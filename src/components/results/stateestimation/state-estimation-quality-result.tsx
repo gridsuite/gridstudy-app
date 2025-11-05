@@ -111,8 +111,6 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
                     defaultColDef={defaultColDef}
                     tableName={tableNameFormatted}
                     rows={rowsToShow}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}

@@ -54,12 +54,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result,
         []
     );
 
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
     const messages = useIntlResultStatusMessages(intl);
 
     const getRowStyle = useCallback(
@@ -72,10 +66,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result,
         },
         [theme.selectedRow.background]
     );
-
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
 
     const renderLoadFlowResult = () => {
         const message = getNoRowsMessage(
@@ -97,8 +87,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result,
                         id: 'LoadFlowResultsStatus',
                     })}
                     rows={rowsToShow}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}

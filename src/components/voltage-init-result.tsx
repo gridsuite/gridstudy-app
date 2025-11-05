@@ -128,15 +128,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
         }),
         []
     );
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
 
     const applyModifications = () => {
         setApplyingModifications(true);
@@ -289,8 +280,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     defaultColDef={defaultColDef}
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows as any[]}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     skipColumnHeaders={false}
                     getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
                         return undefined;
@@ -330,8 +319,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     defaultColDef={defaultColDef}
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={result.reactiveSlacks}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     skipColumnHeaders={false}
                     getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
                         return undefined;
@@ -381,8 +368,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 defaultColDef={defaultColDef}
                 tableName={intl.formatMessage({ id: 'BusVoltages' })}
                 rows={busVoltages}
-                onRowDataUpdated={onRowDataUpdated}
-                onGridReady={onGridReady}
                 skipColumnHeaders={false}
                 getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
                     return undefined;

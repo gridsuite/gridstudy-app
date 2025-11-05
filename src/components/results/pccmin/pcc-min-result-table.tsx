@@ -146,16 +146,6 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
         []
     );
 
-    const onGridReady = useCallback((params: GridReadyEvent) => {
-        if (params?.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
-    const onRowDataUpdated = useCallback((params: RowDataUpdatedEvent) => {
-        params.api.sizeColumnsToFit();
-    }, []);
-
     const rowsToShow = getRows(result, pccMinStatus);
     const message = getNoRowsMessage(messages, result, pccMinStatus, !isFetching);
 
@@ -172,8 +162,6 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
                     defaultColDef={defaultColDef}
                     tableName={intl.formatMessage({ id: 'Results' })}
                     rows={rowsToShow}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}
                     showLinearProgress={openPccMinLoader}

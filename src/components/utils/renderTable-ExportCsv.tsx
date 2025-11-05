@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, RefObject } from 'react';
+import { FunctionComponent, RefObject, useCallback } from 'react';
 import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
 import { CustomAGGrid, CsvExport, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
@@ -37,8 +37,6 @@ interface RenderTableAndExportCsvProps {
     tableName: string;
     rows: any[];
     showLinearProgress?: boolean;
-    onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
-    onGridReady: ((event: GridReadyEvent) => void) | undefined;
     getRowStyle?: (params: RowClassParams) => RowStyle | undefined;
     overlayNoRowsTemplate: string | undefined;
     skipColumnHeaders: boolean;
@@ -50,8 +48,6 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     defaultColDef,
     tableName,
     rows,
-    onRowDataUpdated,
-    onGridReady,
     getRowStyle,
     overlayNoRowsTemplate,
     skipColumnHeaders = false,
@@ -59,7 +55,14 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
 }) => {
     const isRowsEmpty = !rows || rows.length === 0;
     const language = useSelector((state: AppState) => state.computedLanguage);
-
+    const onRowDataUpdated = useCallback((params: any) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
+        api?.sizeColumnsToFit();
+    }, []);
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
