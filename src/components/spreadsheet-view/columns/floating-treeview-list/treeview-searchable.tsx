@@ -10,7 +10,7 @@ import { QuickSearch } from '../../../report-viewer/QuickSearch';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { ChevronRight, ExpandMore } from '@mui/icons-material';
 import Button from '@mui/material/Button';
-import { Dispatch, MouseEvent, RefObject, SetStateAction, useCallback, useMemo, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { FORMULA } from '../column-creation-form';
 import { useFormulaQuickSearch } from './use-formula-quicksearch';
 import { buildTreeData, sortData } from './utils/json-schema-parser';
@@ -28,8 +28,6 @@ interface TreeviewSearchableProps {
     inputRef: RefObject<HTMLInputElement>;
     equipmentType: SpreadsheetEquipmentType;
 }
-
-const MOUSE_EVENT_DETAIL_DOUBLE_CLICK = 2;
 
 export const TreeviewSearchable = ({
     properties,
@@ -62,15 +60,6 @@ export const TreeviewSearchable = ({
 
     const { handleKeyDown, handleTreeviewKeyDown } = usePopoverToggle(properties, setAnchorEl, handleConfirm);
 
-    const handleDoubleClick = useCallback(
-        (e: MouseEvent) => {
-            if (e.detail === MOUSE_EVENT_DETAIL_DOUBLE_CLICK) {
-                handleConfirm();
-            }
-        },
-        [handleConfirm]
-    );
-
     return (
         <>
             <Box sx={{ p: 1 }}>
@@ -91,7 +80,6 @@ export const TreeviewSearchable = ({
                     onExpandedItemsChange={(_, ids) => setExpandedItems(ids)}
                     onKeyDown={handleTreeviewKeyDown}
                     onItemFocus={(e, itemId) => setPendingSelection(itemId)}
-                    onItemClick={handleDoubleClick}
                     slots={{
                         expandIcon: ChevronRight,
                         collapseIcon: ExpandMore,

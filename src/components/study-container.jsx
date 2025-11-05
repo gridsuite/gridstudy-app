@@ -218,6 +218,12 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
+            if (updateTypeHeader === NotificationType.PCC_MIN_FAILED) {
+                snackError({
+                    headerId: 'pccMinError',
+                    messageTxt: errorMessage,
+                });
+            }
         },
         [snackError, userName]
     );

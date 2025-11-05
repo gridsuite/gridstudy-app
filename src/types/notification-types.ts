@@ -79,6 +79,9 @@ export enum NotificationType {
     STATE_ESTIMATION_RESULT = 'stateEstimationResult',
     STATE_ESTIMATION_FAILED = 'stateEstimation_failed',
     STATE_ESTIMATION_STATUS = 'stateEstimation_status',
+    PCC_MIN_RESULT = 'pccMinResult',
+    PCC_MIN_FAILED = 'pccMin_failed',
+    PCC_MIN_STATUS = 'pccMin_status',
 
     // spreadsheets
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
@@ -126,7 +129,7 @@ export const MODIFYING_NODE_NOTIFICATION_TYPES = [
     NotificationType.NODE_BUILD_FAILED,
 ] as NotificationType[];
 
-export const COMPUTATION_NOTIFIACTION_TYPES = [
+export const COMPUTATION_NOTIFICATION_TYPES = [
     NotificationType.LOADFLOW_RESULT,
     NotificationType.LOADFLOW_FAILED,
     NotificationType.LOADFLOW_STATUS,
@@ -155,6 +158,9 @@ export const COMPUTATION_NOTIFIACTION_TYPES = [
     NotificationType.STATE_ESTIMATION_RESULT,
     NotificationType.STATE_ESTIMATION_FAILED,
     NotificationType.STATE_ESTIMATION_STATUS,
+    NotificationType.PCC_MIN_RESULT,
+    NotificationType.PCC_MIN_FAILED,
+    NotificationType.PCC_MIN_STATUS,
 ] as NotificationType[];
 
 export enum RootNetworkIndexationStatus {
@@ -494,7 +500,16 @@ interface StateEstimationFailedEventDataHeaders extends ComputationFailedEventDa
 interface StateEstimationStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
     updateType: NotificationType.STATE_ESTIMATION_STATUS;
 }
+interface PccMinStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
+    updateType: NotificationType.PCC_MIN_STATUS;
+}
+interface PccMinResultEventDataHeaders extends ComputationResultEventDataHeaders {
+    updateType: NotificationType.PCC_MIN_RESULT;
+}
 
+interface PccMinFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
+    updateType: NotificationType.PCC_MIN_FAILED;
+}
 // Payloads
 export interface DeletedEquipment {
     equipmentId: string;
@@ -820,6 +835,19 @@ export interface StateEstimationStatusEventData {
     payload: undefined;
 }
 
+export interface PccMinResultEventData {
+    headers: PccMinResultEventDataHeaders;
+    payload: undefined;
+}
+export interface PccMinFailedEventData {
+    headers: PccMinFailedEventDataHeaders;
+    payload: undefined;
+}
+
+export interface PccMinStatusEventData {
+    headers: PccMinStatusEventDataHeaders;
+    payload: undefined;
+}
 export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyEventData, 'payload'> {
     headers: SpreadsheetParametersUpdatedDataHeaders;
     /**
@@ -848,6 +876,10 @@ export function isLoadflowResultNotification(notif: unknown): notif is LoadflowR
 
 export function isStateEstimationResultNotification(notif: unknown): notif is StateEstimationResultEventData {
     return (notif as StateEstimationResultEventData).headers?.updateType === NotificationType.STATE_ESTIMATION_RESULT;
+}
+
+export function isPccMinResultNotification(notif: unknown): notif is PccMinResultEventData {
+    return (notif as PccMinResultEventData).headers?.updateType === NotificationType.PCC_MIN_RESULT;
 }
 
 export function isRootNetworkDeletionStartedNotification(notif: unknown): notif is RootNetworkDeletionStartedEventData {
@@ -1012,10 +1044,13 @@ export type ComputationEventData =
     | VoltageInitStatusEventData
     | StateEstimationResultEventData
     | StateEstimationFailedEventData
-    | StateEstimationStatusEventData;
+    | StateEstimationStatusEventData
+    | PccMinResultEventData
+    | PccMinFailedEventData
+    | PccMinStatusEventData;
 
 export function isComputationNotification(notif: unknown): notif is ComputationEventData {
-    return COMPUTATION_NOTIFIACTION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
+    return COMPUTATION_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
 }
 
 export function isIndexationStatusNotification(notif: unknown): notif is IndexationStatusEventData {
@@ -1100,7 +1135,10 @@ export type StudyUpdateEventData =
     | VoltageInitStatusEventData
     | StateEstimationResultEventData
     | StateEstimationFailedEventData
-    | StateEstimationStatusEventData;
+    | StateEstimationStatusEventData
+    | PccMinResultEventData
+    | PccMinFailedEventData
+    | PccMinStatusEventData;
 
 export type StudyUpdateNotification = {
     eventData: StudyUpdateEventData;

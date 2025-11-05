@@ -8,9 +8,9 @@ import type { UUID } from 'node:crypto';
 
 export interface Modification {
     modificationUuid: UUID;
-    impactedEquipmentId: string;
     messageValues: string;
     messageType: string;
+    impactedEquipmentIds: string[];
 }
 
 export interface ModificationsSearchResult {

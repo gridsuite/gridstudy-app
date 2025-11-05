@@ -271,6 +271,7 @@ export interface OperationalLimitsGroup {
     id: string;
     name: string;
     applicability?: string;
+    limitsProperties?: LimitsProperty[];
     currentLimits: CurrentLimits;
     modificationType?: string | null; // only needed when the data is used for a branch modification
 }
@@ -286,11 +287,26 @@ export interface TemporaryLimit extends Limit {
     selected?: boolean;
 }
 
+export interface LimitsProperty {
+    name: string;
+    value: string;
+}
+
+// Structure from modification
 export interface CurrentLimits {
     id: string;
     applicability?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
+}
+
+// Structure from map-server
+export interface CurrentLimitsData {
+    id: string;
+    applicability?: string;
+    limitsProperties?: LimitsProperty[];
+    permanentLimit: number | null;
+    temporaryLimits: TemporaryLimit[]; //FIXME : not really the convenient type (should refactor that + usage)
 }
 
 export interface SubstationModificationInfo {

@@ -58,6 +58,8 @@ export default function SubstationsAutocomplete({
             onChange={handleChange}
             options={substations}
             size={'small'}
+            freeSolo
+            autoSelect
             sx={styles.autocomplete}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
