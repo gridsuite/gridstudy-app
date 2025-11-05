@@ -90,7 +90,7 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
         };
     });
 
-export const decorateWithErrorRenderer = (columns: CustomColDef[], intl: IntlShape): CustomColDef[] => {
+export const addFormulaErrorsRenderer = (columns: CustomColDef[], intl: IntlShape): CustomColDef[] => {
     return columns.map((col) => ({
         ...col,
         cellRendererSelector: (params) =>
