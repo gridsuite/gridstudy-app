@@ -154,6 +154,17 @@ const spreadsheetFr = {
     'spreadsheet/calculation/min_abbrev': 'Min',
     'spreadsheet/calculation/max_abbrev': 'Max',
 
+    //Formula errors
+    'spreadsheet/formula/import/disabled': 'La fonction import est désactivée',
+    'spreadsheet/formula/createUnit/disabled': 'La fonction createUnit est désactivée',
+    'spreadsheet/formula/evaluate/disabled': 'La fonction evaluate est désactivée',
+    'spreadsheet/formula/parse/disabled': 'La fonction parse est désactivée',
+    'spreadsheet/formula/simplify/disabled': 'La fonction simplify est désactivée',
+    'spreadsheet/formula/derivative/disabled': 'La fonction derivative est désactivée',
+    'spreadsheet/formula/compile/disabled': 'La fonction compile est désactivée',
+    'spreadsheet/formula/help/disabled': 'La fonction help est désactivée',
+    'spreadsheet/formula/length/error': 'La fonction length attend une donnée de type tableau ou objet',
+
     // Column types
     TEXT: 'Texte',
     NUMBER: 'Nombre',

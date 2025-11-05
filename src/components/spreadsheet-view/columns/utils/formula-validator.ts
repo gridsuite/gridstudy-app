@@ -12,29 +12,38 @@ interface ValidationResult {
     error?: string;
 }
 
-export const validateFormulaResult = (value: any, type: COLUMN_TYPES): ValidationResult => {
+export function isValidationResult(value: unknown): value is ValidationResult {
+    return (
+        typeof value === 'object' && value !== null && value.hasOwnProperty('isValid') && value.hasOwnProperty('error')
+    );
+}
+
+export const formatValidationResult = (isValid: boolean, messageId?: string): ValidationResult => {
+    return { isValid: isValid, error: messageId };
+};
+
+export const validateFormulaResult = (value: any, type: COLUMN_TYPES): any => {
+    if (isValidationResult(value)) {
+        return value;
+    }
+
     switch (type) {
         case COLUMN_TYPES.NUMBER:
-            return {
-                isValid:
-                    (typeof value === 'number' && !isNaN(value)) ||
-                    (typeof value !== 'boolean' && !isNaN(Number(value))),
-                error: 'Formula must evaluate to a number',
-            };
+            return formatValidationResult(
+                (typeof value === 'number' && !isNaN(value)) || (typeof value !== 'boolean' && !isNaN(Number(value))),
+                'Formula must evaluate to a number'
+            );
         case COLUMN_TYPES.BOOLEAN:
-            return {
-                isValid: typeof value === 'boolean',
-                error: 'Formula must evaluate to a boolean',
-            };
+            return formatValidationResult(typeof value === 'boolean', 'Formula must evaluate to a boolean');
         case COLUMN_TYPES.ENUM:
-            return {
-                isValid: typeof value === 'string' || typeof value === 'number',
-                error: 'Formula must evaluate to a string',
-            };
+            return formatValidationResult(
+                typeof value === 'string' || typeof value === 'number',
+                'Formula must evaluate to a string'
+            );
         case COLUMN_TYPES.TEXT:
-            return { isValid: true }; // Text accepts any type
+            return formatValidationResult(true); // Text accepts any type
         default:
-            return { isValid: false, error: 'Unknown column type' };
+            return formatValidationResult(false, 'Unknown column type');
     }
 };
 

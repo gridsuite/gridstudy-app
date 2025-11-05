@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo } from 'react';
 import { useTheme, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -87,6 +87,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     const theme = useTheme();
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const language = useSelector((state: AppState) => state.computedLanguage);
 
     const isEditDisabled = currentNode?.type === NodeType.ROOT || !isDataEditable;
 
@@ -132,7 +133,11 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode?.type, theme, isDataEditable]
     );
 
-    const gridContext = useMemo(() => ({ theme, currentNode, studyUuid }), [currentNode, studyUuid, theme]);
+    const gridContext = useMemo(() => ({ theme, currentNode, studyUuid, intl }), [currentNode, intl, studyUuid, theme]);
+
+    useEffect(() => {
+        gridRef.current?.api?.refreshCells({ force: true, suppressFlash: true });
+    }, [gridRef, language]);
 
     return (
         <>

@@ -14,10 +14,11 @@ import {
     numberColumnDefinition,
     textColumnDefinition,
 } from '../common-column-definitions';
-import { validateFormulaResult } from './formula-validator';
+import { isValidationResult, validateFormulaResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { CustomColDef } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
+import { ErrorCellRenderer } from '../../../custom-aggrid/cell-renderers';
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
@@ -37,7 +38,7 @@ const createValueGetter =
             const validation = validateFormulaResult(result, colDef.type);
 
             if (!validation.isValid) {
-                return undefined;
+                return validation;
             }
             return result;
         } catch (e) {
@@ -85,5 +86,9 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
             hide: !colDef.visible,
             editable: false,
             enableCellChangeFlash: true,
+            cellRendererSelector: (params) =>
+                isValidationResult(params.value) && !params.value.isValid
+                    ? { component: ErrorCellRenderer }
+                    : { component: baseDefinition.cellRenderer },
         };
     });

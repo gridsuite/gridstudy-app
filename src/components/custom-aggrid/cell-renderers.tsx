@@ -35,6 +35,8 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
+const FORMULA_ERROR_LABEL = '#ERROR';
+
 export const BooleanCellRenderer = (props: any) => {
     const isChecked = props.value;
     return (
@@ -100,6 +102,20 @@ export const NumericCellRenderer = (props: NumericCellRendererProps) => {
                 title={cellValue.tooltip ? cellValue.tooltip : cellValue.value?.toString()}
             >
                 <Box sx={styles.overflow}>{cellValue.value}</Box>
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const ErrorCellRenderer = (props: CustomCellRendererProps) => {
+    return (
+        <Box sx={mergeSx(styles.tableCell)}>
+            <Tooltip
+                disableFocusListener
+                disableTouchListener
+                title={props.context?.intl?.formatMessage({ id: props.value?.error })}
+            >
+                <Box sx={styles.overflow}>{FORMULA_ERROR_LABEL}</Box>
             </Tooltip>
         </Box>
     );

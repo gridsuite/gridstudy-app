@@ -7,6 +7,7 @@
 
 import { all, create } from 'mathjs';
 import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
+import { formatValidationResult } from './formula-validator';
 
 const instance = create(all);
 
@@ -14,24 +15,15 @@ export const limitedEvaluate = instance.evaluate;
 
 instance.import(
     {
-        import: function () {
-            throw new Error('Function import is disabled');
-        },
-        createUnit: function () {
-            throw new Error('Function createUnit is disabled');
-        },
-        evaluate: function () {
-            throw new Error('Function evaluate is disabled');
-        },
-        parse: function () {
-            throw new Error('Function parse is disabled');
-        },
-        simplify: function () {
-            throw new Error('Function simplify is disabled');
-        },
-        derivative: function () {
-            throw new Error('Function derivative is disabled');
-        },
+        import: () => formatValidationResult(false, 'spreadsheet/formula/import/disabled'),
+        createUnit: () => formatValidationResult(false, 'spreadsheet/formula/createUnit/disabled'),
+        evaluate: () => formatValidationResult(false, 'spreadsheet/formula/evaluate/disabled'),
+        parse: () => formatValidationResult(false, 'spreadsheet/formula/parse/disabled'),
+        simplify: () => formatValidationResult(false, 'spreadsheet/formula/simplify/disabled'),
+        derivative: () => formatValidationResult(false, 'spreadsheet/formula/derivative/disabled'),
+        compile: () => formatValidationResult(false, 'spreadsheet/formula/compile/disabled'),
+        help: () => formatValidationResult(false, 'spreadsheet/formula/help/disabled'),
+        parser: () => formatValidationResult(false, 'spreadsheet/formula/parser/disabled'),
         equal: function (a: any, b: any) {
             // == instead of === to be able to compare strings to numbers
             return a === b;
@@ -45,7 +37,7 @@ instance.import(
             } else if (Array.isArray(obj)) {
                 return obj.length;
             }
-            throw new Error('length() expects an array or object');
+            return formatValidationResult(false, 'spreadsheet/formula/length/error');
         },
         unitToKiloUnit,
         unitToMicroUnit,
