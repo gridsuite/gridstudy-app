@@ -13,6 +13,23 @@ import { useController, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { HorizontalRule } from '@mui/icons-material';
 import { CONNECTION_DIRECTIONS_VALUES } from './move-voltage-level-feeder-bays.type';
+import { MuiStyles } from '@gridsuite/commons-ui';
+
+const styles = {
+    container: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+        border: 'none',
+        gap: 2,
+        padding: '1rem',
+        '&:hover': {
+            backgroundColor: 'transparent',
+        },
+    },
+} as const satisfies MuiStyles;
 
 type FeederBayDirectionCellRendererProps = {
     name: string;
@@ -54,25 +71,7 @@ export default function FeederBayDirectionCellRenderer({
         });
     }, [value, setValue, name]);
     return (
-        <ToggleButton
-            value={value}
-            onClick={handleClick}
-            disabled={disabled}
-            size="small"
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '100%',
-                height: '100%',
-                border: 'none',
-                gap: 2,
-                padding: '1rem',
-                '&:hover': {
-                    backgroundColor: 'transparent',
-                },
-            }}
-        >
+        <ToggleButton value={value} onClick={handleClick} disabled={disabled} size="small" sx={styles.container}>
             <IconButton onClick={handleClick} size="small" disabled={disabled}>
                 {DIRECTION_ICONS[value] || <HorizontalRule />}
             </IconButton>
