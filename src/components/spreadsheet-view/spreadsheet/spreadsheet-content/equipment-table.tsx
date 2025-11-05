@@ -133,11 +133,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode?.type, theme, isDataEditable]
     );
 
-    const gridContext = useMemo(() => ({ theme, currentNode, studyUuid, intl }), [currentNode, intl, studyUuid, theme]);
-
-    useEffect(() => {
-        gridRef.current?.api?.refreshCells({ force: true, suppressFlash: true });
-    }, [gridRef, language]);
+    const gridContext = useMemo(() => ({ theme, currentNode, studyUuid }), [currentNode, studyUuid, theme]);
 
     return (
         <>

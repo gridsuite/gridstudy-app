@@ -11,6 +11,7 @@ import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { ICellRendererParams } from 'ag-grid-community';
 import { CustomCellRendererProps } from 'ag-grid-react';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { IntlShape } from 'react-intl';
 
 const styles = {
     tableCell: (theme) => ({
@@ -36,6 +37,15 @@ const styles = {
 } as const satisfies MuiStyles;
 
 const FORMULA_ERROR_LABEL = '#ERROR';
+
+interface BaseCellRendererProps {
+    value: string | undefined;
+    tooltip?: string;
+}
+
+interface ErrorCellRendererParams extends ICellRendererParams {
+    intl: IntlShape;
+}
 
 export const BooleanCellRenderer = (props: any) => {
     const isChecked = props.value;
@@ -107,29 +117,22 @@ export const NumericCellRenderer = (props: NumericCellRendererProps) => {
     );
 };
 
-export const ErrorCellRenderer = (props: CustomCellRendererProps) => {
-    return (
-        <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip
-                disableFocusListener
-                disableTouchListener
-                title={props.context?.intl?.formatMessage({ id: props.value?.error })}
-            >
-                <Box sx={styles.overflow}>{FORMULA_ERROR_LABEL}</Box>
-            </Tooltip>
-        </Box>
-    );
+const BaseCellRenderer = ({ value, tooltip }: BaseCellRendererProps) => (
+    <Box sx={mergeSx(styles.tableCell)}>
+        <Tooltip disableFocusListener disableTouchListener title={tooltip || value || ''}>
+            <Box sx={styles.overflow}>{value}</Box>
+        </Tooltip>
+    </Box>
+);
+
+export const ErrorCellRenderer = (props: ErrorCellRendererParams) => {
+    const errorMessage = props.intl.formatMessage({ id: props.value?.error });
+    return <BaseCellRenderer value={FORMULA_ERROR_LABEL} tooltip={errorMessage} />;
 };
 
 export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
     const cellValue = formatCell(props);
-    return (
-        <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip disableFocusListener disableTouchListener title={cellValue.value?.toString()}>
-                <Box sx={styles.overflow}>{cellValue.value?.toString()}</Box>
-            </Tooltip>
-        </Box>
-    );
+    return <BaseCellRenderer value={cellValue.value?.toString()} tooltip={cellValue.value?.toString()} />;
 };
 
 export const NetworkModificationNameCellRenderer = (props: CustomCellRendererProps) => {

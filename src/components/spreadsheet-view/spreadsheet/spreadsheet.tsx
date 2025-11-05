@@ -16,6 +16,7 @@ import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
+import { useIntl } from 'react-intl';
 
 interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
@@ -38,8 +39,9 @@ export const Spreadsheet = memo(
         active,
     }: SpreadsheetProps) => {
         const gridRef = useRef<AgGridReact>(null);
+        const intl = useIntl();
 
-        const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
+        const columnsDefinitions = useMemo(() => mapColumns(tableDefinition, intl), [intl, tableDefinition]);
         const rowCounterInfos = useFilteredRowCounterInfo({
             gridRef,
             tableDefinition,
