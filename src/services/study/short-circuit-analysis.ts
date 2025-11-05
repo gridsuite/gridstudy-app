@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
@@ -14,6 +14,12 @@ import { GsLang, backendFetch, backendFetchJson, backendFetchText } from '@grids
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
+
+const PREFIX_SHORTCIRCUIT_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';
+
+export function getShortCircuitUrl() {
+    return `${PREFIX_SHORTCIRCUIT_SERVER_QUERIES}/v1/`;
+}
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
@@ -212,4 +218,32 @@ export function downloadShortCircuitResultZippedCsv(
         },
         body: JSON.stringify({ headersCsv, enumValueTranslations, language }),
     });
+}
+
+export function setShortCircuitParameters(studyUuid: UUID, newParams: any) {
+    console.info('set short circuit parameters');
+    const setShortCircuitParametersUrl = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(setShortCircuitParametersUrl);
+    return backendFetch(setShortCircuitParametersUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newParams ? JSON.stringify(newParams) : null,
+    });
+}
+
+export function getShortCircuitParameters(studyUuid: UUID) {
+    console.info('get short circuit parameters');
+    const getScParams = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(getScParams);
+    return backendFetchJson(getScParams);
+}
+
+export function getShortCircuitSpecificParametersDescription() {
+    console.info('get short circuit specific parameters description');
+    const getShortCircuitSpecificParametersUrl = getShortCircuitUrl() + 'parameters/specific-parameters';
+    console.debug(getShortCircuitSpecificParametersUrl);
+    return backendFetchJson(getShortCircuitSpecificParametersUrl);
 }
