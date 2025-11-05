@@ -5,17 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
+import { FunctionComponent, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { Box } from '@mui/material';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { ComputingType } from '@gridsuite/commons-ui';
 
-import { ColumnContext } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
 import { AgGridReact } from 'ag-grid-react';
 import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv';

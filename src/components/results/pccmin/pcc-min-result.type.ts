@@ -69,13 +69,13 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
         tab: PCCMIN_RESULT,
     };
 
-    const filterParams = {
+    const pccMinFilterParams = {
         type: AgGridFilterType.PccMin,
         tab: PCCMIN_RESULT,
         updateFilterCallback: onFilter,
     };
 
-    const inputFilterParams = (
+    const inputPccMinFilterParams = (
         filterDefinition: Pick<
             Required<ColumnContext>['filterComponentParams']['filterParams'],
             'dataType' | 'comparators'
@@ -85,7 +85,7 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
         filterComponentParams: {
             filterParams: {
                 ...filterDefinition,
-                ...filterParams,
+                ...pccMinFilterParams,
             },
         },
     });
@@ -95,39 +95,39 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
             headerName: intl.formatMessage({ id: 'Bus' }),
             colId: 'busId',
             field: 'busId',
-            context: { sortParams, ...inputFilterParams(textFilterParams) },
+            context: { sortParams, ...inputPccMinFilterParams(textFilterParams) },
             minWidth: 180,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Contingency' }),
             colId: 'limitingEquipment',
             field: 'limitingEquipment',
-            context: { sortParams, ...inputFilterParams(textFilterParams) },
+            context: { sortParams, ...inputPccMinFilterParams(textFilterParams) },
             minWidth: 180,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'PccMinTri' }),
             colId: 'pccMinTri',
             field: 'pccMinTri',
-            context: { numeric: true, fractionDigits: 2, sortParams, ...inputFilterParams(numericFilterParams) },
+            context: { numeric: true, fractionDigits: 2, sortParams, ...inputPccMinFilterParams(numericFilterParams) },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'IccMinTri' }),
             colId: 'iccMinTri',
             field: 'iccMinTri',
-            context: { numeric: true, fractionDigits: 2, sortParams, ...inputFilterParams(numericFilterParams) },
+            context: { numeric: true, fractionDigits: 2, sortParams, ...inputPccMinFilterParams(numericFilterParams) },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'xOhm' }),
             colId: 'x',
             field: 'x',
-            context: { numeric: true, fractionDigits: 2, sortParams, ...inputFilterParams(numericFilterParams) },
+            context: { numeric: true, fractionDigits: 2, sortParams, ...inputPccMinFilterParams(numericFilterParams) },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'rOhm' }),
             colId: 'r',
             field: 'r',
-            context: { numeric: true, fractionDigits: 2, sortParams, ...inputFilterParams(numericFilterParams) },
+            context: { numeric: true, fractionDigits: 2, sortParams, ...inputPccMinFilterParams(numericFilterParams) },
         }),
     ];
 };
