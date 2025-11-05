@@ -176,10 +176,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             connectionSide: bay.connectionSide,
                             connectionName: bay.connectablePositionInfos.connectionName || null,
                             connectionDirection: bay.connectablePositionInfos.connectionDirection,
-                            connectionPosition:
-                                bay.connectablePositionInfos.connectionPosition !== undefined
-                                    ? String(bay.connectablePositionInfos.connectionPosition)
-                                    : null,
+                            connectionPosition: String(bay.connectablePositionInfos.connectionPosition ?? null),
                             isRemoved: false,
                             rowId: null,
                         });
@@ -298,12 +295,12 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 ? tableData
                       .filter((row): row is NonNullable<typeof row> => row != null)
                       .map((row) => ({
-                          equipmentId: row.equipmentId!,
-                          busbarSectionId: row.busbarSectionId!,
-                          connectionSide: row.connectionSide!,
-                          connectionPosition: row.connectionPosition!,
-                          connectionName: row.connectionName!,
-                          connectionDirection: row.connectionDirection!,
+                          equipmentId: row.equipmentId ?? '',
+                          busbarSectionId: row.busbarSectionId ?? '',
+                          connectionSide: row.connectionSide ?? null,
+                          connectionPosition: row.connectionPosition ?? null,
+                          connectionName: row.connectionName ?? null,
+                          connectionDirection: row.connectionDirection ?? null,
                       }))
                 : [];
         const moveVoltageLevelFeederBaysInfos = {
