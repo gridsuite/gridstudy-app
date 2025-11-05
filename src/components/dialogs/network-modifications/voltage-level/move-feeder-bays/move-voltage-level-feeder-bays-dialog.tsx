@@ -33,12 +33,33 @@ import {
     MoveFeederBayInfos,
     MoveVoltageLevelFeederBaysInfos,
 } from '../../../../../services/network-modification-types';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { FeederBayInfos, FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
+import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
+import { AnyObject, TestFunction } from 'yup';
+import { fetchVoltageLevelFeederBaysBusBarSectionsInfos } from '../../../../../services/study/network';
+import { FeederBaysBusBarSectionsInfos } from '../../../../../services/study/network-map.type';
+
+const isActiveRow = (row: FeederBaysFormInfos) => row && !row.isRemoved;
+const checkConnectionPositionField: TestFunction<string | undefined, AnyObject> = (currentPosition, context) => {
+    // access to rows
+    const rows: FeederBaysFormInfos[] = context.from?.[1]?.value?.[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE];
+    if (!Array.isArray(rows)) {
+        return true;
+    }
+    // take only active rows
+    const activeRows = rows.filter(isActiveRow);
+    // counting duplication
+    let count = 0;
+    for (const row of activeRows) {
+        // convert to string because the initial value is a number, not a string
+        if (`${currentPosition}` === `${row.connectionPosition}`) {
+            count = count + 1;
+        }
+    }
+    return count <= 1;
+};
 
 function requiredWhenActive<T extends yup.Schema>(schema: T) {
     return schema.when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
@@ -199,10 +220,12 @@ export default function MoveVoltageLevelFeederBaysDialog({
     );
 
     const handleVoltageLevelDataFetch = useCallback(
-        (voltageLevel: any) => {
-            const busBarSectionInfos = Object.values(voltageLevel?.busBarSectionInfos || {}).flat() as string[];
-            const feederBaysInfos: FeederBaysInfos = (
-                Object.entries(voltageLevel?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
+        (feederBaysBusBarSectionsInfo: FeederBaysBusBarSectionsInfos) => {
+            const busBarSectionInfos: string[] = Object.values(
+                feederBaysBusBarSectionsInfo?.busBarSectionsInfos.busBarSections || {}
+            ).flat() as string[];
+            const feederBaysInfos: FeederBaysInfos = Object.entries(
+                feederBaysBusBarSectionsInfo?.feederBaysInfos || {}
             ).flatMap(([equipmentId, feederBayInfos]) =>
                 feederBayInfos.map((feederBay) => ({
                     equipmentId,
@@ -230,21 +253,18 @@ export default function MoveVoltageLevelFeederBaysDialog({
     );
 
     const onEquipmentIdChange = useCallback(
-        (equipmentId: string) => {
-            if (equipmentId) {
+        (voltageLevelId: string) => {
+            if (voltageLevelId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchNetworkElementInfos(
+                fetchVoltageLevelFeederBaysBusBarSectionsInfos(
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
-                    true
+                    voltageLevelId
                 )
-                    .then((voltageLevel) => {
-                        if (voltageLevel) {
-                            handleVoltageLevelDataFetch(voltageLevel);
+                    .then((feederBaysBusBarSectionInfo) => {
+                        if (feederBaysBusBarSectionInfo) {
+                            handleVoltageLevelDataFetch(feederBaysBusBarSectionInfo);
                         }
                     })
                     .catch(() => {
