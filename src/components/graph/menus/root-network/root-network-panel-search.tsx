@@ -132,8 +132,8 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
                     value={searchTerm}
                     label={intl.formatMessage({
                         id: isNodeTab(tabValue)
-                            ? 'rootNetwork.searchPlaceholder.nodes'
-                            : 'rootNetwork.searchPlaceholder.modifications',
+                            ? 'rootNetwork.searchLabel.nodes'
+                            : 'rootNetwork.searchLabel.modifications',
                     })}
                     onChange={handleOnChange}
                     onClear={leaveSearch}
