@@ -36,7 +36,7 @@ import {
 } from './voltage-init-result.type';
 import { AppState } from 'redux/reducer';
 import RunningStatus from './utils/running-status';
-import { GridReadyEvent, RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
+import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 

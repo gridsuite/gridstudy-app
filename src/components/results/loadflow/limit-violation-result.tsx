@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
-import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { RowClassParams } from 'ag-grid-community';
 
 import { LimitViolationResultProps } from './load-flow-result.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';

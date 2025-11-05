@@ -64,15 +64,6 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
         [theme.selectedRow.background]
     );
 
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
     const messages = useIntlResultStatusMessages(intl, true);
 
     const defaultColDef = useMemo(

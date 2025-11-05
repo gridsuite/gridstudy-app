@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, RefObject, useCallback } from 'react';
-import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-community';
 import { CustomAGGrid, CsvExport, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { Box, LinearProgress } from '@mui/material';
