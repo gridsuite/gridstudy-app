@@ -35,19 +35,19 @@ export const validateFormulaResult = (value: any, type: COLUMN_TYPES): Validatio
         case COLUMN_TYPES.NUMBER:
             return formatValidationResult(
                 (typeof value === 'number' && !isNaN(value)) || (typeof value !== 'boolean' && !isNaN(Number(value))),
-                'Formula must evaluate to a number'
+                'spreadsheet/formula/type/number'
             );
         case COLUMN_TYPES.BOOLEAN:
-            return formatValidationResult(typeof value === 'boolean', 'Formula must evaluate to a boolean');
+            return formatValidationResult(typeof value === 'boolean', 'spreadsheet/formula/type/boolean');
         case COLUMN_TYPES.ENUM:
             return formatValidationResult(
                 typeof value === 'string' || typeof value === 'number',
-                'Formula must evaluate to a string'
+                'spreadsheet/formula/type/enum'
             );
         case COLUMN_TYPES.TEXT:
             return formatValidationResult(true); // Text accepts any type
         default:
-            return formatValidationResult(false, 'Unknown column type');
+            return formatValidationResult(false, 'spreadsheet/formula/type/unknown');
     }
 };
 

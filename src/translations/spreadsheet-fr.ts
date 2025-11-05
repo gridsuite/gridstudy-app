@@ -164,6 +164,10 @@ const spreadsheetFr = {
     'spreadsheet/formula/compile/disabled': 'La fonction compile est désactivée',
     'spreadsheet/formula/help/disabled': 'La fonction help est désactivée',
     'spreadsheet/formula/length/error': 'La fonction length attend une donnée de type tableau ou objet',
+    'spreadsheet/formula/type/number': 'La formule doit exprimer une donnée numérique',
+    'spreadsheet/formula/type/boolean': 'La formule doit exprimer une donnée booléenne',
+    'spreadsheet/formula/type/enum': 'La formule doit exprimer une donnée textuelle',
+    'spreadsheet/formula/type/unknown': 'Type de donnée inconnu',
 
     // Column types
     TEXT: 'Texte',

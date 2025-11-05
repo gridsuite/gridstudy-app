@@ -159,6 +159,10 @@ const spreadsheetEn = {
     'spreadsheet/formula/compile/disabled': 'Function compile is disabled',
     'spreadsheet/formula/help/disabled': 'Function help is disabled',
     'spreadsheet/formula/length/error': 'Function length expects an array or object',
+    'spreadsheet/formula/type/number': 'Formula must evaluate to a number',
+    'spreadsheet/formula/type/boolean': 'Formula must evaluate to a boolean',
+    'spreadsheet/formula/type/enum': 'Formula must evaluate to a string',
+    'spreadsheet/formula/type/unknown': 'Unknown column type',
 
     // Column types
     TEXT: 'Text',
