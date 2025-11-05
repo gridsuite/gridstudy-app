@@ -1906,14 +1906,14 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(RESET_PCCMIN_ANALYSIS_PAGINATION, (state, _action: ResetPccminAnalysisPaginationAction) => {
-        // Reset all shortcircuit analysis tabs to page 0 but keep their rowsPerPage
-        PCCMIN_ANALYSIS_TABS.forEach((tab) => {
+        // Reset all PccMin tabs to page 0, keep rowsPerPage
+        for (const tab of PCCMIN_ANALYSIS_TABS) {
             const currentPagination = state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][tab];
             state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][tab] = {
                 page: 0,
                 rowsPerPage: currentPagination.rowsPerPage,
             };
-        });
+        }
     });
 
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
