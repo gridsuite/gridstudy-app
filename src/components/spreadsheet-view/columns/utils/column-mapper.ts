@@ -14,7 +14,7 @@ import {
     numberColumnDefinition,
     textColumnDefinition,
 } from '../common-column-definitions';
-import { isValidationError, isValidationResult, validateFormulaResult } from './formula-validator';
+import { isValidationError, validateFormulaResult, ValidationResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { CustomColDef } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
@@ -29,7 +29,7 @@ export const useColumnDefinitions = (tableDefinition: SpreadsheetTabDefinition) 
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
-    (params: ValueGetterParams): boolean | string | number | undefined => {
+    (params: ValueGetterParams): ValidationResult | boolean | string | number | undefined => {
         try {
             // Skip formula processing for pinned rows and use raw value
             if (isCalculationRow(params.node?.data?.rowType)) {

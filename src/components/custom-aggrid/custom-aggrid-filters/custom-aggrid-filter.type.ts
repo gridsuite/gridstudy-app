@@ -12,6 +12,7 @@ import { ColumnMenuProps } from '../../spreadsheet-view/columns/column-menu';
 import { SortParams } from '../hooks/use-custom-aggrid-sort';
 import { COLUMN_TYPES, CustomCellType } from '../custom-aggrid-header.type';
 import type { UUID } from 'node:crypto';
+import {ValidationResult} from "../../spreadsheet-view/columns/utils/formula-validator";
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -67,7 +68,7 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
 }
 
 export interface CustomColDef<TData = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
-    extends ColDef<TData, boolean | string | number | CustomCellType> {
+    extends ColDef<TData, boolean | string | number | CustomCellType | ValidationResult> {
     colId: string;
     context?: ColumnContext<F>;
 }

@@ -7,7 +7,7 @@
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { MAX_FORMULA_CHARACTERS } from '../../constants';
 
-interface ValidationResult {
+export interface ValidationResult {
     isValid: boolean;
     error?: string;
 }
@@ -26,7 +26,7 @@ export const formatValidationResult = (isValid: boolean, messageId?: string): Va
     return { isValid: isValid, error: messageId };
 };
 
-export const validateFormulaResult = (value: any, type: COLUMN_TYPES): any => {
+export const validateFormulaResult = (value: any, type: COLUMN_TYPES): ValidationResult => {
     if (isValidationResult(value)) {
         return value;
     }
