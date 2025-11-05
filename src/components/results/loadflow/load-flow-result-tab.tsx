@@ -30,7 +30,7 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -48,7 +48,7 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { ICellRendererParams } from 'ag-grid-community';
-import { Button, Tooltip } from '@mui/material';
+import { Button } from '@mui/material';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 
@@ -182,11 +182,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             };
             if (value) {
                 return (
-                    <Tooltip title={value}>
-                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
-                            {value}
-                        </Button>
-                    </Tooltip>
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
                 );
             }
         },

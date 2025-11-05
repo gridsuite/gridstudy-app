@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import * as React from 'react';
-import { CSSProperties, FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { Box, Stack, styled, Typography, useTheme } from '@mui/material';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { ListChildComponentProps } from 'react-window';
+import { type RowComponentProps } from 'react-window';
 
 export interface ReportItem {
     id: string;
@@ -78,8 +78,19 @@ const TreeViewItemStack = styled(Stack)<{ left: number; node: ReportItem }>((pro
         },
     };
 });
+const ITEM_DEPTH_OFFSET = 12;
 
-export interface TreeViewItemData {
+export function TreeviewItem({
+    index,
+    nodes,
+    onSelectedItem,
+    onExpandItem,
+    highlightedReportId,
+    searchTerm,
+    currentResultIndex,
+    searchResults,
+    style,
+}: RowComponentProps<{
     nodes: ReportItem[];
     onSelectedItem: (node: ReportItem) => void;
     onExpandItem: (node: ReportItem) => void;
@@ -87,20 +98,7 @@ export interface TreeViewItemData {
     searchTerm: string;
     currentResultIndex: number;
     searchResults: number[];
-}
-
-export interface TreeViewItemProps extends ListChildComponentProps {
-    data: TreeViewItemData;
-    index: number;
-    style: CSSProperties;
-}
-
-const ITEM_DEPTH_OFFSET = 12;
-
-export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
-    const { data, index } = props;
-    const { nodes, onSelectedItem, onExpandItem, highlightedReportId, searchTerm, currentResultIndex, searchResults } =
-        data;
+}>) {
     const currentNode = nodes[index];
     const left = currentNode.depth * ITEM_DEPTH_OFFSET;
     const isCollapsable = currentNode.isCollapsable ?? true;
@@ -143,7 +141,7 @@ export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
     );
 
     return (
-        <TreeViewItemBox sx={mergeSx(styles.content, styles.labelRoot)} style={props.style}>
+        <TreeViewItemBox sx={mergeSx(styles.content, styles.labelRoot)} style={style}>
             <TreeViewItemStack
                 direction="row"
                 left={left}
@@ -164,4 +162,4 @@ export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
             </TreeViewItemStack>
         </TreeViewItemBox>
     );
-};
+}
