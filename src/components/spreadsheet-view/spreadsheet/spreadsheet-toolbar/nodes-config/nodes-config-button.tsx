@@ -34,7 +34,10 @@ export default function NodesConfigButton({ disabled }: Readonly<NodesConfigButt
 
     const { nodeAliases, updateNodeAliases } = useNodeAliases();
 
-    const showWarning = useMemo(() => nodeAliases?.length && nodeAliases.some((n) => !validAlias(n)), [nodeAliases]);
+    const showWarning = useMemo(
+        () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.some((n) => !validAlias(n)),
+        [nodeAliases]
+    );
 
     const badgeText = useMemo(() => {
         if (nodeAliases?.length && !showWarning) {

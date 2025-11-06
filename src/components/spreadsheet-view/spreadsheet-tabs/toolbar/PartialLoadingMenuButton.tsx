@@ -125,7 +125,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                             sx={spreadsheetStyles.toolbarButton}
                             size={'small'}
                             onClick={handleClick}
-                            disabled={open || disabled}
+                            disabled={disabled}
                         >
                             <DatasetIcon />
                         </Button>
