@@ -16,13 +16,11 @@ import { MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE } from '../../../../utils/field-co
 type FeederBayPositionCellRendererProps = {
     name: string;
     disabled: boolean;
-    watchTable: FeederBaysFormInfos[];
 };
 
 export default function FeederBayPositionCellRenderer({
     name,
     disabled,
-    watchTable,
 }: Readonly<FeederBayPositionCellRendererProps>) {
     const { control } = useFormContext();
     const {

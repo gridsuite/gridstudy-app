@@ -37,9 +37,10 @@ import { EquipmentModificationDialogProps } from '../../../../graph/menus/networ
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
-import { AnyObject, TestFunction } from 'yup';
 import { fetchVoltageLevelFeederBaysBusBarSectionsInfos } from '../../../../../services/study/network';
 import { FeederBaysBusBarSectionsInfos } from '../../../../../services/study/network-map.type';
+import { toNumber } from '../../../../utils/validation-functions';
+import { isNumber } from 'mathjs';
 
 function requiredWhenActive<T extends yup.Schema>(schema: T) {
     return schema.when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
@@ -54,9 +55,9 @@ const formSchema = yup.object().shape({
             [BUSBAR_SECTION_ID]: requiredWhenActive(yup.string()),
             [BUSBAR_SECTION_IDS]: requiredWhenActive(yup.array().of(yup.string())),
             [CONNECTION_SIDE]: yup.string().nullable(),
-            [CONNECTION_NAME]: requiredWhenActive(yup.string()),
-            [CONNECTION_DIRECTION]: requiredWhenActive(yup.string()),
-            [CONNECTION_POSITION]: yup.string().nullable(),
+            [CONNECTION_NAME]: yup.string().nullable(),
+            [CONNECTION_DIRECTION]: yup.string().nullable(),
+            [CONNECTION_POSITION]: yup.number().nullable(),
             [IS_REMOVED]: yup.boolean(),
             [IS_SEPARATOR]: yup.boolean(),
         })
@@ -72,7 +73,7 @@ const emptyFormData = {
             [CONNECTION_SIDE]: null,
             [CONNECTION_NAME]: null,
             [CONNECTION_DIRECTION]: null,
-            [CONNECTION_POSITION]: '0',
+            [CONNECTION_POSITION]: null,
             [IS_REMOVED]: false,
             [IS_SEPARATOR]: false,
         },
@@ -135,7 +136,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionSide: bay.connectionSide || null,
                     connectionName: bay.connectablePositionInfos.connectionName || null,
                     connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
-                    connectionPosition: String(bay.connectablePositionInfos.connectionPosition ?? null),
+                    connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
+                        ? parseInt(bay.connectablePositionInfos.connectionPosition)
+                        : null,
                     isRemoved: false,
                     rowId: null,
                 }));
@@ -150,7 +153,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             connectionSide: bay.connectionSide,
                             connectionName: bay.connectablePositionInfos.connectionName || null,
                             connectionDirection: bay.connectablePositionInfos.connectionDirection,
-                            connectionPosition: String(bay.connectablePositionInfos.connectionPosition ?? null),
+                            connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
+                                ? parseInt(bay.connectablePositionInfos.connectionPosition)
+                                : null,
                             isRemoved: false,
                             rowId: null,
                         });
@@ -169,7 +174,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                 connectionSide: bay.connectionSide,
                                 connectionName: bay.connectionName,
                                 connectionDirection: bay.connectionDirection,
-                                connectionPosition: bay.connectionPosition,
+                                connectionPosition: isNumber(bay.connectionPosition)
+                                    ? parseInt(bay.connectionPosition)
+                                    : null,
                                 isRemoved: true,
                                 rowId: null,
                             });
@@ -189,7 +196,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionSide: bay.connectionSide,
                     connectionName: bay.connectionName,
                     connectionDirection: bay.connectionDirection,
-                    connectionPosition: bay.connectionPosition,
+                    connectionPosition: isNumber(bay.connectionPosition) ? parseInt(bay.connectionPosition) : null,
                     isRemoved: false,
                     rowId: null,
                 }));
@@ -271,7 +278,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                           equipmentId: row.equipmentId ?? '',
                           busbarSectionId: row.busbarSectionId ?? '',
                           connectionSide: row.connectionSide ?? null,
-                          connectionPosition: row.connectionPosition ?? null,
+                          connectionPosition: isNumber(row.connectionPosition)
+                              ? row.connectionPosition.toString()
+                              : null,
                           connectionName: row.connectionName ?? null,
                           connectionDirection: row.connectionDirection ?? null,
                       }))

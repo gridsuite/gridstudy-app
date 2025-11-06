@@ -38,7 +38,6 @@ const defaultColDef = {
     resizable: true,
     editable: false,
     headerClass: 'centered-header',
-    cellClass: 'centered-cell',
     suppressMovable: true,
 };
 
@@ -162,7 +161,6 @@ export function MoveVoltageLevelFeederBaysForm({
                             paddingTop: '1rem',
                             '& input': {
                                 textAlign: 'center',
-                                textOverflow: 'ellipsis',
                             },
                             '& .MuiOutlinedInput-notchedOutline': {
                                 border: 'unset', // Remove the border
@@ -191,7 +189,6 @@ export function MoveVoltageLevelFeederBaysForm({
                             paddingTop: '1rem',
                             '& input': {
                                 textAlign: 'center',
-                                textOverflow: 'ellipsis',
                             },
                         },
                     }}
@@ -246,7 +243,6 @@ export function MoveVoltageLevelFeederBaysForm({
                     key={data.rowId}
                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`}
                     disabled={data.isRemoved}
-                    watchTable={watchTable}
                 />
             );
         },
@@ -355,6 +351,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     suppressMovableColumns={true}
+                    suppressCellFocus={true}
                     animateRows={false}
                     domLayout="normal"
                     headerHeight={48}
