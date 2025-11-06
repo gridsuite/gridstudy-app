@@ -8,23 +8,17 @@
 import { useCallback, useState } from 'react';
 import { Button, type ButtonProps, Menu, MenuItem, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { type MuiStyles, useStateBoolean } from '@gridsuite/commons-ui';
+import { useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import AddEmptySpreadsheetDialog from './dialogs/add-empty-spreadsheet-dialog';
 import AddSpreadsheetFromModelDialog from './dialogs/add-spreadsheet-from-model-dialog';
 import AddSpreadsheetsFromCollectionDialog from './dialogs/add-spreadsheets-from-collection-dialog';
 import type { DialogComponent } from './types';
+import { spreadsheetStyles } from '../spreadsheet.style';
 
 export type AddSpreadsheetButtonProps = {
     disabled: boolean;
 };
-
-const styles = {
-    addButton: (theme) => ({
-        color: theme.palette.primary.main,
-        minWidth: '100%',
-    }),
-} as const satisfies MuiStyles;
 
 export interface SpreadsheetOption {
     id: string;
@@ -80,7 +74,12 @@ export default function AddSpreadsheetButton({ disabled }: Readonly<AddSpreadshe
         <>
             <Tooltip title={<FormattedMessage id="spreadsheet/create_new_spreadsheet/add_button_tooltip" />}>
                 <span>
-                    <Button onClick={handleClick} disabled={disabled} sx={styles.addButton} size={'small'}>
+                    <Button
+                        onClick={handleClick}
+                        disabled={disabled}
+                        sx={spreadsheetStyles.toolbarButton}
+                        size={'small'}
+                    >
                         <AddIcon />
                     </Button>
                 </span>

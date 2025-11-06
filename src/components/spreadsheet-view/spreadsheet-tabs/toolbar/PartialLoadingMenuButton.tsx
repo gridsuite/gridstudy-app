@@ -24,11 +24,11 @@ const styles = {
     }),
 } as const satisfies MuiStyles;
 
-type NodesConfigButtonProps = {
+type PartialLoadingMenuButtonProps = {
     disabled?: boolean;
 };
 
-export default function PartialLoadingMenuButton({ disabled }: Readonly<NodesConfigButtonProps>) {
+export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialLoadingMenuButtonProps>) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>(undefined);
 
