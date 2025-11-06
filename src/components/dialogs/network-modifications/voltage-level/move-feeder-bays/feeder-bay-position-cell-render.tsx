@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useController, useFormContext } from 'react-hook-form';
+import { useController, useFormContext, useWatch } from 'react-hook-form';
 import { IntegerInput } from '@gridsuite/commons-ui';
 import { useMemo } from 'react';
 import { FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import { MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE } from '../../../../utils/field-constants';
 
 type FeederBayPositionCellRendererProps = {
     name: string;
@@ -28,11 +29,18 @@ export default function FeederBayPositionCellRenderer({
         field: { value },
     } = useController({ name, control });
 
+    const allPositions = useWatch({
+        control,
+        name: MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
+    });
+
     const isDuplicate = useMemo(() => {
-        if (value == null || !watchTable?.length) return false;
-        const count = watchTable.filter((item) => !item.isRemoved && item.connectionPosition === value).length;
+        if (value == null || !allPositions?.length) return false;
+        const count = allPositions.filter(
+            (item: FeederBaysFormInfos) => !item.isRemoved && item.connectionPosition === value
+        ).length;
         return count > 1;
-    }, [value, watchTable]);
+    }, [value, allPositions]);
 
     return (
         <div style={{ position: 'relative' }}>
@@ -44,7 +52,7 @@ export default function FeederBayPositionCellRenderer({
                     variant: 'outlined',
                     helperText: isDuplicate && (
                         <Typography variant="caption">
-                            <FormattedMessage id="DuplicatedPositionsError" />
+                            <FormattedMessage id="DuplicatedPositionsWarning" />
                         </Typography>
                     ),
                     FormHelperTextProps: {

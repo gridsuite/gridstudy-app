@@ -158,7 +158,6 @@ export function MoveVoltageLevelFeederBaysForm({
                         disabled: data.isRemoved,
                         size: 'small',
                         variant: 'outlined',
-                        autoFocus: true,
                         sx: {
                             paddingTop: '1rem',
                             '& input': {
@@ -188,7 +187,6 @@ export function MoveVoltageLevelFeederBaysForm({
                         disabled: data.isRemoved,
                         size: 'small',
                         variant: 'outlined',
-                        autoFocus: true,
                         sx: {
                             paddingTop: '1rem',
                             '& input': {

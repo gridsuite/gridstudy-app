@@ -1638,7 +1638,7 @@
     "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
     "TOP": "Top",
     "BOTTOM": "Bottom",
-    "DuplicatedPositionsError": "Duplicated number",
+    "DuplicatedPositionsWarning": "Duplicated number",
     "MissingConnectionsInVoltageLevel": "Missing connections in voltage level (Connections removed from list on validation)",
     "moveFeederBaysSections": "Feeder bay will be connected onto the selected busbar section",
     "Length": "Amount of elements",
