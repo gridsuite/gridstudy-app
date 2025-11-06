@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
-import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { RowClassParams } from 'ag-grid-community';
 
 import { LimitViolationResultProps } from './load-flow-result.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
@@ -65,12 +65,6 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
         []
     );
 
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
             if (params?.data?.elementId) {
@@ -82,9 +76,6 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
         [theme.selectedRow.background]
     );
 
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
     const messages = useIntlResultStatusMessages(intl);
 
     const renderLoadFlowLimitViolations = () => {
@@ -100,8 +91,6 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
                     defaultColDef={defaultColDef}
                     tableName={tableName}
                     rows={rowsToShow}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}
