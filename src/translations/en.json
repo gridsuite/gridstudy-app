@@ -1401,6 +1401,7 @@
     "PccMin": "Pcc min N-1",
     "startPccMinError": "An error occurred while launching the pcc min",
     "pccMinError": "An error occurred when executing the pcc min",
+    "PccMinResultsError": "An error occurred when exporting pcc min N-1 results",
     "NoFilter": "No filter",
     "searchPlaceholder": "Search",
     "searchPlaceholderLog": "Search in Logs",
@@ -1648,5 +1649,9 @@
     "equipmentID": "Equipment ID",
     "voltageLevelNominalVoltageMinValueError": "Nominal voltage must be greater than low voltage limit and less than high voltage limit",
     "voltageLevelNominalVoltageMaxValueError": "Low voltage limit must be inferior to high voltage limit",
-    "generatorMinimumActivePowerMaxValueError" : "Minimum active power must be inferior to maximum active power"
-}
+    "generatorMinimumActivePowerMaxValueError" : "Minimum active power must be inferior to maximum active power",
+    "PccMinTri": "Pcc min (MVA) ",
+    "IccMinTri": "Icc min (kA)",
+    "rOhm": "r (Ω)",
+    "xOhm":"x (Ω)"   
+ }

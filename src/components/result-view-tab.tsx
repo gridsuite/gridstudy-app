@@ -29,6 +29,7 @@ import { ComputingType, type MuiStyles, usePrevious } from '@gridsuite/commons-u
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { IService } from './result-view-tab.type';
 import { CurrentTreeNode } from './graph/tree-node.type';
+import { PccMinResultTab } from './results/pccmin/pcc-min-result-tab';
 
 const styles = {
     table: {
@@ -85,6 +86,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+    const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
 
     const renderLoadFlowResult = useMemo(() => {
         return (
@@ -186,6 +188,18 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
+    const renderPccMinResult = useMemo(() => {
+        return (
+            <Paper sx={styles.analysisResult}>
+                <PccMinResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
+            </Paper>
+        );
+    }, [currentNode?.id, currentRootNetworkUuid, studyUuid]);
+
     const services: IService[] = useMemo(() => {
         return [
             {
@@ -236,24 +250,32 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 displayed: enableDeveloperMode && stateEstimationAvailability === OptionalServicesStatus.Up,
                 renderResult: renderStateEstimationResult,
             },
+            {
+                id: 'PccMin',
+                computingType: [ComputingType.PCC_MIN],
+                displayed: enableDeveloperMode && pccMinAvailability === OptionalServicesStatus.Up,
+                renderResult: renderPccMinResult,
+            },
         ].filter(({ displayed }: IService) => displayed);
     }, [
-        sensitivityAnalysisUnavailability,
-        securityAnalysisAvailability,
-        dynamicSimulationAvailability,
-        dynamicSecurityAnalysisAvailability,
-        voltageInitAvailability,
-        shortCircuitAvailability,
-        stateEstimationAvailability,
-        enableDeveloperMode,
-        renderDynamicSimulationResult,
-        renderDynamicSecurityAnalysisResult,
-        renderSecurityAnalysisResult,
-        renderSensitivityAnalysisResult,
-        renderShortCircuitAnalysisResult,
-        renderVoltageInitResult,
         renderLoadFlowResult,
+        securityAnalysisAvailability,
+        renderSecurityAnalysisResult,
+        sensitivityAnalysisUnavailability,
+        renderSensitivityAnalysisResult,
+        shortCircuitAvailability,
+        renderShortCircuitAnalysisResult,
+        enableDeveloperMode,
+        dynamicSimulationAvailability,
+        renderDynamicSimulationResult,
+        dynamicSecurityAnalysisAvailability,
+        renderDynamicSecurityAnalysisResult,
+        voltageInitAvailability,
+        renderVoltageInitResult,
+        stateEstimationAvailability,
         renderStateEstimationResult,
+        pccMinAvailability,
+        renderPccMinResult,
     ]);
 
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
