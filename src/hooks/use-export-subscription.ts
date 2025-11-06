@@ -20,6 +20,7 @@ export default function useExportSubscription() {
             setExportSubscription(identifier);
             snackInfo({
                 messageTxt: intl.formatMessage({ id: 'export.message.started' }, { fileName: fileName }),
+                persist: true,
             });
         },
         [snackInfo, intl]
