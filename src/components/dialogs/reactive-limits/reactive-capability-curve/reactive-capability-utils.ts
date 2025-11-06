@@ -133,7 +133,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
                 }
                 return resultSchema
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
-                    .test('ifOneLineThenAllLines', '', ifOneFieldThenAllFields)
+                    .test('ifOneFieldThenAllFields', '', ifOneFieldThenAllFields)
                     .test(
                         'checkAllValuesAreUnique',
                         'ReactiveCapabilityCurveCreationErrorPInvalid',
