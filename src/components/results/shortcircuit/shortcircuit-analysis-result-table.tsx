@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { Box, Button, Tooltip, useTheme } from '@mui/material';
+import { Box, Button, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import {
     GridReadyEvent,
@@ -21,19 +21,22 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { CustomAGGrid, unitToKiloUnit, ComputingType } from '@gridsuite/commons-ui';
+import { CustomAGGrid, unitToKiloUnit, ComputingType, OverflowableText } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterType as AgGridFilterType, FilterConfig } from '../../../types/custom-aggrid-types';
+import {
+    FilterType as AgGridFilterType,
+    FilterConfig,
+    numericFilterParams,
+    textFilterParams,
+} from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
 import { resultsStyles } from '../common/utils';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
@@ -105,11 +108,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             };
             if (value) {
                 return (
-                    <Tooltip title={value}>
-                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
-                            {value}
-                        </Button>
-                    </Tooltip>
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
                 );
             }
         },
@@ -143,16 +144,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             type: AgGridFilterType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
             updateFilterCallback: onFilter,
-        };
-
-        const textFilterParams = {
-            dataType: FILTER_DATA_TYPES.TEXT,
-            comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-        };
-
-        const numericFilterParams = {
-            dataType: FILTER_DATA_TYPES.NUMBER,
-            comparators: Object.values(FILTER_NUMBER_COMPARATORS),
         };
 
         const inputFilterParams = (

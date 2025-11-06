@@ -7,6 +7,7 @@
 import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
 import type { MuiStyles } from '@gridsuite/commons-ui';
+import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -39,8 +40,45 @@ export enum FilterType {
     SUBSTATION_PROPERTY = 'substationProperty',
 }
 
+export interface Selector {
+    page: number;
+    size: number;
+    filter: FilterConfig[] | null;
+    sort: SortConfig[];
+}
+
 export const resultsStyles = {
     sldLink: {
         color: 'node.background',
+        maxWidth: '100%',
     },
 } as const satisfies MuiStyles;
+
+export type Pageable = {
+    offset?: number;
+    pageNumber?: number;
+    pageSize?: number;
+    paged?: boolean;
+    sort?: Sort;
+    unpaged?: boolean;
+};
+
+export type Sort = {
+    empty?: boolean;
+    sorted?: boolean;
+    unsorted?: boolean;
+};
+
+export interface Page<ResultType> {
+    content?: ResultType[];
+    pageable?: Pageable;
+    last?: boolean;
+    totalPages?: number;
+    totalElements?: number;
+    first?: boolean;
+    size?: number;
+    number?: number;
+    sort?: Sort;
+    numberOfElements?: number;
+    empty?: boolean;
+}
