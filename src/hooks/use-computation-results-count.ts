@@ -50,6 +50,7 @@ export const useComputationResultsCount = () => {
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
+    const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -79,6 +80,9 @@ export const useComputationResultsCount = () => {
         enableDeveloperMode &&
         (stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
+    const pccMinResultPresent =
+        enableDeveloperMode && (pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+
     return [
         loadflowResultPresent,
         saResutPresent,
@@ -89,5 +93,6 @@ export const useComputationResultsCount = () => {
         dynamicSimulationResultPresent,
         dynamicSecurityAnalysisResultPresent,
         stateEstimationResultPresent,
+        pccMinResultPresent,
     ].filter(Boolean).length;
 };
