@@ -82,6 +82,7 @@ export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
 export const LIMITS_PROPERTIES = 'limitsProperties';
 export const ENABLE_OLG_MODIFICATION = 'enableOLGModification';
+export const ALL_OLG_MODIFICATION_TYPE = 'allOperationalLimitsGroupsModificationType';
 export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
 export const SELECTED_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
 export const PERMANENT_LIMIT = 'permanentLimit';
@@ -212,6 +213,10 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the limit exists it is modified, if not it is created
     ADD: 'ADD',
     DELETE: 'DELETE',
+    REPLACE: 'REPLACE',
+} as const;
+export const ALL_LIMIT_SETS_MODIFICATION_TYPE = {
+    MODIFY: 'MODIFY',
     REPLACE: 'REPLACE',
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
