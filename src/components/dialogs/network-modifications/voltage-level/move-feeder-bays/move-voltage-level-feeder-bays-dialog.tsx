@@ -39,7 +39,6 @@ import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feede
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import { fetchVoltageLevelFeederBaysBusBarSectionsInfos } from '../../../../../services/study/network';
 import { FeederBaysBusBarSectionsInfos } from '../../../../../services/study/network-map.type';
-import { toNumber } from '../../../../utils/validation-functions';
 import { isNumber } from 'mathjs';
 
 function requiredWhenActive<T extends yup.Schema>(schema: T) {
@@ -137,7 +136,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionName: bay.connectablePositionInfos.connectionName || null,
                     connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
                     connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
-                        ? parseInt(bay.connectablePositionInfos.connectionPosition)
+                        ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
                         : null,
                     isRemoved: false,
                     rowId: null,
@@ -154,7 +153,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             connectionName: bay.connectablePositionInfos.connectionName || null,
                             connectionDirection: bay.connectablePositionInfos.connectionDirection,
                             connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
-                                ? parseInt(bay.connectablePositionInfos.connectionPosition)
+                                ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
                                 : null,
                             isRemoved: false,
                             rowId: null,
@@ -175,7 +174,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                 connectionName: bay.connectionName,
                                 connectionDirection: bay.connectionDirection,
                                 connectionPosition: isNumber(bay.connectionPosition)
-                                    ? parseInt(bay.connectionPosition)
+                                    ? Number.parseInt(bay.connectionPosition)
                                     : null,
                                 isRemoved: true,
                                 rowId: null,
@@ -196,7 +195,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionSide: bay.connectionSide,
                     connectionName: bay.connectionName,
                     connectionDirection: bay.connectionDirection,
-                    connectionPosition: isNumber(bay.connectionPosition) ? parseInt(bay.connectionPosition) : null,
+                    connectionPosition: isNumber(bay.connectionPosition)
+                        ? Number.parseInt(bay.connectionPosition)
+                        : null,
                     isRemoved: false,
                     rowId: null,
                 }));
