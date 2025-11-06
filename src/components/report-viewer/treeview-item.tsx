@@ -11,7 +11,7 @@ import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { type RowComponentProps } from 'react-window';
-import {escapeRegExp} from "../spreadsheet-view/columns/floating-treeview-list/tree-label";
+import { escapeRegExp } from '../utils/utils';
 
 export interface ReportItem {
     id: string;

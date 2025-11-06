@@ -14,6 +14,7 @@ import DataArrayIcon from '@mui/icons-material/DataArray';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Box, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
+import { escapeRegExp } from '../../../utils/utils';
 
 type TreeLabelProps = {
     text: string;
@@ -21,11 +22,6 @@ type TreeLabelProps = {
     highlight?: string;
     active?: boolean;
 };
-
-//Escapes regex special characters to avoid misinterpreting user prompts
-export function escapeRegExp(string: string): string {
-    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 function highlightText(text: string, query?: string, active?: boolean) {
     if (!query) {
