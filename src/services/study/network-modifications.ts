@@ -1079,6 +1079,7 @@ export function modifyTwoWindingsTransformer({
             selectedOperationalLimitsGroup1: selectedLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             [ENABLE_OLG_MODIFICATION]: enableOLGModification,
+            [ALL_OLG_MODIFICATION_TYPE]: enableOLGModification ? ALL_LIMIT_SETS_MODIFICATION_TYPE.REPLACE : null,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
