@@ -12,6 +12,7 @@ import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { Page } from '../common/utils';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -90,36 +91,11 @@ export interface PreContingencyResult {
 
 export type QueryParamsType = Record<string, string | number | SortConfig[] | FilterConfig[] | GlobalFilters>;
 
-type Sort = {
-    empty?: boolean;
-    sorted?: boolean;
-    unsorted?: boolean;
-};
-
-type Pageable = {
-    offset?: number;
-    pageNumber?: number;
-    pageSize?: number;
-    paged?: boolean;
-    sort?: Sort;
-    unpaged?: boolean;
-};
-
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
-export interface SecurityAnalysisNmkResult {
-    content?: ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null;
-    empty?: boolean;
-    first?: boolean;
-    last?: boolean;
-    number?: number;
-    numberOfElements?: number;
-    pageable?: Pageable;
-    size?: number;
-    sort?: Sort;
-    totalElements?: number;
-    totalPages?: number;
-}
+export type SecurityAnalysisNmkResult = Page<
+    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null
+>;
 
 // Components props interfaces
 export interface SecurityAnalysisTabProps {

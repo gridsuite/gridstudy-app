@@ -109,6 +109,7 @@ export const dynamicSimulationResultInvalidations = [NotificationType.DYNAMIC_SI
 export const dynamicSecurityAnalysisResultInvalidations = [NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT];
 export const voltageInitResultInvalidations = [NotificationType.VOLTAGE_INIT_RESULT];
 export const stateEstimationResultInvalidations = [NotificationType.STATE_ESTIMATION_RESULT];
+export const pccMinResultInvalidations = [NotificationType.PCC_MIN_RESULT];
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): void => {
