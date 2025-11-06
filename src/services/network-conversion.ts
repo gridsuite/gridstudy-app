@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { backendFetchJson } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 
 const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-conversion';
 
@@ -29,4 +29,9 @@ export function getCaseImportParameters(caseUuid: UUID): Promise<GetCaseImportPa
         PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/cases/' + caseUuid + '/import-parameters';
     console.debug(getExportFormatsUrl);
     return backendFetchJson(getExportFormatsUrl);
+}
+
+export function fetchExportNetworkFile(exportUuid: UUID) {
+    const url = PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/download-file/' + exportUuid;
+    return backendFetch(url);
 }

@@ -7,16 +7,16 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+    networkModificationHandleSubtree,
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
-    networkModificationHandleSubtree,
-    setNodeSelectionForCopy,
-    resetLogsFilter,
     reorderNetworkModificationTreeNodes,
+    resetLogsFilter,
     resetLogsPagination,
+    setNodeSelectionForCopy,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -28,20 +28,22 @@ import { BUILD_STATUS } from './network/constants';
 import {
     copySubtree,
     copyTreeNode,
+    createNodeSequence,
     createTreeNode,
     cutSubtree,
     cutTreeNode,
-    stashSubtree,
-    stashTreeNode,
     fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
     fetchStashedNodes,
-    createNodeSequence,
+    stashSubtree,
+    stashTreeNode,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import { CopyType } from './network-modification.type';
 import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
+import useExportSubscription from '../hooks/use-export-subscription';
+import { exportNetworkFile } from '../services/study/network.js';
 
 const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
@@ -56,7 +58,6 @@ export const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
-    const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
     const [nodesToRestore, setNodesToRestore] = useState([]);
 
@@ -121,6 +122,8 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     nodeSelectionForCopyRef.current = selectionForCopy;
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+
+    const { subscribeExport } = useExportSubscription();
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -459,10 +462,21 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
 
-    const handleClickExportNodeNetwork = (url) => {
-        window.open(url, DownloadIframe);
-        setOpenExportDialog(false);
-    };
+    const handleClickExportNodeNetwork = useCallback(
+        (nodeUuid, params, selectedFormat, fileName) => {
+            exportNetworkFile(studyUuid, nodeUuid, currentRootNetworkUuid, params, selectedFormat, fileName)
+                .then((response) => {
+                    subscribeExport(response, fileName);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                });
+            setOpenExportDialog(false);
+        },
+        [studyUuid, currentRootNetworkUuid, subscribeExport, snackError]
+    );
 
     const handleExportCaseOnNode = () => {
         setOpenExportDialog(true);
@@ -583,7 +597,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     onClose={() => setOpenExportDialog(false)}
                     onClick={handleClickExportNodeNetwork}
                     studyUuid={studyUuid}
-                    rootNetworkUuid={currentRootNetworkUuid}
                     nodeUuid={activeNode?.id}
                 />
             )}
@@ -595,7 +608,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     anchorNodeId={activeNode?.id}
                 />
             )}
-            <iframe id={DownloadIframe} name={DownloadIframe} title={DownloadIframe} style={{ display: 'none' }} />
         </>
     );
 };
