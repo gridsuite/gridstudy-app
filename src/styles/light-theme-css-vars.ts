@@ -21,6 +21,10 @@ export const lightThemeCssVars = {
     '.nad-textnode-highlight': {
         backgroundColor: '#f0f0f0cc', // same displayed color as #9c9c9c20 but with 0.8 opacity
     },
+    '.sld-battery': {
+        stroke: 'black',
+        fill: 'none',
+    },
     '.sld-vl0to30, .nad-vl0to30': {
         '--vl-color': '#ABAE28',
     },
