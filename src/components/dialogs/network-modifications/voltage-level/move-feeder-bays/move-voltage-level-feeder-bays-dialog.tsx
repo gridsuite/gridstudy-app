@@ -41,26 +41,6 @@ import { AnyObject, TestFunction } from 'yup';
 import { fetchVoltageLevelFeederBaysBusBarSectionsInfos } from '../../../../../services/study/network';
 import { FeederBaysBusBarSectionsInfos } from '../../../../../services/study/network-map.type';
 
-const isActiveRow = (row: FeederBaysFormInfos) => row && !row.isRemoved;
-const checkConnectionPositionField: TestFunction<string | undefined, AnyObject> = (currentPosition, context) => {
-    // access to rows
-    const rows: FeederBaysFormInfos[] = context.from?.[1]?.value?.[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE];
-    if (!Array.isArray(rows)) {
-        return true;
-    }
-    // take only active rows
-    const activeRows = rows.filter(isActiveRow);
-    // counting duplication
-    let count = 0;
-    for (const row of activeRows) {
-        // convert to string because the initial value is a number, not a string
-        if (`${currentPosition}` === `${row.connectionPosition}`) {
-            count = count + 1;
-        }
-    }
-    return count <= 1;
-};
-
 function requiredWhenActive<T extends yup.Schema>(schema: T) {
     return schema.when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
         return !isRemoved && !isSeparator ? schema.nullable().required() : schema.nullable();
@@ -155,7 +135,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionSide: bay.connectionSide || null,
                     connectionName: bay.connectablePositionInfos.connectionName || null,
                     connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
-                    connectionPosition: bay.connectablePositionInfos.connectionPosition || null,
+                    connectionPosition: String(bay.connectablePositionInfos.connectionPosition ?? null),
                     isRemoved: false,
                     rowId: null,
                 }));
@@ -170,7 +150,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             connectionSide: bay.connectionSide,
                             connectionName: bay.connectablePositionInfos.connectionName || null,
                             connectionDirection: bay.connectablePositionInfos.connectionDirection,
-                            connectionPosition: bay.connectablePositionInfos.connectionPosition || '0',
+                            connectionPosition: String(bay.connectablePositionInfos.connectionPosition ?? null),
                             isRemoved: false,
                             rowId: null,
                         });
@@ -285,14 +265,16 @@ export default function MoveVoltageLevelFeederBaysDialog({
         const tableData = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
         const feederBays: MoveFeederBayInfos[] =
             tableData && Array.isArray(tableData)
-                ? tableData.map((row) => ({
-                      equipmentId: row?.equipmentId!,
-                      busbarSectionId: row?.busbarSectionId!,
-                      connectionSide: row?.connectionSide!,
-                      connectionPosition: row?.connectionPosition != null ? String(row.connectionPosition) : '0',
-                      connectionName: row?.connectionName!,
-                      connectionDirection: row?.connectionDirection!,
-                  }))
+                ? tableData
+                      .filter((row): row is NonNullable<typeof row> => row != null)
+                      .map((row) => ({
+                          equipmentId: row.equipmentId ?? '',
+                          busbarSectionId: row.busbarSectionId ?? '',
+                          connectionSide: row.connectionSide ?? null,
+                          connectionPosition: row.connectionPosition ?? null,
+                          connectionName: row.connectionName ?? null,
+                          connectionDirection: row.connectionDirection ?? null,
+                      }))
                 : [];
         const moveVoltageLevelFeederBaysInfos = {
             voltageLevelId: selectedId,

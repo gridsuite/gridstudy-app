@@ -229,7 +229,6 @@ export function MoveVoltageLevelFeederBaysForm({
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysFormInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.rowId === data.rowId) ?? -1;
-
             return FeederBayDirectionCellRenderer({
                 name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
                 disabled: data.isRemoved,

@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
-import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { RowClassParams } from 'ag-grid-community';
 
 import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';
@@ -64,15 +64,6 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
         [theme.selectedRow.background]
     );
 
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
     const messages = useIntlResultStatusMessages(intl, true);
 
     const defaultColDef = useMemo(
@@ -111,8 +102,6 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
                     defaultColDef={defaultColDef}
                     tableName={tableNameFormatted}
                     rows={rowsToShow}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}
