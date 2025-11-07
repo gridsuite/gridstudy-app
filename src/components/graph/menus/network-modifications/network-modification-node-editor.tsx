@@ -142,6 +142,12 @@ const emptyCopiedModificationsSelection = {
     copyInfos: null,
 };
 
+enum TabToClean {
+    AllTabs,
+    CurrentTab,
+    OtherTabs,
+}
+
 const NetworkModificationNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -194,7 +200,7 @@ const NetworkModificationNodeEditor = () => {
             console.info('message received from broadcast channel: ', event.data);
             isInitiatingCopyTab.current = false;
             if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data)) {
-                cleanClipboard();
+                cleanClipboard(true, TabToClean.CurrentTab);
             } else {
                 setCopiedModifications(event.data.modificationsUuids);
                 setCopyInfos({
@@ -221,17 +227,21 @@ const NetworkModificationNodeEditor = () => {
     }, [broadcastChannel, snackInfo]);
 
     const cleanClipboard = useCallback(
-        (showSnackInfo: boolean = true) => {
-            setCopyInfos(null);
-            setCopiedModifications((oldCopiedModifications) => {
-                if (oldCopiedModifications.length && showSnackInfo) {
-                    snackInfo({
-                        messageId: 'CopiedModificationInvalidationMessage',
-                    });
-                }
-                return [];
-            });
-            if (true === isInitiatingCopyTab.current) {
+        (showSnackInfo: boolean = true, tab: TabToClean = TabToClean.AllTabs) => {
+            const isCleanCurrentTab = tab !== TabToClean.OtherTabs;
+            const isCleanOtherTabs = tab !== TabToClean.CurrentTab && isInitiatingCopyTab.current;
+            if (isCleanCurrentTab) {
+                setCopyInfos(null);
+                setCopiedModifications((oldCopiedModifications) => {
+                    if (oldCopiedModifications.length && showSnackInfo) {
+                        snackInfo({
+                            messageId: 'CopiedModificationInvalidationMessage',
+                        });
+                    }
+                    return [];
+                });
+            }
+            if (isCleanOtherTabs) {
                 broadcastChannel.postMessage(emptyCopiedModificationsSelection);
                 isInitiatingCopyTab.current = false;
             }
@@ -1078,7 +1088,8 @@ const NetworkModificationNodeEditor = () => {
             originStudyUuid: studyUuid ?? undefined,
             originNodeUuid: currentNode?.id,
         });
-    }, [currentNode?.id, selectedModificationsIds, studyUuid]);
+        cleanClipboard(false, TabToClean.OtherTabs);
+    }, [cleanClipboard, currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
         setCopiedModifications(selectedModificationsIds());
@@ -1105,7 +1116,7 @@ const NetworkModificationNodeEditor = () => {
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
             copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos)
                 .then(() => {
-                    cleanClipboard(false);
+                    cleanClipboard(false, TabToClean.CurrentTab);
                 })
                 .catch((errmsg) => {
                     snackError({
