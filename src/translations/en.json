@@ -4,7 +4,7 @@
     "debug.header.fileError": "Computation data download failed",
     "export.message.started": "Export {fileName} started",
     "export.message.succeeded": "Export {fileName} succeeded",
-    "export.message.failed": "Export file failed {error}",
+    "export.message.failed": "Export file failed",
 
     "button.delete": "Delete",
     "button.continue": "Continue",
@@ -1037,7 +1037,6 @@
 
     "CopyFromExisting": "Copy from existing equipment",
     "EquipmentCopied": "Data successfully copied from equipment {equipmentId}",
-    "EquipmentCopyFailed404": "Equipment copy failed: the equipment was not found",
     "EquipmentCopyFailed": "Equipment copy failed",
 
     "insertNodeAbove": "Above",
@@ -1653,5 +1652,5 @@
     "PccMinTri": "Pcc min (MVA) ",
     "IccMinTri": "Icc min (kA)",
     "rOhm": "r (Ω)",
-    "xOhm":"x (Ω)"   
+    "xOhm":"x (Ω)"
  }

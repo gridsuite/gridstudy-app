@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import NetworkModificationTree from './network-modification-tree';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { ExportNetworkDialog } from './dialogs/export-network-dialog';
 import { BUILD_STATUS } from './network/constants';
 import {
@@ -338,17 +338,11 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                         globalBuildStatus: BUILD_STATUS.NOT_BUILT,
                         nodeType: networkModificationNodeType,
                     }).catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'NodeCreateError',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
                     })
                 )
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NodeCreateError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
                 });
         },
         [studyUuid, snackError]
@@ -357,10 +351,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     const handleCreateSecuritySequence = useCallback(
         (element) => {
             createNodeSequence(studyUuid, element.id, NodeSequenceType.SECURITY_SEQUENCE).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'SequenceCreateError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'SequenceCreateError' });
             });
         },
         [studyUuid, snackError]
@@ -388,10 +379,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
             if (CopyType.NODE_CUT === nodeSelectionForCopyRef.current.copyType) {
                 cutTreeNode(studyUuid, nodeSelectionForCopyRef.current.nodeId, referenceNodeId, insertMode).catch(
                     (error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'NodeCreateError',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
                     }
                 );
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
@@ -404,10 +392,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     referenceNodeId,
                     insertMode
                 ).catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NodeCreateError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
                 });
                 //In copy/paste, we can still paste the same node later
             }
@@ -430,10 +415,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     const handleUnbuildNode = useCallback(
         (element) => {
             unbuildNode(studyUuid, element.id, currentRootNetworkUuid).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'NodeUnbuildingError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'NodeUnbuildingError' });
             });
         },
         [studyUuid, currentRootNetworkUuid, snackError]
@@ -442,6 +424,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     const handleBuildNode = useCallback(
         (element) => {
             buildNode(studyUuid, element.id, currentRootNetworkUuid).catch((error) => {
+                // TODO: change for snackWithFallback when we integrate values inside backend errors
                 if (error.status === 403 && error.message.includes(HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE)) {
                     // retrieve last word of the message (ex: "MAX_NODE_BUILDS_EXCEEDED max allowed built nodes : 2" -> 2)
                     let limit = error.message.split(/[: ]+/).pop();
@@ -469,9 +452,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     subscribeExport(response, fileName);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                    });
+                    snackWithFallback(snackError, error);
                 });
             setOpenExportDialog(false);
         },
@@ -510,10 +491,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     const handleRemoveSubtree = useCallback(
         (element) => {
             stashSubtree(studyUuid, element.id).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'NodeDeleteError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'NodeDeleteError' });
             });
         },
         [snackError, studyUuid]
@@ -540,10 +518,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         (referenceNodeId) => {
             if (CopyType.SUBTREE_CUT === nodeSelectionForCopyRef.current.copyType) {
                 cutSubtree(studyUuid, nodeSelectionForCopyRef.current.nodeId, referenceNodeId).catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NodeCreateError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
                 });
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
                 dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
@@ -554,10 +529,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     nodeSelectionForCopyRef.current.nodeId,
                     referenceNodeId
                 ).catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NodeCreateError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
                 });
                 //In copy/paste, we can still paste the same node later
             }

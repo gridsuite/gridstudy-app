@@ -11,7 +11,7 @@ import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
 import type { UUID } from 'node:crypto';
-import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE } from 'components/network-modification-tree-pane';
 
 type BuildButtonProps = {
@@ -74,10 +74,7 @@ export const BuildButton = ({
             } else {
                 unbuildNode(studyUuid, nodeUuid, currentRootNetworkUuid)
                     .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'NodeUnbuildingError',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'NodeUnbuildingError' });
                     })
                     .finally(() => {
                         setIsLoading(false);

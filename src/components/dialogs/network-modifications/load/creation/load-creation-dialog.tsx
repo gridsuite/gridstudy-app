@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER_SETPOINT,
@@ -178,10 +178,7 @@ export function LoadCreationDialog({
                 terminalConnected: load.connectivity?.terminalConnected,
                 properties: toModificationProperties(load),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LoadCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LoadCreationError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError]

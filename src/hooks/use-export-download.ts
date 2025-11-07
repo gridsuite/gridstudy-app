@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'node:crypto';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { downloadZipFile } from '../services/utils';
 import { fetchExportNetworkFile } from '../services/network-conversion';
@@ -37,9 +37,7 @@ export function useExportDownload() {
                     });
                 })
                 .catch((error: Error) => {
-                    snackError({
-                        messageTxt: intl.formatMessage({ id: 'export.message.failed' }, { error: error.message }),
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'export.message.failed' });
                 });
         },
         [intl, snackError, snackSuccess]

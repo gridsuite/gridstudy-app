@@ -12,6 +12,7 @@ import {
     IElementUpdateDialog,
     MODIFICATION_TYPES,
     NetworkModificationMetadata,
+    snackWithFallback,
     usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -779,9 +780,7 @@ const NetworkModificationNodeEditor = () => {
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -817,9 +816,7 @@ const NetworkModificationNodeEditor = () => {
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -839,9 +836,7 @@ const NetworkModificationNodeEditor = () => {
                 setModificationsToExclude(res);
             })
             .catch((error: Error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -992,11 +987,8 @@ const NetworkModificationNodeEditor = () => {
                     cleanClipboard();
                 }
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errDeleteModificationMsg',
-                });
+            .catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'errDeleteModificationMsg' });
             });
     }, [currentNode?.id, selectedNetworkModifications, snackError, studyUuid, cleanClipboard, copiedModifications]);
 
@@ -1019,11 +1011,8 @@ const NetworkModificationNodeEditor = () => {
                     },
                 });
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errCreateModificationsMsg',
-                });
+            .catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'errCreateModificationsMsg' });
             })
             .finally(() => {
                 setSaveInProgress(false);
@@ -1049,9 +1038,8 @@ const NetworkModificationNodeEditor = () => {
                     },
                 });
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
+            .catch((error) => {
+                snackWithFallback(snackError, error, {
                     headerId: 'errUpdateModificationsMsg',
                     headerValues: {
                         item: elementFullPath,
@@ -1107,16 +1095,14 @@ const NetworkModificationNodeEditor = () => {
                 .then(() => {
                     cleanClipboard(false);
                 })
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
+                .catch((error) => {
+                    snackWithFallback(snackError, error, {
                         headerId: 'errCutModificationMsg',
                     });
                 });
         } else {
-            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((error) => {
+                snackWithFallback(snackError, error, {
                     headerId: 'errDuplicateModificationMsg',
                 });
             });
@@ -1154,9 +1140,7 @@ const NetworkModificationNodeEditor = () => {
                     });
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                    });
+                    snackWithFallback(snackError, error);
                     setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
@@ -1281,10 +1265,7 @@ const NetworkModificationNodeEditor = () => {
 
         changeNetworkModificationOrder(studyUuid, currentNode?.id, movedItem.uuid, before)
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'errReorderModificationMsg',
-                });
+                snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
                 setModifications(previousModifications);
             })
             .finally(() => setIsDragging(false));

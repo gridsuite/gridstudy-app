@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, mergeSx, type MuiStyles, type Parameter, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CheckBoxList,
+    mergeSx,
+    type MuiStyles,
+    type Parameter,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     Delete as DeleteIcon,
     RemoveRedEye as RemoveRedEyeIcon,
@@ -121,11 +128,8 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
         if (studyUuid) {
             setIsRootNetworksProcessing(true);
-            deleteRootNetworks(studyUuid, selectedRootNetworksUuid).catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'deleteRootNetworkError',
-                });
+            deleteRootNetworks(studyUuid, selectedRootNetworksUuid).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'deleteRootNetworkError' });
                 setIsRootNetworksProcessing(false);
             });
         }
@@ -285,10 +289,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
             updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
         } catch (error) {
-            snackError({
-                headerId: 'updateRootNetworksError',
-                messageTxt: error instanceof Error ? error.message : String(error),
-            });
+            snackWithFallback(snackError, error, { headerId: 'updateRootNetworksError' });
             setIsRootNetworksProcessing(false);
         }
     };

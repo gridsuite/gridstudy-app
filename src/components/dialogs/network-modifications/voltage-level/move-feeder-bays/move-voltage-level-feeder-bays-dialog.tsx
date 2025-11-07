@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
@@ -299,10 +305,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
             modificationUuid: editData?.uuid,
             isUpdate: !!editData,
         }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'MoveVoltageLevelFeederBaysError',
-            });
+            snackWithFallback(snackError, error, { headerId: 'MoveVoltageLevelFeederBaysError' });
         });
     }, [currentNodeUuid, editData, getValues, selectedId, snackError, studyUuid]);
 

@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ExportCsvButton, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, PARAM_LANGUAGE, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { downloadShortCircuitResultZippedCsv } from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
@@ -95,12 +95,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
                 });
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'shortCircuitAnalysisCsvResultsError',
-                    }),
-                });
+                snackWithFallback(snackError, error, { headerId: 'shortCircuitAnalysisCsvResultsError' });
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
@@ -108,7 +103,6 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
-        intl,
         snackError,
         csvHeaders,
         analysisType,
