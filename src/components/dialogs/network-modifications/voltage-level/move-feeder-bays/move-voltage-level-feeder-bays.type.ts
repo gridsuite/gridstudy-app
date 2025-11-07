@@ -13,7 +13,7 @@ export type FeederBaysFormInfos = {
     connectionSide: string | null;
     connectionName: string | null;
     connectionDirection: string | null;
-    connectionPosition: string | null;
+    connectionPosition: number | null;
     isRemoved: boolean;
     rowId: string | null;
 };
