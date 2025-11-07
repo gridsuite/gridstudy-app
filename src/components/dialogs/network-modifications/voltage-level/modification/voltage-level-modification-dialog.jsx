@@ -62,7 +62,14 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [SUBSTATION_ID]: yup.string().nullable(),
         [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [LOW_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [LOW_VOLTAGE_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'mustBeGreaterOrEqualToZero')
+            .when([HIGH_VOLTAGE_LIMIT], {
+                is: (highVoltageLimit) => highVoltageLimit != null,
+                then: (schema) => schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
+            }),
         [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
@@ -100,7 +107,22 @@ const VoltageLevelModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues } = formMethods;
+    const { reset, getValues, subscribe, trigger } = formMethods;
+
+    useEffect(() => {
+        const callback = subscribe({
+            name: [`${HIGH_VOLTAGE_LIMIT}`],
+            formState: {
+                values: true,
+            },
+            callback: ({ isSubmitted }) => {
+                if (isSubmitted) {
+                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
+                }
+            },
+        });
+        return () => callback();
+    }, [trigger, subscribe]);
 
     useEffect(() => {
         if (editData) {
