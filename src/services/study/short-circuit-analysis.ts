@@ -193,8 +193,10 @@ export function downloadShortCircuitResultZippedCsv(
     )}/shortcircuit/result/csv`;
     const type = getShortCircuitAnalysisTypeFromEnum(analysisType);
     const param = new URLSearchParams();
+    let oneBusCase = false;
     if (type) {
         param.append('type', type);
+        oneBusCase = type === 'ONE_BUS';
     }
     const urlWithParam = `${url}?${param.toString()}`;
     console.debug(urlWithParam);
@@ -204,6 +206,6 @@ export function downloadShortCircuitResultZippedCsv(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ headersCsv, enumValueTranslations, language }),
+        body: JSON.stringify({ headersCsv, enumValueTranslations, language, oneBusCase }),
     });
 }
