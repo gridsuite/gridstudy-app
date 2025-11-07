@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import { getNominalVoltageColor } from '../utils/colors';
 import { useNameOrId } from './utils/equipmentInfosHandler';
 import { Box } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 const styles = {
     menu: {
@@ -48,6 +49,7 @@ const voltageLevelComparator = (vl1, vl2) => {
 
 const VoltageLevelChoice = ({ handleClose, onClickHandler, substation, position }) => {
     const { getNameOrId } = useNameOrId();
+    const baseVoltagesConfig = useSelector((state) => state.baseVoltagesConfig);
 
     return (
         <Box sx={styles.menu}>
@@ -64,7 +66,7 @@ const VoltageLevelChoice = ({ handleClose, onClickHandler, substation, position 
             >
                 {substation !== undefined &&
                     substation.voltageLevels.sort(voltageLevelComparator).map((voltageLevel) => {
-                        let color = getNominalVoltageColor(voltageLevel.nominalV);
+                        let color = getNominalVoltageColor(baseVoltagesConfig, voltageLevel.nominalV);
                         let colorString =
                             'rgb(' + color[0].toString() + ',' + color[1].toString() + ',' + color[2].toString() + ')';
 

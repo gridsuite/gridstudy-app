@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import App from './app';
 import {
     createTheme,
@@ -78,7 +78,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import { store } from '../redux/store';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
@@ -108,6 +108,8 @@ import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator'
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
+import { fetchBaseVoltagesConfig } from '../services/utils';
+import { setBaseVoltagesConfig } from '../redux/actions';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -460,9 +462,42 @@ const basename = new URL(document.querySelector('base').href).pathname;
 const AppWrapperWithRedux = () => {
     const computedLanguage = useSelector((state) => state.computedLanguage);
     const theme = useSelector((state) => state[PARAM_THEME]);
+    const baseVoltagesConfig = useSelector((state) => state.baseVoltagesConfig);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
-    const rootCssVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        fetchBaseVoltagesConfig().then((appMetadataBaseVoltagesConfig) =>
+            dispatch(setBaseVoltagesConfig(appMetadataBaseVoltagesConfig))
+        );
+    }, [dispatch]);
+
+    const getVoltageLevelsCssVars = (theme) => {
+        const css = {};
+
+        for (const interval of baseVoltagesConfig) {
+            const className = `.sld-${interval.name}, .nad-${interval.name}`;
+
+            const themeColors = theme === LIGHT_THEME ? interval.lightThemeColors : interval.darkThemeColors;
+            css[className] = { '--vl-color': themeColors.default };
+
+            for (let i = 1; i <= 9; i++) {
+                const key = `bus-${i}`;
+                const color = themeColors[key];
+                if (!color) continue;
+
+                const selector = `.sld-${interval.name}.sld-${key}, .nad-${interval.name}.nad-${key}`;
+                css[selector] = { '--vl-color': color };
+            }
+        }
+        return css;
+    };
+
+    const rootCssVars = [
+        ...(theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars),
+        ...getVoltageLevelsCssVars(theme),
+    ];
 
     const urlMapper = useNotificationsUrlGenerator();
 
