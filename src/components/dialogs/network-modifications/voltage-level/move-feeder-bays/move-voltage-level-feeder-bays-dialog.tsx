@@ -33,36 +33,13 @@ import {
     MoveFeederBayInfos,
     MoveVoltageLevelFeederBaysInfos,
 } from '../../../../../services/network-modification-types';
-import { fetchVoltageLevelFeederBaysBusBarSectionsInfos } from '../../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
-import { AnyObject, TestFunction } from 'yup';
+import { fetchVoltageLevelFeederBaysBusBarSectionsInfos } from '../../../../../services/study/network';
 import { FeederBaysBusBarSectionsInfos } from '../../../../../services/study/network-map.type';
-
-const isActiveRow = (row: FeederBaysFormInfos) => row && !row.isRemoved;
-const checkConnectionPositionField: TestFunction<string | null | undefined, AnyObject> = (currentPosition, context) => {
-    // access to rows
-    const rows: FeederBaysFormInfos[] = context.from?.[1]?.value?.[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE];
-    if (!Array.isArray(rows)) {
-        return true;
-    }
-    if (currentPosition === null || currentPosition === undefined) {
-        return true;
-    }
-    // take only active rows
-    const activeRows = rows.filter(isActiveRow);
-    // counting duplication
-    let count = 0;
-    for (const row of activeRows) {
-        // convert to string because the initial value is a number, not a string
-        if (`${currentPosition}` === `${row.connectionPosition}`) {
-            count = count + 1;
-        }
-    }
-    return count <= 1;
-};
+import { isNumber } from 'mathjs';
 
 function requiredWhenActive<T extends yup.Schema>(schema: T) {
     return schema.when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
@@ -79,10 +56,7 @@ const formSchema = yup.object().shape({
             [CONNECTION_SIDE]: yup.string().nullable(),
             [CONNECTION_NAME]: yup.string().nullable(),
             [CONNECTION_DIRECTION]: yup.string().nullable(),
-            [CONNECTION_POSITION]: yup
-                .string()
-                .nullable()
-                .test('checkUniquePositions', 'DuplicatedPositionsError', checkConnectionPositionField),
+            [CONNECTION_POSITION]: yup.number().nullable().positive(),
             [IS_REMOVED]: yup.boolean(),
             [IS_SEPARATOR]: yup.boolean(),
         })
@@ -161,7 +135,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionSide: bay.connectionSide || null,
                     connectionName: bay.connectablePositionInfos.connectionName || null,
                     connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
-                    connectionPosition: String(bay.connectablePositionInfos.connectionPosition ?? null),
+                    connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
+                        ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
+                        : null,
                     isRemoved: false,
                     rowId: null,
                 }));
@@ -176,7 +152,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             connectionSide: bay.connectionSide,
                             connectionName: bay.connectablePositionInfos.connectionName || null,
                             connectionDirection: bay.connectablePositionInfos.connectionDirection,
-                            connectionPosition: String(bay.connectablePositionInfos.connectionPosition ?? null),
+                            connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
+                                ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
+                                : null,
                             isRemoved: false,
                             rowId: null,
                         });
@@ -195,7 +173,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                 connectionSide: bay.connectionSide,
                                 connectionName: bay.connectionName,
                                 connectionDirection: bay.connectionDirection,
-                                connectionPosition: bay.connectionPosition,
+                                connectionPosition: isNumber(bay.connectionPosition)
+                                    ? Number.parseInt(bay.connectionPosition)
+                                    : null,
                                 isRemoved: true,
                                 rowId: null,
                             });
@@ -215,7 +195,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionSide: bay.connectionSide,
                     connectionName: bay.connectionName,
                     connectionDirection: bay.connectionDirection,
-                    connectionPosition: bay.connectionPosition,
+                    connectionPosition: isNumber(bay.connectionPosition)
+                        ? Number.parseInt(bay.connectionPosition)
+                        : null,
                     isRemoved: false,
                     rowId: null,
                 }));
@@ -297,7 +279,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                           equipmentId: row.equipmentId ?? '',
                           busbarSectionId: row.busbarSectionId ?? '',
                           connectionSide: row.connectionSide ?? null,
-                          connectionPosition: row.connectionPosition ?? null,
+                          connectionPosition: isNumber(row.connectionPosition)
+                              ? row.connectionPosition.toString()
+                              : null,
                           connectionName: row.connectionName ?? null,
                           connectionDirection: row.connectionDirection ?? null,
                       }))
