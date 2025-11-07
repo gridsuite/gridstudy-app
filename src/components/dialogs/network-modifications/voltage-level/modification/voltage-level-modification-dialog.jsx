@@ -107,7 +107,21 @@ const VoltageLevelModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues } = formMethods;
+    const { reset, getValues, subscribe, trigger } = formMethods;
+
+    useEffect(() => {
+        const callback = subscribe({
+            formState: {
+                values: true,
+            },
+            callback: ({ values }) => {
+                if (values.highVoltageLimit > values.lowVoltageLimit) {
+                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
+                }
+            },
+        });
+        return () => callback();
+    }, [trigger, subscribe]);
 
     useEffect(() => {
         if (editData) {
