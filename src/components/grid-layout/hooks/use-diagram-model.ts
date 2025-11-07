@@ -28,11 +28,11 @@ import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
 import { useDiagramParamsInitialization } from './use-diagram-params-initialization';
 import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { BaseVoltageConfig, useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
 import { isThereTooManyOpenedNadDiagrams, mergePositions } from '../cards/diagrams/diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
-import { getBaseVoltagesConfigInfos } from 'utils/constants';
+import { BaseVoltagesConfigInfos } from 'utils/constants';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -56,6 +56,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const baseVoltagesConfig = useSelector((state: AppState) => state.baseVoltagesConfig);
+    const baseVoltagesConfigRef = useRef<BaseVoltageConfig[]>([]);
+    baseVoltagesConfigRef.current = baseVoltagesConfig ?? [];
     const getDiagramTitle = useDiagramTitle();
 
     const [diagrams, setDiagrams] = useState<Record<UUID, Diagram>>({});
@@ -286,6 +289,18 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
         });
     }, []);
+
+    const getBaseVoltagesConfigInfos = (): BaseVoltagesConfigInfos => {
+        return {
+            baseVoltages: baseVoltagesConfigRef.current.map((vl: BaseVoltageConfig) => ({
+                name: vl.name,
+                minValue: vl.minValue,
+                maxValue: vl.maxValue,
+                profile: 'Default',
+            })),
+            defaultProfile: 'Default',
+        };
+    };
 
     const fetchDiagramSvg = useCallback(
         (diagram: Diagram) => {

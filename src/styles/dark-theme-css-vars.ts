@@ -5,9 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DARK_THEME } from '@gridsuite/commons-ui';
-import { cssColors } from 'utils/colors';
-
 export const darkThemeCssVars = {
     '.nad-edge-infos text': {
         stroke: '#292e33', // Border outside of the displayed values on lines. Same color as the background.
@@ -21,5 +18,4 @@ export const darkThemeCssVars = {
     '.nad-textnode-highlight': {
         backgroundColor: '#32373bd9', // same displayed color as #6c6c6c20 but with 0.85 opacity
     },
-    ...cssColors(DARK_THEME),
 };
