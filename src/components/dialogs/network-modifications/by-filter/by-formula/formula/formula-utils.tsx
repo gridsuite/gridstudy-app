@@ -80,6 +80,12 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerSetPointText', unit: MEGA_WATT },
         { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerSetPointText', unit: MEGA_VAR },
         { id: 'DROOP', label: 'Droop', unit: PERCENTAGE },
+        { id: 'TRANSIENT_REACTANCE', label: 'TransientReactanceForm', unit: OHM },
+        {
+            id: 'STEP_UP_TRANSFORMER_REACTANCE',
+            label: 'TransformerReactanceForm',
+            unit: OHM,
+        },
     ],
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [
         { id: 'MAXIMUM_SECTION_COUNT', label: 'maximumSectionCount' },
