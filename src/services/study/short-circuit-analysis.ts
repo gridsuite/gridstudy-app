@@ -174,14 +174,20 @@ export function fetchShortCircuitAnalysisPagedResults({
     return backendFetchJson(url);
 }
 
+// Matches CsvExportParams in short-circuit-server
+export type ShortCircuitCsvExportParams = {
+    csvHeader: string[] | undefined;
+    enumValueTranslations: Record<string, string>;
+    language: GsLang;
+    oneBusCase: boolean;
+};
+
 export function downloadShortCircuitResultZippedCsv(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     analysisType: number,
-    headersCsv: string[] | undefined,
-    enumValueTranslations: Record<string, string>,
-    language: GsLang
+    csvParams: ShortCircuitCsvExportParams
 ) {
     console.info(
         `Fetching short-circuit analysis export csv on ${studyUuid} , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
@@ -193,10 +199,8 @@ export function downloadShortCircuitResultZippedCsv(
     )}/shortcircuit/result/csv`;
     const type = getShortCircuitAnalysisTypeFromEnum(analysisType);
     const param = new URLSearchParams();
-    let oneBusCase = false;
     if (type) {
         param.append('type', type);
-        oneBusCase = type === 'ONE_BUS';
     }
     const urlWithParam = `${url}?${param.toString()}`;
     console.debug(urlWithParam);
@@ -206,6 +210,6 @@ export function downloadShortCircuitResultZippedCsv(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ headersCsv, enumValueTranslations, language, oneBusCase }),
+        body: JSON.stringify(csvParams),
     });
 }
