@@ -2,6 +2,9 @@
     "debug.message.downloadFile": "À la fin du calcul ses données seront téléchargées.",
     "debug.header.fileNotFound": "Données de calcul non trouvées",
     "debug.header.fileError": "Échec du téléchargement des données de calcul",
+    "export.message.started": "Export du {fileName} a commencé",
+    "export.message.succeeded": "Export du {fileName} a réussi",
+    "export.message.failed": "Échec du téléchargement du fichier {error}",
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
@@ -591,7 +594,7 @@
     "VSC_CONVERTER_STATION": "Station de conversion VSC",
     "VSC": "HVDC (VSC)",
     "LCC": "HVDC (LCC)",
-    "BUS": "Bus",
+    "BUS": "Noeud électrique",
     "BUSBAR_SECTION": "Section de jeux de barres",
     "BY_FORMULA": "Modifier par formule",
     "BY_FILTER": "Modifier par filtre",
@@ -1396,8 +1399,9 @@
     "startStateEstimationError": "Une erreur est survenue lors du lancement de l'estimation d'état",
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",
     "PccMin": "Pcc min N-1",
-    "startPccMinError": "Une erreur est survenue lors du lancement de pccMin",
-    "pccMinError": "Une erreur est survenue lors de l'exécution de pccMin",
+    "startPccMinError": "Une erreur est survenue lors du lancement de pcc min N-1",
+    "pccMinError": "Une erreur est survenue lors de l'exécution de pcc min N-1",
+    "PccMinResultsError": "Une erreur s'est produite lors de la récupération du résultat de pcc min N-1",
     "NoFilter": "Aucun filtre",
     "searchPlaceholder": "Recherche",
     "searchPlaceholderLog": "Rechercher dans les Logs",
@@ -1641,5 +1645,9 @@
     "equipmentID": "ID de l'ouvrage",
     "voltageLevelNominalVoltageMinValueError": "La tension nominale doit être comprise entre la limite de tension basse et la limite de tension haute",
     "voltageLevelNominalVoltageMaxValueError": "La limite de tension basse doit être inférieure à celle de tension haute",
-    "generatorMinimumActivePowerMaxValueError" : "La puissance active min doit être inférieure à la puissance active max"
+    "generatorMinimumActivePowerMaxValueError" : "La puissance active min doit être inférieure à la puissance active max",
+    "PccMinTri": "Pcc min (MVA) ",
+    "IccMinTri": "Icc min (kA)",
+    "rOhm": "r (Ω)",
+    "xOhm":"x (Ω)"
 }

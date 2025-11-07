@@ -46,6 +46,7 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import { useDiagramGridLayout } from 'hooks/use-diagram-grid-layout';
+import useExportNotification from '../hooks/use-export-notification.js';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -141,6 +142,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
+
+    useExportNotification();
 
     const displayErrorNotifications = useCallback(
         (eventData) => {

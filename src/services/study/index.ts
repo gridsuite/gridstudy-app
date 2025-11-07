@@ -12,10 +12,10 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    ComputingType,
     EquipmentType,
     ExtendedEquipmentType,
     Parameter,
-    ComputingType,
 } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';

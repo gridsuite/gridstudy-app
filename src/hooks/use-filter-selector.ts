@@ -9,6 +9,7 @@ import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
     LOGS_STORE_FIELD,
+    PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
@@ -19,6 +20,7 @@ import {
     setDynamicSimulationResultFilter,
     setLoadflowResultFilter,
     setLogsFilter,
+    setPccminAnalysisResultFilter,
     setSecurityAnalysisResultFilter,
     setSensitivityAnalysisResultFilter,
     setShortcircuitAnalysisResultFilter,
@@ -64,6 +66,10 @@ const FILTER_PARAMS: Record<
     [FilterType.StateEstimation]: {
         filterType: STATEESTIMATION_RESULT_STORE_FIELD,
         filterStoreAction: setStateEstimationResultFilter,
+    },
+    [FilterType.PccMin]: {
+        filterType: PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
+        filterStoreAction: setPccminAnalysisResultFilter,
     },
 };
 

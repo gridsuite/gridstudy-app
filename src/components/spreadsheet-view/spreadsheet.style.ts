@@ -17,4 +17,8 @@ export const spreadsheetStyles = {
         borderRadius: '6px',
         border: '1px solid',
     },
+    toolbarButton: (theme) => ({
+        color: theme.palette.primary.main,
+        minWidth: '100%',
+    }),
 } as const satisfies MuiStyles;
