@@ -25,11 +25,11 @@ import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcirc
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 
 interface ShortCircuitAnalysisResultTabProps {
@@ -93,7 +93,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
-    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSubTabChange = useCallback(
@@ -195,7 +195,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
-                        globalFilters={getGlobalFilterParameter(globalFilters)}
+                        globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                     />
                 ) : (

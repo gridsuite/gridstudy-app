@@ -6,12 +6,12 @@
  */
 import { RefObject, useEffect, useRef } from 'react';
 import { ReportItem } from './treeview-item';
-import { FixedSizeList } from 'react-window';
+import { ListImperativeAPI } from 'react-window';
 
 export const useTreeViewScroll = (
     highlightedReportId: string | undefined,
     nodes: ReportItem[],
-    listRef: RefObject<FixedSizeList>
+    listRef: RefObject<ListImperativeAPI>
 ) => {
     const scrollLocked = useRef(false);
 
@@ -21,7 +21,10 @@ export const useTreeViewScroll = (
 
     useEffect(() => {
         if (listRef.current && highlightedReportId && !scrollLocked.current) {
-            listRef.current.scrollToItem(nodes.map((node) => node.id).indexOf(highlightedReportId), 'center');
+            listRef.current.scrollToRow({
+                index: nodes.map((node) => node.id).indexOf(highlightedReportId),
+                align: 'center',
+            });
             scrollLocked.current = true;
         }
     }, [highlightedReportId, listRef, nodes]);

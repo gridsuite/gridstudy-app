@@ -30,7 +30,7 @@ import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import {
     COLUMN_DEPENDENCIES,
@@ -46,6 +46,8 @@ import {
 import { AppState } from 'redux/reducer';
 import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
 import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floating-popover-treeview-wrapper';
+import { isFormulaContentSizeOk } from './utils/formula-validator';
+import { MAX_FORMULA_CHARACTERS } from '../constants';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -144,7 +146,9 @@ export default function ColumnCreationDialog({
                 label="spreadsheet/custom_column/column_content"
                 minRows={3}
                 rows={3}
+                maxCharactersNumber={MAX_FORMULA_CHARACTERS}
                 sx={{ flexGrow: 1 }}
+                acceptValue={isFormulaContentSizeOk}
             />
         </FloatingPopoverTreeviewWrapper>
     );

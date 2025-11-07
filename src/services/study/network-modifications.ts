@@ -6,6 +6,9 @@
  */
 
 import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
     EquipmentInfos,
     EquipmentType,
     MODIFICATION_TYPES,
@@ -13,11 +16,10 @@ import {
     NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     Assignment,
     AttachLineInfo,
@@ -59,6 +61,7 @@ import { Filter } from '../../components/dialogs/network-modifications/by-filter
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
+import { ENABLE_OLG_MODIFICATION } from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -839,6 +842,7 @@ export function modifyLine({
     operationalLimitsGroups,
     selectedOperationalLimitsGroup1,
     selectedOperationalLimitsGroup2,
+    enableOLGModification,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -889,6 +893,7 @@ export function modifyLine({
             operationalLimitsGroups: operationalLimitsGroups,
             selectedOperationalLimitsGroup1: selectedOperationalLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedOperationalLimitsGroup2,
+            [ENABLE_OLG_MODIFICATION]: enableOLGModification,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
             busOrBusbarSectionId1: toModificationOperation(busOrBusbarSectionId1),
             voltageLevelId2: toModificationOperation(voltageLevelId2),
@@ -1011,6 +1016,7 @@ export function modifyTwoWindingsTransformer({
     operationalLimitsGroups,
     selectedLimitsGroup1,
     selectedLimitsGroup2,
+    enableOLGModification,
     ratioTapChanger,
     phaseTapChanger,
     voltageLevelId1 = undefined,
@@ -1067,6 +1073,7 @@ export function modifyTwoWindingsTransformer({
             operationalLimitsGroups: operationalLimitsGroups,
             selectedOperationalLimitsGroup1: selectedLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedLimitsGroup2,
+            [ENABLE_OLG_MODIFICATION]: enableOLGModification,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
@@ -1102,7 +1109,10 @@ export interface CreateTabularModificationProps {
     modificationType: string;
     modifications: Modification[];
     modificationUuid: UUID;
-    type: ModificationType;
+    tabularType:
+        | ModificationType.LIMIT_SETS_TABULAR_MODIFICATION
+        | ModificationType.TABULAR_MODIFICATION
+        | ModificationType.TABULAR_CREATION;
     csvFilename?: string;
     properties?: TabularProperty[];
 }
@@ -1113,27 +1123,27 @@ export function createTabularModification({
     modificationType,
     modifications,
     modificationUuid,
-    type,
+    tabularType,
     csvFilename,
     properties,
 }: CreateTabularModificationProps) {
-    let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    let tabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {
-        createTabularModificationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating tabular modification');
+        tabularModificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating ' + tabularType);
     } else {
-        console.info('Creating tabular modification');
+        console.info('Creating ' + tabularType);
     }
 
-    return backendFetchText(createTabularModificationUrl, {
+    return backendFetchText(tabularModificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: type,
+            type: tabularType,
             modificationType: modificationType,
             modifications: modifications,
             properties: properties,
@@ -2042,50 +2052,6 @@ export function modifyByAssignment(
             'Content-Type': 'application/json',
         },
         body: body,
-    });
-}
-
-export interface CreateTabularCreationProps {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    creationType: string;
-    creations: Modification[];
-    modificationUuid: UUID;
-    csvFilename?: string;
-    properties?: TabularProperty[];
-}
-
-export function createTabularCreation({
-    studyUuid,
-    nodeUuid,
-    creationType,
-    creations,
-    modificationUuid,
-    csvFilename,
-    properties,
-}: CreateTabularCreationProps) {
-    let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
-        createTabularCreationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating tabular creation');
-    } else {
-        console.info('Creating tabular creation');
-    }
-
-    return backendFetchText(createTabularCreationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.TABULAR_CREATION.type,
-            creationType: creationType,
-            creations: creations,
-            properties: properties,
-            csvFilename: csvFilename,
-        }),
     });
 }
 

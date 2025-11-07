@@ -10,11 +10,10 @@ import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
-import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
+import { GsLang, backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
 import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
-import { GsLang } from '@gridsuite/commons-ui';
+import { Selector } from 'components/results/common/utils';
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
@@ -22,12 +21,6 @@ interface ShortCircuitAnalysisResult {
     currentRootNetworkUuid?: UUID;
     type: ShortCircuitAnalysisType;
     globalFilters?: GlobalFilters;
-}
-interface Selector {
-    page: number;
-    size: number;
-    filter: FilterConfig[] | null;
-    sort: SortConfig[];
 }
 interface ShortCircuitAnalysisPagedResults extends ShortCircuitAnalysisResult {
     selector: Partial<Selector>;
@@ -39,7 +32,7 @@ export function startShortCircuitAnalysis(
     currentRootNetworkUuid: UUID | null,
     busId: string,
     debug?: boolean
-): Promise<void> {
+): Promise<Response> {
     console.info(
         `Running short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );

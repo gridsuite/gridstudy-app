@@ -46,6 +46,7 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import { useDiagramGridLayout } from 'hooks/use-diagram-grid-layout';
+import useExportNotification from '../hooks/use-export-notification.js';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -142,6 +143,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
+    useExportNotification();
+
     const displayErrorNotifications = useCallback(
         (eventData) => {
             const updateTypeHeader = eventData.headers.updateType;
@@ -180,12 +183,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED) {
-                snackError({
-                    headerId: 'nonEvacuatedEnergyAnalysisError',
-                    messageTxt: errorMessage,
-                });
-            }
             if (
                 updateTypeHeader === NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED ||
                 updateTypeHeader === NotificationType.ONE_BUS_SC_ANALYSIS_FAILED
@@ -221,6 +218,12 @@ export function StudyContainer({ view, onChangeTab }) {
             if (updateTypeHeader === NotificationType.STATE_ESTIMATION_FAILED) {
                 snackError({
                     headerId: 'stateEstimationError',
+                    messageTxt: errorMessage,
+                });
+            }
+            if (updateTypeHeader === NotificationType.PCC_MIN_FAILED) {
+                snackError({
+                    headerId: 'pccMinError',
                     messageTxt: errorMessage,
                 });
             }

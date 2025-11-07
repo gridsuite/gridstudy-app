@@ -9,7 +9,7 @@ import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
 import {
     AttributeModification,
-    CurrentLimits,
+    CurrentLimitsData,
     OperationalLimitsGroup,
     OperationType,
     TemporaryLimit,
@@ -21,6 +21,7 @@ import {
     CURRENT_LIMITS,
     DELETION_MARK,
     ID,
+    LIMITS_PROPERTIES,
     MODIFICATION_TYPE,
     NAME,
     SELECTED,
@@ -151,15 +152,16 @@ export const formatToTemporaryLimitsFormInfos = (temporaryLimits: TemporaryLimit
         };
     });
 
-export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimits[]) => {
+export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsData[]) => {
     const formattedCompleteLimitsGroups: OperationalLimitsGroup[] = [];
     if (completeLimitsGroups) {
-        completeLimitsGroups.forEach((elt) => {
+        for (const elt of completeLimitsGroups) {
             if (isNotBlankOrEmpty(elt.id)) {
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id + elt.applicability,
                     [NAME]: elt.id,
                     [APPLICABIlITY]: elt.applicability,
+                    [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
                         [ID]: elt.id,
                         permanentLimit: elt.permanentLimit,
@@ -167,7 +169,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimits[]
                     },
                 });
             }
-        });
+        }
     }
     return formattedCompleteLimitsGroups;
 };

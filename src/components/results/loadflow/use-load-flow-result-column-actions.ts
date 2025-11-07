@@ -10,7 +10,7 @@ import { OverloadedEquipment } from './load-flow-result.type';
 import { ColDef } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from '../../../services/study/network-map';
 import { BranchSide } from '../../utils/constants';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 

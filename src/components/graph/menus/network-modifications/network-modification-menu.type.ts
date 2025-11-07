@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 export interface RootNetworkMetadata {
@@ -54,6 +54,7 @@ export enum NetworkModificationCopyType {
 
 export interface NetworkModificationCopyInfo {
     copyType: NetworkModificationCopyType;
+    originStudyUuid?: UUID;
     originNodeUuid?: UUID;
 }
 

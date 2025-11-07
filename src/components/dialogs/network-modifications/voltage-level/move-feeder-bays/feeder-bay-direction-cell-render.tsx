@@ -5,35 +5,46 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo } from 'react';
-import { Box, IconButton, ToggleButton } from '@mui/material';
+import { ReactNode, useCallback, useMemo } from 'react';
+import { IconButton, ToggleButton } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useController, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import type { MuiStyles } from '@gridsuite/commons-ui';
+import { HorizontalRule } from '@mui/icons-material';
+import { CONNECTION_DIRECTIONS_VALUES } from './move-voltage-level-feeder-bays.type';
+import { MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     container: {
         display: 'flex',
+        justifyContent: 'center',
         alignItems: 'center',
-        gap: 1,
-        marginTop: 1.75,
-    },
-    button: {
-        width: 100,
-        whiteSpace: 'nowrap',
+        width: '100%',
+        height: '100%',
+        border: 'none',
+        gap: 2,
+        padding: '1rem',
+        '&:hover': {
+            backgroundColor: 'transparent',
+        },
     },
 } as const satisfies MuiStyles;
-
-const CONNECTION_DIRECTIONS_VALUES = {
-    TOP: { id: 'TOP', label: 'Top' },
-    BOTTOM: { id: 'BOTTOM', label: 'Bottom' },
-} as const;
 
 type FeederBayDirectionCellRendererProps = {
     name: string;
     disabled: boolean;
+};
+
+const DIRECTION_CYCLE: Record<string, string> = {
+    [CONNECTION_DIRECTIONS_VALUES.TOP.id]: CONNECTION_DIRECTIONS_VALUES.BOTTOM.id,
+    [CONNECTION_DIRECTIONS_VALUES.BOTTOM.id]: CONNECTION_DIRECTIONS_VALUES.UNDEFINED.id,
+    [CONNECTION_DIRECTIONS_VALUES.UNDEFINED.id]: CONNECTION_DIRECTIONS_VALUES.TOP.id,
+};
+
+const DIRECTION_ICONS: Record<string, ReactNode> = {
+    [CONNECTION_DIRECTIONS_VALUES.TOP.id]: <ArrowUpwardIcon />,
+    [CONNECTION_DIRECTIONS_VALUES.BOTTOM.id]: <ArrowDownwardIcon />,
 };
 
 export default function FeederBayDirectionCellRenderer({
@@ -47,31 +58,24 @@ export default function FeederBayDirectionCellRenderer({
     const intl = useIntl();
 
     const translatedLabel = useMemo(() => {
-        const direction = Object.values(CONNECTION_DIRECTIONS_VALUES).find((dir) => dir.id === value);
+        const valueToFind = value ?? 'UNDEFINED'; // null ou undefined → 'UNDEFINED'
+        const direction = Object.values(CONNECTION_DIRECTIONS_VALUES).find((dir) => dir.id === valueToFind);
         return direction ? intl.formatMessage({ id: direction.label }) : '';
     }, [intl, value]);
 
     const handleClick = useCallback(() => {
-        if (value) {
-            const newValue =
-                value === CONNECTION_DIRECTIONS_VALUES.TOP.id
-                    ? CONNECTION_DIRECTIONS_VALUES.BOTTOM.id
-                    : CONNECTION_DIRECTIONS_VALUES.TOP.id;
-            setValue(name, newValue, {
-                shouldDirty: true,
-                shouldTouch: true,
-            });
-        }
+        const newValue = DIRECTION_CYCLE[value] || CONNECTION_DIRECTIONS_VALUES.TOP.id; // from null or UNDEFINED, go to TOP
+        setValue(name, newValue, {
+            shouldDirty: true,
+            shouldTouch: true,
+        });
     }, [value, setValue, name]);
-
     return (
-        <Box sx={styles.container}>
+        <ToggleButton value={value} onClick={handleClick} disabled={disabled} size="small" sx={styles.container}>
             <IconButton onClick={handleClick} size="small" disabled={disabled}>
-                {value === CONNECTION_DIRECTIONS_VALUES.TOP.id ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
+                {DIRECTION_ICONS[value] || <HorizontalRule />}
             </IconButton>
-            <ToggleButton value={value} onClick={handleClick} disabled={disabled} size="small" sx={styles.button}>
-                {translatedLabel}
-            </ToggleButton>
-        </Box>
+            <span>{translatedLabel}</span>
+        </ToggleButton>
     );
 }

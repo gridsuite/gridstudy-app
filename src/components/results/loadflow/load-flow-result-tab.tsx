@@ -30,7 +30,7 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -43,12 +43,12 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { ICellRendererParams } from 'ag-grid-community';
-import { Button, Tooltip } from '@mui/material';
+import { Button } from '@mui/material';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 
@@ -88,7 +88,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
@@ -129,16 +129,20 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
                 })),
                 filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
-                ...(getGlobalFilterParameter(globalFilters) !== undefined && {
-                    globalFilters: {
-                        ...getGlobalFilterParameter(globalFilters),
-                        limitViolationsTypes:
-                            tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
-                    },
-                }),
+                ...(isGlobalFilterParameter(globalFilters)
+                    ? {
+                          globalFilters: {
+                              ...globalFilters,
+                              limitViolationsTypes:
+                                  tabIndex === 0
+                                      ? [LimitTypes.CURRENT]
+                                      : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
+                          },
+                      }
+                    : {}),
             });
         },
-        [tabIndex, filters, intl, sortConfig, getGlobalFilterParameter, globalFilters]
+        [tabIndex, filters, intl, sortConfig, globalFilters]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {
@@ -178,11 +182,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             };
             if (value) {
                 return (
-                    <Tooltip title={value}>
-                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
-                            {value}
-                        </Button>
-                    </Tooltip>
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
                 );
             }
         },

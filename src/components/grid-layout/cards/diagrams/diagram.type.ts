@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { DiagramConfigPosition } from '../../../../services/explore';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 
@@ -22,15 +22,15 @@ type DiagramBaseParams = {
     name: string;
 };
 
-type VoltageLevelDiagramParams = DiagramBaseParams & {
+export type VoltageLevelDiagramParams = DiagramBaseParams & {
     type: DiagramType.VOLTAGE_LEVEL;
     voltageLevelId: string;
 };
-type SubstationDiagramParams = DiagramBaseParams & {
+export type SubstationDiagramParams = DiagramBaseParams & {
     type: DiagramType.SUBSTATION;
     substationId: string;
 };
-type NetworkAreaDiagramParams = DiagramBaseParams & {
+export type NetworkAreaDiagramParams = DiagramBaseParams & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     nadConfigUuid: UUID | undefined;
     initializationNadConfigUuid?: UUID; // used for initialization, not saved

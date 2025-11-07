@@ -7,16 +7,18 @@
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    DndColumnType,
     ColumnNumeric,
     ColumnText,
     DndColumn,
+    DndColumnType,
     FloatInput,
-    SelectInput,
     Option,
+    SelectInput,
 } from '@gridsuite/commons-ui';
 import {
     APPLICABIlITY,
+    CURRENT_LIMITS,
+    LIMITS_PROPERTIES,
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -33,11 +35,11 @@ import { TemporaryLimit } from '../../../services/network-modification-types';
 import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
-import GridSection from '../commons/grid-section';
 import { APPLICABILITY } from '../../network/constants';
+import { LimitsPropertiesSideStack } from './limits-properties-side-stack';
 
 export interface LimitsSidePaneProps {
-    limitsGroupFormName: string;
+    opLimitsGroupFormName: string;
     limitsGroupApplicabilityName?: string;
     permanentCurrentLimitPreviousValue: number | null | undefined;
     temporaryLimitsPreviousValues: TemporaryLimit[];
@@ -46,10 +48,11 @@ export interface LimitsSidePaneProps {
     currentNode?: CurrentTreeNode;
     selectedLimitSetName?: string;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
+    disabled: boolean;
 }
 
 export function LimitsSidePane({
-    limitsGroupFormName,
+    opLimitsGroupFormName,
     limitsGroupApplicabilityName,
     permanentCurrentLimitPreviousValue,
     temporaryLimitsPreviousValues,
@@ -58,9 +61,14 @@ export function LimitsSidePane({
     currentNode,
     selectedLimitSetName,
     checkLimitSetUnicity,
+    disabled,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
+    const limitsGroupFormName = useMemo(
+        (): string => `${opLimitsGroupFormName}.${CURRENT_LIMITS}`,
+        [opLimitsGroupFormName]
+    );
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
@@ -163,31 +171,6 @@ export function LimitsSidePane({
         [findTemporaryLimit, shouldReturnPreviousValue]
     );
 
-    const disableTableCell = useCallback(
-        (
-            rowIndex: number,
-            column: ColumnText | ColumnNumeric,
-            arrayFormName: string,
-            temporaryLimits?: TemporaryLimit[]
-        ) => {
-            // If the temporary limit is added, all fields are editable
-            // otherwise, only the value field is editable
-            let disable: boolean =
-                temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
-                column.dataKey !== TEMPORARY_LIMIT_VALUE;
-
-            if (
-                getValues(arrayFormName) &&
-                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
-            ) {
-                disable = false;
-            }
-
-            return disable;
-        },
-        [getValues, temporaryLimitHasPreviousValue]
-    );
-
     const isValueModified = useCallback(
         (rowIndex: number, arrayFormName: string) => {
             const temporaryLimits = getValues(arrayFormName);
@@ -211,17 +194,21 @@ export function LimitsSidePane({
                 label="PermanentCurrentLimitText"
                 adornment={AmpereAdornment}
                 previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                clearable={clearableFields}
+                clearable={!disabled && clearableFields}
+                disabled={disabled}
             />
         ),
-        [clearableFields, limitsGroupFormName, permanentCurrentLimitPreviousValue]
+        [clearableFields, disabled, limitsGroupFormName, permanentCurrentLimitPreviousValue]
     );
 
     return (
         <Box sx={{ p: 2 }}>
             {limitsGroupApplicabilityName && (
-                <>
-                    <GridSection title={selectedLimitSetName ?? ''} isLiteralText />
+                <Box>
+                    <LimitsPropertiesSideStack
+                        name={`${opLimitsGroupFormName}.${LIMITS_PROPERTIES}`}
+                        disabled={disabled}
+                    />
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
                         <Grid item xs={2}>
                             <FormattedMessage id="Applicability" />
@@ -234,6 +221,7 @@ export function LimitsSidePane({
                                 sx={{ flexGrow: 1 }}
                                 disableClearable
                                 size="small"
+                                disabled={disabled}
                                 onCheckNewValue={(value: Option | null) => {
                                     if (value) {
                                         const errorMessage: string = checkLimitSetUnicity(
@@ -249,7 +237,7 @@ export function LimitsSidePane({
                             />
                         </Grid>
                     </Grid>
-                </>
+                </Box>
             )}
             <Box>
                 <LimitsChart
@@ -266,9 +254,9 @@ export function LimitsSidePane({
                 createRow={createRows}
                 columnsDefinition={columnsDefinition}
                 previousValues={temporaryLimitsPreviousValues}
-                disableTableCell={disableTableCell}
                 getPreviousValue={getPreviousValue}
                 isValueModified={isValueModified}
+                disabled={disabled}
             />
         </Box>
     );

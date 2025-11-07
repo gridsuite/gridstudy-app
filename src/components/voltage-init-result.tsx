@@ -36,7 +36,7 @@ import {
 } from './voltage-init-result.type';
 import { AppState } from 'redux/reducer';
 import RunningStatus from './utils/running-status';
-import { GridReadyEvent, RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
+import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
@@ -96,7 +96,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
 
-    const [disableApplyModifications, setDisableApplyModifications] = useState(!result?.modificationsGroupUuid);
+    const [disableApplyModifications, setDisableApplyModifications] = useState(false);
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] = useState(false);
     const [voltageInitModification, setVoltageInitModification] = useState<EditData>();
@@ -107,6 +107,13 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
         isLoading: status === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
     });
+
+    useEffect(() => {
+        if (result?.modificationsGroupUuid && status === RunningStatus.SUCCEED) {
+            // un-applied result available => dont disable
+            setDisableApplyModifications(false);
+        }
+    }, [result?.modificationsGroupUuid, status]);
 
     const gridRef = useRef<AgGridReact>(null);
     const defaultColDef = useMemo(
@@ -121,15 +128,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
         }),
         []
     );
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
 
     const applyModifications = () => {
         setApplyingModifications(true);
@@ -282,8 +280,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     defaultColDef={defaultColDef}
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows as any[]}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     skipColumnHeaders={false}
                     getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
                         return undefined;
@@ -323,8 +319,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     defaultColDef={defaultColDef}
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={result.reactiveSlacks}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     skipColumnHeaders={false}
                     getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
                         return undefined;
@@ -374,8 +368,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 defaultColDef={defaultColDef}
                 tableName={intl.formatMessage({ id: 'BusVoltages' })}
                 rows={busVoltages}
-                onRowDataUpdated={onRowDataUpdated}
-                onGridReady={onGridReady}
                 skipColumnHeaders={false}
                 getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
                     return undefined;

@@ -5,11 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getRequestParamFromList } from '../utils';
-import { UUID } from 'crypto';
+import type { NonEmptyTuple } from 'type-fest';
+import { backendFetchJson } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
+import { getRequestParamFromList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import type { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
+import type { FilterEquipmentType } from '../../types/filter-lib/filter';
 
 export interface ExpertFilter {
     id?: UUID;
@@ -37,6 +41,35 @@ export interface IdentifiableAttributes {
     distributionKey: number;
 }
 
+/**
+ * Evaluate a {@link GlobalFilter} on a network
+ * @param studyUuid the {@link UUID} of the study to work on
+ * @param currentNodeUuid the current node to get the variant
+ * @param currentRootNetworkUuid the root network to work on to get the variant
+ * @param equipmentTypes The types of equipment to filter
+ * @param filters the filters description
+ * @return The equipment IDs that pass the filters
+ */
+export async function evaluateGlobalFilter(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    equipmentTypes: NonEmptyTuple<FilterEquipmentType>,
+    filters: GlobalFilters
+): Promise<string[]> {
+    return backendFetchJson(
+        `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/global-filter/evaluate?${new URLSearchParams(
+            { equipmentTypes: equipmentTypes.join(',') }
+        )}`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(filters),
+        }
+    );
+}
+
+/** @deprecated migrate to {@link #evaluateGlobalFilter} */
 export async function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
@@ -58,6 +91,7 @@ export async function evaluateJsonFilter(
     });
 }
 
+/** @deprecated migrate to {@link #evaluateGlobalFilter} */
 export async function evaluateFilters(
     studyUuid: UUID,
     currentNodeUuid: UUID,

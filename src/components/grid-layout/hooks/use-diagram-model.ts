@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useDiagramEventListener } from './use-diagram-event-listener';
 import {
     Diagram,
@@ -38,6 +38,9 @@ type UseDiagramModelProps = {
     onAddDiagram: (diagram: Diagram) => void;
     onDiagramAlreadyExists?: (diagramUuid: UUID) => void;
 };
+
+export type CreateDiagramFuncType = (diagramParams: DiagramParams) => void;
+export type UpdateDiagramFuncType = (diagramParams: DiagramParams, fetch?: boolean) => void;
 
 export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyExists }: UseDiagramModelProps) => {
     const intl = useIntl();
@@ -72,30 +75,8 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagramTypes]
     );
 
-    const diagramAlreadyExists = useCallback(
-        (diagramParams: DiagramParams) => {
-            switch (diagramParams.type) {
-                case DiagramType.VOLTAGE_LEVEL:
-                    return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.VOLTAGE_LEVEL)
-                        .some((d) => d.voltageLevelId === diagramParams.voltageLevelId);
-                case DiagramType.SUBSTATION:
-                    return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.SUBSTATION)
-                        .some((d) => d.substationId === diagramParams.substationId);
-                case DiagramType.NETWORK_AREA_DIAGRAM:
-                    return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
-                        .some((d) => d.diagramUuid === diagramParams.diagramUuid);
-                default:
-                    return false;
-            }
-        },
-        [diagrams]
-    );
-
     const createPendingDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
+        (diagramParams: DiagramParams, disableOnAddCallback: boolean = false) => {
             const pendingDiagram: Diagram = {
                 ...diagramParams,
                 svg: null,
@@ -105,7 +86,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 newDiagrams[pendingDiagram.diagramUuid] = pendingDiagram;
                 return newDiagrams;
             });
-            onAddDiagram(pendingDiagram);
+            if (!disableOnAddCallback) {
+                onAddDiagram(pendingDiagram);
+            }
             return pendingDiagram;
         },
         [onAddDiagram]
@@ -207,6 +190,102 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         ]
     );
 
+    // Helper functions to reduce nesting
+    const handleFetchSuccess = useCallback(
+        (diagram: Diagram, data: any) => {
+            setDiagrams((diagrams) => {
+                if (!diagrams[diagram.diagramUuid]) {
+                    console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
+                    return diagrams;
+                }
+                const newDiagrams = { ...diagrams };
+                const vlIdsFromSvg =
+                    (data.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels?.map((vl: any) => vl.id) ??
+                    [];
+
+                newDiagrams[diagram.diagramUuid] = {
+                    ...diagrams[diagram.diagramUuid],
+                    svg: data,
+                    name: getDiagramTitle(diagram, data),
+                    ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
+                        voltageLevelToExpandIds: [],
+                        voltageLevelIds: [
+                            ...new Set([
+                                ...(diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds,
+                                ...vlIdsFromSvg,
+                            ]),
+                        ],
+                        voltageLevelToOmitIds: (
+                            diagrams[diagram.diagramUuid] as NetworkAreaDiagram
+                        ).voltageLevelToOmitIds.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
+                        positions: mergePositions(
+                            (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions ?? [],
+                            data.metadata as DiagramMetadata
+                        ),
+                    }),
+                };
+                return newDiagrams;
+            });
+        },
+        [getDiagramTitle]
+    );
+
+    const handleFetchError = useCallback(
+        (diagram: Diagram, error: any) => {
+            console.error('Error while fetching SVG', error.message);
+            if (error.status === 400) {
+                setDiagrams((diagrams) => {
+                    const newDiagrams = { ...diagrams };
+                    delete newDiagrams[diagram.diagramUuid];
+                    return newDiagrams;
+                });
+                snackError({
+                    headerId: 'nadConfiguredPositionsModeFailed',
+                });
+                return;
+            }
+            setDiagrams((diagrams) => {
+                if (!diagrams[diagram.diagramUuid]) {
+                    console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
+                    return diagrams;
+                }
+                const newDiagrams = { ...diagrams };
+
+                newDiagrams[diagram.diagramUuid] = {
+                    ...diagrams[diagram.diagramUuid],
+                };
+                return newDiagrams;
+            });
+            let errorMessage: string;
+            if (error.status === 404) {
+                errorMessage = diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
+            } else if (error.status === 403) {
+                errorMessage = error.message;
+                snackError({
+                    headerId: errorMessage,
+                });
+            } else {
+                errorMessage = 'svgLoadingFail';
+                snackError({
+                    headerId: errorMessage,
+                });
+            }
+            setDiagramErrors((diagramErrors) => {
+                return {
+                    ...diagramErrors,
+                    [diagram.diagramUuid]: errorMessage,
+                };
+            });
+        },
+        [snackError]
+    );
+
+    const handleFetchFinally = useCallback((diagram: Diagram) => {
+        setLoadingDiagrams((loadingDiagrams) => {
+            return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
+        });
+    }, []);
+
     const fetchDiagramSvg = useCallback(
         (diagram: Diagram) => {
             // make url from type
@@ -240,102 +319,28 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 }
                 return [...loadingDiagrams, diagram.diagramUuid];
             });
-            // fetch the svg
+
             fetchSvg(url, fetchOptions)
                 .then((data) => {
                     if (data == null) {
                         return;
                     }
-                    setDiagrams((diagrams) => {
-                        if (!diagrams[diagram.diagramUuid]) {
-                            console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
-                            return diagrams;
-                        }
-                        const newDiagrams = { ...diagrams };
-                        const vlIdsFromSvg =
-                            (data.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels?.map(
-                                (vl: any) => vl.id
-                            ) ?? [];
-
-                        newDiagrams[diagram.diagramUuid] = {
-                            ...diagrams[diagram.diagramUuid],
-                            svg: data,
-                            name: getDiagramTitle(diagram, data),
-                            ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
-                                voltageLevelToExpandIds: [],
-                                voltageLevelIds: [
-                                    ...new Set([
-                                        ...(diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds,
-                                        ...vlIdsFromSvg,
-                                    ]),
-                                ],
-                                voltageLevelToOmitIds: (
-                                    diagrams[diagram.diagramUuid] as NetworkAreaDiagram
-                                ).voltageLevelToOmitIds.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
-                                positions: mergePositions(
-                                    (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions ?? [],
-                                    data.metadata as DiagramMetadata
-                                ),
-                            }),
-                        };
-                        return newDiagrams;
-                    });
+                    handleFetchSuccess(diagram, data);
                 })
                 .catch((error) => {
-                    console.error('Error while fetching SVG', error.message);
-                    if (error.status === 400) {
-                        // remove the failed diagram from loading list and show a snack error.
-                        setDiagrams((diagrams) => {
-                            const newDiagrams = { ...diagrams };
-                            delete newDiagrams[diagram.diagramUuid];
-                            return newDiagrams;
-                        });
-                        snackError({
-                            headerId: 'nadConfiguredPositionsModeFailed',
-                        });
-                        return;
-                    }
-                    setDiagrams((diagrams) => {
-                        if (!diagrams[diagram.diagramUuid]) {
-                            console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
-                            return diagrams;
-                        }
-                        const newDiagrams = { ...diagrams };
-
-                        newDiagrams[diagram.diagramUuid] = {
-                            ...diagrams[diagram.diagramUuid],
-                        };
-                        return newDiagrams;
-                    });
-                    let errorMessage: string;
-                    if (error.status === 404) {
-                        errorMessage =
-                            diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
-                    } else if (error.status === 403) {
-                        errorMessage = error.message;
-                        snackError({
-                            headerId: errorMessage,
-                        });
-                    } else {
-                        errorMessage = 'svgLoadingFail';
-                        snackError({
-                            headerId: errorMessage,
-                        });
-                    }
-                    setDiagramErrors((diagramErrors) => {
-                        return {
-                            ...diagramErrors,
-                            [diagram.diagramUuid]: errorMessage,
-                        };
-                    });
+                    handleFetchError(diagram, error);
                 })
                 .finally(() => {
-                    setLoadingDiagrams((loadingDiagrams) => {
-                        return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
-                    });
+                    handleFetchFinally(diagram);
                 });
         },
-        [getDiagramTitle, getUrl, snackError, networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode]
+        [
+            getUrl,
+            networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+            handleFetchSuccess,
+            handleFetchError,
+            handleFetchFinally,
+        ]
     );
 
     const findSimilarDiagram = useCallback(
@@ -353,12 +358,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             diagram.type === DiagramType.SUBSTATION &&
                             diagram.substationId === diagramParams.substationId
                     );
-                case DiagramType.NETWORK_AREA_DIAGRAM:
-                    return Object.values(diagrams).find(
-                        (diagram) =>
-                            diagram.type === DiagramType.NETWORK_AREA_DIAGRAM &&
-                            diagram.diagramUuid === diagramParams.diagramUuid
-                    );
+                case DiagramType.NETWORK_AREA_DIAGRAM: // no good criteria to get similar NAD for now
                 default:
                     return undefined;
             }
@@ -366,45 +366,51 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagrams]
     );
 
-    const createDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
+    const isCreationRequestValid = useCallback(
+        (diagramParams: DiagramParams): boolean => {
             if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM && isThereTooManyOpenedNadDiagrams(diagrams)) {
                 snackInfo({
                     messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),
                 });
-                return;
+                return false;
             }
 
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance don't manage this type of diagram
-                return;
+                return false;
             }
-            if (diagramAlreadyExists(diagramParams)) {
-                // blink the similar diagram
-                const similarDiagram = findSimilarDiagram(diagramParams);
-                if (similarDiagram) {
-                    onDiagramAlreadyExists?.(similarDiagram.diagramUuid);
-                }
-                return;
+            const similarDiagram = findSimilarDiagram(diagramParams);
+            if (similarDiagram) {
+                onDiagramAlreadyExists?.(similarDiagram.diagramUuid);
+                return false;
             }
-            const diagram = createPendingDiagram(diagramParams);
-            fetchDiagramSvg(diagram);
+            return true;
         },
-        [
-            createPendingDiagram,
-            diagramAlreadyExists,
-            fetchDiagramSvg,
-            filterDiagramParams,
-            findSimilarDiagram,
-            onDiagramAlreadyExists,
-            diagrams,
-            intl,
-            snackInfo,
-        ]
+        [diagrams, filterDiagramParams, snackInfo, intl, findSimilarDiagram, onDiagramAlreadyExists]
     );
 
-    const updateDiagramAndFetch = useCallback(
-        (diagramParams: DiagramParams, fetch: boolean) => {
+    const initDiagram = useCallback(
+        (diagramParams: DiagramParams) => {
+            if (!isCreationRequestValid(diagramParams)) {
+                return;
+            }
+            fetchDiagramSvg(createPendingDiagram(diagramParams, true));
+        },
+        [createPendingDiagram, fetchDiagramSvg, isCreationRequestValid]
+    );
+
+    const createDiagram: CreateDiagramFuncType = useCallback(
+        (diagramParams: DiagramParams) => {
+            if (!isCreationRequestValid(diagramParams)) {
+                return;
+            }
+            fetchDiagramSvg(createPendingDiagram(diagramParams));
+        },
+        [isCreationRequestValid, createPendingDiagram, fetchDiagramSvg]
+    );
+
+    const updateDiagram: UpdateDiagramFuncType = useCallback(
+        (diagramParams: DiagramParams, fetch: boolean = true) => {
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance doesn't manage this type of diagram
                 return;
@@ -427,20 +433,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagrams, fetchDiagramSvg, filterDiagramParams]
     );
 
-    const updateDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
-            return updateDiagramAndFetch(diagramParams, true);
-        },
-        [updateDiagramAndFetch]
-    );
-
-    const updateDiagramPositions = useCallback(
-        (diagramParams: DiagramParams) => {
-            return updateDiagramAndFetch(diagramParams, false);
-        },
-        [updateDiagramAndFetch]
-    );
-
     const removeDiagram = useCallback((id: UUID) => {
         setDiagrams((oldDiagrams) => {
             if (oldDiagrams[id]) {
@@ -452,7 +444,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         });
     }, []);
 
-    useDiagramParamsInitialization({ onLoadDiagramParams: createDiagram });
+    useDiagramParamsInitialization({ onLoadDiagramParams: initDiagram });
 
     const updateAllDiagrams = useCallback(() => {
         if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
@@ -461,14 +453,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         setDiagramErrors({});
         setGlobalError(undefined);
         setDiagrams((oldDiagrams) => {
-            Object.values(oldDiagrams).forEach((diagram) => {
+            for (const diagram of Object.values(oldDiagrams)) {
                 diagram.svg = null; // reset svg
-            });
+            }
             return oldDiagrams;
         });
-        Object.values(diagrams).forEach((diagram) => {
+        for (const diagram of Object.values(diagrams)) {
             fetchDiagramSvg(diagram);
-        });
+        }
     }, [currentNode, currentRootNetworkUuid, diagrams, fetchDiagramSvg, studyUuid]);
 
     useDiagramEventListener({ createDiagram, removeDiagram });
@@ -514,6 +506,5 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         removeDiagram,
         createDiagram,
         updateDiagram,
-        updateDiagramPositions,
     };
 };

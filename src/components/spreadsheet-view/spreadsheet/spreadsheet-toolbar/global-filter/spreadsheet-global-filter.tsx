@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useMemo } from 'react';
 import { debounce } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -56,23 +56,28 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
 
     const filters = useMemo<GlobalFilterSelectorProps['filters']>(
         () => [
-            ...(tableDefinition.type === SpreadsheetEquipmentType.SUBSTATION ? [] : voltageLevelsFilter),
+            ...(tableDefinition.type === SpreadsheetEquipmentType.SUBSTATION ||
+            tableDefinition.type === SpreadsheetEquipmentType.HVDC_LINE
+                ? []
+                : voltageLevelsFilter),
             ...countriesFilter,
             ...propertiesFilter,
         ],
         [countriesFilter, propertiesFilter, tableDefinition.type, voltageLevelsFilter]
     );
 
-    const filterTypes = useMemo<GlobalFilterSelectorProps['filterableEquipmentTypes']>(
-        () => [
+    const filterTypes = useMemo<GlobalFilterSelectorProps['filterableEquipmentTypes']>(() => {
+        let fTypes = [
             ...(tableDefinition.type === SpreadsheetEquipmentType.BRANCH
                 ? [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]
                 : [tableDefinition.type as unknown as EQUIPMENT_TYPES]),
             EQUIPMENT_TYPES.SUBSTATION,
-            EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-        ],
-        [tableDefinition.type]
-    );
+        ];
+        if (tableDefinition.type !== SpreadsheetEquipmentType.SUBSTATION) {
+            fTypes.push(EQUIPMENT_TYPES.VOLTAGE_LEVEL);
+        }
+        return fTypes;
+    }, [tableDefinition.type]);
 
     useEffect(() => {
         if (globalFilterSpreadsheetState) {

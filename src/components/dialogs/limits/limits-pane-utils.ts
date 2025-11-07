@@ -10,9 +10,11 @@ import {
     APPLICABIlITY,
     CURRENT_LIMITS,
     DELETION_MARK,
+    ENABLE_OLG_MODIFICATION,
     ID,
     LIMIT_SETS_MODIFICATION_TYPE,
     LIMITS,
+    LIMITS_PROPERTIES,
     NAME,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
@@ -23,6 +25,7 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
+    VALUE,
 } from 'components/utils/field-constants';
 import {
     areArrayElementsUnique,
@@ -34,6 +37,7 @@ import yup from 'components/utils/yup-config';
 import {
     AttributeModification,
     CurrentLimits,
+    CurrentLimitsData,
     OperationalLimitsGroup,
     OperationType,
     TemporaryLimit,
@@ -51,6 +55,7 @@ const limitsGroupValidationSchema = (isModification: boolean) => ({
     [NAME]: yup.string().nonNullable().required(),
     [APPLICABIlITY]: yup.string().nonNullable().required(),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
+    [LIMITS_PROPERTIES]: yup.array().of(limitsPropertyValidationSchema()),
 });
 
 const temporaryLimitsValidationSchema = () => {
@@ -64,6 +69,12 @@ const temporaryLimitsValidationSchema = () => {
                 is: (limitValue: number | null, limitDuration: number | null) => limitValue || limitDuration,
                 then: () => yup.string().nullable().required(),
             }),
+    });
+};
+const limitsPropertyValidationSchema = () => {
+    return yup.object().shape({
+        [NAME]: yup.string().required(),
+        [VALUE]: yup.string().required(),
     });
 };
 
@@ -102,6 +113,7 @@ const limitsValidationSchemaCreation = (id: string, isModification: boolean) => 
             }),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
+        [ENABLE_OLG_MODIFICATION]: yup.boolean(),
     };
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
@@ -110,18 +122,19 @@ export const getLimitsValidationSchema = (isModification: boolean = false, id: s
     return limitsValidationSchemaCreation(id, isModification);
 };
 
-const limitsEmptyFormData = (id: string) => {
+const limitsEmptyFormData = (isModification: boolean, id: string) => {
     const limitsGroup = {
         [OPERATIONAL_LIMITS_GROUPS]: [],
         [SELECTED_LIMITS_GROUP_1]: null,
         [SELECTED_LIMITS_GROUP_2]: null,
+        [ENABLE_OLG_MODIFICATION]: !isModification,
     };
 
     return { [id]: limitsGroup };
 };
 
-export const getLimitsEmptyFormData = (id = LIMITS) => {
-    return limitsEmptyFormData(id);
+export const getLimitsEmptyFormData = (isModification = true, id = LIMITS) => {
+    return limitsEmptyFormData(isModification, id);
 };
 
 export const formatOpLimitGroupsToFormInfos = (
@@ -135,6 +148,7 @@ export const formatOpLimitGroupsToFormInfos = (
             id: opLimitGroup.id + opLimitGroup.applicability,
             name: opLimitGroup.id,
             applicability: opLimitGroup.applicability,
+            limitsProperties: opLimitGroup.limitsProperties,
             currentLimits: {
                 id: opLimitGroup.currentLimits.id,
                 permanentLimit: opLimitGroup.currentLimits.permanentLimit,
@@ -148,6 +162,7 @@ export const getAllLimitsFormData = (
     operationalLimitsGroups: OperationalLimitsGroupFormInfos[] = [],
     selectedOperationalLimitsGroup1: string | null = null,
     selectedOperationalLimitsGroup2: string | null = null,
+    enableOLGModification: boolean | null = true,
     id = LIMITS
 ) => {
     return {
@@ -155,6 +170,7 @@ export const getAllLimitsFormData = (
             [OPERATIONAL_LIMITS_GROUPS]: operationalLimitsGroups,
             [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroup1,
             [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroup2,
+            [ENABLE_OLG_MODIFICATION]: !!enableOLGModification,
         },
     };
 };
@@ -220,6 +236,22 @@ export const updateTemporaryLimits = (
     return updatedTemporaryLimits;
 };
 
+export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimitsData[]) => {
+    return currentLimits?.map((currentLimit: CurrentLimitsData) => {
+        return {
+            id: currentLimit.id + currentLimit.applicability,
+            name: currentLimit.id,
+            applicability: currentLimit.applicability,
+            limitsProperties: currentLimit.limitsProperties,
+            currentLimits: {
+                id: currentLimit.id,
+                permanentLimit: null,
+                temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
+            },
+        };
+    });
+};
+
 /**
  * extract data loaded from the map server and merge it with local data
  * in order to fill the operational limits groups modification interface
@@ -228,12 +260,12 @@ export const combineFormAndMapServerLimitsGroups = (
     formBranchModification: LineModificationFormInfos,
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroupFormInfos[] => {
-    let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification.limits.operationalLimitsGroups ?? [];
+    let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification?.limits?.operationalLimitsGroups ?? [];
 
     // updates limit values :
-    updatedOpLG.forEach((opLG: OperationalLimitsGroupFormInfos) => {
+    for (const opLG of updatedOpLG) {
         const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
-            (currentLimit: CurrentLimits) =>
+            (currentLimit: CurrentLimitsData) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
         );
         if (equivalentFromMapServer !== undefined) {
@@ -242,10 +274,10 @@ export const combineFormAndMapServerLimitsGroups = (
                 formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
             );
         }
-    });
+    }
 
     // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
-    mapServerBranch.currentLimits?.forEach((currentLimit: CurrentLimits) => {
+    for (const currentLimit of mapServerBranch.currentLimits) {
         const equivalentFromNetMod = updatedOpLG.find(
             (opLG: OperationalLimitsGroupFormInfos) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
@@ -255,6 +287,7 @@ export const combineFormAndMapServerLimitsGroups = (
                 id: currentLimit.id + currentLimit.applicability,
                 name: currentLimit.id,
                 applicability: currentLimit.applicability,
+                limitsProperties: currentLimit.limitsProperties,
                 currentLimits: {
                     id: currentLimit.id,
                     permanentLimit: null,
@@ -262,11 +295,16 @@ export const combineFormAndMapServerLimitsGroups = (
                 },
             });
         }
-    });
+    }
 
     return updatedOpLG;
 };
 
+export const getOpLimitsGroupInfosFromBranchModification = (
+    formBranchModification: LineModificationFormInfos
+): OperationalLimitsGroupFormInfos[] => {
+    return formBranchModification?.limits?.operationalLimitsGroups ?? [];
+};
 export const addModificationTypeToTemporaryLimits = (
     formTemporaryLimits: TemporaryLimitFormInfos[]
 ): TemporaryLimit[] => {
@@ -319,8 +357,10 @@ export const addModificationTypeToOpLimitsGroups = (
             id: limitsGroupForm.id,
             name: limitsGroupForm.name,
             applicability: limitsGroupForm.applicability,
+            limitsProperties: limitsGroupForm.limitsProperties,
             currentLimits: currentLimits,
             modificationType: LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD,
+            temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
         };
     });
 };

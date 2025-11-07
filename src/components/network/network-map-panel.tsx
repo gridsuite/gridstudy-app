@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { Writable } from 'type-fest';
 import {
     type Coordinate,
     DRAW_EVENT,
@@ -56,7 +55,7 @@ import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
@@ -69,9 +68,8 @@ import GuidancePopup from './guidance-popup';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
+import { getNominalVoltageColor } from 'utils/colors';
 
-const INITIAL_POSITION = [0, 0] as const;
-const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
 const EMPTY_ARRAY: any[] = [];
@@ -1120,13 +1118,12 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         filteredNominalVoltages={filteredNominalVoltages}
                         labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
                         arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
-                        initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
-                        initialZoom={INITIAL_ZOOM}
                         lineFullPath={lineFullPath}
                         lineParallelPath={lineParallelPath}
                         lineFlowMode={lineFlowMode}
                         useName={useName}
                         visible={visible}
+                        enablePitchAndRotate={false}
                         disabled={disabled}
                         onSubstationClick={handleOpenVoltageLevel}
                         onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
@@ -1187,6 +1184,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                             onDrawEvent(event);
                         }}
                         shouldDisableToolTip={!visible || isInDrawingMode.value}
+                        getNominalVoltageColor={getNominalVoltageColor}
                     />
                     {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                     {renderSearchEquipment()}

@@ -20,6 +20,7 @@ import { Box, Grid, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/materi
 import { DeviceHubIcon, type MuiStyles, OverflowableText, PhotoLibraryIcon, TuneIcon } from '@gridsuite/commons-ui';
 import { useDisplayModes } from '../hooks/use-display-modes';
 import { useEffect } from 'react';
+import { NodeType } from './graph/tree-node.type';
 
 const styles = {
     horizontalToolbar: (theme) => ({
@@ -66,6 +67,8 @@ export function HorizontalToolbar() {
         }
     }, [enableDeveloperMode, toggleOptions, applyModes]);
 
+    const isModificationsDisabled = currentNode === null || currentNode?.type !== NodeType.NETWORK_MODIFICATION;
+
     return (
         <Grid container alignItems="center" sx={styles.horizontalToolbar}>
             <Grid sx={{ marginRight: 'auto', marginLeft: '20px' }}>
@@ -102,9 +105,9 @@ export function HorizontalToolbar() {
                                 <span style={{ display: 'inline-flex' }}>
                                     <ToggleButton
                                         value={StudyDisplayMode.MODIFICATIONS}
-                                        disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
+                                        disabled={isModificationsDisabled}
                                     >
-                                        <TuneIcon />
+                                        <TuneIcon disabled={isModificationsDisabled} />
                                     </ToggleButton>
                                 </span>
                             </Tooltip>

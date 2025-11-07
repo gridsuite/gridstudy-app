@@ -127,11 +127,14 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
             <Box sx={styles.searchField}>
                 <SearchBar
                     placeholder={intl.formatMessage({
-                        id: isNodeTab(tabValue)
-                            ? 'rootNetwork.searchPlaceholder.nodes'
-                            : 'rootNetwork.searchPlaceholder.modifications',
+                        id: 'searchPlaceholder',
                     })}
                     value={searchTerm}
+                    label={intl.formatMessage({
+                        id: isNodeTab(tabValue)
+                            ? 'rootNetwork.searchLabel.nodes'
+                            : 'rootNetwork.searchLabel.modifications',
+                    })}
                     onChange={handleOnChange}
                     onClear={leaveSearch}
                 />
@@ -139,7 +142,7 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
 
             {isLoading && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    {intl.formatMessage({ id: 'rootNetwork.loading' })}
+                    <FormattedMessage id="rootNetwork.loading" />
                 </Typography>
             )}
             {showResultsCount && (
