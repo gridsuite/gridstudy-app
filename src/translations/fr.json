@@ -2,6 +2,9 @@
     "debug.message.downloadFile": "À la fin du calcul ses données seront téléchargées.",
     "debug.header.fileNotFound": "Données de calcul non trouvées",
     "debug.header.fileError": "Échec du téléchargement des données de calcul",
+    "export.message.started": "Export du {fileName} a commencé",
+    "export.message.succeeded": "Export du {fileName} a réussi",
+    "export.message.failed": "Échec du téléchargement du fichier {error}",
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
@@ -1635,7 +1638,7 @@
     "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Déplacer les départs",
     "TOP": "Haut",
     "BOTTOM": "Bas",
-    "DuplicatedPositionsError": "Numéro en doublon",
+    "DuplicatedPositionsWarning": "Numéro en doublon",
     "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)",
     "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée",
     "Length": "Nombre d'éléments",
