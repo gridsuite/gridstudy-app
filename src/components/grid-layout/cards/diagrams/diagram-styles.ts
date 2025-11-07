@@ -81,10 +81,11 @@ export const styles = {
         },
     },
     divDiagramInvalid: {
-        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-voltage polygon, & .sld-angle polygon': {
-            opacity: INVALID_LOADFLOW_OPACITY,
-        },
-        '& .sld-active-power text, & .sld-reactive-power text, & .sld-voltage text, & .sld-angle text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info':
+        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-voltage polygon, & .sld-angle polygon, & .sld-consumption-sum polygon, & .sld-production-sum polygon':
+            {
+                opacity: INVALID_LOADFLOW_OPACITY,
+            },
+        '& .sld-active-power text, & .sld-reactive-power text, & .sld-voltage text, & .sld-angle text, & .sld-consumption-sum text, & .sld-production-sum text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info, & .sld-consumption-sum.sld-bus-legend-info, & .sld-production-sum.sld-bus-legend-info':
             {
                 fill: '#787F81',
             },
