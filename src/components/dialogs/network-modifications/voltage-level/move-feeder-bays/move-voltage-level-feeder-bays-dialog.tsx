@@ -35,11 +35,15 @@ import {
 } from '../../../../../services/network-modification-types';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
+import { FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
-import { fetchVoltageLevelFeederBaysBusBarSectionsInfos } from '../../../../../services/study/network';
-import { FeederBaysBusBarSectionsInfos } from '../../../../../services/study/network-map.type';
+import {
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchVoltageLevelFeederBaysInfos,
+} from '../../../../../services/study/network';
 import { isNumber } from 'mathjs';
+import { FeederBaysInfos, VoltageLevelFeederBaysInfos } from '../../../../../services/study/network-map.type';
+import { Simulate } from 'react-dom/test-utils';
 
 function requiredWhenActive<T extends yup.Schema>(schema: T) {
     return schema.when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
@@ -125,10 +129,10 @@ export default function MoveVoltageLevelFeederBaysDialog({
     }, [editData?.voltageLevelId]);
 
     const mergeRowData = useCallback(
-        (feederBaysInfos: FeederBaysInfos, busBarSectionInfos: string[]) => {
+        (feederBaysInfos: any, busBarSectionInfos: string[]) => {
             let mergedRowData: FeederBaysFormInfos[] = [];
             if (!editData?.uuid && feederBaysInfos.length > 0) {
-                mergedRowData = feederBaysInfos.filter(Boolean).map((bay) => ({
+                mergedRowData = feederBaysInfos.filter(Boolean).map((bay: any) => ({
                     equipmentId: bay.equipmentId,
                     busbarSectionId: bay.busbarSectionId || null,
                     busbarSectionIds: busBarSectionInfos,
@@ -144,7 +148,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
             } else if (editData?.uuid && isNodeBuiltValue && editData?.feederBays && editData?.feederBays?.length > 0) {
                 const feederBaysEditData = editData.feederBays;
                 if (feederBaysInfos.length > 0) {
-                    feederBaysInfos.filter(Boolean).forEach((bay) => {
+                    feederBaysInfos.filter(Boolean).forEach((bay: any) => {
                         mergedRowData.push({
                             equipmentId: bay.equipmentId,
                             busbarSectionId: bay.busbarSectionId,
@@ -162,7 +166,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     const deletedFeederBays = feederBaysEditData.filter(
                         (bay) =>
                             bay?.equipmentId &&
-                            !feederBaysInfos.some((formBay) => formBay?.equipmentId === bay.equipmentId)
+                            !feederBaysInfos.some((formBay: any) => formBay?.equipmentId === bay.equipmentId)
                     );
                     if (deletedFeederBays.length > 0) {
                         deletedFeederBays.forEach((bay) => {
@@ -208,20 +212,16 @@ export default function MoveVoltageLevelFeederBaysDialog({
     );
 
     const handleVoltageLevelDataFetch = useCallback(
-        (feederBaysBusBarSectionsInfo: FeederBaysBusBarSectionsInfos) => {
-            const busBarSectionInfos: string[] = Object.values(
-                feederBaysBusBarSectionsInfo?.busBarSectionsInfos.busBarSections || {}
-            ).flat();
-            const feederBaysInfos: FeederBaysInfos = Object.entries(
-                feederBaysBusBarSectionsInfo?.feederBaysInfos || {}
-            ).flatMap(([equipmentId, feederBayInfos]) =>
-                feederBayInfos.map((feederBay) => ({
-                    equipmentId,
-                    ...feederBay,
-                }))
+        (voltageLevelFeederBaysInfos: VoltageLevelFeederBaysInfos, busBarSectionInfos: any[]) => {
+            const feederBaysArray = Object.entries(voltageLevelFeederBaysInfos?.feederBaysInfos || {}).flatMap(
+                ([equipmentId, feederBayInfos]) =>
+                    feederBayInfos.map((feederBay) => ({
+                        equipmentId,
+                        ...feederBay,
+                    }))
             );
             // merge row data between actual values in network and user's modification infos
-            const mergedRowData = mergeRowData(feederBaysInfos, busBarSectionInfos);
+            const mergedRowData = mergeRowData(feederBaysArray, busBarSectionInfos);
             // Enrich rows with unique identifiers to track form rows
             const mergedRowDataWithKeys = mergedRowData.map((item, index) => ({
                 ...item,
@@ -241,23 +241,38 @@ export default function MoveVoltageLevelFeederBaysDialog({
     );
 
     const onEquipmentIdChange = useCallback(
-        (voltageLevelId: string) => {
+        async (voltageLevelId: string) => {
             if (voltageLevelId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchVoltageLevelFeederBaysBusBarSectionsInfos(
-                    studyUuid,
-                    currentNodeUuid,
-                    currentRootNetworkUuid,
-                    voltageLevelId
-                )
-                    .then((feederBaysBusBarSectionInfo) => {
-                        if (feederBaysBusBarSectionInfo) {
-                            handleVoltageLevelDataFetch(feederBaysBusBarSectionInfo);
-                        }
-                    })
-                    .catch(() => {
+                try {
+                    const [busesOrBusbarSections, feederBaysInfo] = await Promise.all([
+                        fetchBusesOrBusbarSectionsForVoltageLevel(
+                            studyUuid,
+                            currentNodeUuid,
+                            currentRootNetworkUuid,
+                            voltageLevelId
+                        ),
+                        fetchVoltageLevelFeederBaysInfos(
+                            studyUuid,
+                            currentNodeUuid,
+                            currentRootNetworkUuid,
+                            voltageLevelId
+                        ),
+                    ]);
+
+                    const busBarSectionInfos =
+                        busesOrBusbarSections?.map((b) => ({
+                            id: b.id,
+                            label: b.name ?? '',
+                        })) ?? [];
+                    if (feederBaysInfo) {
+                        handleVoltageLevelDataFetch(feederBaysInfo, busBarSectionInfos);
+                    } else {
                         setDataFetchStatus(FetchStatus.FAILED);
-                    });
+                    }
+                } catch (error) {
+                    setDataFetchStatus(FetchStatus.FAILED);
+                }
             }
         },
         [studyUuid, currentNodeUuid, currentRootNetworkUuid, handleVoltageLevelDataFetch]
