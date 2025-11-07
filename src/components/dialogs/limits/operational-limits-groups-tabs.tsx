@@ -229,6 +229,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 if (editingTabIndex !== undefined) {
                     let operationalLimitsGroupToUpdate = operationalLimitsGroups[editingTabIndex];
                     operationalLimitsGroupToUpdate.name = editedLimitGroupName;
+                    operationalLimitsGroupToUpdate.applicability = applicability;
                     operationalLimitsGroupToUpdate.id =
                         editedLimitGroupName + limitsGroups[editingTabIndex].applicability;
                     updateLimitsGroups(editingTabIndex, operationalLimitsGroupToUpdate);
