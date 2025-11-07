@@ -56,7 +56,7 @@ const formSchema = yup.object().shape({
             [CONNECTION_SIDE]: yup.string().nullable(),
             [CONNECTION_NAME]: yup.string().nullable(),
             [CONNECTION_DIRECTION]: yup.string().nullable(),
-            [CONNECTION_POSITION]: yup.number().nullable(),
+            [CONNECTION_POSITION]: yup.number().nullable().positive(),
             [IS_REMOVED]: yup.boolean(),
             [IS_SEPARATOR]: yup.boolean(),
         })
