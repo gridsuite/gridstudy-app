@@ -419,7 +419,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onSelectNodeCallback: handleNodeLeftClick,
                 onToggleHoverCallback: handleToggleHover,
                 onRightClickCallback: showEquipmentMenu,
-                initialViewBox: diagramViewerRef?.current?.getViewBox()
+                initialViewBox: diagramViewerRef?.current?.getViewBox(),
             };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
