@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { catchErrorHandler, fetchStudyMetadata, StudyMetadata } from '@gridsuite/commons-ui';
+import { BaseVoltageConfig, catchErrorHandler, fetchStudyMetadata, StudyMetadata } from '@gridsuite/commons-ui';
 import { getUserToken } from '../redux/user-store';
 
 export const FetchStatus = {
@@ -82,6 +82,13 @@ export const fetchDefaultParametersValues = () => {
             return defaultValues;
         });
 };
+
+export async function fetchBaseVoltagesConfig(): Promise<BaseVoltageConfig[] | undefined> {
+    console.info('fetching base voltages configuration from apps-metadata file');
+    const studyMetadata = await fetchStudyMetadata();
+    return studyMetadata.baseVoltagesCongig;
+}
+
 export const getQueryParamsList = (params: string[] | number[] | null | undefined, paramName: string) => {
     if (params != null && Array.isArray(params) && params.length > 0) {
         const urlSearchParams = new URLSearchParams();

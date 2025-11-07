@@ -5,9 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LIGHT_THEME } from '@gridsuite/commons-ui';
-import { cssColors } from 'utils/colors';
-
 export const lightThemeCssVars = {
     '.nad-edge-infos text': {
         stroke: 'white', // Border outside of the displayed values on lines. Same color as the background.
@@ -24,5 +21,4 @@ export const lightThemeCssVars = {
     '.nad-textnode-highlight': {
         backgroundColor: '#f0f0f0cc', // same displayed color as #9c9c9c20 but with 0.8 opacity
     },
-    ...cssColors(LIGHT_THEME),
 };
