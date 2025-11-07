@@ -72,6 +72,10 @@ export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
         type: column.type,
         precision: column?.precision,
         formula: column.formula,
+        filterDataType: column.filterDataType,
+        filterTolerance: column.filterTolerance,
+        filterType: column.filterType,
+        filterValue: column.filterValue,
         visible: column.visible,
         [COLUMN_DEPENDENCIES]: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
     }));
