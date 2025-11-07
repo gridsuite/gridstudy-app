@@ -201,6 +201,18 @@ const VoltageLevelCreationDialog = ({
     });
 
     const { reset, setValue, getValues, watch, trigger } = formMethods;
+
+    // Watch LOW_VOLTAGE_LIMIT changed
+    useEffect(() => {
+        const subscription = watch((value, { name }) => {
+            // force trigger validation on BUS_BAR_SECTION_ID2 if it has a value
+            if (name === `${HIGH_VOLTAGE_LIMIT}` && getValues(`${LOW_VOLTAGE_LIMIT}`) < value) {
+                trigger(`${LOW_VOLTAGE_LIMIT}`);
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, trigger, getValues]);
+
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
