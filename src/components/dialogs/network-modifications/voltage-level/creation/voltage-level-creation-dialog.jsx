@@ -209,7 +209,7 @@ const VoltageLevelCreationDialog = ({
                 values: true,
             },
             callback: ({ values }) => {
-                if (values.highVoltageLimit > values.lowVoltageLimit) {
+                if (values.highVoltageLimit >= values.lowVoltageLimit) {
                     trigger(`${LOW_VOLTAGE_LIMIT}`).then();
                 }
             },
