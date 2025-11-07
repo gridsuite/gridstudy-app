@@ -111,11 +111,12 @@ const VoltageLevelModificationDialog = ({
 
     useEffect(() => {
         const callback = subscribe({
+            name: [`${HIGH_VOLTAGE_LIMIT}`],
             formState: {
                 values: true,
             },
-            callback: ({ values }) => {
-                if (values.highVoltageLimit >= values.lowVoltageLimit) {
+            callback: ({ isSubmitted }) => {
+                if (isSubmitted) {
                     trigger(`${LOW_VOLTAGE_LIMIT}`).then();
                 }
             },
