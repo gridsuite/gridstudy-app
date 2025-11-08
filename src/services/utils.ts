@@ -85,15 +85,12 @@ export const fetchDefaultParametersValues = () => {
 
 export async function fetchBaseVoltagesConfig(): Promise<BaseVoltageConfig[]> {
     console.info('fetching base voltages configuration from apps-metadata file');
-    console.log('la fonction fetch est bien appelée !');
     const emptyConfig: BaseVoltageConfig[] = [];
     return fetchStudyMetadata()
         .then((studyMetadata) => {
-            console.log('le fetch a bien récupéré des objets : ' + studyMetadata?.baseVoltagesConfig?.length);
             return studyMetadata?.baseVoltagesConfig ?? emptyConfig;
         })
         .catch((error: unknown) => {
-            console.log('erreur lors du fetch');
             catchErrorHandler(error, (message) => {
                 console.error(`fetching error (${message}), then empty config will be used.`);
             });

@@ -453,28 +453,18 @@ const AppWrapperWithRedux = () => {
     const baseVoltagesConfig = useSelector((state) => state.baseVoltagesConfig);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
-    console.log('computedLanguage : ' + computedLanguage);
-
-    console.log('avant useEffect : ' + baseVoltagesConfig);
-
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log('hello from useEffect');
         fetchBaseVoltagesConfig().then((appMetadataBaseVoltagesConfig) => {
             dispatch(setBaseVoltagesConfig(appMetadataBaseVoltagesConfig));
-            console.log('depuis appMetadata : ' + appMetadataBaseVoltagesConfig.length);
-            console.log('depuis appMetadata hehe : ' + appMetadataBaseVoltagesConfig[0]);
         });
     }, [dispatch]);
-
-    console.log('après useEffect : ' + baseVoltagesConfig);
 
     const getVoltageLevelsCssVars = useCallback(
         (theme) => {
             if (!baseVoltagesConfig) return {};
             const css = {};
-            console.log('depuis la fonction get css : ' + baseVoltagesConfig);
 
             for (const interval of baseVoltagesConfig) {
                 const className = `.sld-${interval.name}, .nad-${interval.name}`;
@@ -495,7 +485,6 @@ const AppWrapperWithRedux = () => {
         },
         [baseVoltagesConfig]
     );
-    console.log('voltageLevelsCssVars' + getVoltageLevelsCssVars(theme));
 
     const rootCssVars = useMemo(() => {
         if (!baseVoltagesConfig || baseVoltagesConfig.length === 0) return {};
@@ -504,8 +493,6 @@ const AppWrapperWithRedux = () => {
             ...getVoltageLevelsCssVars(theme),
         };
     }, [baseVoltagesConfig, getVoltageLevelsCssVars, theme]);
-
-    console.log('rootCssVars' + rootCssVars);
 
     const urlMapper = useNotificationsUrlGenerator();
 
