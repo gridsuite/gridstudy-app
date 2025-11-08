@@ -116,6 +116,10 @@ code {
     stroke: var(--vl-color, blue);
     fill: none;
 }
+.sld-battery {
+    stroke: var(--vl-color, blue);
+    fill: none;
+}
 .sld-two-wt {
     stroke: var(--vl-color, blue);
     fill: none;

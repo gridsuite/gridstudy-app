@@ -36,7 +36,6 @@ import {
     PLANNED_OUTAGE_RATE,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
@@ -89,6 +88,7 @@ import {
     getShortCircuitFormData,
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
+import { toReactiveCapabilityCurveChoiceForGeneratorCreation } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -275,7 +275,8 @@ export default function GeneratorCreationDialog({
     const onSubmit = useCallback(
         (generator: GeneratorCreationDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn =
+                toReactiveCapabilityCurveChoiceForGeneratorCreation(reactiveLimits, editData) === 'CURVE';
             const isDistantRegulation = generator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
 
             const generatorCreationInfos = {
