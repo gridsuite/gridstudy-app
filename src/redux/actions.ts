@@ -182,7 +182,7 @@ export type SetBaseVoltagesConfigAction = Readonly<Action<typeof SET_BASE_VOLTAG
     baseVoltagesConfig: BaseVoltageConfig[];
 };
 
-export function SetBaseVoltagesConfig(baseVoltagesConfig: BaseVoltageConfig[]): SetBaseVoltagesConfigAction {
+export function setBaseVoltagesConfig(baseVoltagesConfig: BaseVoltageConfig[]): SetBaseVoltagesConfigAction {
     return {
         type: SET_BASE_VOLTAGES_CONFIG,
         baseVoltagesConfig,

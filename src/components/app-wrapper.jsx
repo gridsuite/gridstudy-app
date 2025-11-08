@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useCallback } from 'react';
 import App from './app';
 import {
     createTheme,
@@ -465,39 +465,59 @@ const AppWrapperWithRedux = () => {
     const baseVoltagesConfig = useSelector((state) => state.baseVoltagesConfig);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
+    console.log('computedLanguage : ' + computedLanguage);
+
+    console.log('avant useEffect : ' + baseVoltagesConfig);
+
     const dispatch = useDispatch();
 
     useEffect(() => {
-        fetchBaseVoltagesConfig().then((appMetadataBaseVoltagesConfig) =>
-            dispatch(setBaseVoltagesConfig(appMetadataBaseVoltagesConfig))
-        );
+        console.log('hello from useEffect');
+        fetchBaseVoltagesConfig().then((appMetadataBaseVoltagesConfig) => {
+            dispatch(setBaseVoltagesConfig(appMetadataBaseVoltagesConfig));
+            console.log('depuis appMetadata : ' + appMetadataBaseVoltagesConfig.length);
+            console.log('depuis appMetadata hehe : ' + appMetadataBaseVoltagesConfig[0]);
+        });
     }, [dispatch]);
 
-    const getVoltageLevelsCssVars = (theme) => {
-        const css = {};
+    console.log('après useEffect : ' + baseVoltagesConfig);
 
-        for (const interval of baseVoltagesConfig) {
-            const className = `.sld-${interval.name}, .nad-${interval.name}`;
+    const getVoltageLevelsCssVars = useCallback(
+        (theme) => {
+            if (!baseVoltagesConfig) return {};
+            const css = {};
+            console.log('depuis la fonction get css : ' + baseVoltagesConfig);
 
-            const themeColors = theme === LIGHT_THEME ? interval.lightThemeColors : interval.darkThemeColors;
-            css[className] = { '--vl-color': themeColors.default };
+            for (const interval of baseVoltagesConfig) {
+                const className = `.sld-${interval.name}, .nad-${interval.name}`;
 
-            for (let i = 1; i <= 9; i++) {
-                const key = `bus-${i}`;
-                const color = themeColors[key];
-                if (!color) continue;
+                const themeColors = theme === LIGHT_THEME ? interval.lightThemeColors : interval.darkThemeColors;
+                css[className] = { '--vl-color': themeColors.default };
 
-                const selector = `.sld-${interval.name}.sld-${key}, .nad-${interval.name}.nad-${key}`;
-                css[selector] = { '--vl-color': color };
+                for (let i = 1; i <= 9; i++) {
+                    const key = `bus-${i}`;
+                    const color = themeColors[key];
+                    if (!color) continue;
+
+                    const selector = `.sld-${interval.name}.sld-${key}, .nad-${interval.name}.nad-${key}`;
+                    css[selector] = { '--vl-color': color };
+                }
             }
-        }
-        return css;
-    };
+            return css;
+        },
+        [baseVoltagesConfig]
+    );
+    console.log('voltageLevelsCssVars' + getVoltageLevelsCssVars(theme));
 
-    const rootCssVars = [
-        ...(theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars),
-        ...getVoltageLevelsCssVars(theme),
-    ];
+    const rootCssVars = useMemo(() => {
+        if (!baseVoltagesConfig || baseVoltagesConfig.length === 0) return {};
+        return {
+            ...(theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars),
+            ...getVoltageLevelsCssVars(theme),
+        };
+    }, [baseVoltagesConfig, getVoltageLevelsCssVars, theme]);
+
+    console.log('rootCssVars' + rootCssVars);
 
     const urlMapper = useNotificationsUrlGenerator();
 

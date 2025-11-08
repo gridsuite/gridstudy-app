@@ -27,12 +27,9 @@ export const getNominalVoltageIntervalByVoltageValue = (
     }
 };
 
-export const getNominalVoltageColor = (
-    baseVoltages: BaseVoltageConfig[],
-    voltageValue: number
-): number[] | undefined => {
+export const getNominalVoltageColor = (baseVoltages: BaseVoltageConfig[], voltageValue: number): number[] => {
     const color = getNominalVoltageIntervalByVoltageValue(baseVoltages, voltageValue)?.mapColor;
-    return color ? parseRGB(color) : undefined;
+    return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
 };
 
 export const INVALID_LOADFLOW_OPACITY = 0.2;
