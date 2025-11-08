@@ -24,7 +24,7 @@ export type FeederBayInfos = {
     connectablePositionInfos: ConnectablePositionInfos;
 };
 
-export type FeederBaysInfos = (FeederBayInfos & {
+export type FeederBays = (FeederBayInfos & {
     equipmentId: string;
 })[];
 

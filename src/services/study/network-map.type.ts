@@ -29,13 +29,7 @@ interface FeederBay {
     connectablePositionInfos: ConnectablePositionInfos;
 }
 
-export interface FeederBaysInfos {
-    [equipmentId: string]: FeederBay[];
-}
-
-export interface VoltageLevelFeederBaysInfos {
-    feederBaysInfos?: FeederBaysInfos;
-}
+export type FeederBaysInfos = Record<string, FeederBay[]>;
 
 export type BranchInfos = Equipment & {
     name: string;
