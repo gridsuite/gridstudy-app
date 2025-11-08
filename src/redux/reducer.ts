@@ -221,7 +221,7 @@ import {
     PCCMIN_ANALYSIS_RESULT_PAGINATION,
     type PccminAnalysisResultFilterAction,
     PccminAnalysisResultPaginationAction,
-    SetBaseVoltagesConfig,
+    SetBaseVoltagesConfigAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
@@ -246,7 +246,6 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
-    SetBaseVoltagesConfigAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -1007,6 +1006,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_BASE_VOLTAGES_CONFIG, (state, action: SetBaseVoltagesConfigAction) => {
         state.baseVoltagesConfig = action.baseVoltagesConfig;
+        console.log('dans reducer : ' + state.baseVoltagesConfig);
     });
 
     builder.addCase(ATTEMPT_LEAVE_PARAMETERS_TAB, (state, action: AttemptLeaveParametersTabAction) => {
@@ -1347,6 +1347,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SELECT_COMPUTED_LANGUAGE, (state, action: SelectComputedLanguageAction) => {
         state.computedLanguage = action.computedLanguage;
+        console.log('reducer computedLanguage');
     });
 
     builder.addCase(SET_PARAMS_LOADED, (state, action: SetParamsLoadedAction) => {
