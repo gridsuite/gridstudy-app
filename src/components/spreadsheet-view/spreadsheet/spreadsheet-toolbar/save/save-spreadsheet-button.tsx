@@ -73,12 +73,16 @@ export default function SaveSpreadsheetButton({
                         console.error('Export API is not available.');
                         return;
                     }
+
+                    // No active calculation: 1 pinned row (default empty line); some calculations: > 1 pinned rows
+                    const calculationRowNumber = gridRef.current?.api.getGridOption('pinnedBottomRowData')?.length ?? 0;
                     downloadCSVData({
                         // Filter out the rowIndex column and the hidden columns before exporting to CSV
                         columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
                         tableName: tableDefinition.name,
                         language: language,
                         exportDataAsCsv,
+                        skipPinnedBottom: calculationRowNumber === 1, // skip last empty line
                     });
                 },
                 disabled: dataSize === 0,
