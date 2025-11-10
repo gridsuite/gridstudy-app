@@ -304,6 +304,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                         <Tab
                             onContextMenu={(e) => handleOpenMenu(e, index)}
                             key={opLg.id + index}
+                            disableRipple
                             label={
                                 editingTabIndex === index ? (
                                     <TextField
