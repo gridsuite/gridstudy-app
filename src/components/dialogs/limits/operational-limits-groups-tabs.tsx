@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Tab, Tabs } from '@mui/material';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     APPLICABIlITY,
@@ -26,16 +26,15 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { CurrentLimitsData, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
-import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
-import { grey } from '@mui/material/colors';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
-import { LimitsPropertiesStack } from './limits-properties-stack';
+import { OperationalLimitsGroupTab } from './operational-limits-group-tab';
 
 const limitsStyles = {
-    limitsBackground: {
+    tabBackground: {
+        flexBasis: 'fit-content',
         p: 1,
         minHeight: 60,
     },
@@ -112,17 +111,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             name: `${parentFormName}.${SELECTED_LIMITS_GROUP_2}`,
         });
 
-        // control of the focus on the edited tab
-        const [editLimitGroupRef, setEditLimitGroupRef] = useState<HTMLInputElement>();
-        const onRefSet = useCallback((ref: HTMLInputElement) => {
-            setEditLimitGroupRef(ref);
-        }, []);
-        useEffect(() => {
-            if (editingTabIndex !== -1 && editLimitGroupRef) {
-                editLimitGroupRef.focus();
-            }
-        }, [editingTabIndex, editLimitGroupRef]);
-
         const handleTabChange = useCallback(
             (event: React.SyntheticEvent, newValue: number): void => {
                 // if editing do not change index
@@ -136,6 +124,9 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
 
         const handleOpenMenu = useCallback(
             (event: React.MouseEvent<HTMLDivElement>, index: number): void => {
+                if (!editable) {
+                    return;
+                }
                 event.preventDefault();
                 event.stopPropagation();
                 setIndexSelectedLimitSet(index);
@@ -145,7 +136,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     tabIndex: index,
                 });
             },
-            [setIndexSelectedLimitSet, setContextMenuCoordinates]
+            [editable, setIndexSelectedLimitSet]
         );
 
         const handleCloseMenu = useCallback(() => {
@@ -260,15 +251,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             checkLimitSetUnicity,
         ]);
 
-        const handleKeyDown = useCallback(
-            (event: React.KeyboardEvent) => {
-                if (event.key === 'Enter') {
-                    finishEditingLimitsGroup();
-                }
-            },
-            [finishEditingLimitsGroup]
-        );
-
         const addNewLimitSet = useCallback(() => {
             const formName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
             const operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
@@ -305,48 +287,20 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                             onContextMenu={(e) => handleOpenMenu(e, index)}
                             key={opLg.id + index}
                             disableRipple
+                            sx={limitsStyles.tabBackground}
                             label={
-                                editingTabIndex === index ? (
-                                    <TextField
-                                        value={editedLimitGroupName}
-                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                            setEditedLimitGroupName(event.target.value);
-                                        }}
-                                        onKeyDown={handleKeyDown}
-                                        inputRef={onRefSet}
-                                        onBlur={() => finishEditingLimitsGroup()}
-                                        error={!!editionError}
-                                        helperText={!!editionError && <FormattedMessage id={editionError} />}
-                                        size="small"
-                                        fullWidth
-                                    />
-                                ) : (
-                                    <Stack direction="row" spacing={1}>
-                                        <Stack spacing={0}>
-                                            {opLg.name}
-                                            {opLg?.applicability ? (
-                                                <Typography noWrap align="left" color={grey[500]}>
-                                                    <FormattedMessage
-                                                        id={
-                                                            Object.values(APPLICABILITY).find(
-                                                                (item) => item.id === opLg.applicability
-                                                            )?.label
-                                                        }
-                                                    />
-                                                </Typography>
-                                            ) : (
-                                                ''
-                                            )}
-                                        </Stack>
-                                        {!isAModification && (
-                                            <LimitsPropertiesStack
-                                                name={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
-                                            />
-                                        )}
-                                    </Stack>
-                                )
+                                <OperationalLimitsGroupTab
+                                    editing={editingTabIndex === index}
+                                    opLg={opLg}
+                                    isAModification={isAModification}
+                                    finishEditingLimitsGroup={finishEditingLimitsGroup}
+                                    editionError={editionError}
+                                    index={index}
+                                    parentFormName={parentFormName}
+                                    editedLimitGroupName={editedLimitGroupName}
+                                    setEditedLimitGroupName={setEditedLimitGroupName}
+                                />
                             }
-                            sx={limitsStyles.limitsBackground}
                         />
                     ))}
                 </Tabs>
