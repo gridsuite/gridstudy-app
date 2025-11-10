@@ -19,9 +19,11 @@ import { spreadsheetStyles } from '../../../spreadsheet.style';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../../redux/reducer';
 import SaveNamingFilterDialog from './save-naming-filter-dialog';
+import { useClipboard } from 'hooks/use-navigator-clipboard';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
+    COPY_CSV = 'COPY_CSV',
     EXPORT_CSV = 'EXPORT_CSV',
     SAVE_FILTER = 'SAVE_FILTER',
 }
@@ -51,11 +53,13 @@ export default function SaveSpreadsheetButton({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const customSaveDialogOpen = useStateBoolean(false);
     const saveFilterDialogOpen = useStateBoolean(false);
-    const { downloadCSVData } = useCsvExport();
+    const { downloadCSVData, getCSVData } = useCsvExport();
     const language = useSelector((state: AppState) => state.computedLanguage);
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget), []);
     const handleClose = useCallback(() => setAnchorEl(null), []);
+
+    const clipboard = useClipboard();
 
     const spreadsheetOptions = useMemo<Record<SpreadsheetSaveOptionId, SpreadsheetSaveOption>>(
         () => ({
@@ -63,6 +67,30 @@ export default function SaveSpreadsheetButton({
                 id: SpreadsheetSaveOptionId.SAVE_MODEL,
                 label: 'spreadsheet/save/options/model',
                 action: customSaveDialogOpen.setTrue,
+            },
+            [SpreadsheetSaveOptionId.COPY_CSV]: {
+                id: SpreadsheetSaveOptionId.COPY_CSV,
+                label: 'CPY',
+                action: () => {
+                    const getDataAsCsv = gridRef.current?.api.getDataAsCsv;
+                    if (!getDataAsCsv) {
+                        console.error('Export API is not available.');
+                        return;
+                    }
+                    // No active calculation: 1 pinned row (default empty line); some calculations: > 1 pinned rows
+                    const calculationRowNumber = gridRef.current?.api.getGridOption('pinnedBottomRowData')?.length ?? 0;
+                    const csvRows = getCSVData({
+                        // Filter out the rowIndex column and the hidden columns before exporting to CSV
+                        columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
+                        tableName: tableDefinition.name,
+                        language: language,
+                        getDataAsCsv,
+                        skipPinnedBottom: calculationRowNumber === 1, // skip last empty line
+                    });
+                    clipboard.copy(csvRows ?? '');
+                    console.error('DBG DBR', clipboard.state);
+                },
+                disabled: dataSize === 0,
             },
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
@@ -73,7 +101,6 @@ export default function SaveSpreadsheetButton({
                         console.error('Export API is not available.');
                         return;
                     }
-
                     // No active calculation: 1 pinned row (default empty line); some calculations: > 1 pinned rows
                     const calculationRowNumber = gridRef.current?.api.getGridOption('pinnedBottomRowData')?.length ?? 0;
                     downloadCSVData({
@@ -96,14 +123,16 @@ export default function SaveSpreadsheetButton({
         }),
         [
             customSaveDialogOpen.setTrue,
-            saveFilterDialogOpen.setTrue,
             dataSize,
-            columns,
-            downloadCSVData,
-            gridRef,
-            tableDefinition.name,
+            saveFilterDialogOpen.setTrue,
             tableDefinition.type,
+            tableDefinition.name,
+            gridRef,
+            getCSVData,
+            columns,
             language,
+            clipboard,
+            downloadCSVData,
         ]
     );
 
