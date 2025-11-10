@@ -82,7 +82,7 @@ export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
 export const LIMITS_PROPERTIES = 'limitsProperties';
 export const ENABLE_OLG_MODIFICATION = 'enableOLGModification';
-export const ALL_OLG_MODIFICATION_TYPE = 'allOperationalLimitsGroupsModificationType';
+export const OLGS_MODIFICATION_TYPE = 'operationalLimitsGroupsModificationType';
 export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
 export const SELECTED_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
 export const PERMANENT_LIMIT = 'permanentLimit';
@@ -215,9 +215,12 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     DELETE: 'DELETE',
     REPLACE: 'REPLACE',
 } as const;
-export const ALL_LIMIT_SETS_MODIFICATION_TYPE = {
-    MODIFY: 'MODIFY',
-    REPLACE: 'REPLACE',
+// Determines how all the operational limits groups will be modified as a group
+export const OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE = {
+    // Modification types for Tabular modifications :
+    MODIFY: 'MODIFY', // standard mode : the olg modifications are applied. The unspecified olg are not changed at all
+    // Modification type for simple form modifications :
+    REPLACE: 'REPLACE', // All the olg are removed, then the olg modification/add etc are applied
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
