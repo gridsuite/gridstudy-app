@@ -45,7 +45,7 @@ export const getReactiveLimitsFormData = ({
 
 export const getReactiveLimitsEmptyFormData = (id = REACTIVE_LIMITS) => ({
     [id]: {
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'MINMAX',
         [MINIMUM_REACTIVE_POWER]: null,
         [MAXIMUM_REACTIVE_POWER]: null,
         [REACTIVE_CAPABILITY_CURVE_TABLE]: [getRowEmptyFormData(), getRowEmptyFormData()],
