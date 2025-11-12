@@ -118,7 +118,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
-    const [feederBaysPreviousValues, setFeederBaysPreviousValues] = useState<FeederBaysInfos>([]);
+    const [feederBaysPreviousValues, setFeederBaysPreviousValues] = useState<FeederBays>([]);
 
     const formMethods = useForm<DeepNullable<MoveVoltageLevelFeederBaysFormSchemaType>>({
         defaultValues: emptyFormData,
@@ -149,7 +149,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
                         : null,
                     isRemoved: false,
-                    rowId: null,
+                    rowId: bay.rowId,
                 }));
             } else if (editData?.uuid && isNodeBuiltValue && editData?.feederBays && editData?.feederBays?.length > 0) {
                 const feederBaysEditData = editData.feederBays;
@@ -166,7 +166,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                 ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
                                 : null,
                             isRemoved: false,
-                            rowId: null,
+                            rowId: bay.rowId,
                         });
                     });
                     const deletedFeederBays = feederBaysEditData.filter(
@@ -175,7 +175,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             !feederBaysInfos.some((formBay) => formBay?.equipmentId === bay.equipmentId)
                     );
                     if (deletedFeederBays.length > 0) {
-                        deletedFeederBays.forEach((bay) => {
+                        deletedFeederBays.forEach((bay, index) => {
                             mergedRowData.push({
                                 equipmentId: bay.equipmentId,
                                 busbarSectionId: bay.busbarSectionId,
@@ -187,7 +187,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                     ? Number.parseInt(bay.connectionPosition)
                                     : null,
                                 isRemoved: true,
-                                rowId: null,
+                                rowId: `${bay.equipmentId}-${index}-deleted`,
                             });
                         });
                     }
@@ -198,7 +198,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 editData?.feederBays &&
                 editData?.feederBays?.length > 0
             ) {
-                mergedRowData = editData.feederBays.filter(Boolean).map((bay) => ({
+                mergedRowData = editData.feederBays.filter(Boolean).map((bay, index) => ({
                     equipmentId: bay.equipmentId,
                     busbarSectionId: bay.busbarSectionId,
                     busbarSectionIds: busBarSectionInfos,
@@ -209,7 +209,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         ? Number.parseInt(bay.connectionPosition)
                         : null,
                     isRemoved: false,
-                    rowId: null,
+                    rowId: `${bay.equipmentId}-${index}-edited`,
                 }));
             }
             return mergedRowData;
@@ -226,14 +226,14 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     ...feederBay,
                 }))
             );
-            // merge row data between actual values in network and user's modification infos
-            const mergedRowData = mergeRowData(feederBaysArray, busbarSectionIds);
             // Enrich rows with unique identifiers to track form rows
-            const mergedRowDataWithKeys = mergedRowData.map((item, index) => ({
+            const feederBaysWithRowIds = feederBaysArray.map((item, index) => ({
                 ...item,
-                rowId: `${item.equipmentId}-${index}`,
+                rowId: `${item.equipmentId}-${index}-network`,
             }));
-            setFeederBaysPreviousValues(feederBaysInfos);
+            setFeederBaysPreviousValues(feederBaysWithRowIds);
+            // merge row data between actual values in network and user's modification infos
+            const mergedRowDataWithKeys = mergeRowData(feederBaysWithRowIds, busbarSectionIds);
             // reset default values for RHF state
             reset(
                 {
@@ -385,7 +385,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         studyUuid={studyUuid}
                         isReady={dataFetchStatus === FetchStatus.SUCCEED}
-                        feederBaysFormInfos={feederBaysPreviousValues}
+                        feederBaysPreviousValues={feederBaysPreviousValues}
                     />
                 )}
             </ModificationDialog>

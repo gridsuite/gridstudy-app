@@ -26,6 +26,7 @@ export type FeederBayInfos = {
 
 export type FeederBays = (FeederBayInfos & {
     equipmentId: string;
+    rowId: string;
 })[];
 
 export const CONNECTION_DIRECTIONS_VALUES = {
