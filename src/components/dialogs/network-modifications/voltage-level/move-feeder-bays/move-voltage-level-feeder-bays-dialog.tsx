@@ -175,7 +175,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             !feederBaysInfos.some((formBay) => formBay?.equipmentId === bay.equipmentId)
                     );
                     if (deletedFeederBays.length > 0) {
-                        deletedFeederBays.forEach((bay, index) => {
+                        for (const [index, bay] of deletedFeederBays.entries()) {
                             mergedRowData.push({
                                 equipmentId: bay.equipmentId,
                                 busbarSectionId: bay.busbarSectionId,
@@ -189,7 +189,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                 isRemoved: true,
                                 rowId: `${bay.equipmentId}-${index}-deleted`,
                             });
-                        });
+                        }
                     }
                 }
             } else if (
@@ -272,12 +272,13 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             id: b.id,
                             label: b.name ?? '',
                         })) ?? [];
-                    if (feederBaysInfo) {
+                    if (feederBaysInfo && busBarSectionInfos) {
                         handleVoltageLevelDataFetch(feederBaysInfo, busBarSectionInfos);
                     } else {
                         setDataFetchStatus(FetchStatus.FAILED);
                     }
                 } catch (error) {
+                    console.error(error);
                     setDataFetchStatus(FetchStatus.FAILED);
                 }
             }
