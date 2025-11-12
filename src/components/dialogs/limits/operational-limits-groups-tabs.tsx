@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Tab, Tabs } from '@mui/material';
+import { Tab, Tabs, TextField } from '@mui/material';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     APPLICABIlITY,
@@ -30,7 +30,7 @@ import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
-import { OperationalLimitsGroupTab } from './operational-limits-group-tab';
+import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
 
 const limitsStyles = {
     tabBackground: {
@@ -289,17 +289,30 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                             disableRipple
                             sx={limitsStyles.tabBackground}
                             label={
-                                <OperationalLimitsGroupTab
-                                    editing={editingTabIndex === index}
-                                    opLg={opLg}
-                                    isAModification={isAModification}
-                                    finishEditingLimitsGroup={finishEditingLimitsGroup}
-                                    editionError={editionError}
-                                    index={index}
-                                    parentFormName={parentFormName}
-                                    editedLimitGroupName={editedLimitGroupName}
-                                    setEditedLimitGroupName={setEditedLimitGroupName}
-                                />
+                                editingTabIndex === index ? (
+                                    <TextField
+                                        value={editedLimitGroupName}
+                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                            setEditedLimitGroupName(event.target.value);
+                                        }}
+                                        onKeyDown={handleKeyDown}
+                                        inputRef={onRefSet}
+                                        onBlur={() => finishEditingLimitsGroup()}
+                                        error={!!editionError}
+                                        helperText={!!editionError && <FormattedMessage id={editionError} />}
+                                        size="small"
+                                        fullWidth
+                                    />
+                                ) : (
+                                    <OperationalLimitsGroupTabLabel
+                                        operationalLimitsGroup={opLg}
+                                        showIconButton={index === hoveredRowIndex || index === activatedByMenuTabIndex}
+                                        editable={!editable || editingTabIndex !== -1}
+                                        limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
+                                        handleOpenMenu={handleOpenMenu}
+                                        index={index}
+                                    />
+                                )
                             }
                         />
                     ))}

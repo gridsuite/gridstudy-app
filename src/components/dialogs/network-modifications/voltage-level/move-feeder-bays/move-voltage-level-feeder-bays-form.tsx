@@ -12,7 +12,7 @@ import { filledTextField } from '../../../dialog-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import HeaderWithTooltip from '../topology-modification/header-with-tooltip';
-import { AutocompleteInput, CustomAGGrid, IntegerInput, TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomAGGrid, TextInput } from '@gridsuite/commons-ui';
 import {
     BUSBAR_SECTION_ID,
     BUSBAR_SECTION_IDS,
@@ -28,16 +28,16 @@ import GridItem from '../../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
 import type { UUID } from 'node:crypto';
-import { FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
+import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
+import FeederBayPositionCellRenderer from './feeder-bay-position-cell-render';
 
 const defaultColDef = {
     sortable: false,
     resizable: true,
     editable: false,
     headerClass: 'centered-header',
-    cellClass: 'centered-cell',
     suppressMovable: true,
 };
 
@@ -48,6 +48,7 @@ interface MoveVoltageLevelFeederBaysFormProps {
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
     isReady: boolean;
+    feederBaysFormInfos: FeederBaysInfos;
 }
 
 export function MoveVoltageLevelFeederBaysForm({
@@ -56,6 +57,7 @@ export function MoveVoltageLevelFeederBaysForm({
     isUpdate,
     currentRootNetworkUuid,
     studyUuid,
+    feederBaysFormInfos,
     isReady = false,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
     const intl = useIntl();
@@ -157,12 +159,10 @@ export function MoveVoltageLevelFeederBaysForm({
                         disabled: data.isRemoved,
                         size: 'small',
                         variant: 'outlined',
-                        autoFocus: true,
                         sx: {
                             paddingTop: '1rem',
                             '& input': {
                                 textAlign: 'center',
-                                textOverflow: 'ellipsis',
                             },
                             '& .MuiOutlinedInput-notchedOutline': {
                                 border: 'unset', // Remove the border
@@ -187,20 +187,18 @@ export function MoveVoltageLevelFeederBaysForm({
                         disabled: data.isRemoved,
                         size: 'small',
                         variant: 'outlined',
-                        autoFocus: true,
                         sx: {
                             paddingTop: '1rem',
                             '& input': {
                                 textAlign: 'center',
-                                textOverflow: 'ellipsis',
                             },
                         },
                     }}
-                    previousValue={watchTable[formIndex]?.connectionName ?? ''}
+                    previousValue={feederBaysFormInfos[formIndex]?.connectablePositionInfos.connectionName ?? ''}
                 />
             );
         },
-        [getValues]
+        [feederBaysFormInfos, getValues]
     );
 
     const renderBusbarSectionCell = useCallback(
@@ -219,18 +217,17 @@ export function MoveVoltageLevelFeederBaysForm({
                     sx={{ padding: '1rem' }}
                     disabled={data.isRemoved}
                     disableClearable
-                    previousValue={watchTable[formIndex]?.busbarSectionId ?? undefined}
+                    previousValue={feederBaysFormInfos[formIndex]?.busbarSectionId ?? undefined}
                 />
             );
         },
-        [getValues]
+        [feederBaysFormInfos, getValues]
     );
 
     const renderConnectionDirectionCell = useCallback(
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysFormInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.rowId === data.rowId) ?? -1;
-
             return FeederBayDirectionCellRenderer({
                 name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
                 disabled: data.isRemoved,
@@ -244,22 +241,11 @@ export function MoveVoltageLevelFeederBaysForm({
             const watchTable: FeederBaysFormInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.rowId === data.rowId) ?? -1;
             return (
-                <div style={{ position: 'relative' }}>
-                    <IntegerInput
-                        name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`}
-                        formProps={{
-                            disabled: data.isRemoved,
-                            size: 'small',
-                            variant: 'outlined',
-                            sx: {
-                                padding: '1rem',
-                                '& input': { textAlign: 'center' },
-                            },
-                        }}
-                        inputTransform={(value) => String(value ?? 0)}
-                        outputTransform={(value) => (value === '0' ? null : Number(value))}
-                    />
-                </div>
+                <FeederBayPositionCellRenderer
+                    key={data.rowId}
+                    name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`}
+                    disabled={data.isRemoved}
+                />
             );
         },
         [getValues]
@@ -367,6 +353,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     suppressMovableColumns={true}
+                    suppressCellFocus={true}
                     animateRows={false}
                     domLayout="normal"
                     headerHeight={48}

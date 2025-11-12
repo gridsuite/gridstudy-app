@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { MAX_FORMULA_CHARACTERS } from '../../constants';
 
 interface ValidationResult {
     isValid: boolean;
@@ -35,4 +36,8 @@ export const validateFormulaResult = (value: any, type: COLUMN_TYPES): Validatio
         default:
             return { isValid: false, error: 'Unknown column type' };
     }
+};
+
+export const isFormulaContentSizeOk = (val: string) => {
+    return val?.length <= MAX_FORMULA_CHARACTERS;
 };

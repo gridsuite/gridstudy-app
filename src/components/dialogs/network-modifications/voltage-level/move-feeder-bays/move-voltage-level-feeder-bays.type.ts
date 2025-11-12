@@ -13,7 +13,7 @@ export type FeederBaysFormInfos = {
     connectionSide: string | null;
     connectionName: string | null;
     connectionDirection: string | null;
-    connectionPosition: string | null;
+    connectionPosition: number | null;
     isRemoved: boolean;
     rowId: string | null;
 };
@@ -27,3 +27,9 @@ export type FeederBayInfos = {
 export type FeederBaysInfos = (FeederBayInfos & {
     equipmentId: string;
 })[];
+
+export const CONNECTION_DIRECTIONS_VALUES = {
+    TOP: { id: 'TOP', label: 'Top' },
+    BOTTOM: { id: 'BOTTOM', label: 'Bottom' },
+    UNDEFINED: { id: 'UNDEFINED', label: 'Undefined' },
+} as const;
