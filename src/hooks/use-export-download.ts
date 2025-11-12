@@ -12,7 +12,7 @@ import { fetchExportNetworkFile } from '../services/network-conversion';
 import { useIntl } from 'react-intl';
 
 export function useExportDownload() {
-    const { snackError, snackInfo } = useSnackMessage();
+    const { snackError, snackSuccess } = useSnackMessage();
     const intl = useIntl();
 
     const downloadExportNetworkFile = useCallback(
@@ -31,7 +31,7 @@ export function useExportDownload() {
 
                     const blob = await response.blob();
                     downloadZipFile(blob, filename);
-                    snackInfo({
+                    snackSuccess({
                         messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: filename }),
                         persist: true,
                     });
@@ -42,7 +42,7 @@ export function useExportDownload() {
                     });
                 });
         },
-        [intl, snackError, snackInfo]
+        [intl, snackError, snackSuccess]
     );
     return { downloadExportNetworkFile };
 }
