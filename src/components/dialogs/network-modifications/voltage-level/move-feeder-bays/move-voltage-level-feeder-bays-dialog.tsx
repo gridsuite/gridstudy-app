@@ -209,7 +209,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         ? Number.parseInt(bay.connectionPosition)
                         : null,
                     isRemoved: false,
-                    rowId: `${bay.equipmentId}-${index}-edited`,
+                    rowId: `${bay.equipmentId}-${index}`,
                 }));
             }
             return mergedRowData;
@@ -229,7 +229,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
             // Enrich rows with unique identifiers to track form rows
             const feederBaysWithRowIds = feederBaysArray.map((item, index) => ({
                 ...item,
-                rowId: `${item.equipmentId}-${index}-network`,
+                rowId: `${item.equipmentId}-${index}`,
             }));
             setFeederBaysPreviousValues(feederBaysWithRowIds);
             // merge row data between actual values in network and user's modification infos
