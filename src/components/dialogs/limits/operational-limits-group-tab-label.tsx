@@ -17,7 +17,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 interface OperationalLimitsGroupTabLabelProps {
     operationalLimitsGroup: OperationalLimitsGroupFormInfos;
     showIconButton: boolean;
-    disabled: boolean;
+    editable: boolean;
     limitsPropertiesName: string;
     handleOpenMenu: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
     index: number;
