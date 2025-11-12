@@ -399,6 +399,31 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [diagramParams, onNadChange]
     );
 
+    const handleFocusVoltageLevel = useCallback(
+        (voltageLevelId: string) => {
+            if (!diagramViewerRef.current || !svgMetadata) {
+                return;
+            }
+
+            const node = svgMetadata.nodes.find((n) => n.equipmentId === voltageLevelId);
+            if (!node) {
+                return;
+            }
+
+            const focusSize = 500;
+
+            const newViewBox = {
+                x: node.x - focusSize / 2,
+                y: node.y - focusSize / 2,
+                width: focusSize,
+                height: focusSize,
+            };
+
+            diagramViewerRef.current.setViewBox(newViewBox);
+        },
+        [svgMetadata]
+    );
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -519,6 +544,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onToggleShowLabels={handleToggleShowLabels}
                 isShowLabels={showLabels}
                 isDiagramLoading={loadingState}
+                svgVoltageLevels={svgVoltageLevels}
+                onFocusVoltageLevel={handleFocusVoltageLevel}
             />
             {renderEquipmentMenu()}
             {renderModificationDialog()}
