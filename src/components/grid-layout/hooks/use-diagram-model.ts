@@ -32,7 +32,17 @@ import { BaseVoltageConfig, useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
 import { isThereTooManyOpenedNadDiagrams, mergePositions } from '../cards/diagrams/diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
-import { BaseVoltagesConfigInfos } from 'utils/constants';
+
+interface BaseVoltages {
+    name: string;
+    minValue: number;
+    maxValue: number;
+    profile: string;
+}
+interface BaseVoltagesConfigInfos {
+    baseVoltages: BaseVoltages[];
+    defaultProfile: string;
+}
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -57,8 +67,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const baseVoltagesConfig = useSelector((state: AppState) => state.baseVoltagesConfig);
-    const baseVoltagesConfigRef = useRef<BaseVoltageConfig[]>([]);
-    baseVoltagesConfigRef.current = baseVoltagesConfig ?? [];
     const getDiagramTitle = useDiagramTitle();
 
     const [diagrams, setDiagrams] = useState<Record<UUID, Diagram>>({});
@@ -290,9 +298,12 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         });
     }, []);
 
-    const getBaseVoltagesConfigInfos = (): BaseVoltagesConfigInfos => {
+    const getBaseVoltagesConfigInfos = useCallback((): BaseVoltagesConfigInfos | undefined => {
+        if (!baseVoltagesConfig) {
+            return;
+        }
         return {
-            baseVoltages: baseVoltagesConfigRef.current.map((vl: BaseVoltageConfig) => ({
+            baseVoltages: baseVoltagesConfig.map((vl: BaseVoltageConfig) => ({
                 name: vl.name,
                 minValue: vl.minValue,
                 maxValue: vl.maxValue,
@@ -300,7 +311,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             })),
             defaultProfile: 'Default',
         };
-    };
+    }, [baseVoltagesConfig]);
 
     const fetchDiagramSvg = useCallback(
         (diagram: Diagram) => {
@@ -362,6 +373,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [
             getUrl,
             networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+            getBaseVoltagesConfigInfos,
             handleFetchSuccess,
             handleFetchError,
             handleFetchFinally,
