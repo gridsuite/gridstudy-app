@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BaseVoltageConfig } from '@gridsuite/commons-ui';
+import { BaseVoltageConfig, LIGHT_THEME } from '@gridsuite/commons-ui';
 
 export const MAX_VOLTAGE = 500;
 
@@ -30,6 +30,33 @@ export const getNominalVoltageIntervalByVoltageValue = (
 export const getNominalVoltageColor = (baseVoltages: BaseVoltageConfig[], voltageValue: number): number[] => {
     const color = getNominalVoltageIntervalByVoltageValue(baseVoltages, voltageValue)?.mapColor;
     return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
+};
+
+export const getVoltageLevelsCssVars = (
+    baseVoltages: BaseVoltageConfig[],
+    theme: string
+): Record<string, Record<string, string>> => {
+    const css: Record<string, Record<string, string>> = {};
+
+    for (const interval of baseVoltages) {
+        const className = `.sld-${interval.name}, .nad-${interval.name}`;
+
+        const themeColors =
+            theme === LIGHT_THEME
+                ? interval.sldAndNadColors.lightThemeColors
+                : interval.sldAndNadColors.darkThemeColors;
+        css[className] = { '--vl-color': themeColors.default };
+
+        for (let i = 1; i <= 9; i++) {
+            const key = `bus-${i}`;
+            const color = themeColors[key];
+            if (!color) continue;
+
+            const selector = `.sld-${interval.name}.sld-${key}, .nad-${interval.name}.nad-${key}`;
+            css[selector] = { '--vl-color': color };
+        }
+    }
+    return css;
 };
 
 export const INVALID_LOADFLOW_OPACITY = 0.2;
