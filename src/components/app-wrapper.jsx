@@ -475,10 +475,13 @@ const AppWrapperWithRedux = () => {
     }, [dispatch]);
 
     const rootCssVars = useMemo(() => {
-        if (!baseVoltagesConfig || baseVoltagesConfig.length === 0) return {};
+        const themeVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
+        if (!baseVoltagesConfig || baseVoltagesConfig.length === 0) {
+            return themeVars;
+        }
         return {
-            ...(theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars),
-            ...getVoltageLevelsCssVars(baseVoltagesConfig.current, theme),
+            ...themeVars,
+            ...getVoltageLevelsCssVars(baseVoltagesConfig, theme),
         };
     }, [baseVoltagesConfig, theme]);
 

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { type MuiStyles } from '@gridsuite/commons-ui';
@@ -41,15 +41,8 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export type NominalVoltageFilterProps = {
-    nominalVoltages: number[];
-    filteredNominalVoltages: number[];
-    onChange: (filteredNominalVoltages: number[]) => void;
-};
-
-export interface VoltageLevelInterval {
+interface VoltageLevelInterval {
     name: string;
-    vlValue: number;
     minValue: number;
     maxValue: number;
     label: string;
@@ -59,44 +52,50 @@ type VoltageLevelValuesInterval = VoltageLevelInterval & {
     isChecked: boolean;
 };
 
+export type NominalVoltageFilterProps = {
+    nominalVoltages: number[];
+    filteredNominalVoltages: number[];
+    onChange: (filteredNominalVoltages: number[]) => void;
+};
+
 export default function NominalVoltageFilter({
     nominalVoltages,
     filteredNominalVoltages,
     onChange,
 }: Readonly<NominalVoltageFilterProps>) {
-    const baseVoltagesConfig = useSelector((state: AppState) => state.baseVoltagesConfig);
-    const baseVoltageIntervals =
-        baseVoltagesConfig?.map(({ name, vlValue, minValue, maxValue, label }) => ({
-            name,
-            vlValue,
-            minValue,
-            maxValue,
-            label,
-        })) ?? [];
-    const baseVoltageIntervalsRef = useRef<VoltageLevelInterval[]>([]);
-    baseVoltageIntervalsRef.current = baseVoltageIntervals;
-
+    const baseVoltagesConfigIntervals = useSelector(
+        (state: AppState) =>
+            state.baseVoltagesConfig?.map(({ name, minValue, maxValue, label }) => ({
+                name,
+                minValue,
+                maxValue,
+                label,
+            })) ?? []
+    );
     const [voltageLevelIntervals, setVoltageLevelIntervals] = useState<VoltageLevelValuesInterval[]>(
-        baseVoltageIntervalsRef.current.map((interval) => ({ ...interval, vlListValues: [], isChecked: true }))
+        baseVoltagesConfigIntervals.map((interval) => ({ ...interval, vlListValues: [], isChecked: true }))
     );
 
-    const getNominalVoltageIntervalNameByVoltageValue = (voltageValue: number): string | undefined => {
-        for (let interval of baseVoltageIntervalsRef.current) {
-            if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
-                return interval.name;
+    const getNominalVoltageIntervalName = useCallback(
+        (voltageValue: number) => {
+            for (let interval of baseVoltagesConfigIntervals) {
+                if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
+                    return interval.name;
+                }
             }
-        }
-    };
+        },
+        [baseVoltagesConfigIntervals]
+    );
 
     useEffect(() => {
-        const newIntervals = baseVoltageIntervalsRef.current.map((interval) => {
+        const newIntervals = baseVoltagesConfigIntervals.map((interval) => {
             const vlListValues = nominalVoltages.filter(
-                (vnom) => getNominalVoltageIntervalNameByVoltageValue(vnom) === interval.name
+                (vnom) => getNominalVoltageIntervalName(vnom) === interval.name
             );
             return { ...interval, vlListValues, isChecked: true };
         });
         setVoltageLevelIntervals(newIntervals);
-    }, [nominalVoltages]);
+    }, [baseVoltagesConfigIntervals, getNominalVoltageIntervalName, nominalVoltages]);
 
     const handleToggle = useCallback(
         (interval: VoltageLevelValuesInterval) => {
