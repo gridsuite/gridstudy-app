@@ -5,14 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, FormHelperText, Stack, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { LimitsPropertiesStack } from './limits-properties-stack';
+import { grey, red } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
-import { grey } from '@mui/material/colors';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useFormState } from 'react-hook-form';
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import { LIMITS, OPERATIONAL_LIMITS_GROUPS } from '../../utils/field-constants';
+import { LimitsFormSchema } from './operational-limits-groups-types';
 
 interface OperationalLimitsGroupTabLabelProps {
     operationalLimitsGroup: OperationalLimitsGroupFormInfos;
@@ -31,13 +35,20 @@ export function OperationalLimitsGroupTabLabel({
     handleOpenMenu,
     index,
 }: Readonly<OperationalLimitsGroupTabLabelProps>) {
+    const { errors } = useFormState<LimitsFormSchema>({ name: `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}` });
+
+    const permanentLimitErrorMessage =
+        errors?.limits?.operationalLimitsGroups?.[index]?.currentLimits?.permanentLimit?.message;
+
     return (
         <Box
             sx={{ display: 'inline-flex', alignItems: 'center', boxSizing: 'inherit', justifyContent: 'space-between' }}
         >
-            <Stack direction="row" spacing={1}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                 <Stack spacing={0}>
-                    {operationalLimitsGroup.name}
+                    <Typography color={permanentLimitErrorMessage ? red[500] : undefined}>
+                        {operationalLimitsGroup.name}
+                    </Typography>
                     {operationalLimitsGroup?.applicability ? (
                         <Typography noWrap align="left" color={grey[500]}>
                             <FormattedMessage
@@ -52,6 +63,9 @@ export function OperationalLimitsGroupTabLabel({
                         ''
                     )}
                 </Stack>
+                <FormHelperText error={!!permanentLimitErrorMessage}>
+                    {permanentLimitErrorMessage ? <ErrorOutlineOutlinedIcon /> : ''}
+                </FormHelperText>
                 <LimitsPropertiesStack name={limitsPropertiesName} />
             </Stack>
 
