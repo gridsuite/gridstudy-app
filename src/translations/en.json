@@ -1564,6 +1564,8 @@
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
     "addVoltageLevel": "Add a voltage level",
+    "searchVoltageLevelInNad": "Search voltage level",
+    "noResultsFound": "No results found",
     "hide": "Hide",
     "hideLabels": "Hide labels in edit mode",
     "showLabels": "Show labels",
