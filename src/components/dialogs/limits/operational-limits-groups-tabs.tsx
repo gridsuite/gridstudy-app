@@ -31,6 +31,7 @@ import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
+import { FormattedMessage } from 'react-intl';
 
 const limitsStyles = {
     tabBackground: {
@@ -110,6 +111,17 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         const selectedLimitsGroups2: string = useWatch({
             name: `${parentFormName}.${SELECTED_LIMITS_GROUP_2}`,
         });
+
+        // control of the focus on the edited tab
+        const [editLimitGroupRef, setEditLimitGroupRef] = useState<HTMLInputElement>();
+        const onRefSet = useCallback((ref: HTMLInputElement) => {
+            setEditLimitGroupRef(ref);
+        }, []);
+        useEffect(() => {
+            if (editingTabIndex !== -1 && editLimitGroupRef) {
+                editLimitGroupRef.focus();
+            }
+        }, [editingTabIndex, editLimitGroupRef]);
 
         const handleTabChange = useCallback(
             (event: React.SyntheticEvent, newValue: number): void => {
@@ -251,6 +263,15 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             checkLimitSetUnicity,
         ]);
 
+        const handleKeyDown = useCallback(
+            (event: React.KeyboardEvent) => {
+                if (event.key === 'Enter') {
+                    finishEditingLimitsGroup();
+                }
+            },
+            [finishEditingLimitsGroup]
+        );
+
         const addNewLimitSet = useCallback(() => {
             const formName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
             const operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
@@ -306,11 +327,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                 ) : (
                                     <OperationalLimitsGroupTabLabel
                                         operationalLimitsGroup={opLg}
-                                        showIconButton={index === hoveredRowIndex || index === activatedByMenuTabIndex}
-                                        editable={!editable || editingTabIndex !== -1}
                                         limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
-                                        handleOpenMenu={handleOpenMenu}
-                                        index={index}
                                     />
                                 )
                             }

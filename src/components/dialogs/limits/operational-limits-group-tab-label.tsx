@@ -10,26 +10,16 @@ import { FormattedMessage } from 'react-intl';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { LimitsPropertiesStack } from './limits-properties-stack';
-import IconButton from '@mui/material/IconButton';
 import { grey } from '@mui/material/colors';
-import MenuIcon from '@mui/icons-material/Menu';
 
 interface OperationalLimitsGroupTabLabelProps {
     operationalLimitsGroup: OperationalLimitsGroupFormInfos;
-    showIconButton: boolean;
-    editable: boolean;
     limitsPropertiesName: string;
-    handleOpenMenu: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
-    index: number;
 }
 
 export function OperationalLimitsGroupTabLabel({
     operationalLimitsGroup,
-    showIconButton,
-    editable,
     limitsPropertiesName,
-    handleOpenMenu,
-    index,
 }: Readonly<OperationalLimitsGroupTabLabelProps>) {
     return (
         <Box
@@ -54,16 +44,6 @@ export function OperationalLimitsGroupTabLabel({
                 </Stack>
                 <LimitsPropertiesStack name={limitsPropertiesName} />
             </Stack>
-
-            {showIconButton && (
-                <IconButton
-                    size="small"
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleOpenMenu(e, index)}
-                    disabled={editable}
-                >
-                    <MenuIcon fontSize="small" />
-                </IconButton>
-            )}
         </Box>
     );
 }
