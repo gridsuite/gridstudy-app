@@ -26,7 +26,7 @@ interface OperationalLimitsGroupTabLabelProps {
 export function OperationalLimitsGroupTabLabel({
     operationalLimitsGroup,
     showIconButton,
-    disabled,
+    editable,
     limitsPropertiesName,
     handleOpenMenu,
     index,
@@ -59,7 +59,7 @@ export function OperationalLimitsGroupTabLabel({
                 <IconButton
                     size="small"
                     onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleOpenMenu(e, index)}
-                    disabled={disabled}
+                    disabled={editable}
                 >
                     <MenuIcon fontSize="small" />
                 </IconButton>
