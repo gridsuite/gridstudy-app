@@ -314,7 +314,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                     <OperationalLimitsGroupTabLabel
                                         operationalLimitsGroup={opLg}
                                         showIconButton={index === hoveredRowIndex || index === activatedByMenuTabIndex}
-                                        disabled={!editable || editingTabIndex !== -1}
+                                        editable={!editable || editingTabIndex !== -1}
                                         limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
                                         handleOpenMenu={handleOpenMenu}
                                         index={index}
