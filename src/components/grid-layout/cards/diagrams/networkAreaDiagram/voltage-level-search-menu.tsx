@@ -7,7 +7,7 @@
 
 import { useMemo, useState, type FC } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Menu, TextField, MenuItem, ListItemText, InputAdornment, Box, useTheme } from '@mui/material';
+import { Menu, TextField, MenuItem, ListItemText, InputAdornment, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 
@@ -40,7 +40,6 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     onSelect,
 }) => {
     const intl = useIntl();
-    const theme = useTheme();
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredVoltageLevels = useMemo(() => {
