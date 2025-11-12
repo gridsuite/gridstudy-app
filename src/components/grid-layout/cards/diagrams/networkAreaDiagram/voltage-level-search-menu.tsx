@@ -7,7 +7,7 @@
 
 import { useMemo, useState, type FC } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Menu, TextField, MenuItem, ListItemText, InputAdornment, Box } from '@mui/material';
+import { Menu, TextField, MenuItem, ListItemText, InputAdornment, Box, useTheme } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 
@@ -40,6 +40,7 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     onSelect,
 }) => {
     const intl = useIntl();
+    const theme = useTheme();
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredVoltageLevels = useMemo(() => {
@@ -48,9 +49,43 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
         if (!searchTerm) {
             return voltageLevels.toSorted(compareVoltageLevels);
         }
+
         const term = searchTerm.toLowerCase();
-        return voltageLevels.filter((vlId) => vlId.toLowerCase().includes(term)).toSorted(compareVoltageLevels);
+        const filtered = voltageLevels.filter((vlId) => vlId.toLowerCase().includes(term));
+
+        // Sort with priority: items starting with search term first, then alphabetically
+        return filtered.toSorted((a, b) => {
+            const aLower = a.toLowerCase();
+            const bLower = b.toLowerCase();
+            const aStarts = aLower.startsWith(term);
+            const bStarts = bLower.startsWith(term);
+
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            return compareVoltageLevels(a, b);
+        });
     }, [searchTerm, voltageLevels]);
+
+    const highlightText = useMemo(
+        () => (text: string, highlight: string) => {
+            if (!highlight) {
+                return text;
+            }
+            const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+            return (
+                <span>
+                    {parts.map((part, partIndex) =>
+                        part.toLowerCase() === highlight.toLowerCase() ? (
+                            <strong key={`${part}-${partIndex}`}>{part}</strong>
+                        ) : (
+                            <span key={`${part}-${partIndex}`}>{part}</span>
+                        )
+                    )}
+                </span>
+            );
+        },
+        []
+    );
 
     const handleClose = () => {
         setSearchTerm('');
@@ -93,7 +128,7 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                 ) : (
                     filteredVoltageLevels.map((vlId) => (
                         <MenuItem key={vlId} onClick={() => handleSelect(vlId)}>
-                            <ListItemText primary={vlId} />
+                            <ListItemText primary={highlightText(vlId, searchTerm)} />
                         </MenuItem>
                     ))
                 )}
