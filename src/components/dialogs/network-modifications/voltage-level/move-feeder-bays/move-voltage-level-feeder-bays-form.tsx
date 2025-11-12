@@ -28,7 +28,7 @@ import GridItem from '../../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
 import type { UUID } from 'node:crypto';
-import { FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
+import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
 import FeederBayPositionCellRenderer from './feeder-bay-position-cell-render';
@@ -48,6 +48,7 @@ interface MoveVoltageLevelFeederBaysFormProps {
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
     isReady: boolean;
+    feederBaysFormInfos: FeederBaysInfos;
 }
 
 export function MoveVoltageLevelFeederBaysForm({
@@ -56,6 +57,7 @@ export function MoveVoltageLevelFeederBaysForm({
     isUpdate,
     currentRootNetworkUuid,
     studyUuid,
+    feederBaysFormInfos,
     isReady = false,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
     const intl = useIntl();
@@ -192,11 +194,11 @@ export function MoveVoltageLevelFeederBaysForm({
                             },
                         },
                     }}
-                    previousValue={watchTable[formIndex]?.connectionName ?? ''}
+                    previousValue={feederBaysFormInfos[formIndex]?.connectablePositionInfos.connectionName ?? ''}
                 />
             );
         },
-        [getValues]
+        [feederBaysFormInfos, getValues]
     );
 
     const renderBusbarSectionCell = useCallback(
@@ -215,11 +217,11 @@ export function MoveVoltageLevelFeederBaysForm({
                     sx={{ padding: '1rem' }}
                     disabled={data.isRemoved}
                     disableClearable
-                    previousValue={watchTable[formIndex]?.busbarSectionId ?? undefined}
+                    previousValue={feederBaysFormInfos[formIndex]?.busbarSectionId ?? undefined}
                 />
             );
         },
-        [getValues]
+        [feederBaysFormInfos, getValues]
     );
 
     const renderConnectionDirectionCell = useCallback(
