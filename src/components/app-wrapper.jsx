@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo, useEffect, useCallback } from 'react';
+import { useMemo, useEffect } from 'react';
 import App from './app';
 import {
     createTheme,
@@ -108,6 +108,7 @@ import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator'
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
+import { getVoltageLevelsCssVars } from 'utils/colors';
 import { fetchBaseVoltagesConfig } from '../services/utils';
 import { setBaseVoltagesConfig } from '../redux/actions';
 
@@ -473,38 +474,13 @@ const AppWrapperWithRedux = () => {
         });
     }, [dispatch]);
 
-    const getVoltageLevelsCssVars = useCallback(
-        (theme) => {
-            if (!baseVoltagesConfig) return {};
-            const css = {};
-
-            for (const interval of baseVoltagesConfig) {
-                const className = `.sld-${interval.name}, .nad-${interval.name}`;
-
-                const themeColors = theme === LIGHT_THEME ? interval.lightThemeColors : interval.darkThemeColors;
-                css[className] = { '--vl-color': themeColors.default };
-
-                for (let i = 1; i <= 9; i++) {
-                    const key = `bus-${i}`;
-                    const color = themeColors[key];
-                    if (!color) continue;
-
-                    const selector = `.sld-${interval.name}.sld-${key}, .nad-${interval.name}.nad-${key}`;
-                    css[selector] = { '--vl-color': color };
-                }
-            }
-            return css;
-        },
-        [baseVoltagesConfig]
-    );
-
     const rootCssVars = useMemo(() => {
         if (!baseVoltagesConfig || baseVoltagesConfig.length === 0) return {};
         return {
             ...(theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars),
-            ...getVoltageLevelsCssVars(theme),
+            ...getVoltageLevelsCssVars(baseVoltagesConfig.current, theme),
         };
-    }, [baseVoltagesConfig, getVoltageLevelsCssVars, theme]);
+    }, [baseVoltagesConfig, theme]);
 
     const urlMapper = useNotificationsUrlGenerator();
 
