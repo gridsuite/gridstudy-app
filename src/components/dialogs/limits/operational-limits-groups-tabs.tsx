@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import { Tab, Tabs, TextField } from '@mui/material';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     APPLICABIlITY,
@@ -25,16 +24,14 @@ import {
 } from '../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { CurrentLimitsData, OperationalLimitsGroup } from '../../../services/network-modification-types';
-import MenuIcon from '@mui/icons-material/Menu';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
-import { grey } from '@mui/material/colors';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
-import { LimitsPropertiesStack } from './limits-properties-stack';
+import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
 
 const limitsStyles = {
     limitsBackground: {
@@ -314,49 +311,14 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                         fullWidth
                                     />
                                 ) : (
-                                    <Box
-                                        sx={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            boxSizing: 'inherit',
-                                            justifyContent: 'space-between',
-                                        }}
-                                    >
-                                        <Stack direction="row" spacing={1}>
-                                            <Stack spacing={0}>
-                                                {opLg.name}
-                                                {opLg?.applicability ? (
-                                                    <Typography noWrap align="left" color={grey[500]}>
-                                                        <FormattedMessage
-                                                            id={
-                                                                Object.values(APPLICABILITY).find(
-                                                                    (item) => item.id === opLg.applicability
-                                                                )?.label
-                                                            }
-                                                        />
-                                                    </Typography>
-                                                ) : (
-                                                    ''
-                                                )}
-                                            </Stack>
-                                            <LimitsPropertiesStack
-                                                name={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
-                                            />
-                                        </Stack>
-
-                                        {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
-                                            <IconButton
-                                                size="small"
-                                                onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                                                    handleOpenMenu(e, index)
-                                                }
-                                                // during the naming of a limit set no other limit set manipulation is allowed :
-                                                disabled={!editable || editingTabIndex !== -1}
-                                            >
-                                                <MenuIcon fontSize="small" />
-                                            </IconButton>
-                                        )}
-                                    </Box>
+                                    <OperationalLimitsGroupTabLabel
+                                        operationalLimitsGroup={opLg}
+                                        showIconButton={index === hoveredRowIndex || index === activatedByMenuTabIndex}
+                                        editable={!editable || editingTabIndex !== -1}
+                                        limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
+                                        handleOpenMenu={handleOpenMenu}
+                                        index={index}
+                                    />
                                 )
                             }
                             sx={limitsStyles.limitsBackground}
