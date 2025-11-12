@@ -30,7 +30,7 @@ import { useParameterState } from './parameters/use-parameters-state';
 function makeButton(onClick: () => void, message: string, disabled: boolean) {
     return (
         <Grid item>
-            <Button onClick={onClick} variant="contained" disabled={disabled} data-testid={`${message}Button`}>
+            <Button onClick={onClick} variant="contained" disabled={disabled}>
                 <FormattedMessage id={message} />
             </Button>
         </Grid>
@@ -181,7 +181,7 @@ export function ContingencyListSelector({ open, onClose, onStart }: Readonly<Con
     return (
         <>
             <Dialog open={open} onClose={handleClose} maxWidth={'sm'} fullWidth={true}>
-                <DialogTitle data-testid="DialogTitle">
+                <DialogTitle>
                     <Typography component="span" variant="h5">
                         <FormattedMessage id="ContingencyListsSelection" />
                     </Typography>

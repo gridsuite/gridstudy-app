@@ -97,7 +97,7 @@ export function HorizontalToolbar() {
                             size="small"
                         >
                             <Tooltip title={<FormattedMessage id={'Tree'} />}>
-                                <ToggleButton value={StudyDisplayMode.TREE} data-testid="DisplayModeTree">
+                                <ToggleButton value={StudyDisplayMode.TREE}>
                                     <DeviceHubIcon />
                                 </ToggleButton>
                             </Tooltip>
@@ -106,7 +106,6 @@ export function HorizontalToolbar() {
                                     <ToggleButton
                                         value={StudyDisplayMode.MODIFICATIONS}
                                         disabled={isModificationsDisabled}
-                                        data-testid="DisplayModifications"
                                     >
                                         <TuneIcon disabled={isModificationsDisabled} />
                                     </ToggleButton>
@@ -120,7 +119,6 @@ export function HorizontalToolbar() {
                                             disabled={
                                                 currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'
                                             }
-                                            data-testid="DisplayDynamicSimulation"
                                         >
                                             <OfflineBoltOutlinedIcon fontSize="small" />
                                         </ToggleButton>
@@ -128,10 +126,7 @@ export function HorizontalToolbar() {
                                 </Tooltip>
                             )}
                             <Tooltip title={<FormattedMessage id={'images'} />}>
-                                <ToggleButton
-                                    value={StudyDisplayMode.GRID_LAYOUT_PANEL}
-                                    data-testid="DisplayModeImages"
-                                >
+                                <ToggleButton value={StudyDisplayMode.GRID_LAYOUT_PANEL}>
                                     <PhotoLibraryIcon />
                                 </ToggleButton>
                             </Tooltip>

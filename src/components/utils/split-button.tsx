@@ -190,11 +190,11 @@ const SplitButton = ({
     const getRunningIcon = (status: RunningStatus) => {
         switch (status) {
             case RunningStatus.RUNNING:
-                return <LoopIcon sx={styles.rotate} data-testid="ModelExecutionRunning" />;
+                return <LoopIcon sx={styles.rotate} />;
             case RunningStatus.SUCCEED:
-                return <DoneIcon data-testid="ModelExecutionDone" />;
+                return <DoneIcon />;
             case RunningStatus.FAILED:
-                return <ErrorOutlineIcon data-testid="ModelExecutionFail" />;
+                return <ErrorOutlineIcon />;
             case RunningStatus.IDLE:
             default:
                 return <PlayIcon />;
@@ -232,7 +232,6 @@ const SplitButton = ({
                     sx={getStyle(runningStatus)}
                     disabled={buttonDisabled}
                     onClick={handleClick}
-                    data-testid="RunModelButton"
                 >
                     <span style={{ marginTop: '2px' }}>{breakText(text)}</span>
                 </Button>
@@ -242,7 +241,6 @@ const SplitButton = ({
                     onClick={handleToggle}
                     sx={getStyle(runningStatus)}
                     disabled={selectionDisabled}
-                    data-testid="RunnableModelsButton"
                 >
                     <ArrowDropDownIcon sx={mergeSx(styles.expand, open ? styles.expandOpen : undefined)} />
                 </Button>
