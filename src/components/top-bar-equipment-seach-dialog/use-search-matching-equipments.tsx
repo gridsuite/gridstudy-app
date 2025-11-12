@@ -48,10 +48,36 @@ export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsPr
         fetchElements,
     });
 
-    const equipmentsFound = useMemo(
-        () => getEquipmentsInfosForSearchBar(elementsFound, getNameOrId),
-        [elementsFound, getNameOrId]
-    );
+    const equipmentsFound = useMemo(() => {
+        const equipments = getEquipmentsInfosForSearchBar(elementsFound, getNameOrId);
+
+        if (!searchTerm) {
+            // Keep original sort (substations first, then voltage levels ...)
+            return equipments;
+        }
+
+        // group by equipment type, prioritize items starting with search term within each type
+        const term = searchTerm.toLowerCase();
+        return equipments.toSorted((a, b) => {
+            // maintain equipment type order
+            if (a.type !== b.type) {
+                const aIndex = equipments.findIndex((e) => e.type === a.type);
+                const bIndex = equipments.findIndex((e) => e.type === b.type);
+                return aIndex - bIndex;
+            }
+
+            // within same type, prioritize items starting with search term
+            const aStarts = a.label.toLowerCase().startsWith(term);
+            const bStarts = b.label.toLowerCase().startsWith(term);
+
+            if (aStarts !== bStarts) {
+                return aStarts ? -1 : 1;
+            }
+
+            // maintain original order within same type and same start status
+            return equipments.indexOf(a) - equipments.indexOf(b);
+        });
+    }, [elementsFound, getNameOrId, searchTerm]);
 
     useEffect(() => {
         updateSearchTerm(searchTerm?.trim());
