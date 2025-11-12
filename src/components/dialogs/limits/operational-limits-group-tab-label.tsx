@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { Box, Stack, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { APPLICABILITY } from '../../network/constants';
@@ -6,7 +13,6 @@ import { LimitsPropertiesStack } from './limits-properties-stack';
 import IconButton from '@mui/material/IconButton';
 import { grey } from '@mui/material/colors';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useFormState } from 'react-hook-form';
 
 interface OperationalLimitsGroupTabLabelProps {
     operationalLimitsGroup: OperationalLimitsGroupFormInfos;
@@ -15,7 +21,6 @@ interface OperationalLimitsGroupTabLabelProps {
     limitsPropertiesName: string;
     handleOpenMenu: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
     index: number;
-    isAModification?: boolean;
 }
 
 export function OperationalLimitsGroupTabLabel({
@@ -25,7 +30,6 @@ export function OperationalLimitsGroupTabLabel({
     limitsPropertiesName,
     handleOpenMenu,
     index,
-    isAModification,
 }: Readonly<OperationalLimitsGroupTabLabelProps>) {
     return (
         <Box
@@ -48,13 +52,7 @@ export function OperationalLimitsGroupTabLabel({
                         ''
                     )}
                 </Stack>
-                {!isAModification && (
-                    <LimitsPropertiesStack
-                        name={
-                            limitsPropertiesName /*`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`*/
-                        }
-                    />
-                )}
+                <LimitsPropertiesStack name={limitsPropertiesName} />
             </Stack>
 
             {showIconButton && (
