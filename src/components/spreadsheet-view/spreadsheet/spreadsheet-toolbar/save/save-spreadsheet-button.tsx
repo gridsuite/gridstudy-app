@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { type MouseEvent, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import { type MouseEvent, type RefObject, useCallback, useMemo, useState } from 'react';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
 import {
+    copyToClipboard,
     CsvDownloadProps,
     EquipmentType,
     FILTER_EQUIPMENTS,
-    useClipboard,
     useCsvExport,
     useSnackMessage,
     useStateBoolean,
@@ -60,24 +60,21 @@ export default function SaveSpreadsheetButton({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const customSaveDialogOpen = useStateBoolean(false);
     const saveFilterDialogOpen = useStateBoolean(false);
-    const { downloadCSVData, getCSVData } = useCsvExport();
     const language = useSelector((state: AppState) => state.computedLanguage);
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget), []);
     const handleClose = useCallback(() => setAnchorEl(null), []);
 
     const { snackInfo, snackError } = useSnackMessage();
-    const clipboard = useClipboard();
+    const { downloadCSVData, getCSVData } = useCsvExport();
 
-    useEffect(() => {
-        if (clipboard.copyState === 'SUCCESS') {
-            snackInfo({ headerId: 'spreadsheet/clipboard/success' });
-            clipboard.ready();
-        } else if (clipboard.copyState === 'ERROR') {
-            snackError({ headerId: 'spreadsheet/clipboard/error' });
-            clipboard.ready();
-        }
-    }, [clipboard, snackInfo, snackError]);
+    const onClipboardCopy = useCallback(() => {
+        snackInfo({ headerId: 'spreadsheet/save/options/csv/clipboard/success' });
+    }, [snackInfo]);
+
+    const onClipboardError = useCallback(() => {
+        snackError({ headerId: 'spreadsheet/save/options/csv/clipboard/error' });
+    }, [snackError]);
 
     const getCsvProps = useCallback(
         (csvCase: SpreadsheetSaveOptionId.COPY_CSV | SpreadsheetSaveOptionId.EXPORT_CSV) => {
@@ -113,11 +110,11 @@ export default function SaveSpreadsheetButton({
             },
             [SpreadsheetSaveOptionId.COPY_CSV]: {
                 id: SpreadsheetSaveOptionId.COPY_CSV,
-                label: 'spreadsheet/save/options/csv/copy',
+                label: 'spreadsheet/save/options/csv/clipboard',
                 action: () => {
                     const csvProps = getCsvProps(SpreadsheetSaveOptionId.COPY_CSV);
                     if (csvProps) {
-                        clipboard.copy(getCSVData(csvProps) ?? '');
+                        copyToClipboard(getCSVData(csvProps) ?? '', onClipboardCopy, onClipboardError);
                     }
                 },
                 disabled: dataSize === 0,
@@ -146,8 +143,9 @@ export default function SaveSpreadsheetButton({
             saveFilterDialogOpen.setTrue,
             tableDefinition.type,
             getCsvProps,
-            clipboard,
             getCSVData,
+            onClipboardCopy,
+            onClipboardError,
             downloadCSVData,
         ]
     );

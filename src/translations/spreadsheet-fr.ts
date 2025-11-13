@@ -45,8 +45,12 @@ const spreadsheetFr = {
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/filter': 'En tant que filtre',
     'spreadsheet/save/options/collection': 'Collection',
-    'spreadsheet/save/options/csv/copy': 'Copie CSV',
     'spreadsheet/save/options/csv/export': 'Export CSV',
+    'spreadsheet/save/options/csv/clipboard': 'Copie CSV',
+    'spreadsheet/save/options/csv/clipboard/success':
+        'Le contenu de la feuille a été copié dans le presse-papier système',
+    'spreadsheet/save/options/csv/clipboard/error':
+        "Le contenu de la feuille n'a pas pu être copié dans le presse-papier système",
     'spreadsheet/save/dialog_title': 'Enregistrer un modèle de tableur',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Enregistrer une collection de tableurs',
     'spreadsheet/save/error_message': 'Une erreur est survenue lors de la création du modèle de tableur',
@@ -144,9 +148,6 @@ const spreadsheetFr = {
     'spreadsheet/global-model-edition/search': 'Rechercher dans formule',
     'spreadsheet/global-model-edition/replace': 'Remplacer dans formule',
     'spreadsheet/global-model-edition/replace_all': 'Tout remplacer',
-
-    'spreadsheet/clipboard/success': 'Le contenu de la feuille a été copié dans le presse-papier système',
-    'spreadsheet/clipboard/error': "Le contenu de la feuille n'a pas pu être copié dans le presse-papier système",
 
     // calculations
     'spreadsheet/calculation/sum': 'Somme',
