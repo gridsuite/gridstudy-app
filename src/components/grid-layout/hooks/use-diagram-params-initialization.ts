@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DiagramParams } from '../cards/diagrams/diagram.type';
+import type { DiagramParams } from '../cards/diagrams/diagram.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';

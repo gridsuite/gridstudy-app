@@ -8,12 +8,12 @@ import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, DiagramEvent, DiagramEventType } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
-import { DiagramParams, DiagramType } from '../cards/diagrams/diagram.type';
+import { DiagramType } from '../cards/diagrams/diagram.type';
 import { resetDiagramEvent } from 'redux/actions';
-import { v4 } from 'uuid';
+import type { CreateDiagramFuncType } from './diagram-model.types';
 
 type UseDiagramEventListenerProps = {
-    createDiagram: (diagram: DiagramParams) => void;
+    createDiagram: CreateDiagramFuncType;
     removeDiagram: (id: UUID) => void;
 };
 
@@ -28,21 +28,18 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
             }
             if (diagramEvent.diagramType === DiagramType.VOLTAGE_LEVEL) {
                 createDiagram({
-                    diagramUuid: v4() as UUID,
                     type: DiagramType.VOLTAGE_LEVEL,
                     voltageLevelId: diagramEvent.voltageLevelId,
                     name: '',
                 });
             } else if (diagramEvent.diagramType === DiagramType.SUBSTATION) {
                 createDiagram({
-                    diagramUuid: v4() as UUID,
                     type: DiagramType.SUBSTATION,
                     substationId: diagramEvent.substationId,
                     name: '',
                 });
             } else if (diagramEvent.diagramType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 createDiagram({
-                    diagramUuid: v4() as UUID,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
                     name: diagramEvent.name,
                     nadConfigUuid: diagramEvent.nadConfigUuid,
