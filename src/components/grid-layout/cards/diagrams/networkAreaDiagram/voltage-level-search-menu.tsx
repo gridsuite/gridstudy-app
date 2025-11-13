@@ -52,15 +52,15 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
         const term = searchTerm.toLowerCase();
         const filtered = voltageLevels.filter((vlId) => vlId.toLowerCase().includes(term));
 
-        // Sort with priority: items starting with search term first, then alphabetically
+        // items starting with search term first, then alphabetically
         return filtered.toSorted((a, b) => {
-            const aLower = a.toLowerCase();
-            const bLower = b.toLowerCase();
-            const aStarts = aLower.startsWith(term);
-            const bStarts = bLower.startsWith(term);
+            const aStarts = a.toLowerCase().startsWith(term);
+            const bStarts = b.toLowerCase().startsWith(term);
 
-            if (aStarts && !bStarts) return -1;
-            if (!aStarts && bStarts) return 1;
+            if (aStarts !== bStarts) {
+                return aStarts ? -1 : 1;
+            }
+
             return compareVoltageLevels(a, b);
         });
     }, [searchTerm, voltageLevels]);
