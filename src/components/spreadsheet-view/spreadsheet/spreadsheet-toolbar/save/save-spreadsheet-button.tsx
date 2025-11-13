@@ -5,12 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { type MouseEvent, type RefObject, useCallback, useMemo, useState } from 'react';
+import { type MouseEvent, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
-import { EquipmentType, FILTER_EQUIPMENTS, useCsvExport, useStateBoolean } from '@gridsuite/commons-ui';
+import {
+    CsvDownloadProps,
+    EquipmentType,
+    FILTER_EQUIPMENTS,
+    useClipboard,
+    useCsvExport,
+    useSnackMessage,
+    useStateBoolean,
+} from '@gridsuite/commons-ui';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 import { type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import type { AgGridReact } from 'ag-grid-react';
@@ -19,7 +27,6 @@ import { spreadsheetStyles } from '../../../spreadsheet.style';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../../redux/reducer';
 import SaveNamingFilterDialog from './save-naming-filter-dialog';
-import { useClipboard } from 'hooks/use-navigator-clipboard';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
@@ -59,7 +66,43 @@ export default function SaveSpreadsheetButton({
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget), []);
     const handleClose = useCallback(() => setAnchorEl(null), []);
 
+    const { snackInfo, snackError } = useSnackMessage();
     const clipboard = useClipboard();
+
+    useEffect(() => {
+        if (clipboard.copyState === 'SUCCESS') {
+            snackInfo({ headerId: 'spreadsheet/clipboard/success' });
+            clipboard.ready();
+        } else if (clipboard.copyState === 'ERROR') {
+            snackError({ headerId: 'spreadsheet/clipboard/error' });
+            clipboard.ready();
+        }
+    }, [clipboard, snackInfo, snackError]);
+
+    const getCsvProps = useCallback(
+        (csvCase: SpreadsheetSaveOptionId.COPY_CSV | SpreadsheetSaveOptionId.EXPORT_CSV) => {
+            const gridCsvFunction =
+                csvCase === SpreadsheetSaveOptionId.COPY_CSV
+                    ? gridRef.current?.api.getDataAsCsv
+                    : gridRef.current?.api.exportDataAsCsv;
+            if (!gridCsvFunction) {
+                console.error('Csv API is not available.');
+                return;
+            }
+            // No active calculation: 1 pinned row (default empty line); some calculations: > 1 pinned rows
+            const calculationRowNumber = gridRef.current?.api.getGridOption('pinnedBottomRowData')?.length ?? 0;
+            return {
+                // Filter out the rowIndex column and the hidden columns before exporting to CSV
+                columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
+                tableName: tableDefinition.name,
+                language: language,
+                getDataAsCsv: csvCase === SpreadsheetSaveOptionId.COPY_CSV ? gridCsvFunction : undefined,
+                exportDataAsCsv: csvCase === SpreadsheetSaveOptionId.COPY_CSV ? undefined : gridCsvFunction,
+                skipPinnedBottom: calculationRowNumber === 1,
+            } as CsvDownloadProps;
+        },
+        [columns, gridRef, language, tableDefinition.name]
+    );
 
     const spreadsheetOptions = useMemo<Record<SpreadsheetSaveOptionId, SpreadsheetSaveOption>>(
         () => ({
@@ -70,47 +113,23 @@ export default function SaveSpreadsheetButton({
             },
             [SpreadsheetSaveOptionId.COPY_CSV]: {
                 id: SpreadsheetSaveOptionId.COPY_CSV,
-                label: 'CPY',
+                label: 'spreadsheet/save/options/csv/copy',
                 action: () => {
-                    const getDataAsCsv = gridRef.current?.api.getDataAsCsv;
-                    if (!getDataAsCsv) {
-                        console.error('Export API is not available.');
-                        return;
+                    const csvProps = getCsvProps(SpreadsheetSaveOptionId.COPY_CSV);
+                    if (csvProps) {
+                        clipboard.copy(getCSVData(csvProps) ?? '');
                     }
-                    // No active calculation: 1 pinned row (default empty line); some calculations: > 1 pinned rows
-                    const calculationRowNumber = gridRef.current?.api.getGridOption('pinnedBottomRowData')?.length ?? 0;
-                    const csvRows = getCSVData({
-                        // Filter out the rowIndex column and the hidden columns before exporting to CSV
-                        columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
-                        tableName: tableDefinition.name,
-                        language: language,
-                        getDataAsCsv,
-                        skipPinnedBottom: calculationRowNumber === 1, // skip last empty line
-                    });
-                    clipboard.copy(csvRows ?? '');
-                    console.error('DBG DBR', clipboard.state);
                 },
                 disabled: dataSize === 0,
             },
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
-                label: 'spreadsheet/save/options/csv',
+                label: 'spreadsheet/save/options/csv/export',
                 action: () => {
-                    const exportDataAsCsv = gridRef.current?.api.exportDataAsCsv;
-                    if (!exportDataAsCsv) {
-                        console.error('Export API is not available.');
-                        return;
+                    const csvProps = getCsvProps(SpreadsheetSaveOptionId.EXPORT_CSV);
+                    if (csvProps) {
+                        downloadCSVData(csvProps);
                     }
-                    // No active calculation: 1 pinned row (default empty line); some calculations: > 1 pinned rows
-                    const calculationRowNumber = gridRef.current?.api.getGridOption('pinnedBottomRowData')?.length ?? 0;
-                    downloadCSVData({
-                        // Filter out the rowIndex column and the hidden columns before exporting to CSV
-                        columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
-                        tableName: tableDefinition.name,
-                        language: language,
-                        exportDataAsCsv,
-                        skipPinnedBottom: calculationRowNumber === 1, // skip last empty line
-                    });
                 },
                 disabled: dataSize === 0,
             },
@@ -126,12 +145,9 @@ export default function SaveSpreadsheetButton({
             dataSize,
             saveFilterDialogOpen.setTrue,
             tableDefinition.type,
-            tableDefinition.name,
-            gridRef,
-            getCSVData,
-            columns,
-            language,
+            getCsvProps,
             clipboard,
+            getCSVData,
             downloadCSVData,
         ]
     );
