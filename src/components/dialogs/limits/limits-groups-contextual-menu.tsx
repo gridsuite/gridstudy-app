@@ -115,8 +115,8 @@ export function LimitsGroupsContextualMenu({
     ]);
 
     const handleRenameTab = useCallback(() => {
-        activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null);
-    }, [activatedByMenuTabIndex, startEditingLimitsGroup]);
+        contextMenuCoordinates.tabIndex != null && startEditingLimitsGroup(contextMenuCoordinates.tabIndex, null);
+    }, [contextMenuCoordinates.tabIndex, startEditingLimitsGroup]);
 
     return (
         <Menu
@@ -128,7 +128,7 @@ export function LimitsGroupsContextualMenu({
                     ? { top: contextMenuCoordinates.y, left: contextMenuCoordinates.x }
                     : undefined
             }
-         >
+        >
             <MenuItem onClick={handleRenameTab}>
                 <ListItemIcon>
                     <Edit fontSize="small" />
