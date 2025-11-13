@@ -15,7 +15,7 @@ import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
 import { TreeviewSearchable } from './treeview-searchable';
 import { usePopoverToggle } from './utils/use-popover-toggle';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 
 interface FormulaAutocompleteFieldProps {
@@ -38,7 +38,7 @@ export function FloatingPopoverTreeviewWrapper({
     useEffect(() => {
         fetchSpreadsheetEquipmentTypeSchema(spreadsheetEquipmentType)
             .then((result) => setProperties(result))
-            .catch((error) => snackError({ headerId: 'FetchingEquipmentSchemaError', messageTxt: error }));
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'FetchingEquipmentSchemaError' }));
     }, [snackError, spreadsheetEquipmentType]);
 
     const { handleKeyDown } = usePopoverToggle(properties, setAnchorEl);

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -165,10 +165,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 newLine2Id: lineSplit[LINE2_ID],
                 newLine2Name: sanitizeString(lineSplit[LINE2_NAME]),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LineDivisionError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LineDivisionError' });
             });
         },
         [currentNodeUuid, editData, newVoltageLevel, snackError, studyUuid]

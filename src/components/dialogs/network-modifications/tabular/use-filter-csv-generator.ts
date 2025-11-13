@@ -12,6 +12,7 @@ import {
     TreeViewFinderNodeProps,
     LANG_FRENCH,
     useSnackMessage,
+    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import { EquipmentsFilter, evaluateFilters } from 'services/study/filter';
 import { EQUIPMENT_ID } from 'components/utils/field-constants';
@@ -182,11 +183,7 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
                 const filename = generateFilename();
                 downloadCsvFile({ content: csvContent, filename });
             } catch (error) {
-                console.error('❌ CSV generation failed:', error);
-                snackError({
-                    messageTxt: error instanceof Error ? error.message : 'Unknown error occurred',
-                    headerId: 'GenerateFromFilterError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'GenerateFromFilterError' });
             }
         },
         [extractEquipmentIds, generateCsvContent, generateFilename, downloadCsvFile, snackError]

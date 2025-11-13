@@ -26,7 +26,13 @@ import {
 import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
-import { NotificationsUrlKeys, useIntlRef, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    NotificationsUrlKeys,
+    snackWithFallback,
+    useIntlRef,
+    useNotificationsListener,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
 import { BUILD_STATUS } from './network/constants';
@@ -330,10 +336,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NetworkModificationTreeLoadError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'NetworkModificationTreeLoadError' });
                 })
                 .finally(() => console.debug('Network modification tree loading finished'));
             // Note: studyUuid and dispatch don't change
@@ -360,10 +363,7 @@ export function StudyContainer({ view, onChangeTab }) {
                             .then(() => setIsFirstRootNetworkIndexationFound(true))
                             .catch((error) => {
                                 // unknown error when trying to reindex root network
-                                snackError({
-                                    headerId: 'rootNetworkIndexationError',
-                                    messageTxt: error,
-                                });
+                                snackWithFallback(snackError, error, { headerId: 'rootNetworkIndexationError' });
                             });
                         break;
                     }

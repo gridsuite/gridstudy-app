@@ -6,7 +6,7 @@
  */
 
 import { Grid, Typography } from '@mui/material';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, snackWithFallback } from '@gridsuite/commons-ui';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../../percentage-area/percentage-area';
@@ -40,10 +40,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode, current
                     setLinesOptions(values.sort());
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'equipmentsLoadingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
                 });
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid, watchLineToAttachOrSplit, snackError]);

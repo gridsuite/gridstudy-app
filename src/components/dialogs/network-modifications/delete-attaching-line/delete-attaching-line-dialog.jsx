@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -113,10 +113,7 @@ const DeleteAttachingLineDialog = ({
                 replacingLine1Id: formData[REPLACING_LINE_1_ID],
                 replacingLine1Name: sanitizeString(formData[REPLACING_LINE_1_NAME]),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'DeleteAttachingLineError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'DeleteAttachingLineError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]

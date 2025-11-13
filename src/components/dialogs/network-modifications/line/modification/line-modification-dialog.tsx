@@ -12,6 +12,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -282,10 +283,7 @@ const LineModificationDialog = ({
                 q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][VALUE],
                 q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LineModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LineModificationError' });
             });
         },
         [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError]

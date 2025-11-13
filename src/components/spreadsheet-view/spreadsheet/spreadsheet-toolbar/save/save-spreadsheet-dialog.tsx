@@ -10,6 +10,7 @@ import {
     ElementType,
     IElementCreationDialog,
     IElementUpdateDialog,
+    snackWithFallback,
     useSnackMessage,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
@@ -116,11 +117,8 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
                     },
                 });
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'spreadsheet/save/error_message',
-                });
+            .catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/save/error_message' });
             });
     };
 
@@ -147,9 +145,8 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
                     },
                 });
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
+            .catch((error) => {
+                snackWithFallback(snackError, error, {
                     headerId: 'spreadsheet/save/update_error_message',
                     headerValues: {
                         item: elementFullPath,

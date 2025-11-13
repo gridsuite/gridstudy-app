@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
@@ -183,10 +183,7 @@ const LineAttachToVoltageLevelDialog = ({
                 newLine2Id: lineAttach[LINE2_ID],
                 newLine2Name: sanitizeString(lineAttach[LINE2_NAME]),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LineAttachmentError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LineAttachmentError' });
             });
         },
         [attachmentLine, currentNodeUuid, editData, newVoltageLevel, snackError, studyUuid]

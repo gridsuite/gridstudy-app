@@ -6,7 +6,7 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
@@ -164,10 +164,7 @@ export function TabularDialog({
                 csvFilename: formData[CSV_FILENAME],
                 properties: formData[TABULAR_PROPERTIES],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TabularModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TabularModificationError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]
@@ -211,10 +208,7 @@ export function TabularDialog({
                 csvFilename: formData[CSV_FILENAME],
                 properties: formData[TABULAR_PROPERTIES],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TabularCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TabularCreationError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]

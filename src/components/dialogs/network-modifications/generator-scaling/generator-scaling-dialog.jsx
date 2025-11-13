@@ -11,7 +11,7 @@ import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
@@ -72,10 +72,7 @@ const GeneratorScalingDialog = ({
                 generatorScalingInfos[VARIATION_TYPE],
                 generatorScalingInfos[VARIATIONS]
             ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'GeneratorScalingError',
-                });
+                snackWithFallback(snackError, errorMessage, { headerId: 'GeneratorScalingError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]

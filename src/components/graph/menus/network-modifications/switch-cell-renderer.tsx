@@ -7,7 +7,7 @@
 
 import React, { useState, useCallback, SetStateAction } from 'react';
 import { Switch, Tooltip } from '@mui/material';
-import { NetworkModificationMetadata, useSnackMessage } from '@gridsuite/commons-ui';
+import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationActivated } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -38,8 +38,8 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
                 return;
             }
             setModificationActivated(studyUuid, currentNode?.id, modificationUuid, activated)
-                .catch((err) => {
-                    snackError({ messageTxt: err.message, messageId: 'networkModificationActivationError' });
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'networkModificationActivationError' });
                 })
                 .finally(() => {
                     setIsLoading(false);

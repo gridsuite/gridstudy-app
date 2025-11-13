@@ -15,7 +15,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createCouplingDevice } from '../../../../../services/study/network-modifications';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, Option, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    Option,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 import CreateCouplingDeviceForm from './create-coupling-device-form';
@@ -115,10 +122,7 @@ export default function CreateCouplingDeviceDialog({
                 modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'CreateCouplingDeviceError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'CreateCouplingDeviceError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError, selectedId]

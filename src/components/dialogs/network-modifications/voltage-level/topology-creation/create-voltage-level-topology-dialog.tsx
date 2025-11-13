@@ -9,7 +9,13 @@ import { SECTION_COUNT, SWITCH_KIND, SWITCH_KINDS, SWITCHES_BETWEEN_SECTIONS } f
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -113,10 +119,7 @@ export default function CreateVoltageLevelTopologyDialog({
                 modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'CreateVoltageLevelTopologyError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'CreateVoltageLevelTopologyError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError, selectedId]

@@ -8,7 +8,7 @@
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
@@ -112,12 +112,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                     setCount(totalElements);
                 }
             })
-            .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'PccMinResultsError',
-                })
-            )
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'PccMinResultsError' }))
             .finally(() => {
                 if (isMounted) {
                     setIsFetching(false);

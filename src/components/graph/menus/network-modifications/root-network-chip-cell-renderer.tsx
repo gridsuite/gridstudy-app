@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useMemo, SetStateAction } from 'react';
-import { ActivableChip, NetworkModificationMetadata, useSnackMessage } from '@gridsuite/commons-ui';
+import { ActivableChip, NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -104,8 +104,8 @@ const RootNetworkChipCellRenderer = ({
                 modificationUuid,
                 newStatus
             )
-                .catch((err) => {
-                    snackError({ messageTxt: err.message, messageId: 'modificationActivationByRootNetworkError' });
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'modificationActivationByRootNetworkError' });
                 })
                 .finally(() => {
                     setIsLoading(false);

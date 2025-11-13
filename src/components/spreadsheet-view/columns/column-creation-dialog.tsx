@@ -16,6 +16,7 @@ import {
     IntegerInput,
     type MuiStyles,
     MultipleAutocompleteInput,
+    snackWithFallback,
     SubmitButton,
     TextInput,
     useSnackMessage,
@@ -253,8 +254,7 @@ export default function ColumnCreationDialog({
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/custom_column/error_saving_or_updating_column',
                     });
                 });

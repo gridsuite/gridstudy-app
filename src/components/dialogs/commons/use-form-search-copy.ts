@@ -11,6 +11,7 @@ import {
     type EquipmentInfos,
     type EquipmentType,
     type ExtendedEquipmentType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_INFOS_TYPES, type EQUIPMENT_TYPES } from '../../utils/equipment-types';
@@ -65,16 +66,10 @@ export function useFormSearchCopy(
                     });
                 })
                 .catch((error) => {
-                    console.error(`error while fetching equipment ${element.id} : message = ${error.message}`);
-                    let msg;
-                    if (error.status === 404) {
-                        msg = intl.formatMessage({ id: 'EquipmentCopyFailed404' }, { equipmentId: element.id });
-                    } else {
-                        msg = `${intl.formatMessage({ id: 'EquipmentCopyFailed' }, { equipmentId: element.id })} ${
-                            error.message
-                        }`;
-                    }
-                    snackError({ messageTxt: msg });
+                    snackWithFallback(snackError, error, {
+                        headerId: 'EquipmentCopyFailed',
+                        headerValues: { equipmentId: element.id },
+                    });
                 })
                 .finally(() => handleCloseSearchDialog()),
         [

@@ -17,7 +17,13 @@ import {
     renameTableDefinition,
     reorderTableDefinitions,
 } from 'redux/actions';
-import { type MuiStyles, PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
+import {
+    type MuiStyles,
+    PopupConfirmationDialog,
+    snackWithFallback,
+    useSnackMessage,
+    useStateBoolean,
+} from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import type { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
@@ -122,7 +128,7 @@ export default function SpreadsheetTabs({
                 }
             })
             .catch((error) => {
-                snackError({ messageTxt: error.message, headerId: 'spreadsheet/remove_spreadsheet_error' });
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/remove_spreadsheet_error' });
             });
     };
 
@@ -136,7 +142,7 @@ export default function SpreadsheetTabs({
                 setIsRenameDialogOpen(false);
             })
             .catch((error) => {
-                snackError({ messageTxt: error.message, headerId: 'spreadsheet/rename_spreadsheet_error' });
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/rename_spreadsheet_error' });
             });
     };
 
@@ -171,9 +177,8 @@ export default function SpreadsheetTabs({
                     headerId: 'spreadsheet/global-model-edition/update_confirmation_message',
                 });
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
+            .catch((error) => {
+                snackWithFallback(snackError, error, {
                     headerId: 'spreadsheet/global-model-edition/update_error_message',
                 });
             });
@@ -222,7 +227,7 @@ export default function SpreadsheetTabs({
             if (spreadsheetsCollectionUuid) {
                 const newOrder = reorderedTabs.map((tab) => tab.uuid);
                 reorderSpreadsheetConfigs(studyUuid, spreadsheetsCollectionUuid, newOrder).catch((error) => {
-                    snackError({ messageTxt: error.message, headerId: 'spreadsheet/reorder_tabs_error' });
+                    snackWithFallback(snackError, error, { headerId: 'spreadsheet/reorder_tabs_error' });
                 });
             }
         },

@@ -17,7 +17,7 @@ import { Event, EventProperty, EventPropertyName, PrimitiveTypes } from './types
 import yup from 'components/utils/yup-config';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useSelector } from 'react-redux';
@@ -161,8 +161,7 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
                   };
 
             saveDynamicSimulationEvent(studyUuid, currentNodeId, submitEvent).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
+                snackWithFallback(snackError, error, {
                     headerId: 'DynamicSimulationEventSaveError',
                 });
             });

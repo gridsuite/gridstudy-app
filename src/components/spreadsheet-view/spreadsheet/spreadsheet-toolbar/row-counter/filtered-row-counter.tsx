@@ -12,7 +12,7 @@ import { Box, Button, CircularProgress, Fade, Tooltip } from '@mui/material';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { resetSpreadsheetColumnsFilters } from '../../../../../services/study/study-config';
 import { UseFilteredRowCounterInfoReturn } from './use-filtered-row-counter';
-import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
     getContainer: (theme) => ({
@@ -44,8 +44,7 @@ export function FilteredRowCounter({ rowCounterInfos, tableDefinition }: Readonl
     const handleResetFilters = useCallback(() => {
         if (isAnyFilterPresent && studyUuid) {
             resetSpreadsheetColumnsFilters(studyUuid, tableDefinition.uuid).catch((error) => {
-                console.error('Failed to update global filters:', error);
-                snackError({ headerId: 'spreadsheet/reset_filters_error', messageTxt: error.messageTxt ?? error });
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/reset_filters_error' });
             });
         }
     }, [isAnyFilterPresent, snackError, studyUuid, tableDefinition.uuid]);

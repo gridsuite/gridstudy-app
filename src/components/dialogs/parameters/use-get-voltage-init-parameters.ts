@@ -11,6 +11,7 @@ import { AppState } from '../../../redux/reducer';
 import {
     ComputingType,
     NotificationsUrlKeys,
+    snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
     VoltageInitStudyParameters,
@@ -38,10 +39,7 @@ export const useGetVoltageInitParameters = (): VoltageInitStudyParameters | null
                     setVoltageInitParams(params);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' });
                 });
         },
         [snackError]

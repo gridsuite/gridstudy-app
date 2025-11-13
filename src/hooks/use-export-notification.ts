@@ -4,8 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useIntl } from 'react-intl';
-import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    NotificationsUrlKeys,
+    snackWithFallback,
+    useNotificationsListener,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { useExportDownload } from './use-export-download';
 import { useSelector } from 'react-redux';
@@ -14,7 +18,6 @@ import { isExportNetworkNotification } from '../types/notification-types';
 import { buildExportIdentifier, isExportSubscribed, unsetExportSubscription } from '../utils/export-network-utils';
 
 export default function useExportNotification() {
-    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const { downloadExportNetworkFile } = useExportDownload();
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
@@ -30,16 +33,14 @@ export default function useExportNotification() {
                 if (isSubscribed && userIdNotif === userId) {
                     unsetExportSubscription(exportIdentifierNotif);
                     if (error) {
-                        snackError({
-                            messageTxt: intl.formatMessage({ id: 'export.message.failed' }, { error: error }),
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'export.message.failed' });
                     } else {
                         downloadExportNetworkFile(exportUuid);
                     }
                 }
             }
         },
-        [userId, snackError, downloadExportNetworkFile, intl]
+        [userId, snackError, downloadExportNetworkFile]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleExportNotification });

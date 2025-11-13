@@ -13,6 +13,7 @@ import {
     ShortCircuitParametersInfos,
     useNotificationsListener,
     ComputingType,
+    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
@@ -36,10 +37,7 @@ export const useGetShortCircuitParameters = (): ShortCircuitParametersInfos | nu
                     setShortCircuitParams(params);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' });
                 });
         },
         [snackError]

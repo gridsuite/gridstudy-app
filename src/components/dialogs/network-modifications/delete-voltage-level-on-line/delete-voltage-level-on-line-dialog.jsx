@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -108,10 +108,7 @@ const DeleteVoltageLevelOnLineDialog = ({
                 formData[REPLACING_LINE_1_ID],
                 sanitizeString(formData[REPLACING_LINE_1_NAME])
             ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'DeleteVoltageLevelOnLineError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'DeleteVoltageLevelOnLineError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]

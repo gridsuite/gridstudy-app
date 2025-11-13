@@ -14,6 +14,7 @@ import {
     ComputingType,
     formatComputingTypeLabel,
     NotificationsUrlKeys,
+    snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -107,10 +108,7 @@ export default function useComputationDebug({
                         });
                     } else {
                         // or whatever error
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'debug.header.fileError',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'debug.header.fileError' });
                     }
                 });
         },

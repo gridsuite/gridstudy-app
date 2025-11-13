@@ -26,6 +26,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -223,10 +224,7 @@ const VoltageLevelModificationDialog = ({
                 ),
                 properties: toModificationProperties(voltageLevel),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'VoltageLevelModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'VoltageLevelModificationError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, selectedId, snackError]

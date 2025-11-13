@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { AutocompleteInput, CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     fetchDynamicSimulationParameters,
     updateDynamicSimulationParameters,
@@ -90,8 +90,7 @@ export function DynamicSimulationParametersSelector({
                 reset({ ...emptyFormData, [MAPPING]: paramsPlusMappings.mapping });
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
+                snackWithFallback(snackError, error, {
                     headerId: 'DynamicSimulationGetMappingError',
                 });
             });
@@ -115,8 +114,7 @@ export function DynamicSimulationParametersSelector({
                         onStart(newDynamicSimulationParams);
                     })
                     .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
+                        snackWithFallback(snackError, error, {
                             headerId: 'DynamicSimulationParametersChangeError',
                         });
                     });

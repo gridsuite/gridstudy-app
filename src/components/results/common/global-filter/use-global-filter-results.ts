@@ -8,7 +8,7 @@
 import type { NonEmptyTuple } from 'type-fest';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import type { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { evaluateGlobalFilter } from '../../../../services/study/filter';
 import type { AppState } from '../../../../redux/reducer';
@@ -41,8 +41,7 @@ function useGlobalFiltersResults(
             evaluateGlobalFilter(studyUuid, currentNode.id, currentRootNetworkUuid, equipmentTypes, globalFilters)
                 .then(setFilteredIds)
                 .catch((error) => {
-                    console.error('Error while fetching GlobalFilter results', error);
-                    snackError({ headerId: 'FilterEvaluationError', messageTxt: `${error}` });
+                    snackWithFallback(snackError, error, { headerId: 'FilterEvaluationError' });
                 });
         }
     }, [

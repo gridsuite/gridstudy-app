@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
@@ -199,10 +199,7 @@ const ShuntCompensatorCreationDialog = ({
                 terminalConnected: shuntCompensator[CONNECTIVITY]?.[CONNECTED],
                 properties: toModificationProperties(shuntCompensator),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ShuntCompensatorCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'ShuntCompensatorCreationError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]

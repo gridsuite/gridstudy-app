@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { CustomFormProvider, Option, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import {
@@ -210,8 +210,7 @@ export default function LineTypesCatalogSelectorDialog({
                     setUndergroundShapeFactors(createOptionsFromUndergroundShapeFactors(selectedData));
                 }
             } catch (error) {
-                snackError({
-                    messageTxt: (error as Error).message,
+                snackWithFallback(snackError, error, {
                     headerId: 'LineTypesCatalogFetchingError',
                 });
             }

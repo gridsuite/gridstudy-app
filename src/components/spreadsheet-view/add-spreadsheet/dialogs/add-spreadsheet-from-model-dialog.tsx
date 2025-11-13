@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     DirectoryItemsInput,
     ElementType,
+    snackWithFallback,
     TextInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -101,8 +102,7 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<AddSpre
                     });
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
                     });
                 });

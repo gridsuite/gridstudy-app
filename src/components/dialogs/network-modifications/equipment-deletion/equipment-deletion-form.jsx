@@ -8,7 +8,7 @@
 import { Grid } from '@mui/material';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useSnackMessage, AutocompleteInput } from '@gridsuite/commons-ui';
+import { useSnackMessage, AutocompleteInput, snackWithFallback } from '@gridsuite/commons-ui';
 import { filledTextField } from 'components/dialogs/dialog-utils';
 import {
     DELETION_SPECIFIC_DATA,
@@ -76,10 +76,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
                     }
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'equipmentsLoadingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
                 });
             return () => {
                 ignore = true;

@@ -20,7 +20,13 @@ import {
     R,
 } from '../../../../../utils/field-constants';
 import yup from '../../../../../utils/yup-config';
-import { CustomFormProvider, ExtendedEquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    ExtendedEquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccFormInfos, LccModificationSchemaForm } from '../common/lcc-type';
 import { useCallback, useEffect, useState } from 'react';
@@ -167,10 +173,7 @@ export const LccModificationDialog = ({
                 modificationUuid: editData ? editData.uuid : null,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LccModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LccModificationError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError, lccToModify]

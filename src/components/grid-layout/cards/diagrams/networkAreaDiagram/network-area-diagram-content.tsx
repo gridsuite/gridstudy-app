@@ -40,6 +40,7 @@ import {
     IElementCreationDialog,
     IElementUpdateDialog,
     mergeSx,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
@@ -171,12 +172,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     },
                 });
             })
-            .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'diagramConfigCreationError',
-                })
-            );
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'diagramConfigCreationError' }));
     };
 
     const handleUpdateNadConfig = (data: IElementUpdateDialog) => {
@@ -198,12 +194,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     },
                 });
             })
-            .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'diagramConfigUpdateError',
-                })
-            );
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'diagramConfigUpdateError' }));
     };
 
     const {
