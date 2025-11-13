@@ -28,8 +28,6 @@ export const useGetPccMinParameters = (): PccMinParameters | null => {
     const [pccMinParams, setPccMinParams] = useState<PccMinParameters | null>(null);
 
     const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
-    const pccMinAvailabilityRef = useRef(pccMinAvailability);
-    pccMinAvailabilityRef.current = pccMinAvailability;
 
     const fetchPccMinStudyParameters = useCallback(
         (studyUuid: UUID) => {
