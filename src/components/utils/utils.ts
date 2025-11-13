@@ -324,5 +324,5 @@ export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean }
 
 //Escapes regex special characters to avoid misinterpreting user prompts
 export function escapeRegExp(string: string): string {
-    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
