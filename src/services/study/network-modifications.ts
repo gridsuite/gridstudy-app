@@ -61,7 +61,11 @@ import { Filter } from '../../components/dialogs/network-modifications/by-filter
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
-import { ENABLE_OLG_MODIFICATION } from '../../components/utils/field-constants';
+import {
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
+    OLGS_MODIFICATION_TYPE,
+    ENABLE_OLG_MODIFICATION,
+} from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -894,6 +898,9 @@ export function modifyLine({
             selectedOperationalLimitsGroup1: selectedOperationalLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedOperationalLimitsGroup2,
             [ENABLE_OLG_MODIFICATION]: enableOLGModification,
+            [OLGS_MODIFICATION_TYPE]: enableOLGModification
+                ? OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE
+                : null,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
             busOrBusbarSectionId1: toModificationOperation(busOrBusbarSectionId1),
             voltageLevelId2: toModificationOperation(voltageLevelId2),
@@ -1074,6 +1081,9 @@ export function modifyTwoWindingsTransformer({
             selectedOperationalLimitsGroup1: selectedLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             [ENABLE_OLG_MODIFICATION]: enableOLGModification,
+            [OLGS_MODIFICATION_TYPE]: enableOLGModification
+                ? OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE
+                : null,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
