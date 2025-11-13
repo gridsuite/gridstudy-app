@@ -50,11 +50,11 @@ import {
     TemporaryLimitFormInfos,
 } from '../network-modifications/line/modification/line-modification-type';
 
-const limitsGroupValidationSchema = (isModification: boolean) => ({
+const limitsGroupValidationSchema = () => ({
     [ID]: yup.string().nonNullable().required(),
     [NAME]: yup.string().nonNullable().required(),
     [APPLICABIlITY]: yup.string().nonNullable().required(),
-    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
+    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema()),
     [LIMITS_PROPERTIES]: yup.array().of(limitsPropertyValidationSchema()),
 });
 
@@ -78,10 +78,8 @@ const limitsPropertyValidationSchema = () => {
     });
 };
 
-const currentLimitsValidationSchema = (isModification = false) => ({
-    [PERMANENT_LIMIT]: isModification
-        ? yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero')
-        : yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
+const currentLimitsValidationSchema = () => ({
+    [PERMANENT_LIMIT]: yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(temporaryLimitsValidationSchema())
@@ -97,10 +95,10 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         }),
 });
 
-const limitsValidationSchemaCreation = (id: string, isModification: boolean) => {
+const limitsValidationSchemaCreation = (id: string) => {
     const completeLimitsGroupSchema = {
         [OPERATIONAL_LIMITS_GROUPS]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
+            .array(yup.object().shape(limitsGroupValidationSchema()))
             .test('distinctNames', 'LimitSetApplicabilityError', (array) => {
                 const namesArray: OperationalLimitsId[] = !array
                     ? []
@@ -118,8 +116,8 @@ const limitsValidationSchemaCreation = (id: string, isModification: boolean) => 
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
 
-export const getLimitsValidationSchema = (isModification: boolean = false, id: string = LIMITS) => {
-    return limitsValidationSchemaCreation(id, isModification);
+export const getLimitsValidationSchema = (id: string = LIMITS) => {
+    return limitsValidationSchemaCreation(id);
 };
 
 const limitsEmptyFormData = (isModification: boolean, id: string) => {
@@ -143,19 +141,25 @@ export const formatOpLimitGroupsToFormInfos = (
     if (!limitGroups) {
         return [];
     }
-    return limitGroups.map((opLimitGroup: OperationalLimitsGroup) => {
-        return {
-            id: opLimitGroup.id + opLimitGroup.applicability,
-            name: opLimitGroup.id,
-            applicability: opLimitGroup.applicability,
-            limitsProperties: opLimitGroup.limitsProperties,
-            currentLimits: {
-                id: opLimitGroup.currentLimits.id,
-                permanentLimit: opLimitGroup.currentLimits.permanentLimit,
-                temporaryLimits: formatToTemporaryLimitsFormInfos(opLimitGroup.currentLimits.temporaryLimits),
-            },
-        };
-    });
+
+    return limitGroups
+        .filter(
+            (opLimitGroup: OperationalLimitsGroup) =>
+                opLimitGroup.modificationType !== LIMIT_SETS_MODIFICATION_TYPE.DELETE
+        )
+        .map((opLimitGroup: OperationalLimitsGroup) => {
+            return {
+                id: opLimitGroup.id + opLimitGroup.applicability,
+                name: opLimitGroup.id,
+                applicability: opLimitGroup.applicability,
+                limitsProperties: opLimitGroup.limitsProperties,
+                currentLimits: {
+                    id: opLimitGroup.currentLimits.id,
+                    permanentLimit: opLimitGroup.currentLimits.permanentLimit,
+                    temporaryLimits: formatToTemporaryLimitsFormInfos(opLimitGroup.currentLimits.temporaryLimits),
+                },
+            };
+        });
 };
 
 export const getAllLimitsFormData = (
@@ -245,7 +249,7 @@ export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimitsDat
             limitsProperties: currentLimit.limitsProperties,
             currentLimits: {
                 id: currentLimit.id,
-                permanentLimit: null,
+                permanentLimit: currentLimit.permanentLimit,
                 temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
             },
         };
@@ -261,7 +265,6 @@ export const combineFormAndMapServerLimitsGroups = (
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroupFormInfos[] => {
     let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification?.limits?.operationalLimitsGroups ?? [];
-
     // updates limit values :
     for (const opLG of updatedOpLG) {
         const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
@@ -269,6 +272,7 @@ export const combineFormAndMapServerLimitsGroups = (
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
         );
         if (equivalentFromMapServer !== undefined) {
+            opLG.currentLimits.permanentLimit = equivalentFromMapServer.permanentLimit;
             opLG.currentLimits.temporaryLimits = updateTemporaryLimits(
                 opLG.currentLimits.temporaryLimits,
                 formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
@@ -290,7 +294,7 @@ export const combineFormAndMapServerLimitsGroups = (
                 limitsProperties: currentLimit.limitsProperties,
                 currentLimits: {
                     id: currentLimit.id,
-                    permanentLimit: null,
+                    permanentLimit: currentLimit.permanentLimit,
                     temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
                 },
             });
