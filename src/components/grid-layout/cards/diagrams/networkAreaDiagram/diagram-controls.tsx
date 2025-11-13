@@ -28,6 +28,7 @@ import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import SpeakerNotesOffOutlinedIcon from '@mui/icons-material/SpeakerNotesOffOutlined';
 import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
+import SearchIcon from '@mui/icons-material/Search';
 import { Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -36,6 +37,7 @@ import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import VoltageLevelSearchMenu from './voltage-level-search-menu';
 
 const styles = {
     actionIcon: (theme) => ({
@@ -82,6 +84,8 @@ interface DiagramControlsProps {
     onToggleShowLabels?: () => void;
     isShowLabels?: boolean;
     isDiagramLoading?: boolean;
+    svgVoltageLevels?: string[];
+    onFocusVoltageLevel?: (vlId: string) => void;
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({
@@ -95,6 +99,8 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     onToggleShowLabels,
     isShowLabels,
     isDiagramLoading,
+    svgVoltageLevels,
+    onFocusVoltageLevel,
 }) => {
     const intl = useIntl();
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
@@ -131,8 +137,18 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         }
     };
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const [searchAnchorEl, setSearchAnchorEl] = useState<HTMLElement | null>(null);
+
     const handleClickAddVoltageLevelIcon = () => {
         setIsDialogSearchOpen(true);
+    };
+
+    const handleClickSearchVoltageLevelIcon = (event: React.MouseEvent<HTMLElement>) => {
+        setSearchAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseSearch = () => {
+        setSearchAnchorEl(null);
     };
     const handleSave = (data: IElementCreationDialog) => {
         if (onSave) {
@@ -162,9 +178,21 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     const handleToggleEditMode = () => {
         onToggleEditNadMode?.(!isEditNadMode);
     };
+
+    const handleVoltageLevelSelect = useCallback(
+        (voltageLevelId: string) => {
+            if (onFocusVoltageLevel) {
+                onFocusVoltageLevel(voltageLevelId);
+            }
+            handleCloseSearch();
+        },
+        [onFocusVoltageLevel]
+    );
+
     const handleCloseSearchDialog = useCallback(() => {
         setIsDialogSearchOpen(false);
     }, []);
+
     const { snackWarning } = useSnackMessage();
 
     const onSelectionChange = useCallback(
@@ -232,6 +260,17 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         <IconButton sx={styles.actionIcon} onClick={handleClickLoadIcon}>
                             <UploadIcon sx={styles.icon} />
                         </IconButton>
+                    </Tooltip>
+                    <Tooltip title={<FormattedMessage id={'searchVoltageLevelInNad'} />}>
+                        <span>
+                            <IconButton
+                                sx={styles.actionIcon}
+                                onClick={handleClickSearchVoltageLevelIcon}
+                                disabled={isDiagramLoading || !svgVoltageLevels || svgVoltageLevels.length === 0}
+                            >
+                                <SearchIcon sx={styles.icon} />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                     {isEditNadMode && (
                         <>
@@ -311,6 +350,15 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         />
                     </Box>
                     {renderSearchEquipment()}
+                    {svgVoltageLevels && (
+                        <VoltageLevelSearchMenu
+                            open={Boolean(searchAnchorEl)}
+                            anchorEl={searchAnchorEl}
+                            onClose={handleCloseSearch}
+                            voltageLevels={svgVoltageLevels}
+                            onSelect={handleVoltageLevelSelect}
+                        />
+                    )}
                 </>
             )}
         </>
