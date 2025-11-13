@@ -15,6 +15,7 @@ import {
 } from '../utils/config-params';
 import type { Action } from 'redux';
 import {
+    BaseVoltageConfig,
     ComputingType,
     type GsLang,
     type GsLangUser,
@@ -152,6 +153,7 @@ export type AppActions =
     | ReorderTableDefinitionsAction
     | RenameTableDefinitionAction
     | SetAppTabIndexAction
+    | SetBaseVoltagesConfigAction
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
@@ -177,6 +179,18 @@ export function setAppTabIndex(tabIndex: number): SetAppTabIndexAction {
     return {
         type: SET_APP_TAB_INDEX,
         tabIndex,
+    };
+}
+
+export const SET_BASE_VOLTAGES_CONFIG = 'SET_BASE_VOLTAGES_CONFIG';
+export type SetBaseVoltagesConfigAction = Readonly<Action<typeof SET_BASE_VOLTAGES_CONFIG>> & {
+    baseVoltagesConfig: BaseVoltageConfig[];
+};
+
+export function setBaseVoltagesConfig(baseVoltagesConfig: BaseVoltageConfig[]): SetBaseVoltagesConfigAction {
+    return {
+        type: SET_BASE_VOLTAGES_CONFIG,
+        baseVoltagesConfig,
     };
 }
 

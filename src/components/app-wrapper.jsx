@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import App from './app';
 import {
     createTheme,
@@ -72,7 +72,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import messages_plugins from '../plugins/translations';
@@ -102,6 +102,9 @@ import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator'
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
+import { getVoltageLevelsCssVars } from 'utils/colors';
+import { fetchBaseVoltagesConfig } from '../services/utils';
+import { setBaseVoltagesConfig } from '../redux/actions';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -448,9 +451,27 @@ const basename = new URL(document.querySelector('base').href).pathname;
 const AppWrapperWithRedux = () => {
     const computedLanguage = useSelector((state) => state.computedLanguage);
     const theme = useSelector((state) => state[PARAM_THEME]);
+    const baseVoltagesConfig = useSelector((state) => state.baseVoltagesConfig);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
-    const rootCssVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        fetchBaseVoltagesConfig().then((appMetadataBaseVoltagesConfig) => {
+            dispatch(setBaseVoltagesConfig(appMetadataBaseVoltagesConfig));
+        });
+    }, [dispatch]);
+
+    const rootCssVars = useMemo(() => {
+        const themeVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
+        if (!baseVoltagesConfig || baseVoltagesConfig.length === 0) {
+            return themeVars;
+        }
+        return {
+            ...themeVars,
+            ...getVoltageLevelsCssVars(baseVoltagesConfig, theme),
+        };
+    }, [baseVoltagesConfig, theme]);
 
     const urlMapper = useNotificationsUrlGenerator();
 
