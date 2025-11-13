@@ -53,7 +53,7 @@ const createValueGetter =
         }
     };
 
-export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
+const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
     tableDefinition?.columns.map((colDef): CustomColDef => {
         let baseDefinition: ColDef;
 
@@ -96,7 +96,7 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
         };
     });
 
-export const addFormulaErrorsRenderer = (intl: IntlShape, columns: CustomColDef[]): CustomColDef[] => {
+const addFormulaErrorsRenderer = (intl: IntlShape, columns: CustomColDef[]): CustomColDef[] => {
     return columns.map((col) => ({
         ...col,
         cellRendererSelector: (params) =>

@@ -36,7 +36,7 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-const FORMULA_ERROR_LABEL = '#ERROR';
+const FORMULA_ERROR_KEY = 'spreadsheet/formula/error';
 
 interface BaseCellRendererProps {
     value: string | undefined;
@@ -127,12 +127,13 @@ const BaseCellRenderer = ({ value, tooltip }: BaseCellRendererProps) => (
 
 export const ErrorCellRenderer = (props: ErrorCellRendererParams) => {
     const errorMessage = props.intl.formatMessage({ id: props.value?.error });
-    return <BaseCellRenderer value={FORMULA_ERROR_LABEL} tooltip={errorMessage} />;
+    const errorValue = props.intl.formatMessage({ id: FORMULA_ERROR_KEY });
+    return <BaseCellRenderer value={errorValue} tooltip={errorMessage} />;
 };
 
 export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
-    const cellValue = formatCell(props);
-    return <BaseCellRenderer value={cellValue.value?.toString()} tooltip={cellValue.value?.toString()} />;
+    const cellValue = formatCell(props).value?.toString();
+    return <BaseCellRenderer value={cellValue} />;
 };
 
 export const NetworkModificationNameCellRenderer = (props: CustomCellRendererProps) => {

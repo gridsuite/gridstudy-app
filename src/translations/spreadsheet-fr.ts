@@ -155,6 +155,7 @@ const spreadsheetFr = {
     'spreadsheet/calculation/max_abbrev': 'Max',
 
     //Formula errors
+    'spreadsheet/formula/error': '#ERREUR',
     'spreadsheet/formula/import/disabled': 'La fonction import est désactivée',
     'spreadsheet/formula/createUnit/disabled': 'La fonction createUnit est désactivée',
     'spreadsheet/formula/evaluate/disabled': 'La fonction evaluate est désactivée',
@@ -166,7 +167,7 @@ const spreadsheetFr = {
     'spreadsheet/formula/length/error': 'La fonction length attend une donnée de type tableau ou objet',
     'spreadsheet/formula/type/number': 'La formule doit exprimer une donnée numérique',
     'spreadsheet/formula/type/boolean': 'La formule doit exprimer une donnée booléenne',
-    'spreadsheet/formula/type/enum': 'La formule doit exprimer une donnée textuelle',
+    'spreadsheet/formula/type/enum': 'La formule doit exprimer une donnée textuelle ou numérique',
     'spreadsheet/formula/type/unknown': 'Type de donnée inconnu',
 
     // Column types
