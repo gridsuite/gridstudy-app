@@ -14,15 +14,15 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@gridsuite/commons-ui": "0.136.0",
+        "@gridsuite/commons-ui": "file:../commons-ui/gridsuite-commons-ui-0.136.0.tgz",
         "@hello-pangea/dnd": "^18.0.1",
         "@hookform/resolvers": "^4.1.3",
-        "@mui/icons-material": "^5.18.0",
-        "@mui/lab": "5.0.0-alpha.175",
-        "@mui/material": "^5.18.0",
+        "@mui/icons-material": "^6.5.0",
+        "@mui/lab": "6.0.1-beta.36",
+        "@mui/material": "^6.5.0",
         "@mui/x-charts": "^7.29.1",
         "@mui/x-tree-view": "^7.29.1",
-        "@powsybl/network-viewer": "2.0.0",
+        "@powsybl/network-viewer": "file:../../powsybl/powsybl-network-viewer/powsybl-network-viewer-2.1.0-dev.0.tgz",
         "@reduxjs/toolkit": "^2.9.0",
         "@svgdotjs/svg.js": "^3.2.4",
         "@xyflow/react": "^12.8.4",
@@ -54,8 +54,11 @@
         "redux": "^5.0.1",
         "typeface-roboto": "^1.1.13",
         "uuid": "^13.0.0",
-        "yup": "^1.7.0"
+        "yup": "^1.7.0",
+        "notistack": "^3.0.2"
     },
+    "//": "For react-is, override to prevent the use of react-is@19 which comes with mui v6 (see migration guide to mui v6)",
+    "react-is": "^18.3.1",
     "overrides": {
         "@powsybl/network-viewer": {
             "react-intl": "$react-intl"

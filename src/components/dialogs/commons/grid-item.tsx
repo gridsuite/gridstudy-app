@@ -14,8 +14,14 @@ export interface GridItemProps extends PropsWithChildren {
 }
 
 export default function GridItem({ children, size = 6, alignItem = 'flex-start', tooltip }: Readonly<GridItemProps>) {
+    let newSize: number | boolean | 'auto' | undefined;
+    if (typeof size === 'number') {
+        newSize = size;
+    } else {
+        newSize = size === 'grow' ? true : size;
+    }
     return (
-        <Grid item xs={size} alignItems={alignItem}>
+        <Grid item xs={newSize} alignItems={alignItem}>
             {children &&
                 (tooltip ? (
                     <Tooltip title={tooltip}>
