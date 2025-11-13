@@ -31,19 +31,19 @@ export interface OperationalLimitsGroupsFormSchema {
     [OPERATIONAL_LIMITS_GROUPS]: OperationalLimitsGroupFormSchema[];
     [SELECTED_LIMITS_GROUP_1]?: string;
     [SELECTED_LIMITS_GROUP_2]?: string;
-    [ENABLE_OLG_MODIFICATION]?: boolean;
+    [ENABLE_OLG_MODIFICATION]: boolean;
 }
 
 export interface OperationalLimitsGroupFormSchema {
     [ID]: string;
     [NAME]: string;
-    [APPLICABIlITY]: string;
+    [APPLICABIlITY]?: string;
     [CURRENT_LIMITS]: CurrentLimitsFormSchema;
-    [LIMITS_PROPERTIES]: LimitsPropertyFormSchema[];
+    [LIMITS_PROPERTIES]?: LimitsPropertyFormSchema[];
 }
 
 export interface CurrentLimitsFormSchema {
-    [PERMANENT_LIMIT]: number;
+    [PERMANENT_LIMIT]: number | null;
     [TEMPORARY_LIMITS]: TemporaryLimitsFormSchema[];
 }
 
@@ -52,8 +52,8 @@ interface LimitsPropertyFormSchema {
     [VALUE]: string;
 }
 
-interface TemporaryLimitsFormSchema {
-    [TEMPORARY_LIMIT_DURATION]?: number;
-    [TEMPORARY_LIMIT_VALUE]?: number;
+export interface TemporaryLimitsFormSchema {
+    [TEMPORARY_LIMIT_DURATION]: number | null;
+    [TEMPORARY_LIMIT_VALUE]: number | null;
     [TEMPORARY_LIMIT_NAME]: string;
 }

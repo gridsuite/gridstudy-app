@@ -8,7 +8,6 @@
 import { Box, FormHelperText, Stack, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { APPLICABILITY } from '../../network/constants';
-import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { LimitsPropertiesStack } from './limits-properties-stack';
 import { grey, red } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
@@ -16,10 +15,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useFormState } from 'react-hook-form';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import { LIMITS, OPERATIONAL_LIMITS_GROUPS } from '../../utils/field-constants';
-import { LimitsFormSchema } from './operational-limits-groups-types';
+import { LimitsFormSchema, OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
 
 interface OperationalLimitsGroupTabLabelProps {
-    operationalLimitsGroup: OperationalLimitsGroupFormInfos;
+    operationalLimitsGroup: OperationalLimitsGroupFormSchema;
     showIconButton: boolean;
     editable: boolean;
     limitsPropertiesName: string;

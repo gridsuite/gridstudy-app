@@ -91,7 +91,7 @@ import {
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
-    combineFormAndMapServerLimitsGroups,
+    convertToOperationalLimitsGroupFormSchema,
     formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
@@ -665,7 +665,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                             [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                             [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
                                                 ? getOpLimitsGroupInfosFromBranchModification(formValues)
-                                                : combineFormAndMapServerLimitsGroups(formValues, twt),
+                                                : convertToOperationalLimitsGroupFormSchema(formValues, twt),
                                         },
                                     },
                                     ...getRatioTapChangerFormData({
