@@ -50,7 +50,7 @@ const styles = {
     }),
 } as const satisfies MuiStyles;
 
-const TreeViewItemBox = styled(Box)(() => {
+const TreeViewItemBox = styled('div')(() => {
     return {
         display: 'flex',
         alignItems: 'center',
