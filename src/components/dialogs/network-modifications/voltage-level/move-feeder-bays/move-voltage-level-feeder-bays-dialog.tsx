@@ -109,6 +109,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
+    const [feederBaysPreviousValues, setFeederBaysPreviousValues] = useState<FeederBaysInfos>([]);
 
     const formMethods = useForm<DeepNullable<MoveVoltageLevelFeederBaysFormSchemaType>>({
         defaultValues: emptyFormData,
@@ -227,6 +228,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 ...item,
                 rowId: `${item.equipmentId}-${index}`,
             }));
+            setFeederBaysPreviousValues(feederBaysInfos);
             // reset default values for RHF state
             reset(
                 {
@@ -363,6 +365,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         studyUuid={studyUuid}
                         isReady={dataFetchStatus === FetchStatus.SUCCEED}
+                        feederBaysFormInfos={feederBaysPreviousValues}
                     />
                 )}
             </ModificationDialog>
