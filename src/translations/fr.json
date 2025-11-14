@@ -1562,6 +1562,8 @@
     "expand": "Étendre",
     "expandAllVoltageLevels": "Étendre tous les postes",
     "addVoltageLevel": "Ajouter un poste",
+    "searchVoltageLevelInNad": "Rechercher un poste",
+    "noResultsFound": "Aucun résultat trouvé",
     "hide": "Masquer",
     "hideLabels": "Masquer les libellés en mode edition",
     "showLabels": "Afficher les libellés",
