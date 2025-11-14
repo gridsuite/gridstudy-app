@@ -15,9 +15,9 @@ import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
 import { PopoverProps } from '@mui/material/Popover';
 import { APPLICABILITY } from '../../network/constants';
-import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
-import { CurrentLimits } from '../../../services/network-modification-types';
 import { useCallback } from 'react';
+import { CurrentLimitsData } from '../../../services/study/network-map.type';
+import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
 
 export interface LimitsGroupsContextualMenuProps {
     parentFormName: string;
@@ -29,11 +29,11 @@ export interface LimitsGroupsContextualMenuProps {
     startEditingLimitsGroup: (index: number, name: string | null) => void;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
-    currentLimitsToModify: CurrentLimits[];
+    currentLimitsToModify: CurrentLimitsData[];
     operationalLimitsGroups: FieldValues;
     appendToLimitsGroups: UseFieldArrayAppend<
         {
-            [p: string]: OperationalLimitsGroupFormInfos[];
+            [p: string]: OperationalLimitsGroupFormSchema[];
         },
         string
     >;
@@ -93,9 +93,9 @@ export function LimitsGroupsContextualMenu({
     const handleDuplicateTab = useCallback(() => {
         let newName: string = '';
         if (indexSelectedLimitSet !== null) {
-            const duplicatedLimits1: OperationalLimitsGroupFormInfos = operationalLimitsGroups[indexSelectedLimitSet];
+            const duplicatedLimits1: OperationalLimitsGroupFormSchema = operationalLimitsGroups[indexSelectedLimitSet];
             newName = duplicatedLimits1.name + '_COPY';
-            const newLimitsGroup1: OperationalLimitsGroupFormInfos = {
+            const newLimitsGroup1: OperationalLimitsGroupFormSchema = {
                 ...duplicatedLimits1,
                 [ID]: newName,
             };
