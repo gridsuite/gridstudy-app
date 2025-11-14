@@ -68,7 +68,7 @@ export default function ImportParametersSection() {
                         initValues={currentParameters}
                         onChange={handleParamsChange}
                         variant="standard"
-                        selectionWithDialog={(param: any) => param.possibleValues?.length > 10}
+                        selectionWithDialog={(param: Parameter) => param.possibleValues?.length > 10}
                     />
                 )}
             </Box>
