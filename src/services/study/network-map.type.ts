@@ -7,7 +7,7 @@
 import { CurrentLimitsData } from '../network-modification-types';
 import { Equipment } from '../../components/dialogs/network-modifications/common/properties/property-utils';
 import { BusBarSections } from '../../components/dialogs/network-modifications/voltage-level/section/voltage-level-section.type';
-import { FeederBayInfos } from '../../components/dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays.type';
+import { ConnectablePositionInfos } from '../../components/dialogs/connectivity/connectivity.type';
 
 export type SwitchInfos = {
     id: string;
@@ -23,10 +23,13 @@ export type BusBarSectionsInfos = {
     busBarSections: BusBarSections;
 };
 
-export type FeederBaysBusBarSectionsInfos = {
-    feederBaysInfos: Record<string, FeederBayInfos[]>;
-    busBarSectionsInfos: BusBarSectionsInfos;
-};
+interface FeederBay {
+    busbarSectionId: string;
+    connectionSide: string | null;
+    connectablePositionInfos: ConnectablePositionInfos;
+}
+
+export type FeederBaysInfos = Record<string, FeederBay[]>;
 
 export type BranchInfos = Equipment & {
     name: string;

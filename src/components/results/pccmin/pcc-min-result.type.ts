@@ -58,6 +58,7 @@ export interface PccMinPagedResults extends PccMinResults {
 export const FROM_COLUMN_TO_FIELD_PCC_MIN: Record<string, string> = {
     busId: 'busId',
     limitingEquipment: 'limitingEquipment',
+    voltageLevelId: 'voltageLevelId',
     pccMinTri: 'pccMinTri',
     iccMinTri: 'iccMinTri',
     r: 'r',
@@ -97,6 +98,7 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
 
     let columnsMeta = [
         { colId: 'busId', headerKey: 'Bus', filterDef: textFilterParams },
+        { colId: 'voltageLevelId', headerKey: 'voltageLevelId', filterDef: textFilterParams },
         { colId: 'limitingEquipment', headerKey: 'Contingency', filterDef: textFilterParams },
         {
             colId: 'pccMinTri',
