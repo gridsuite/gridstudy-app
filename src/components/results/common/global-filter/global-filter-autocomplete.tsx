@@ -27,7 +27,7 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { FilterType } from '../utils';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import { OverflowableText, OverflowableChip } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
@@ -223,8 +223,7 @@ function GlobalFilterAutocomplete({
             const key: string = `inputFieldChip_${element.label}`;
             if (index < TAG_LIMIT_NUMBER) {
                 return (
-                    <Chip
-                        size="small"
+                    <OverflowableChip
                         label={label}
                         {...getTagsProps({ index })}
                         key={key}
