@@ -237,13 +237,13 @@ const NetworkModificationNodeEditor = () => {
 
     const cleanClipboard = useCallback(() => {
         cleanCurrentTabClipboard('copiedModificationsInvalidationMsg');
-        cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromOtherTab');
+        cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromOtherStudy');
     }, [cleanCurrentTabClipboard, cleanOtherTabsClipboard]);
 
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', (event) => {
-            cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromTabClosure');
+            cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
         });
     }, [cleanOtherTabsClipboard]);
 

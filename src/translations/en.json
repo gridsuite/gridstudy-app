@@ -28,14 +28,14 @@
     "moveStudyNotification": "The study has been moved from {oldStudyPath} to {studyPath}",
 
     "copiedNodeInvalidationMsg": "Clipboard content cleared due to changes in nodes",
-    "copiedNodeInvalidationMsgFromOtherTab": "Clipboard content cleared due to changes in nodes in another tab",
-    "copiedNodeInvalidationMsgFromTabClosure": "Clipboard content cleared due to a tab being closed",
-    "copiedNodeUpdateMsg": "Clipboard content updated after copying a node in another tab",
+    "copiedNodeInvalidationMsgFromOtherStudy": "Clipboard content cleared due to changes in nodes in another study",
+    "copiedNodeInvalidationMsgFromStudyClosure": "Clipboard content cleared due to a study being closed",
+    "copiedNodeUpdateMsg": "Clipboard content updated after copying a node in another study",
 
     "copiedModificationsInvalidationMsg": "Clipboard content cleared due to changes in modifications",
-    "copiedModificationsInvalidationMsgFromOtherTab": "Clipboard content cleared due to changes in modifications in another tab",
-    "copiedModificationsInvalidationMsgFromTabClosure": "Clipboard content cleared due to a tab being closed",
-    "copiedModificationsUpdateMsg": "Clipboard content updated after copying modifications in another tab",
+    "copiedModificationsInvalidationMsgFromOtherStudy": "Clipboard content cleared due to changes in modifications in another study",
+    "copiedModificationsInvalidationMsgFromStudyClosure": "Clipboard content cleared due to a study being closed",
+    "copiedModificationsUpdateMsg": "Clipboard content updated after copying modifications in another study",
 
     "exportNetwork": "Export the network",
     "export": "Export",

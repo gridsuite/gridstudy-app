@@ -115,7 +115,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
             if (true === isInitiatingCopyTab.current) {
                 broadcastChannel.postMessage({
                     nodeToCopy: noNodeSelectionForCopy,
-                    message: 'copiedNodeInvalidationMsgFromTabClosure',
+                    message: 'copiedNodeInvalidationMsgFromStudyClosure',
                 });
             }
         });
@@ -174,7 +174,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         if (true === isInitiatingCopyTab.current) {
             broadcastChannel.postMessage({
                 nodeToCopy: noNodeSelectionForCopy,
-                message: 'copiedNodeInvalidationMsgFromOtherTab',
+                message: 'copiedNodeInvalidationMsgFromOtherStudy',
             });
 
             //we need to reset isInitiatingCopyTab here otherwise it won't in the current tab thus next unrelated pasting actions will reset other tabs clipboard
@@ -401,7 +401,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
             dispatchNodeSelectionForCopy(studyUuid, nodeId, CopyType.NODE_CUT);
             broadcastChannel.postMessage({
                 nodeToCopy: noNodeSelectionForCopy,
-                message: 'copiedNodeInvalidationMsgFromOtherTab',
+                message: 'copiedNodeInvalidationMsgFromOtherStudy',
             });
         } else {
             dispatchNoNodeSelectionForCopy();
@@ -559,7 +559,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 nodeId: nodeId,
                 copyType: CopyType.SUBTREE_COPY,
             },
-            message: 'copiedNodeInvalidationMsgFromOtherTab',
+            message: 'copiedNodeInvalidationMsgFromOtherStudy',
         });
     };
 
@@ -568,7 +568,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
             dispatchNodeSelectionForCopy(studyUuid, nodeId, CopyType.SUBTREE_CUT);
             broadcastChannel.postMessage({
                 nodeToCopy: noNodeSelectionForCopy,
-                message: 'copiedNodeInvalidationMsgFromOtherTab',
+                message: 'copiedNodeInvalidationMsgFromOtherStudy',
             });
         } else {
             dispatchNoNodeSelectionForCopy();
