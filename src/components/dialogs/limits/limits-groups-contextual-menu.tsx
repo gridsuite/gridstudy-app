@@ -97,13 +97,15 @@ export function LimitsGroupsContextualMenu({
                 [ID]: newName,
             };
             appendToLimitsGroups(newLimitsGroup1);
-            setIndexSelectedLimitSet(operationalLimitsGroups.length - 1);
+            handleCloseMenu();
+            setIndexSelectedLimitSet(operationalLimitsGroups.length);
         }
     }, [
-        appendToLimitsGroups,
         indexSelectedLimitSet,
-        setIndexSelectedLimitSet,
         operationalLimitsGroups,
+        appendToLimitsGroups,
+        setIndexSelectedLimitSet,
+        handleCloseMenu,
     ]);
 
     return (
