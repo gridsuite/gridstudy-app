@@ -26,7 +26,7 @@ import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
-import { tabStyles } from 'components/utils/tab-utils';
+import { stylesLayout } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
@@ -35,6 +35,15 @@ import { CurrentLimitsData } from 'services/study/network-map.type';
 import { FormattedMessage } from 'react-intl';
 
 const limitsStyles = {
+    tabs: () => ({
+        ...stylesLayout.listDisplay,
+        '.MuiTab-root.MuiButtonBase-root': {
+            textTransform: 'none', //tab text not upper-case
+            textAlign: 'left',
+            alignItems: 'stretch',
+            p: 0,
+        },
+    }),
     tabBackground: {
         flexBasis: 'fit-content',
         p: 1,
@@ -309,7 +318,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     variant="fullWidth"
                     value={indexSelectedLimitSet !== null && indexSelectedLimitSet}
                     onChange={handleTabChange}
-                    sx={tabStyles.listDisplay}
+                    sx={limitsStyles.tabs}
                     visibleScrollbar
                 >
                     {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
