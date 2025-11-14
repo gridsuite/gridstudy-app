@@ -10,11 +10,11 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } fro
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
+    DELETION_MARK,
     ID,
     LIMITS_PROPERTIES,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
-    SELECTED,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
     TEMPORARY_LIMIT_DURATION,
@@ -31,7 +31,7 @@ import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
-import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
+import { OperationalLimitsGroupFormSchema, TemporaryLimitsFormSchema } from './operational-limits-groups-types';
 import { CurrentLimitsData } from 'services/study/network-map.type';
 
 const limitsStyles = {
@@ -183,12 +183,11 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 }
 
                 // new limit sets are created with 5 empty limits by default
-                const emptyTemporaryLimit = {
+                const emptyTemporaryLimit: TemporaryLimitsFormSchema = {
                     [TEMPORARY_LIMIT_NAME]: '',
                     [TEMPORARY_LIMIT_DURATION]: null,
                     [TEMPORARY_LIMIT_VALUE]: null,
-                    modificationType: null,
-                    [SELECTED]: false,
+                    [DELETION_MARK]: false,
                 };
                 const newLimitsGroup: OperationalLimitsGroupFormSchema = {
                     [ID]: name + APPLICABILITY.EQUIPMENT.id,
