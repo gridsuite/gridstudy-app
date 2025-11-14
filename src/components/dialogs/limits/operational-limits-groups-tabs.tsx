@@ -37,6 +37,9 @@ import { FormattedMessage } from 'react-intl';
 const limitsStyles = {
     tabs: () => ({
         ...stylesLayout.listDisplay,
+        '& .MuiTab-root': {
+            borderRight: '1px solid grey',
+        },
         '.MuiTab-root.MuiButtonBase-root': {
             textTransform: 'none', //tab text not upper-case
             textAlign: 'left',
