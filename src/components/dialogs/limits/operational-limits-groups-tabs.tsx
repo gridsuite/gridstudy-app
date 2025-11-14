@@ -24,7 +24,7 @@ import {
 } from '../../utils/field-constants';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
-import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
+import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
@@ -32,6 +32,7 @@ import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
 import { CurrentLimitsData } from 'services/study/network-map.type';
+import { FormattedMessage } from 'react-intl';
 
 const limitsStyles = {
     tabBackground: {
@@ -336,6 +337,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                     <OperationalLimitsGroupTabLabel
                                         operationalLimitsGroup={opLg}
                                         limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
+                                        index={index}
                                     />
                                 )
                             }
