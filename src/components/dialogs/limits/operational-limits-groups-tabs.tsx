@@ -24,18 +24,31 @@ import {
 } from '../../utils/field-constants';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
-import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
+import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
-import { FormattedMessage } from 'react-intl';
-import { tabStyles } from 'components/utils/tab-utils';
+import { stylesLayout } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
 import { CurrentLimitsData } from 'services/study/network-map.type';
+import { FormattedMessage } from 'react-intl';
 
 const limitsStyles = {
-    limitsBackground: {
+    tabs: () => ({
+        ...stylesLayout.listDisplay,
+        '& .MuiTab-root': {
+            borderRight: '1px solid grey',
+        },
+        '.MuiTab-root.MuiButtonBase-root': {
+            textTransform: 'none', //tab text not upper-case
+            textAlign: 'left',
+            alignItems: 'stretch',
+            p: 0,
+        },
+    }),
+    tabBackground: {
+        flexBasis: 'fit-content',
         p: 1,
         minHeight: 60,
     },
@@ -94,10 +107,12 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         },
         ref
     ) => {
-        const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
         const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
-        const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
-        const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
+        const [contextMenuCoordinates, setContextMenuCoordinates] = useState<ContextMenuCoordinates>({
+            x: null,
+            y: null,
+            tabIndex: null,
+        });
         const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
         const [editionError, setEditionError] = useState<string>('');
         const { setValue, getValues } = useFormContext();
@@ -142,19 +157,29 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         );
 
         const handleOpenMenu = useCallback(
-            (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
+            (event: React.MouseEvent<HTMLDivElement>, index: number): void => {
+                if (!editable) {
+                    return;
+                }
+                event.preventDefault();
                 event.stopPropagation();
-                setMenuAnchorEl(event.currentTarget);
                 setIndexSelectedLimitSet(index);
-                setActivatedByMenuTabIndex(index);
+                setContextMenuCoordinates({
+                    x: event.clientX,
+                    y: event.clientY,
+                    tabIndex: index,
+                });
             },
-            [setMenuAnchorEl, setIndexSelectedLimitSet, setActivatedByMenuTabIndex]
+            [editable, setIndexSelectedLimitSet]
         );
 
         const handleCloseMenu = useCallback(() => {
-            setMenuAnchorEl(null);
-            setActivatedByMenuTabIndex(null);
-        }, [setMenuAnchorEl, setActivatedByMenuTabIndex]);
+            setContextMenuCoordinates({
+                x: null,
+                y: null,
+                tabIndex: null,
+            });
+        }, [setContextMenuCoordinates]);
 
         const startEditingLimitsGroup = useCallback(
             (index: number, name: string | null) => {
@@ -296,14 +321,15 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     variant="fullWidth"
                     value={indexSelectedLimitSet !== null && indexSelectedLimitSet}
                     onChange={handleTabChange}
-                    sx={tabStyles.listDisplay}
+                    sx={limitsStyles.tabs}
                     visibleScrollbar
                 >
                     {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
                         <Tab
-                            onMouseEnter={() => setHoveredRowIndex(index)}
-                            onMouseLeave={() => setHoveredRowIndex(-1)}
+                            onContextMenu={(e) => handleOpenMenu(e, index)}
                             key={opLg.id + index}
+                            disableRipple
+                            sx={limitsStyles.tabBackground}
                             label={
                                 editingTabIndex === index ? (
                                     <TextField
@@ -322,15 +348,11 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                 ) : (
                                     <OperationalLimitsGroupTabLabel
                                         operationalLimitsGroup={opLg}
-                                        showIconButton={index === hoveredRowIndex || index === activatedByMenuTabIndex}
-                                        editable={!editable || editingTabIndex !== -1}
                                         limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
-                                        handleOpenMenu={handleOpenMenu}
                                         index={index}
                                     />
                                 )
                             }
-                            sx={limitsStyles.limitsBackground}
                         />
                     ))}
                 </Tabs>
@@ -338,9 +360,8 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     parentFormName={parentFormName}
                     indexSelectedLimitSet={indexSelectedLimitSet}
                     setIndexSelectedLimitSet={setIndexSelectedLimitSet}
-                    menuAnchorEl={menuAnchorEl}
                     handleCloseMenu={handleCloseMenu}
-                    activatedByMenuTabIndex={activatedByMenuTabIndex}
+                    contextMenuCoordinates={contextMenuCoordinates}
                     startEditingLimitsGroup={startEditingLimitsGroup}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
