@@ -10,11 +10,11 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } fro
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
+    DELETION_MARK,
     ID,
     LIMITS_PROPERTIES,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
-    SELECTED,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
     TEMPORARY_LIMIT_DURATION,
@@ -22,16 +22,17 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { CurrentLimitsData, OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
-import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
+import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
+import { CurrentLimitsData } from 'services/study/network-map.type';
 
 const limitsStyles = {
     limitsBackground: {
@@ -55,11 +56,10 @@ const limitsStyles = {
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
-    limitsGroups: OperationalLimitsGroupFormInfos[];
+    limitsGroups: OperationalLimitsGroupFormSchema[];
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
-    isAModification: boolean;
     currentLimitsToModify: CurrentLimitsData[];
     editable: boolean;
 }
@@ -89,7 +89,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             setIndexSelectedLimitSet,
             indexSelectedLimitSet,
             checkLimitSetUnicity,
-            isAModification,
             editable,
             currentLimitsToModify,
         },
@@ -102,6 +101,17 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
         const [editionError, setEditionError] = useState<string>('');
         const { setValue, getValues } = useFormContext();
+        const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
+        const {
+            fields: operationalLimitsGroups,
+            update: updateLimitsGroups,
+            append: appendToLimitsGroups,
+            remove: removeLimitsGroups,
+        } = useFieldArray<{
+            [key: string]: OperationalLimitsGroupFormSchema[];
+        }>({
+            name: operationalLimitsGroupsFormName,
+        });
         const selectedLimitsGroups1: string = useWatch({
             name: `${parentFormName}.${SELECTED_LIMITS_GROUP_1}`,
         });
@@ -173,20 +183,18 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 }
 
                 // new limit sets are created with 5 empty limits by default
-                const emptyTemporaryLimit = {
+                const emptyTemporaryLimit: TemporaryLimitFormSchema = {
                     [TEMPORARY_LIMIT_NAME]: '',
                     [TEMPORARY_LIMIT_DURATION]: null,
                     [TEMPORARY_LIMIT_VALUE]: null,
-                    modificationType: null,
-                    [SELECTED]: false,
+                    [DELETION_MARK]: false,
                 };
-                const newLimitsGroup: OperationalLimitsGroup = {
+                const newLimitsGroup: OperationalLimitsGroupFormSchema = {
                     [ID]: name + APPLICABILITY.EQUIPMENT.id,
                     [NAME]: name,
                     [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     [LIMITS_PROPERTIES]: [],
                     [CURRENT_LIMITS]: {
-                        [ID]: name,
                         [TEMPORARY_LIMITS]: [emptyTemporaryLimit],
                         [PERMANENT_LIMIT]: null,
                     },
@@ -215,12 +223,12 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 }
 
                 if (editingTabIndex !== undefined) {
-                    setValue(
-                        `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${editingTabIndex}].${NAME}`,
-                        editedLimitGroupName
-                    );
-                    const finalId: string = editedLimitGroupName + limitsGroups[editingTabIndex].applicability;
-                    setValue(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${editingTabIndex}].${ID}`, finalId);
+                    let operationalLimitsGroupToUpdate = operationalLimitsGroups[editingTabIndex];
+                    operationalLimitsGroupToUpdate.name = editedLimitGroupName;
+                    operationalLimitsGroupToUpdate.applicability = applicability;
+                    operationalLimitsGroupToUpdate.id =
+                        editedLimitGroupName + limitsGroups[editingTabIndex].applicability;
+                    updateLimitsGroups(editingTabIndex, operationalLimitsGroupToUpdate);
                     if (
                         getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`) === oldName &&
                         (applicability === APPLICABILITY.SIDE1.id || applicability === APPLICABILITY.EQUIPMENT.id)
@@ -239,15 +247,16 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 setEditionError('');
             }
         }, [
-            parentFormName,
-            setValue,
-            getValues,
             editingTabIndex,
             editedLimitGroupName,
             limitsGroups,
-            setEditingTabIndex,
-            setIndexSelectedLimitSet,
             checkLimitSetUnicity,
+            setIndexSelectedLimitSet,
+            operationalLimitsGroups,
+            updateLimitsGroups,
+            getValues,
+            parentFormName,
+            setValue,
         ]);
 
         const handleKeyDown = useCallback(
@@ -290,7 +299,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     sx={tabStyles.listDisplay}
                     visibleScrollbar
                 >
-                    {limitsGroups.map((opLg: OperationalLimitsGroupFormInfos, index: number) => (
+                    {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
                         <Tab
                             onMouseEnter={() => setHoveredRowIndex(index)}
                             onMouseLeave={() => setHoveredRowIndex(-1)}
@@ -335,8 +344,10 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     startEditingLimitsGroup={startEditingLimitsGroup}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
-                    isModification={isAModification}
                     currentLimitsToModify={currentLimitsToModify}
+                    operationalLimitsGroups={operationalLimitsGroups}
+                    appendToLimitsGroups={appendToLimitsGroups}
+                    removeLimitsGroups={removeLimitsGroups}
                 />
             </>
         );
