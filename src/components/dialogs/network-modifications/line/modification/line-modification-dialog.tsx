@@ -57,7 +57,7 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
-    combineFormAndMapServerLimitsGroups,
+    convertToOperationalLimitsGroupFormSchema,
     formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
@@ -103,10 +103,11 @@ import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LimitsDialogFormInfos, LineModificationFormInfos } from './line-modification-type';
+import { LineModificationFormInfos } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../utils/utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -154,8 +155,8 @@ const LineModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState<BranchInfos | null>(null);
-    const [tabIndex, setTabIndex] = useState<number | null>(LineModificationDialogTab.CONNECTIVITY_TAB);
-    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
+    const [tabIndex, setTabIndex] = useState<number>(LineModificationDialogTab.CONNECTIVITY_TAB);
+    const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
     const emptyFormData: any = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
@@ -231,7 +232,7 @@ const LineModificationDialog = ({
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
-            const limits: LimitsDialogFormInfos = line[LIMITS];
+            const limits: OperationalLimitsGroupsFormSchema = line[LIMITS];
             modifyLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -319,7 +320,7 @@ const LineModificationDialog = ({
                                             [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                             [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
                                                 ? getOpLimitsGroupInfosFromBranchModification(formValues)
-                                                : combineFormAndMapServerLimitsGroups(formValues, line),
+                                                : convertToOperationalLimitsGroupFormSchema(line),
                                         },
                                     },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
@@ -363,10 +364,15 @@ const LineModificationDialog = ({
         if (errors?.[STATE_ESTIMATION] !== undefined) {
             tabsInError.push(LineModificationDialogTab.STATE_ESTIMATION_TAB);
         }
-        if (tabsInError.length > 0) {
+
+        if (tabsInError.includes(tabIndex)) {
+            // error in current tab => do not change tab systematically but remove current tab in error list
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+        } else if (tabsInError.length > 0) {
+            // switch to the first tab in the list then remove the tab in the error list
             setTabIndex(tabsInError[0]);
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
         }
-        setTabIndexesWithError(tabsInError);
     };
 
     const open = useOpenShortWaitFetching({
@@ -378,7 +384,7 @@ const LineModificationDialog = ({
     });
 
     const handleCloseLineTypesCatalogDialog = () => {
-        setOpenLineTypesCatalogDialog(false);
+        setIsOpenLineTypesCatalogDialog(false);
     };
 
     const handleLineSegmentsBuildSubmit = (data: any) => {
@@ -432,7 +438,7 @@ const LineModificationDialog = ({
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
-                onOpenCatalogDialog={selectedId != null ? () => setOpenLineTypesCatalogDialog(true) : undefined}
+                onOpenCatalogDialog={selectedId != null ? () => setIsOpenLineTypesCatalogDialog(true) : undefined}
                 {...dialogProps}
             >
                 {selectedId == null && (
