@@ -153,40 +153,39 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
         );
     };
 
-    const doCreateRootNetwork = ({ name, tag, description, caseName, caseId }: FormData) => {
+    const doCreateRootNetwork = ({
+        name,
+        tag,
+        description,
+        caseName,
+        caseId,
+        currentParameters,
+        caseFormat,
+    }: FormData) => {
         if (!studyUuid) {
             return;
         }
         setIsRootNetworksProcessing(true);
-        getCaseImportParameters(caseId as UUID)
-            .then((params: GetCaseImportParametersReturn) => {
-                // Format the parameters
-                const formattedParams = formatCaseImportParameters(params.parameters);
-                const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
-                // Call createRootNetwork with formatted parameters
-                createRootNetwork(studyUuid, {
-                    name,
-                    tag,
-                    description,
-                    importParametersRaw: customizedCurrentParameters,
-                    caseInfos: {
-                        originalCaseUuid: caseId as UUID,
-                        caseFormat: params.formatName,
-                    },
-                });
-
-                if (isMonoRootStudy && rootNetworks.length === 1) {
-                    dispatch(setMonoRootStudy(false));
-                }
-            })
-
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'createRootNetworksError',
-                });
-                setIsRootNetworksProcessing(false);
+        createRootNetwork(studyUuid, {
+            name,
+            tag,
+            description,
+            importParametersRaw: currentParameters,
+            caseInfos: {
+                originalCaseUuid: caseId as UUID,
+                caseFormat: caseFormat ?? null,
+            },
+        }).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'createRootNetworksError',
             });
+            setIsRootNetworksProcessing(false);
+        });
+
+        if (isMonoRootStudy && rootNetworks.length === 1) {
+            dispatch(setMonoRootStudy(false));
+        }
     };
     const minimizeRootNetworkPanel = useCallback(() => {
         setIsSearchActive(false);
