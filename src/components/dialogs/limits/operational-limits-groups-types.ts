@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    APPLICABIlITY,
+    APPLICABILITY_FIELD,
     CURRENT_LIMITS,
     DELETION_MARK,
     ENABLE_OLG_MODIFICATION,
@@ -13,6 +13,7 @@ import {
     LIMITS,
     LIMITS_PROPERTIES,
     NAME,
+    OLG_IS_DUPLICATE,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
     SELECTED_LIMITS_GROUP_1,
@@ -38,7 +39,8 @@ export interface OperationalLimitsGroupsFormSchema {
 export interface OperationalLimitsGroupFormSchema {
     [ID]: string;
     [NAME]: string;
-    [APPLICABIlITY]?: string;
+    [APPLICABILITY_FIELD]?: string;
+    [OLG_IS_DUPLICATE]?: boolean;
     [CURRENT_LIMITS]: CurrentLimitsFormSchema;
     [LIMITS_PROPERTIES]?: LimitsPropertyFormSchema[];
 }
@@ -54,8 +56,8 @@ interface LimitsPropertyFormSchema {
 }
 
 export interface TemporaryLimitFormSchema {
-    [TEMPORARY_LIMIT_DURATION]: number | null;
-    [TEMPORARY_LIMIT_VALUE]: number | null;
-    [TEMPORARY_LIMIT_NAME]: string;
-    [DELETION_MARK]: boolean;
+    [TEMPORARY_LIMIT_DURATION]?: number | null;
+    [TEMPORARY_LIMIT_VALUE]?: number | null;
+    [TEMPORARY_LIMIT_NAME]?: string | null;
+    [DELETION_MARK]?: boolean;
 }
