@@ -149,6 +149,22 @@ const spreadsheetEn = {
     'spreadsheet/calculation/min_abbrev': 'Min',
     'spreadsheet/calculation/max_abbrev': 'Max',
 
+    //Formula errors
+    'spreadsheet/formula/error': '#ERROR',
+    'spreadsheet/formula/import/disabled': 'Function import is disabled',
+    'spreadsheet/formula/createUnit/disabled': 'Function createUnit is disabled',
+    'spreadsheet/formula/evaluate/disabled': 'Function evaluate is disabled',
+    'spreadsheet/formula/parse/disabled': 'Function parse is disabled',
+    'spreadsheet/formula/simplify/disabled': 'Function simplify is disabled',
+    'spreadsheet/formula/derivative/disabled': 'Function derivative is disabled',
+    'spreadsheet/formula/compile/disabled': 'Function compile is disabled',
+    'spreadsheet/formula/help/disabled': 'Function help is disabled',
+    'spreadsheet/formula/length/error': 'Function length expects an array or object',
+    'spreadsheet/formula/type/number': 'Formula must evaluate to a number',
+    'spreadsheet/formula/type/boolean': 'Formula must evaluate to a boolean',
+    'spreadsheet/formula/type/enum': 'Formula must evaluate to a string or a number',
+    'spreadsheet/formula/type/unknown': 'Unknown column type',
+
     // Column types
     TEXT: 'Text',
     NUMBER: 'Number',

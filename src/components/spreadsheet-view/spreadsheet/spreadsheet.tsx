@@ -13,7 +13,7 @@ import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
-import { mapColumns } from '../columns/utils/column-mapper';
+import { useColumnDefinitions } from '../columns/utils/column-mapper';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
 
@@ -38,8 +38,8 @@ export const Spreadsheet = memo(
         active,
     }: SpreadsheetProps) => {
         const gridRef = useRef<AgGridReact>(null);
+        const columnsDefinitions = useColumnDefinitions(tableDefinition);
 
-        const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
         const rowCounterInfos = useFilteredRowCounterInfo({
             gridRef,
             tableDefinition,

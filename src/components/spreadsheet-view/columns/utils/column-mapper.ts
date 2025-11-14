@@ -14,14 +14,22 @@ import {
     numberColumnDefinition,
     textColumnDefinition,
 } from '../common-column-definitions';
-import { validateFormulaResult } from './formula-validator';
+import { isValidationError, validateFormulaResult, ValidationResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { CustomColDef } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
+import { ErrorCellRenderer } from '../../../custom-aggrid/cell-renderers';
+import { IntlShape, useIntl } from 'react-intl';
+import { useMemo } from 'react';
+
+export const useColumnDefinitions = (tableDefinition: SpreadsheetTabDefinition) => {
+    const intl = useIntl();
+    return useMemo(() => addFormulaErrorsRenderer(intl, mapColumns(tableDefinition)), [intl, tableDefinition]);
+};
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
-    (params: ValueGetterParams): boolean | string | number | undefined => {
+    (params: ValueGetterParams): ValidationResult | boolean | string | number | undefined => {
         try {
             // Skip formula processing for pinned rows and use raw value
             if (isCalculationRow(params.node?.data?.rowType)) {
@@ -37,7 +45,7 @@ const createValueGetter =
             const validation = validateFormulaResult(result, colDef.type);
 
             if (!validation.isValid) {
-                return undefined;
+                return validation;
             }
             return result;
         } catch (e) {
@@ -45,7 +53,7 @@ const createValueGetter =
         }
     };
 
-export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
+const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
     tableDefinition?.columns.map((colDef): CustomColDef => {
         let baseDefinition: ColDef;
 
@@ -87,3 +95,11 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
             enableCellChangeFlash: true,
         };
     });
+
+const addFormulaErrorsRenderer = (intl: IntlShape, columns: CustomColDef[]): CustomColDef[] => {
+    return columns.map((col) => ({
+        ...col,
+        cellRendererSelector: (params) =>
+            isValidationError(params.value) ? { component: ErrorCellRenderer, params: { intl } } : undefined, //Returning undefined make it so the originally defined renderer is used
+    }));
+};
