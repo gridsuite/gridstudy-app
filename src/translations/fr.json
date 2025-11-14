@@ -27,11 +27,16 @@
 
     "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
-    "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
-    "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
-    "CopiedModificationInvalidationMessageFromAnotherStudy": "Suite à un changement des modifications dans une autre étude, le contenu du presse papier a été supprimé",
-    "CopiedModificationUpdateMessageFromAnotherStudy": "Suite à la copie de modifications dans une autre étude, le presse papier a été modifié",
-    "CopiedModificationInvalidationMessageAfterTabClosure": "Suite à la fermeture de l'onglet d'une autre étude, le presse papier a été supprimé",
+    "copiedNodeInvalidationMsg": "Contenu du presse-papier supprimé, suite à un changement dans les noeuds",
+    "copiedNodeInvalidationMsgFromOtherTab": "Contenu du presse-papier supprimé, suite à un changement dans les noeuds dans un autre onglet",
+    "copiedNodeInvalidationMsgFromTabClosure": "Contenu du presse-papier supprimé, suite à la fermeture d'un onglet",
+    "copiedNodeUpdateMsg": "Contenu du presse-papier mis à jour, suite à la copie d'un noeud dans un autre onglet",
+
+    "copiedModificationsInvalidationMsg": "Contenu du presse-papier supprimé, suite à un changement dans les modifications",
+    "copiedModificationsInvalidationMsgFromOtherTab": "Contenu du presse-papier supprimé, suite à un changement dans les modifications dans un autre onglet",
+    "copiedModificationsInvalidationMsgFromTabClosure": "Contenu du presse-papier supprimé, suite à la fermeture d'un onglet",
+    "copiedModificationsUpdateMsg": "Contenu du presse-papier mis à jour, suite à la copie de modifications dans un autre onglet",
+
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "download.fileName": "Nom de fichier",
