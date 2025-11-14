@@ -230,9 +230,7 @@ export const updateTemporaryLimits = (
     });
 
     //remove deleted temporary limits from current and previous modifications
-    updatedTemporaryLimits = updatedTemporaryLimits?.filter(
-        (limit: TemporaryLimitFormSchema) => !limit[DELETION_MARK]
-    );
+    updatedTemporaryLimits = updatedTemporaryLimits?.filter((limit: TemporaryLimitFormSchema) => !limit[DELETION_MARK]);
 
     return updatedTemporaryLimits;
 };
