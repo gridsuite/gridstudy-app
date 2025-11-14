@@ -254,28 +254,31 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
         );
     };
 
-    const doUpdateRootNetwork = async ({ name, tag, description, caseName, caseId }: FormData) => {
+    const doUpdateRootNetwork = async ({
+        name,
+        tag,
+        description,
+        caseName,
+        currentParameters,
+        caseFormat,
+        caseId,
+    }: FormData) => {
         if (!studyUuid || !editedRootNetwork) {
             return;
         }
         try {
             setIsRootNetworksProcessing(true);
-            const params = caseId ? await getCaseImportParameters(caseId as UUID) : null;
-            const formattedParams = params ? formatCaseImportParameters(params.parameters) : null;
-            const customizedParams = formattedParams
-                ? customizeCurrentParameters(formattedParams as Parameter[])
-                : null;
             const rootNetworkInfos: RootNetworkInfos = {
                 id: editedRootNetwork.rootNetworkUuid,
                 name,
                 tag,
                 description: description ?? '',
-                importParametersRaw: caseId ? customizedParams : null,
+                importParametersRaw: caseId ? currentParameters : null,
                 caseInfos:
-                    caseId && params
+                    caseId && caseFormat
                         ? {
                               originalCaseUuid: caseId as UUID,
-                              caseFormat: params.formatName,
+                              caseFormat: caseFormat,
                           }
                         : {
                               originalCaseUuid: null,
@@ -283,7 +286,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                           },
             };
 
-            updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
+            await updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
         } catch (error) {
             snackError({
                 headerId: 'updateRootNetworksError',

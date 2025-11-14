@@ -8,8 +8,10 @@
 import {
     CustomFormProvider,
     DescriptionField,
+    FieldConstants,
     isObjectEmpty,
     MAX_CHAR_DESCRIPTION,
+    Parameter,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
@@ -25,6 +27,11 @@ import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'ser
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { getCaseImportParameters } from 'services/network-conversion';
+import { customizeCurrentParameters, formatCaseImportParameters } from 'components/graph/util/case-import-parameters';
+import { UUID } from 'node:crypto';
+import { useIntl } from 'react-intl';
+import ImportParametersSection from './import-parameters-section';
 
 export interface FormData {
     [NAME]: string;
@@ -32,6 +39,9 @@ export interface FormData {
     [CASE_NAME]: string;
     [CASE_ID]: string;
     [DESCRIPTION]?: string;
+    [FieldConstants.FORMATTED_CASE_PARAMETERS]: Parameter[];
+    [FieldConstants.CURRENT_PARAMETERS]: Record<string, string>;
+    [FieldConstants.CASE_FORMAT]?: string;
 }
 
 interface RootNetworkDialogProps {
@@ -43,22 +53,24 @@ interface RootNetworkDialogProps {
 }
 
 const getSchema = (isModification = false) => {
+    const optionalIfIsModification = <T extends yup.AnySchema>(schema: T) =>
+        schema.when([], {
+            is: isModification,
+            then: (s) => s.optional(),
+            otherwise: (s) => s.required(),
+        });
+
     return yup
         .object()
         .shape({
             [NAME]: yup.string().trim().required(),
             [TAG]: yup.string().trim().required(),
-            [CASE_NAME]: yup.string().when([], {
-                is: isModification,
-                then: (schema) => schema.optional(),
-                otherwise: (schema) => schema.required(),
-            }),
-            [CASE_ID]: yup.string().when([], {
-                is: isModification,
-                then: (schema) => schema.optional(),
-                otherwise: (schema) => schema.required(),
-            }),
+            [CASE_NAME]: optionalIfIsModification(yup.string()),
+            [CASE_ID]: optionalIfIsModification(yup.string()),
             [DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
+            [FieldConstants.FORMATTED_CASE_PARAMETERS]: optionalIfIsModification(yup.mixed<Parameter[]>()),
+            [FieldConstants.CURRENT_PARAMETERS]: optionalIfIsModification(yup.mixed<Record<string, string>>()),
+            [FieldConstants.CASE_FORMAT]: yup.string().optional(),
         })
         .required();
 };
@@ -69,6 +81,9 @@ const emptyFormData: FormData = {
     [CASE_NAME]: '',
     [CASE_ID]: '',
     [DESCRIPTION]: '',
+    [FieldConstants.FORMATTED_CASE_PARAMETERS]: [],
+    [FieldConstants.CURRENT_PARAMETERS]: {},
+    [FieldConstants.CASE_FORMAT]: '',
 };
 
 const MAX_TAG_LENGTH = 4;
@@ -81,6 +96,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     editableRootNetwork,
     ...dialogProps
 }) => {
+    const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [modifiedByUser, setModifiedByUser] = useState(false);
 
@@ -95,6 +111,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     const {
         reset,
         setValue,
+        setError,
         formState: { errors },
     } = formMethods;
 
@@ -114,6 +131,31 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const getCurrentCaseImportParams = useCallback(
+        (uuid: UUID) => {
+            getCaseImportParameters(uuid)
+                .then((result) => {
+                    const formattedParams = formatCaseImportParameters(result.parameters);
+                    setValue(FieldConstants.CURRENT_PARAMETERS, customizeCurrentParameters(formattedParams));
+                    setValue(FieldConstants.FORMATTED_CASE_PARAMETERS, formattedParams, {
+                        shouldDirty: true,
+                    });
+                    setValue(FieldConstants.CASE_FORMAT, result.formatName);
+                })
+                .catch(() => {
+                    setValue(FieldConstants.FORMATTED_CASE_PARAMETERS, []);
+                    setValue(FieldConstants.CASE_FORMAT, '');
+                    setError(`root.${FieldConstants.API_CALL}`, {
+                        type: 'parameterLoadingProblem',
+                        message: intl.formatMessage({
+                            id: 'parameterLoadingProblem',
+                        }),
+                    });
+                });
+        },
+        [intl, setError, setValue]
+    );
+
     const onSelectCase = (selectedCase: TreeViewFinderNodeProps) => {
         if (!modifiedByUser && !isModification) {
             setValue(NAME, selectedCase.name, {
@@ -126,6 +168,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
         setValue(CASE_ID, selectedCase.id, {
             shouldDirty: true,
         });
+        getCurrentCaseImportParams(selectedCase.id);
     };
 
     const handleSave = useCallback(
@@ -186,6 +229,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                         />
                     </Grid>
                 </Grid>
+                {!isModification && <ImportParametersSection />}
             </ModificationDialog>
         </CustomFormProvider>
     );
