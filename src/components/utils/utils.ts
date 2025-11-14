@@ -29,7 +29,7 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
 } from './field-constants';
-import { TemporaryLimitsFormSchema } from '../dialogs/limits/operational-limits-groups-types';
+import { TemporaryLimitFormSchema } from '../dialogs/limits/operational-limits-groups-types';
 import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
@@ -142,7 +142,7 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): T
         };
     });
 
-export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitsFormSchema[] =>
+export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
@@ -154,7 +154,7 @@ export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimi
 
 export const formatMapInfosToTemporaryLimitsFormSchema = (
     temporaryLimits: TemporaryLimitsData[]
-): TemporaryLimitsFormSchema[] =>
+): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimitsData) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',

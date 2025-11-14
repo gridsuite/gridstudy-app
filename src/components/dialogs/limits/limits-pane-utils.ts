@@ -45,7 +45,7 @@ import {
 import { BranchInfos, CurrentLimitsData } from '../../../services/study/network-map.type';
 import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
 import { LineModificationFormInfos } from '../network-modifications/line/modification/line-modification-type';
-import { OperationalLimitsGroupFormSchema, TemporaryLimitsFormSchema } from './operational-limits-groups-types';
+import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
 
 const limitsGroupValidationSchema = () => ({
     [ID]: yup.string().nonNullable().required(),
@@ -204,21 +204,21 @@ export const sanitizeLimitsGroups = (
               },
     }));
 
-export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitsFormSchema[]): TemporaryLimitsFormSchema[] =>
+export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitFormSchema[]): TemporaryLimitFormSchema[] =>
     temporaryLimitList
-        ?.filter((limit: TemporaryLimitsFormSchema) => limit?.name?.trim())
+        ?.filter((limit: TemporaryLimitFormSchema) => limit?.name?.trim())
         .map(({ name, ...temporaryLimit }) => ({
             ...temporaryLimit,
             name: sanitizeString(name) ?? '',
         })) || [];
 
-const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitsFormSchema[], limit: TemporaryLimit) =>
+const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitFormSchema[], limit: TemporaryLimit) =>
     temporaryLimits?.find(
-        (l: TemporaryLimitsFormSchema) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration
+        (l: TemporaryLimitFormSchema) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration
     );
 
 export const updateTemporaryLimits = (
-    temporaryLimitsForm: TemporaryLimitsFormSchema[],
+    temporaryLimitsForm: TemporaryLimitFormSchema[],
     temporaryLimitsToModify: TemporaryLimit[] // from map server
 ) => {
     let updatedTemporaryLimits = temporaryLimitsForm ?? [];
@@ -231,7 +231,7 @@ export const updateTemporaryLimits = (
 
     //remove deleted temporary limits from current and previous modifications
     updatedTemporaryLimits = updatedTemporaryLimits?.filter(
-        (limit: TemporaryLimitsFormSchema) => !limit[DELETION_MARK]
+        (limit: TemporaryLimitFormSchema) => !limit[DELETION_MARK]
     );
 
     return updatedTemporaryLimits;
@@ -301,9 +301,9 @@ export const getOpLimitsGroupInfosFromBranchModification = (
     return formBranchModification?.limits?.operationalLimitsGroups ?? [];
 };
 export const addModificationTypeToTemporaryLimits = (
-    formTemporaryLimits: TemporaryLimitsFormSchema[]
+    formTemporaryLimits: TemporaryLimitFormSchema[]
 ): TemporaryLimit[] => {
-    return formTemporaryLimits.map((limit: TemporaryLimitsFormSchema) => {
+    return formTemporaryLimits.map((limit: TemporaryLimitFormSchema) => {
         return {
             ...limit,
             modificationType: limit[DELETION_MARK]
@@ -358,7 +358,7 @@ export const addModificationTypeToOpLimitsGroups = (
     });
 };
 
-export const temporaryLimitToTemporaryLimitFormSchema = (temporaryLimit: TemporaryLimit): TemporaryLimitsFormSchema => {
+export const temporaryLimitToTemporaryLimitFormSchema = (temporaryLimit: TemporaryLimit): TemporaryLimitFormSchema => {
     return {
         [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
         [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
