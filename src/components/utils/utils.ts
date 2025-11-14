@@ -143,11 +143,12 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): T
     });
 
 export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitsFormSchema[] =>
-    temporaryLimits?.map((limit: TemporaryLimitsData) => {
+    temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [DELETION_MARK]: limit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
         };
     });
 
@@ -159,6 +160,7 @@ export const formatMapInfosToTemporaryLimitsFormSchema = (
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [DELETION_MARK]: false,
         };
     });
 

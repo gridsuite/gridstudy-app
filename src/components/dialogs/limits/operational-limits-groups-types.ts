@@ -7,6 +7,7 @@
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
+    DELETION_MARK,
     ENABLE_OLG_MODIFICATION,
     ID,
     LIMITS,
@@ -56,4 +57,5 @@ export interface TemporaryLimitsFormSchema {
     [TEMPORARY_LIMIT_DURATION]: number | null;
     [TEMPORARY_LIMIT_VALUE]: number | null;
     [TEMPORARY_LIMIT_NAME]: string;
+    [DELETION_MARK]: boolean;
 }

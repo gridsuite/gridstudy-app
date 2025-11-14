@@ -9,6 +9,7 @@ import { sanitizeString } from '../dialog-utils';
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
+    DELETION_MARK,
     ENABLE_OLG_MODIFICATION,
     ID,
     LIMIT_SETS_MODIFICATION_TYPE,
@@ -217,16 +218,21 @@ const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitsFormSchema[], li
     );
 
 export const updateTemporaryLimits = (
-    temporaryLimitsFormInfos: TemporaryLimitsFormSchema[],
+    temporaryLimitsForm: TemporaryLimitsFormSchema[],
     temporaryLimitsToModify: TemporaryLimit[] // from map server
 ) => {
-    let updatedTemporaryLimits = temporaryLimitsFormInfos ?? [];
+    let updatedTemporaryLimits = temporaryLimitsForm ?? [];
     //add temporary limits from map server that are not in the form values
     temporaryLimitsToModify?.forEach((limit: TemporaryLimit) => {
         if (findTemporaryLimitForm(updatedTemporaryLimits, limit) === undefined) {
             updatedTemporaryLimits?.push(temporaryLimitToTemporaryLimitFormSchema(limit));
         }
     });
+
+    //remove deleted temporary limits from current and previous modifications
+    updatedTemporaryLimits = updatedTemporaryLimits?.filter(
+        (limit: TemporaryLimitsFormSchema) => !limit[DELETION_MARK]
+    );
 
     return updatedTemporaryLimits;
 };
@@ -300,7 +306,9 @@ export const addModificationTypeToTemporaryLimits = (
     return formTemporaryLimits.map((limit: TemporaryLimitsFormSchema) => {
         return {
             ...limit,
-            modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
+            modificationType: limit[DELETION_MARK]
+                ? TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
+                : TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
 };
@@ -355,5 +363,6 @@ export const temporaryLimitToTemporaryLimitFormSchema = (temporaryLimit: Tempora
         [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
         [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
         [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value,
+        [DELETION_MARK]: false,
     };
 };
