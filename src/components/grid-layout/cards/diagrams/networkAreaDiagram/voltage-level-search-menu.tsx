@@ -48,9 +48,43 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
         if (!searchTerm) {
             return voltageLevels.toSorted(compareVoltageLevels);
         }
+
         const term = searchTerm.toLowerCase();
-        return voltageLevels.filter((vlId) => vlId.toLowerCase().includes(term)).toSorted(compareVoltageLevels);
+        const filtered = voltageLevels.filter((vlId) => vlId.toLowerCase().includes(term));
+
+        // items starting with search term first, then alphabetically
+        return filtered.toSorted((a, b) => {
+            const aStarts = a.toLowerCase().startsWith(term);
+            const bStarts = b.toLowerCase().startsWith(term);
+
+            if (aStarts !== bStarts) {
+                return aStarts ? -1 : 1;
+            }
+
+            return compareVoltageLevels(a, b);
+        });
     }, [searchTerm, voltageLevels]);
+
+    const highlightText = useMemo(
+        () => (text: string, highlight: string) => {
+            if (!highlight) {
+                return text;
+            }
+            const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+            return (
+                <span>
+                    {parts.map((part, partIndex) =>
+                        part.toLowerCase() === highlight.toLowerCase() ? (
+                            <strong key={`${part}-${partIndex}`}>{part}</strong>
+                        ) : (
+                            <span key={`${part}-${partIndex}`}>{part}</span>
+                        )
+                    )}
+                </span>
+            );
+        },
+        []
+    );
 
     const handleClose = () => {
         setSearchTerm('');
@@ -93,7 +127,7 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                 ) : (
                     filteredVoltageLevels.map((vlId) => (
                         <MenuItem key={vlId} onClick={() => handleSelect(vlId)}>
-                            <ListItemText primary={vlId} />
+                            <ListItemText primary={highlightText(vlId, searchTerm)} />
                         </MenuItem>
                     ))
                 )}
