@@ -62,9 +62,11 @@ export function OperationalLimitsGroupTabLabel({
                         ''
                     )}
                 </Stack>
-                <FormHelperText error={!!permanentLimitErrorMessage}>
-                    {permanentLimitErrorMessage ? <ErrorOutlineOutlinedIcon /> : ''}
-                </FormHelperText>
+                {permanentLimitErrorMessage && (
+                    <FormHelperText error>
+                        <ErrorOutlineOutlinedIcon />
+                    </FormHelperText>
+                )}
                 <LimitsPropertiesStack name={limitsPropertiesName} />
             </Stack>
 
