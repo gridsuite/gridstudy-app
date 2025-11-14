@@ -206,7 +206,6 @@ export function LimitsPane({
                         limitsGroups={limitsGroups}
                         indexSelectedLimitSet={indexSelectedLimitSet}
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
-                        checkLimitSetUnicity={checkLimitSetUnicity}
                         editable={olgEditable}
                         currentLimitsToModify={equipmentToModify?.currentLimits ?? []}
                     />
