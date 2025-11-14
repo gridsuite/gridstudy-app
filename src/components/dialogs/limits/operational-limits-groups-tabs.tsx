@@ -341,7 +341,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     menuAnchorEl={menuAnchorEl}
                     handleCloseMenu={handleCloseMenu}
                     activatedByMenuTabIndex={activatedByMenuTabIndex}
-                    startEditingLimitsGroup={startEditingLimitsGroup}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
                     currentLimitsToModify={currentLimitsToModify}
