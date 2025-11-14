@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, FormHelperText, Stack, Typography } from '@mui/material';
+import { Box, FormHelperText, Stack, Typography, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { APPLICABILITY } from '../../network/constants';
 import { LimitsPropertiesStack } from './limits-properties-stack';
@@ -37,9 +37,19 @@ export function OperationalLimitsGroupTabLabel({
         >
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                 <Stack spacing={0}>
-                    <Typography color={permanentLimitErrorMessage ? red[500] : undefined}>
-                        {operationalLimitsGroup.name}
-                    </Typography>
+                    <Tooltip title={operationalLimitsGroup.name}>
+                        <Typography
+                            variant="body1"
+                            color={permanentLimitErrorMessage ? red[500] : undefined}
+                            sx={{
+                                maxWidth: '100px',
+                                textOverflow: 'ellipsis',
+                            }}
+                            noWrap
+                        >
+                            {operationalLimitsGroup.name}
+                        </Typography>
+                    </Tooltip>
                     {operationalLimitsGroup?.applicability ? (
                         <Typography noWrap align="left" color={grey[500]}>
                             <FormattedMessage
