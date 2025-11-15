@@ -1655,5 +1655,6 @@
     "PccMinTri": "Pcc min (MVA) ",
     "IccMinTri": "Icc min (kA)",
     "rOhm": "r (Ω)",
-    "xOhm":"x (Ω)"   
+    "xOhm":"x (Ω)",
+    "csvExportPccMinResultError": "An error occurred when exporting pcc min results"
  }
