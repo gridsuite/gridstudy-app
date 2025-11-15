@@ -11,6 +11,7 @@ import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { type RowComponentProps } from 'react-window';
+import { escapeRegExp } from '../utils/utils';
 
 export interface ReportItem {
     id: string;
@@ -117,9 +118,10 @@ export function TreeviewItem({
             if (!highlight) {
                 return text;
             }
-            const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+            const safeInput = escapeRegExp(highlight);
+            const parts = text.split(new RegExp(`(${safeInput})`, 'gi'));
             return parts.map((part, partIndex) => {
-                if (part.toLowerCase() === highlight.toLowerCase()) {
+                if (part.toLowerCase() === safeInput.toLowerCase()) {
                     const isCurrentOccurrence = searchResults[currentResultIndex] === index;
                     return (
                         <span
