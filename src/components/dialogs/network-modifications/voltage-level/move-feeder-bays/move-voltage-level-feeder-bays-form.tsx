@@ -28,7 +28,7 @@ import GridItem from '../../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
 import type { UUID } from 'node:crypto';
-import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
+import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
 import FeederBayPositionCellRenderer from './feeder-bay-position-cell-render';
@@ -48,7 +48,7 @@ interface MoveVoltageLevelFeederBaysFormProps {
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
     isReady: boolean;
-    feederBaysFormInfos: FeederBaysInfos;
+    feederBaysPreviousValues: FeederBays;
 }
 
 export function MoveVoltageLevelFeederBaysForm({
@@ -57,7 +57,7 @@ export function MoveVoltageLevelFeederBaysForm({
     isUpdate,
     currentRootNetworkUuid,
     studyUuid,
-    feederBaysFormInfos,
+    feederBaysPreviousValues,
     isReady = false,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
     const intl = useIntl();
@@ -179,7 +179,9 @@ export function MoveVoltageLevelFeederBaysForm({
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysFormInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.rowId === data.rowId) ?? -1;
-
+            const previousValue =
+                feederBaysPreviousValues?.find((item) => item.rowId === data.rowId)?.connectablePositionInfos
+                    .connectionName ?? '';
             return (
                 <TextInput
                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_NAME}`}
@@ -194,11 +196,11 @@ export function MoveVoltageLevelFeederBaysForm({
                             },
                         },
                     }}
-                    previousValue={feederBaysFormInfos[formIndex]?.connectablePositionInfos.connectionName ?? ''}
+                    previousValue={previousValue}
                 />
             );
         },
-        [feederBaysFormInfos, getValues]
+        [feederBaysPreviousValues, getValues]
     );
 
     const renderBusbarSectionCell = useCallback(
@@ -208,7 +210,8 @@ export function MoveVoltageLevelFeederBaysForm({
             const busBarSectionIds = getValues(
                 `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_IDS}`
             );
-
+            const previousValue =
+                feederBaysPreviousValues?.find((item) => item.rowId === data.rowId)?.busbarSectionId ?? undefined;
             return (
                 <AutocompleteInput
                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_ID}`}
@@ -217,11 +220,11 @@ export function MoveVoltageLevelFeederBaysForm({
                     sx={{ padding: '1rem' }}
                     disabled={data.isRemoved}
                     disableClearable
-                    previousValue={feederBaysFormInfos[formIndex]?.busbarSectionId ?? undefined}
+                    previousValue={previousValue}
                 />
             );
         },
-        [feederBaysFormInfos, getValues]
+        [feederBaysPreviousValues, getValues]
     );
 
     const renderConnectionDirectionCell = useCallback(

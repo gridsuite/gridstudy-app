@@ -24,8 +24,9 @@ export type FeederBayInfos = {
     connectablePositionInfos: ConnectablePositionInfos;
 };
 
-export type FeederBaysInfos = (FeederBayInfos & {
+export type FeederBays = (FeederBayInfos & {
     equipmentId: string;
+    rowId: string;
 })[];
 
 export const CONNECTION_DIRECTIONS_VALUES = {
