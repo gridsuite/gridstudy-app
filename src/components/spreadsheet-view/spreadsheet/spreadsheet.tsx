@@ -38,8 +38,8 @@ export const Spreadsheet = memo(
         active,
     }: SpreadsheetProps) => {
         const gridRef = useRef<AgGridReact>(null);
-        const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
 
+        const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
         const rowCounterInfos = useFilteredRowCounterInfo({
             gridRef,
             tableDefinition,
