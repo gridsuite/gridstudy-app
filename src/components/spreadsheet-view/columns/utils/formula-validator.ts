@@ -17,9 +17,6 @@ export function isValidationError(value: unknown): value is ValidationError {
 }
 
 export const validateFormulaResult = (value: CustomAggridValue, type: COLUMN_TYPES): CustomAggridValue => {
-    if (isValidationError(value)) {
-        return value;
-    }
     switch (type) {
         case COLUMN_TYPES.NUMBER:
             return (typeof value === 'number' && !Number.isNaN(value)) ||

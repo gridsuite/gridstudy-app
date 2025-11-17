@@ -38,7 +38,7 @@ const createValueGetter =
             });
             const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
             const result = limitedEvaluate(escapedFormula, scope);
-            return validateFormulaResult(result, colDef.type);
+            return isValidationError(result) ? result : validateFormulaResult(result, colDef.type);
         } catch (e) {
             return undefined;
         }
