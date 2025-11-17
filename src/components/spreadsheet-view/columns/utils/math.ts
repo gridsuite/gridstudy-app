@@ -12,35 +12,43 @@ const instance = create(all);
 
 export const limitedEvaluate = instance.evaluate;
 
+// Custom error class for MathJS validation errors
+export class MathJsValidationError extends Error {
+    constructor(public error: string) {
+        super(error);
+        this.name = 'MathJsValidationError';
+    }
+}
+
 instance.import(
     {
-        import: () => ({
-            error: 'spreadsheet/formula/import/disabled',
-        }),
-        createUnit: () => ({
-            error: 'spreadsheet/formula/createUnit/disabled',
-        }),
-        evaluate: () => ({
-            error: 'spreadsheet/formula/evaluate/disabled',
-        }),
-        parse: () => ({
-            error: 'spreadsheet/formula/parse/disabled',
-        }),
-        simplify: () => ({
-            error: 'spreadsheet/formula/simplify/disabled',
-        }),
-        derivative: () => ({
-            error: 'spreadsheet/formula/derivative/disabled',
-        }),
-        compile: () => ({
-            error: 'spreadsheet/formula/compile/disabled',
-        }),
-        help: () => ({
-            error: 'spreadsheet/formula/help/disabled',
-        }),
-        parser: () => ({
-            error: 'spreadsheet/formula/parser/disabled',
-        }),
+        import: () => {
+            throw new MathJsValidationError('spreadsheet/formula/import/disabled');
+        },
+        createUnit: () => {
+            throw new MathJsValidationError('spreadsheet/formula/createUnit/disabled');
+        },
+        evaluate: () => {
+            throw new MathJsValidationError('spreadsheet/formula/evaluate/disabled');
+        },
+        parse: () => {
+            throw new MathJsValidationError('spreadsheet/formula/parse/disabled');
+        },
+        simplify: () => {
+            throw new MathJsValidationError('spreadsheet/formula/simplify/disabled');
+        },
+        derivative: () => {
+            throw new MathJsValidationError('spreadsheet/formula/derivative/disabled');
+        },
+        compile: () => {
+            throw new MathJsValidationError('spreadsheet/formula/compile/disabled');
+        },
+        help: () => {
+            throw new MathJsValidationError('spreadsheet/formula/help/disabled');
+        },
+        parser: () => {
+            throw new MathJsValidationError('spreadsheet/formula/parser/disabled');
+        },
         equal: function (a: any, b: any) {
             // == instead of === to be able to compare strings to numbers
             return a === b;
@@ -54,7 +62,7 @@ instance.import(
             } else if (Array.isArray(obj)) {
                 return obj.length;
             }
-            return { error: 'spreadsheet/formula/length/error' };
+            throw new MathJsValidationError('spreadsheet/formula/length/error');
         },
         unitToKiloUnit,
         unitToMicroUnit,

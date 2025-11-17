@@ -6,7 +6,7 @@
  */
 import { ColumnMenu } from '../column-menu';
 import { COLUMN_TYPES } from '../../../custom-aggrid/custom-aggrid-header.type';
-import { limitedEvaluate } from './math';
+import { limitedEvaluate, MathJsValidationError } from './math';
 import { ColDef, ValueGetterParams } from 'ag-grid-community';
 import {
     booleanColumnDefinition,
@@ -38,8 +38,11 @@ const createValueGetter =
             });
             const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
             const result = limitedEvaluate(escapedFormula, scope);
-            return isValidationError(result) ? result : validateFormulaResult(result, colDef.type);
+            return validateFormulaResult(result, colDef.type);
         } catch (e) {
+            if (e instanceof MathJsValidationError) {
+                return { error: e.error };
+            }
             return undefined;
         }
     };
