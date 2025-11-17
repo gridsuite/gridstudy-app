@@ -29,7 +29,7 @@ import {
     fetchElementsInfos,
     mergeSx,
     TreeViewFinderNodeProps,
-    OverflowableChip
+    OverflowableChip,
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
 
