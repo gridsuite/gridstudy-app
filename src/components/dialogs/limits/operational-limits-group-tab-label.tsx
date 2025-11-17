@@ -40,7 +40,7 @@ export function OperationalLimitsGroupTabLabel({
                     <Tooltip title={operationalLimitsGroup.name}>
                         <Typography
                             variant="body1"
-                            color={permanentLimitErrorMessage ? red[500] : blue[700]}
+                            color={permanentLimitErrorMessage ? red[500] : undefined}
                             sx={{
                                 maxWidth: '100px',
                                 textOverflow: 'ellipsis',

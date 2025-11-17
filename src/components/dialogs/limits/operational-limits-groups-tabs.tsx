@@ -39,11 +39,10 @@ const limitsStyles = {
     tabs: () => ({
         ...stylesLayout.listDisplay,
         maxHeight: '50vh',
-        overflow: 'auto',
+        height: '100%',
+        borderRight: 1,
+        borderColor: 'divider',
         transition: 'transform 0.3s ease-in-out',
-        '& .MuiTab-root': {
-            borderRight: '1px solid grey',
-        },
         '& .MuiTabs-indicator': {
             borderRight: `3px solid ${blue[700]}`,
         },
@@ -322,13 +321,13 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 
         return (
-            <Box sx={limitsStyles.tabs}>
+            <Box>
                 <Tabs
                     orientation="vertical"
-                    variant="fullWidth"
+                    variant="scrollable"
                     value={indexSelectedLimitSet !== null && indexSelectedLimitSet}
                     onChange={handleTabChange}
-                    visibleScrollbar
+                    sx={limitsStyles.tabs}
                 >
                     {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
                         <Tab
