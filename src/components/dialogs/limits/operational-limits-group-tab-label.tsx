@@ -5,25 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, FormHelperText, Stack, Typography, Tooltip } from '@mui/material';
+import { Box, FormHelperText, Stack, Typography, Tooltip, IconButton } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { APPLICABILITY } from '../../network/constants';
 import { LimitsPropertiesStack } from './limits-properties-stack';
-import { blue, grey, red } from '@mui/material/colors';
+import { grey, red } from '@mui/material/colors';
 import { useFormState } from 'react-hook-form';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import { LIMITS, OPERATIONAL_LIMITS_GROUPS } from '../../utils/field-constants';
 import { LimitsFormSchema, OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 interface OperationalLimitsGroupTabLabelProps {
     operationalLimitsGroup: OperationalLimitsGroupFormSchema;
+    showIconButton: boolean;
     limitsPropertiesName: string;
+    handleOpenMenu: (event: React.MouseEvent<HTMLElement>, index: number) => void;
     index: number;
 }
 
 export function OperationalLimitsGroupTabLabel({
     operationalLimitsGroup,
+    showIconButton,
     limitsPropertiesName,
+    handleOpenMenu,
     index,
 }: Readonly<OperationalLimitsGroupTabLabelProps>) {
     const { errors } = useFormState<LimitsFormSchema>({ name: `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}` });
@@ -71,6 +76,11 @@ export function OperationalLimitsGroupTabLabel({
                 )}
                 <LimitsPropertiesStack name={limitsPropertiesName} />
             </Stack>
+            {showIconButton && (
+                <IconButton size="small" onClick={(e) => handleOpenMenu(e, index)}>
+                    <MoreVertIcon fontSize="small" />
+                </IconButton>
+            )}
         </Box>
     );
 }

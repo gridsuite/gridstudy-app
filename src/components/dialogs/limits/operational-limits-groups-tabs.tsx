@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Tab, Tabs, TextField } from '@mui/material';
+import { Tab, Tabs, TextField } from '@mui/material';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     APPLICABIlITY,
@@ -54,7 +54,10 @@ const limitsStyles = {
         },
     }),
     tabBackground: {
-        flexBasis: 'fit-content',
+        '&:hover': {
+            backgroundColor: 'rgba(25, 118, 210, 0.05)', // blue[700]
+        },
+        width: '100%',
         p: 1,
         minHeight: 60,
     },
@@ -113,6 +116,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         },
         ref
     ) => {
+        const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
         const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
         const [contextMenuCoordinates, setContextMenuCoordinates] = useState<ContextMenuCoordinates>({
             x: null,
@@ -163,7 +167,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         );
 
         const handleOpenMenu = useCallback(
-            (event: React.MouseEvent<HTMLDivElement>, index: number): void => {
+            (event: React.MouseEvent<HTMLElement>, index: number): void => {
                 if (!editable) {
                     return;
                 }
@@ -321,7 +325,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 
         return (
-            <Box>
+            <>
                 <Tabs
                     orientation="vertical"
                     variant="scrollable"
@@ -331,6 +335,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 >
                     {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
                         <Tab
+                            onMouseEnter={() => setHoveredRowIndex(index)}
                             onContextMenu={(e) => handleOpenMenu(e, index)}
                             key={opLg.id + index}
                             disableRipple
@@ -353,7 +358,9 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                 ) : (
                                     <OperationalLimitsGroupTabLabel
                                         operationalLimitsGroup={opLg}
+                                        showIconButton={editable && index === hoveredRowIndex}
                                         limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
+                                        handleOpenMenu={handleOpenMenu}
                                         index={index}
                                     />
                                 )
@@ -375,7 +382,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     appendToLimitsGroups={appendToLimitsGroups}
                     removeLimitsGroups={removeLimitsGroups}
                 />
-            </Box>
+            </>
         );
     }
 );
