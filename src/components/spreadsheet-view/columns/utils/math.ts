@@ -7,7 +7,6 @@
 
 import { all, create } from 'mathjs';
 import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
-import { formatValidationResult } from './formula-validator';
 
 const instance = create(all);
 
@@ -15,15 +14,33 @@ export const limitedEvaluate = instance.evaluate;
 
 instance.import(
     {
-        import: () => formatValidationResult(false, 'spreadsheet/formula/import/disabled'),
-        createUnit: () => formatValidationResult(false, 'spreadsheet/formula/createUnit/disabled'),
-        evaluate: () => formatValidationResult(false, 'spreadsheet/formula/evaluate/disabled'),
-        parse: () => formatValidationResult(false, 'spreadsheet/formula/parse/disabled'),
-        simplify: () => formatValidationResult(false, 'spreadsheet/formula/simplify/disabled'),
-        derivative: () => formatValidationResult(false, 'spreadsheet/formula/derivative/disabled'),
-        compile: () => formatValidationResult(false, 'spreadsheet/formula/compile/disabled'),
-        help: () => formatValidationResult(false, 'spreadsheet/formula/help/disabled'),
-        parser: () => formatValidationResult(false, 'spreadsheet/formula/parser/disabled'),
+        import: () => ({
+            error: 'spreadsheet/formula/import/disabled',
+        }),
+        createUnit: () => ({
+            error: 'spreadsheet/formula/createUnit/disabled',
+        }),
+        evaluate: () => ({
+            error: 'spreadsheet/formula/evaluate/disabled',
+        }),
+        parse: () => ({
+            error: 'spreadsheet/formula/parse/disabled',
+        }),
+        simplify: () => ({
+            error: 'spreadsheet/formula/simplify/disabled',
+        }),
+        derivative: () => ({
+            error: 'spreadsheet/formula/derivative/disabled',
+        }),
+        compile: () => ({
+            error: 'spreadsheet/formula/compile/disabled',
+        }),
+        help: () => ({
+            error: 'spreadsheet/formula/help/disabled',
+        }),
+        parser: () => ({
+            error: 'spreadsheet/formula/parser/disabled',
+        }),
         equal: function (a: any, b: any) {
             // == instead of === to be able to compare strings to numbers
             return a === b;
@@ -37,7 +54,7 @@ instance.import(
             } else if (Array.isArray(obj)) {
                 return obj.length;
             }
-            return formatValidationResult(false, 'spreadsheet/formula/length/error');
+            return { error: 'spreadsheet/formula/length/error' };
         },
         unitToKiloUnit,
         unitToMicroUnit,

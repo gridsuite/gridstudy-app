@@ -6,48 +6,36 @@
  */
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { MAX_FORMULA_CHARACTERS } from '../../constants';
+import { type CustomAggridValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
-export interface ValidationResult {
-    isValid: boolean;
-    error?: string;
+export interface ValidationError {
+    error: string;
 }
 
-export function isValidationResult(value: unknown): value is ValidationResult {
-    return (
-        typeof value === 'object' && value !== null && value.hasOwnProperty('isValid') && value.hasOwnProperty('error')
-    );
+export function isValidationError(value: unknown): value is ValidationError {
+    return typeof value === 'object' && value !== null && value.hasOwnProperty('error');
 }
 
-export function isValidationError(value: unknown): value is ValidationResult {
-    return isValidationResult(value) && !value.isValid;
-}
-
-export const formatValidationResult = (isValid: boolean, messageId?: string): ValidationResult => {
-    return { isValid: isValid, error: messageId };
-};
-
-export const validateFormulaResult = (value: any, type: COLUMN_TYPES): ValidationResult => {
-    if (isValidationResult(value)) {
-        return value;
-    }
-
+export const validateFormulaResult = (value: CustomAggridValue, type: COLUMN_TYPES): CustomAggridValue => {
     switch (type) {
         case COLUMN_TYPES.NUMBER:
-            return formatValidationResult(
-                (typeof value === 'number' && !isNaN(value)) || (typeof value !== 'boolean' && !isNaN(Number(value))),
-                'spreadsheet/formula/type/number'
-            );
+            return (typeof value === 'number' && !isNaN(value)) || (typeof value !== 'boolean' && !isNaN(Number(value)))
+                ? value
+                : { error: 'spreadsheet/formula/type/number' };
         case COLUMN_TYPES.BOOLEAN:
-            return formatValidationResult(typeof value === 'boolean', 'spreadsheet/formula/type/boolean');
+            return typeof value === 'boolean'
+                ? value
+                : {
+                      error: 'spreadsheet/formula/type/boolean',
+                  };
         case COLUMN_TYPES.ENUM:
-            return formatValidationResult(
-                typeof value === 'string' || typeof value === 'number',
-                'spreadsheet/formula/type/enum'
-            );
+            return typeof value === 'string' || typeof value === 'number'
+                ? value
+                : { error: 'spreadsheet/formula/type/enum' };
         case COLUMN_TYPES.TEXT:
-            return formatValidationResult(true); // Text accepts any type
+            return value; // Text accepts any type
         default:
-            return formatValidationResult(false, 'spreadsheet/formula/type/unknown');
+            return { error: 'spreadsheet/formula/type/unknown' };
     }
 };
 

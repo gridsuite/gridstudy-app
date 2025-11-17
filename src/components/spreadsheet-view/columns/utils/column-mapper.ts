@@ -14,22 +14,18 @@ import {
     numberColumnDefinition,
     textColumnDefinition,
 } from '../common-column-definitions';
-import { isValidationError, validateFormulaResult, ValidationResult } from './formula-validator';
+import { isValidationError, validateFormulaResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
-import { CustomColDef } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import {
+    type CustomAggridValue,
+    type CustomColDef,
+} from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer } from '../../../custom-aggrid/cell-renderers';
-import { IntlShape, useIntl } from 'react-intl';
-import { useMemo } from 'react';
-
-export const useColumnDefinitions = (tableDefinition: SpreadsheetTabDefinition) => {
-    const intl = useIntl();
-    return useMemo(() => addFormulaErrorsRenderer(intl, mapColumns(tableDefinition)), [intl, tableDefinition]);
-};
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
-    (params: ValueGetterParams): ValidationResult | boolean | string | number | undefined => {
+    (params: ValueGetterParams): CustomAggridValue | undefined => {
         try {
             // Skip formula processing for pinned rows and use raw value
             if (isCalculationRow(params.node?.data?.rowType)) {
@@ -42,18 +38,13 @@ const createValueGetter =
             });
             const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
             const result = limitedEvaluate(escapedFormula, scope);
-            const validation = validateFormulaResult(result, colDef.type);
-
-            if (!validation.isValid) {
-                return validation;
-            }
-            return result;
+            return validateFormulaResult(result, colDef.type);
         } catch (e) {
             return undefined;
         }
     };
 
-const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
+export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
     tableDefinition?.columns.map((colDef): CustomColDef => {
         let baseDefinition: ColDef;
 
@@ -90,16 +81,10 @@ const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
                 },
             },
             valueGetter: createValueGetter(colDef),
+            cellRendererSelector: (params) =>
+                isValidationError(params.value) ? { component: ErrorCellRenderer } : undefined, //Returning undefined make it so the originally defined renderer is used
             hide: !colDef.visible,
             editable: false,
             enableCellChangeFlash: true,
         };
     });
-
-const addFormulaErrorsRenderer = (intl: IntlShape, columns: CustomColDef[]): CustomColDef[] => {
-    return columns.map((col) => ({
-        ...col,
-        cellRendererSelector: (params) =>
-            isValidationError(params.value) ? { component: ErrorCellRenderer, params: { intl } } : undefined, //Returning undefined make it so the originally defined renderer is used
-    }));
-};
