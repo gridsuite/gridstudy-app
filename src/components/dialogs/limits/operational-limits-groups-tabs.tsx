@@ -10,11 +10,11 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } fro
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
+    DELETION_MARK,
     ID,
     LIMITS_PROPERTIES,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
-    SELECTED,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
     TEMPORARY_LIMIT_DURATION,
@@ -23,15 +23,16 @@ import {
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
-import { CurrentLimitsData, OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
-import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
+import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
+import { CurrentLimitsData } from 'services/study/network-map.type';
 
 const limitsStyles = {
     limitsBackground: {
@@ -55,7 +56,7 @@ const limitsStyles = {
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
-    limitsGroups: OperationalLimitsGroupFormInfos[];
+    limitsGroups: OperationalLimitsGroupFormSchema[];
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
@@ -107,7 +108,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             append: appendToLimitsGroups,
             remove: removeLimitsGroups,
         } = useFieldArray<{
-            [key: string]: OperationalLimitsGroupFormInfos[];
+            [key: string]: OperationalLimitsGroupFormSchema[];
         }>({
             name: operationalLimitsGroupsFormName,
         });
@@ -182,20 +183,18 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 }
 
                 // new limit sets are created with 5 empty limits by default
-                const emptyTemporaryLimit = {
+                const emptyTemporaryLimit: TemporaryLimitFormSchema = {
                     [TEMPORARY_LIMIT_NAME]: '',
                     [TEMPORARY_LIMIT_DURATION]: null,
                     [TEMPORARY_LIMIT_VALUE]: null,
-                    modificationType: null,
-                    [SELECTED]: false,
+                    [DELETION_MARK]: false,
                 };
-                const newLimitsGroup: OperationalLimitsGroup = {
+                const newLimitsGroup: OperationalLimitsGroupFormSchema = {
                     [ID]: name + APPLICABILITY.EQUIPMENT.id,
                     [NAME]: name,
                     [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     [LIMITS_PROPERTIES]: [],
                     [CURRENT_LIMITS]: {
-                        [ID]: name,
                         [TEMPORARY_LIMITS]: [emptyTemporaryLimit],
                         [PERMANENT_LIMIT]: null,
                     },
@@ -300,7 +299,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     sx={tabStyles.listDisplay}
                     visibleScrollbar
                 >
-                    {limitsGroups.map((opLg: OperationalLimitsGroupFormInfos, index: number) => (
+                    {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
                         <Tab
                             onMouseEnter={() => setHoveredRowIndex(index)}
                             onMouseLeave={() => setHoveredRowIndex(-1)}
