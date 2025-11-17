@@ -57,6 +57,7 @@ const limitsStyles = {
         '&:hover': {
             backgroundColor: 'rgba(25, 118, 210, 0.05)', // blue[700]
         },
+        maxWidth: 600,
         width: '100%',
         p: 1,
         minHeight: 60,
