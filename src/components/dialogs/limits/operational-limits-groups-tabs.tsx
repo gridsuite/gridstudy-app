@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Tab, Tabs, TextField } from '@mui/material';
+import { Box, Tab, Tabs, TextField } from '@mui/material';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     APPLICABIlITY,
@@ -33,15 +33,22 @@ import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-l
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
 import { CurrentLimitsData } from 'services/study/network-map.type';
 import { FormattedMessage } from 'react-intl';
+import { blue } from '@mui/material/colors';
 
 const limitsStyles = {
     tabs: () => ({
         ...stylesLayout.listDisplay,
+        maxHeight: '50vh',
+        overflow: 'auto',
+        transition: 'transform 0.3s ease-in-out',
         '& .MuiTab-root': {
             borderRight: '1px solid grey',
         },
+        '& .MuiTabs-indicator': {
+            borderRight: `3px solid ${blue[700]}`,
+        },
         '.MuiTab-root.MuiButtonBase-root': {
-            textTransform: 'none', //tab text not upper-case
+            textTransform: 'none',
             textAlign: 'left',
             alignItems: 'stretch',
             p: 0,
@@ -315,13 +322,12 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 
         return (
-            <>
+            <Box sx={limitsStyles.tabs}>
                 <Tabs
                     orientation="vertical"
                     variant="fullWidth"
                     value={indexSelectedLimitSet !== null && indexSelectedLimitSet}
                     onChange={handleTabChange}
-                    sx={limitsStyles.tabs}
                     visibleScrollbar
                 >
                     {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
@@ -370,7 +376,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     appendToLimitsGroups={appendToLimitsGroups}
                     removeLimitsGroups={removeLimitsGroups}
                 />
-            </>
+            </Box>
         );
     }
 );
