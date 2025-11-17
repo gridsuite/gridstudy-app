@@ -9,7 +9,6 @@ import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
 import {
     AttributeModification,
-    CurrentLimitsData,
     OperationalLimitsGroup,
     OperationType,
     TemporaryLimit,
@@ -30,7 +29,8 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
 } from './field-constants';
-import { TemporaryLimitFormInfos } from '../dialogs/network-modifications/line/modification/line-modification-type';
+import { TemporaryLimitFormSchema } from '../dialogs/limits/operational-limits-groups-types';
+import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -132,23 +132,35 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): TemporaryLimit[] =>
-    temporaryLimits?.map((limit: TemporaryLimit) => {
+export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): TemporaryLimit[] =>
+    temporaryLimits?.map((limit: TemporaryLimitsData) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [MODIFICATION_TYPE]: limit?.[MODIFICATION_TYPE] ?? null,
+            [MODIFICATION_TYPE]: null,
         };
     });
 
-export const formatToTemporaryLimitsFormInfos = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormInfos[] =>
+export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
             [DELETION_MARK]: limit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
+        };
+    });
+
+export const formatMapInfosToTemporaryLimitsFormSchema = (
+    temporaryLimits: TemporaryLimitsData[]
+): TemporaryLimitFormSchema[] =>
+    temporaryLimits?.map((limit: TemporaryLimitsData) => {
+        return {
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [DELETION_MARK]: false,
         };
     });
 
@@ -163,7 +175,6 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsDa
                     [APPLICABIlITY]: elt.applicability,
                     [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
-                        [ID]: elt.id,
                         permanentLimit: elt.permanentLimit,
                         temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
                     },
