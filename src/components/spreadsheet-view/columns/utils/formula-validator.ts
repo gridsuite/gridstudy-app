@@ -13,13 +13,14 @@ export interface ValidationError {
 }
 
 export function isValidationError(value: unknown): value is ValidationError {
-    return typeof value === 'object' && value !== null && value.hasOwnProperty('error');
+    return !!(typeof value === 'object' && value?.hasOwnProperty('error'));
 }
 
 export const validateFormulaResult = (value: CustomAggridValue, type: COLUMN_TYPES): CustomAggridValue => {
     switch (type) {
         case COLUMN_TYPES.NUMBER:
-            return (typeof value === 'number' && !isNaN(value)) || (typeof value !== 'boolean' && !isNaN(Number(value)))
+            return (typeof value === 'number' && !Number.isNaN(value)) ||
+                (typeof value !== 'boolean' && !Number.isNaN(Number(value)))
                 ? value
                 : { error: 'spreadsheet/formula/type/number' };
         case COLUMN_TYPES.BOOLEAN:
