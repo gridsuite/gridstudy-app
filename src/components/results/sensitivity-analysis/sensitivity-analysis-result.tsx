@@ -38,21 +38,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-
-function isColDef(col: ColDef | ColGroupDef): col is ColDef {
-    return (col as ColDef).field !== undefined;
-}
-
-function getColumnHeaderDisplayNames(gridApi: GridApi): string[] {
-    return (
-        gridApi.getColumnDefs()?.map((c) => {
-            if (isColDef(c)) {
-                return c.headerComponentParams?.displayName;
-            }
-            return '';
-        }) ?? []
-    );
-}
+import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
