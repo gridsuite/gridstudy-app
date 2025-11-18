@@ -58,7 +58,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 }) => {
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
 
-    const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+    const [csvHeader, setCsvHeader] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
 
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
@@ -127,7 +127,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     const handleGridColumnsChanged = useCallback((params: GridReadyEvent) => {
         if (params?.api) {
-            setCsvHeaders(getDisplayedColumns(params));
+            setCsvHeader(getDisplayedColumns(params));
         }
     }, []);
 
@@ -184,7 +184,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             currentRootNetworkUuid={currentRootNetworkUuid}
-                            csvHeaders={csvHeaders}
+                            csvHeader={csvHeader}
                             analysisType={tabIndex}
                             disabled={isCsvButtonDisabled}
                         />

@@ -91,7 +91,7 @@ import {
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
-    combineFormAndMapServerLimitsGroups,
+    convertToOperationalLimitsGroupFormSchema,
     formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
@@ -567,11 +567,14 @@ const TwoWindingsTransformerModificationDialog = ({
             tabsInError.push(TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB);
         }
 
-        if (tabsInError.length > 0) {
+        if (tabsInError.includes(tabIndex)) {
+            // error in current tab => do not change tab systematically but remove current tab in error list
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+        } else if (tabsInError.length > 0) {
+            // switch to the first tab in the list then remove the tab in the error list
             setTabIndex(tabsInError[0]);
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
         }
-
-        setTabIndexesWithError(tabsInError);
     };
 
     const clear = useCallback(() => {
@@ -662,7 +665,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                             [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                             [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
                                                 ? getOpLimitsGroupInfosFromBranchModification(formValues)
-                                                : combineFormAndMapServerLimitsGroups(formValues, twt),
+                                                : convertToOperationalLimitsGroupFormSchema(twt),
                                         },
                                     },
                                     ...getRatioTapChangerFormData({

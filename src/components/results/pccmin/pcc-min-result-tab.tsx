@@ -48,7 +48,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     });
 
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
-        return [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.GENERATOR];
+        return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
     }, []);
 
     useEffect(() => {
