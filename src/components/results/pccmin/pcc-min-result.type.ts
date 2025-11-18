@@ -100,7 +100,7 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
 
     let columnsMeta = [
         { colId: 'busId', headerKey: 'Bus', filterDef: textFilterParams },
-        { colId: 'voltageLevelId', headerKey: 'voltageLevelId', filterDef: textFilterParams },
+        { colId: 'voltageLevelId', headerKey: 'busVoltageLevel', filterDef: textFilterParams },
         { colId: 'limitingEquipment', headerKey: 'Contingency', filterDef: textFilterParams },
         {
             colId: 'pccMinTri',
