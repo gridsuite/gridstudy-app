@@ -136,17 +136,15 @@ export function LimitsPropertiesSideStack({ name, disabled }: Readonly<LimitsPro
                         error={valueEditorError !== ''}
                         helperText={valueEditorError}
                     />
-                    {hovered && (
-                        <IconButton
-                            sx={{ verticalAlign: 'center' }}
-                            onClick={() => {
-                                setIsEditing(false);
-                                setNameEditorError('');
-                            }}
-                        >
-                            <Delete />
-                        </IconButton>
-                    )}
+                    <IconButton
+                        sx={{ verticalAlign: 'center' }}
+                        onClick={() => {
+                            setIsEditing(false);
+                            setNameEditorError('');
+                        }}
+                    >
+                        <Delete visibility={hovered ? 'visible' : 'hidden'} />
+                    </IconButton>
                 </Box>
             ) : (
                 ''
