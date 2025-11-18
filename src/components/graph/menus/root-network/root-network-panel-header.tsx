@@ -22,8 +22,6 @@ import { FileUpload } from '@mui/icons-material';
 import RootNetworkDialog, { FormData } from '../../../dialogs/root-network/root-network-dialog';
 import { createRootNetwork } from 'services/root-network';
 import type { UUID } from 'node:crypto';
-import { getCaseImportParameters, GetCaseImportParametersReturn } from 'services/network-conversion';
-import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 import { useDispatch, useSelector } from 'react-redux';
 import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';

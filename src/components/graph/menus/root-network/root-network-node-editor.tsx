@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, mergeSx, type MuiStyles, type Parameter, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, mergeSx, type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     Delete as DeleteIcon,
     RemoveRedEye as RemoveRedEyeIcon,
@@ -18,11 +18,9 @@ import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { RootNetworkInfos, RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
-import { getCaseImportParameters } from 'services/network-conversion';
 import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
-import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 const styles = {
