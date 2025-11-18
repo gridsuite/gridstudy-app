@@ -11,6 +11,7 @@ import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { ICellRendererParams } from 'ag-grid-community';
 import { CustomCellRendererProps } from 'ag-grid-react';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
 
 const styles = {
     tableCell: (theme) => ({
@@ -34,6 +35,13 @@ const styles = {
         marginLeft: 'inherit',
     },
 } as const satisfies MuiStyles;
+
+const FORMULA_ERROR_KEY = 'spreadsheet/formula/error';
+
+interface BaseCellRendererProps {
+    value: string | undefined;
+    tooltip?: string;
+}
 
 export const BooleanCellRenderer = (props: any) => {
     const isChecked = props.value;
@@ -105,15 +113,24 @@ export const NumericCellRenderer = (props: NumericCellRendererProps) => {
     );
 };
 
+const BaseCellRenderer = ({ value, tooltip }: BaseCellRendererProps) => (
+    <Box sx={mergeSx(styles.tableCell)}>
+        <Tooltip disableFocusListener disableTouchListener title={tooltip || value || ''}>
+            <Box sx={styles.overflow}>{value}</Box>
+        </Tooltip>
+    </Box>
+);
+
+export const ErrorCellRenderer = (props: CustomCellRendererProps) => {
+    const intl = useIntl();
+    const errorMessage = intl.formatMessage({ id: props.value?.error });
+    const errorValue = intl.formatMessage({ id: FORMULA_ERROR_KEY });
+    return <BaseCellRenderer value={errorValue} tooltip={errorMessage} />;
+};
+
 export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
-    const cellValue = formatCell(props);
-    return (
-        <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip disableFocusListener disableTouchListener title={cellValue.value?.toString()}>
-                <Box sx={styles.overflow}>{cellValue.value?.toString()}</Box>
-            </Tooltip>
-        </Box>
-    );
+    const cellValue = formatCell(props).value?.toString();
+    return <BaseCellRenderer value={cellValue} />;
 };
 
 export const NetworkModificationNameCellRenderer = (props: CustomCellRendererProps) => {
