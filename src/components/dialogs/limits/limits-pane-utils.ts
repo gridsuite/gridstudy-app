@@ -9,7 +9,6 @@ import { sanitizeString } from '../dialog-utils';
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
-    DELETION_MARK,
     ENABLE_OLG_MODIFICATION,
     ID,
     LIMIT_SETS_MODIFICATION_TYPE,

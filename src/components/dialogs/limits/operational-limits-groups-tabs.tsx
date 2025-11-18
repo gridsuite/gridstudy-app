@@ -10,7 +10,6 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } fro
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
-    DELETION_MARK,
     ID,
     LIMITS_PROPERTIES,
     OPERATIONAL_LIMITS_GROUPS,

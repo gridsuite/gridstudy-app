@@ -18,7 +18,6 @@ import { Option } from '@gridsuite/commons-ui';
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
-    DELETION_MARK,
     ID,
     LIMITS_PROPERTIES,
     MODIFICATION_TYPE,

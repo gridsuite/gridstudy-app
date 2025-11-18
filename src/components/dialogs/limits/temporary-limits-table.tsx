@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useState } from 'react';
+import { useFieldArray } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import {
     type ColumnNumeric,
@@ -21,7 +21,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { DELETION_MARK, SELECTED } from '../../utils/field-constants';
+import { SELECTED } from '../../utils/field-constants';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 
 const styles = {
@@ -87,7 +87,6 @@ function TemporaryLimitsTable({
 }: Readonly<TemporaryLimitsTableProps>) {
     const { fields, append, remove } = useFieldArray({ name: arrayFormName });
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
-    const { setValue, getValues } = useFormContext();
 
     function renderTableCell(rowId: string, rowIndex: number, column: ColumnText | ColumnNumeric) {
         const name = `${arrayFormName}[${rowIndex}].${column.dataKey}`;
