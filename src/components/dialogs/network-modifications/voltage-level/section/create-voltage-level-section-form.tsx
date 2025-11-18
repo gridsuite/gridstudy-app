@@ -283,10 +283,7 @@ export function CreateVoltageLevelSectionForm({
         />
     );
     const newSwitchState = (
-        <SwitchInput
-            name={NEW_SWITCH_STATES}
-            label={isNewSwitchOpen ? 'areSwitchesClosed' : 'areSwitchesOpen'}
-        />
+        <SwitchInput name={NEW_SWITCH_STATES} label={isNewSwitchOpen ? 'areSwitchesClosed' : 'areSwitchesOpen'} />
     );
     const getLabelDescription = useCallback(() => {
         return intl.formatMessage({ id: 'newSection' });
