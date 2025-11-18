@@ -14,6 +14,7 @@ import DataArrayIcon from '@mui/icons-material/DataArray';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Box, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
+import { escapeRegExp } from '../../../utils/utils';
 
 type TreeLabelProps = {
     text: string;
@@ -26,8 +27,9 @@ function highlightText(text: string, query?: string, active?: boolean) {
     if (!query) {
         return text;
     }
-    return text.split(new RegExp(`(${query})`, 'gi')).map((part, index) =>
-        part.toLowerCase() === query.toLowerCase() ? (
+    const safeInput = escapeRegExp(query);
+    return text.split(new RegExp(`(${safeInput})`, 'gi')).map((part, index) =>
+        part.toLowerCase() === safeInput.toLowerCase() ? (
             <span key={index} style={{ backgroundColor: active ? 'orange' : 'yellow' }}>
                 {part}
             </span>
