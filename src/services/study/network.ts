@@ -19,7 +19,7 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { getQueryParamsList } from '../utils';
-import { BusBarSectionsInfos, FeederBaysBusBarSectionsInfos, SwitchInfos } from './network-map.type';
+import { BusBarSectionsInfos, FeederBaysInfos, SwitchInfos } from './network-map.type';
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
 import { isBlankOrEmpty } from '../../components/utils/validation-functions';
@@ -186,14 +186,14 @@ export function fetchVoltageLevelBusBarSectionsInfos(
     return backendFetchJson(fetchTopologyUrl);
 }
 
-export function fetchVoltageLevelFeederBaysBusBarSectionsInfos(
+export function fetchVoltageLevelFeederBaysInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     voltageLevelId: string
-): Promise<FeederBaysBusBarSectionsInfos> {
+): Promise<FeederBaysInfos> {
     console.info(
-        `Fetching feeder bays and bus bar sections information of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+        `Fetching feeder bays infos of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
@@ -202,7 +202,7 @@ export function fetchVoltageLevelFeederBaysBusBarSectionsInfos(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
-        '/feeder-bays-and-bus-bar-sections' +
+        '/feeder-bays' +
         '?' +
         urlSearchParams.toString();
 
