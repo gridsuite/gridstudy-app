@@ -109,7 +109,7 @@ export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
     const cellValue = formatCell(props);
     return (
         <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip disableFocusListener disableTouchListener title={cellValue.value?.toString()}>
+            <Tooltip disableFocusListener disableTouchListener title={cellValue.tooltip?.toString()}>
                 <Box sx={styles.overflow}>{cellValue.value?.toString()}</Box>
             </Tooltip>
         </Box>
