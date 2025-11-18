@@ -182,12 +182,10 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     setValue(formName, []);
                 }
 
-                // new limit sets are created with 5 empty limits by default
                 const emptyTemporaryLimit: TemporaryLimitFormSchema = {
                     [TEMPORARY_LIMIT_NAME]: '',
                     [TEMPORARY_LIMIT_DURATION]: null,
                     [TEMPORARY_LIMIT_VALUE]: null,
-                    [DELETION_MARK]: false,
                 };
                 const newLimitsGroup: OperationalLimitsGroupFormSchema = {
                     [ID]: name + APPLICABILITY.EQUIPMENT.id,

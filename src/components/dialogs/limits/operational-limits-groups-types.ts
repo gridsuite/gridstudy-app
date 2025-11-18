@@ -57,5 +57,4 @@ export interface TemporaryLimitFormSchema {
     [TEMPORARY_LIMIT_DURATION]: number | null;
     [TEMPORARY_LIMIT_VALUE]: number | null;
     [TEMPORARY_LIMIT_NAME]: string;
-    [DELETION_MARK]: boolean;
 }

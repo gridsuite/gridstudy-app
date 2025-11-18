@@ -85,7 +85,7 @@ function TemporaryLimitsTable({
     isValueModified,
     disableAddingRows = false,
 }: Readonly<TemporaryLimitsTableProps>) {
-    const { fields, append } = useFieldArray({ name: arrayFormName });
+    const { fields, append, remove } = useFieldArray({ name: arrayFormName });
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
     const { setValue, getValues } = useFormContext();
 
@@ -136,20 +136,11 @@ function TemporaryLimitsTable({
         );
     }
 
-    const deletionMarkFormName = useCallback(
-        (index: number) => `${arrayFormName}[${index}].${DELETION_MARK}`,
-        [arrayFormName]
-    );
-
     const renderTableRow = (rowId: string, index: number) => (
         <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
             {columnsDefinition.map((column) => renderTableCell(rowId, index, column))}
             <TableCell key={rowId + 'delete'}>
-                <IconButton
-                    color="primary"
-                    disabled={disabled}
-                    onClick={() => setValue(deletionMarkFormName(index), true, { shouldDirty: true })}
-                >
+                <IconButton color="primary" disabled={disabled} onClick={() => remove(index)}>
                     <DeleteIcon visibility={index === hoveredRowIndex ? 'visible' : 'hidden'} />
                 </IconButton>
             </TableCell>
@@ -159,10 +150,7 @@ function TemporaryLimitsTable({
     function renderTableBody() {
         return (
             <TableBody>
-                {fields.map(
-                    (value: Record<'id', string>, index: number) =>
-                        !getValues(deletionMarkFormName(index)) && renderTableRow(value.id, index)
-                )}
+                {fields.map((value: Record<'id', string>, index: number) => renderTableRow(value.id, index))}
             </TableBody>
         );
     }
