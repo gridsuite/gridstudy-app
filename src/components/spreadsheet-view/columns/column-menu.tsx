@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
-import { PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
+import { PopupConfirmationDialog, snackWithFallback, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { setRemoveColumnDefinition } from 'redux/actions';
@@ -69,8 +69,7 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
             duplicateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid)
                 .then()
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/custom_column/duplicate_column_error',
                     });
                 });
@@ -108,10 +107,7 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'spreadsheet/custom_column/delete_column_error',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'spreadsheet/custom_column/delete_column_error' });
                 });
         }
     }, [

@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -528,10 +529,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][RATIO_TAP_CHANGER_STATUS],
                 phaseTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][PHASE_TAP_CHANGER_STATUS],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TwoWindingsTransformerModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TwoWindingsTransformerModificationError' });
             });
         },
         [

@@ -14,7 +14,7 @@ import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DropResult } from '@hello-pangea/dnd';
 import { updateTableDefinition } from 'redux/actions';
 import type { UUID } from 'node:crypto';
-import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';
 import { updateColumnStates } from 'services/study/study-config';
@@ -140,10 +140,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
             })
             .catch((error) => {
                 resetColumnState();
-                snackError({
-                    messageTxt: error,
-                    headerId: 'spreadsheet/reorder_columns/error',
-                });
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/reorder_columns/error' });
             });
 
         handleCloseColumnsSettingDialog();
