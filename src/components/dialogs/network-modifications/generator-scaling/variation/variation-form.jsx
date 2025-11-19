@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
+import { DirectoryItemsInput, snackWithFallback } from '@gridsuite/commons-ui';
 import {
     FILTERS,
     ID,
@@ -66,10 +66,7 @@ const VariationForm = ({ name, index }) => {
                     setValue(filterFieldName, newFilters);
                 })
                 .catch((errorMessage) => {
-                    snackError({
-                        messageTxt: errorMessage,
-                        headerId: 'GeneratorScalingError',
-                    });
+                    snackWithFallback(snackError, errorMessage, { headerId: 'GeneratorScalingError' });
                 });
         },
         [filterFieldName, filters, setValue, snackError]

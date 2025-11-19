@@ -29,6 +29,7 @@ import {
     fetchDirectoryElementPath,
     FlatParameters,
     Parameter,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
@@ -104,10 +105,7 @@ export function ExportNetworkDialog({
                     setFileName(`${studyName}_${nodeName}`);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'LoadStudyAndParentsInfoError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
                 });
         }
     }, [studyUuid, nodeName, snackError]);
