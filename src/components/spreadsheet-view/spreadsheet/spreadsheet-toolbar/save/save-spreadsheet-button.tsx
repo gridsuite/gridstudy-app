@@ -66,7 +66,7 @@ export default function SaveSpreadsheetButton({
     const handleClose = useCallback(() => setAnchorEl(null), []);
 
     const { snackInfo, snackError } = useSnackMessage();
-    const { downloadCSVData, getCSVData } = useCsvExport();
+    const { getData } = useCsvExport();
 
     const onClipboardCopy = useCallback(() => {
         snackInfo({ headerId: 'spreadsheet/save/options/csv/clipboard/success' });
@@ -93,8 +93,7 @@ export default function SaveSpreadsheetButton({
                 columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
                 tableName: tableDefinition.name,
                 language: language,
-                getDataAsCsv: csvCase === SpreadsheetSaveOptionId.COPY_CSV ? gridCsvFunction : undefined,
-                exportDataAsCsv: csvCase === SpreadsheetSaveOptionId.COPY_CSV ? undefined : gridCsvFunction,
+                getData: gridCsvFunction,
                 skipPinnedBottom: calculationRowNumber === 1,
             } as CsvDownloadProps;
         },
@@ -114,7 +113,7 @@ export default function SaveSpreadsheetButton({
                 action: () => {
                     const csvProps = getCsvProps(SpreadsheetSaveOptionId.COPY_CSV);
                     if (csvProps) {
-                        copyToClipboard(getCSVData(csvProps) ?? '', onClipboardCopy, onClipboardError);
+                        copyToClipboard(getData(csvProps) ?? '', onClipboardCopy, onClipboardError);
                     }
                 },
                 disabled: dataSize === 0,
@@ -125,7 +124,7 @@ export default function SaveSpreadsheetButton({
                 action: () => {
                     const csvProps = getCsvProps(SpreadsheetSaveOptionId.EXPORT_CSV);
                     if (csvProps) {
-                        downloadCSVData(csvProps);
+                        getData(csvProps);
                     }
                 },
                 disabled: dataSize === 0,
@@ -143,10 +142,9 @@ export default function SaveSpreadsheetButton({
             saveFilterDialogOpen.setTrue,
             tableDefinition.type,
             getCsvProps,
-            getCSVData,
+            getData,
             onClipboardCopy,
             onClipboardError,
-            downloadCSVData,
         ]
     );
 
