@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
@@ -250,10 +250,7 @@ const ShuntCompensatorModificationDialog = ({
                 modificationUuid: editData?.uuid,
                 properties: toModificationProperties(shuntCompensator),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ShuntCompensatorModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'ShuntCompensatorModificationError' });
             });
         },
         [currentNodeUuid, studyUuid, editData, snackError, selectedId]

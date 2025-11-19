@@ -8,7 +8,12 @@
 import { SetStateAction, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    NotificationsUrlKeys,
+    snackWithFallback,
+    useNotificationsListener,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { fetchRootNetworks } from 'services/root-network';
 import { setMonoRootStudy, setRootNetworks } from 'redux/actions';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
@@ -47,7 +52,7 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
                     }
                 })
                 .catch((error) => {
-                    snackError({ messageTxt: error.message });
+                    snackWithFallback(snackError, error);
                 });
         }
     }, [studyUuid, dispatch, setIsRootNetworksProcessing, snackError]);
