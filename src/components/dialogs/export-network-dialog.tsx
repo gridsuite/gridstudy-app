@@ -40,6 +40,8 @@ import { useParameterState } from './parameters/use-parameters-state';
 import { AppState } from '../../redux/reducer';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 
+import { IGNORED_PARAMS } from './root-network/ignored-params';
+
 const STRING_LIST = 'STRING_LIST';
 
 /**
@@ -64,7 +66,10 @@ interface ExportNetworkDialogProps {
 // TODO to be removed when extensions param default value corrected in backend to include all possible values
 function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parameter[] {
     return parameters.map((parameter) => {
-        if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
+        if (
+            parameter.type === STRING_LIST &&
+            (parameter.name?.endsWith('included.extensions') || parameter.name?.endsWith('included-extensions'))
+        ) {
             parameter.defaultValue = parameter.possibleValues;
         }
         return parameter;
@@ -128,7 +133,6 @@ export function ExportNetworkDialog({
     };
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
-    const metasAsArray = formatWithParameter?.parameters || [];
     const [currentParameters, setCurrentParameters] = useState({});
     const onChange = useCallback((paramName: string, value: unknown, isInEdition: boolean) => {
         if (!isInEdition) {
@@ -159,6 +163,16 @@ export function ExportNetworkDialog({
         let selected = event.target.value;
         setSelectedFormat(selected);
     };
+
+    const metasAsArray = useMemo(() => {
+        if (formatWithParameter?.parameters) {
+            return formatWithParameter?.parameters.filter(
+                (param: Parameter) => !IGNORED_PARAMS || IGNORED_PARAMS.indexOf(param.name) === -1
+            );
+        } else {
+            return [];
+        }
+    }, [formatWithParameter?.parameters]);
 
     return (
         <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} aria-labelledby="dialog-title-export">

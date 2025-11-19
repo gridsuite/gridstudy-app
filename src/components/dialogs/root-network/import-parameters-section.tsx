@@ -10,9 +10,7 @@ import { FieldConstants, FlatParameters, Parameter } from '@gridsuite/commons-ui
 import { useMemo, useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
 import AdvancedParameterButton from './advanced-parameters-button';
-
-// FIXME: To be removed when gridsuite supports subnetworks.
-const IGNORED_PARAMS = ['iidm.import.cgmes.cgm-with-subnetworks', 'iidm.import.cgmes.cgm-with-subnetworks-defined-by'];
+import { IGNORED_PARAMS } from './ignored-params';
 
 export default function ImportParametersSection() {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
