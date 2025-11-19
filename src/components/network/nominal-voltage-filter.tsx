@@ -9,9 +9,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { MAX_VOLTAGE } from 'utils/constants';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { getNominalVoltageIntervalName } from 'utils/base-voltages-config-utils';
 
 const styles = {
     nominalVoltageZone: {
@@ -45,7 +45,6 @@ interface VoltageLevelInterval {
     name: string;
     minValue: number;
     maxValue: number;
-    label: string;
 }
 type VoltageLevelValuesInterval = VoltageLevelInterval & {
     vlListValues: number[];
@@ -63,39 +62,26 @@ export default function NominalVoltageFilter({
     filteredNominalVoltages,
     onChange,
 }: Readonly<NominalVoltageFilterProps>) {
-    const baseVoltagesConfigIntervals = useSelector(
-        (state: AppState) =>
-            state.baseVoltagesConfig?.map(({ name, minValue, maxValue, label }) => ({
-                name,
-                minValue,
-                maxValue,
-                label,
-            })) ?? []
-    );
+    const baseVoltagesConfigIntervals = useSelector((state: AppState) => state.baseVoltagesConfig ?? []);
     const [voltageLevelIntervals, setVoltageLevelIntervals] = useState<VoltageLevelValuesInterval[]>(
-        baseVoltagesConfigIntervals.map((interval) => ({ ...interval, vlListValues: [], isChecked: true }))
-    );
-
-    const getNominalVoltageIntervalName = useCallback(
-        (voltageValue: number) => {
-            for (let interval of baseVoltagesConfigIntervals) {
-                if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
-                    return interval.name;
-                }
-            }
-        },
-        [baseVoltagesConfigIntervals]
+        baseVoltagesConfigIntervals.map(({ name, minValue, maxValue }) => ({
+            name,
+            minValue,
+            maxValue,
+            vlListValues: [],
+            isChecked: true,
+        }))
     );
 
     useEffect(() => {
         const newIntervals = baseVoltagesConfigIntervals.map((interval) => {
             const vlListValues = nominalVoltages.filter(
-                (vnom) => getNominalVoltageIntervalName(vnom) === interval.name
+                (vnom) => getNominalVoltageIntervalName(baseVoltagesConfigIntervals, vnom) === interval.name
             );
             return { ...interval, vlListValues, isChecked: true };
         });
         setVoltageLevelIntervals(newIntervals);
-    }, [baseVoltagesConfigIntervals, getNominalVoltageIntervalName, nominalVoltages]);
+    }, [baseVoltagesConfigIntervals, nominalVoltages]);
 
     const handleToggle = useCallback(
         (interval: VoltageLevelValuesInterval) => {
@@ -142,10 +128,11 @@ export default function NominalVoltageFilter({
                                     id={'voltageLevelInterval'}
                                     values={{
                                         lowBound: interval.minValue,
-                                        highBound: interval.maxValue === Infinity ? MAX_VOLTAGE : interval.maxValue,
+                                        highBound: interval.maxValue,
                                     }}
                                 />
                             }
+                            placement="left"
                         >
                             <ListItemButton
                                 role={undefined}
@@ -162,7 +149,7 @@ export default function NominalVoltageFilter({
                                 <ListItemText
                                     sx={styles.nominalVoltageText}
                                     disableTypography
-                                    primary={interval.label}
+                                    primary={<FormattedMessage id={interval.name} />}
                                 ></ListItemText>
                             </ListItemButton>
                         </Tooltip>

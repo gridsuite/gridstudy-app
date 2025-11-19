@@ -75,6 +75,7 @@ import {
     MAP_BASEMAP_CARTO_NOLABEL,
     businessErrorsFr,
     businessErrorsEn,
+    fetchBaseVoltagesConfig,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -103,13 +104,14 @@ import events_locale_fr from '../translations/dynamic/events-locale-fr';
 import events_locale_en from '../translations/dynamic/events-locale-en';
 import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
+import base_voltages_fr from '../translations/external/base-voltages-fr';
+import base_voltages_en from '../translations/external/base-voltages-en';
 import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
-import { getVoltageLevelsCssVars } from 'utils/colors';
-import { fetchBaseVoltagesConfig } from '../services/utils';
+import { getBaseVoltagesCssVars } from 'utils/colors';
 import { setBaseVoltagesConfig } from '../redux/actions';
 
 // Register all community features (migration to V33)
@@ -411,6 +413,7 @@ const messages = {
         ...errors_locale_en,
         ...events_locale_en,
         ...spreadsheet_locale_en,
+        ...base_voltages_en,
         ...parametersEn,
         ...useUniqueNameValidationEn,
         ...filterEn,
@@ -450,6 +453,7 @@ const messages = {
         ...errors_locale_fr,
         ...events_locale_fr,
         ...spreadsheet_locale_fr,
+        ...base_voltages_fr,
         ...parametersFr,
         ...useUniqueNameValidationFr,
         ...filterFr,
@@ -470,7 +474,7 @@ const AppWrapperWithRedux = () => {
 
     useEffect(() => {
         fetchBaseVoltagesConfig().then((appMetadataBaseVoltagesConfig) => {
-            dispatch(setBaseVoltagesConfig(appMetadataBaseVoltagesConfig));
+            dispatch(setBaseVoltagesConfig(appMetadataBaseVoltagesConfig) ?? []);
         });
     }, [dispatch]);
 
@@ -481,7 +485,7 @@ const AppWrapperWithRedux = () => {
         }
         return {
             ...themeVars,
-            ...getVoltageLevelsCssVars(baseVoltagesConfig, theme),
+            ...getBaseVoltagesCssVars(baseVoltagesConfig, theme),
         };
     }, [baseVoltagesConfig, theme]);
 

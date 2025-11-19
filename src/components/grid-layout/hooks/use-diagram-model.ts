@@ -33,15 +33,10 @@ import { NodeType } from 'components/graph/tree-node.type';
 import { isThereTooManyOpenedNadDiagrams, mergePositions } from '../cards/diagrams/diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 
-interface BaseVoltages {
+interface BaseVoltageInfos {
     name: string;
     minValue: number;
     maxValue: number;
-    profile: string;
-}
-interface BaseVoltagesConfigInfos {
-    baseVoltages: BaseVoltages[];
-    defaultProfile: string;
 }
 
 type UseDiagramModelProps = {
@@ -298,19 +293,15 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         });
     }, []);
 
-    const getBaseVoltagesConfigInfos = useCallback((): BaseVoltagesConfigInfos | undefined => {
+    const getBaseVoltagesConfigInfos = useCallback((): BaseVoltageInfos[] | undefined => {
         if (!baseVoltagesConfig) {
             return;
         }
-        return {
-            baseVoltages: baseVoltagesConfig.map((vl: BaseVoltageConfig) => ({
-                name: vl.name,
-                minValue: vl.minValue,
-                maxValue: vl.maxValue,
-                profile: 'Default',
-            })),
-            defaultProfile: 'Default',
-        };
+        return baseVoltagesConfig.map((vl: BaseVoltageConfig) => ({
+            name: vl.name,
+            minValue: vl.minValue,
+            maxValue: vl.maxValue,
+        }));
     }, [baseVoltagesConfig]);
 
     const fetchDiagramSvg = useCallback(
