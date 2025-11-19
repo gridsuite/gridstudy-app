@@ -49,7 +49,7 @@ const voltageLevelComparator = (vl1, vl2) => {
 
 const VoltageLevelChoice = ({ handleClose, onClickHandler, substation, position }) => {
     const { getNameOrId } = useNameOrId();
-    const baseVoltagesConfig = useSelector((state) => state.baseVoltagesConfig);
+    const baseVoltages = useSelector((state) => state.baseVoltages);
 
     return (
         <Box sx={styles.menu}>
@@ -66,7 +66,7 @@ const VoltageLevelChoice = ({ handleClose, onClickHandler, substation, position 
             >
                 {substation !== undefined &&
                     substation.voltageLevels.sort(voltageLevelComparator).map((voltageLevel) => {
-                        let color = getBaseVoltageMapColor(baseVoltagesConfig, voltageLevel.nominalV);
+                        let color = getBaseVoltageMapColor(baseVoltages, voltageLevel.nominalV);
                         let colorString =
                             'rgb(' + color[0].toString() + ',' + color[1].toString() + ',' + color[2].toString() + ')';
 

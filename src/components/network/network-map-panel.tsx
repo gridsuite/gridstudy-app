@@ -165,7 +165,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
         const isNetworkModificationTreeUpToDate = useSelector(
             (state: AppState) => state.isNetworkModificationTreeModelUpToDate
         );
-        const baseVoltagesConfig = useSelector((state: AppState) => state.baseVoltagesConfig) ?? [];
+        const baseVoltages = useSelector((state: AppState) => state.baseVoltages);
         const theme = useTheme();
         const { snackInfo } = useSnackMessage();
 
@@ -1174,9 +1174,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                             onDrawEvent(event);
                         }}
                         shouldDisableToolTip={!visible || isInDrawingMode.value}
-                        getNominalVoltageColor={(voltageValue) =>
-                            getBaseVoltageMapColor(baseVoltagesConfig, voltageValue)
-                        }
+                        getNominalVoltageColor={(voltageValue) => getBaseVoltageMapColor(baseVoltages, voltageValue)}
                     />
                     {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                     {renderSearchEquipment()}
