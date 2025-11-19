@@ -316,12 +316,19 @@ const LineModificationDialog = ({
                                 (formValues: LineModificationFormInfos) => ({
                                     ...formValues,
                                     ...{
-                                        [LIMITS]: {
-                                            [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
-                                            [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
-                                                ? getOpLimitsGroupInfosFromBranchModification(formValues)
-                                                : convertToOperationalLimitsGroupFormSchema(line),
-                                        },
+                                        [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
+                                            ? {
+                                                  [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      getOpLimitsGroupInfosFromBranchModification(formValues),
+                                              }
+                                            : {
+                                                  [ENABLE_OLG_MODIFICATION]: false,
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      convertToOperationalLimitsGroupFormSchema(
+                                                          line?.currentLimits ?? []
+                                                      ),
+                                              },
                                     },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),
