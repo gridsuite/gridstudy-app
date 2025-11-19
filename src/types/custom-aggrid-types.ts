@@ -45,6 +45,7 @@ export enum FilterType {
     Logs = 'Logs',
     StateEstimation = 'StateEstimation',
     PccMin = 'PccMin',
+    VoltageInit = 'VoltageInit',
 }
 
 export type FilterData = {

@@ -16,13 +16,13 @@ import {
     COMMON_APP_NAME,
     fetchConfigParameter,
     fetchConfigParameters,
+    getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
     LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
-    getComputedLanguage,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -41,6 +41,7 @@ import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
     attemptLeaveParametersTab,
+    initComputationResultFilters,
     initTableDefinitions,
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
@@ -56,7 +57,11 @@ import {
     setUpdateNetworkVisualizationParameters,
     updateTableColumns,
 } from '../redux/actions';
-import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
+import {
+    getComputationResultFilters,
+    getNetworkVisualizationParameters,
+    getSpreadsheetConfigCollection,
+} from '../services/study/study-config';
 import { STUDY_VIEWS, StudyView } from './utils/utils';
 import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
 import {
@@ -70,6 +75,7 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
+import { processComputationResultFilters } from './results/computing-result-filters.type.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -324,6 +330,13 @@ const App = () => {
                 resetTableDefinitions(collection);
             });
 
+            const fetchComputationResultFiltersPromise = getComputationResultFilters(studyUuid).then((collection) => {
+                console.log('raw computing filters:', collection);
+                const processed = processComputationResultFilters(collection);
+                console.log('===============processed', processed);
+                dispatch(initComputationResultFilters(processed));
+            });
+
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
                     dispatch(setOptionalServices(retrieveOptionalServices(services)));
@@ -345,6 +358,7 @@ const App = () => {
                 fetchAppConfigPromise,
                 fetchOptionalServices,
                 fetchSpreadsheetConfigPromise,
+                fetchComputationResultFiltersPromise,
             ])
                 .then(() => {
                     dispatch(setParamsLoaded());

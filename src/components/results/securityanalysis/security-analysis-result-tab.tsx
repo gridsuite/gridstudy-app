@@ -38,16 +38,16 @@ import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-d
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useIntl } from 'react-intl/lib';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -118,13 +118,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         (state: AppState) => state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][getStoreFields(tabIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SecurityAnalysis,
         getStoreFields(tabIndex) as SecurityAnalysisTab
     );
     const { page, rowsPerPage } = pagination;
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFilters, updateGlobalFilters, columnFilters } = useComputationFilters(
+        AgGridFilterType.SecurityAnalysis,
+        getStoreFields(tabIndex)
+    );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const globalFilterOptions = useMemo(
@@ -159,8 +161,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 }));
             }
 
-            if (filters) {
-                const updatedFilters = convertFilterValues(intl, filters);
+            if (columnFilters) {
+                const updatedFilters = convertFilterValues(intl, columnFilters);
                 const columnToFieldMapping = mappingColumnToField(resultType);
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
@@ -172,7 +174,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
 
-        [tabIndex, resultType, sortConfig, filters, globalFilters, currentRootNetworkUuid, page, rowsPerPage, intl]
+        [
+            tabIndex,
+            resultType,
+            sortConfig,
+            columnFilters,
+            globalFilters,
+            currentRootNetworkUuid,
+            page,
+            rowsPerPage,
+            intl,
+        ]
     );
 
     const {
@@ -277,7 +289,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode)) && (
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
+                            onChange={updateGlobalFilters}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}

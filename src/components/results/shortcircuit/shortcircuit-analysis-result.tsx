@@ -33,12 +33,17 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType, PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
+import {
+    FilterType as AgGridFilterType,
+    FilterType,
+    PaginationType,
+    ShortcircuitAnalysisTab,
+} from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -84,7 +89,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
 
-    const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
+    const { columnFilters } = useComputationFilters(AgGridFilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.ShortcircuitAnalysis,
         mappingTabs(analysisType) as ShortcircuitAnalysisTab
@@ -127,7 +132,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));
 
-        const updatedFilters = filters ? convertFilterValues(filters) : null;
+        const updatedFilters = columnFilters ? convertFilterValues(columnFilters) : null;
 
         const selector = {
             page,
@@ -177,7 +182,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         currentNode?.id,
         currentRootNetworkUuid,
         intl,
-        filters,
+        columnFilters,
         sortConfig,
         fromFrontColumnToBackKeys,
         globalFilters,
@@ -253,7 +258,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 onFilter={memoizedSetPageCallback}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
-                filters={filters}
+                filters={columnFilters ?? []}
                 openVoltageLevelDiagram={openVoltageLevelDiagram}
             />
             <CustomTablePagination

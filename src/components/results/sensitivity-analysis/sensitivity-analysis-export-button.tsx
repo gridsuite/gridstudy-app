@@ -11,7 +11,6 @@ import { downloadZipFile } from '../../../services/utils';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
-import { useFilterSelector } from 'hooks/use-filter-selector';
 import {
     DATA_KEY_TO_FILTER_KEY_N,
     DATA_KEY_TO_FILTER_KEY_NK,
@@ -26,6 +25,7 @@ import { SensiKind } from './sensitivity-analysis-result.type';
 import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
 
 interface SensitivityExportButtonProps {
     studyUuid: UUID;
@@ -56,7 +56,10 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
 
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
-    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { columnFilters } = useComputationFilters(
+        AgGridFilterType.SensitivityAnalysis,
+        mappingTabs(sensiKind, nOrNkIndex)
+    );
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
@@ -76,11 +79,12 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
     const exportCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
-        const mappedFilters = filters?.map((elem) => {
-            const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
-            const newColumn = keyMap[elem.column as keyof typeof keyMap];
-            return { ...elem, column: newColumn };
-        });
+        const mappedFilters =
+            columnFilters?.map((elem) => {
+                const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
+                const newColumn = keyMap[elem.column as keyof typeof keyMap];
+                return { ...elem, column: newColumn };
+            }) ?? [];
         const sortSelector = sortConfig?.length
             ? {
                   sortKeysWithWeightAndDirection: Object.fromEntries(
@@ -129,7 +133,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
             })
             .finally(() => setIsCsvExportLoading(false));
     }, [
-        filters,
+        columnFilters,
         sortConfig,
         nOrNkIndex,
         sensiKind,

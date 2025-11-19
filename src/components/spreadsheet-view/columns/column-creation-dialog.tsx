@@ -28,8 +28,7 @@ import { AppDispatch } from 'redux/store';
 import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { useFilterSelector } from 'hooks/use-filter-selector';
-import { FilterType } from 'types/custom-aggrid-types';
+import { FilterConfig, FilterType } from 'types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import {
@@ -48,6 +47,7 @@ import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../servi
 import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floating-popover-treeview-wrapper';
 import { isFormulaContentSizeOk } from './utils/formula-validator';
 import { MAX_FORMULA_CHARACTERS } from '../constants';
+import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -153,7 +153,7 @@ export default function ColumnCreationDialog({
         </FloatingPopoverTreeviewWrapper>
     );
 
-    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
+    const { columnFilters, updateColumnFilters } = useComputationFilters(FilterType.Spreadsheet, spreadsheetConfigUuid);
 
     const validateParams = (
         columnsDefinitions: ColumnDefinition[],
@@ -215,8 +215,8 @@ export default function ColumnCreationDialog({
 
             if (existingColumn) {
                 isUpdate = true;
-                const updatedFilters = filters?.filter((filter) => filter.column !== existingColumn.id);
-                dispatchFilters(updatedFilters);
+                const updatedFilters = columnFilters?.filter((filter) => filter.column !== existingColumn.id);
+                updateColumnFilters(updatedFilters);
             }
 
             const formattedParams = {
@@ -268,8 +268,8 @@ export default function ColumnCreationDialog({
             spreadsheetConfigUuid,
             reset,
             open,
-            filters,
-            dispatchFilters,
+            columnFilters,
+            updateColumnFilters,
             dispatch,
             tableDefinition,
             snackError,

@@ -26,7 +26,6 @@ import {
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import {
     FilterType as AgGridFilterType,
     PaginationType,
@@ -39,6 +38,7 @@ import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -73,7 +73,10 @@ function PagedSensitivityAnalysisResult({
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { columnFilters } = useComputationFilters(
+        AgGridFilterType.SensitivityAnalysis,
+        mappingTabs(sensiKind, nOrNkIndex)
+    );
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SensitivityAnalysis,
         mappingTabs(sensiKind, nOrNkIndex) as SensitivityAnalysisTab
@@ -168,7 +171,7 @@ function PagedSensitivityAnalysisResult({
             pageNumber: page,
             ...sortSelector,
         };
-        const mappedFilters = filters?.map((elem) => {
+        const mappedFilters = columnFilters?.map((elem) => {
             const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
             const newColumn = keyMap[elem.column as keyof typeof keyMap];
             return { ...elem, column: newColumn };
@@ -179,7 +182,7 @@ function PagedSensitivityAnalysisResult({
             nodeUuid,
             currentRootNetworkUuid,
             selector,
-            mappedFilters,
+            mappedFilters ?? [],
             globalFilters
         )
             .then((res) => {
@@ -205,7 +208,7 @@ function PagedSensitivityAnalysisResult({
         sensiKind,
         rowsPerPage,
         page,
-        filters,
+        columnFilters,
         globalFilters,
         studyUuid,
         nodeUuid,

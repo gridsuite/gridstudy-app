@@ -13,7 +13,7 @@ import {
     SpreadsheetCollectionDto,
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
+import { GlobalFilter, GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 import { DiagramGridLayoutDto } from 'components/grid-layout/diagram-grid-layout.types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
@@ -232,5 +232,20 @@ export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModel
         headers: {
             'Content-Type': 'application/json',
         },
+    });
+}
+
+export function getComputationResultFilters(studyUuid: UUID): Promise<any> {
+    console.info('get computing result config collection');
+    const url = getStudyUrl(studyUuid) + '/computation-result-filters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function updateComputationResultFilters(studyUuid: UUID, id: UUID, filters: GlobalFilters) {
+    return backendFetch(getStudyUrl(studyUuid) + `/computation-result-filters/${id}`, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(filters),
     });
 }

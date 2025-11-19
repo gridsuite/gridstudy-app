@@ -23,12 +23,14 @@ import {
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
 import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
+import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -47,7 +49,7 @@ function SensitivityAnalysisResultTab({
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFilters, updateGlobalFilters } = useComputationFilters(AgGridFilterType.SecurityAnalysis, sensiTab);
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
@@ -90,7 +92,7 @@ function SensitivityAnalysisResultTab({
                         </Tabs>
                         <Box sx={{ display: 'flex', flexGrow: 0 }}>
                             <GlobalFilterSelector
-                                onChange={handleGlobalFilterChange}
+                                onChange={updateGlobalFilters}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
                                 genericFiltersStrictMode={true}
