@@ -6,8 +6,9 @@
  */
 
 import { BaseVoltageConfig, LIGHT_THEME } from '@gridsuite/commons-ui';
+import { getNominalVoltageIntervalByVoltageValue } from './base-voltages-config-utils';
 
-export const MAX_VOLTAGE = 500;
+export const INVALID_LOADFLOW_OPACITY = 0.2;
 
 function parseRGB(stringRGB: string): number[] | undefined {
     return stringRGB
@@ -16,23 +17,12 @@ function parseRGB(stringRGB: string): number[] | undefined {
         .map(Number);
 }
 
-export const getNominalVoltageIntervalByVoltageValue = (
-    baseVoltages: BaseVoltageConfig[],
-    voltageValue: number
-): BaseVoltageConfig | undefined => {
-    for (let interval of baseVoltages) {
-        if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
-            return interval;
-        }
-    }
-};
-
-export const getNominalVoltageColor = (baseVoltages: BaseVoltageConfig[], voltageValue: number): number[] => {
+export const getBaseVoltageMapColor = (baseVoltages: BaseVoltageConfig[], voltageValue: number): number[] => {
     const color = getNominalVoltageIntervalByVoltageValue(baseVoltages, voltageValue)?.mapColor;
     return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
 };
 
-export const getVoltageLevelsCssVars = (
+export const getBaseVoltagesCssVars = (
     baseVoltages: BaseVoltageConfig[],
     theme: string
 ): Record<string, Record<string, string>> => {
@@ -58,5 +48,3 @@ export const getVoltageLevelsCssVars = (
     }
     return css;
 };
-
-export const INVALID_LOADFLOW_OPACITY = 0.2;
