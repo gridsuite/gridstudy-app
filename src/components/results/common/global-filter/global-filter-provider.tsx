@@ -9,7 +9,12 @@ import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 're
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 import type { UUID } from 'node:crypto';
-import { ElementAttributes, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementAttributes,
+    fetchDirectoryElementPath,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
 import { addToRecentGlobalFilters, removeFromRecentGlobalFilters } from '../../../../redux/actions';
 import { useDispatch } from 'react-redux';
@@ -81,8 +86,7 @@ export default function GlobalFilterProvider({
                         });
                     } else {
                         // or whatever error => do nothing except showing error message
-                        snackError({
-                            messageTxt: error.message,
+                        snackWithFallback(snackError, error, {
                             headerId: 'ComputationFilterResultsError',
                         });
                     }
