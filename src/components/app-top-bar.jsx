@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { fetchAppsMetadata, LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
@@ -22,33 +22,31 @@ import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { STUDY_VIEWS, StudyView } from './utils/utils';
 import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
+import { WorkspaceToolbar } from './workspace/core/workspace-toolbar';
+import { WorkspaceSwitcher } from './workspace/core/workspace-switcher';
 
 const styles = {
-    boxContent: (theme) => ({ display: 'flex', overflow: 'hidden', width: '100%', marginLeft: theme.spacing(4) }),
-    tabs: {},
-    searchButton: {
-        marginTop: 'auto',
-        marginBottom: 'auto',
-        marginLeft: 1,
-        marginRight: 1,
-    },
+    boxContent: (theme) => ({
+        display: 'flex',
+        overflow: 'hidden',
+        alignItems: 'center',
+        width: '100%',
+        marginLeft: theme.spacing(1),
+    }),
     runButtonContainer: {
-        marginTop: 'auto',
-        marginBottom: 'auto',
-        marginRight: '10%',
-        marginLeft: 'auto',
+        display: 'flex',
+        alignItems: 'center',
+        marginRight: 1.5,
     },
     syncToggleContainer: {
-        marginTop: 'auto',
-        marginBottom: 'auto',
-        marginLeft: -4,
-        marginRight: 1,
+        display: 'flex',
+        alignItems: 'center',
+        marginRight: 1.5,
     },
 };
 
-const AppTopBar = ({ user, onChangeTab, userManager }) => {
+const AppTopBar = ({ user, userManager }) => {
     const dispatch = useDispatch();
     const theme = useSelector((state) => state[PARAM_THEME]);
     const appTabIndex = useSelector((state) => state.appTabIndex);
@@ -93,37 +91,16 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
             equipmentLabelling={useNameLocal}
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
+            density="compact"
         >
             {user && studyUuid && currentRootNetworkUuid && (
                 <Box sx={styles.boxContent}>
-                    <Tabs
-                        value={appTabIndex}
-                        variant="scrollable"
-                        onChange={(event, newTabIndex) => {
-                            onChangeTab(newTabIndex);
-                        }}
-                        aria-label="views"
-                        sx={styles.tabs}
-                    >
-                        {STUDY_VIEWS.map((tabName) => {
-                            let label;
-                            let style;
-                            if (tabName === StudyView.RESULTS && notificationsCount > 0) {
-                                label = (
-                                    <Badge badgeContent={notificationsCount} color="secondary">
-                                        <FormattedMessage id={tabName} />
-                                    </Badge>
-                                );
-                            } else if (tabName === StudyView.PARAMETERS) {
-                                label = <Settings />;
-                                style = { minWidth: 'initial' };
-                            } else {
-                                label = <FormattedMessage id={tabName} />;
-                            }
-                            return <Tab sx={style} key={tabName} label={label} />;
-                        })}
-                    </Tabs>
-
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1.5, marginRight: 'auto' }}>
+                        <WorkspaceSwitcher />
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1.5, marginLeft: 'auto' }}>
+                        <WorkspaceToolbar />
+                    </Box>
                     <Box sx={styles.runButtonContainer}>
                         <RunButtonContainer
                             studyUuid={studyUuid}
@@ -143,7 +120,6 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
 
 AppTopBar.propTypes = {
     user: PropTypes.object,
-    onChangeTab: PropTypes.func.isRequired,
     userManager: PropTypes.object.isRequired,
 };
 

@@ -1651,5 +1651,7 @@
     "PccMinTri": "Pcc min (MVA) ",
     "IccMinTri": "Icc min (kA)",
     "rOhm": "r (Ω)",
-    "xOhm":"x (Ω)"
+    "xOhm":"x (Ω)",
+    "workspaces": "Espaces de travail",
+    "resetWorkspaceConfirmation": "Êtes-vous sûr de vouloir réinitialiser cet espace de travail ? Toutes les fenêtres ouvertes seront fermées."
 }

@@ -34,6 +34,8 @@ import {
 } from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
 import { resultsStyles } from '../common/utils';
+import { useDiagramHandlers } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
@@ -50,7 +52,6 @@ interface ShortCircuitAnalysisResultProps {
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     onFilter: () => void;
     filters: FilterConfig[];
-    openVoltageLevelDiagram: (id: string) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -95,16 +96,16 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     onRowDataUpdated,
     onFilter,
     filters,
-    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
+    const { openDiagram } = useDiagramHandlers();
 
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value } = props || {};
             const onClick = () => {
-                openVoltageLevelDiagram(value);
+                openDiagram(value, DiagramType.VOLTAGE_LEVEL);
             };
             if (value) {
                 return (
@@ -114,7 +115,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 );
             }
         },
-        [openVoltageLevelDiagram]
+        [openDiagram]
     );
 
     const getEnumLabel = useCallback(

@@ -40,7 +40,6 @@ export interface LoadFlowTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    openVoltageLevelDiagram: (id: string) => void;
 }
 
 export interface LoadflowResultTap {

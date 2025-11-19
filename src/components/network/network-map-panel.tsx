@@ -44,7 +44,8 @@ import {
     type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import { openDiagram, resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
+import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
+import { useDiagramHandlers } from '../workspace/window-contents/diagrams/common/use-diagram-handlers';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -122,8 +123,6 @@ type NetworkMapPanelProps = {
     lineFullPath: boolean;
     lineParallelPath: boolean;
     lineFlowMode: LineFlowMode;
-    onOpenNetworkAreaDiagram: (elementId?: string) => void;
-    showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
     isInDrawingMode: UseStateBooleanReturn;
 };
@@ -145,14 +144,14 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             lineParallelPath,
             lineFlowMode,
             /* callbacks */
-            onOpenNetworkAreaDiagram,
-            showInSpreadsheet,
             onPolygonChanged,
             isInDrawingMode,
         }: NetworkMapPanelProps,
         ref
     ) => {
         const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
+
+        const { showInSpreadsheet: storeShowInSpreadsheet } = useDiagramHandlers();
 
         const mapEquipments = useSelector((state: AppState) => state.mapEquipments);
         const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
@@ -165,7 +164,6 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             (state: AppState) => state.isNetworkModificationTreeModelUpToDate
         );
         const theme = useTheme();
-        const { snackInfo } = useSnackMessage();
 
         const rootNodeId = useMemo(() => {
             const rootNode = treeModel?.treeNodes.find((node) => node?.data?.label === ROOT_NODE_LABEL);
@@ -188,7 +186,6 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
 
         const lineFullPathRef = useRef<boolean>();
         const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
-        const intl = useIntl();
 
         /*
         This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -312,10 +309,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             studyUuid,
             disabled,
             onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => {
-                showInSpreadsheet({
-                    equipmentType: equipmentType,
-                    equipmentId: equipmentId,
-                });
+                storeShowInSpreadsheet(equipmentId, equipmentType);
             },
             onDeleteEquipment: handleDeleteEquipment,
             onOpenModificationDialog: handleOpenModificationDialog,
@@ -1049,21 +1043,13 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             [isInDrawingMode, leaveDrawingMode]
         );
 
-        const onNADCreation = useCallback(() => {
-            snackInfo({
-                messageId: 'generatedNADOpenedInTheGrid',
-            });
-        }, [snackInfo]);
+        const { openDiagram } = useDiagramHandlers();
 
         const openSLDInTheGrid = useCallback(
             (equipmentId: string, diagramType: DiagramType) => {
-                dispatch(openDiagram(equipmentId, diagramType));
-                snackInfo({
-                    messageId: 'SLDOpenedInTheGrid',
-                    messageValues: { diagramType: intl.formatMessage({ id: diagramType }), equipmentId },
-                });
+                openDiagram(equipmentId, diagramType);
             },
-            [dispatch, intl, snackInfo]
+            [openDiagram]
         );
 
         const handleOpenVoltageLevel = useCallback(
@@ -1202,7 +1188,6 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         <SelectionCreationPanel
                             getEquipments={getEquipments}
                             onCancel={leaveDrawingMode}
-                            onNADCreation={onNADCreation}
                             nominalVoltages={nominalVoltages}
                         />
                     </Box>
@@ -1286,7 +1271,6 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                 {studyUuid && (
                     <TopBarEquipmentSearchDialog
                         showVoltageLevelDiagram={showVoltageLevelDiagram}
-                        onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                         isDialogSearchOpen={isDialogSearchOpen}
                         setIsDialogSearchOpen={setIsDialogSearchOpen}
                     />

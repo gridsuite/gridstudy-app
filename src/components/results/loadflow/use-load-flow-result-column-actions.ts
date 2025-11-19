@@ -13,22 +13,23 @@ import { BranchSide } from '../../utils/constants';
 import type { UUID } from 'node:crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
+import { useDiagramHandlers } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 
 type UseLoadFlowResultColumnActionsProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    openVoltageLevelDiagram: (id: string) => void;
 };
 
 export const useLoadFlowResultColumnActions = ({
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    openVoltageLevelDiagram,
 }: UseLoadFlowResultColumnActionsProps) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
+    const { openDiagram } = useDiagramHandlers();
 
     const getBranchSide = useCallback(
         (side: string | undefined) => {
@@ -71,14 +72,14 @@ export const useLoadFlowResultColumnActions = ({
                                         equipmentId: row.subjectId || '',
                                     },
                                 });
-                            } else if (openVoltageLevelDiagram) {
-                                openVoltageLevelDiagram(vlId);
+                            } else {
+                                openDiagram(vlId, DiagramType.VOLTAGE_LEVEL);
                             }
                         });
                 }
             }
         },
-        [studyUuid, nodeUuid, currentRootNetworkUuid, getBranchSide, openVoltageLevelDiagram, snackError]
+        [studyUuid, nodeUuid, currentRootNetworkUuid, getBranchSide, openDiagram, snackError]
     );
 
     return { onLinkClick };

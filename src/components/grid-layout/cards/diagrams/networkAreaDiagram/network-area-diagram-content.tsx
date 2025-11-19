@@ -66,6 +66,7 @@ type NetworkAreaDiagramContentProps = {
     readonly visible: boolean;
     readonly onVoltageLevelClick: (diagramParams: VoltageLevelDiagramParams) => void;
     readonly onNadChange: (nadParams: NetworkAreaDiagramParams, fetch?: boolean) => void;
+    readonly onSaveNad?: () => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
@@ -81,6 +82,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         svgVoltageLevels,
         loadingState,
         showInSpreadsheet,
+        onSaveNad,
     } = props;
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -98,6 +100,18 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
+
+    // Wrapped handler to save when exiting edit mode
+    const handleSetIsEditNadMode = useCallback(
+        (newMode: boolean) => {
+            if (isEditNadMode && !newMode) {
+                // Exiting edit mode - save
+                onSaveNad?.();
+            }
+            setIsEditNadMode(newMode);
+        },
+        [isEditNadMode, onSaveNad]
+    );
 
     const handleToggleShowLabels = useCallback(() => {
         setShowLabels((oldShowLabels) => !oldShowLabels);
@@ -386,6 +400,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 voltageLevelToOmitIds: [],
                 positions: [],
             });
+            // Note: Parent will clear savedWorkspaceConfigUuid, then auto-save will create new one after load
         },
         [diagramParams, onNadChange]
     );
@@ -529,7 +544,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onUpdate={handleUpdateNadConfig}
                 onLoad={handleReplaceNad}
                 isEditNadMode={isEditNadMode}
-                onToggleEditNadMode={setIsEditNadMode}
+                onToggleEditNadMode={handleSetIsEditNadMode}
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                 onAddVoltageLevel={handleAddVoltageLevel}
                 onToggleShowLabels={handleToggleShowLabels}

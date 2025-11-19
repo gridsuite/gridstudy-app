@@ -77,6 +77,8 @@ import {
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
 import { Provider, useSelector } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from '../redux/store';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import messages_plugins from '../plugins/translations';
@@ -100,7 +102,6 @@ import events_locale_fr from '../translations/dynamic/events-locale-fr';
 import events_locale_en from '../translations/dynamic/events-locale-en';
 import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
-import { store } from '../redux/store';
 import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
@@ -486,7 +487,9 @@ const AppWrapperWithRedux = () => {
 const AppWrapper = () => {
     return (
         <Provider store={store}>
-            <AppWrapperWithRedux />
+            <PersistGate loading={null} persistor={persistor}>
+                <AppWrapperWithRedux />
+            </PersistGate>
         </Provider>
     );
 };

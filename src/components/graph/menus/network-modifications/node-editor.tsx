@@ -7,14 +7,12 @@
 
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
-import { useDispatch, useSelector } from 'react-redux';
-import { setHighlightModification, setToggleOptions } from '../../../../redux/actions';
+import { useSelector } from 'react-redux';
 import { Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { NodeEditorHeader } from './node-editor-header';
 import { isSecurityModificationNode } from '../../tree-node.type';
-import { StudyDisplayMode } from '../../../network-modification.type';
 import { LoadflowModificationAlert } from './loadflow-modifications/loadflow-modification-alert';
 
 const styles = {
@@ -28,20 +26,12 @@ const styles = {
 } as const satisfies MuiStyles;
 
 const NodeEditor = () => {
-    const dispatch = useDispatch();
-
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
-    const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
-
-    const closeModificationsDrawer = () => {
-        dispatch(setHighlightModification(null));
-        dispatch(setToggleOptions(toggleOptions.filter((option) => option !== StudyDisplayMode.MODIFICATIONS)));
-    };
 
     return (
         <Box sx={styles.paper}>
-            <NodeEditorHeader onClose={closeModificationsDrawer} />
+            <NodeEditorHeader />
 
             <NetworkModificationNodeEditor />
             {loadFlowStatus === RunningStatus.SUCCEED && isSecurityModificationNode(currentTreeNode) && (

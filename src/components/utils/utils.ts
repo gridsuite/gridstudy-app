@@ -309,24 +309,6 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
     return Array.from({ length }, (_, index) => start + index * step);
 }
 
-export const StudyView = {
-    TREE: 'Tree',
-    SPREADSHEET: 'Spreadsheet',
-    RESULTS: 'Results',
-    LOGS: 'Logs',
-    PARAMETERS: 'Parameters',
-};
-
-export const STUDY_VIEWS = [
-    StudyView.TREE,
-    StudyView.SPREADSHEET,
-    StudyView.RESULTS,
-    StudyView.LOGS,
-    StudyView.PARAMETERS,
-];
-
-export type StudyViewType = (typeof StudyView)[keyof typeof StudyView];
-
 export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
     return rows?.map((row) => {
         return { ...row, [SELECTED]: false };

@@ -7,7 +7,6 @@
 
 import StudyPane from './study-pane';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import * as PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
@@ -45,7 +44,6 @@ import {
     NotificationType,
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
-import { useDiagramGridLayout } from 'hooks/use-diagram-grid-layout';
 import useExportNotification from '../hooks/use-export-notification.js';
 
 function useStudy(studyUuidRequest) {
@@ -107,7 +105,7 @@ function useStudy(studyUuidRequest) {
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 
-export function StudyContainer({ view, onChangeTab }) {
+export function StudyContainer() {
     const websocketExpectedCloseRef = useRef();
     const intlRef = useIntlRef();
 
@@ -136,8 +134,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const currentRootNetworkUuidRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
-
-    useDiagramGridLayout();
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -517,18 +513,7 @@ export function StudyContainer({ view, onChangeTab }) {
             loading={studyPending || !paramsLoaded || !isFirstStudyNetworkFound || !isFirstRootNetworkIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
-            <StudyPane
-                studyUuid={studyUuid}
-                currentNode={currentNode}
-                view={view}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                onChangeTab={onChangeTab}
-            />
+            <StudyPane />
         </WaitingLoader>
     );
 }
-
-StudyContainer.propTypes = {
-    view: PropTypes.any,
-    onChangeTab: PropTypes.func,
-};

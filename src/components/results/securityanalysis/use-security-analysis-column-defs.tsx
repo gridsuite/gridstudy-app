@@ -23,6 +23,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { useDiagramHandlers } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -32,7 +34,6 @@ export interface SecurityAnalysisFilterEnumsType {
 type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
-    openVoltageLevelDiagram: (id: string) => void,
     tabIndex: number,
     onFilter: () => void
 ) => ColDef[];
@@ -40,12 +41,12 @@ type UseSecurityAnalysisColumnsDefsProps = (
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
-    openVoltageLevelDiagram,
     tabIndex,
     onFilter
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const { openDiagram } = useDiagramHandlers();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -101,14 +102,14 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                                         equipmentId: row.subjectId || '',
                                     },
                                 });
-                            } else if (openVoltageLevelDiagram) {
-                                openVoltageLevelDiagram(vlId);
+                            } else {
+                                openDiagram(vlId, DiagramType.VOLTAGE_LEVEL);
                             }
                         });
                 }
             }
         },
-        [nodeUuid, currentRootNetworkUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
+        [nodeUuid, currentRootNetworkUuid, openDiagram, snackError, studyUuid, intl]
     );
 
     // for nmk views, custom view for subjectId cell
