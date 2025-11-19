@@ -5,14 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CheckBoxList,
-    mergeSx,
-    type MuiStyles,
-    type Parameter,
-    snackWithFallback,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { CheckBoxList, mergeSx, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     Delete as DeleteIcon,
     RemoveRedEye as RemoveRedEyeIcon,
@@ -25,11 +18,9 @@ import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { RootNetworkInfos, RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
-import { getCaseImportParameters } from 'services/network-conversion';
 import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
-import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 const styles = {
@@ -107,9 +98,9 @@ interface RootNetworkNodeEditorProps {
 }
 
 const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
-    isRootNetworksProcessing,
-    setIsRootNetworksProcessing,
-}) => {
+                                                                         isRootNetworksProcessing,
+                                                                         setIsRootNetworksProcessing,
+                                                                     }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
@@ -160,7 +151,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 </IconButton>
             );
         },
-        [currentRootNetworkUuid, isRootNetworksProcessing, setCurrentRootNetworkUuidWithSync]
+        [currentRootNetworkUuid, isRootNetworksProcessing, setCurrentRootNetworkUuidWithSync],
     );
 
     useEffect(() => {
@@ -216,7 +207,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
             <Box
                 sx={mergeSx(
                     styles.rootNetworkMonoRoot,
-                    isRootNetworksProcessing ? undefined : styles.rootNetworkMonoRootHover
+                    isRootNetworksProcessing ? undefined : styles.rootNetworkMonoRootHover,
                 )}
                 onClick={handleMonoRootUpdate}
             >
@@ -258,36 +249,39 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
         );
     };
 
-    const doUpdateRootNetwork = async ({ name, tag, description, caseName, caseId }: FormData) => {
+    const doUpdateRootNetwork = async ({
+                                           name,
+                                           tag,
+                                           description,
+                                           caseName,
+                                           currentParameters,
+                                           caseFormat,
+                                           caseId,
+                                       }: FormData) => {
         if (!studyUuid || !editedRootNetwork) {
             return;
         }
         try {
             setIsRootNetworksProcessing(true);
-            const params = caseId ? await getCaseImportParameters(caseId as UUID) : null;
-            const formattedParams = params ? formatCaseImportParameters(params.parameters) : null;
-            const customizedParams = formattedParams
-                ? customizeCurrentParameters(formattedParams as Parameter[])
-                : null;
             const rootNetworkInfos: RootNetworkInfos = {
                 id: editedRootNetwork.rootNetworkUuid,
                 name,
                 tag,
                 description: description ?? '',
-                importParametersRaw: caseId ? customizedParams : null,
+                importParametersRaw: caseId ? currentParameters : null,
                 caseInfos:
-                    caseId && params
+                    caseId && caseFormat
                         ? {
-                              originalCaseUuid: caseId as UUID,
-                              caseFormat: params.formatName,
-                          }
+                            originalCaseUuid: caseId as UUID,
+                            caseFormat: caseFormat,
+                        }
                         : {
-                              originalCaseUuid: null,
-                              caseFormat: null,
-                          },
+                            originalCaseUuid: null,
+                            caseFormat: null,
+                        },
             };
 
-            updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
+            await updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
         } catch (error) {
             snackWithFallback(snackError, error, { headerId: 'updateRootNetworksError' });
             setIsRootNetworksProcessing(false);

@@ -1650,5 +1650,6 @@
     "PccMinTri": "Pcc min (MVA) ",
     "IccMinTri": "Icc min (kA)",
     "rOhm": "r (Ω)",
-    "xOhm":"x (Ω)"
+    "xOhm":"x (Ω)",
+    "importParameters": "Paramètres d'import"
 }

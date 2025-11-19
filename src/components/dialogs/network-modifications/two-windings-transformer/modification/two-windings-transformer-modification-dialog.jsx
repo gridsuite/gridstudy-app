@@ -663,7 +663,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                             [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                             [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
                                                 ? getOpLimitsGroupInfosFromBranchModification(formValues)
-                                                : convertToOperationalLimitsGroupFormSchema(formValues, twt),
+                                                : convertToOperationalLimitsGroupFormSchema(twt),
                                         },
                                     },
                                     ...getRatioTapChangerFormData({
