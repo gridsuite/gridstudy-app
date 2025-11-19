@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BaseVoltageConfig } from '@gridsuite/commons-ui';
+import { BaseVoltage, BaseVoltageConfig } from '@gridsuite/commons-ui';
 
 export const getNominalVoltageIntervalByVoltageValue = (
-    baseVoltages: BaseVoltageConfig[],
+    baseVoltages: BaseVoltage[],
     voltageValue: number
-): BaseVoltageConfig | undefined => {
+): BaseVoltage | undefined => {
     for (let interval of baseVoltages) {
         if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
             return interval;
@@ -18,10 +18,17 @@ export const getNominalVoltageIntervalByVoltageValue = (
     }
 };
 
-export const getNominalVoltageIntervalName = (baseVoltages: BaseVoltageConfig[], voltageValue: number) => {
+export const getNominalVoltageIntervalName = (
+    baseVoltages: BaseVoltage[],
+    voltageValue: number
+): string | undefined => {
     for (let interval of baseVoltages) {
         if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
             return interval.name;
         }
     }
+};
+
+export const getBaseVoltagesConfig = (baseVoltages: BaseVoltage[]): BaseVoltageConfig[] => {
+    return baseVoltages.map(({ name, minValue, maxValue, profile }) => ({ name, minValue, maxValue, profile }));
 };

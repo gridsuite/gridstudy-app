@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BaseVoltageConfig, LIGHT_THEME } from '@gridsuite/commons-ui';
+import { BaseVoltage, LIGHT_THEME } from '@gridsuite/commons-ui';
 import { getNominalVoltageIntervalByVoltageValue } from './base-voltages-config-utils';
 
 export const INVALID_LOADFLOW_OPACITY = 0.2;
@@ -17,13 +17,13 @@ function parseRGB(stringRGB: string): number[] | undefined {
         .map(Number);
 }
 
-export const getBaseVoltageMapColor = (baseVoltages: BaseVoltageConfig[], voltageValue: number): number[] => {
+export const getBaseVoltageMapColor = (baseVoltages: BaseVoltage[], voltageValue: number): number[] => {
     const color = getNominalVoltageIntervalByVoltageValue(baseVoltages, voltageValue)?.mapColor;
     return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
 };
 
 export const getBaseVoltagesCssVars = (
-    baseVoltages: BaseVoltageConfig[],
+    baseVoltages: BaseVoltage[],
     theme: string
 ): Record<string, Record<string, string>> => {
     const css: Record<string, Record<string, string>> = {};

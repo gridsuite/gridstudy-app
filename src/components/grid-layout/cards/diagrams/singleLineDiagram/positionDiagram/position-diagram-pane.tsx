@@ -15,6 +15,7 @@ import { getVoltageLevelSingleLineDiagram } from '../../../../../../services/stu
 import { AppState } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
+import { getBaseVoltagesConfig } from 'utils/base-voltages-config-utils';
 
 interface PositionDiagramPaneProps {
     open: boolean;
@@ -36,6 +37,7 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const baseVoltages = useSelector((state: AppState) => state.baseVoltages);
     const voltageLevelSingleLineDiagramUrl = useMemo(() => {
         if (!voltageLevelId) {
             return '';
@@ -63,6 +65,12 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
         networkVisuParams.singleLineDiagramParameters.componentLibrary,
         language,
     ]);
+    const sldRequestInfos = { baseVoltagesConfigInfos: getBaseVoltagesConfig(baseVoltages) };
+    const fetchOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sldRequestInfos),
+    };
 
     return (
         <Dialog onClose={onClose} open={open} maxWidth="md" scroll="body">
@@ -72,6 +80,7 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
                     diagramTitle={voltageLevelId}
                     svgUrl={voltageLevelSingleLineDiagramUrl}
                     svgType={DiagramType.VOLTAGE_LEVEL}
+                    fetchOptions={fetchOptions}
                 />
             )}
         </Dialog>

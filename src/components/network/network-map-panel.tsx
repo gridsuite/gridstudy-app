@@ -145,7 +145,7 @@ export const NetworkMapPanel = ({
     const lineParallelPath = networkVisuParams.mapParameters.lineParallelPath;
     const lineFlowMode = networkVisuParams.mapParameters.lineFlowMode as LineFlowMode;
     const isInDrawingMode = useStateBoolean(false);
-    const baseVoltagesConfig = useSelector((state: AppState) => state.baseVoltagesConfig) ?? [];
+    const baseVoltages = useSelector((state: AppState) => state.baseVoltages);
     const theme = useTheme();
 
     const rootNodeId = useMemo(() => {
@@ -1108,9 +1108,7 @@ export const NetworkMapPanel = ({
                         onDrawEvent(event);
                     }}
                     shouldDisableToolTip={isInDrawingMode.value}
-                    getNominalVoltageColor={(voltageValue) =>
-                            getBaseVoltageMapColor(baseVoltagesConfig, voltageValue)
-                        }
+                    getNominalVoltageColor={(voltageValue) => getBaseVoltageMapColor(baseVoltages, voltageValue)}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                 {renderSearchEquipment()}

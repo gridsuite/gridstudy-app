@@ -62,9 +62,9 @@ export default function NominalVoltageFilter({
     filteredNominalVoltages,
     onChange,
 }: Readonly<NominalVoltageFilterProps>) {
-    const baseVoltagesConfigIntervals = useSelector((state: AppState) => state.baseVoltagesConfig ?? []);
+    const baseVoltagesIntervals = useSelector((state: AppState) => state.baseVoltages);
     const [voltageLevelIntervals, setVoltageLevelIntervals] = useState<VoltageLevelValuesInterval[]>(
-        baseVoltagesConfigIntervals.map(({ name, minValue, maxValue }) => ({
+        baseVoltagesIntervals.map(({ name, minValue, maxValue }) => ({
             name,
             minValue,
             maxValue,
@@ -74,14 +74,14 @@ export default function NominalVoltageFilter({
     );
 
     useEffect(() => {
-        const newIntervals = baseVoltagesConfigIntervals.map((interval) => {
+        const newIntervals = baseVoltagesIntervals.map((interval) => {
             const vlListValues = nominalVoltages.filter(
-                (vnom) => getNominalVoltageIntervalName(baseVoltagesConfigIntervals, vnom) === interval.name
+                (vnom) => getNominalVoltageIntervalName(baseVoltagesIntervals, vnom) === interval.name
             );
             return { ...interval, vlListValues, isChecked: true };
         });
         setVoltageLevelIntervals(newIntervals);
-    }, [baseVoltagesConfigIntervals, nominalVoltages]);
+    }, [baseVoltagesIntervals, nominalVoltages]);
 
     const handleToggle = useCallback(
         (interval: VoltageLevelValuesInterval) => {

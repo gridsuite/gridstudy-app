@@ -28,6 +28,7 @@ interface PositionDiagramProps {
     onClose: () => void;
     svgType: string;
     disabled?: boolean;
+    fetchOptions?: RequestInit;
 }
 
 const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDivElement>) => {
@@ -59,7 +60,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
     useEffect(() => {
         if (props.svgUrl) {
             updateLoadingState(true);
-            fetchSvg(props.svgUrl)
+            fetchSvg(props.svgUrl, props.fetchOptions)
                 .then((data) => {
                     if (data !== null) {
                         setSvg({

@@ -10,7 +10,7 @@ import {
     type AuthenticationActions,
     type AuthenticationRouterErrorAction,
     type AuthenticationRouterErrorState,
-    BaseVoltageConfig,
+    BaseVoltage,
     type CommonStoreState,
     ComputingType,
     type GsLang,
@@ -163,7 +163,7 @@ import {
     SET_ACTIVE_SPREADSHEET_TAB,
     SET_ADDED_SPREADSHEET_TAB,
     SET_APP_TAB_INDEX,
-    SET_BASE_VOLTAGES_CONFIG,
+    SET_BASE_VOLTAGES,
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
@@ -207,7 +207,7 @@ import {
     PCCMIN_ANALYSIS_RESULT_PAGINATION,
     type PccminAnalysisResultFilterAction,
     PccminAnalysisResultPaginationAction,
-    SetBaseVoltagesConfigAction,
+    SetBaseVoltagesAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
@@ -515,7 +515,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
     appTabIndex: number;
-    baseVoltagesConfig: BaseVoltageConfig[] | undefined;
+    baseVoltages: BaseVoltage[];
     attemptedLeaveParametersTabIndex: number | null;
     isDirtyComputationParameters: boolean;
     studyUpdated: StudyUpdated;
@@ -687,7 +687,7 @@ const initialTablesState: TablesState = {
 const initialState: AppState = {
     syncEnabled: false,
     appTabIndex: 0,
-    baseVoltagesConfig: undefined,
+    baseVoltages: [],
     attemptedLeaveParametersTabIndex: null,
     isDirtyComputationParameters: false,
     studyUuid: null,
@@ -923,8 +923,8 @@ export const reducer = createReducer(initialState, (builder) => {
         state.appTabIndex = action.tabIndex;
     });
 
-    builder.addCase(SET_BASE_VOLTAGES_CONFIG, (state, action: SetBaseVoltagesConfigAction) => {
-        state.baseVoltagesConfig = action.baseVoltagesConfig;
+    builder.addCase(SET_BASE_VOLTAGES, (state, action: SetBaseVoltagesAction) => {
+        state.baseVoltages = action.baseVoltages;
     });
 
     builder.addCase(ATTEMPT_LEAVE_PARAMETERS_TAB, (state, action: AttemptLeaveParametersTabAction) => {
