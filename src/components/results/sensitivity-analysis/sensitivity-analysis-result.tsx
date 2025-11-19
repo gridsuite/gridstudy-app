@@ -23,9 +23,6 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-a
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import type {
-    ColDef,
-    ColGroupDef,
-    GridApi,
     GridColumnsChangedEvent,
     GridReadyEvent,
     RowDataUpdatedEvent,

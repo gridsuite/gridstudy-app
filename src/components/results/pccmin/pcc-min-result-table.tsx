@@ -11,7 +11,7 @@ import { Box, LinearProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
-import { CustomAGGrid, CsvExport, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { ComputingType } from '@gridsuite/commons-ui';

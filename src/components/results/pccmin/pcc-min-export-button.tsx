@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { ExportCsvButton, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { downloadZipFile } from '../../../services/utils';
@@ -14,7 +14,7 @@ import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { useFilterSelector } from 'hooks/use-filter-selector';
-import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
@@ -41,7 +41,6 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
 
-    const intl = useIntl();
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     useEffect(() => {
