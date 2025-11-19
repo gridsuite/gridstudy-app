@@ -430,10 +430,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                         messageValues: { limit: limit },
                     });
                 } else {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NodeBuildingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' });
                 }
             });
         },
