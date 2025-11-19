@@ -27,6 +27,8 @@ interface TreeviewSearchableProps {
     setAnchorEl: Dispatch<SetStateAction<Element | null>>;
     inputRef: RefObject<HTMLInputElement>;
     equipmentType: SpreadsheetEquipmentType;
+    formulaCursorPosition: number;
+    formulaTextRef: RefObject<HTMLTextAreaElement>;
 }
 
 export const TreeviewSearchable = ({
@@ -35,6 +37,8 @@ export const TreeviewSearchable = ({
     setAnchorEl,
     inputRef,
     equipmentType,
+    formulaCursorPosition,
+    formulaTextRef,
 }: TreeviewSearchableProps) => {
     const intl = useIntl();
     const [pendingSelection, setPendingSelection] = useState<string | null>(null);
@@ -51,12 +55,29 @@ export const TreeviewSearchable = ({
 
     const handleConfirm = useCallback(() => {
         if (pendingSelection) {
-            const newValue = getValues(FORMULA) ? `${getValues(FORMULA)}${pendingSelection}` : pendingSelection;
-            setValue(FORMULA, newValue, { shouldValidate: true });
+            const currentFormulaValue = getValues(FORMULA) || '';
+            const before = currentFormulaValue.slice(0, formulaCursorPosition);
+            const after = currentFormulaValue.slice(formulaCursorPosition);
+            const newFormulaValue = before + pendingSelection + after;
+            const newFormulaCursorPosition = formulaCursorPosition + pendingSelection.length;
+
+            setValue(FORMULA, newFormulaValue, { shouldValidate: true });
+
+            setPendingSelection(null);
+            setAnchorEl(null);
+
+            // Focus and set cursor on formula text field
+            requestAnimationFrame(() => {
+                if (formulaTextRef.current) {
+                    formulaTextRef.current.focus();
+                    formulaTextRef.current.setSelectionRange(newFormulaCursorPosition, newFormulaCursorPosition);
+                }
+            });
+        } else {
+            setPendingSelection(null);
+            setAnchorEl(null);
         }
-        setPendingSelection(null);
-        setAnchorEl(null);
-    }, [getValues, pendingSelection, setAnchorEl, setPendingSelection, setValue]);
+    }, [getValues, pendingSelection, setAnchorEl, setValue, formulaTextRef, formulaCursorPosition]);
 
     const { handleKeyDown, handleTreeviewKeyDown } = usePopoverToggle(properties, setAnchorEl, handleConfirm);
 
