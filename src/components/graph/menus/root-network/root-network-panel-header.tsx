@@ -15,6 +15,7 @@ import {
     type MuiStyles,
     OverflowableText,
     type Parameter,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
@@ -87,10 +88,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                     setStudyName(studyName);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'LoadStudyAndParentsInfoError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
                 });
         }
         setRootNetworkConfirmCreationDialogOpen(true);
@@ -174,10 +172,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 caseFormat: caseFormat ?? null,
             },
         }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'createRootNetworksError',
-            });
+            snackWithFallback(snackError, error, { headerId: 'createRootNetworksError' });
             setIsRootNetworksProcessing(false);
         });
 

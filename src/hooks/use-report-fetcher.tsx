@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
 import { fetchNodeReportLogs, fetchNodeSeverities, fetchParentNodesReport, fetchLogMatches } from '../services/study';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     MatchPosition,
     PagedLogs,
@@ -120,10 +120,7 @@ export const useReportFetcher = (
                     return makeSingleReportAndMapNames(fetchedReport, nodesNames);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'ReportFetchError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'ReportFetchError' });
                     return undefined;
                 })
                 .finally(() => {

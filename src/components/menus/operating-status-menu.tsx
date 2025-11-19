@@ -26,6 +26,7 @@ import {
     type ExtendedEquipmentType,
     type MuiStyles,
     OperatingStatus,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
@@ -146,10 +147,7 @@ const withOperatingStatusMenu =
         );
 
         function handleError(error: Error, translationKey: string) {
-            snackError({
-                messageTxt: error.message,
-                headerId: getTranslationKey(translationKey),
-            });
+            snackWithFallback(snackError, error, { headerId: getTranslationKey(translationKey) });
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(false);
             }

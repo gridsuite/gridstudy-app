@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     fetchDirectoryElementPath,
     NotificationsUrlKeys,
+    snackWithFallback,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
@@ -58,10 +59,7 @@ export default function useStudyPath(studyUuid: UUID | null) {
                 })
                 .catch((error) => {
                     document.title = initialTitle;
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'LoadStudyAndParentsInfoError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
                 });
     }, [initialTitle, snackError, studyUuid]);
     const onStudyUpdated = useCallback(

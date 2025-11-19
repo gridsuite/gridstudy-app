@@ -4,7 +4,7 @@
     "debug.header.fileError": "Échec du téléchargement des données de calcul",
     "export.message.started": "Export du {fileName} a commencé",
     "export.message.succeeded": "Export du {fileName} a réussi",
-    "export.message.failed": "Échec du téléchargement du fichier {error}",
+    "export.message.failed": "Échec du téléchargement du fichier",
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
@@ -1035,7 +1035,6 @@
 
     "CopyFromExisting": "Copier depuis un ouvrage existant",
     "EquipmentCopied": "Données copiées depuis l'ouvrage {equipmentId}",
-    "EquipmentCopyFailed404": "Erreur lors de la copie de l'ouvrage : l'ouvrage n'a pas été trouvé",
     "EquipmentCopyFailed": "Erreur lors de la copie de l'ouvrage",
 
     "insertNodeAbove": "Au-dessus",

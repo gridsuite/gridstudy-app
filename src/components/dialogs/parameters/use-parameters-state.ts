@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { updateConfigParameter, useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, updateConfigParameter, useSnackMessage } from '@gridsuite/commons-ui';
 import { AppConfigState } from 'redux/reducer';
 
 import { simpleConverterToString } from '../../../utils/types-utils';
@@ -51,10 +51,7 @@ export function useParameterState<K extends keyof AppConfigState>(
                 (paramValueUpdateConvertor ?? simpleConverterToString)(value)
             ).catch((error) => {
                 setParamLocalState(paramGlobalState);
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'paramsChangingError' });
             });
         },
         [paramName, snackError, paramGlobalState, paramValueUpdateConvertor]

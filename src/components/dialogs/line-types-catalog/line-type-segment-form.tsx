@@ -29,7 +29,7 @@ import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
 import { calculateReactance, calculateResistance, calculateSusceptance } from '../../utils/utils';
-import { CustomAGGrid, type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomAGGrid, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
 import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
@@ -68,8 +68,7 @@ export const LineTypeSegmentForm = () => {
                 setLineTypesCatalog(values);
             })
             .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
+                snackWithFallback(snackError, error, {
                     headerId: 'LineTypesCatalogFetchingError',
                 })
             );
