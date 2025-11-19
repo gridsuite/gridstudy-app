@@ -510,7 +510,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             tableNamePrefix="VoltageInit_"
                             disabled={rowData.length === 0 || editDataFetchStatus === FetchStatus.RUNNING}
                             language={language}
-                            exportDataAsCsv={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
+                            getData={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
                         />
                     </Box>
                     <Box sx={styles.grid}>
