@@ -6,9 +6,8 @@
  */
 
 import { Parameter } from '@gridsuite/commons-ui';
-import { CaseImportParameters } from 'services/network-conversion';
 
-export function formatCaseImportParameters(params: CaseImportParameters[]): CaseImportParameters[] {
+export function formatCaseImportParameters(params: Parameter[]): Parameter[] {
     // sort possible values alphabetically to display select options sorted
     return params?.map((parameter) => ({
         ...parameter,
