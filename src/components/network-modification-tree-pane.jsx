@@ -403,10 +403,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     const handleRemoveNode = useCallback(
         (element) => {
             stashTreeNode(studyUuid, element.id).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'NodeDeleteError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'NodeDeleteError' });
             });
         },
         [studyUuid, snackError]
