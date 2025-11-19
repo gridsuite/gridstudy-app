@@ -98,9 +98,9 @@ interface RootNetworkNodeEditorProps {
 }
 
 const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
-                                                                         isRootNetworksProcessing,
-                                                                         setIsRootNetworksProcessing,
-                                                                     }) => {
+    isRootNetworksProcessing,
+    setIsRootNetworksProcessing,
+}) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
@@ -151,7 +151,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 </IconButton>
             );
         },
-        [currentRootNetworkUuid, isRootNetworksProcessing, setCurrentRootNetworkUuidWithSync],
+        [currentRootNetworkUuid, isRootNetworksProcessing, setCurrentRootNetworkUuidWithSync]
     );
 
     useEffect(() => {
@@ -207,7 +207,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
             <Box
                 sx={mergeSx(
                     styles.rootNetworkMonoRoot,
-                    isRootNetworksProcessing ? undefined : styles.rootNetworkMonoRootHover,
+                    isRootNetworksProcessing ? undefined : styles.rootNetworkMonoRootHover
                 )}
                 onClick={handleMonoRootUpdate}
             >
@@ -250,14 +250,14 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
     };
 
     const doUpdateRootNetwork = async ({
-                                           name,
-                                           tag,
-                                           description,
-                                           caseName,
-                                           currentParameters,
-                                           caseFormat,
-                                           caseId,
-                                       }: FormData) => {
+        name,
+        tag,
+        description,
+        caseName,
+        currentParameters,
+        caseFormat,
+        caseId,
+    }: FormData) => {
         if (!studyUuid || !editedRootNetwork) {
             return;
         }
@@ -272,13 +272,13 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 caseInfos:
                     caseId && caseFormat
                         ? {
-                            originalCaseUuid: caseId as UUID,
-                            caseFormat: caseFormat,
-                        }
+                              originalCaseUuid: caseId as UUID,
+                              caseFormat: caseFormat,
+                          }
                         : {
-                            originalCaseUuid: null,
-                            caseFormat: null,
-                        },
+                              originalCaseUuid: null,
+                              caseFormat: null,
+                          },
             };
 
             await updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
