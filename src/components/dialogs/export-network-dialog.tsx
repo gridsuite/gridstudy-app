@@ -165,7 +165,7 @@ export function ExportNetworkDialog({
     const metasAsArray = useMemo(() => {
         if (formatWithParameter?.parameters) {
             return formatWithParameter?.parameters.filter(
-                (param: Parameter) => !IGNORED_PARAMS || IGNORED_PARAMS.indexOf(param.name) === -1
+                (param: Parameter) => IGNORED_PARAMS.indexOf(param.name) === -1
             );
         } else {
             return [];

@@ -39,10 +39,7 @@ export default function ImportParametersSection() {
     };
 
     const filteredParams = useMemo(
-        () =>
-            formatWithParameters.filter(
-                (param: Parameter) => !IGNORED_PARAMS || IGNORED_PARAMS.indexOf(param.name) === -1
-            ),
+        () => formatWithParameters.filter((param: Parameter) => IGNORED_PARAMS.indexOf(param.name) === -1),
         [formatWithParameters]
     );
 
