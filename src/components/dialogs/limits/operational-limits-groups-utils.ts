@@ -8,7 +8,6 @@
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
-    DELETION_MARK,
     ID,
     LIMITS_PROPERTIES,
     NAME,
@@ -28,7 +27,6 @@ function generateEmptyTemporaryLimitArray(): TemporaryLimitFormSchema[] {
             [TEMPORARY_LIMIT_NAME]: '',
             [TEMPORARY_LIMIT_DURATION]: null,
             [TEMPORARY_LIMIT_VALUE]: null,
-            [DELETION_MARK]: false,
         },
     ];
 }
