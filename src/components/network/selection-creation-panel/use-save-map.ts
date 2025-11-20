@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Equipment, useSnackMessage } from '@gridsuite/commons-ui';
+import { Equipment, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -93,17 +93,11 @@ export const useSaveMap = (): UseSaveMapOutput => {
                 }
             } catch (error: any) {
                 if (error.message === 'EmptySelection') {
-                    snackWarning({
-                        messageTxt: intl.formatMessage({
-                            id: error.message,
-                        }),
+                    snackWithFallback(snackWarning, error, {
                         headerId: isFilter ? 'FilterCreationError' : 'ContingencyListCreationError',
                     });
                 } else {
-                    snackError({
-                        messageTxt: intl.formatMessage({
-                            id: error.message,
-                        }),
+                    snackWithFallback(snackError, error, {
                         headerId: isFilter ? 'FilterCreationError' : 'ContingencyListCreationError',
                     });
                 }

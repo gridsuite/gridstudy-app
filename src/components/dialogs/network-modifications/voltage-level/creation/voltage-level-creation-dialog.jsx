@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     FieldType,
     MODIFICATION_TYPES,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -359,10 +360,7 @@ const VoltageLevelCreationDialog = ({
                 topologyKind: voltageLevel[TOPOLOGY_KIND],
                 properties: toModificationProperties(voltageLevel),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'VoltageLevelCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'VoltageLevelCreationError' });
             });
         },
         [getValues, onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]

@@ -29,7 +29,6 @@ import {
 import {
     areArrayElementsUnique,
     formatMapInfosToTemporaryLimitsFormSchema,
-    formatTemporaryLimits,
     formatToTemporaryLimitsFormSchema,
     toModificationOperation,
 } from 'components/utils/utils';
@@ -41,7 +40,7 @@ import {
     OperationType,
     TemporaryLimit,
 } from '../../../services/network-modification-types';
-import { BranchInfos, CurrentLimitsData } from '../../../services/study/network-map.type';
+import { CurrentLimitsData } from '../../../services/study/network-map.type';
 import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
 import { LineModificationFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
@@ -248,26 +247,11 @@ export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimitsDat
 };
 
 export const convertToOperationalLimitsGroupFormSchema = (
-    mapServerBranch: BranchInfos
+    currentLimits: CurrentLimitsData[]
 ): OperationalLimitsGroupFormSchema[] => {
     let updatedOpLG: OperationalLimitsGroupFormSchema[] = [];
-    // updates limit values :
-    for (const opLG of updatedOpLG) {
-        const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
-            (currentLimit: CurrentLimitsData) =>
-                currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
-        );
-        if (equivalentFromMapServer !== undefined) {
-            opLG.currentLimits.permanentLimit = equivalentFromMapServer.permanentLimit;
-            opLG.currentLimits.temporaryLimits = updateTemporaryLimits(
-                opLG.currentLimits.temporaryLimits,
-                formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
-            );
-        }
-    }
 
-    // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
-    for (const currentLimit of mapServerBranch.currentLimits) {
+    for (const currentLimit of currentLimits) {
         const equivalentFromNetMod = updatedOpLG.find(
             (opLG: OperationalLimitsGroupFormSchema) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]

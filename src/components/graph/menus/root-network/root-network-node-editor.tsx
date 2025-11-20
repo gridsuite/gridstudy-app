@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, mergeSx, type MuiStyles, type Parameter, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, mergeSx, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     Delete as DeleteIcon,
     RemoveRedEye as RemoveRedEyeIcon,
@@ -18,11 +18,9 @@ import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { RootNetworkInfos, RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
-import { getCaseImportParameters } from 'services/network-conversion';
 import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
-import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 const styles = {
@@ -121,11 +119,8 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
         if (studyUuid) {
             setIsRootNetworksProcessing(true);
-            deleteRootNetworks(studyUuid, selectedRootNetworksUuid).catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'deleteRootNetworkError',
-                });
+            deleteRootNetworks(studyUuid, selectedRootNetworksUuid).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'deleteRootNetworkError' });
                 setIsRootNetworksProcessing(false);
             });
         }
@@ -254,28 +249,31 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
         );
     };
 
-    const doUpdateRootNetwork = async ({ name, tag, description, caseName, caseId }: FormData) => {
+    const doUpdateRootNetwork = async ({
+        name,
+        tag,
+        description,
+        caseName,
+        currentParameters,
+        caseFormat,
+        caseId,
+    }: FormData) => {
         if (!studyUuid || !editedRootNetwork) {
             return;
         }
         try {
             setIsRootNetworksProcessing(true);
-            const params = caseId ? await getCaseImportParameters(caseId as UUID) : null;
-            const formattedParams = params ? formatCaseImportParameters(params.parameters) : null;
-            const customizedParams = formattedParams
-                ? customizeCurrentParameters(formattedParams as Parameter[])
-                : null;
             const rootNetworkInfos: RootNetworkInfos = {
                 id: editedRootNetwork.rootNetworkUuid,
                 name,
                 tag,
                 description: description ?? '',
-                importParametersRaw: caseId ? customizedParams : null,
+                importParametersRaw: caseId ? currentParameters : null,
                 caseInfos:
-                    caseId && params
+                    caseId && caseFormat
                         ? {
                               originalCaseUuid: caseId as UUID,
-                              caseFormat: params.formatName,
+                              caseFormat: caseFormat,
                           }
                         : {
                               originalCaseUuid: null,
@@ -283,12 +281,9 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                           },
             };
 
-            updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
+            await updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
         } catch (error) {
-            snackError({
-                headerId: 'updateRootNetworksError',
-                messageTxt: error instanceof Error ? error.message : String(error),
-            });
+            snackWithFallback(snackError, error, { headerId: 'updateRootNetworksError' });
             setIsRootNetworksProcessing(false);
         }
     };
