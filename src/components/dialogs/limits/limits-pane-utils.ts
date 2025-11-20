@@ -9,7 +9,6 @@ import { sanitizeString } from '../dialog-utils';
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
-    DELETION_MARK,
     ENABLE_OLG_MODIFICATION,
     ID,
     LIMIT_SETS_MODIFICATION_TYPE,
@@ -228,9 +227,6 @@ export const updateTemporaryLimits = (
         }
     });
 
-    //remove deleted temporary limits from current and previous modifications
-    updatedTemporaryLimits = updatedTemporaryLimits?.filter((limit: TemporaryLimitFormSchema) => !limit[DELETION_MARK]);
-
     return updatedTemporaryLimits;
 };
 
@@ -288,9 +284,7 @@ export const addModificationTypeToTemporaryLimits = (
     return formTemporaryLimits.map((limit: TemporaryLimitFormSchema) => {
         return {
             ...limit,
-            modificationType: limit[DELETION_MARK]
-                ? TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
-                : TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
+            modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
 };
@@ -345,6 +339,5 @@ export const temporaryLimitToTemporaryLimitFormSchema = (temporaryLimit: Tempora
         [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
         [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
         [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value,
-        [DELETION_MARK]: false,
     };
 };
