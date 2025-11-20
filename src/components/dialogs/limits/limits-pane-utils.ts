@@ -41,7 +41,7 @@ import {
     OperationType,
     TemporaryLimit,
 } from '../../../services/network-modification-types';
-import { BranchInfos, CurrentLimitsData } from '../../../services/study/network-map.type';
+import { CurrentLimitsData } from '../../../services/study/network-map.type';
 import { LineModificationFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
 import { TestContext } from 'yup';
