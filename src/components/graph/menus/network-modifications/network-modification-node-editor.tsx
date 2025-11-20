@@ -194,51 +194,59 @@ const NetworkModificationNodeEditor = () => {
         broadcast.onmessage = (event) => {
             console.info('message received from broadcast channel: ', event.data);
             isInitiatingCopyTab.current = false;
-            if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data)) {
-                cleanClipboard();
+            if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data.modificationsToCopy)) {
+                cleanCurrentTabClipboard(event.data.message);
             } else {
-                setCopiedModifications(event.data.modificationsUuids);
+                setCopiedModifications(event.data.modificationsToCopy.modificationsUuids);
                 setCopyInfos({
-                    copyType: event.data.copyInfos.copyType,
-                    originStudyUuid: event.data.copyInfos.originStudyUuid,
-                    originNodeUuid: event.data.copyInfos.originNodeUuid,
+                    copyType: event.data.modificationsToCopy.copyInfos.copyType,
+                    originStudyUuid: event.data.modificationsToCopy.copyInfos.originStudyUuid,
+                    originNodeUuid: event.data.modificationsToCopy.copyInfos.originNodeUuid,
                 });
-                snackInfo({ messageId: 'CopiedModificationUpdateMessageFromAnotherStudy' });
+                snackInfo({ messageId: event.data.message });
             }
         };
         return broadcast;
     });
 
-    useEffect(() => {
-        //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
-        window.addEventListener('beforeunload', (event) => {
-            if (true === isInitiatingCopyTab.current) {
-                broadcastChannel.postMessage(emptyCopiedModificationsSelection);
-                snackInfo({
-                    messageId: 'CopiedModificationInvalidationMessageAfterTabClosure',
-                });
-            }
-        });
-    }, [broadcastChannel, snackInfo]);
-
-    const cleanClipboard = useCallback(
-        (showSnackInfo: boolean = true) => {
+    const cleanCurrentTabClipboard = useCallback(
+        (snackInfoMessage?: string) => {
             setCopyInfos(null);
             setCopiedModifications((oldCopiedModifications) => {
-                if (oldCopiedModifications.length && showSnackInfo) {
+                if (oldCopiedModifications.length && snackInfoMessage) {
                     snackInfo({
-                        messageId: 'CopiedModificationInvalidationMessage',
+                        messageId: snackInfoMessage,
                     });
                 }
                 return [];
             });
+        },
+        [snackInfo]
+    );
+    const cleanOtherTabsClipboard = useCallback(
+        (snackInfoMessage?: string) => {
             if (true === isInitiatingCopyTab.current) {
-                broadcastChannel.postMessage(emptyCopiedModificationsSelection);
+                broadcastChannel.postMessage({
+                    modificationsToCopy: emptyCopiedModificationsSelection,
+                    message: snackInfoMessage,
+                });
                 isInitiatingCopyTab.current = false;
             }
         },
-        [snackInfo, broadcastChannel]
+        [broadcastChannel]
     );
+
+    const cleanClipboard = useCallback(() => {
+        cleanCurrentTabClipboard('copiedModificationsInvalidationMsg');
+        cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromOtherStudy');
+    }, [cleanCurrentTabClipboard, cleanOtherTabsClipboard]);
+
+    useEffect(() => {
+        //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
+        window.addEventListener('beforeunload', (event) => {
+            cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
+        });
+    }, [cleanOtherTabsClipboard]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -1066,7 +1074,9 @@ const NetworkModificationNodeEditor = () => {
             originStudyUuid: studyUuid ?? undefined,
             originNodeUuid: currentNode?.id,
         });
-    }, [currentNode?.id, selectedModificationsIds, studyUuid]);
+        isInitiatingCopyTab.current = true;
+        cleanOtherTabsClipboard('copiedModificationsInvalidationMsg');
+    }, [cleanOtherTabsClipboard, currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
         setCopiedModifications(selectedModificationsIds());
@@ -1076,12 +1086,15 @@ const NetworkModificationNodeEditor = () => {
             originNodeUuid: currentNode?.id,
         });
         broadcastChannel.postMessage({
-            modificationsUuids: selectedModificationsIds(),
-            copyInfos: {
-                copyType: NetworkModificationCopyType.COPY,
-                originStudyUuid: studyUuid,
-                originNodeUuid: currentNode?.id,
+            modificationsToCopy: {
+                modificationsUuids: selectedModificationsIds(),
+                copyInfos: {
+                    copyType: NetworkModificationCopyType.COPY,
+                    originStudyUuid: studyUuid,
+                    originNodeUuid: currentNode?.id,
+                },
             },
+            message: 'copiedModificationsUpdateMsg',
         });
         isInitiatingCopyTab.current = true;
     }, [broadcastChannel, currentNode?.id, selectedModificationsIds, studyUuid]);
@@ -1093,7 +1106,7 @@ const NetworkModificationNodeEditor = () => {
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
             copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos)
                 .then(() => {
-                    cleanClipboard(false);
+                    cleanCurrentTabClipboard();
                 })
                 .catch((error) => {
                     snackWithFallback(snackError, error, {
@@ -1107,7 +1120,7 @@ const NetworkModificationNodeEditor = () => {
                 });
             });
         }
-    }, [copyInfos, studyUuid, currentNode?.id, copiedModifications, cleanClipboard, snackError]);
+    }, [copyInfos, studyUuid, currentNode?.id, copiedModifications, cleanCurrentTabClipboard, snackError]);
 
     const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
