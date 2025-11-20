@@ -6,21 +6,13 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, Parameter } from '@gridsuite/commons-ui';
 
 const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-conversion';
 
-export interface CaseImportParameters {
-    name: string;
-    description: string;
-    type: string;
-    defaultValue: any;
-    possibleValues?: string[] | null;
-}
-
 export interface GetCaseImportParametersReturn {
     formatName: string;
-    parameters: CaseImportParameters[];
+    parameters: Parameter[];
 }
 
 export function getCaseImportParameters(caseUuid: UUID): Promise<GetCaseImportParametersReturn> {

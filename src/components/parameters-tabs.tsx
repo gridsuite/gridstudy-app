@@ -52,6 +52,7 @@ import {
     getSecurityAnalysisDefaultLimitReductions,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
+    PccMinParametersInLine,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
     ShortCircuitParametersInLine,
@@ -65,6 +66,7 @@ import {
     getShortCircuitSpecificParametersDescription,
     setShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
+import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -107,6 +109,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+    const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
 
     const networkVisualizationsParameters = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
@@ -198,6 +201,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     );
     useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
 
+    const pccMinParameters = useGetPccMinParameters();
     const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
 
@@ -246,6 +250,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 (!enableDeveloperMode &&
                     (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
                         oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
+                        oldValue === TAB_VALUES.pccMinTabValue ||
                         oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
                         oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue)) ||
                 oldValue === TAB_VALUES.stateEstimationTabValue
@@ -304,6 +309,14 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                         enableDeveloperMode={enableDeveloperMode}
                     />
                 );
+            case TAB_VALUES.pccMinTabValue:
+                return (
+                    <PccMinParametersInLine
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        pccMinParameters={pccMinParameters}
+                    />
+                );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setDirtyFields} />;
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
@@ -346,6 +359,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,
         shortCircuitParametersBackend,
+        pccMinParameters,
         user,
         voltageInitParameters,
         useStateEstimationParameters,
@@ -393,6 +407,13 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
                             />
+                            {enableDeveloperMode ? (
+                                <Tab
+                                    disabled={pccMinAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="PccMin" />}
+                                    value={TAB_VALUES.pccMinTabValue}
+                                />
+                            ) : null}
                             {enableDeveloperMode ? (
                                 <Tab
                                     disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}

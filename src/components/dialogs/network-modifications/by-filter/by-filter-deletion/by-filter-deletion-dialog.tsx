@@ -8,7 +8,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { FILTERS, ID, NAME, TYPE } from '../../../../utils/field-constants';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -99,10 +99,7 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
                 formData[FILTERS],
                 editData?.uuid
             ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'UnableToDeleteEquipment',
-                });
+                snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]
