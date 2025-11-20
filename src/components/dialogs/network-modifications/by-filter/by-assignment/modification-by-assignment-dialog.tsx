@@ -12,6 +12,7 @@ import {
     convertOutputValue,
     CustomFormProvider,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FC, useCallback, useEffect, useMemo } from 'react';
@@ -129,10 +130,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 !!editData,
                 editData?.uuid ?? null
             ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ModifyByAssignment',
-                });
+                snackWithFallback(snackError, error, { headerId: 'ModifyByAssignment' });
             });
         },
         [currentNodeUuid, editData, emptyValueStr, snackError, studyUuid]

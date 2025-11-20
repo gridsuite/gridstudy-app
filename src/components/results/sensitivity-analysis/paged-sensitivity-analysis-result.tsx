@@ -18,6 +18,7 @@ import {
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage, ComputingType, useDebounce } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -139,14 +140,9 @@ function PagedSensitivityAnalysisResult({
                 setOptions(res);
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'SensitivityAnalysisResultsError',
-                    }),
-                });
+                snackWithFallback(snackError, error, { headerId: 'SensitivityAnalysisResultsError' });
             });
-    }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, currentRootNetworkUuid, snackError, intl]);
+    }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, currentRootNetworkUuid, snackError]);
 
     const fetchResult = useCallback(() => {
         const sortSelector = sortConfig?.length
@@ -189,12 +185,7 @@ function PagedSensitivityAnalysisResult({
                 setCount(filteredSensitivitiesCount);
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'SensitivityAnalysisResultsError',
-                    }),
-                });
+                snackWithFallback(snackError, error, { headerId: 'SensitivityAnalysisResultsError' });
             })
             .finally(() => {
                 setIsLoading(false);
@@ -211,7 +202,6 @@ function PagedSensitivityAnalysisResult({
         nodeUuid,
         currentRootNetworkUuid,
         snackError,
-        intl,
     ]);
 
     // Debounce the fetch to avoid excessive calls

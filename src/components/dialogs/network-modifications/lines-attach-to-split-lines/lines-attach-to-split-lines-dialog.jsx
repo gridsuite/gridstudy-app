@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import PropTypes from 'prop-types';
@@ -129,10 +129,7 @@ const LinesAttachToSplitLinesDialog = ({
                 replacingLine2Id: linesAttachToSplitLine[REPLACING_LINE_2_ID],
                 replacingLine2Name: sanitizeString(linesAttachToSplitLine[REPLACING_LINE_2_NAME]),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LineAttachmentError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LineAttachmentError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError]

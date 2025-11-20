@@ -6,7 +6,13 @@
  */
 
 import { useIntl } from 'react-intl';
-import { ElementType, useSnackMessage, DirectoryItemSelector, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    useSnackMessage,
+    DirectoryItemSelector,
+    TreeViewFinderNodeProps,
+    snackWithFallback,
+} from '@gridsuite/commons-ui';
 import { copyOrMoveModifications } from '../../services/study';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
@@ -41,11 +47,8 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
                 originStudyUuid: studyUuid,
                 originNodeUuid: currentNode.id,
             };
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationUuidList, copyInfos).catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errDuplicateModificationMsg',
-                });
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationUuidList, copyInfos).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'errDuplicateModificationMsg' });
             });
         }
         // close the file selector
