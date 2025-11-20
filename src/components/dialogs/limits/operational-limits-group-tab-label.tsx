@@ -46,7 +46,14 @@ export function OperationalLimitsGroupTabLabel({
         >
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                 <Stack spacing={0}>
-                    <Typography color={hasError ? red[500] : undefined}>{operationalLimitsGroup.name}</Typography>
+                    <Stack direction={'row'} spacing={1} sx={{ alignItems: 'stretch' }}>
+                        <Typography color={hasError ? red[500] : undefined}>{operationalLimitsGroup.name}</Typography>
+                        {hasError && (
+                            <FormHelperText error>
+                                <ErrorOutlineOutlinedIcon />
+                            </FormHelperText>
+                        )}
+                    </Stack>
                     {operationalLimitsGroup?.applicability ? (
                         <Typography noWrap align="left" color={grey[500]}>
                             <FormattedMessage
@@ -61,11 +68,6 @@ export function OperationalLimitsGroupTabLabel({
                         ''
                     )}
                 </Stack>
-                {hasError && (
-                    <FormHelperText error>
-                        <ErrorOutlineOutlinedIcon />
-                    </FormHelperText>
-                )}
                 <LimitsPropertiesStack name={limitsPropertiesName} />
             </Stack>
 
