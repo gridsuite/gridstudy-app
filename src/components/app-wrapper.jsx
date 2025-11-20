@@ -79,7 +79,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { store } from '../redux/store';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
@@ -112,7 +112,7 @@ import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
 import { getBaseVoltagesCssVars } from 'utils/colors';
-import { setBaseVoltages } from '../redux/actions';
+import { getLocalStorageBaseVoltages, saveLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -467,27 +467,21 @@ const basename = new URL(document.querySelector('base').href).pathname;
 const AppWrapperWithRedux = () => {
     const computedLanguage = useSelector((state) => state.computedLanguage);
     const theme = useSelector((state) => state[PARAM_THEME]);
-    const baseVoltages = useSelector((state) => state.baseVoltages);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
-
-    const dispatch = useDispatch();
 
     useEffect(() => {
         fetchBaseVoltages().then((appMetadataBaseVoltages) => {
-            dispatch(setBaseVoltages(appMetadataBaseVoltages) ?? []);
+            saveLocalStorageBaseVoltages(appMetadataBaseVoltages);
         });
-    }, [dispatch]);
+    }, []);
 
     const rootCssVars = useMemo(() => {
         const themeVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
-        if (!baseVoltages || baseVoltages.length === 0) {
-            return themeVars;
-        }
         return {
             ...themeVars,
-            ...getBaseVoltagesCssVars(baseVoltages, theme),
+            ...getBaseVoltagesCssVars(theme),
         };
-    }, [baseVoltages, theme]);
+    }, [theme]);
 
     const urlMapper = useNotificationsUrlGenerator();
 

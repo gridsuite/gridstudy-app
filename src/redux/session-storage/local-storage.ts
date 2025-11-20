@@ -5,13 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DARK_THEME, getComputedLanguage, GsLang, GsTheme, LANG_SYSTEM } from '@gridsuite/commons-ui';
+import { BaseVoltage, DARK_THEME, getComputedLanguage, GsLang, GsTheme, LANG_SYSTEM } from '@gridsuite/commons-ui';
 import { APP_NAME } from '../../utils/config-params';
 import type { UUID } from 'node:crypto';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 
 const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();
 const LOCAL_STORAGE_LANGUAGE_KEY = (APP_NAME + '_LANGUAGE').toUpperCase();
+const LOCAL_STORAGE_BASE_VOLTAGES_KEY = 'BASE_VOLTAGES';
 
 export function getLocalStorageTheme() {
     return (localStorage.getItem(LOCAL_STORAGE_THEME_KEY) as GsTheme) || DARK_THEME;
@@ -43,4 +44,16 @@ export function getLocalStorageSyncEnabled(studyUuid: UUID): boolean {
         }
     }
     return false;
+}
+
+export function getLocalStorageBaseVoltages(): BaseVoltage[] {
+    const baseVoltages = localStorage.getItem(LOCAL_STORAGE_BASE_VOLTAGES_KEY);
+    if (baseVoltages) {
+        return JSON.parse(baseVoltages);
+    }
+    return [];
+}
+
+export function saveLocalStorageBaseVoltages(baseVoltages: BaseVoltage[]) {
+    localStorage.setItem(LOCAL_STORAGE_BASE_VOLTAGES_KEY, JSON.stringify(baseVoltages));
 }
