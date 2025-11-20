@@ -25,10 +25,10 @@ import { CurrentTreeNode } from '../../graph/tree-node.type';
 import GridSection from '../commons/grid-section';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
-import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { InputWithPopupConfirmation, SwitchInput } from '@gridsuite/commons-ui';
 import { mapServerLimitsGroupsToFormInfos } from './limits-pane-utils';
-import { BranchInfos } from '../../../services/study/network-map.type';
+import { BranchInfos, CurrentLimitsData } from '../../../services/study/network-map.type';
+import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
 
 export interface LimitsPaneProps {
     id?: string;
@@ -44,11 +44,11 @@ export function LimitsPane({
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
-    const { reset, getValues } = useFormContext();
+    const { setValue } = useFormContext();
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups: OperationalLimitsGroupFormInfos[] = useWatch({
+    const limitsGroups: OperationalLimitsGroupFormSchema[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const olgEditable: boolean = useWatch({
@@ -62,7 +62,7 @@ export function LimitsPane({
     const getCurrentLimits = (equipmentToModify: any, operationalLimitsGroupId: string): CurrentLimits | null => {
         if (equipmentToModify?.currentLimits) {
             return equipmentToModify.currentLimits.find(
-                (currentLimit: CurrentLimits) =>
+                (currentLimit: CurrentLimitsData) =>
                     currentLimit.id + currentLimit.applicability === operationalLimitsGroupId
             );
         }
@@ -75,7 +75,7 @@ export function LimitsPane({
     ): CurrentLimits | null => {
         if (equipmentToModify?.currentLimits) {
             return equipmentToModify.currentLimits.find(
-                (currentLimit: CurrentLimits) => currentLimit.id === operationalLimitsGroupName
+                (currentLimit: CurrentLimitsData) => currentLimit.id === operationalLimitsGroupName
             );
         }
         return null;
@@ -92,10 +92,10 @@ export function LimitsPane({
             }
 
             // checks if limit sets with that name already exist
-            const sameNameInLs: OperationalLimitsGroupFormInfos[] = limitsGroups
+            const sameNameInLs: OperationalLimitsGroupFormSchema[] = limitsGroups
                 .filter((_ls, index: number) => index !== indexSelectedLimitSet)
                 .filter(
-                    (limitsGroup: OperationalLimitsGroupFormInfos) =>
+                    (limitsGroup: OperationalLimitsGroupFormSchema) =>
                         limitsGroup.name.trim() === editedLimitGroupName.trim()
                 );
 
@@ -120,17 +120,10 @@ export function LimitsPane({
     );
 
     const handlePopupConfirmation = () => {
-        const resetOLGs: OperationalLimitsGroupFormInfos[] = mapServerLimitsGroupsToFormInfos(
+        const resetOLGs: OperationalLimitsGroupFormSchema[] = mapServerLimitsGroupsToFormInfos(
             equipmentToModify?.currentLimits ?? []
         );
-        const currentValues = getValues();
-        reset({
-            ...currentValues,
-            [LIMITS]: {
-                [OPERATIONAL_LIMITS_GROUPS]: resetOLGs,
-                [ENABLE_OLG_MODIFICATION]: false,
-            },
-        });
+        setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, resetOLGs);
     };
 
     return (
@@ -214,7 +207,7 @@ export function LimitsPane({
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
                     {indexSelectedLimitSet !== null &&
                         limitsGroups.map(
-                            (operationalLimitsGroup: OperationalLimitsGroupFormInfos, index: number) =>
+                            (operationalLimitsGroup: OperationalLimitsGroupFormSchema, index: number) =>
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
                                         key={operationalLimitsGroup.id}

@@ -16,8 +16,8 @@ import { BranchInfos } from '../../../../../services/study/network-map.type';
 export interface LineModificationDialogHeaderProps {
     lineToModify: BranchInfos | null;
     tabIndexesWithError: number[];
-    tabIndex: number | null;
-    setTabIndex: React.Dispatch<React.SetStateAction<number | null>>;
+    tabIndex: number;
+    setTabIndex: (index: number) => void;
     equipmentId: string;
 }
 

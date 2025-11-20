@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ExportCsvButton, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -96,25 +96,10 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
                 setIsCsvExportSuccessful(true);
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'securityAnalysisCsvResultsError',
-                    }),
-                });
+                snackWithFallback(snackError, error, { headerId: 'securityAnalysisCsvResultsError' });
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [
-        resultType,
-        csvHeaders,
-        enumValueTranslations,
-        studyUuid,
-        nodeUuid,
-        rootNetworkUuid,
-        snackError,
-        intl,
-        language,
-    ]);
+    }, [resultType, csvHeaders, enumValueTranslations, studyUuid, nodeUuid, rootNetworkUuid, snackError, language]);
 
     return (
         <ExportCsvButton

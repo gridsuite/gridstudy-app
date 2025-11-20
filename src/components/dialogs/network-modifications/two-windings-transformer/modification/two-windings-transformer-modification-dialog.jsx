@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -91,7 +92,7 @@ import {
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
-    combineFormAndMapServerLimitsGroups,
+    convertToOperationalLimitsGroupFormSchema,
     formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
@@ -528,10 +529,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][RATIO_TAP_CHANGER_STATUS],
                 phaseTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][PHASE_TAP_CHANGER_STATUS],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TwoWindingsTransformerModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TwoWindingsTransformerModificationError' });
             });
         },
         [
@@ -567,11 +565,14 @@ const TwoWindingsTransformerModificationDialog = ({
             tabsInError.push(TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB);
         }
 
-        if (tabsInError.length > 0) {
+        if (tabsInError.includes(tabIndex)) {
+            // error in current tab => do not change tab systematically but remove current tab in error list
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+        } else if (tabsInError.length > 0) {
+            // switch to the first tab in the list then remove the tab in the error list
             setTabIndex(tabsInError[0]);
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
         }
-
-        setTabIndexesWithError(tabsInError);
     };
 
     const clear = useCallback(() => {
@@ -658,12 +659,19 @@ const TwoWindingsTransformerModificationDialog = ({
                                 (formValues) => ({
                                     ...formValues,
                                     ...{
-                                        [LIMITS]: {
-                                            [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
-                                            [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
-                                                ? getOpLimitsGroupInfosFromBranchModification(formValues)
-                                                : combineFormAndMapServerLimitsGroups(formValues, twt),
-                                        },
+                                        [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
+                                            ? {
+                                                  [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      getOpLimitsGroupInfosFromBranchModification(formValues),
+                                              }
+                                            : {
+                                                  [ENABLE_OLG_MODIFICATION]: false,
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      convertToOperationalLimitsGroupFormSchema(
+                                                          twt?.currentLimits ?? []
+                                                      ),
+                                              },
                                     },
                                     ...getRatioTapChangerFormData({
                                         enabled: isRatioTapChangerEnabled(twt),

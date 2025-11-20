@@ -29,6 +29,7 @@ import {
     fetchElementsInfos,
     mergeSx,
     TreeViewFinderNodeProps,
+    OverflowableChip,
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
 
@@ -213,8 +214,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                             <List sx={mergeSx(resultsGlobalFilterStyles.list, { overflowY: 'auto' })}>
                                 {selectedGlobalFilters.map((element: GlobalFilter) => (
                                     <ListItem key={element.label} sx={{ height: '1.8em' }}>
-                                        <Chip
-                                            size="small"
+                                        <OverflowableChip
                                             label={getOptionLabel(element, translate)}
                                             sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                                             onDelete={() => {
