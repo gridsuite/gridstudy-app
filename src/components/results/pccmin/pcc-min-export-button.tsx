@@ -7,7 +7,6 @@
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { ExportCsvButton, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
-import { useIntl } from 'react-intl';
 import { downloadZipFile } from '../../../services/utils';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
