@@ -5,31 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, FormHelperText, Stack, Typography } from '@mui/material';
+import { Box, FormHelperText, Stack, Typography, Tooltip, IconButton } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { APPLICABILITY } from '../../network/constants';
 import { LimitsPropertiesStack } from './limits-properties-stack';
 import { grey, red } from '@mui/material/colors';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import { useFormState } from 'react-hook-form';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import { LIMITS, OPERATIONAL_LIMITS_GROUPS } from '../../utils/field-constants';
 import { LimitsFormSchema, OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 interface OperationalLimitsGroupTabLabelProps {
     operationalLimitsGroup: OperationalLimitsGroupFormSchema;
     showIconButton: boolean;
-    editable: boolean;
     limitsPropertiesName: string;
-    handleOpenMenu: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
+    handleOpenMenu: (event: React.MouseEvent<HTMLElement>, index: number) => void;
     index: number;
 }
 
 export function OperationalLimitsGroupTabLabel({
     operationalLimitsGroup,
     showIconButton,
-    editable,
     limitsPropertiesName,
     handleOpenMenu,
     index,
@@ -45,9 +42,19 @@ export function OperationalLimitsGroupTabLabel({
         >
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                 <Stack spacing={0}>
-                    <Typography color={permanentLimitErrorMessage ? red[500] : undefined}>
-                        {operationalLimitsGroup.name}
-                    </Typography>
+                    <Tooltip title={operationalLimitsGroup.name}>
+                        <Typography
+                            variant="body1"
+                            color={permanentLimitErrorMessage ? red[500] : undefined}
+                            sx={{
+                                maxWidth: '100px',
+                                textOverflow: 'ellipsis',
+                            }}
+                            noWrap
+                        >
+                            {operationalLimitsGroup.name}
+                        </Typography>
+                    </Tooltip>
                     {operationalLimitsGroup?.applicability ? (
                         <Typography noWrap align="left" color={grey[500]}>
                             <FormattedMessage
@@ -69,14 +76,9 @@ export function OperationalLimitsGroupTabLabel({
                 )}
                 <LimitsPropertiesStack name={limitsPropertiesName} />
             </Stack>
-
             {showIconButton && (
-                <IconButton
-                    size="small"
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleOpenMenu(e, index)}
-                    disabled={editable}
-                >
-                    <MenuIcon fontSize="small" />
+                <IconButton size="small" onClick={(e) => handleOpenMenu(e, index)}>
+                    <MoreVertIcon fontSize="small" />
                 </IconButton>
             )}
         </Box>
