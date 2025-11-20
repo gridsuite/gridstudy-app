@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { type MuiStyles } from '@gridsuite/commons-ui';
+import { BaseVoltage, type MuiStyles } from '@gridsuite/commons-ui';
 import { getBaseVoltageIntervalName } from 'utils/base-voltages-utils';
 import { getLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
 
@@ -40,12 +40,7 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-interface VoltageLevelInterval {
-    name: string;
-    minValue: number;
-    maxValue: number;
-}
-type VoltageLevelValuesInterval = VoltageLevelInterval & {
+type VoltageLevelValuesInterval = Pick<BaseVoltage, 'name' | 'minValue' | 'maxValue'> & {
     vlListValues: number[];
     isChecked: boolean;
 };
