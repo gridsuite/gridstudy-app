@@ -1108,7 +1108,7 @@ export const NetworkMapPanel = ({
                         onDrawEvent(event);
                     }}
                     shouldDisableToolTip={isInDrawingMode.value}
-                    getNominalVoltageColor={(voltageValue) => getBaseVoltageMapColor(voltageValue)}
+                    getNominalVoltageColor={getBaseVoltageMapColor}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                 {renderSearchEquipment()}

@@ -28,21 +28,19 @@ export const getBaseVoltagesCssVars = (theme: string): Record<string, Record<str
     const css: Record<string, Record<string, string>> = {};
 
     for (const interval of baseVoltages) {
-        const className = `.sld-${interval.name}, .nad-${interval.name}`;
-
         const themeColors =
             theme === LIGHT_THEME
                 ? interval.sldAndNadColors.lightThemeColors
                 : interval.sldAndNadColors.darkThemeColors;
-        css[className] = { '--vl-color': themeColors.default };
+
+        const vlStyleClassName = `.sld-${interval.name}, .nad-${interval.name}`;
+        css[vlStyleClassName] = { '--vl-color': themeColors.default };
 
         for (let i = 1; i <= 9; i++) {
-            const key = `bus-${i}`;
-            const color = themeColors[key];
-            if (!color) continue;
-
-            const selector = `.sld-${interval.name}.sld-${key}, .nad-${interval.name}.nad-${key}`;
-            css[selector] = { '--vl-color': color };
+            const busColor = themeColors[`bus-${i}`];
+            if (!busColor) continue;
+            const busStyleClassName = `.sld-${interval.name}.sld-bus-${i}, .nad-${interval.name}.nad-bus-${i}`;
+            css[busStyleClassName] = { '--vl-color': busColor };
         }
     }
     return css;
