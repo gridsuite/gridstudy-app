@@ -44,7 +44,7 @@ export function LimitsPane({
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
-    const { reset, getValues } = useFormContext();
+    const { setValue } = useFormContext();
 
     const myRef: any = useRef<any>(null);
 
@@ -85,14 +85,7 @@ export function LimitsPane({
         const resetOLGs: OperationalLimitsGroupFormSchema[] = mapServerLimitsGroupsToFormInfos(
             equipmentToModify?.currentLimits ?? []
         );
-        const currentValues = getValues();
-        reset({
-            ...currentValues,
-            [LIMITS]: {
-                [OPERATIONAL_LIMITS_GROUPS]: resetOLGs,
-                [ENABLE_OLG_MODIFICATION]: false,
-            },
-        });
+        setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, resetOLGs);
     };
 
     return (

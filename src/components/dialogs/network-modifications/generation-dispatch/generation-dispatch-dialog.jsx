@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -139,10 +139,7 @@ const GenerationDispatchDialog = ({
                 generatorsFrequencyReserve: generation[GENERATORS_FREQUENCY_RESERVES],
                 substationsGeneratorsOrdering: generation[SUBSTATIONS_GENERATORS_ORDERING],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'GenerationDispatchError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'GenerationDispatchError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError]

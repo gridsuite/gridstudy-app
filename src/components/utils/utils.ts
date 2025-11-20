@@ -18,7 +18,6 @@ import { Option } from '@gridsuite/commons-ui';
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
-    DELETION_MARK,
     ID,
     LIMITS_PROPERTIES,
     MODIFICATION_TYPE,
@@ -138,7 +137,7 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): T
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [MODIFICATION_TYPE]: null,
+            [MODIFICATION_TYPE]: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
 
@@ -148,7 +147,6 @@ export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimi
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [DELETION_MARK]: limit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
         };
     });
 
@@ -160,7 +158,6 @@ export const formatMapInfosToTemporaryLimitsFormSchema = (
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [DELETION_MARK]: false,
         };
     });
 

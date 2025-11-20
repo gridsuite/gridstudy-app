@@ -4,7 +4,7 @@
     "debug.header.fileError": "Échec du téléchargement des données de calcul",
     "export.message.started": "Export du {fileName} a commencé",
     "export.message.succeeded": "Export du {fileName} a réussi",
-    "export.message.failed": "Échec du téléchargement du fichier {error}",
+    "export.message.failed": "Échec du téléchargement du fichier",
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
@@ -27,11 +27,16 @@
 
     "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
-    "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
-    "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
-    "CopiedModificationInvalidationMessageFromAnotherStudy": "Suite à un changement des modifications dans une autre étude, le contenu du presse papier a été supprimé",
-    "CopiedModificationUpdateMessageFromAnotherStudy": "Suite à la copie de modifications dans une autre étude, le presse papier a été modifié",
-    "CopiedModificationInvalidationMessageAfterTabClosure": "Suite à la fermeture de l'onglet d'une autre étude, le presse papier a été supprimé",
+    "copiedNodeInvalidationMsg": "Contenu du presse-papier supprimé, suite à un changement dans les noeuds",
+    "copiedNodeInvalidationMsgFromOtherStudy": "Contenu du presse-papier supprimé, suite à un changement dans les noeuds dans une autre étude",
+    "copiedNodeInvalidationMsgFromStudyClosure": "Contenu du presse-papier supprimé, suite à la fermeture d'une étude",
+    "copiedNodeUpdateMsg": "Contenu du presse-papier mis à jour, suite à la copie d'un noeud dans une autre étude",
+
+    "copiedModificationsInvalidationMsg": "Contenu du presse-papier supprimé, suite à un changement dans les modifications",
+    "copiedModificationsInvalidationMsgFromOtherStudy": "Contenu du presse-papier supprimé, suite à un changement dans les modifications dans une autre étude",
+    "copiedModificationsInvalidationMsgFromStudyClosure": "Contenu du presse-papier supprimé, suite à la fermeture d'une étude",
+    "copiedModificationsUpdateMsg": "Contenu du presse-papier mis à jour, suite à la copie de modifications dans une autre étude",
+
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "download.fileName": "Nom de fichier",
@@ -1035,7 +1040,6 @@
 
     "CopyFromExisting": "Copier depuis un ouvrage existant",
     "EquipmentCopied": "Données copiées depuis l'ouvrage {equipmentId}",
-    "EquipmentCopyFailed404": "Erreur lors de la copie de l'ouvrage : l'ouvrage n'a pas été trouvé",
     "EquipmentCopyFailed": "Erreur lors de la copie de l'ouvrage",
 
     "insertNodeAbove": "Au-dessus",

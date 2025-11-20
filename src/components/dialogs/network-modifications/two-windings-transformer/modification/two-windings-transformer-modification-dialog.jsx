@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -528,10 +529,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][RATIO_TAP_CHANGER_STATUS],
                 phaseTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][PHASE_TAP_CHANGER_STATUS],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TwoWindingsTransformerModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TwoWindingsTransformerModificationError' });
             });
         },
         [
@@ -661,12 +659,19 @@ const TwoWindingsTransformerModificationDialog = ({
                                 (formValues) => ({
                                     ...formValues,
                                     ...{
-                                        [LIMITS]: {
-                                            [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
-                                            [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
-                                                ? getOpLimitsGroupInfosFromBranchModification(formValues)
-                                                : convertToOperationalLimitsGroupFormSchema(twt),
-                                        },
+                                        [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
+                                            ? {
+                                                  [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      getOpLimitsGroupInfosFromBranchModification(formValues),
+                                              }
+                                            : {
+                                                  [ENABLE_OLG_MODIFICATION]: false,
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      convertToOperationalLimitsGroupFormSchema(
+                                                          twt?.currentLimits ?? []
+                                                      ),
+                                              },
                                     },
                                     ...getRatioTapChangerFormData({
                                         enabled: isRatioTapChangerEnabled(twt),
