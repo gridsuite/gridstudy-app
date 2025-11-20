@@ -10,6 +10,7 @@ import {
     EquipmentType,
     MODIFICATION_TYPES,
     ModificationType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -182,10 +183,7 @@ export default function VoltageLevelTopologyModificationDialog({
                 modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'VoltageLevelTopologyModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'VoltageLevelTopologyModificationError' });
             });
         },
         [editData, selectedId, studyUuid, currentNodeUuid, snackError]

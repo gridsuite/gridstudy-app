@@ -7,7 +7,7 @@
 
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
@@ -150,10 +150,7 @@ const SubstationModificationDialog = ({
                 country: substation[COUNTRY],
                 properties: toModificationProperties(substation),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'SubstationModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'SubstationModificationError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid, selectedId]

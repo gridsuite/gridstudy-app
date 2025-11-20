@@ -15,7 +15,7 @@ import {
     SpreadsheetTabDefinition,
 } from '../../types/spreadsheet.type';
 import { Dispatch } from 'redux';
-import { UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { snackWithFallback, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
@@ -136,8 +136,7 @@ const handleSuccess = (
             dispatch(addSortForNewSpreadsheet(uuid, [{ colId: 'id', sort: SortWay.ASC }]));
         })
         .catch((error) => {
-            snackError({
-                messageTxt: error,
+            snackWithFallback(snackError, error, {
                 headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
             });
         })
@@ -185,8 +184,7 @@ export const addNewSpreadsheet = ({
             handleSuccess(uuid, newTableDefinition, dispatch, snackError, open, nodeAliases, resetNodeAliases);
         })
         .catch((error) => {
-            snackError({
-                messageTxt: error,
+            snackWithFallback(snackError, error, {
                 headerId: 'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet',
             });
             open.setFalse();

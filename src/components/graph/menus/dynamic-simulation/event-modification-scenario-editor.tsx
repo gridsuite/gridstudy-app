@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -128,9 +128,7 @@ const EventModificationScenarioEditor = () => {
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -186,11 +184,8 @@ const EventModificationScenarioEditor = () => {
             return;
         }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((errMsg) => {
-            snackError({
-                messageTxt: errMsg,
-                headerId: 'DynamicSimulationEventDeleteError',
-            });
+        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((error) => {
+            snackWithFallback(snackError, error, { headerId: 'DynamicSimulationEventDeleteError' });
         });
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
