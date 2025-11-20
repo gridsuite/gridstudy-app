@@ -82,7 +82,6 @@ export const fetchDefaultParametersValues = () => {
             return defaultValues;
         });
 };
-
 export const getQueryParamsList = (params: string[] | number[] | null | undefined, paramName: string) => {
     if (params != null && Array.isArray(params) && params.length > 0) {
         const urlSearchParams = new URLSearchParams();

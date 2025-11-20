@@ -9,9 +9,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
-import { getNominalVoltageIntervalName } from 'utils/base-voltages-config-utils';
+import { getBaseVoltageIntervalName } from 'utils/base-voltages-utils';
+import { getLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
 
 const styles = {
     nominalVoltageZone: {
@@ -62,9 +61,8 @@ export default function NominalVoltageFilter({
     filteredNominalVoltages,
     onChange,
 }: Readonly<NominalVoltageFilterProps>) {
-    const baseVoltagesIntervals = useSelector((state: AppState) => state.baseVoltages);
     const [voltageLevelIntervals, setVoltageLevelIntervals] = useState<VoltageLevelValuesInterval[]>(
-        baseVoltagesIntervals.map(({ name, minValue, maxValue }) => ({
+        getLocalStorageBaseVoltages().map(({ name, minValue, maxValue }) => ({
             name,
             minValue,
             maxValue,
@@ -74,14 +72,12 @@ export default function NominalVoltageFilter({
     );
 
     useEffect(() => {
-        const newIntervals = baseVoltagesIntervals.map((interval) => {
-            const vlListValues = nominalVoltages.filter(
-                (vnom) => getNominalVoltageIntervalName(baseVoltagesIntervals, vnom) === interval.name
-            );
+        const newIntervals = getLocalStorageBaseVoltages().map((interval) => {
+            const vlListValues = nominalVoltages.filter((vnom) => getBaseVoltageIntervalName(vnom) === interval.name);
             return { ...interval, vlListValues, isChecked: true };
         });
         setVoltageLevelIntervals(newIntervals);
-    }, [baseVoltagesIntervals, nominalVoltages]);
+    }, [nominalVoltages]);
 
     const handleToggle = useCallback(
         (interval: VoltageLevelValuesInterval) => {

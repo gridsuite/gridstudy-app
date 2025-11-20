@@ -6,11 +6,10 @@
  */
 
 import { BaseVoltage, BaseVoltageConfig } from '@gridsuite/commons-ui';
+import { getLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
 
-export const getNominalVoltageIntervalByVoltageValue = (
-    baseVoltages: BaseVoltage[],
-    voltageValue: number
-): BaseVoltage | undefined => {
+export const getBaseVoltageIntervalByVoltageValue = (voltageValue: number): BaseVoltage | undefined => {
+    const baseVoltages = getLocalStorageBaseVoltages();
     for (let interval of baseVoltages) {
         if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
             return interval;
@@ -18,17 +17,11 @@ export const getNominalVoltageIntervalByVoltageValue = (
     }
 };
 
-export const getNominalVoltageIntervalName = (
-    baseVoltages: BaseVoltage[],
-    voltageValue: number
-): string | undefined => {
-    for (let interval of baseVoltages) {
-        if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
-            return interval.name;
-        }
-    }
+export const getBaseVoltageIntervalName = (voltageValue: number): string | undefined => {
+    return getBaseVoltageIntervalByVoltageValue(voltageValue)?.name;
 };
 
-export const getBaseVoltagesConfig = (baseVoltages: BaseVoltage[]): BaseVoltageConfig[] => {
+export const getBaseVoltagesConfig = (): BaseVoltageConfig[] => {
+    const baseVoltages = getLocalStorageBaseVoltages();
     return baseVoltages.map(({ name, minValue, maxValue, profile }) => ({ name, minValue, maxValue, profile }));
 };

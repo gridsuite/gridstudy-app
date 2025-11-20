@@ -10,7 +10,6 @@ import {
     type AuthenticationActions,
     type AuthenticationRouterErrorAction,
     type AuthenticationRouterErrorState,
-    BaseVoltage,
     type CommonStoreState,
     ComputingType,
     type GsLang,
@@ -169,7 +168,6 @@ import {
     SET_ACTIVE_SPREADSHEET_TAB,
     SET_ADDED_SPREADSHEET_TAB,
     SET_APP_TAB_INDEX,
-    SET_BASE_VOLTAGES,
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
@@ -221,7 +219,6 @@ import {
     PCCMIN_ANALYSIS_RESULT_PAGINATION,
     type PccminAnalysisResultFilterAction,
     PccminAnalysisResultPaginationAction,
-    SetBaseVoltagesAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
@@ -586,7 +583,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
     appTabIndex: number;
-    baseVoltages: BaseVoltage[];
     attemptedLeaveParametersTabIndex: number | null;
     isDirtyComputationParameters: boolean;
     studyUpdated: StudyUpdated;
@@ -762,7 +758,6 @@ const initialTablesState: TablesState = {
 const initialState: AppState = {
     syncEnabled: false,
     appTabIndex: 0,
-    baseVoltages: [],
     attemptedLeaveParametersTabIndex: null,
     isDirtyComputationParameters: false,
     studyUuid: null,
@@ -1002,10 +997,6 @@ const initialState: AppState = {
 export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SET_APP_TAB_INDEX, (state, action: SetAppTabIndexAction) => {
         state.appTabIndex = action.tabIndex;
-    });
-
-    builder.addCase(SET_BASE_VOLTAGES, (state, action: SetBaseVoltagesAction) => {
-        state.baseVoltages = action.baseVoltages;
     });
 
     builder.addCase(ATTEMPT_LEAVE_PARAMETERS_TAB, (state, action: AttemptLeaveParametersTabAction) => {

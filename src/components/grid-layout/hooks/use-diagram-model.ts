@@ -32,7 +32,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
 import { isThereTooManyOpenedNadDiagrams, mergePositions } from '../cards/diagrams/diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
-import { getBaseVoltagesConfig } from 'utils/base-voltages-config-utils';
+import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -56,7 +56,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
-    const baseVoltages = useSelector((state: AppState) => state.baseVoltages);
     const getDiagramTitle = useDiagramTitle();
 
     const [diagrams, setDiagrams] = useState<Record<UUID, Diagram>>({});
@@ -306,7 +305,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     positions: diagram.positions,
                     nadPositionsGenerationMode:
                         networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
-                    baseVoltagesConfigInfos: getBaseVoltagesConfig(baseVoltages),
+                    baseVoltagesConfigInfos: getBaseVoltagesConfig(),
                 };
                 fetchOptions = {
                     method: 'POST',
@@ -315,7 +314,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 };
             }
             if (diagram.type === DiagramType.SUBSTATION || diagram.type === DiagramType.VOLTAGE_LEVEL) {
-                const sldRequestInfos = { baseVoltagesConfigInfos: getBaseVoltagesConfig(baseVoltages) };
+                const sldRequestInfos = { baseVoltagesConfigInfos: getBaseVoltagesConfig() };
                 fetchOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -348,7 +347,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [
             getUrl,
             networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
-            baseVoltages,
             handleFetchSuccess,
             handleFetchError,
             handleFetchFinally,
