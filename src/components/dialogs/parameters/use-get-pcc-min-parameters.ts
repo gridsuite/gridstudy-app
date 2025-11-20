@@ -5,69 +5,69 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import {
     ComputingType,
+    getPccMinStudyParameters,
     NotificationsUrlKeys,
-    snackWithFallback,
+    PccMinParameters,
     useNotificationsListener,
     useSnackMessage,
-    VoltageInitStudyParameters,
 } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
-import { getVoltageInitStudyParameters } from '../../../services/study/voltage-init';
 import type { UUID } from 'node:crypto';
 import { haveComputationParametersChanged } from './use-parameters-notification';
 import { isComputationParametersUpdatedNotification } from 'types/notification-types';
 
-export const useGetVoltageInitParameters = (): VoltageInitStudyParameters | null => {
+export const useGetPccMinParameters = (): PccMinParameters | null => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
-    const [voltageInitParams, setVoltageInitParams] = useState<VoltageInitStudyParameters | null>(null);
+    const [pccMinParams, setPccMinParams] = useState<PccMinParameters | null>(null);
 
-    const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
-    const voltageInitAvailabilityRef = useRef(voltageInitAvailability);
-    voltageInitAvailabilityRef.current = voltageInitAvailability;
+    const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
 
-    const fetchVoltageInitStudyParameters = useCallback(
+    const fetchPccMinStudyParameters = useCallback(
         (studyUuid: UUID) => {
-            getVoltageInitStudyParameters(studyUuid)
+            getPccMinStudyParameters(studyUuid)
                 .then((params) => {
-                    setVoltageInitParams(params);
+                    setPccMinParams(params);
                 })
                 .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' });
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsRetrievingError',
+                    });
                 });
         },
         [snackError]
     );
     useEffect(() => {
-        if (studyUuid && voltageInitAvailability === OptionalServicesStatus.Up) {
-            fetchVoltageInitStudyParameters(studyUuid);
+        if (studyUuid && pccMinAvailability === OptionalServicesStatus.Up) {
+            fetchPccMinStudyParameters(studyUuid);
         }
-    }, [voltageInitAvailability, studyUuid, fetchVoltageInitStudyParameters]);
+    }, [pccMinAvailability, studyUuid, fetchPccMinStudyParameters]);
 
-    const voltageInitParamsUpdated = useCallback(
+    const pccMinParamsUpdated = useCallback(
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             if (
                 studyUuid &&
-                voltageInitAvailability === OptionalServicesStatus.Up &&
+                pccMinAvailability === OptionalServicesStatus.Up &&
                 isComputationParametersUpdatedNotification(eventData) &&
-                haveComputationParametersChanged(ComputingType.VOLTAGE_INITIALIZATION, eventData)
+                haveComputationParametersChanged(ComputingType.PCC_MIN, eventData)
             ) {
-                fetchVoltageInitStudyParameters(studyUuid);
+                fetchPccMinStudyParameters(studyUuid);
             }
         },
-        [studyUuid, fetchVoltageInitStudyParameters, voltageInitAvailability]
+        [studyUuid, fetchPccMinStudyParameters, pccMinAvailability]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: voltageInitParamsUpdated,
+        listenerCallbackMessage: pccMinParamsUpdated,
     });
 
-    return voltageInitParams;
+    return pccMinParams;
 };

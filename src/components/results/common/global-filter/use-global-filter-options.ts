@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useEffect, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../../services/study/network-map';
@@ -37,10 +37,7 @@ export const useGlobalFilterOptions = () => {
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchCountryError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
                 });
 
             fetchAllNominalVoltages(studyUuid, currentNode.id, currentRootNetworkUuid)
@@ -53,10 +50,7 @@ export const useGlobalFilterOptions = () => {
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchNominalVoltagesError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'FetchNominalVoltagesError' });
                 });
 
             fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
