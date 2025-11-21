@@ -16,7 +16,6 @@ import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
-import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
 import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
@@ -27,6 +26,7 @@ import { useNodeAliases } from '../../hooks/use-node-aliases';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
+import { useComputationFilters } from '../../../../hooks/use-computation-result-filters';
 
 const styles = {
     table: (theme) => ({
@@ -163,7 +163,7 @@ export const SpreadsheetContent = memo(
             }
         }, [transformedRowData, gridRef, isGridReady]);
 
-        const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
+        const { columnFilters } = useComputationFilters(FilterType.Spreadsheet, tableDefinition?.uuid);
 
         useEffect(() => {
             const api = gridRef.current?.api;
@@ -179,8 +179,8 @@ export const SpreadsheetContent = memo(
             if (!api || !isGridReady) {
                 return;
             }
-            updateFilters(api, filters);
-        }, [filters, gridRef, isGridReady, equipments, tableDefinition?.columns]);
+            updateFilters(api, columnFilters);
+        }, [columnFilters, gridRef, isGridReady, equipments, tableDefinition?.columns]);
 
         const handleModify = useCallback(
             (equipmentId: string) => {

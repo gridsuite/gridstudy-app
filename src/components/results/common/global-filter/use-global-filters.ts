@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { FilterType } from '../utils';
 
@@ -20,11 +20,8 @@ export function isGlobalFilterParameter(globalFilters: GlobalFilters | undefined
 }
 
 export default function useGlobalFilters() {
-    const [globalFilters, setGlobalFilters] = useState<GlobalFilters>();
-
-    // see <GlobalFilterSelector onChange={...} .../>
-    const handleGlobalFilterChange = useCallback((value: GlobalFilter[]) => {
-        let newGlobalFilter: GlobalFilters = {};
+    const buildGlobalFilters = useCallback((value: GlobalFilter[]): GlobalFilters => {
+        const newGlobalFilter: GlobalFilters = {};
 
         const nominalVs = new Set(
             value
@@ -32,11 +29,11 @@ export default function useGlobalFilters() {
                 .map((filter: GlobalFilter) => filter.label)
         );
 
-        const genericFilters: Set<string> = new Set(
+        const genericFilters = new Set(
             value
-                .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
+                .filter((filter: GlobalFilter) => filter.filterType === FilterType.GENERIC_FILTER)
                 .map((filter: GlobalFilter) => filter.uuid ?? '')
-                .filter((uuid: string): boolean => uuid !== '')
+                .filter((uuid: string) => uuid !== '')
         );
 
         const countryCodes = new Set(
@@ -50,25 +47,24 @@ export default function useGlobalFilters() {
             .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
             .forEach((filter: GlobalFilter) => {
                 if (filter.filterSubtype) {
-                    const subtypeSubstationProperties = substationProperties.get(filter.filterSubtype);
-                    if (subtypeSubstationProperties) {
-                        subtypeSubstationProperties.push(filter.label);
+                    const subtypeProps = substationProperties.get(filter.filterSubtype);
+                    if (subtypeProps) {
+                        subtypeProps.push(filter.label);
                     } else {
                         substationProperties.set(filter.filterSubtype, [filter.label]);
                     }
                 }
             });
 
-        newGlobalFilter.nominalV = [...nominalVs];
-        newGlobalFilter.countryCode = [...countryCodes];
-        newGlobalFilter.genericFilter = [...genericFilters];
-
+        if (nominalVs.size > 0) newGlobalFilter.nominalV = [...nominalVs];
+        if (countryCodes.size > 0) newGlobalFilter.countryCode = [...countryCodes];
+        if (genericFilters.size > 0) newGlobalFilter.genericFilter = [...genericFilters];
         if (substationProperties.size > 0) {
             newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
         }
 
-        setGlobalFilters(newGlobalFilter);
+        return newGlobalFilter;
     }, []);
 
-    return { globalFilters, handleGlobalFilterChange };
+    return { buildGlobalFilters };
 }
