@@ -29,6 +29,7 @@ function isSingleSymbol(formula: string) {
         const node = parse(formula);
         return isSymbolNode(node) || isAccessorNode(node);
     } catch (error) {
+        console.warn(`Error while parsing formula ${error}`);
         return false;
     }
 }
