@@ -22,6 +22,16 @@ import {
 } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer } from '../../../custom-aggrid/cell-renderers';
+import { parse } from 'mathjs';
+
+function isSingleSymbol(formula: string): boolean {
+    try {
+        const node = parse(formula);
+        return !node.hasOwnProperty('args');
+    } catch (error) {
+        return false;
+    }
+}
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
@@ -38,10 +48,17 @@ const createValueGetter =
             });
             const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
             const result = limitedEvaluate(escapedFormula, scope);
-            return validateFormulaResult(result, colDef.type);
+            return result ? validateFormulaResult(result, colDef.type) : undefined;
         } catch (e) {
-            if (e instanceof MathJsValidationError) {
-                return { error: e.error };
+            if (e instanceof Error) {
+                if (e instanceof MathJsValidationError) {
+                    return { error: e.error };
+                }
+                // If we encounter a signle undefined symbol it won't display an error but if we make operations on an undefined symbol it will
+                // It's setup this way to prevent interpreting missing data as errors
+                if (!isSingleSymbol(colDef.formula)) {
+                    return { error: 'spreadsheet/formula/error/generic' };
+                }
             }
             return undefined;
         }
