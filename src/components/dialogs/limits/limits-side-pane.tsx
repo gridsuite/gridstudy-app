@@ -198,7 +198,7 @@ export function LimitsSidePane({
         [clearableFields, disabled, limitsGroupFormName, permanentCurrentLimitPreviousValue]
     );
 
-    // Trigger all OLG_is_Duplicate fields when change on applicability or name field
+    // Trigger all OLG_IS_DUPLICATE fields when change on applicability or name field
     useEffect(() => {
         const unsubscribeCallBack = subscribe({
             name: [`${name}.${APPLICABILITY_FIELD}`, `${name}.${NAME}`],
