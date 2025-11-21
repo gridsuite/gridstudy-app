@@ -7,14 +7,14 @@
 
 import { ReactFlowProvider } from '@xyflow/react';
 import { Box, useTheme } from '@mui/material';
+import { ResizeHandle } from '@gridsuite/commons-ui';
 import { Panel, PanelGroup } from 'react-resizable-panels';
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import GridLayoutPanel from './grid-layout/grid-layout-panel';
 import NodeEditor from './graph/menus/network-modifications/node-editor';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
-import ResizeHandle from './resize-handle';
 
 import { usePanelManager } from '../hooks/use-panel-manager';
 import { PANEL_CONFIG, PANEL_IDS } from '../constants/panel.constants';
