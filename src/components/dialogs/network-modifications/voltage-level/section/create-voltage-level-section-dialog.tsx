@@ -4,7 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -197,7 +203,7 @@ export default function CreateVoltageLevelSectionDialog({
                     : POSITION_NEW_SECTION_SIDE.BEFORE.id,
                 [SWITCHES_BEFORE_SECTIONS]: editData?.leftSwitchKind ?? null,
                 [SWITCHES_AFTER_SECTIONS]: editData?.rightSwitchKind ?? null,
-                [NEW_SWITCH_STATES]: editData?.switchOpen ?? false,
+                [NEW_SWITCH_STATES]: !(editData?.switchOpen ?? false),
             });
         },
         [reset]
@@ -243,7 +249,7 @@ export default function CreateVoltageLevelSectionDialog({
                     voltageLevelSection?.isAfterBusBarSectionId === POSITION_NEW_SECTION_SIDE.AFTER.id,
                 leftSwitchKind: voltageLevelSection?.switchesBeforeSections || null,
                 rightSwitchKind: voltageLevelSection?.switchesAfterSections || null,
-                switchOpen: voltageLevelSection?.newSwitchStates || false,
+                switchOpen: !voltageLevelSection?.newSwitchStates || false,
             } satisfies CreateVoltageLevelSectionInfos;
             createVoltageLevelSection({
                 voltageLevelSectionInfos: voltageLevelSectionInfos,
@@ -252,10 +258,7 @@ export default function CreateVoltageLevelSectionDialog({
                 modificationUuid: editData?.uuid ?? null,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'VoltageLevelSectionCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'VoltageLevelSectionCreationError' });
             });
         },
         [selectedId, findBusbarKeyForSection, studyUuid, currentNodeUuid, editData, snackError]

@@ -6,7 +6,7 @@
  */
 import { AMOUNT_TEMPORARY_LIMITS, CSV_FILENAME, MODIFICATIONS_TABLE, TYPE } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
-import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -103,10 +103,7 @@ export function LimitSetsModificationDialog({
                 tabularType: ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
                 csvFilename: formData[CSV_FILENAME],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TabularModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TabularModificationError' });
             });
         },
         [currentNodeUuid, editData, getValues, snackError, studyUuid]

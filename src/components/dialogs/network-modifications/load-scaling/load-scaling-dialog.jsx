@@ -11,7 +11,7 @@ import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import LoadScalingForm from './load-scaling-form';
 import { useCallback, useEffect } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
@@ -64,11 +64,8 @@ const LoadScalingDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
                 editData?.uuid ?? undefined,
                 loadScalingInfos[VARIATION_TYPE],
                 loadScalingInfos[VARIATIONS]
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'LoadScalingError',
-                });
+            ).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'LoadScalingError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]

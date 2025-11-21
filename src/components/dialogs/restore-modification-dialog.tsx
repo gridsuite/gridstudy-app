@@ -11,6 +11,7 @@ import {
     CancelButton,
     CheckBoxList,
     type MuiStyles,
+    snackWithFallback,
     useModificationLabelComputer,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -80,11 +81,8 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
     const handleDelete = () => {
         const selectedModificationsUuidsToDelete = selectedItems.map((item) => item.uuid);
         setOpenDeleteConfirmationPopup(false);
-        deleteModifications(studyUuid, currentNode?.id, selectedModificationsUuidsToDelete).catch((errmsg) => {
-            snackError({
-                messageTxt: errmsg,
-                headerId: 'errDeleteModificationMsg',
-            });
+        deleteModifications(studyUuid, currentNode?.id, selectedModificationsUuidsToDelete).catch((error) => {
+            snackWithFallback(snackError, error, { headerId: 'errDeleteModificationMsg' });
         });
         handleClose();
     };

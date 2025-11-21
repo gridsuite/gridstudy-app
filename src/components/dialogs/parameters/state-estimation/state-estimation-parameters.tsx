@@ -9,6 +9,7 @@ import {
     CustomFormProvider,
     mergeSx,
     PopupConfirmationDialog,
+    snackWithFallback,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -90,10 +91,7 @@ export const StateEstimationParameters = ({
 
     const resetStateEstimationParameters = useCallback(() => {
         updateStateEstimationParameters(studyUuid, null).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'paramsChangingError',
-            });
+            snackWithFallback(snackError, error, { headerId: 'paramsChangingError' });
         });
     }, [studyUuid, snackError]);
 
@@ -118,10 +116,7 @@ export const StateEstimationParameters = ({
                     setStateEstimationParams(fromStateEstimationParametersFormToParamValues(newParams));
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
-                        headerId: 'updateStateEstimationParametersError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'updateStateEstimationParametersError' });
                 });
             onValidationError();
         },

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -221,10 +221,7 @@ export default function LoadModificationDialog({
                 qMeasurementValidity: stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY],
                 properties: toModificationProperties(load) ?? null,
             }).catch((error: Error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LoadModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LoadModificationError' });
             });
         },
         [selectedId, editData, studyUuid, currentNodeUuid, snackError]
