@@ -151,6 +151,7 @@ const spreadsheetEn = {
 
     //Formula errors
     'spreadsheet/formula/error': '#ERROR',
+    'spreadsheet/formula/error/generic': 'Formula returns an error',
     'spreadsheet/formula/import/disabled': 'Function import is disabled',
     'spreadsheet/formula/createUnit/disabled': 'Function createUnit is disabled',
     'spreadsheet/formula/evaluate/disabled': 'Function evaluate is disabled',
