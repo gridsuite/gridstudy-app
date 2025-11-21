@@ -95,14 +95,24 @@ function useStudy(studyUuidRequest) {
                     });
             })
             .catch((error) => {
-                // Handle errors when fetching study existence
-                if (error.status === HttpStatusCode.NOT_FOUND) {
-                    setErrMessage(
-                        intlRef.current.formatMessage({ id: 'studyNotFound' }, { studyUuid: studyUuidRequest })
-                    );
-                } else {
-                    setErrMessage(error.message);
+                let message = '';
+                switch (error.status) {
+                    case HttpStatusCode.NOT_FOUND:
+                        message = intlRef.current.formatMessage(
+                            { id: 'studyNotFound' },
+                            { studyUuid: studyUuidRequest }
+                        );
+                        break;
+                    case HttpStatusCode.NOT_ALLOWED:
+                        message = intlRef.current.formatMessage(
+                            { id: 'noWritePermissionOnStudy' },
+                            { studyUuid: studyUuidRequest }
+                        );
+                        break;
+                    default:
+                        message = error.message;
                 }
+                setErrMessage(message);
             })
             .finally(() => setPending(false));
     }, [studyUuidRequest, dispatch, intlRef]);
