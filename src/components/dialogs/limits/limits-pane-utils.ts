@@ -95,7 +95,7 @@ const currentLimitsValidationSchema = () => ({
 });
 
 interface OperationalLimitsGroupFormSchemaWithPath extends OperationalLimitsGroupFormSchema {
-    path: string;
+    rhfPath: string;
 }
 
 function hasDuplicate(field: boolean | null | undefined, context: TestContext) {
@@ -108,7 +108,7 @@ function hasDuplicateOperationalLimitsGroups(context: TestContext) {
         context.from?.[1]?.value?.[OPERATIONAL_LIMITS_GROUPS];
     const operationalLimitsGroupsWithPath: OperationalLimitsGroupFormSchemaWithPath[] = operationalLimitsGroups.map(
         (item, index) => {
-            return { ...item, path: `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}[${index}]` };
+            return { ...item, rhfPath: `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}[${index}]` };
         }
     );
 

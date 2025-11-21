@@ -20,7 +20,8 @@ import { tabStyles } from 'components/utils/tab-utils';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
 import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
 import { CurrentLimitsData } from 'services/study/network-map.type';
-import { generateEmptyOperationalLimitsGroup, generateUniqueId, limitsStyles } from './operational-limits-groups-utils';
+import { generateEmptyOperationalLimitsGroup, generateUniqueId } from './operational-limits-groups-utils';
+import { limitsStyles } from './operational-limits-groups-styles';
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;

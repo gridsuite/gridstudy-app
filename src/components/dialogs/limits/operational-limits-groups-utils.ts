@@ -19,7 +19,6 @@ import {
 } from 'components/utils/field-constants';
 import { APPLICABILITY } from 'components/network/constants';
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
-import type { MuiStyles } from '@gridsuite/commons-ui';
 
 function generateEmptyTemporaryLimitArray(): TemporaryLimitFormSchema[] {
     return [
@@ -43,26 +42,6 @@ export function generateEmptyOperationalLimitsGroup(name: string): OperationalLi
         },
     };
 }
-
-export const limitsStyles = {
-    limitsBackground: {
-        p: 1,
-        minHeight: 60,
-    },
-    copyLimitsToRightBackground: {
-        height: 200,
-        display: 'flex',
-    },
-    copyLimitsToLeftBackground: {
-        height: '50%',
-    },
-    copyLimitsButtons: {
-        alignSelf: 'flex-end',
-        minWidth: '0px',
-        height: 'auto',
-        padding: '1',
-    },
-} as const satisfies MuiStyles;
 
 export function generateUniqueId(baseName: string, names: string[]): string {
     let finalId = baseName;
