@@ -282,7 +282,7 @@ export function CreateVoltageLevelSectionForm({
             disabled={!busbarIndex || isNotRequiredSwitchAfter || isNotFoundOrNotSupported}
         />
     );
-    const newSwitchState = (
+    const switchValue = (
         <SwitchInput name={NEW_SWITCH_STATES} label={isNewSwitchOpen ? 'areSwitchesClosed' : 'areSwitchesOpen'} />
     );
     const getLabelDescription = useCallback(() => {
@@ -378,7 +378,7 @@ export function CreateVoltageLevelSectionForm({
                     {switchAfterField}
                 </Grid>
                 <Grid item xs={12}>
-                    {newSwitchState}
+                    {switchValue}
                 </Grid>
             </Grid>
             <PositionDiagramPane
