@@ -22,12 +22,12 @@ import {
 } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer } from '../../../custom-aggrid/cell-renderers';
-import { parse } from 'mathjs';
+import { isAccessorNode, isSymbolNode, parse } from 'mathjs';
 
 function isSingleSymbol(formula: string): boolean {
     try {
         const node = parse(formula);
-        return !node.hasOwnProperty('args');
+        return isSymbolNode(node) || isAccessorNode(node);
     } catch (error) {
         return false;
     }
