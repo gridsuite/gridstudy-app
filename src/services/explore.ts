@@ -9,6 +9,7 @@ import { ContingencyList } from './study/contingency-list';
 import type { UUID } from 'node:crypto';
 import { backendFetch, ElementType } from '@gridsuite/commons-ui';
 import { SpreadsheetCollection, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
+import { HttpStatusCode } from '../utils/http-status-code';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
 const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
@@ -260,4 +261,15 @@ export function updateDiagramConfig(id: UUID, diagramConfig: DiagramConfig, name
         body: JSON.stringify(diagramConfig),
         headers: { 'Content-Type': 'application/json' },
     });
+}
+
+export function hasPermission(elementUuid: UUID, permission: string) {
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${elementUuid}?permission=${permission}`;
+    console.debug(url);
+    return backendFetch(url, { method: 'head' })
+        .then((response) => response.status === HttpStatusCode.OK)
+        .catch(() => {
+            console.info(`Permission to ${permission} in directory ${elementUuid} denied`);
+            return false;
+        });
 }
