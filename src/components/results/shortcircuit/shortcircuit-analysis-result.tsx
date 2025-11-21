@@ -25,7 +25,7 @@ import {
     PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType, snackWithFallback } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
@@ -149,12 +149,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                     setCount(totalElements);
                 }
             })
-            .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ShortCircuitAnalysisResultsError',
-                })
-            )
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'ShortCircuitAnalysisResultsError' }))
             .finally(() => {
                 if (active) {
                     setIsFetching(false);
@@ -219,12 +214,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                     });
                 }
             })
-            .catch((err) =>
-                snackError({
-                    messageTxt: err.message,
-                    headerId: 'ShortCircuitAnalysisResultsError',
-                })
-            );
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'ShortCircuitAnalysisResultsError' }));
     }, [
         analysisStatus,
         intl,

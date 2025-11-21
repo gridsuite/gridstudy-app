@@ -27,7 +27,7 @@ import {
 import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
@@ -204,10 +204,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                 columnPosition: index,
             }));
             updateNodesColumnPositions(studyUuid, parentNodeId, children).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'NodeUpdateColumnPositions',
-                });
+                snackWithFallback(snackError, error, { headerId: 'NodeUpdateColumnPositions' });
             });
         },
         [studyUuid, treeModel, snackError]

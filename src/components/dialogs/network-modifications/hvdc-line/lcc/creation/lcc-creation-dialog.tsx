@@ -31,7 +31,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from '../common/lcc-type';
 import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
-import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ExtendedEquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import { useCallback, useEffect, useState } from 'react';
@@ -179,10 +179,7 @@ export function LccCreationDialog({
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LccCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LccCreationError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError]

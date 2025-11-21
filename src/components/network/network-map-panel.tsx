@@ -39,6 +39,7 @@ import {
     HvdcType,
     type MuiStyles,
     NotificationsUrlKeys,
+    snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
     type UseStateBooleanReturn,
@@ -281,10 +282,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                 } else {
                     deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch(
                         (error) => {
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'UnableToDeleteEquipment',
-                            });
+                            snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
                         }
                     );
                 }
@@ -517,10 +515,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         if (!checkNodeConsistency(nodeBeforeFetch)) {
                             return;
                         }
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'geoDataLoadingFail',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'geoDataLoadingFail' });
                     });
             } else {
                 return Promise.resolve(true);
@@ -581,11 +576,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                     setIsRootNodeGeoDataLoaded(true);
                 })
                 .catch(function (error) {
-                    console.error(error.message);
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'geoDataLoadingFail',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'geoDataLoadingFail' });
                 })
                 .finally(() => {
                     if (currentNodeRef.current?.id === rootNodeId) {
@@ -731,10 +722,8 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                 dispatch(setReloadMapNeeded(false));
                 resetImpactedElementTypes();
                 resetImpactedSubstationsIds();
-                return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend).catch((e) =>
-                    snackError({
-                        messageTxt: e.message,
-                    })
+                return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend).catch((error) =>
+                    snackWithFallback(snackError, error)
                 );
             },
             [

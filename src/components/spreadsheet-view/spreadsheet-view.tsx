@@ -21,7 +21,7 @@ import { Spreadsheet } from './spreadsheet/spreadsheet';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
-import { type MuiStyles, PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, PopupConfirmationDialog, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 
@@ -110,8 +110,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ curre
                 getStudySpreadsheetConfigCollection();
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error,
+                snackWithFallback(snackError, error, {
                     headerId: 'spreadsheet/reset_spreadsheet_collection/error_resetting_collection',
                 });
             });

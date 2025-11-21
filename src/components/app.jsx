@@ -23,6 +23,7 @@ import {
     useNotificationsListener,
     useSnackMessage,
     getComputedLanguage,
+    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -154,12 +155,7 @@ const App = () => {
                     .then((param) => {
                         updateParams([param]);
                     })
-                    .catch((error) =>
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        })
-                    );
+                    .catch((error) => snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' }));
             }
         },
         [snackError, updateParams]
@@ -211,9 +207,7 @@ const App = () => {
                     dispatch(saveSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
                 })
                 .catch((error) => {
-                    console.error(error);
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
                     });
                 });
@@ -229,8 +223,7 @@ const App = () => {
                     resetTableDefinitions(collection);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_collection',
                     });
                 });
@@ -328,10 +321,7 @@ const App = () => {
                     dispatch(setOptionalServices(retrieveOptionalServices(services)));
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'optionalServicesRetrievingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'optionalServicesRetrievingError' });
                 });
 
             // Dispatch globally when all params are loaded to allow easy waiting.
@@ -348,12 +338,7 @@ const App = () => {
                 .then(() => {
                     dispatch(setParamsLoaded());
                 })
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    })
-                );
+                .catch((error) => snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' }));
         }
     }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams, resetTableDefinitions]);
 

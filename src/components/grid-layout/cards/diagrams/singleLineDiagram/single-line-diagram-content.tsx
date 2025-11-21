@@ -29,7 +29,7 @@ import {
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
 import { useTheme } from '@mui/material/styles';
-import { ComputingType, EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType, mergeSx, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import EquipmentPopover from '../../../../tooltips/equipment-popover';
@@ -153,10 +153,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                         diagramParams.type === DiagramType.VOLTAGE_LEVEL
                             ? diagramParams.voltageLevelId
                             : (diagramParams as SubstationDiagramParams).substationId;
-                    snackError({
+                    snackWithFallback(snackError, error, {
                         headerId: 'updateSwitchStateError',
                         headerValues: { diagramTitle: diagramId },
-                        messageTxt: error.message,
                     });
                     setLocallySwitchedBreaker(undefined);
                     // revert the DOM visual state of the breaker
@@ -226,10 +225,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     debug && subscribeDebug(ComputingType.SHORT_CIRCUIT_ONE_BUS);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'startShortCircuitError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'startShortCircuitError' });
                     dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
                     resetOneBusShortcircuitAnalysisLoader();
                 })

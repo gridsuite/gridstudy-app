@@ -11,7 +11,7 @@ import type { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
 import { type AppState } from '../../../redux/reducer';
 import { loadEquipments, setSpreadsheetFetching } from '../../../redux/actions';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from '../../../services/study/network';
 import { mapSpreadsheetEquipments } from '../../../utils/spreadsheet-equipments-mapper';
 import { EQUIPMENT_INFOS_TYPES } from '../../utils/equipment-types';
@@ -58,12 +58,8 @@ export function useFetchEquipment() {
                             `Equipment data fetching and dispatch done for ${fetcherPromises.length} built nodes among ${nodesIds.size}`
                         );
                     })
-                    .catch((err) => {
-                        console.debug('Equipment data fetching and dispatch NOT done');
-                        snackError({
-                            messageTxt: err.message,
-                            headerId: 'SpreadsheetFetchError',
-                        });
+                    .catch((error) => {
+                        snackWithFallback(snackError, error, { headerId: 'SpreadsheetFetchError' });
                     })
                     .finally(() => {
                         dispatch(setSpreadsheetFetching(type, false));

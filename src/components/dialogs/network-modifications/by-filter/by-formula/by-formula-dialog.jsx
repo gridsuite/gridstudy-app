@@ -12,6 +12,7 @@ import {
     convertOutputValue,
     CustomFormProvider,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
@@ -173,10 +174,7 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
                 !!editData,
                 editData?.uuid ?? null
             ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ModifyByFormula',
-                });
+                snackWithFallback(snackError, error, { headerId: 'ModifyByFormula' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]
