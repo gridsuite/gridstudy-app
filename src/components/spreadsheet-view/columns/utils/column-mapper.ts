@@ -24,7 +24,7 @@ import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer } from '../../../custom-aggrid/cell-renderers';
 import { isAccessorNode, isSymbolNode, parse } from 'mathjs';
 
-function isSingleSymbol(formula: string): boolean {
+function isSingleSymbol(formula: string) {
     try {
         const node = parse(formula);
         return isSymbolNode(node) || isAccessorNode(node);
@@ -54,8 +54,7 @@ const createValueGetter =
                 if (e instanceof MathJsValidationError) {
                     return { error: e.error };
                 }
-                // If we encounter a signle undefined symbol it won't display an error but if we make operations on an undefined symbol it will
-                // It's setup this way to prevent interpreting missing data as errors
+                // If we encounter a single undefined symbol it won't display an error, it's setup this way to prevent interpreting missing data as errors
                 if (!isSingleSymbol(colDef.formula)) {
                     return { error: 'spreadsheet/formula/error/generic' };
                 }
