@@ -19,9 +19,11 @@ import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import {
     convertFilterValues,
+    countryAdequaciesColumnsDefinition,
+    exchangesColumnsDefinition,
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
     loadFlowCurrentViolationsColumnsDefinition,
-    loadFlowResultColumnsDefinition,
+    componentColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
     makeData,
     mappingFields,
@@ -207,20 +209,30 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     tabIndex,
                     SubjectIdRenderer
                 );
-            case 2:
-                return loadFlowResultColumnsDefinition(
-                    intl,
-                    filterEnums,
-                    getEnumLabel,
-                    tabIndex,
-                    StatusCellRender,
-                    NumberCellRenderer
-                );
 
             default:
                 return [];
         }
     }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer]);
+
+    const componentColumns = useMemo(() => {
+        return componentColumnsDefinition(
+            intl,
+            filterEnums,
+            getEnumLabel,
+            tabIndex,
+            StatusCellRender,
+            NumberCellRenderer
+        );
+    }, [tabIndex, intl, filterEnums, getEnumLabel]);
+
+    const countryAdequaciesColumns = useMemo(() => {
+        return countryAdequaciesColumnsDefinition(intl, tabIndex, NumberCellRenderer);
+    }, [tabIndex, intl]);
+
+    const exchangesColumns = useMemo(() => {
+        return exchangesColumnsDefinition(intl, tabIndex, NumberCellRenderer);
+    }, [tabIndex, intl]);
 
     const resetResultStates = useCallback(() => {
         setResult(null);
@@ -262,7 +274,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 <Tabs value={tabIndex} onChange={handleTabChange} sx={styles.flexElement}>
                     <Tab label={<FormattedMessage id={'LoadFlowResultsCurrentViolations'} />} />
                     <Tab label={<FormattedMessage id={'LoadFlowResultsVoltageViolations'} />} />
-                    <Tab label={<FormattedMessage id={'LoadFlowResultsStatus'} />} />
+                    <Tab label={<FormattedMessage id={'LoadFlowResultsSummary'} />} />
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
@@ -304,9 +316,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 <LoadFlowResult
                     result={result}
                     isLoadingResult={isLoadingResult || filterEnumsLoading}
-                    columnDefs={loadFlowLimitViolationsColumns}
+                    componentColumnDefs={componentColumns}
+                    countryAdequaciesColumnDefs={countryAdequaciesColumns}
+                    exchangesColumnDefs={exchangesColumns}
                     tableName={intl.formatMessage({
-                        id: 'LoadFlowResultsStatus',
+                        id: 'LoadFlowResultsSummary',
                     })}
                 />
             )}
