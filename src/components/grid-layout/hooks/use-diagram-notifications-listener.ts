@@ -8,7 +8,11 @@ import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
-import { isLoadflowResultNotification, isStudyNotification } from 'types/notification-types';
+import {
+    isLoadflowResultNotification,
+    isShortCircuitResultNotification,
+    isStudyNotification,
+} from 'types/notification-types';
 
 type UseDiagramNotificationsListenerProps = {
     updateAllDiagrams: () => void;
@@ -20,7 +24,11 @@ export const useDiagramNotificationsListener = ({ updateAllDiagrams }: UseDiagra
     const updateDiagramsCallback = useCallback(
         (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
-            if (isLoadflowResultNotification(eventData) || isStudyNotification(eventData)) {
+            if (
+                isLoadflowResultNotification(eventData) ||
+                isShortCircuitResultNotification(eventData) ||
+                isStudyNotification(eventData)
+            ) {
                 // check consistency of the event
                 if (eventData.headers.rootNetworkUuid !== currentRootNetworkUuid) {
                     return;

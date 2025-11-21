@@ -922,6 +922,13 @@ export function isNodeBuildStatusUpdatedNotification(notif: unknown): notif is N
     );
 }
 
+export function isShortCircuitResultNotification(notif: unknown): notif is ShortCircuitAnalysisResultEventData {
+    return (
+        (notif as ShortCircuitAnalysisResultEventData).headers?.updateType ===
+        NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT
+    );
+}
+
 export function isOneBusShortCircuitResultNotification(
     notif: unknown
 ): notif is OneBusShortCircuitAnalysisResultEventData {
