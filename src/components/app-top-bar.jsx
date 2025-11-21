@@ -91,15 +91,15 @@ const AppTopBar = ({ user, userManager }) => {
             equipmentLabelling={useNameLocal}
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
-            density="compact"
+            dense
         >
             {user && studyUuid && currentRootNetworkUuid && (
                 <Box sx={styles.boxContent}>
                     <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1.5, marginRight: 'auto' }}>
-                        <WorkspaceSwitcher />
+                        <WorkspaceToolbar />
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1.5, marginLeft: 'auto' }}>
-                        <WorkspaceToolbar />
+                        <WorkspaceSwitcher />
                     </Box>
                     <Box sx={styles.runButtonContainer}>
                         <RunButtonContainer

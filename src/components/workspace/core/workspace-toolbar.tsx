@@ -114,38 +114,6 @@ export const WorkspaceToolbar = () => {
 
     return (
         <Box sx={styles.container}>
-            <ToggleButtonGroup size="small" sx={{ marginRight: 0.5 }}>
-                <Tooltip title={<FormattedMessage id="importFromGridExplore" />}>
-                    <ToggleButton
-                        value="upload"
-                        selected={true}
-                        onClick={() => setIsLoadSelectorOpen(true)}
-                        sx={styles.actionButton}
-                    >
-                        <Upload fontSize="small" />
-                    </ToggleButton>
-                </Tooltip>
-                <Tooltip title={<FormattedMessage id="equipment_search/label" />}>
-                    <ToggleButton
-                        value="search"
-                        selected={true}
-                        onClick={() => setIsDialogSearchOpen(true)}
-                        sx={styles.actionButton}
-                    >
-                        <Search fontSize="small" />
-                    </ToggleButton>
-                </Tooltip>
-                <Tooltip title={<FormattedMessage id="OpenMapCard" />}>
-                    <ToggleButton
-                        value="map"
-                        selected={isMapOpen}
-                        onClick={() => dispatch(toggleWindow(WindowType.MAP))}
-                        sx={styles.toggleButton}
-                    >
-                        <Public fontSize="small" />
-                    </ToggleButton>
-                </Tooltip>
-            </ToggleButtonGroup>
             <ToggleButtonGroup size="small">
                 <Tooltip title={<FormattedMessage id="Tree" />}>
                     <ToggleButton
@@ -217,6 +185,38 @@ export const WorkspaceToolbar = () => {
                         sx={styles.toggleButton}
                     >
                         <Settings fontSize="small" />
+                    </ToggleButton>
+                </Tooltip>
+            </ToggleButtonGroup>
+            <ToggleButtonGroup size="small" sx={{ marginRight: 0.5 }}>
+                <Tooltip title={<FormattedMessage id="importFromGridExplore" />}>
+                    <ToggleButton
+                        value="upload"
+                        selected={true}
+                        onClick={() => setIsLoadSelectorOpen(true)}
+                        sx={styles.actionButton}
+                    >
+                        <Upload fontSize="small" />
+                    </ToggleButton>
+                </Tooltip>
+                <Tooltip title={<FormattedMessage id="equipment_search/label" />}>
+                    <ToggleButton
+                        value="search"
+                        selected={true}
+                        onClick={() => setIsDialogSearchOpen(true)}
+                        sx={styles.actionButton}
+                    >
+                        <Search fontSize="small" />
+                    </ToggleButton>
+                </Tooltip>
+                <Tooltip title={<FormattedMessage id="OpenMapCard" />}>
+                    <ToggleButton
+                        value="map"
+                        selected={isMapOpen}
+                        onClick={() => dispatch(toggleWindow(WindowType.MAP))}
+                        sx={styles.toggleButton}
+                    >
+                        <Public fontSize="small" />
                     </ToggleButton>
                 </Tooltip>
             </ToggleButtonGroup>
