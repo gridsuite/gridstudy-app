@@ -1532,6 +1532,8 @@
     "previousStatus": "État précédent",
     "currentStatus": "État modifié",
     "Open": "Ouvert",
+    "areSwitchesOpen": "Ouverts",
+    "areSwitchesClosed": "Fermés",
     "Closed": "Fermé",
     "GridLayoutPanel": "Grille des images",
     "GridLayoutPanelAndTree": "Grille des images et arbre décisionnel",
