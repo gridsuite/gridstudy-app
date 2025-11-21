@@ -358,7 +358,6 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
                             label: 'CreateVoltageLevelTopology',
-                            hide: !enableDeveloperMode,
                             action: () => withDefaultParams(CreateVoltageLevelTopologyDialog),
                         },
                         {
