@@ -27,6 +27,7 @@ import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
+    hasElementPermission,
     NotificationsUrlKeys,
     snackWithFallback,
     useIntlRef,
@@ -53,7 +54,6 @@ import {
 } from 'types/notification-types';
 import { useDiagramGridLayout } from 'hooks/use-diagram-grid-layout';
 import useExportNotification from '../hooks/use-export-notification.js';
-import { hasPermission } from '../services/explore.ts';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -63,7 +63,7 @@ function useStudy(studyUuidRequest) {
     const intlRef = useIntlRef();
 
     useEffect(() => {
-        hasPermission(studyUuidRequest, 'WRITE')
+        hasElementPermission(studyUuidRequest, 'WRITE')
             .then((hasWritePermission) => {
                 if (hasWritePermission === false) {
                     setErrMessage(
