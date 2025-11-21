@@ -63,6 +63,7 @@ import { useParametersNotification } from './dialogs/parameters/use-parameters-n
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
 import {
     getShortCircuitParameters,
+    getShortCircuitProvider,
     getShortCircuitSpecificParametersDescription,
     setShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
@@ -192,7 +193,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         ComputingType.SHORT_CIRCUIT,
         OptionalServicesStatus.Up,
         null,
-        null,
+        getShortCircuitProvider,
         null,
         null,
         getShortCircuitParameters,

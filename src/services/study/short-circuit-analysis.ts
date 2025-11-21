@@ -247,3 +247,10 @@ export function getShortCircuitSpecificParametersDescription() {
     console.debug(getShortCircuitSpecificParametersUrl);
     return backendFetchJson(getShortCircuitSpecificParametersUrl);
 }
+
+export function getShortCircuitProvider(parameterUuid: string): Promise<string> {
+    console.info('get short circuit analysis parameters provider');
+    const url = `${getShortCircuitUrl()}parameters/${encodeURIComponent(parameterUuid)}/provider`;
+    console.debug(url);
+    return backendFetchText(url);
+}
