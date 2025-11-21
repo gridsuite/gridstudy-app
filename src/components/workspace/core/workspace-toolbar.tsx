@@ -98,7 +98,12 @@ export const WorkspaceToolbar = () => {
 
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements.length > 0 && selectedElements[0].type) {
-            dispatch(openNAD(selectedElements[0].name, { nadConfigUuid: selectedElements[0].id }));
+            const element = selectedElements[0];
+            if (element.type === ElementType.DIAGRAM_CONFIG) {
+                dispatch(openNAD(element.name, { nadConfigUuid: element.id }));
+            } else if (element.type === ElementType.FILTER) {
+                dispatch(openNAD(element.name, { filterUuid: element.id }));
+            }
         }
         setIsLoadSelectorOpen(false);
     };
@@ -223,7 +228,7 @@ export const WorkspaceToolbar = () => {
             <DirectoryItemSelector
                 open={isLoadSelectorOpen}
                 onClose={selectElement}
-                types={[ElementType.DIAGRAM_CONFIG]}
+                types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
                 equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
                 title={intl.formatMessage({
                     id: 'elementSelection',
