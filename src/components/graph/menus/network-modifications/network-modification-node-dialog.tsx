@@ -10,6 +10,7 @@ import {
     DescriptionField,
     isObjectEmpty,
     MAX_CHAR_DESCRIPTION,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
@@ -90,10 +91,7 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
                 name: values[NAME],
                 description: values[DESCRIPTION],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'NodeUpdateError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'NodeUpdateError' });
             });
         },
         [currentTreeNode?.id, currentTreeNode?.type, snackError, studyUuid]

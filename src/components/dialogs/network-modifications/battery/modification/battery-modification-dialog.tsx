@@ -6,7 +6,13 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -318,10 +324,7 @@ export default function BatteryModificationDialog({
                 modificationUuid: editData?.uuid ?? null,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'BatteryModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'BatteryModificationError' });
             });
         },
         [selectedId, studyUuid, currentNodeUuid, editData, snackError]

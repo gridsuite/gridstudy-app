@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -19,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import RunningStatus from './utils/running-status';
 
 import { PARAM_DEVELOPER_MODE, PARAM_PROVIDER_DYNAFLOW, PARAM_PROVIDER_DYNAWO } from '../utils/config-params';
-import { ComputingType, formatComputingTypeLabel, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, formatComputingTypeLabel, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import { DynamicSimulationParametersSelector } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 import { ContingencyListSelector } from './dialogs/contingency-list-selector';
@@ -67,7 +66,6 @@ const COMPUTATIONS_WITH_PAGINATION = [
 ];
 
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
-    const intl = useIntl();
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const loadFlowStatusInfos = useSelector((state) => state.computingStatusParameters[ComputingType.LOAD_FLOW]);
 
@@ -181,10 +179,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                         fnCatch(error);
                     }
                     if (errorHeaderId) {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: errorHeaderId,
-                        });
+                        snackWithFallback(snackError, error, { headerId: errorHeaderId });
                     }
                 })
                 .finally(() => {
@@ -205,15 +200,9 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             return providerFetcher(studyUuid).then((provider) => {
                 if (forbiddenProvidersOnConstructionNode.includes(provider)) {
                     snackError({
-                        headerTxt: intl.formatMessage({
-                            id: formatComputingTypeLabel(computingType),
-                        }),
-                        messageTxt: intl.formatMessage(
-                            {
-                                id: 'ForbiddenProviderError',
-                            },
-                            { provider: provider }
-                        ),
+                        headerId: formatComputingTypeLabel(computingType),
+                        messageId: 'ForbiddenProviderError',
+                        messageValues: { provider },
                     });
                     return false;
                 } else {
@@ -221,7 +210,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 }
             });
         },
-        [currentNode, intl, snackError]
+        [currentNode, snackError]
     );
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
@@ -404,10 +393,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                             'DynamicSimulationRunError'
                         );
                     } catch (error) {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'DynamicSimulationRunError',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'DynamicSimulationRunError' });
                     }
                 },
                 actionOnRunnable() {
@@ -441,10 +427,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                             'startDynamicSecurityAnalysisError'
                         );
                     } catch (error) {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'startDynamicSecurityAnalysisError',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'startDynamicSecurityAnalysisError' });
                     }
                 },
                 actionOnRunnable() {

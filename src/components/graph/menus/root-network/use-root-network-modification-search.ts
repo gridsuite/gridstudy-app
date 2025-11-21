@@ -10,7 +10,7 @@ import { getModifications } from '../../../../services/root-network';
 import type { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
+import { useSnackMessage, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
 import { setHighlightModification } from 'redux/actions';
 
 function reOrderSearchResults(
@@ -58,7 +58,7 @@ export const useRootNetworkModificationSearch = () => {
             if (studyUuid && currentRootNetworkUuid) {
                 getModifications(studyUuid, currentRootNetworkUuid, searchTerm)
                     .then(setModificationsResults)
-                    .catch((errmsg) => snackError({ messageTxt: errmsg, headerId: 'equipmentsSearchingError' }))
+                    .catch((error) => snackWithFallback(snackError, error, { headerId: 'equipmentsSearchingError' }))
                     .finally(() => setIsLoading(false));
             }
         },

@@ -10,6 +10,7 @@ import {
     EquipmentType,
     Identifiable,
     MODIFICATION_TYPES,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -322,10 +323,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
             modificationUuid: editData?.uuid,
             isUpdate: !!editData,
         }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'MoveVoltageLevelFeederBaysError',
-            });
+            snackWithFallback(snackError, error, { headerId: 'MoveVoltageLevelFeederBaysError' });
         });
     }, [currentNodeUuid, editData, getValues, selectedId, snackError, studyUuid]);
 
