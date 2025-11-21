@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Chip, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
+import { Box, Button, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
 import {
     getResultsGlobalFiltersChipStyle,
     GLOBAL_FILTERS_CELL_HEIGHT,
@@ -28,8 +28,8 @@ import {
     ElementType,
     fetchElementsInfos,
     mergeSx,
-    TreeViewFinderNodeProps,
     OverflowableChip,
+    TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
 
