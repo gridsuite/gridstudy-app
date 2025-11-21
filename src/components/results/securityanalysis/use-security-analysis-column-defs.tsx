@@ -23,8 +23,9 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { useDiagramHandlers } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { openSLD } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
 import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
+import { useDispatch } from 'react-redux';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -46,7 +47,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-    const { openDiagram } = useDiagramHandlers();
+    const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -103,13 +104,14 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                                     },
                                 });
                             } else {
-                                openDiagram(vlId, DiagramType.VOLTAGE_LEVEL);
+                                dispatch(openSLD(vlId, DiagramType.VOLTAGE_LEVEL));
                             }
                         });
                 }
             }
         },
-        [nodeUuid, currentRootNetworkUuid, openDiagram, snackError, studyUuid, intl]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [nodeUuid, currentRootNetworkUuid, snackError, studyUuid, intl]
     );
 
     // for nmk views, custom view for subjectId cell

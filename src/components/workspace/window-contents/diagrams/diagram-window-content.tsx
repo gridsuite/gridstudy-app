@@ -13,7 +13,7 @@ import { SldWindowContent } from './sld/sld-window-content';
 
 interface DiagramWindowContentProps {
     diagramData: DiagramWindowData;
-    windowId: string;
+    windowId: UUID;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;

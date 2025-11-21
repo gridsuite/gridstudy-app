@@ -8,6 +8,7 @@
 import { Box } from '@mui/material';
 import { ReactFlowProvider } from '@xyflow/react';
 import { memo } from 'react';
+import { useSelector } from 'react-redux';
 import NetworkModificationTreePane from '../../network-modification-tree-pane';
 import { SpreadsheetView } from '../../spreadsheet-view/spreadsheet-view';
 import { ReportViewerTab } from '../../report-viewer-tab.jsx';
@@ -15,34 +16,29 @@ import { ResultViewTab } from '../../result-view-tab';
 import ParametersTabs from '../../parameters-tabs';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { WindowType, type DiagramWindowData } from '../types/workspace.types';
-import type { CurrentTreeNode } from '../../graph/tree-node.type';
 import type { UUID } from 'node:crypto';
 import { DiagramWindowContent } from './diagrams/diagram-window-content';
 import { MapWindowContent } from './map-window-content';
 import NodeEditor from 'components/graph/menus/network-modifications/node-editor';
-
-export interface WindowContentDependencies {
-    studyUuid: string | null;
-    currentRootNetworkUuid: string | null;
-    currentNode: CurrentTreeNode | null;
-}
+import EventModificationScenarioEditor from 'components/graph/menus/dynamic-simulation/event-modification-scenario-editor';
+import type { AppState } from '../../../redux/reducer';
 
 export const WindowContentFactory = memo(
     ({
         windowType,
         windowData,
         windowId,
-        dependencies,
     }: {
         windowType: WindowType;
         windowData: unknown;
-        windowId: string;
-        dependencies: WindowContentDependencies;
+        windowId: UUID;
     }): React.ReactNode => {
-        const { studyUuid, currentRootNetworkUuid, currentNode } = dependencies;
+        const studyUuid = useSelector((state: AppState) => state.studyUuid);
+        const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+        const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
         if (!studyUuid || !currentRootNetworkUuid || !currentNode) {
-            return <Box>Invalid window dependencies</Box>;
+            return null;
         }
 
         switch (windowType) {
@@ -105,6 +101,9 @@ export const WindowContentFactory = memo(
 
             case WindowType.NODE_EDITOR:
                 return <NodeEditor />;
+
+            case WindowType.EVENT_SCENARIO:
+                return <EventModificationScenarioEditor />;
 
             default:
                 return null;

@@ -6,38 +6,41 @@
  */
 
 import { useCallback } from 'react';
-import { DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
+import { useDispatch } from 'react-redux';
+import { showInSpreadsheet, openDiagram } from '../../../../../redux/slices/workspace-slice';
 import type {
     VoltageLevelDiagramParams,
     SubstationDiagramParams,
 } from '../../../../grid-layout/cards/diagrams/diagram.type';
+import { DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { useDiagramHandlers } from './use-diagram-handlers';
 
-export const useDiagramCommon = () => {
-    const { showInSpreadsheet: storeShowInSpreadsheet, openDiagram: storeOpenDiagram } = useDiagramHandlers();
+export const useDiagramNavigation = () => {
+    const dispatch = useDispatch();
 
-    const showInSpreadsheet = useCallback(
+    const handleShowInSpreadsheet = useCallback(
         (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => {
             if (equipment.equipmentId && equipment.equipmentType) {
-                storeShowInSpreadsheet(equipment.equipmentId, equipment.equipmentType);
+                dispatch(
+                    showInSpreadsheet({ equipmentId: equipment.equipmentId, equipmentType: equipment.equipmentType })
+                );
             }
         },
-        [storeShowInSpreadsheet]
+        [dispatch]
     );
 
-    const openDiagram = useCallback(
+    const handleOpenDiagram = useCallback(
         (params: VoltageLevelDiagramParams | SubstationDiagramParams) => {
             const id = params.type === DiagramType.VOLTAGE_LEVEL ? params.voltageLevelId : params.substationId;
             if (id) {
-                storeOpenDiagram(id, params.type);
+                dispatch(openDiagram({ id, diagramType: params.type }));
             }
         },
-        [storeOpenDiagram]
+        [dispatch]
     );
 
     return {
-        showInSpreadsheet,
-        openDiagram,
+        handleShowInSpreadsheet,
+        handleOpenDiagram,
     };
 };

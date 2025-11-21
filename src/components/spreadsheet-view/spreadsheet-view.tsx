@@ -21,7 +21,6 @@ import { Spreadsheet } from './spreadsheet/spreadsheet';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
-import { useDiagramHandlers } from '../workspace/window-contents/diagrams/common/use-diagram-handlers';
 import { type MuiStyles, PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';

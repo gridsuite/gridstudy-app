@@ -22,6 +22,7 @@ import {
     setRootNetworks,
     studyUpdated,
 } from '../redux/actions';
+import { initializeWorkspaces, loadWorkspacesFromStorage } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
@@ -489,7 +490,11 @@ export function StudyContainer() {
             websocketExpectedCloseRef.current = false;
             dispatch(openStudy(studyUuid));
 
-            // study cleanup at unmount event
+            const savedWorkspaces = loadWorkspacesFromStorage(studyUuid);
+            if (savedWorkspaces) {
+                dispatch(initializeWorkspaces(savedWorkspaces));
+            }
+
             return function () {
                 websocketExpectedCloseRef.current = true;
                 dispatch(closeStudy());

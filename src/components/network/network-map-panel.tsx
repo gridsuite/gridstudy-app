@@ -45,7 +45,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
-import { useDiagramHandlers } from '../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { openSLD, showInSpreadsheet } from '../workspace/window-contents/diagrams/common/use-diagram-handlers';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -150,8 +150,6 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
         ref
     ) => {
         const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
-
-        const { showInSpreadsheet: storeShowInSpreadsheet } = useDiagramHandlers();
 
         const mapEquipments = useSelector((state: AppState) => state.mapEquipments);
         const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
@@ -309,7 +307,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             studyUuid,
             disabled,
             onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => {
-                storeShowInSpreadsheet(equipmentId, equipmentType);
+                dispatch(showInSpreadsheet({ equipmentId, equipmentType }));
             },
             onDeleteEquipment: handleDeleteEquipment,
             onOpenModificationDialog: handleOpenModificationDialog,
@@ -1043,13 +1041,11 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             [isInDrawingMode, leaveDrawingMode]
         );
 
-        const { openDiagram } = useDiagramHandlers();
-
         const openSLDInTheGrid = useCallback(
-            (equipmentId: string, diagramType: DiagramType) => {
-                openDiagram(equipmentId, diagramType);
+            (equipmentId: string, diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION) => {
+                dispatch(openSLD(equipmentId, diagramType));
             },
-            [openDiagram]
+            [dispatch]
         );
 
         const handleOpenVoltageLevel = useCallback(

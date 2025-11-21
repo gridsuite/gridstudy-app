@@ -14,8 +14,7 @@ import { centerOnSubstation } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
-import { DiagramType } from '../grid-layout/cards/diagrams/diagram.type';
-import { openDiagram as openDiagramAction } from '../../redux/slices/workspace-slice';
+import { openNAD } from '../workspace/window-contents/diagrams/common/use-diagram-handlers';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
@@ -64,7 +63,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
         (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.stopPropagation();
             onClose?.();
-            dispatch(openDiagramAction({ id: element.id, diagramType: DiagramType.NETWORK_AREA_DIAGRAM }));
+            dispatch(openNAD(element.id, { initialVoltageLevelIds: [element.id] }));
         },
         [dispatch, element.id, onClose]
     );

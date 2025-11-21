@@ -6,26 +6,24 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
-import { Diagram, DiagramType, DiagramParams } from '../../../../grid-layout/cards/diagrams/diagram.type';
+import { Diagram, DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg } from '../../../../../services/study';
 import {
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
 } from '../../../../../services/study/network';
-import { isNodeBuilt, isStatusBuilt } from '../../../../graph/util/model-functions';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../../utils/config-params';
 import { SLD_DISPLAY_MODE } from '../../../../network/constants';
 import type { DiagramWindowData } from '../../../types/workspace.types';
-import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
-import { isLoadflowResultNotification, isStudyNotification } from '../../../../../types/notification-types';
+import { useDiagramNotifications } from '../common/use-diagram-notifications';
+import { isNodeBuilt, isStatusBuilt } from '../../../../graph/util/model-functions';
 import { NodeType } from '../../../../graph/tree-node.type';
 
 interface UseSldDiagramProps {
     diagramData: DiagramWindowData;
-    diagramUuid: UUID;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
@@ -33,7 +31,6 @@ interface UseSldDiagramProps {
 
 export const useSldDiagram = ({
     diagramData,
-    diagramUuid,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
@@ -47,81 +44,76 @@ export const useSldDiagram = ({
         () =>
             ({
                 ...diagramData,
-                diagramUuid,
                 type: diagramData.diagramType as DiagramType,
-                name: diagramData.name || '',
                 svg: null,
             }) as Diagram
     );
-
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
 
-    // Fetch SLD diagram SVG
-    const fetchDiagram = useCallback(
-        async (diag: Diagram) => {
-            if (!currentNode || !isNodeBuilt(currentNode)) return;
+    const fetchDiagram = useCallback(async () => {
+        if (!currentNode || !isNodeBuilt(currentNode)) return;
 
-            let url: string | null = null;
-            if (diag.type === DiagramType.VOLTAGE_LEVEL && 'voltageLevelId' in diag) {
-                url = getVoltageLevelSingleLineDiagram({
-                    studyUuid,
-                    currentNodeUuid: currentNodeId,
-                    currentRootNetworkUuid,
-                    voltageLevelId: diag.voltageLevelId,
-                    useName: paramUseName,
-                    centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-                    diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                    componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
-                    sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
-                    language,
-                });
-            } else if (diag.type === DiagramType.SUBSTATION && 'substationId' in diag) {
-                url = getSubstationSingleLineDiagram({
-                    studyUuid,
-                    currentNodeUuid: currentNodeId,
-                    currentRootNetworkUuid,
-                    substationId: diag.substationId,
-                    useName: paramUseName,
-                    centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-                    diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                    substationLayout: networkVisuParams.singleLineDiagramParameters.substationLayout,
-                    componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
-                    language,
-                });
-            }
+        setLoading(true);
+        setGlobalError(undefined);
 
-            if (!url) return;
+        try {
+            setDiagram((currentDiagram) => {
+                let url: string | null = null;
+                if (currentDiagram.type === DiagramType.VOLTAGE_LEVEL && 'voltageLevelId' in currentDiagram) {
+                    url = getVoltageLevelSingleLineDiagram({
+                        studyUuid,
+                        currentNodeUuid: currentNodeId,
+                        currentRootNetworkUuid,
+                        voltageLevelId: currentDiagram.voltageLevelId,
+                        useName: paramUseName,
+                        centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
+                        diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                        componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                        sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
+                        language,
+                    });
+                } else if (currentDiagram.type === DiagramType.SUBSTATION && 'substationId' in currentDiagram) {
+                    url = getSubstationSingleLineDiagram({
+                        studyUuid,
+                        currentNodeUuid: currentNodeId,
+                        currentRootNetworkUuid,
+                        substationId: currentDiagram.substationId,
+                        useName: paramUseName,
+                        centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
+                        diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                        substationLayout: networkVisuParams.singleLineDiagramParameters.substationLayout,
+                        componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                        language,
+                    });
+                }
 
-            setLoading(true);
-            setGlobalError(undefined);
+                if (url) {
+                    fetchSvg(url, { method: 'GET' })
+                        .then((svgData) => {
+                            if (svgData) {
+                                setDiagram((prev) => ({ ...prev, svg: svgData }));
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching SLD diagram:', error);
+                        })
+                        .finally(() => {
+                            setLoading(false);
+                        });
+                } else {
+                    setLoading(false);
+                }
 
-            try {
-                const svgData = await fetchSvg(url, { method: 'GET' });
-                if (!svgData) return;
-
-                setDiagram((prev) => ({ ...prev, svg: svgData }));
-            } catch (error) {
-                console.error('Error fetching SLD diagram:', error);
-            } finally {
-                setLoading(false);
-            }
-        },
-        [currentNode, studyUuid, currentNodeId, currentRootNetworkUuid, paramUseName, networkVisuParams, language]
-    );
-
-    const updateDiagram = useCallback(
-        (diagramParams: DiagramParams, fetch: boolean = true) => {
-            setDiagram((prev) => {
-                const updated: Diagram = { ...prev, ...diagramParams };
-                if (fetch) fetchDiagram(updated);
-                return updated;
+                return currentDiagram;
             });
-        },
-        [fetchDiagram]
-    );
+        } catch (error) {
+            console.error('Error fetching SLD diagram:', error);
+            setLoading(false);
+        }
+    }, [currentNode, studyUuid, currentNodeId, currentRootNetworkUuid, paramUseName, networkVisuParams, language]);
 
-    // Initial fetch
+    // Fetch when diagram data or node changes
     useEffect(() => {
         if (!currentNode?.id) return;
 
@@ -131,33 +123,36 @@ export const useSldDiagram = ({
         }
 
         setGlobalError(undefined);
-        fetchDiagram(diagram);
+
+        // Update diagram from diagramData
+        setDiagram({
+            ...diagramData,
+            type: diagramData.diagramType as DiagramType,
+            svg: null,
+        } as Diagram);
+
+        fetchDiagram();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentNodeId, currentNode?.type, currentNode?.data?.globalBuildStatus, currentRootNetworkUuid]);
+    }, [
+        currentNodeId,
+        currentNode?.id,
+        currentNode?.type,
+        currentNode?.data?.globalBuildStatus,
+        currentRootNetworkUuid,
+        diagramData.voltageLevelId,
+        diagramData.substationId,
+        diagramData.diagramType,
+    ]);
 
-    // Refetch on notifications
-    const diagramRef = useRef(diagram);
-    diagramRef.current = diagram;
-
-    const handleNotification = useCallback(
-        (event: MessageEvent) => {
-            const eventData = JSON.parse(event.data);
-            if (
-                (isLoadflowResultNotification(eventData) || isStudyNotification(eventData)) &&
-                eventData.headers.rootNetworkUuid === currentRootNetworkUuid
-            ) {
-                fetchDiagram(diagramRef.current);
-            }
-        },
-        [currentRootNetworkUuid, fetchDiagram]
-    );
-
-    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleNotification });
+    // Listen for notifications and refetch
+    useDiagramNotifications({
+        currentRootNetworkUuid,
+        onNotification: fetchDiagram,
+    });
 
     return {
         diagram,
         loading,
         globalError,
-        updateDiagram,
     };
 };

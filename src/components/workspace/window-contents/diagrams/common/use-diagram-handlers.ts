@@ -5,82 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import {
-    openDiagram as openDiagramAction,
-    showInSpreadsheet as showInSpreadsheetAction,
-    openNetworkAreaDiagram as openNetworkAreaDiagramAction,
-} from '../../../../../redux/slices/workspace-slice';
+import { openDiagram, showInSpreadsheet } from '../../../../../redux/slices/workspace-slice';
 import { DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
-import { EquipmentType } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import type { DiagramConfigPosition } from '../../../../../services/explore';
 
-export const useDiagramHandlers = () => {
-    const dispatch = useDispatch();
+export const openSLD = (id: string, type: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION) =>
+    openDiagram({ id, diagramType: type });
 
-    const openDiagram = useCallback(
-        (id: string, diagramType: DiagramType, extraData?: any) => {
-            dispatch(openDiagramAction({ id, diagramType, extraData }));
+export const openNAD = (
+    name: string,
+    options?: { nadConfigUuid?: UUID; filterUuid?: UUID; initialVoltageLevelIds?: string[] }
+) =>
+    openDiagram({
+        id: name,
+        diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
+        extraData: {
+            name,
+            ...options,
         },
-        [dispatch]
-    );
-
-    const showInSpreadsheet = useCallback(
-        (equipmentId: string, equipmentType: EquipmentType) => {
-            dispatch(showInSpreadsheetAction({ equipmentId, equipmentType }));
-        },
-        [dispatch]
-    );
-
-    const openNetworkAreaDiagram = useCallback(
-        (
-            name: string,
-            nadConfigUuid?: UUID,
-            filterUuid?: UUID,
-            voltageLevelIds?: string[],
-            voltageLevelToExpandIds?: string[],
-            voltageLevelToOmitIds?: string[],
-            positions?: DiagramConfigPosition[]
-        ) => {
-            dispatch(
-                openNetworkAreaDiagramAction({
-                    name,
-                    nadConfigUuid,
-                    filterUuid,
-                    voltageLevelIds,
-                    voltageLevelToExpandIds,
-                    voltageLevelToOmitIds,
-                    positions,
-                })
-            );
-        },
-        [dispatch]
-    );
-
-    return { openDiagram, showInSpreadsheet, openNetworkAreaDiagram };
-};
-
-export const openNadConfigHelper = (openDiagram: any, nadConfigUuid: string) => {
-    openDiagram('Network Area Diagram', DiagramType.NETWORK_AREA_DIAGRAM, {
-        name: '',
-        nadConfigUuid,
-        voltageLevelIds: [],
-        voltageLevelToExpandIds: [],
-        voltageLevelToOmitIds: [],
-        positions: [],
     });
-};
 
-export const openEquipmentDiagramHelper = (
-    openDiagram: any,
-    equipment: { id: string; type: EquipmentType | string; voltageLevelId?: string }
-) => {
-    if (equipment.type === EquipmentType.VOLTAGE_LEVEL || equipment.voltageLevelId) {
-        const vlId = equipment.voltageLevelId || equipment.id;
-        openDiagram(vlId, DiagramType.VOLTAGE_LEVEL);
-    } else if (equipment.type === EquipmentType.SUBSTATION) {
-        openDiagram(equipment.id, DiagramType.SUBSTATION);
-    }
-};
+export { showInSpreadsheet };

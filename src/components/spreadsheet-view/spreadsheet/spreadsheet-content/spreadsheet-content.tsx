@@ -27,7 +27,7 @@ import { useNodeAliases } from '../../hooks/use-node-aliases';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
-import { useDiagramHandlers } from '../../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { openSLD } from '../../../workspace/window-contents/diagrams/common/use-diagram-handlers';
 import { useDispatch } from 'react-redux';
 import { consumeSpreadsheetTarget } from '../../../../redux/slices/workspace-slice';
 
@@ -190,17 +190,15 @@ export const SpreadsheetContent = memo(
             [handleOpenModificationDialog]
         );
 
-        const { openDiagram } = useDiagramHandlers();
-
         const handleOpenDiagram = useCallback(
             (equipmentId: string) => {
                 const diagramType =
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? DiagramType.SUBSTATION
                         : DiagramType.VOLTAGE_LEVEL;
-                openDiagram(equipmentId, diagramType);
+                dispatch(openSLD(equipmentId, diagramType));
             },
-            [openDiagram, tableDefinition?.type]
+            [dispatch, tableDefinition?.type]
         );
 
         return (

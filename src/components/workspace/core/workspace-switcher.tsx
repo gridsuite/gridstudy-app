@@ -39,6 +39,7 @@ import {
     renameWorkspace as renameWorkspaceAction,
     clearWorkspace as clearWorkspaceAction,
 } from '../../../redux/slices/workspace-slice';
+import type { UUID } from 'node:crypto';
 
 const styles = {
     container: {
@@ -84,21 +85,21 @@ export const WorkspaceSwitcher = memo(() => {
     const activeWorkspaceId = useSelector(selectActiveWorkspaceId);
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-    const [renameDialog, setRenameDialog] = useState<{ workspaceId: string; name: string } | null>(null);
-    const [resetWorkspaceId, setResetWorkspaceId] = useState<string | null>(null);
+    const [renameDialog, setRenameDialog] = useState<{ workspaceId: UUID; name: string } | null>(null);
+    const [resetWorkspaceId, setResetWorkspaceId] = useState<UUID | null>(null);
 
     const handleWorkspaceChange = (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
         if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE) {
-            dispatch(switchWorkspace(workspaceId));
+            dispatch(switchWorkspace(workspaceId as UUID));
         }
     };
 
-    const handleSwitchWorkspace = (workspaceId: string) => {
+    const handleSwitchWorkspace = (workspaceId: UUID) => {
         dispatch(switchWorkspace(workspaceId));
         setMenuAnchor(null);
     };
 
-    const handleOpenRenameDialog = (workspaceId: string) => {
+    const handleOpenRenameDialog = (workspaceId: UUID) => {
         const workspace = workspaces.find((w) => w.id === workspaceId);
         setRenameDialog({ workspaceId, name: workspace?.name || '' });
         setMenuAnchor(null);
@@ -161,7 +162,7 @@ export const WorkspaceSwitcher = memo(() => {
                 <List dense sx={{ width: 300, maxHeight: 400, overflow: 'auto', p: 0 }}>
                     {workspaces.map((workspace, index) => {
                         const isActive = workspace.id === activeWorkspaceId;
-                        const windowCount = Object.keys(workspace.workspace.windows).length;
+                        const windowCount = Object.keys(workspace.windows).length;
                         const workspaceName = workspace.name || `Workspace ${index + 1}`;
 
                         return (

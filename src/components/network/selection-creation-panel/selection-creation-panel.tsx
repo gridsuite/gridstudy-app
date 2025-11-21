@@ -38,7 +38,8 @@ import {
     getSelectionCreationSchema,
 } from './selection-creation-schema';
 import { VoltageLevel } from '../../utils/equipment-types';
-import { useDiagramHandlers } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { openNAD } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { useDispatch } from 'react-redux';
 
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
@@ -67,7 +68,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const { pendingState, onSaveSelection } = useSaveMap();
-    const { openNetworkAreaDiagram } = useDiagramHandlers();
+    const dispatch = useDispatch();
     const formMethods = useForm<Nullable<SelectionCreationPanelFormSchema>>({
         defaultValues: emptyFormData,
         // "Nullable" to allow null values as default values for required values
@@ -97,7 +98,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
 
     const handleValidate = (formData: SelectionCreationPaneFields) => {
         if (formData.selectionType === SELECTION_TYPES.NAD) {
-            const selectedSubstationsWithVl = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-network-viewer is migrated to TS
+            const selectedSubstationsWithVl = getEquipments(EquipmentType.VOLTAGE_LEVEL);
             const voltageLevelIds = selectedSubstationsWithVl
                 .flatMap((selectedSubstation) =>
                     selectedSubstation.voltageLevels
@@ -108,7 +109,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 )
                 .filter((id): id is string => !!id);
 
-            openNetworkAreaDiagram(formData.name, undefined, undefined, voltageLevelIds);
+            dispatch(openNAD(formData.name, { initialVoltageLevelIds: voltageLevelIds }));
             return;
         }
 

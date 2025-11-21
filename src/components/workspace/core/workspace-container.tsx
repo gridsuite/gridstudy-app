@@ -7,14 +7,14 @@
 
 import { Box } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { useMemo, useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import type { AppState } from '../../../redux/reducer';
 import { selectWindowIds } from '../../../redux/slices/workspace-selectors';
 import { snapWindow } from '../../../redux/slices/workspace-slice';
 import { WindowDock } from './window-dock';
-import { WindowWrapper } from './window-wrapper';
+import { Window } from './window';
 import { SnapZones } from './snap-zones';
+import { UUID } from 'crypto';
 
 type SnapState = { windowId: string; mousePos: { x: number; y: number } } | null;
 
@@ -38,9 +38,6 @@ const styles = {
 export const WorkspaceContainer = () => {
     const dispatch = useDispatch();
     const windowIds = useSelector(selectWindowIds);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const [snapState, setSnapState] = useState<SnapState>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -51,35 +48,21 @@ export const WorkspaceContainer = () => {
 
     const handleSnap = useCallback(
         (windowId: string, rect: { x: number; y: number; width: number; height: number }) => {
-            dispatch(snapWindow({ windowId, rect }));
+            dispatch(snapWindow({ windowId: windowId as UUID, rect }));
             setSnapState(null);
         },
         [dispatch]
-    );
-
-    const contentDependencies = useMemo(
-        () => ({
-            studyUuid,
-            currentRootNetworkUuid,
-            currentNode,
-        }),
-        [studyUuid, currentRootNetworkUuid, currentNode]
     );
 
     return (
         <Box sx={styles.container}>
             <Box ref={containerRef} sx={styles.windowsArea}>
                 {windowIds.map((windowId) => (
-                    <WindowWrapper
-                        key={windowId}
-                        windowId={windowId}
-                        contentDependencies={contentDependencies}
-                        onSnapRequest={handleSnapRequest}
-                    />
+                    <Window key={windowId} windowId={windowId} onSnapRequest={handleSnapRequest} />
                 ))}
                 {snapState && (
                     <SnapZones
-                        windowId={snapState.windowId}
+                        windowId={snapState.windowId as UUID}
                         mouseX={snapState.mousePos.x}
                         mouseY={snapState.mousePos.y}
                         onSnap={handleSnap}

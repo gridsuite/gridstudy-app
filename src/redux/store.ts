@@ -5,53 +5,37 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import {
-    persistStore,
-    persistReducer,
-    FLUSH,
-    REHYDRATE,
-    PAUSE,
-    PERSIST,
-    PURGE,
-    REGISTER,
-    createTransform,
-} from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { Actions, AppState as LegacyAppState, reducer } from './reducer';
+import { configureStore } from '@reduxjs/toolkit';
+import { reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 import { setUserStore } from './user-store';
-import workspaceReducer from './slices/workspace-slice';
-import { sanitizeMultiWorkspaceForStorage } from '../components/workspace/stores/workspace-helpers';
+import workspacesReducer, { saveWorkspacesToStorage } from './slices/workspace-slice';
+import { debounce } from '@mui/material';
 
-const workspaceTransform = createTransform(
-    (inboundState: any) => {
-        if (!inboundState) return inboundState;
-        return sanitizeMultiWorkspaceForStorage({
-            workspaces: inboundState.workspaces,
-            activeWorkspaceId: inboundState.activeWorkspaceId,
-        });
-    },
-    (outboundState: any) => outboundState,
-    { whitelist: ['workspace'] }
-);
+const saveWorkspacesDebounced = debounce(saveWorkspacesToStorage, 300);
 
-const workspacePersistConfig = {
-    key: 'gridsuite-workspace',
-    storage,
-    whitelist: ['workspaces', 'activeWorkspaceId'],
-    transforms: [workspaceTransform],
+const workspacesPersistenceMiddleware = (store: any) => (next: any) => (action: any) => {
+    const result = next(action);
+
+    if (action.type?.startsWith('workspace/') && action.type !== 'workspace/initializeWorkspaceSlice') {
+        const state = store.getState();
+        const studyUuid = state.studyUuid;
+
+        if (studyUuid && state.workspace) {
+            saveWorkspacesDebounced(state.workspace, studyUuid);
+        }
+    }
+
+    return result;
 };
-
-const persistedWorkspaceReducer = persistReducer(workspacePersistConfig, workspaceReducer);
 
 const rootReducer = (state: any, action: any) => {
     const appState = reducer(state, action);
-    const workspaceState = persistedWorkspaceReducer(state?.workspace, action);
+    const workspacesState = workspacesReducer(state?.workspace, action);
 
     return {
         ...appState,
-        workspace: workspaceState,
+        workspace: workspacesState,
     };
 };
 
@@ -59,14 +43,10 @@ export const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
-            serializableCheck: {
-                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-            },
+            serializableCheck: false,
             immutableCheck: false,
-        }),
+        }).concat(workspacesPersistenceMiddleware),
 });
-
-export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppState = RootState; // For backward compatibility
@@ -81,11 +61,11 @@ if (import.meta.env.DEV && import.meta.hot) {
     import.meta.hot.accept('./reducer', () => {
         const newRootReducer = (state: any, action: any) => {
             const appState = reducer(state, action);
-            const workspaceState = persistedWorkspaceReducer(state?.workspace, action);
+            const workspacesState = workspacesReducer(state?.workspace, action);
 
             return {
                 ...appState,
-                workspace: workspaceState,
+                workspace: workspacesState,
             };
         };
         store.replaceReducer(newRootReducer as any);

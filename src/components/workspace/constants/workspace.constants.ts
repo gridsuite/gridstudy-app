@@ -27,6 +27,9 @@ export const MIN_WINDOW_SIZE: WindowSize = {
     height: 150,
 };
 
+export const DEFAULT_WINDOW_POSITION_OFFSET_MIN = 50;
+export const DEFAULT_WINDOW_POSITION_OFFSET_MAX = 200;
+
 interface WindowConfig {
     defaultSize: WindowSize;
     defaultPosition: WindowPosition;
@@ -37,51 +40,57 @@ interface WindowConfig {
 export const DEFAULT_WINDOW_CONFIGS: Record<WindowType, WindowConfig> = {
     [WindowType.TREE]: {
         title: 'Tree',
-        defaultSize: { width: 400, height: 600 },
-        defaultPosition: { x: 50, y: 50 },
-        minSize: { width: 300, height: 400 },
-    },
-    [WindowType.SPREADSHEET]: {
-        title: 'Spreadsheet',
-        defaultSize: { width: 800, height: 600 },
-        defaultPosition: { x: 100, y: 100 },
-        minSize: { width: 400, height: 300 },
-    },
-    [WindowType.LOGS]: {
-        title: 'Logs',
-        defaultSize: { width: 600, height: 400 },
-        defaultPosition: { x: 150, y: 150 },
-        minSize: { width: 300, height: 200 },
-    },
-    [WindowType.RESULTS]: {
-        title: 'Results',
-        defaultSize: { width: 700, height: 500 },
-        defaultPosition: { x: 200, y: 200 },
-        minSize: { width: 400, height: 300 },
-    },
-    [WindowType.PARAMETERS]: {
-        title: 'parameters',
-        defaultSize: { width: 500, height: 400 },
-        defaultPosition: { x: 250, y: 250 },
-        minSize: { width: 300, height: 250 },
+        defaultSize: { width: 400, height: 500 },
+        minSize: { width: 300, height: 300 },
+        defaultPosition: { x: 0, y: 0 },
     },
     [WindowType.DIAGRAM]: {
         title: 'Diagram',
-        defaultSize: { width: 800, height: 600 },
-        defaultPosition: { x: 300, y: 300 },
-        minSize: { width: 400, height: 300 },
+        defaultSize: { width: 700, height: 500 },
+        minSize: { width: 500, height: 400 },
+        defaultPosition: { x: 50, y: 0 },
     },
     [WindowType.MAP]: {
-        title: 'OpenMapCard',
-        defaultSize: { width: 900, height: 700 },
-        defaultPosition: { x: 150, y: 100 },
+        title: 'Map',
+        defaultSize: { width: 800, height: 600 },
+        minSize: { width: 500, height: 500 },
+        defaultPosition: { x: 100, y: 100 },
+    },
+    [WindowType.SPREADSHEET]: {
+        title: 'Spreadsheet',
+        defaultSize: { width: 1000, height: 500 },
+        minSize: { width: 600, height: 400 },
+        defaultPosition: { x: 100, y: 0 },
+    },
+    [WindowType.PARAMETERS]: {
+        title: 'parameters',
+        defaultSize: { width: 900, height: 500 },
         minSize: { width: 500, height: 400 },
+        defaultPosition: { x: 250, y: 0 },
+    },
+    [WindowType.LOGS]: {
+        title: 'Logs',
+        defaultSize: { width: 900, height: 500 },
+        minSize: { width: 600, height: 300 },
+        defaultPosition: { x: 200, y: 0 },
+    },
+    [WindowType.RESULTS]: {
+        title: 'Results',
+        defaultSize: { width: 1000, height: 500 },
+        minSize: { width: 600, height: 400 },
+        defaultPosition: { x: 150, y: 0 },
     },
     [WindowType.NODE_EDITOR]: {
-        title: 'NodeEditor',
-        defaultSize: { width: 600, height: 500 },
-        defaultPosition: { x: 200, y: 150 },
-        minSize: { width: 400, height: 300 },
+        title: 'modifications',
+        defaultSize: { width: 400, height: 500 },
+        minSize: { width: 300, height: 300 },
+        defaultPosition: { x: 50, y: 0 },
+    },
+    [WindowType.EVENT_SCENARIO]: {
+        title: 'DynamicSimulation',
+        defaultSize: { width: 400, height: 500 },
+        minSize: { width: 300, height: 300 },
+        defaultPosition: { x: 50, y: 0 },
     },
 };
 

@@ -77,8 +77,7 @@ import {
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
 import { Provider, useSelector } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { store, persistor } from '../redux/store';
+import { store } from '../redux/store';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import messages_plugins from '../plugins/translations';
@@ -487,9 +486,7 @@ const AppWrapperWithRedux = () => {
 const AppWrapper = () => {
     return (
         <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-                <AppWrapperWithRedux />
-            </PersistGate>
+            <AppWrapperWithRedux />
         </Provider>
     );
 };

@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { UUID } from 'node:crypto';
+
 export enum WindowType {
     TREE = 'TREE',
     SPREADSHEET = 'SPREADSHEET',
@@ -14,6 +16,7 @@ export enum WindowType {
     DIAGRAM = 'DIAGRAM',
     MAP = 'MAP',
     NODE_EDITOR = 'NODE_EDITOR',
+    EVENT_SCENARIO = 'EVENT_SCENARIO',
 }
 
 export interface SpreadsheetWindowData {
@@ -23,16 +26,15 @@ export interface SpreadsheetWindowData {
 
 export interface DiagramWindowData {
     diagramType: string;
-    name?: string;
+    // SLD-specific fields
     voltageLevelId?: string;
     substationId?: string;
-    nadConfigUuid?: string;
-    filterUuid?: string;
-    savedWorkspaceConfigUuid?: string;
-    voltageLevelIds?: string[];
-    voltageLevelToExpandIds?: string[];
-    voltageLevelToOmitIds?: string[];
-    positions?: any[];
+    // NAD-specific fields (only config references, not voluminous data)
+    nadConfigUuid?: UUID;
+    filterUuid?: UUID;
+    savedWorkspaceConfigUuid?: UUID;
+    // Transient initialization data (consumed once on mount, then cleared, not persisted)
+    initialVoltageLevelIds?: string[];
 }
 
 export type WindowData = SpreadsheetWindowData | DiagramWindowData | Record<string, never>;
@@ -48,10 +50,10 @@ export interface WindowSize {
 }
 
 export interface WindowState {
-    id: string;
+    id: UUID;
     type: WindowType;
     title: string;
-    data?: WindowData;
+    metadata?: WindowData;
     keepMountedWhenMinimized?: boolean;
     position: WindowPosition;
     size: WindowSize;
@@ -64,18 +66,20 @@ export interface WindowState {
 }
 
 export interface WorkspaceState {
-    windows: Record<string, WindowState>;
-    focusedWindowId: string | null;
+    windows: Record<UUID, WindowState>;
+    focusedWindowId: UUID | null;
     nextZIndex: number;
 }
 
 export interface WorkspaceConfig {
-    id: string;
+    id: UUID;
     name: string;
-    workspace: WorkspaceState;
+    windows: Record<UUID, WindowState>;
+    focusedWindowId: UUID | null;
+    nextZIndex: number;
 }
 
 export interface MultiWorkspaceState {
-    workspaces: WorkspaceConfig[];
-    activeWorkspaceId: string;
+    workspaces: Record<UUID, WorkspaceConfig>;
+    activeWorkspaceId: UUID;
 }

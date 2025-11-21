@@ -9,6 +9,7 @@ import { useState, useCallback, RefObject, useEffect } from 'react';
 import { Box } from '@mui/material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { detectSnapZone, calculateZoneRect, type SnapZone, type ZoneRect } from './utils/snap-zone-utils';
+import type { UUID } from 'node:crypto';
 
 const styles = {
     snapZone: {
@@ -18,30 +19,15 @@ const styles = {
         borderColor: 'primary.main',
         pointerEvents: 'none',
         zIndex: 99998,
-        transition: 'opacity 0.2s',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '48px',
-        color: 'primary.main',
-        fontWeight: 'bold',
-    },
-    preview: {
-        position: 'absolute',
-        border: '3px solid',
-        borderColor: 'primary.main',
-        backgroundColor: 'rgba(25, 118, 210, 0.12)',
-        pointerEvents: 'none',
-        zIndex: 99997,
         transition: 'all 0.15s',
     },
 } as const satisfies MuiStyles;
 
 interface SnapZonesProps {
-    windowId: string;
+    windowId: UUID;
     mouseX: number;
     mouseY: number;
-    onSnap: (windowId: string, rect: { x: number; y: number; width: number; height: number }) => void;
+    onSnap: (windowId: UUID, rect: { x: number; y: number; width: number; height: number }) => void;
     containerRef: RefObject<HTMLDivElement>;
 }
 
@@ -91,25 +77,14 @@ export function SnapZones({ windowId, mouseX, mouseY, onSnap, containerRef }: Sn
     const zoneRect = getZoneRect(activeZone);
 
     return (
-        <>
-            <Box
-                sx={{
-                    ...styles.preview,
-                    left: zoneRect.x,
-                    top: zoneRect.y,
-                    width: zoneRect.width,
-                    height: zoneRect.height,
-                }}
-            />
-            <Box
-                sx={{
-                    ...styles.snapZone,
-                    left: zoneRect.x,
-                    top: zoneRect.y,
-                    width: zoneRect.width,
-                    height: zoneRect.height,
-                }}
-            />
-        </>
+        <Box
+            sx={{
+                ...styles.snapZone,
+                left: zoneRect.x,
+                top: zoneRect.y,
+                width: zoneRect.width,
+                height: zoneRect.height,
+            }}
+        />
     );
 }
