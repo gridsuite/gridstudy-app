@@ -93,11 +93,7 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-interface NodeEditorHeaderProps {
-    onClose: () => void;
-}
-
-export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
+export const NodeEditorHeader = () => {
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const label = currentTreeNode?.data?.label ?? '';
@@ -113,10 +109,6 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
                         </Button>
                     </Tooltip>
                 </Box>
-
-                <IconButton size="small" onClick={onClose}>
-                    <CloseIcon />
-                </IconButton>
 
                 <NetworkModificationNodeDialog
                     open={openEditDialog}

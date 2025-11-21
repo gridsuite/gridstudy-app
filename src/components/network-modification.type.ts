@@ -5,14 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// move here because of cyclic dependency between reducer and network-modification-tree-pane & network-modification-tree
-export enum StudyDisplayMode {
-    TREE = 'Tree',
-    GRID_LAYOUT_PANEL = 'GridLayoutPanel',
-    MODIFICATIONS = 'Modifications',
-    EVENT_SCENARIO = 'EventScenario',
-}
-
 export enum CopyType {
     NODE_COPY = 'NODE_COPY',
     NODE_CUT = 'NODE_CUT',

@@ -27,6 +27,9 @@ import { useNodeAliases } from '../../hooks/use-node-aliases';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
+import { openSLD } from '../../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { useDispatch } from 'react-redux';
+import { consumeSpreadsheetTarget } from '../../../../redux/slices/workspace-slice';
 
 const styles = {
     table: (theme) => ({
@@ -52,9 +55,7 @@ interface SpreadsheetContentProps {
     columns: CustomColDef[];
     disabled: boolean;
     equipmentId: string | null;
-    onEquipmentScrolled: () => void;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
-    openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
 
@@ -66,9 +67,7 @@ export const SpreadsheetContent = memo(
         columns,
         disabled,
         equipmentId,
-        onEquipmentScrolled,
         registerRowCounterEvents,
-        openDiagram,
         active,
     }: SpreadsheetContentProps) => {
         const [isGridReady, setIsGridReady] = useState(false);
@@ -102,16 +101,18 @@ export const SpreadsheetContent = memo(
                 equipmentType: tableDefinition?.type,
             });
 
+        const dispatch = useDispatch();
+
         const handleEquipmentScroll = useCallback(() => {
             if (equipmentId && gridRef.current?.api && isGridReady) {
                 const selectedRow = gridRef.current.api.getRowNode(equipmentId);
                 if (selectedRow) {
                     gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
                     selectedRow.setSelected(true, true);
-                    onEquipmentScrolled();
+                    dispatch(consumeSpreadsheetTarget());
                 }
             }
-        }, [equipmentId, gridRef, isGridReady, onEquipmentScrolled]);
+        }, [equipmentId, gridRef, isGridReady, dispatch]);
 
         useEffect(() => {
             handleEquipmentScroll();
@@ -195,9 +196,9 @@ export const SpreadsheetContent = memo(
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? DiagramType.SUBSTATION
                         : DiagramType.VOLTAGE_LEVEL;
-                openDiagram?.(equipmentId, diagramType);
+                dispatch(openSLD(equipmentId, diagramType));
             },
-            [openDiagram, tableDefinition?.type]
+            [dispatch, tableDefinition?.type]
         );
 
         return (

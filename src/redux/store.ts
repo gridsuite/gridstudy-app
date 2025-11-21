@@ -5,18 +5,69 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { legacy_createStore as createStore, Store } from 'redux';
-import { Actions, AppState, reducer } from './reducer';
+import { configureStore } from '@reduxjs/toolkit';
+import { reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 import { setUserStore } from './user-store';
+import workspacesReducer, { saveWorkspacesToStorage } from './slices/workspace-slice';
+import { debounce } from '@mui/material';
 
-export const store = createStore(reducer);
+const saveWorkspacesDebounced = debounce(saveWorkspacesToStorage, 300);
+
+const workspacesPersistenceMiddleware = (store: any) => (next: any) => (action: any) => {
+    const result = next(action);
+
+    if (action.type?.startsWith('workspace/') && action.type !== 'workspace/initializeWorkspaceSlice') {
+        const state = store.getState();
+        const studyUuid = state.studyUuid;
+
+        if (studyUuid && state.workspace) {
+            saveWorkspacesDebounced(state.workspace, studyUuid);
+        }
+    }
+
+    return result;
+};
+
+const rootReducer = (state: any, action: any) => {
+    const appState = reducer(state, action);
+    const workspacesState = workspacesReducer(state?.workspace, action);
+
+    return {
+        ...appState,
+        workspace: workspacesState,
+    };
+};
+
+export const store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+            immutableCheck: false,
+        }).concat(workspacesPersistenceMiddleware),
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppState = RootState; // For backward compatibility
+export type AppDispatch = typeof store.dispatch;
+
 setCommonStore(store);
 setUserStore(store);
-export type AppDispatch = Store<AppState, Actions>['dispatch'];
 
 // to avoid to reset the state with HMR
 // https://redux.js.org/usage/configuring-your-store#hot-reloading
 if (import.meta.env.DEV && import.meta.hot) {
-    import.meta.hot.accept('./reducer', () => store.replaceReducer(reducer));
+    import.meta.hot.accept('./reducer', () => {
+        const newRootReducer = (state: any, action: any) => {
+            const appState = reducer(state, action);
+            const workspacesState = workspacesReducer(state?.workspace, action);
+
+            return {
+                ...appState,
+                workspace: workspacesState,
+            };
+        };
+        store.replaceReducer(newRootReducer as any);
+    });
 }

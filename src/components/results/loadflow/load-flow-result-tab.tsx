@@ -74,7 +74,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
 
@@ -93,7 +92,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
-        openVoltageLevelDiagram,
     });
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 

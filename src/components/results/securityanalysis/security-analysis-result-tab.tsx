@@ -84,7 +84,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -236,13 +235,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const columnDefs = useSecurityAnalysisColumnsDefs(
-        filterEnums,
-        resultType,
-        openVoltageLevelDiagram,
-        tabIndex,
-        memoizedSetPageCallback
-    );
+    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex, memoizedSetPageCallback);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
 

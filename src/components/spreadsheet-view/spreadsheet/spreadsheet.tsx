@@ -22,70 +22,56 @@ interface SpreadsheetProps {
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
     equipmentId: string | null;
-    onEquipmentScrolled: () => void;
-    openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
 
-export const Spreadsheet = memo(
-    ({
-        currentNode,
+export const Spreadsheet = memo(({ currentNode, tableDefinition, disabled, equipmentId, active }: SpreadsheetProps) => {
+    const gridRef = useRef<AgGridReact>(null);
+
+    const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
+    const rowCounterInfos = useFilteredRowCounterInfo({
+        gridRef,
         tableDefinition,
         disabled,
-        equipmentId,
-        onEquipmentScrolled,
-        openDiagram,
-        active,
-    }: SpreadsheetProps) => {
-        const gridRef = useRef<AgGridReact>(null);
+    });
 
-        const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
-        const rowCounterInfos = useFilteredRowCounterInfo({
-            gridRef,
-            tableDefinition,
-            disabled,
-        });
+    const displayedColsDefs = useMemo(() => {
+        const columns = tableDefinition?.columns;
+        const visibleColDefs =
+            columns?.map((column) => {
+                return columnsDefinitions.reduce((acc, curr) => {
+                    if (curr.colId === column.id) {
+                        return curr;
+                    }
+                    return acc;
+                }, {} as CustomColDef);
+            }) || [];
 
-        const displayedColsDefs = useMemo(() => {
-            const columns = tableDefinition?.columns;
-            const visibleColDefs =
-                columns?.map((column) => {
-                    return columnsDefinitions.reduce((acc, curr) => {
-                        if (curr.colId === column.id) {
-                            return curr;
-                        }
-                        return acc;
-                    }, {} as CustomColDef);
-                }) || [];
+        // Return row index column first, followed by visible columns
+        // Pass the table UUID to the rowIndexColumnDefinition
+        return [rowIndexColumnDefinition(tableDefinition?.uuid || ''), ...visibleColDefs];
+    }, [columnsDefinitions, tableDefinition?.columns, tableDefinition?.uuid]);
 
-            // Return row index column first, followed by visible columns
-            // Pass the table UUID to the rowIndexColumnDefinition
-            return [rowIndexColumnDefinition(tableDefinition?.uuid || ''), ...visibleColDefs];
-        }, [columnsDefinitions, tableDefinition?.columns, tableDefinition?.uuid]);
+    return (
+        <>
+            <SpreadsheetToolbar
+                gridRef={gridRef}
+                tableDefinition={tableDefinition}
+                rowCounterInfos={rowCounterInfos}
+                columns={displayedColsDefs}
+                disabled={disabled}
+            />
 
-        return (
-            <>
-                <SpreadsheetToolbar
-                    gridRef={gridRef}
-                    tableDefinition={tableDefinition}
-                    rowCounterInfos={rowCounterInfos}
-                    columns={displayedColsDefs}
-                    disabled={disabled}
-                />
-
-                <SpreadsheetContent
-                    gridRef={gridRef}
-                    currentNode={currentNode}
-                    tableDefinition={tableDefinition}
-                    columns={displayedColsDefs}
-                    disabled={disabled}
-                    equipmentId={equipmentId}
-                    onEquipmentScrolled={onEquipmentScrolled}
-                    registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
-                    openDiagram={openDiagram}
-                    active={active}
-                />
-            </>
-        );
-    }
-);
+            <SpreadsheetContent
+                gridRef={gridRef}
+                currentNode={currentNode}
+                tableDefinition={tableDefinition}
+                columns={displayedColsDefs}
+                disabled={disabled}
+                equipmentId={equipmentId}
+                registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
+                active={active}
+            />
+        </>
+    );
+});

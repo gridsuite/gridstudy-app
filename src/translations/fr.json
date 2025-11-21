@@ -1658,5 +1658,7 @@
     "IccMinTri": "Icc min (kA)",
     "rOhm": "r (Ω)",
     "xOhm":"x (Ω)",
-    "importParameters": "Paramètres d'import"
+    "importParameters": "Paramètres d'import",
+    "workspaces": "Espaces de travail",
+    "resetWorkspaceConfirmation": "Êtes-vous sûr de vouloir réinitialiser cet espace de travail ? Toutes les fenêtres ouvertes seront fermées."
 }

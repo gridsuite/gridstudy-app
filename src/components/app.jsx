@@ -58,7 +58,6 @@ import {
     updateTableColumns,
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
-import { STUDY_VIEWS, StudyView } from './utils/utils';
 import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
@@ -343,20 +342,6 @@ const App = () => {
         }
     }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams, resetTableDefinitions]);
 
-    const onChangeTab = useCallback(
-        (newTabIndex) => {
-            const parametersTabIndex = STUDY_VIEWS.indexOf(StudyView.PARAMETERS);
-
-            //check if we are leaving the parameters tab
-            if (appTabIndex === parametersTabIndex && newTabIndex !== parametersTabIndex) {
-                dispatch(attemptLeaveParametersTab(newTabIndex));
-            } else {
-                dispatch(setAppTabIndex(newTabIndex));
-            }
-        },
-        [dispatch, appTabIndex]
-    );
-
     return (
         <div
             className="singlestretch-child"
@@ -365,7 +350,7 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
+            <AppTopBar user={user} userManager={userManager} />
             <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div
@@ -385,10 +370,7 @@ const App = () => {
                 >
                     {user !== null ? (
                         <Routes>
-                            <Route
-                                path="/studies/:studyUuid"
-                                element={<StudyContainer view={STUDY_VIEWS[appTabIndex]} onChangeTab={onChangeTab} />}
-                            />
+                            <Route path="/studies/:studyUuid" element={<StudyContainer />} />
                             <Route
                                 path="/sign-in-callback"
                                 element={<Navigate replace to={getPreLoginPath() || '/'} />}

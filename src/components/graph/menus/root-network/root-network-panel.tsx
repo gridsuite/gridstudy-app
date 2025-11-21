@@ -29,7 +29,7 @@ const styles = {
 
 const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
-    const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
+    const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(true);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const [isSearchActive, setIsSearchActive] = useState(false);
 
@@ -56,16 +56,6 @@ const RootNetworkPanel: FunctionComponent = () => {
 
     const closeSearchPanel = useCallback(() => {
         setIsSearchActive(false);
-    }, []);
-
-    useEffect(() => {
-        const handleMinimize = () => {
-            setIsRootNetworkPanelMinimized(true);
-            setIsSearchActive(false);
-        };
-
-        window.addEventListener('minimizeRootNetworkPanel', handleMinimize);
-        return () => window.removeEventListener('minimizeRootNetworkPanel', handleMinimize);
     }, []);
 
     return (

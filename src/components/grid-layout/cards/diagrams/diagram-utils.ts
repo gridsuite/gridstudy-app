@@ -13,12 +13,12 @@ import type { UUID } from 'node:crypto';
 
 export const MIN_WIDTH = 150;
 export const MIN_HEIGHT = 150;
-export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
-export const MAX_HEIGHT_VOLTAGE_LEVEL = 700;
-export const MAX_WIDTH_SUBSTATION = 1200;
-export const MAX_HEIGHT_SUBSTATION = 700;
-export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = 1200;
-export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
+export const MAX_WIDTH_VOLTAGE_LEVEL = Infinity;
+export const MAX_HEIGHT_VOLTAGE_LEVEL = Infinity;
+export const MAX_WIDTH_SUBSTATION = Infinity;
+export const MAX_HEIGHT_SUBSTATION = Infinity;
+export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = Infinity;
+export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = Infinity;
 
 // Array of zoom levels used to determine level-of-detail rendering by applying in the network-viewer the
 // corresponding css class 'nad-zoom-{level}' to the NAD's SVG.
