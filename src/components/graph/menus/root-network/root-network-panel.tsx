@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { Paper, useTheme } from '@mui/material';
 import RootNetworkPanelHeader from './root-network-panel-header';
-import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
@@ -36,11 +35,9 @@ const RootNetworkPanel: FunctionComponent = () => {
     const theme = useTheme();
     // Set the panel's width and height based on designer's proposed values
     const panelStyle = useMemo(() => {
-        const width = theme.spacing(isRootNetworkPanelMinimized ? 25 : 42);
+        const width = theme.spacing(isRootNetworkPanelMinimized ? 32 : 42);
 
-        const minHeight = theme.spacing(
-            isRootNetworkPanelMinimized ? (isMonoRootStudy ? 6 : 12) : isMonoRootStudy ? 14 : 38
-        );
+        const minHeight = theme.spacing(isRootNetworkPanelMinimized ? 5 : isMonoRootStudy ? 14 : 38);
 
         return {
             ...styles.paper,
@@ -68,9 +65,6 @@ const RootNetworkPanel: FunctionComponent = () => {
                 setIsSearchActive={setIsSearchActive}
                 closeSearchPanel={closeSearchPanel}
             />
-            {isRootNetworkPanelMinimized && !isMonoRootStudy && !isSearchActive && (
-                <RootNetworkMinimizedPanelContent isRootNetworkPanelMinimized={isRootNetworkPanelMinimized} />
-            )}
             {!isSearchActive && !isRootNetworkPanelMinimized && (
                 <RootNetworkNodeEditor
                     isRootNetworksProcessing={isRootNetworksProcessing}

@@ -5,21 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import type { DiagramAdditionalMetadata } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import NetworkAreaDiagramContent from '../../../../grid-layout/cards/diagrams/networkAreaDiagram/network-area-diagram-content';
-import { DiagramWindowData } from '../../../types/workspace.types';
-import { replaceNadConfig, updateWindowMetadata } from '../../../../../redux/slices/workspace-slice';
+import { NADWindowMetadata } from '../../../types/workspace.types';
+import { updateWindowMetadata } from '../../../../../redux/slices/workspace-slice';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 import type { UUID } from 'node:crypto';
 import { useNadDiagram } from './use-nad-diagram';
 import { DiagramWrapper } from '../diagram-wrapper';
 import type { DiagramConfigPosition } from '../../../../../services/explore';
 import { useDiagramNavigation } from '../common/use-diagram-navigation';
+import { selectWindow } from '../../../../../redux/slices/workspace-selectors';
+import type { RootState } from '../../../../../redux/store';
 
 interface NadWindowContentProps {
-    diagramData: DiagramWindowData;
     windowId: UUID;
     studyUuid: UUID;
     currentNodeId: UUID;
@@ -27,16 +28,17 @@ interface NadWindowContentProps {
 }
 
 export const NadWindowContent = ({
-    diagramData,
     windowId,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
 }: NadWindowContentProps) => {
     const dispatch = useDispatch();
+    const window = useSelector((state: RootState) => selectWindow(state, windowId));
+    const diagramMetadata = window?.metadata as NADWindowMetadata | undefined;
 
     const { diagram, loading, globalError, updateDiagram, handleSaveNad } = useNadDiagram({
-        diagramData,
+        diagramMetadata: diagramMetadata!,
         windowId,
         studyUuid,
         currentNodeId,
@@ -64,13 +66,27 @@ export const NadWindowContent = ({
     // Replace NAD config - updates Redux metadata only
     // The useEffect in use-nad-diagram will handle the fetch when diagramData changes
     const handleReplaceNad = useCallback(
-        (nadConfigUuid?: UUID, filterUuid?: UUID) => {
-            // Update Redux metadata with new persistent config
-            // This will trigger useEffect in hook via diagramData.nadConfigUuid/filterUuid deps
-            dispatch(replaceNadConfig({ windowId, nadConfigUuid, filterUuid }));
+        (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
+            const currentMetadata = diagramMetadata as NADWindowMetadata;
+            dispatch(
+                updateWindowMetadata({
+                    windowId,
+                    title: name,
+                    metadata: {
+                        ...currentMetadata,
+                        nadConfigUuid,
+                        filterUuid,
+                        savedWorkspaceConfigUuid: undefined,
+                    },
+                })
+            );
         },
-        [dispatch, windowId]
+        [dispatch, windowId, diagramMetadata]
     );
+
+    if (!diagramMetadata) {
+        return null;
+    }
 
     return (
         <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>

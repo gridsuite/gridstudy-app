@@ -6,117 +6,43 @@
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { v4 as uuidv4 } from 'uuid';
 import type { UUID } from 'node:crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
-import type { DiagramConfigPosition } from '../../services/explore';
 import { DiagramType } from '../../components/grid-layout/cards/diagrams/diagram.type';
 import {
-    getWindowConfig,
-    DEFAULT_WINDOW_POSITION_OFFSET_MIN,
-    DEFAULT_WINDOW_POSITION_OFFSET_MAX,
-} from '../../components/workspace/constants/workspace.constants';
-import {
     WindowType,
-    type WindowData,
-    type WorkspaceConfig,
-    type DiagramWindowData,
+    type WorkspacesState,
+    type WindowMetadata,
 } from '../../components/workspace/types/workspace.types';
 import {
     createDefaultWorkspaces,
     getActiveWorkspace,
-    getWorkspaceById,
     updateWindow,
-} from '../../components/workspace/stores/workspace-helpers';
+    createWindow,
+    bringToFront,
+    findDiagramWindow,
+    findAndFocusWindow,
+    deleteWindow,
+    createSLDMetadata,
+} from './workspace-helpers';
 
 const STORAGE_KEY_PREFIX = 'gridstudy-workspaces';
 
 const getStorageKey = (studyUuid: string | null) =>
     studyUuid ? `${STORAGE_KEY_PREFIX}-${studyUuid}` : STORAGE_KEY_PREFIX;
 
-// ==================== Helper Functions ====================
-
-/** Create a new window with default properties */
-const createWindow = (
-    workspace: WorkspaceConfig,
-    windowType: WindowType,
-    options: {
-        title?: string;
-        metadata?: WindowData;
-        position?: { x: number; y: number };
-        size?: { width: number; height: number };
-    } = {}
-) => {
-    const config = getWindowConfig(windowType);
-    const newId = uuidv4() as UUID;
-
-    workspace.windows[newId] = {
-        id: newId,
-        type: windowType,
-        title: options.title || config.title,
-        metadata: options.metadata,
-        position: options.position || config.defaultPosition,
-        size: options.size || config.defaultSize,
-        zIndex: workspace.nextZIndex++,
-        isMinimized: false,
-        isMaximized: false,
-        isPinned: false,
-    };
-    workspace.focusedWindowId = newId;
-    return newId;
-};
-
-/** Bring window to front and restore if minimized */
-const bringToFront = (workspace: WorkspaceConfig, windowId: UUID) => {
-    const window = workspace.windows[windowId];
-    if (window) {
-        workspace.focusedWindowId = windowId;
-        window.zIndex = workspace.nextZIndex++;
-        if (window.isMinimized) {
-            window.isMinimized = false;
-        }
-    }
-};
-
-/** Find existing diagram window by type and ID */
-const findDiagramWindow = (
-    workspace: WorkspaceConfig,
-    diagramType: DiagramType,
-    id: string,
-    excludeWindowId?: UUID
-) => {
-    return Object.values(workspace.windows).find((window) => {
-        if (window.id === excludeWindowId || window.type !== WindowType.DIAGRAM) return false;
-        const metadata = window.metadata as DiagramWindowData;
-        if (diagramType === DiagramType.VOLTAGE_LEVEL) {
-            return metadata.diagramType === DiagramType.VOLTAGE_LEVEL && metadata.voltageLevelId === id;
-        }
-        if (diagramType === DiagramType.SUBSTATION) {
-            return metadata.diagramType === DiagramType.SUBSTATION && metadata.substationId === id;
-        }
-        return false;
-    });
-};
-
-/** Get window with highest zIndex */
-const getTopWindow = (workspace: WorkspaceConfig) => {
-    const windows = Object.values(workspace.windows);
-    if (windows.length === 0) return null;
-    return windows.reduce((max, w) => (w.zIndex > max.zIndex ? w : max));
-};
-
-export const loadWorkspacesFromStorage = (studyUuid: string | null): Partial<WorkspaceState> | null => {
+export const loadWorkspacesFromStorage = (studyUuid: string | null): Partial<WorkspacesState> | null => {
     try {
         const key = getStorageKey(studyUuid);
         const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : null;
+        return data ? (JSON.parse(data) as Partial<WorkspacesState>) : null;
     } catch (error) {
         console.warn('Failed to load workspaces from storage:', error);
         return null;
     }
 };
 
-export const saveWorkspacesToStorage = (state: WorkspaceState, studyUuid: string | null) => {
+export const saveWorkspacesToStorage = (state: WorkspacesState, studyUuid: string | null) => {
     try {
         const key = getStorageKey(studyUuid);
         localStorage.setItem(
@@ -131,21 +57,10 @@ export const saveWorkspacesToStorage = (state: WorkspaceState, studyUuid: string
     }
 };
 
-export interface SpreadsheetTarget {
-    equipmentId: string;
-    equipmentType: EquipmentType;
-}
-
-export interface WorkspaceState {
-    workspaces: Record<UUID, WorkspaceConfig>;
-    activeWorkspaceId: UUID;
-    pendingSpreadsheetTarget: SpreadsheetTarget | null;
-}
-
 const DEFAULT_WORKSPACES = createDefaultWorkspaces();
 const DEFAULT_WORKSPACE_IDS = Object.keys(DEFAULT_WORKSPACES);
 
-const initialState: WorkspaceState = {
+const initialState: WorkspacesState = {
     workspaces: DEFAULT_WORKSPACES,
     activeWorkspaceId: DEFAULT_WORKSPACE_IDS[0] as UUID,
     pendingSpreadsheetTarget: null,
@@ -156,29 +71,22 @@ const workspacesSlice = createSlice({
     initialState,
     reducers: {
         // ==================== Initialization ====================
-        initializeWorkspaces: (state, action: PayloadAction<Partial<WorkspaceState>>) => {
+        initializeWorkspaces: (state, action: PayloadAction<Partial<WorkspacesState>>) => {
             return { ...state, ...action.payload };
         },
 
         // ==================== Workspace Management ====================
         switchWorkspace: (state, action: PayloadAction<UUID>) => {
-            if (getWorkspaceById(state, action.payload)) {
-                state.activeWorkspaceId = action.payload;
-            }
+            state.activeWorkspaceId = action.payload;
         },
 
         renameWorkspace: (state, action: PayloadAction<{ workspaceId: UUID; newName: string }>) => {
-            const workspace = getWorkspaceById(state, action.payload.workspaceId);
-            if (workspace) {
-                workspace.name = action.payload.newName;
-            }
+            state.workspaces[action.payload.workspaceId].name = action.payload.newName;
         },
 
         clearWorkspace: (state, action: PayloadAction<UUID>) => {
-            const workspace = getWorkspaceById(state, action.payload);
-            if (workspace) {
-                workspace.windows = {};
-            }
+            const workspace = state.workspaces[action.payload];
+            Object.keys(workspace.windows).forEach((id) => deleteWindow(workspace, id as UUID));
         },
 
         // ==================== Window Lifecycle ====================
@@ -187,16 +95,9 @@ const workspacesSlice = createSlice({
             const existingWindow = Object.values(workspace.windows).find((w) => w.type === action.payload);
 
             if (existingWindow) {
-                const topWindow = getTopWindow(workspace);
-                if (topWindow?.id === existingWindow.id) {
-                    // Already on top, close it
-                    delete workspace.windows[existingWindow.id];
-                    if (workspace.focusedWindowId === existingWindow.id) {
-                        workspace.focusedWindowId = null;
-                    }
-                } else {
-                    bringToFront(workspace, existingWindow.id);
-                }
+                workspace.focusedWindowId === existingWindow.id
+                    ? deleteWindow(workspace, existingWindow.id)
+                    : bringToFront(workspace, existingWindow.id);
             } else {
                 createWindow(workspace, action.payload);
             }
@@ -204,31 +105,26 @@ const workspacesSlice = createSlice({
 
         openOrFocusWindow: (
             state,
-            action: PayloadAction<{ windowType: WindowType; customTitle?: string; customData?: WindowData }>
+            action: PayloadAction<{ windowType: WindowType; customTitle?: string; customData?: WindowMetadata }>
         ) => {
             const { windowType, customTitle, customData } = action.payload;
             const workspace = getActiveWorkspace(state);
-            const existingWindow = Object.values(workspace.windows).find((w) => w.type === windowType);
 
-            if (existingWindow) {
-                bringToFront(workspace, existingWindow.id);
-            } else {
+            if (!findAndFocusWindow(workspace, windowType)) {
                 createWindow(workspace, windowType, { title: customTitle, metadata: customData });
             }
         },
 
         closeWindow: (state, action: PayloadAction<UUID>) => {
             const workspace = getActiveWorkspace(state);
-            delete workspace.windows[action.payload];
+            deleteWindow(workspace, action.payload);
         },
 
         closeWindowsByType: (state, action: PayloadAction<WindowType>) => {
             const workspace = getActiveWorkspace(state);
-            Object.entries(workspace.windows).forEach(([id, window]) => {
-                if (window.type === action.payload) {
-                    delete workspace.windows[id as UUID];
-                }
-            });
+            Object.values(workspace.windows)
+                .filter((window) => window.type === action.payload)
+                .forEach((window) => deleteWindow(workspace, window.id));
         },
 
         // ==================== Window State Management ====================
@@ -240,8 +136,9 @@ const workspacesSlice = createSlice({
             state,
             action: PayloadAction<{ windowId: UUID; position: { x: number; y: number } }>
         ) => {
-            updateWindow(state, action.payload.windowId, (window) => {
-                window.position = action.payload.position;
+            const { windowId, position } = action.payload;
+            updateWindow(state, windowId, (window) => {
+                window.position = position;
             });
         },
 
@@ -249,8 +146,9 @@ const workspacesSlice = createSlice({
             state,
             action: PayloadAction<{ windowId: UUID; size: { width: number; height: number } }>
         ) => {
-            updateWindow(state, action.payload.windowId, (window) => {
-                window.size = action.payload.size;
+            const { windowId, size } = action.payload;
+            updateWindow(state, windowId, (window) => {
+                window.size = size;
             });
         },
 
@@ -273,19 +171,14 @@ const workspacesSlice = createSlice({
 
         toggleMaximize: (state, action: PayloadAction<UUID>) => {
             updateWindow(state, action.payload, (window) => {
+                window.isMaximized = !window.isMaximized;
                 if (window.isMaximized) {
-                    window.isMaximized = false;
-                    if (window.restorePosition) {
-                        window.position = window.restorePosition;
-                    }
-                    if (window.restoreSize) {
-                        window.size = window.restoreSize;
-                    }
-                } else {
-                    window.isMaximized = true;
                     window.restorePosition = window.position;
                     window.restoreSize = window.size;
                     window.position = { x: 0, y: 0 };
+                } else {
+                    window.position = window.restorePosition ?? window.position;
+                    window.size = window.restoreSize ?? window.size;
                 }
             });
         },
@@ -298,114 +191,78 @@ const workspacesSlice = createSlice({
 
         updateWindowMetadata: (
             state,
-            action: PayloadAction<{ windowId: UUID; metadata?: WindowData; title?: string }>
+            action: PayloadAction<{ windowId: UUID; metadata?: WindowMetadata; title?: string }>
         ) => {
-            updateWindow(state, action.payload.windowId, (window) => {
-                if (action.payload.metadata !== undefined) {
-                    window.metadata = action.payload.metadata;
-                }
-                if (action.payload.title !== undefined) {
-                    window.title = action.payload.title;
-                }
+            const { windowId, metadata, title } = action.payload;
+            updateWindow(state, windowId, (window) => {
+                if (metadata !== undefined) window.metadata = metadata;
+                if (title !== undefined) window.title = title;
             });
         },
 
         // ==================== Diagram-Specific Operations ====================
-        openDiagram: (state, action: PayloadAction<{ id: string; diagramType: DiagramType; extraData?: any }>) => {
-            const { id, diagramType, extraData = {} } = action.payload;
+        openSLD: (
+            state,
+            action: PayloadAction<{
+                id: string;
+                diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
+            }>
+        ) => {
+            const { id, diagramType } = action.payload;
             const workspace = getActiveWorkspace(state);
+            const existingWindow = findDiagramWindow(workspace, diagramType, id);
 
-            // Check for existing diagram (prevent duplicates for VL/Substation)
-            if (diagramType === DiagramType.VOLTAGE_LEVEL || diagramType === DiagramType.SUBSTATION) {
-                const existingWindow = findDiagramWindow(workspace, diagramType, id);
-                if (existingWindow) {
-                    bringToFront(workspace, existingWindow.id);
-                    return;
-                }
+            if (existingWindow) {
+                bringToFront(workspace, existingWindow.id);
+            } else {
+                createWindow(workspace, WindowType.SLD, {
+                    title: id,
+                    metadata: createSLDMetadata(id, diagramType),
+                });
             }
-
-            // Build metadata based on diagram type
-            let metadata: DiagramWindowData;
-            switch (diagramType) {
-                case DiagramType.VOLTAGE_LEVEL:
-                    metadata = { diagramType, voltageLevelId: id, ...extraData };
-                    break;
-                case DiagramType.SUBSTATION:
-                    metadata = { diagramType, substationId: id, ...extraData };
-                    break;
-                case DiagramType.NETWORK_AREA_DIAGRAM:
-                    metadata = { diagramType, ...extraData };
-                    break;
-                default:
-                    return;
-            }
-
-            // Create window with randomized position
-            const position = {
-                x: DEFAULT_WINDOW_POSITION_OFFSET_MIN + Math.random() * DEFAULT_WINDOW_POSITION_OFFSET_MAX,
-                y: DEFAULT_WINDOW_POSITION_OFFSET_MIN + Math.random() * (DEFAULT_WINDOW_POSITION_OFFSET_MAX / 2),
-            };
-
-            createWindow(workspace, WindowType.DIAGRAM, { title: id, metadata, position });
         },
 
-        replaceNadConfig: (
+        openNAD: (
             state,
-            action: PayloadAction<{ windowId: UUID; nadConfigUuid?: UUID; filterUuid?: UUID }>
+            action: PayloadAction<{
+                name: string;
+                nadConfigUuid?: UUID;
+                filterUuid?: UUID;
+                initialVoltageLevelIds?: string[];
+            }>
         ) => {
-            updateWindow(state, action.payload.windowId, (window) => {
-                if (window.type === WindowType.DIAGRAM && window.metadata) {
-                    const diagramMetadata = window.metadata as DiagramWindowData;
-                    window.metadata = {
-                        ...diagramMetadata,
-                        nadConfigUuid: action.payload.nadConfigUuid,
-                        filterUuid: action.payload.filterUuid,
-                        savedWorkspaceConfigUuid: undefined, // Clear saved config when loading new
-                    };
-                }
+            const { name, nadConfigUuid, filterUuid, initialVoltageLevelIds } = action.payload;
+            createWindow(getActiveWorkspace(state), WindowType.NAD, {
+                title: name,
+                metadata: { nadConfigUuid, filterUuid, initialVoltageLevelIds },
             });
         },
 
-        navigateDiagram: (state, action: PayloadAction<{ windowId: UUID; id: string; diagramType: DiagramType }>) => {
+        navigateSLD: (state, action: PayloadAction<{ windowId: UUID; id: string; diagramType: DiagramType }>) => {
             const { windowId, id, diagramType } = action.payload;
             const workspace = getActiveWorkspace(state);
 
             // Check if another window already has this diagram
-            if (diagramType === DiagramType.VOLTAGE_LEVEL || diagramType === DiagramType.SUBSTATION) {
-                const existingWindow = findDiagramWindow(workspace, diagramType, id, windowId);
-                if (existingWindow) {
-                    bringToFront(workspace, existingWindow.id);
-                    return;
-                }
+            const existingWindow = findDiagramWindow(workspace, diagramType, id, windowId);
+            if (existingWindow) {
+                bringToFront(workspace, existingWindow.id);
+                return;
             }
 
-            // Update current window's metadata
+            // Update current SLD window
             updateWindow(state, windowId, (window) => {
-                if (window.type === WindowType.DIAGRAM) {
-                    window.metadata = {
-                        diagramType,
-                        voltageLevelId: diagramType === DiagramType.VOLTAGE_LEVEL ? id : undefined,
-                        substationId: diagramType === DiagramType.SUBSTATION ? id : undefined,
-                    };
-                }
+                window.title = id;
+                window.metadata = createSLDMetadata(id, diagramType);
             });
         },
 
         // ==================== Spreadsheet-Specific Operations ====================
         showInSpreadsheet: (state, action: PayloadAction<{ equipmentId: string; equipmentType: EquipmentType }>) => {
             const workspace = getActiveWorkspace(state);
-            const existingWindow = Object.values(workspace.windows).find((w) => w.type === WindowType.SPREADSHEET);
-
-            if (existingWindow) {
-                bringToFront(workspace, existingWindow.id);
-            } else {
+            if (!findAndFocusWindow(workspace, WindowType.SPREADSHEET)) {
                 createWindow(workspace, WindowType.SPREADSHEET);
             }
-
-            state.pendingSpreadsheetTarget = {
-                equipmentId: action.payload.equipmentId,
-                equipmentType: action.payload.equipmentType,
-            };
+            state.pendingSpreadsheetTarget = action.payload;
         },
 
         consumeSpreadsheetTarget: (state) => {
@@ -436,9 +293,9 @@ export const {
     togglePin,
     updateWindowMetadata,
     // Diagram Operations
-    openDiagram,
-    navigateDiagram,
-    replaceNadConfig,
+    openSLD,
+    openNAD,
+    navigateSLD,
     // Spreadsheet Operations
     showInSpreadsheet,
     consumeSpreadsheetTarget,

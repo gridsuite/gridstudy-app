@@ -19,13 +19,12 @@ import {
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { openSLD } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { openSLD } from '../../../redux/slices/workspace-slice';
 import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
-import { useDispatch } from 'react-redux';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -104,7 +103,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                                     },
                                 });
                             } else {
-                                dispatch(openSLD(vlId, DiagramType.VOLTAGE_LEVEL));
+                                dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
                             }
                         });
                 }

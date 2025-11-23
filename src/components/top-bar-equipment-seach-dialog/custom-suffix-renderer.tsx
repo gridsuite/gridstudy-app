@@ -14,7 +14,7 @@ import { centerOnSubstation } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
-import { openNAD } from '../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { openNAD } from '../../redux/slices/workspace-slice';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
@@ -63,7 +63,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
         (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.stopPropagation();
             onClose?.();
-            dispatch(openNAD(element.id, { initialVoltageLevelIds: [element.id] }));
+            dispatch(openNAD({ name: element.id, initialVoltageLevelIds: [element.id] }));
         },
         [dispatch, element.id, onClose]
     );

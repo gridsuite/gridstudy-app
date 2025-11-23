@@ -73,7 +73,7 @@ type NetworkAreaDiagramContentProps = {
         voltageLevelToOmitIds: string[];
     }) => void;
     readonly onUpdatePositions: (positions: DiagramConfigPosition[]) => void;
-    readonly onReplaceNad: (nadConfigUuid?: UUID, filterUuid?: UUID) => void;
+    readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
     readonly onSaveNad?: () => void;
 };
 
@@ -113,11 +113,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
 
-    // Wrapped handler to save when exiting edit mode
+    // save nad when exiting edit mode
     const handleSetIsEditNadMode = useCallback(
         (newMode: boolean) => {
             if (isEditNadMode && !newMode) {
-                // Exiting edit mode - save
                 onSaveNad?.();
             }
             setIsEditNadMode(newMode);
@@ -378,6 +377,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             // viewer reference because we do not want to use an obsolete viewbox on the new NAD.
             diagramViewerRef.current = null;
             onReplaceNad(
+                elementName,
                 elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
                 elementType === ElementType.FILTER ? elementUuid : undefined
             );

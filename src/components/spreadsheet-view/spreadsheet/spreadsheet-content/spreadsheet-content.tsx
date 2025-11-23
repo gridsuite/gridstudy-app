@@ -24,12 +24,10 @@ import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useNodeAliases } from '../../hooks/use-node-aliases';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
-import { openSLD } from '../../../workspace/window-contents/diagrams/common/use-diagram-handlers';
-import { useDispatch } from 'react-redux';
-import { consumeSpreadsheetTarget } from '../../../../redux/slices/workspace-slice';
+import { openSLD, consumeSpreadsheetTarget } from '../../../../redux/slices/workspace-slice';
 
 const styles = {
     table: (theme) => ({
@@ -196,7 +194,7 @@ export const SpreadsheetContent = memo(
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? DiagramType.SUBSTATION
                         : DiagramType.VOLTAGE_LEVEL;
-                dispatch(openSLD(equipmentId, diagramType));
+                dispatch(openSLD({ id: equipmentId, diagramType }));
             },
             [dispatch, tableDefinition?.type]
         );

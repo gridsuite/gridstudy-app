@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { Box, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Box, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Search,
@@ -17,7 +17,7 @@ import {
     Settings,
     Tune,
     AccountTree,
-    OfflineBolt,
+    OfflineBoltOutlined,
     TextSnippet,
 } from '@mui/icons-material';
 import {
@@ -35,16 +35,15 @@ import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import { WindowType } from '../types/workspace.types';
-import { toggleWindow, closeWindow } from '../../../redux/slices/workspace-slice';
+import { toggleWindow, closeWindow, openSLD, openNAD } from '../../../redux/slices/workspace-slice';
 import { selectIsWindowTypeOpen, selectWindows } from '../../../redux/slices/workspace-selectors';
-import { openSLD, openNAD } from '../window-contents/diagrams/common/use-diagram-handlers';
 import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 
 const styles = {
     container: {
         display: 'flex',
         alignItems: 'center',
-        gap: 0.5,
+        gap: 1,
     },
     toggleButton: {
         display: 'flex',
@@ -100,9 +99,9 @@ export const WorkspaceToolbar = () => {
         if (selectedElements.length > 0 && selectedElements[0].type) {
             const element = selectedElements[0];
             if (element.type === ElementType.DIAGRAM_CONFIG) {
-                dispatch(openNAD(element.name, { nadConfigUuid: element.id }));
+                dispatch(openNAD({ name: element.name, nadConfigUuid: element.id }));
             } else if (element.type === ElementType.FILTER) {
-                dispatch(openNAD(element.name, { filterUuid: element.id }));
+                dispatch(openNAD({ name: element.name, filterUuid: element.id }));
             }
         }
         setIsLoadSelectorOpen(false);
@@ -111,14 +110,17 @@ export const WorkspaceToolbar = () => {
     const handleSearchEquipment = (equipment: EquipmentInfos) => {
         if (equipment.type === EquipmentType.VOLTAGE_LEVEL || equipment.voltageLevelId) {
             const vlId = equipment.voltageLevelId || equipment.id;
-            dispatch(openSLD(vlId, DiagramType.VOLTAGE_LEVEL));
+            dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
         } else if (equipment.type === EquipmentType.SUBSTATION) {
-            dispatch(openSLD(equipment.id, DiagramType.SUBSTATION));
+            dispatch(openSLD({ id: equipment.id, diagramType: DiagramType.SUBSTATION }));
         }
     };
 
     return (
         <Box sx={styles.container}>
+            <Typography sx={{ marginLeft: 0.5, display: { xs: 'none', lg: 'block' } }}>
+                <FormattedMessage id="panels" />
+            </Typography>
             <ToggleButtonGroup size="small">
                 <Tooltip title={<FormattedMessage id="Tree" />}>
                     <ToggleButton
@@ -148,7 +150,7 @@ export const WorkspaceToolbar = () => {
                             onClick={() => dispatch(toggleWindow(WindowType.EVENT_SCENARIO))}
                             sx={styles.toggleButton}
                         >
-                            <OfflineBolt fontSize="small" />
+                            <OfflineBoltOutlined fontSize="small" />
                         </ToggleButton>
                     </Tooltip>
                 )}
@@ -193,6 +195,9 @@ export const WorkspaceToolbar = () => {
                     </ToggleButton>
                 </Tooltip>
             </ToggleButtonGroup>
+            <Typography sx={{ marginLeft: 2, display: { xs: 'none', lg: 'block' } }}>
+                <FormattedMessage id="images" />
+            </Typography>
             <ToggleButtonGroup size="small" sx={{ marginRight: 0.5 }}>
                 <Tooltip title={<FormattedMessage id="importFromGridExplore" />}>
                     <ToggleButton
@@ -240,7 +245,7 @@ export const WorkspaceToolbar = () => {
                     showVoltageLevelDiagram={handleSearchEquipment}
                     isDialogSearchOpen={isDialogSearchOpen}
                     setIsDialogSearchOpen={setIsDialogSearchOpen}
-                    disablCenterSubstation={true}
+                    disablCenterSubstation={!isMapOpen}
                 />
             }
         </Box>

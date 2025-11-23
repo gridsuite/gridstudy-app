@@ -7,7 +7,7 @@
 
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { showInSpreadsheet, openDiagram } from '../../../../../redux/slices/workspace-slice';
+import { showInSpreadsheet, openSLD } from '../../../../../redux/slices/workspace-slice';
 import type {
     VoltageLevelDiagramParams,
     SubstationDiagramParams,
@@ -33,7 +33,7 @@ export const useDiagramNavigation = () => {
         (params: VoltageLevelDiagramParams | SubstationDiagramParams) => {
             const id = params.type === DiagramType.VOLTAGE_LEVEL ? params.voltageLevelId : params.substationId;
             if (id) {
-                dispatch(openDiagram({ id, diagramType: params.type }));
+                dispatch(openSLD({ id, diagramType: params.type }));
             }
         },
         [dispatch]

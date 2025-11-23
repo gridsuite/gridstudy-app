@@ -5,18 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState, memo } from 'react';
+import { useCallback, memo, type RefObject } from 'react';
 import { Box } from '@mui/material';
-import { Rnd } from 'react-rnd';
+import { Rnd, type RndDragCallback, type RndResizeCallback, type Position } from 'react-rnd';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { focusWindow, updateWindowPosition, updateWindowSize } from '../../../redux/slices/workspace-slice';
-import { selectWindow, selectFocusedWindowId } from '../../../redux/slices/workspace-selectors';
+import { focusWindow, updateWindowPosition, updateWindowSize, snapWindow } from '../../../redux/slices/workspace-slice';
+import { selectWindow } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
-import { WindowContentFactory } from '../window-contents/window-content-factory';
+import { WINDOW_CONTENT_REGISTRY } from '../window-contents/window-content-registry';
 import { WindowHeader } from './window-header';
 import type { UUID } from 'node:crypto';
 import { getWindowConfig } from '../constants/workspace.constants';
+import type { AppState } from '../../../redux/reducer';
+import { getSnapZone, type SnapRect } from './utils/snap-utils';
 
 const styles = {
     window: {
@@ -50,38 +52,41 @@ const styles = {
 
 interface WindowProps {
     windowId: UUID;
-    onSnapRequest: (windowId: UUID, mousePos: { x: number; y: number } | null) => void;
+    containerRef: RefObject<HTMLDivElement>;
+    snapPreview: SnapRect | null;
+    onSnapPreview: (preview: SnapRect | null) => void;
+    isFocused: boolean;
 }
-export const Window = memo(({ windowId, onSnapRequest }: WindowProps) => {
+export const Window = memo(({ windowId, containerRef, snapPreview, onSnapPreview, isFocused }: WindowProps) => {
     const dispatch = useDispatch();
     const window = useSelector((state: RootState) => selectWindow(state, windowId));
-    const focusedWindowId = useSelector(selectFocusedWindowId);
-    const [dragMousePos, setDragMousePos] = useState<{ x: number; y: number } | null>(null);
-    const [isDragging, setIsDragging] = useState(false);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const isMaximized = window?.isMaximized ?? false;
-    const isPinned = window?.isPinned ?? false;
-    const isFocused = focusedWindowId === windowId;
-
-    const handleDrag = useCallback((_e: any, _d: { x: number; y: number }) => {
-        setIsDragging(true);
-        const event = globalThis.window.event as MouseEvent | undefined;
-        if (event) {
-            setDragMousePos({ x: event.clientX, y: event.clientY });
-        }
-    }, []);
-
-    const handleDragStop = useCallback(
-        (_e: any, data: { x: number; y: number }) => {
-            setIsDragging(false);
-            setDragMousePos(null);
-            dispatch(updateWindowPosition({ windowId, position: { x: data.x, y: data.y } }));
+    const handleDrag = useCallback(
+        (e: MouseEvent) => {
+            if (!containerRef.current) return;
+            const rect = containerRef.current.getBoundingClientRect();
+            onSnapPreview(getSnapZone(e.clientX, e.clientY, rect));
         },
-        [dispatch, windowId]
+        [containerRef, onSnapPreview]
     );
 
-    const handleResizeStop = useCallback(
-        (_e: any, _direction: any, ref: HTMLElement, _delta: any, position: { x: number; y: number }) => {
+    const handleDragStop: RndDragCallback = useCallback(
+        (_e, data) => {
+            if (snapPreview) {
+                dispatch(snapWindow({ windowId, rect: snapPreview }));
+            } else {
+                dispatch(updateWindowPosition({ windowId, position: { x: data.x, y: data.y } }));
+            }
+            onSnapPreview(null);
+        },
+        [dispatch, windowId, snapPreview, onSnapPreview]
+    );
+
+    const handleResizeStop: RndResizeCallback = useCallback(
+        (_e, _direction, ref, _delta, position) => {
             dispatch(
                 updateWindowSize({
                     windowId,
@@ -94,20 +99,12 @@ export const Window = memo(({ windowId, onSnapRequest }: WindowProps) => {
     );
 
     const handleFocus = useCallback(() => {
-        if (!isDragging) {
+        if (!isFocused) {
             dispatch(focusWindow(windowId));
         }
-    }, [dispatch, windowId, isDragging]);
+    }, [dispatch, windowId, isFocused]);
 
-    useEffect(() => {
-        if (isDragging && dragMousePos && !isMaximized && !isPinned) {
-            onSnapRequest(windowId, dragMousePos);
-        } else if (!isDragging && dragMousePos === null) {
-            onSnapRequest(windowId, null);
-        }
-    }, [isDragging, dragMousePos, windowId, onSnapRequest, isMaximized, isPinned]);
-
-    if (!window || window.isMinimized) {
+    if (!window) {
         return null;
     }
 
@@ -131,7 +128,7 @@ export const Window = memo(({ windowId, onSnapRequest }: WindowProps) => {
                 width: window.isMaximized ? '100%' : window.size.width,
                 height: window.isMaximized ? '100%' : window.size.height,
             }}
-            onDrag={handleDrag}
+            onDrag={handleDrag as any}
             onDragStop={handleDragStop}
             onResizeStop={handleResizeStop}
             dragHandleClassName="window-header"
@@ -141,20 +138,28 @@ export const Window = memo(({ windowId, onSnapRequest }: WindowProps) => {
             minWidth={minWidth}
             minHeight={minHeight}
             style={{
-                zIndex: window.zIndex,
+                display: window.isMinimized ? 'none' : 'block',
             }}
         >
             <Box sx={{ ...styles.window, boxShadow: isFocused ? 14 : 0 }}>
                 <WindowHeader
                     windowId={windowId}
                     title={window.title}
+                    windowType={window.type}
                     isPinned={window.isPinned}
                     isMaximized={window.isMaximized}
                     isFocused={isFocused}
                     onFocus={handleFocus}
                 />
                 <Box className="window-content" sx={styles.content}>
-                    <WindowContentFactory windowId={windowId} windowType={window.type} windowData={window.metadata} />
+                    {studyUuid && currentRootNetworkUuid && currentNode
+                        ? WINDOW_CONTENT_REGISTRY[window.type]({
+                              windowId,
+                              studyUuid: studyUuid as UUID,
+                              currentRootNetworkUuid: currentRootNetworkUuid as UUID,
+                              currentNode,
+                          })
+                        : null}
                 </Box>
             </Box>
         </Rnd>

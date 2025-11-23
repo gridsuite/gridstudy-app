@@ -6,17 +6,13 @@
  */
 
 import { Box } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
-import { useState, useCallback, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { useRef, useState, useCallback, useMemo } from 'react';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import { selectWindowIds } from '../../../redux/slices/workspace-selectors';
-import { snapWindow } from '../../../redux/slices/workspace-slice';
+import { selectWindowIds, selectFocusedWindowId } from '../../../redux/slices/workspace-selectors';
 import { WindowDock } from './window-dock';
 import { Window } from './window';
-import { SnapZones } from './snap-zones';
-import { UUID } from 'crypto';
-
-type SnapState = { windowId: string; mousePos: { x: number; y: number } } | null;
+import type { SnapRect } from './utils/snap-utils';
 
 const styles = {
     container: {
@@ -33,40 +29,55 @@ const styles = {
         flex: 1,
         overflow: 'hidden',
     },
+    snapPreview: (theme) => ({
+        position: 'absolute',
+        backgroundColor: theme.palette.primary.main + '26',
+        border: '2px solid',
+        borderColor: theme.palette.primary.main,
+        pointerEvents: 'none',
+        zIndex: 99998,
+        transition: 'all 0.15s',
+    }),
 } as const satisfies MuiStyles;
 
 export const WorkspaceContainer = () => {
-    const dispatch = useDispatch();
     const windowIds = useSelector(selectWindowIds);
-
-    const [snapState, setSnapState] = useState<SnapState>(null);
+    const focusedWindowId = useSelector(selectFocusedWindowId);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [snapPreview, setSnapPreview] = useState<SnapRect | null>(null);
 
-    const handleSnapRequest = useCallback((windowId: string, mousePos: { x: number; y: number } | null) => {
-        setSnapState(mousePos ? { windowId, mousePos } : null);
+    const handleSnapPreview = useCallback((preview: SnapRect | null) => {
+        setSnapPreview(preview);
     }, []);
 
-    const handleSnap = useCallback(
-        (windowId: string, rect: { x: number; y: number; width: number; height: number }) => {
-            dispatch(snapWindow({ windowId: windowId as UUID, rect }));
-            setSnapState(null);
-        },
-        [dispatch]
-    );
+    // Sort windows to render focused window on top
+    const sortedWindowIds = useMemo(() => {
+        if (!focusedWindowId) return windowIds;
+        return windowIds.filter((id) => id !== focusedWindowId).concat(focusedWindowId);
+    }, [windowIds, focusedWindowId]);
 
     return (
         <Box sx={styles.container}>
             <Box ref={containerRef} sx={styles.windowsArea}>
-                {windowIds.map((windowId) => (
-                    <Window key={windowId} windowId={windowId} onSnapRequest={handleSnapRequest} />
-                ))}
-                {snapState && (
-                    <SnapZones
-                        windowId={snapState.windowId as UUID}
-                        mouseX={snapState.mousePos.x}
-                        mouseY={snapState.mousePos.y}
-                        onSnap={handleSnap}
+                {sortedWindowIds.map((windowId) => (
+                    <Window
+                        key={windowId}
+                        windowId={windowId}
                         containerRef={containerRef}
+                        snapPreview={snapPreview}
+                        onSnapPreview={handleSnapPreview}
+                        isFocused={windowId === focusedWindowId}
+                    />
+                ))}
+                {snapPreview && (
+                    <Box
+                        sx={(theme) => ({
+                            ...styles.snapPreview(theme),
+                            left: snapPreview.x,
+                            top: snapPreview.y,
+                            width: snapPreview.width,
+                            height: snapPreview.height,
+                        })}
                     />
                 )}
             </Box>

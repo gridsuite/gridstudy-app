@@ -7,10 +7,10 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
-import type { WindowState, WindowType, WorkspaceConfig } from '../../components/workspace/types/workspace.types';
+import type { WindowState, WindowType, Workspace } from '../../components/workspace/types/workspace.types';
 import type { UUID } from 'node:crypto';
 
-const getActiveWorkspace = (state: RootState): WorkspaceConfig | undefined => {
+const getActiveWorkspace = (state: RootState): Workspace | undefined => {
     return state.workspace.workspaces[state.workspace.activeWorkspaceId];
 };
 
@@ -27,23 +27,17 @@ export const selectIsWindowTypeOpen = createSelector(
     }
 );
 
-export const selectWindowIds = createSelector([getActiveWorkspace], (workspace): UUID[] => {
+export const selectWindowIds = (state: RootState): UUID[] => {
+    const workspace = getActiveWorkspace(state);
     return workspace ? (Object.keys(workspace.windows) as UUID[]) : [];
-});
+};
 
-export const selectWindows = createSelector([getActiveWorkspace], (workspace): WindowState[] => {
+export const selectWindows = (state: RootState): WindowState[] => {
+    const workspace = getActiveWorkspace(state);
     return workspace ? Object.values(workspace.windows) : [];
-});
+};
 
-export const selectWorkspaces = createSelector(
-    [(state: RootState) => state.workspace.workspaces],
-    (workspaces): WorkspaceConfig[] => Object.values(workspaces)
-);
-
-export const selectActiveWorkspaceId = (state: RootState) => state.workspace.activeWorkspaceId;
-
-export const selectFocusedWindowId = createSelector([getActiveWorkspace], (workspace): UUID | null => {
+export const selectFocusedWindowId = (state: RootState): UUID | null => {
+    const workspace = getActiveWorkspace(state);
     return workspace?.focusedWindowId ?? null;
-});
-
-export const selectPendingSpreadsheetTarget = (state: RootState) => state.workspace.pendingSpreadsheetTarget;
+};

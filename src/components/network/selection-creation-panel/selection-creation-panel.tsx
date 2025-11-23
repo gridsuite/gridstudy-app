@@ -25,7 +25,7 @@ import {
     FOLDER_NAME,
 } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
@@ -38,8 +38,7 @@ import {
     getSelectionCreationSchema,
 } from './selection-creation-schema';
 import { VoltageLevel } from '../../utils/equipment-types';
-import { openNAD } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
-import { useDispatch } from 'react-redux';
+import { openNAD } from '../../../redux/slices/workspace-slice';
 
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
@@ -109,7 +108,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 )
                 .filter((id): id is string => !!id);
 
-            dispatch(openNAD(formData.name, { initialVoltageLevelIds: voltageLevelIds }));
+            dispatch(openNAD({ name: formData.name, initialVoltageLevelIds: voltageLevelIds }));
             return;
         }
 

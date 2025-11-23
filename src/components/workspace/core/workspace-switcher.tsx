@@ -30,10 +30,11 @@ import {
     Edit as EditIcon,
     RestartAlt as RestartAltIcon,
 } from '@mui/icons-material';
-import { type MuiStyles, OverflowableText, PopupConfirmationDialog } from '@gridsuite/commons-ui';
+import { type MuiStyles, OverflowableText, PopupConfirmationDialog, CancelButton } from '@gridsuite/commons-ui';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { WORKSPACE_MENU_VALUE } from '../constants/workspace.constants';
-import { selectWorkspaces, selectActiveWorkspaceId } from '../../../redux/slices/workspace-selectors';
+import type { RootState } from '../../../redux/store';
+import type { Workspace } from '../types/workspace.types';
 import {
     switchWorkspace,
     renameWorkspace as renameWorkspaceAction,
@@ -46,6 +47,7 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         gap: 1,
+        marginLeft: 2,
     },
     toggleButton: {
         display: 'flex',
@@ -58,31 +60,26 @@ const styles = {
             lineHeight: 1,
         },
     },
-    dialog: {
-        '& .MuiDialog-paper': {
-            minWidth: 400,
-        },
-    },
-    workspaceItem: {
+    workspaceItem: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         gap: 1,
         '&:hover': {
-            backgroundColor: 'action.hover',
+            backgroundColor: theme.palette.action.hover,
         },
-    },
-    activeWorkspace: {
-        backgroundColor: 'action.selected',
+    }),
+    activeWorkspace: (theme) => ({
+        backgroundColor: theme.palette.action.selected,
         borderLeft: 3,
-        borderColor: 'primary.main',
-    },
+        borderColor: theme.palette.primary.main,
+    }),
 } as const satisfies MuiStyles;
 
 export const WorkspaceSwitcher = memo(() => {
     const intl = useIntl();
     const dispatch = useDispatch();
-    const workspaces = useSelector(selectWorkspaces);
-    const activeWorkspaceId = useSelector(selectActiveWorkspaceId);
+    const workspaces = useSelector((state: RootState) => Object.values(state.workspace.workspaces) as Workspace[]);
+    const activeWorkspaceId = useSelector((state: RootState) => state.workspace.activeWorkspaceId);
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [renameDialog, setRenameDialog] = useState<{ workspaceId: UUID; name: string } | null>(null);
@@ -123,7 +120,7 @@ export const WorkspaceSwitcher = memo(() => {
 
     return (
         <Box sx={styles.container}>
-            <Typography>
+            <Typography sx={{ display: { xs: 'none', lg: 'block' } }}>
                 <FormattedMessage id="workspaces" />
             </Typography>
             <ToggleButtonGroup
@@ -143,7 +140,7 @@ export const WorkspaceSwitcher = memo(() => {
                         </ToggleButton>
                     </Tooltip>
                 ))}
-                <Tooltip title="Manage workspaces">
+                <Tooltip title={intl.formatMessage({ id: 'manageWorkspaces' })}>
                     <ToggleButton
                         value={WORKSPACE_MENU_VALUE}
                         sx={styles.toggleButton}
@@ -179,10 +176,10 @@ export const WorkspaceSwitcher = memo(() => {
                                         maxLineCount={1}
                                     />
                                     <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                                        {windowCount} window{windowCount !== 1 ? 's' : ''}
+                                        {windowCount} <FormattedMessage id={windowCount !== 1 ? 'windows' : 'window'} />
                                     </Typography>
                                 </Box>
-                                <Tooltip title="Rename">
+                                <Tooltip title={intl.formatMessage({ id: 'Rename' })}>
                                     <IconButton
                                         size="small"
                                         onClick={(e) => {
@@ -194,7 +191,7 @@ export const WorkspaceSwitcher = memo(() => {
                                         <EditIcon fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
-                                <Tooltip title="Reset">
+                                <Tooltip title={intl.formatMessage({ id: 'reset' })}>
                                     <IconButton
                                         size="small"
                                         onClick={(e) => {
@@ -214,23 +211,30 @@ export const WorkspaceSwitcher = memo(() => {
 
             {/* Rename dialog */}
             {renameDialog && (
-                <Dialog open onClose={() => setRenameDialog(null)} sx={styles.dialog}>
-                    <DialogTitle>Rename Workspace</DialogTitle>
+                <Dialog open onClose={() => setRenameDialog(null)} maxWidth="xs" fullWidth>
+                    <DialogTitle>
+                        <FormattedMessage id="renameWorkspace" />
+                    </DialogTitle>
                     <DialogContent>
                         <TextField
                             autoFocus
                             fullWidth
-                            label="Workspace Name"
+                            label={intl.formatMessage({ id: 'workspaceName' })}
                             value={renameDialog.name}
                             onChange={(e) => setRenameDialog({ ...renameDialog, name: e.target.value })}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSubmitRename()}
-                            margin="normal"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && renameDialog.name.trim()) {
+                                    handleSubmitRename();
+                                }
+                            }}
+                            margin="dense"
+                            variant="filled"
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setRenameDialog(null)}>Cancel</Button>
-                        <Button onClick={handleSubmitRename} variant="contained" disabled={!renameDialog.name.trim()}>
-                            Rename
+                        <CancelButton onClick={() => setRenameDialog(null)} />
+                        <Button onClick={handleSubmitRename} variant="outlined" disabled={!renameDialog.name.trim()}>
+                            <FormattedMessage id="validate" />
                         </Button>
                     </DialogActions>
                 </Dialog>

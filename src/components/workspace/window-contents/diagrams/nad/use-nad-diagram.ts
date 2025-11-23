@@ -13,7 +13,7 @@ import { DiagramType, NetworkAreaDiagram } from '../../../../grid-layout/cards/d
 import { fetchSvg, getNetworkAreaDiagramUrl, PREFIX_STUDY_QUERIES } from '../../../../../services/study';
 import { mergePositions } from '../../../../grid-layout/cards/diagrams/diagram-utils';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
-import type { DiagramWindowData } from '../../../types/workspace.types';
+import type { NADWindowMetadata } from '../../../types/workspace.types';
 import { backendFetchJson } from '@gridsuite/commons-ui';
 import { updateWindowMetadata as updateWindowMetadataAction } from '../../../../../redux/slices/workspace-slice';
 import type { DiagramConfigPosition } from '../../../../../services/explore';
@@ -22,7 +22,7 @@ import { isNodeBuilt, isStatusBuilt } from '../../../../graph/util/model-functio
 import { NodeType } from '../../../../graph/tree-node.type';
 
 interface UseNadDiagramProps {
-    diagramData: DiagramWindowData;
+    diagramMetadata: NADWindowMetadata;
     windowId: UUID;
     studyUuid: UUID;
     currentNodeId: UUID;
@@ -30,7 +30,7 @@ interface UseNadDiagramProps {
 }
 
 export const useNadDiagram = ({
-    diagramData,
+    diagramMetadata,
     windowId,
     studyUuid,
     currentNodeId,
@@ -39,14 +39,14 @@ export const useNadDiagram = ({
     const dispatch = useDispatch();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
-    const savedConfigRef = useRef<UUID | undefined>(diagramData.savedWorkspaceConfigUuid);
+    const savedConfigRef = useRef<UUID | undefined>(diagramMetadata.savedWorkspaceConfigUuid);
 
     const [diagram, setDiagram] = useState<NetworkAreaDiagram>(() => ({
         type: DiagramType.NETWORK_AREA_DIAGRAM,
         svg: null,
-        nadConfigUuid: diagramData.nadConfigUuid,
-        filterUuid: diagramData.filterUuid,
-        voltageLevelIds: diagramData.initialVoltageLevelIds || [],
+        nadConfigUuid: diagramMetadata.nadConfigUuid,
+        filterUuid: diagramMetadata.filterUuid,
+        voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
         positions: [],
         voltageLevelToExpandIds: [],
         voltageLevelToOmitIds: [],
@@ -80,7 +80,6 @@ export const useNadDiagram = ({
                     updateWindowMetadataAction({
                         windowId,
                         metadata: {
-                            diagramType: 'network-area-diagram',
                             savedWorkspaceConfigUuid: response,
                         },
                     })
@@ -205,9 +204,9 @@ export const useNadDiagram = ({
         setDiagram({
             type: DiagramType.NETWORK_AREA_DIAGRAM,
             svg: null,
-            nadConfigUuid: diagramData.nadConfigUuid,
-            filterUuid: diagramData.filterUuid,
-            voltageLevelIds: diagramData.initialVoltageLevelIds || [],
+            nadConfigUuid: diagramMetadata.nadConfigUuid,
+            filterUuid: diagramMetadata.filterUuid,
+            voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
             positions: [],
             voltageLevelToExpandIds: [],
             voltageLevelToOmitIds: [],
@@ -221,8 +220,8 @@ export const useNadDiagram = ({
         currentNode?.type,
         currentNode?.data?.globalBuildStatus,
         currentRootNetworkUuid,
-        diagramData.nadConfigUuid,
-        diagramData.filterUuid,
+        diagramMetadata.nadConfigUuid,
+        diagramMetadata.filterUuid,
     ]);
 
     // Listen for notifications and refetch

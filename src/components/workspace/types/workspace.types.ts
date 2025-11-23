@@ -13,31 +13,25 @@ export enum WindowType {
     LOGS = 'LOGS',
     RESULTS = 'RESULTS',
     PARAMETERS = 'PARAMETERS',
-    DIAGRAM = 'DIAGRAM',
+    SLD = 'SLD',
+    NAD = 'NAD',
     MAP = 'MAP',
     NODE_EDITOR = 'NODE_EDITOR',
     EVENT_SCENARIO = 'EVENT_SCENARIO',
 }
-
-export interface SpreadsheetWindowData {
-    equipmentId?: string;
-    equipmentType?: string;
-}
-
-export interface DiagramWindowData {
-    diagramType: string;
-    // SLD-specific fields
+export interface SLDWindowMetadata {
     voltageLevelId?: string;
     substationId?: string;
-    // NAD-specific fields (only config references, not voluminous data)
+}
+
+export interface NADWindowMetadata {
     nadConfigUuid?: UUID;
     filterUuid?: UUID;
     savedWorkspaceConfigUuid?: UUID;
-    // Transient initialization data (consumed once on mount, then cleared, not persisted)
     initialVoltageLevelIds?: string[];
 }
 
-export type WindowData = SpreadsheetWindowData | DiagramWindowData | Record<string, never>;
+export type WindowMetadata = SLDWindowMetadata | NADWindowMetadata | Record<string, never>;
 
 export interface WindowPosition {
     x: number;
@@ -53,11 +47,9 @@ export interface WindowState {
     id: UUID;
     type: WindowType;
     title: string;
-    metadata?: WindowData;
-    keepMountedWhenMinimized?: boolean;
+    metadata?: WindowMetadata;
     position: WindowPosition;
     size: WindowSize;
-    zIndex: number;
     isMinimized: boolean;
     isMaximized: boolean;
     isPinned: boolean;
@@ -65,21 +57,15 @@ export interface WindowState {
     restoreSize?: WindowSize;
 }
 
-export interface WorkspaceState {
-    windows: Record<UUID, WindowState>;
-    focusedWindowId: UUID | null;
-    nextZIndex: number;
-}
-
-export interface WorkspaceConfig {
+export interface Workspace {
     id: UUID;
     name: string;
     windows: Record<UUID, WindowState>;
     focusedWindowId: UUID | null;
-    nextZIndex: number;
 }
 
-export interface MultiWorkspaceState {
-    workspaces: Record<UUID, WorkspaceConfig>;
+export interface WorkspacesState {
+    workspaces: Record<UUID, Workspace>;
     activeWorkspaceId: UUID;
+    pendingSpreadsheetTarget: { equipmentId: string; equipmentType: string } | null;
 }

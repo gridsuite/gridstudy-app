@@ -17,20 +17,20 @@ import {
 } from '../../../../../services/study/network';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../../utils/config-params';
 import { SLD_DISPLAY_MODE } from '../../../../network/constants';
-import type { DiagramWindowData } from '../../../types/workspace.types';
+import type { SLDWindowMetadata } from '../../../types/workspace.types';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../../graph/util/model-functions';
 import { NodeType } from '../../../../graph/tree-node.type';
 
 interface UseSldDiagramProps {
-    diagramData: DiagramWindowData;
+    diagramMetadata: SLDWindowMetadata;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
 }
 
 export const useSldDiagram = ({
-    diagramData,
+    diagramMetadata,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
@@ -40,14 +40,14 @@ export const useSldDiagram = ({
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
-    const [diagram, setDiagram] = useState<Diagram>(
-        () =>
-            ({
-                ...diagramData,
-                type: diagramData.diagramType as DiagramType,
-                svg: null,
-            }) as Diagram
-    );
+    const [diagram, setDiagram] = useState<Diagram>(() => {
+        const type = diagramMetadata.voltageLevelId ? DiagramType.VOLTAGE_LEVEL : DiagramType.SUBSTATION;
+        return {
+            ...diagramMetadata,
+            type,
+            svg: null,
+        } as Diagram;
+    });
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
 
@@ -125,9 +125,10 @@ export const useSldDiagram = ({
         setGlobalError(undefined);
 
         // Update diagram from diagramData
+        const type = diagramMetadata.voltageLevelId ? DiagramType.VOLTAGE_LEVEL : DiagramType.SUBSTATION;
         setDiagram({
-            ...diagramData,
-            type: diagramData.diagramType as DiagramType,
+            ...diagramMetadata,
+            type,
             svg: null,
         } as Diagram);
 
@@ -139,9 +140,8 @@ export const useSldDiagram = ({
         currentNode?.type,
         currentNode?.data?.globalBuildStatus,
         currentRootNetworkUuid,
-        diagramData.voltageLevelId,
-        diagramData.substationId,
-        diagramData.diagramType,
+        diagramMetadata.voltageLevelId,
+        diagramMetadata.substationId,
     ]);
 
     // Listen for notifications and refetch

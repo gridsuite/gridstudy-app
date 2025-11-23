@@ -5,13 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchAppsMetadata, LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
-import { Badge, Box, Tab, Tabs } from '@mui/material';
-import { Settings } from '@mui/icons-material';
-import { FormattedMessage } from 'react-intl';
+import { Box } from '@mui/material';
 import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -20,7 +18,6 @@ import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { getServersInfos } from '../services/study';
 import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
-import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
 import { WorkspaceToolbar } from './workspace/core/workspace-toolbar';
@@ -49,14 +46,11 @@ const styles = {
 const AppTopBar = ({ user, userManager }) => {
     const dispatch = useDispatch();
     const theme = useSelector((state) => state[PARAM_THEME]);
-    const appTabIndex = useSelector((state) => state.appTabIndex);
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
-
-    const notificationsCount = useComputationResultsCount();
 
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
     const [useNameLocal, handleChangeUseName] = useParameterState(PARAM_USE_NAME);

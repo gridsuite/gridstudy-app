@@ -13,7 +13,7 @@ import { BranchSide } from '../../utils/constants';
 import type { UUID } from 'node:crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { openSLD } from '../../workspace/window-contents/diagrams/common/use-diagram-handlers';
+import { openSLD } from '../../../redux/slices/workspace-slice';
 import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 import { useDispatch } from 'react-redux';
 
@@ -74,7 +74,7 @@ export const useLoadFlowResultColumnActions = ({
                                     },
                                 });
                             } else {
-                                dispatch(openSLD(vlId, DiagramType.VOLTAGE_LEVEL));
+                                dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
                             }
                         });
                 }

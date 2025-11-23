@@ -14,6 +14,7 @@ import RunningStatus from 'components/utils/running-status';
 import { NodeEditorHeader } from './node-editor-header';
 import { isSecurityModificationNode } from '../../tree-node.type';
 import { LoadflowModificationAlert } from './loadflow-modifications/loadflow-modification-alert';
+import { memo } from 'react';
 
 const styles = {
     paper: (theme) => ({
@@ -25,7 +26,7 @@ const styles = {
     }),
 } as const satisfies MuiStyles;
 
-const NodeEditor = () => {
+const NodeEditor = memo(() => {
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
@@ -39,6 +40,6 @@ const NodeEditor = () => {
             )}
         </Box>
     );
-};
+});
 
 export default NodeEditor;

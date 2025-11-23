@@ -41,7 +41,6 @@ import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/util
 import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
-    attemptLeaveParametersTab,
     initTableDefinitions,
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
@@ -51,7 +50,6 @@ import {
     selectLanguage,
     selectTheme,
     selectUseName,
-    setAppTabIndex,
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
@@ -76,7 +74,6 @@ const noUserManager = { instance: null, error: null };
 const App = () => {
     const { snackError } = useSnackMessage();
 
-    const appTabIndex = useSelector((state) => state.appTabIndex);
     const user = useSelector((state) => state.user);
     const studyUuid = useSelector((state) => state.studyUuid);
     const signInCallbackError = useSelector((state) => state.signInCallbackError);

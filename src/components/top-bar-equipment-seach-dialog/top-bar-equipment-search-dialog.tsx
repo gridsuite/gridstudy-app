@@ -36,6 +36,7 @@ interface TopBarEquipmentSearchDialogProps {
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
     disableEventSearch?: boolean;
     disablCenterSubstation?: boolean;
+    disableKeyboardShortcut?: boolean;
 }
 
 export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearchDialogProps> = (props) => {
@@ -45,6 +46,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
         showVoltageLevelDiagram,
         disableEventSearch,
         disablCenterSubstation = false,
+        disableKeyboardShortcut = false,
     } = props;
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -125,7 +127,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
         [closeDialog, disablCenterSubstation]
     );
 
-    useSearchEvent(enableSearchDialog);
+    useSearchEvent(disableKeyboardShortcut ? () => {} : enableSearchDialog);
 
     return (
         <ElementSearchDialog

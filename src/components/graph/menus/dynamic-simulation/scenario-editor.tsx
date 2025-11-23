@@ -23,9 +23,7 @@ const styles = {
     }),
 } as const satisfies MuiStyles;
 
-export interface ScenarioEditorProps {}
-
-const ScenarioEditor = (props: ScenarioEditorProps) => {
+const ScenarioEditor = () => {
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const intl = useIntl();
