@@ -92,6 +92,9 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
                     columnDefs={columns}
                     onRowDataUpdated={handleRowDataUpdated}
                     onGridReady={handleGridReady}
+                    onDisplayedColumnsChanged={({ api }) => {
+                        setCsvHeaders(getColumnHeaderDisplayNames(api));
+                    }}
                     overlayNoRowsTemplate={noRowMessage}
                     overrideLocales={AGGRID_LOCALES}
                     onModelUpdated={({ api }) => {
