@@ -28,6 +28,7 @@ export const createDefaultWorkspaces = (): Record<UUID, Workspace> => {
             name: `Workspace ${i + 1}`,
             panels: {},
             focusedPanelId: null,
+            nextZIndex: 1,
         };
 
         if (i === 0) {
@@ -40,6 +41,7 @@ export const createDefaultWorkspaces = (): Record<UUID, Workspace> => {
                 metadata: undefined,
                 position: { x: 0, y: 0 },
                 size: treeConfig.defaultSize,
+                zIndex: workspace.nextZIndex++,
                 isMinimized: false,
                 isMaximized: true,
                 isPinned: false,
@@ -90,6 +92,7 @@ export const createPanel = (
         metadata: options.metadata,
         position: options.position || config.defaultPosition,
         size: options.size || config.defaultSize,
+        zIndex: workspace.nextZIndex++,
         isMinimized: false,
         isMaximized: false,
         isPinned: false,
@@ -103,6 +106,7 @@ export const bringToFront = (workspace: Workspace, panelId: UUID) => {
     const panel = workspace.panels[panelId];
     if (panel) {
         workspace.focusedPanelId = panelId;
+        panel.zIndex = workspace.nextZIndex++;
         if (panel.isMinimized) {
             panel.isMinimized = false;
         }

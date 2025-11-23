@@ -27,7 +27,8 @@ import { useNodeAliases } from '../../hooks/use-node-aliases';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
-import { openSLD, consumeSpreadsheetTarget } from '../../../../redux/slices/workspace-slice';
+import { openSLD, updatePanelMetadata } from '../../../../redux/slices/workspace-slice';
+import type { UUID } from 'node:crypto';
 
 const styles = {
     table: (theme) => ({
@@ -47,6 +48,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface SpreadsheetContentProps {
+    panelId: UUID;
     gridRef: RefObject<AgGridReact>;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
@@ -59,6 +61,7 @@ interface SpreadsheetContentProps {
 
 export const SpreadsheetContent = memo(
     ({
+        panelId,
         gridRef,
         currentNode,
         tableDefinition,
@@ -107,10 +110,19 @@ export const SpreadsheetContent = memo(
                 if (selectedRow) {
                     gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
                     selectedRow.setSelected(true, true);
-                    dispatch(consumeSpreadsheetTarget());
+                    // Clear the metadata after successfully scrolling to equipment
+                    dispatch(
+                        updatePanelMetadata({
+                            panelId,
+                            metadata: {
+                                targetEquipmentId: undefined,
+                                targetEquipmentType: undefined,
+                            },
+                        })
+                    );
                 }
             }
-        }, [equipmentId, gridRef, isGridReady, dispatch]);
+        }, [equipmentId, gridRef, isGridReady, dispatch, panelId]);
 
         useEffect(() => {
             handleEquipmentScroll();

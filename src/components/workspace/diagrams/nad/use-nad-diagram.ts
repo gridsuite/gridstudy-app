@@ -154,6 +154,21 @@ export const useNadDiagram = ({
                                 saveNadConfig(updatedDiagram.voltageLevelIds, updatedDiagram.positions, scalingFactor);
                             }
 
+                            // Clear initialVoltageLevelIds after first fetch to prevent re-initialization
+                            if (
+                                diagramMetadata.initialVoltageLevelIds &&
+                                diagramMetadata.initialVoltageLevelIds.length > 0
+                            ) {
+                                dispatch(
+                                    updatePanelMetadataAction({
+                                        panelId: windowId,
+                                        metadata: {
+                                            initialVoltageLevelIds: undefined,
+                                        },
+                                    })
+                                );
+                            }
+
                             return updatedDiagram;
                         });
                     })
@@ -170,7 +185,17 @@ export const useNadDiagram = ({
             console.error('Error fetching NAD diagram:', error);
             setLoading(false);
         }
-    }, [currentNode, studyUuid, currentNodeId, currentRootNetworkUuid, networkVisuParams, saveNadConfig]);
+    }, [
+        currentNode,
+        studyUuid,
+        currentNodeId,
+        currentRootNetworkUuid,
+        networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+        diagramMetadata.initialVoltageLevelIds,
+        saveNadConfig,
+        dispatch,
+        windowId,
+    ]);
 
     const updateDiagram = useCallback(
         (

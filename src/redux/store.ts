@@ -12,7 +12,7 @@ import { setUserStore } from './user-store';
 import workspacesReducer, { saveWorkspacesToStorage } from './slices/workspace-slice';
 import { debounce } from '@mui/material';
 
-const saveWorkspacesDebounced = debounce(saveWorkspacesToStorage, 300);
+const saveWorkspacesDebounced = debounce(saveWorkspacesToStorage, 500);
 
 const workspacesPersistenceMiddleware = (store: any) => (next: any) => (action: any) => {
     const result = next(action);

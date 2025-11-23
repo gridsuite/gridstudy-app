@@ -23,6 +23,8 @@ import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from '
 import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
 import { type MuiStyles, PopupConfirmationDialog, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
+import { selectPanel } from '../../redux/slices/workspace-selectors';
+import { SpreadsheetPanelMetadata } from '../workspace/types/workspace.types';
 
 const styles = {
     invalidNode: {
@@ -33,11 +35,12 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface SpreadsheetViewProps {
+    panelId: UUID;
     currentNode: CurrentTreeNode;
     disabled: boolean;
 }
 
-export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ currentNode, disabled }) => {
+const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panelId, currentNode, disabled }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -48,10 +51,11 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ curre
     const activeSpreadsheetTabUuid = useSelector((state: AppState) => state.tables.activeTabUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    // Read from inter-window communication state
-    const pendingSpreadsheetTarget = useSelector((state: RootState) => state.workspace.pendingSpreadsheetTarget);
-    const targetEquipmentId = pendingSpreadsheetTarget?.equipmentId;
-    const targetEquipmentType = pendingSpreadsheetTarget?.equipmentType;
+    // Read from panel metadata
+    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
+    const panelMetadata = panel?.metadata as SpreadsheetPanelMetadata | undefined;
+    const targetEquipmentId = panelMetadata?.targetEquipmentId;
+    const targetEquipmentType = panelMetadata?.targetEquipmentType;
 
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
 
@@ -79,7 +83,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ curre
     }, [
         targetEquipmentId,
         targetEquipmentType,
-        pendingSpreadsheetTarget,
+        panelMetadata,
         tablesDefinitions,
         activeSpreadsheetTabUuid,
         handleSwitchTab,
@@ -154,6 +158,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ curre
                                 }}
                             >
                                 <Spreadsheet
+                                    panelId={panelId}
                                     currentNode={currentNode}
                                     tableDefinition={tabDef}
                                     disabled={disabled}
@@ -178,3 +183,6 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ curre
         </Paper>
     );
 };
+
+export { SpreadsheetView };
+export default SpreadsheetView;

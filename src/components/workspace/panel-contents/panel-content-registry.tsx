@@ -37,8 +37,8 @@ export const PANEL_CONTENT_REGISTRY: Record<PanelType, PanelRenderer> = {
         </ReactFlowProvider>
     ),
 
-    [PanelType.SPREADSHEET]: ({ currentNode }) => (
-        <SpreadsheetView currentNode={currentNode} disabled={!isNodeBuilt(currentNode)} />
+    [PanelType.SPREADSHEET]: ({ panelId, currentNode }) => (
+        <SpreadsheetView panelId={panelId} currentNode={currentNode} disabled={!isNodeBuilt(currentNode)} />
     ),
 
     [PanelType.LOGS]: ({ currentNode }) => (

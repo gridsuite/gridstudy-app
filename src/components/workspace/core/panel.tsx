@@ -10,7 +10,12 @@ import { Box } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback, type Position } from 'react-rnd';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { focusPanel, updatePanelPosition, updatePanelSize, snapPanel } from '../../../redux/slices/workspace-slice';
+import {
+    focusPanel,
+    updatePanelPosition,
+    updatePanelPositionAndSize,
+    snapPanel,
+} from '../../../redux/slices/workspace-slice';
 import { selectPanel } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
 import { PANEL_CONTENT_REGISTRY } from '../panel-contents/panel-content-registry';
@@ -88,12 +93,12 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
     const handleResizeStop: RndResizeCallback = useCallback(
         (_e, _direction, ref, _delta, position) => {
             dispatch(
-                updatePanelSize({
+                updatePanelPositionAndSize({
                     panelId,
+                    position,
                     size: { width: parseInt(ref.style.width, 10), height: parseInt(ref.style.height, 10) },
                 })
             );
-            dispatch(updatePanelPosition({ panelId, position }));
         },
         [dispatch, panelId]
     );
@@ -139,6 +144,7 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
             minHeight={minHeight}
             style={{
                 display: panel.isMinimized ? 'none' : 'block',
+                zIndex: panel.zIndex,
             }}
         >
             <Box sx={{ ...styles.panel, boxShadow: isFocused ? 14 : 0 }}>

@@ -59,7 +59,6 @@ const DEFAULT_WORKSPACE_IDS = Object.keys(DEFAULT_WORKSPACES);
 const initialState: WorkspacesState = {
     workspaces: DEFAULT_WORKSPACES,
     activeWorkspaceId: DEFAULT_WORKSPACE_IDS[0] as UUID,
-    pendingSpreadsheetTarget: null,
 };
 
 const workspacesSlice = createSlice({
@@ -138,6 +137,21 @@ const workspacesSlice = createSlice({
         updatePanelSize: (state, action: PayloadAction<{ panelId: UUID; size: { width: number; height: number } }>) => {
             const { panelId, size } = action.payload;
             updatePanel(state, panelId, (panel) => {
+                panel.size = size;
+            });
+        },
+
+        updatePanelPositionAndSize: (
+            state,
+            action: PayloadAction<{
+                panelId: UUID;
+                position: { x: number; y: number };
+                size: { width: number; height: number };
+            }>
+        ) => {
+            const { panelId, position, size } = action.payload;
+            updatePanel(state, panelId, (panel) => {
+                panel.position = position;
                 panel.size = size;
             });
         },
@@ -249,14 +263,26 @@ const workspacesSlice = createSlice({
         // ==================== Spreadsheet-Specific Operations ====================
         showInSpreadsheet: (state, action: PayloadAction<{ equipmentId: string; equipmentType: EquipmentType }>) => {
             const workspace = getActiveWorkspace(state);
-            if (!findAndFocusPanel(workspace, PanelType.SPREADSHEET)) {
-                createPanel(workspace, PanelType.SPREADSHEET);
-            }
-            state.pendingSpreadsheetTarget = action.payload;
-        },
+            const spreadsheetPanelExists = findAndFocusPanel(workspace, PanelType.SPREADSHEET);
 
-        consumeSpreadsheetTarget: (state) => {
-            state.pendingSpreadsheetTarget = null;
+            if (spreadsheetPanelExists) {
+                // Update existing spreadsheet panel metadata
+                const panel = Object.values(workspace.panels).find((p) => p.type === PanelType.SPREADSHEET);
+                if (panel) {
+                    panel.metadata = {
+                        targetEquipmentId: action.payload.equipmentId,
+                        targetEquipmentType: action.payload.equipmentType,
+                    };
+                }
+            } else {
+                // Create new spreadsheet panel with target equipment in metadata
+                createPanel(workspace, PanelType.SPREADSHEET, {
+                    metadata: {
+                        targetEquipmentId: action.payload.equipmentId,
+                        targetEquipmentType: action.payload.equipmentType,
+                    },
+                });
+            }
         },
     },
 });
@@ -277,6 +303,7 @@ export const {
     focusPanel,
     updatePanelPosition,
     updatePanelSize,
+    updatePanelPositionAndSize,
     snapPanel,
     toggleMinimize,
     toggleMaximize,
@@ -288,7 +315,6 @@ export const {
     navigateSLD,
     // Spreadsheet Operations
     showInSpreadsheet,
-    consumeSpreadsheetTarget,
 } = workspacesSlice.actions;
 
 export default workspacesSlice.reducer;

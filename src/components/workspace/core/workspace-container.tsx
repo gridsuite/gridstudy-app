@@ -50,16 +50,10 @@ export const WorkspaceContainer = () => {
         setSnapPreview(preview);
     }, []);
 
-    // Sort panels to render focused panel on top
-    const sortedPanelIds = useMemo(() => {
-        if (!focusedPanelId) return panelIds;
-        return panelIds.filter((id) => id !== focusedPanelId).concat(focusedPanelId);
-    }, [panelIds, focusedPanelId]);
-
     return (
         <Box sx={styles.container}>
             <Box ref={containerRef} sx={styles.panelsArea}>
-                {sortedPanelIds.map((panelId) => (
+                {panelIds.map((panelId) => (
                     <Panel
                         key={panelId}
                         panelId={panelId}

@@ -31,7 +31,12 @@ export interface NADPanelMetadata {
     initialVoltageLevelIds?: string[];
 }
 
-export type PanelMetadata = SLDPanelMetadata | NADPanelMetadata | Record<string, never>;
+export interface SpreadsheetPanelMetadata {
+    targetEquipmentId?: string;
+    targetEquipmentType?: string;
+}
+
+export type PanelMetadata = SLDPanelMetadata | NADPanelMetadata | SpreadsheetPanelMetadata | Record<string, never>;
 
 export interface PanelPosition {
     x: number;
@@ -50,6 +55,7 @@ export interface PanelState {
     metadata?: PanelMetadata;
     position: PanelPosition;
     size: PanelSize;
+    zIndex: number;
     isMinimized: boolean;
     isMaximized: boolean;
     isPinned: boolean;
@@ -62,10 +68,10 @@ export interface Workspace {
     name: string;
     panels: Record<UUID, PanelState>;
     focusedPanelId: UUID | null;
+    nextZIndex: number;
 }
 
 export interface WorkspacesState {
     workspaces: Record<UUID, Workspace>;
     activeWorkspaceId: UUID;
-    pendingSpreadsheetTarget: { equipmentId: string; equipmentType: string } | null;
 }
