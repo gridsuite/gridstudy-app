@@ -10,28 +10,28 @@ import { Box } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback, type Position } from 'react-rnd';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { focusWindow, updateWindowPosition, updateWindowSize, snapWindow } from '../../../redux/slices/workspace-slice';
-import { selectWindow } from '../../../redux/slices/workspace-selectors';
+import { focusPanel, updatePanelPosition, updatePanelSize, snapPanel } from '../../../redux/slices/workspace-slice';
+import { selectPanel } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
-import { WINDOW_CONTENT_REGISTRY } from '../window-contents/window-content-registry';
-import { WindowHeader } from './window-header';
+import { PANEL_CONTENT_REGISTRY } from '../panel-contents/panel-content-registry';
+import { PanelHeader } from './panel-header';
 import type { UUID } from 'node:crypto';
-import { getWindowConfig } from '../constants/workspace.constants';
+import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
 
 const styles = {
-    window: {
+    panel: {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
         borderRadius: 4,
         overflow: 'hidden',
-        '& .window-resize-handle': {
+        '& .panel-resize-handle': {
             visibility: 'hidden',
         },
         '&:hover': {
-            '& .window-resize-handle, .window-header-close-button': {
+            '& .panel-resize-handle, .panel-header-close-button': {
                 visibility: 'visible',
             },
         },
@@ -50,16 +50,16 @@ const styles = {
     }),
 } as const satisfies MuiStyles;
 
-interface WindowProps {
-    windowId: UUID;
+interface PanelProps {
+    panelId: UUID;
     containerRef: RefObject<HTMLDivElement>;
     snapPreview: SnapRect | null;
     onSnapPreview: (preview: SnapRect | null) => void;
     isFocused: boolean;
 }
-export const Window = memo(({ windowId, containerRef, snapPreview, onSnapPreview, isFocused }: WindowProps) => {
+export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
     const dispatch = useDispatch();
-    const window = useSelector((state: RootState) => selectWindow(state, windowId));
+    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -76,85 +76,85 @@ export const Window = memo(({ windowId, containerRef, snapPreview, onSnapPreview
     const handleDragStop: RndDragCallback = useCallback(
         (_e, data) => {
             if (snapPreview) {
-                dispatch(snapWindow({ windowId, rect: snapPreview }));
+                dispatch(snapPanel({ panelId, rect: snapPreview }));
             } else {
-                dispatch(updateWindowPosition({ windowId, position: { x: data.x, y: data.y } }));
+                dispatch(updatePanelPosition({ panelId, position: { x: data.x, y: data.y } }));
             }
             onSnapPreview(null);
         },
-        [dispatch, windowId, snapPreview, onSnapPreview]
+        [dispatch, panelId, snapPreview, onSnapPreview]
     );
 
     const handleResizeStop: RndResizeCallback = useCallback(
         (_e, _direction, ref, _delta, position) => {
             dispatch(
-                updateWindowSize({
-                    windowId,
+                updatePanelSize({
+                    panelId,
                     size: { width: parseInt(ref.style.width, 10), height: parseInt(ref.style.height, 10) },
                 })
             );
-            dispatch(updateWindowPosition({ windowId, position }));
+            dispatch(updatePanelPosition({ panelId, position }));
         },
-        [dispatch, windowId]
+        [dispatch, panelId]
     );
 
     const handleFocus = useCallback(() => {
         if (!isFocused) {
-            dispatch(focusWindow(windowId));
+            dispatch(focusPanel(panelId));
         }
-    }, [dispatch, windowId, isFocused]);
+    }, [dispatch, panelId, isFocused]);
 
-    if (!window) {
+    if (!panel) {
         return null;
     }
 
-    const config = getWindowConfig(window.type);
+    const config = getPanelConfig(panel.type);
     const minWidth = config.minSize?.width || 300;
     const minHeight = config.minSize?.height || 200;
 
     return (
         <Rnd
             default={{
-                x: window.position.x,
-                y: window.position.y,
-                width: window.size.width,
-                height: window.size.height,
+                x: panel.position.x,
+                y: panel.position.y,
+                width: panel.size.width,
+                height: panel.size.height,
             }}
             position={{
-                x: window.position.x,
-                y: window.position.y,
+                x: panel.position.x,
+                y: panel.position.y,
             }}
             size={{
-                width: window.isMaximized ? '100%' : window.size.width,
-                height: window.isMaximized ? '100%' : window.size.height,
+                width: panel.isMaximized ? '100%' : panel.size.width,
+                height: panel.isMaximized ? '100%' : panel.size.height,
             }}
             onDrag={handleDrag as any}
             onDragStop={handleDragStop}
             onResizeStop={handleResizeStop}
-            dragHandleClassName="window-header"
-            disableDragging={window.isMaximized || window.isPinned}
-            enableResizing={!window.isMaximized && !window.isPinned}
+            dragHandleClassName="panel-header"
+            disableDragging={panel.isMaximized || panel.isPinned}
+            enableResizing={!panel.isMaximized && !panel.isPinned}
             bounds="parent"
             minWidth={minWidth}
             minHeight={minHeight}
             style={{
-                display: window.isMinimized ? 'none' : 'block',
+                display: panel.isMinimized ? 'none' : 'block',
             }}
         >
-            <Box sx={{ ...styles.window, boxShadow: isFocused ? 14 : 0 }}>
-                <WindowHeader
-                    windowId={windowId}
-                    title={window.title}
-                    windowType={window.type}
-                    isPinned={window.isPinned}
-                    isMaximized={window.isMaximized}
+            <Box sx={{ ...styles.panel, boxShadow: isFocused ? 14 : 0 }}>
+                <PanelHeader
+                    panelId={panelId}
+                    title={panel.title}
+                    panelType={panel.type}
+                    isPinned={panel.isPinned}
+                    isMaximized={panel.isMaximized}
                     isFocused={isFocused}
                     onFocus={handleFocus}
                 />
-                <Box className="window-content" sx={styles.content}>
+                <Box className="panel-content" sx={styles.content}>
                     {studyUuid && currentRootNetworkUuid && currentNode
-                        ? WINDOW_CONTENT_REGISTRY[window.type]({
-                              windowId,
+                        ? PANEL_CONTENT_REGISTRY[panel.type]({
+                              panelId,
                               studyUuid: studyUuid as UUID,
                               currentRootNetworkUuid: currentRootNetworkUuid as UUID,
                               currentNode,

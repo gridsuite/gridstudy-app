@@ -7,8 +7,8 @@
 
 import { Box, CircularProgress } from '@mui/material';
 import { ReactNode } from 'react';
-import AlertCustomMessageNode from '../../../utils/alert-custom-message-node';
-import { cardStyles } from '../../../grid-layout/cards/card-styles';
+import AlertCustomMessageNode from '../../utils/alert-custom-message-node';
+import { cardStyles } from '../../grid-layout/cards/card-styles';
 
 interface DiagramWrapperProps {
     loading: boolean;

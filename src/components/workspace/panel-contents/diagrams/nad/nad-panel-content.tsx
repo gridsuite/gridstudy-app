@@ -9,37 +9,37 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { DiagramAdditionalMetadata } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import NetworkAreaDiagramContent from '../../../../grid-layout/cards/diagrams/networkAreaDiagram/network-area-diagram-content';
-import { NADWindowMetadata } from '../../../types/workspace.types';
-import { updateWindowMetadata } from '../../../../../redux/slices/workspace-slice';
+import { NADPanelMetadata } from '../../../types/workspace.types';
+import { updatePanelMetadata } from '../../../../../redux/slices/workspace-slice';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 import type { UUID } from 'node:crypto';
-import { useNadDiagram } from './use-nad-diagram';
-import { DiagramWrapper } from '../diagram-wrapper';
+import { useNadDiagram } from '../../../diagrams/nad/use-nad-diagram';
+import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import type { DiagramConfigPosition } from '../../../../../services/explore';
-import { useDiagramNavigation } from '../common/use-diagram-navigation';
-import { selectWindow } from '../../../../../redux/slices/workspace-selectors';
+import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
+import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
 
-interface NadWindowContentProps {
-    windowId: UUID;
+interface NadPanelContentProps {
+    panelId: UUID;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
 }
 
-export const NadWindowContent = ({
-    windowId,
+export const NadPanelContent = ({
+    panelId,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
-}: NadWindowContentProps) => {
+}: NadPanelContentProps) => {
     const dispatch = useDispatch();
-    const window = useSelector((state: RootState) => selectWindow(state, windowId));
-    const diagramMetadata = window?.metadata as NADWindowMetadata | undefined;
+    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
+    const diagramMetadata = panel?.metadata as NADPanelMetadata | undefined;
 
     const { diagram, loading, globalError, updateDiagram, handleSaveNad } = useNadDiagram({
         diagramMetadata: diagramMetadata!,
-        windowId,
+        windowId: panelId,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
@@ -67,10 +67,10 @@ export const NadWindowContent = ({
     // The useEffect in use-nad-diagram will handle the fetch when diagramData changes
     const handleReplaceNad = useCallback(
         (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
-            const currentMetadata = diagramMetadata as NADWindowMetadata;
+            const currentMetadata = diagramMetadata as NADPanelMetadata;
             dispatch(
-                updateWindowMetadata({
-                    windowId,
+                updatePanelMetadata({
+                    panelId,
                     title: name,
                     metadata: {
                         ...currentMetadata,
@@ -81,7 +81,7 @@ export const NadWindowContent = ({
                 })
             );
         },
-        [dispatch, windowId, diagramMetadata]
+        [dispatch, panelId, diagramMetadata]
     );
 
     if (!diagramMetadata) {

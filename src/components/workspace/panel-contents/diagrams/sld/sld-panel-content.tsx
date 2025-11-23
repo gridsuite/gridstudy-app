@@ -16,29 +16,29 @@ import SingleLineDiagramContent from '../../../../grid-layout/cards/diagrams/sin
 import { navigateSLD } from '../../../../../redux/slices/workspace-slice';
 import { SLDMetadata } from '@powsybl/network-viewer';
 import type { UUID } from 'node:crypto';
-import { useSldDiagram } from './use-sld-diagram';
-import { DiagramWrapper } from '../diagram-wrapper';
-import { useDiagramNavigation } from '../common/use-diagram-navigation';
-import { selectWindow } from '../../../../../redux/slices/workspace-selectors';
+import { useSldDiagram } from '../../../diagrams/sld/use-sld-diagram';
+import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
+import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
+import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
-import { SLDWindowMetadata } from 'components/workspace/types/workspace.types';
+import { SLDPanelMetadata } from 'components/workspace/types/workspace.types';
 
-interface SldWindowContentProps {
-    windowId: UUID;
+interface SldPanelContentProps {
+    panelId: UUID;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
 }
 
-export const SldWindowContent = ({
-    windowId,
+export const SldPanelContent = ({
+    panelId,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
-}: SldWindowContentProps) => {
+}: SldPanelContentProps) => {
     const dispatch = useDispatch();
-    const window = useSelector((state: RootState) => selectWindow(state, windowId));
-    const diagramMetadata = window?.metadata as SLDWindowMetadata | undefined;
+    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
+    const diagramMetadata = panel?.metadata as SLDPanelMetadata | undefined;
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramMetadata: diagramMetadata!,
@@ -53,10 +53,10 @@ export const SldWindowContent = ({
         (params: VoltageLevelDiagramParams | SubstationDiagramParams) => {
             const id = params.type === DiagramType.VOLTAGE_LEVEL ? params.voltageLevelId : params.substationId;
             if (id) {
-                dispatch(navigateSLD({ windowId, id, diagramType: params.type }));
+                dispatch(navigateSLD({ panelId, id, diagramType: params.type }));
             }
         },
-        [dispatch, windowId]
+        [dispatch, panelId]
     );
 
     const diagramParams = useMemo(() => {
@@ -87,7 +87,7 @@ export const SldWindowContent = ({
                 diagramParams={diagramParams}
                 showInSpreadsheet={handleShowInSpreadsheet}
                 studyUuid={studyUuid}
-                windowId={windowId}
+                windowId={panelId}
                 svg={diagram.svg?.svg ?? undefined}
                 svgMetadata={diagram.svg?.metadata as SLDMetadata}
                 loadingState={loading}

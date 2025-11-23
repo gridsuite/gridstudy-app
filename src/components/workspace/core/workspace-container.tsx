@@ -9,9 +9,9 @@ import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useRef, useState, useCallback, useMemo } from 'react';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import { selectWindowIds, selectFocusedWindowId } from '../../../redux/slices/workspace-selectors';
-import { WindowDock } from './window-dock';
-import { Window } from './window';
+import { selectPanelIds, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
+import { PanelDock } from './panel-dock';
+import { Panel } from './panel';
 import type { SnapRect } from './utils/snap-utils';
 
 const styles = {
@@ -24,7 +24,7 @@ const styles = {
         flexDirection: 'column',
         isolation: 'isolate',
     },
-    windowsArea: {
+    panelsArea: {
         position: 'relative',
         flex: 1,
         overflow: 'hidden',
@@ -41,8 +41,8 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const WorkspaceContainer = () => {
-    const windowIds = useSelector(selectWindowIds);
-    const focusedWindowId = useSelector(selectFocusedWindowId);
+    const panelIds = useSelector(selectPanelIds);
+    const focusedPanelId = useSelector(selectFocusedPanelId);
     const containerRef = useRef<HTMLDivElement>(null);
     const [snapPreview, setSnapPreview] = useState<SnapRect | null>(null);
 
@@ -50,23 +50,23 @@ export const WorkspaceContainer = () => {
         setSnapPreview(preview);
     }, []);
 
-    // Sort windows to render focused window on top
-    const sortedWindowIds = useMemo(() => {
-        if (!focusedWindowId) return windowIds;
-        return windowIds.filter((id) => id !== focusedWindowId).concat(focusedWindowId);
-    }, [windowIds, focusedWindowId]);
+    // Sort panels to render focused panel on top
+    const sortedPanelIds = useMemo(() => {
+        if (!focusedPanelId) return panelIds;
+        return panelIds.filter((id) => id !== focusedPanelId).concat(focusedPanelId);
+    }, [panelIds, focusedPanelId]);
 
     return (
         <Box sx={styles.container}>
-            <Box ref={containerRef} sx={styles.windowsArea}>
-                {sortedWindowIds.map((windowId) => (
-                    <Window
-                        key={windowId}
-                        windowId={windowId}
+            <Box ref={containerRef} sx={styles.panelsArea}>
+                {sortedPanelIds.map((panelId) => (
+                    <Panel
+                        key={panelId}
+                        panelId={panelId}
                         containerRef={containerRef}
                         snapPreview={snapPreview}
                         onSnapPreview={handleSnapPreview}
-                        isFocused={windowId === focusedWindowId}
+                        isFocused={panelId === focusedPanelId}
                     />
                 ))}
                 {snapPreview && (
@@ -81,7 +81,7 @@ export const WorkspaceContainer = () => {
                     />
                 )}
             </Box>
-            <WindowDock />
+            <PanelDock />
         </Box>
     );
 };

@@ -7,37 +7,37 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
-import type { WindowState, WindowType, Workspace } from '../../components/workspace/types/workspace.types';
+import type { PanelState, PanelType, Workspace } from '../../components/workspace/types/workspace.types';
 import type { UUID } from 'node:crypto';
 
 const getActiveWorkspace = (state: RootState): Workspace | undefined => {
     return state.workspace.workspaces[state.workspace.activeWorkspaceId];
 };
 
-export const selectWindow = createSelector(
-    [(state: RootState) => getActiveWorkspace(state)?.windows, (_state: RootState, windowId: UUID) => windowId],
-    (windows, windowId) => windows?.[windowId]
+export const selectPanel = createSelector(
+    [(state: RootState) => getActiveWorkspace(state)?.panels, (_state: RootState, panelId: UUID) => panelId],
+    (panels, panelId) => panels?.[panelId]
 );
 
-export const selectIsWindowTypeOpen = createSelector(
-    [(state: RootState) => getActiveWorkspace(state), (_state: RootState, windowType: WindowType) => windowType],
-    (workspace, windowType): boolean => {
+export const selectIsPanelTypeOpen = createSelector(
+    [(state: RootState) => getActiveWorkspace(state), (_state: RootState, panelType: PanelType) => panelType],
+    (workspace, panelType): boolean => {
         if (!workspace) return false;
-        return Object.values(workspace.windows).some((w) => w.type === windowType);
+        return Object.values(workspace.panels).some((p) => p.type === panelType);
     }
 );
 
-export const selectWindowIds = (state: RootState): UUID[] => {
+export const selectPanelIds = (state: RootState): UUID[] => {
     const workspace = getActiveWorkspace(state);
-    return workspace ? (Object.keys(workspace.windows) as UUID[]) : [];
+    return workspace ? (Object.keys(workspace.panels) as UUID[]) : [];
 };
 
-export const selectWindows = (state: RootState): WindowState[] => {
+export const selectPanels = (state: RootState): PanelState[] => {
     const workspace = getActiveWorkspace(state);
-    return workspace ? Object.values(workspace.windows) : [];
+    return workspace ? Object.values(workspace.panels) : [];
 };
 
-export const selectFocusedWindowId = (state: RootState): UUID | null => {
+export const selectFocusedPanelId = (state: RootState): UUID | null => {
     const workspace = getActiveWorkspace(state);
-    return workspace?.focusedWindowId ?? null;
+    return workspace?.focusedPanelId ?? null;
 };

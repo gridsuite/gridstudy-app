@@ -10,11 +10,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Box, Tabs, Tab, Theme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import { selectWindows, selectFocusedWindowId } from '../../../redux/slices/workspace-selectors';
-import { closeWindow, focusWindow, toggleMinimize } from '../../../redux/slices/workspace-slice';
-import { WindowType } from '../types/workspace.types';
+import { selectPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
+import { closePanel, focusPanel, toggleMinimize } from '../../../redux/slices/workspace-slice';
+import { PanelType } from '../types/workspace.types';
 import type { UUID } from 'node:crypto';
-import { getWindowConfig } from '../constants/workspace.constants';
+import { getPanelConfig } from '../constants/workspace.constants';
 
 const styles = {
     dock: (theme: Theme) => ({
@@ -38,37 +38,37 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const WindowDock = memo(() => {
+export const PanelDock = memo(() => {
     const dispatch = useDispatch();
-    const allWindows = useSelector(selectWindows);
-    const focusedWindowId = useSelector(selectFocusedWindowId);
+    const allPanels = useSelector(selectPanels);
+    const focusedPanelId = useSelector(selectFocusedPanelId);
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);
 
-    const windows = useMemo(
-        () => allWindows.filter((window) => window.type === WindowType.SLD || window.type === WindowType.NAD),
-        [allWindows]
+    const panels = useMemo(
+        () => allPanels.filter((panel) => panel.type === PanelType.SLD || panel.type === PanelType.NAD),
+        [allPanels]
     );
 
-    // Find the index of the focused window in the filtered windows array
+    // Find the index of the focused panel in the filtered panels array
     const selectedTabIndex = useMemo(() => {
-        if (!focusedWindowId) return false;
-        const index = windows.findIndex((w) => w.id === focusedWindowId && !w.isMinimized);
+        if (!focusedPanelId) return false;
+        const index = panels.findIndex((p) => p.id === focusedPanelId && !p.isMinimized);
         return index >= 0 ? index : false;
-    }, [focusedWindowId, windows]);
+    }, [focusedPanelId, panels]);
 
-    if (windows.length === 0) {
+    if (panels.length === 0) {
         return null;
     }
 
-    const handleWindowClick = (windowId: UUID, isMinimized: boolean) => {
+    const handlePanelClick = (panelId: UUID, isMinimized: boolean) => {
         if (isMinimized) {
-            dispatch(toggleMinimize(windowId));
-            dispatch(focusWindow(windowId));
+            dispatch(toggleMinimize(panelId));
+            dispatch(focusPanel(panelId));
         } else {
-            if (windowId === focusedWindowId) {
-                dispatch(toggleMinimize(windowId));
+            if (panelId === focusedPanelId) {
+                dispatch(toggleMinimize(panelId));
             } else {
-                dispatch(focusWindow(windowId));
+                dispatch(focusPanel(panelId));
             }
         }
     };
@@ -82,32 +82,32 @@ export const WindowDock = memo(() => {
                 sx={{ minHeight: 36 }}
                 TabIndicatorProps={{ sx: { top: 0, bottom: 'auto' } }}
             >
-                {windows.map((window, index) => (
+                {panels.map((panel, index) => (
                     <Tab
-                        key={window.id}
+                        key={panel.id}
                         value={index}
-                        onMouseEnter={() => setHoveredTab(window.id)}
+                        onMouseEnter={() => setHoveredTab(panel.id)}
                         onMouseLeave={() => setHoveredTab(null)}
                         label={
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                {getWindowConfig(window.type).icon}
-                                <span>{window.title}</span>
+                                {getPanelConfig(panel.type).icon}
+                                <span>{panel.title}</span>
                                 <Box
                                     component="span"
                                     sx={{
                                         ...styles.closeButton,
-                                        visibility: hoveredTab === window.id && !window.isPinned ? 'visible' : 'hidden',
+                                        visibility: hoveredTab === panel.id && !panel.isPinned ? 'visible' : 'hidden',
                                     }}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        dispatch(closeWindow(window.id));
+                                        dispatch(closePanel(panel.id));
                                     }}
                                 >
                                     <Close />
                                 </Box>
                             </Box>
                         }
-                        onClick={() => handleWindowClick(window.id, window.isMinimized)}
+                        onClick={() => handlePanelClick(panel.id, panel.isMinimized)}
                         sx={{
                             minHeight: 36,
                             textTransform: 'none',

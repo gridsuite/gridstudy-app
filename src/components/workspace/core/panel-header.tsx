@@ -12,10 +12,10 @@ import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { closeWindow, toggleMinimize, toggleMaximize, togglePin } from '../../../redux/slices/workspace-slice';
+import { closePanel, toggleMinimize, toggleMaximize, togglePin } from '../../../redux/slices/workspace-slice';
 import type { UUID } from 'node:crypto';
-import { WindowType } from '../types/workspace.types';
-import { getWindowConfig } from '../constants/workspace.constants';
+import { PanelType } from '../types/workspace.types';
+import { getPanelConfig } from '../constants/workspace.constants';
 
 const getHeaderStyles = (theme: Theme, isFocused: boolean) => ({
     paddingLeft: theme.spacing(1),
@@ -62,30 +62,30 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-interface WindowHeaderProps {
-    windowId: UUID;
+interface PanelHeaderProps {
+    panelId: UUID;
     title: string;
-    windowType: WindowType;
+    panelType: PanelType;
     isPinned: boolean;
     isMaximized: boolean;
     isFocused: boolean;
     onFocus: () => void;
 }
 
-export const WindowHeader = memo(
-    ({ windowId, title, windowType, isPinned, isMaximized, isFocused, onFocus }: WindowHeaderProps) => {
+export const PanelHeader = memo(
+    ({ panelId, title, panelType, isPinned, isMaximized, isFocused, onFocus }: PanelHeaderProps) => {
         const dispatch = useDispatch();
         const intl = useIntl();
         const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
 
         return (
-            <Box onMouseDown={onFocus} className="window-header" sx={(theme) => getHeaderStyles(theme, isFocused)}>
+            <Box onMouseDown={onFocus} className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused)}>
                 <OverflowableText
                     sx={styles.title}
                     tooltipSx={styles.tooltip}
                     text={
                         <Box sx={styles.titleContent}>
-                            {getWindowConfig(windowType).icon}
+                            {getPanelConfig(panelType).icon}
                             <Typography variant="caption" sx={styles.titleText}>
                                 {displayTitle}
                             </Typography>
@@ -94,39 +94,39 @@ export const WindowHeader = memo(
                 />
                 <Box sx={styles.headerActions}>
                     <IconButton
-                        className="window-header-close-button"
+                        className="panel-header-close-button"
                         size="small"
                         sx={styles.iconButton}
-                        onClick={() => dispatch(togglePin(windowId))}
+                        onClick={() => dispatch(togglePin(panelId))}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                     </IconButton>
-                    {(windowType === WindowType.SLD || windowType === WindowType.NAD) && (
+                    {(panelType === PanelType.SLD || panelType === PanelType.NAD) && (
                         <IconButton
-                            className="window-header-close-button"
+                            className="panel-header-close-button"
                             size="small"
                             sx={styles.iconButton}
-                            onClick={() => dispatch(toggleMinimize(windowId))}
+                            onClick={() => dispatch(toggleMinimize(panelId))}
                             onMouseDown={(e) => e.stopPropagation()}
                         >
                             <Minimize fontSize="small" />
                         </IconButton>
                     )}
                     <IconButton
-                        className="window-header-close-button"
+                        className="panel-header-close-button"
                         size="small"
                         sx={styles.iconButton}
-                        onClick={() => dispatch(toggleMaximize(windowId))}
+                        onClick={() => dispatch(toggleMaximize(panelId))}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         {isMaximized ? <FilterNone fontSize="small" /> : <CropSquare fontSize="small" />}
                     </IconButton>
                     <IconButton
-                        className="window-header-close-button"
+                        className="panel-header-close-button"
                         size="small"
                         sx={styles.iconButton}
-                        onClick={() => dispatch(closeWindow(windowId))}
+                        onClick={() => dispatch(closePanel(panelId))}
                         onMouseDown={(e) => e.stopPropagation()}
                         disabled={isPinned}
                     >

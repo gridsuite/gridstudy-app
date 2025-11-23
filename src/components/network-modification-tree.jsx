@@ -11,7 +11,7 @@ import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { reorderNetworkModificationTreeNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { closeWindowsByType, openOrFocusWindow } from '../redux/slices/workspace-slice';
+import { closePanelsByType, openOrFocusPanel } from '../redux/slices/workspace-slice';
 import { isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
@@ -32,7 +32,7 @@ import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
-import { WindowType } from './workspace/types/workspace.types';
+import { PanelType } from './workspace/types/workspace.types';
 
 const styles = {
     modificationTree: (theme) => ({
@@ -94,14 +94,14 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     // close modifications/ event scenario when current node is root
     useEffect(() => {
         if (currentNode?.type === NodeType.ROOT) {
-            dispatch(closeWindowsByType(WindowType.NODE_EDITOR));
+            dispatch(closePanelsByType(PanelType.NODE_EDITOR));
         }
     }, [currentNode, dispatch]);
 
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === NodeType.NETWORK_MODIFICATION) {
-                dispatch(openOrFocusWindow({ windowType: WindowType.NODE_EDITOR }));
+                dispatch(openOrFocusPanel({ panelType: PanelType.NODE_EDITOR }));
             }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);

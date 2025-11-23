@@ -12,24 +12,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../../redux/actions';
 import NetworkMapPanel from '../../network/network-map-panel';
 import type { CurrentTreeNode } from '../../graph/tree-node.type';
-import { selectWindow } from '../../../redux/slices/workspace-selectors';
+import { selectPanel } from '../../../redux/slices/workspace-selectors';
 import { RootState } from 'redux/store';
 
-interface MapWindowContentProps {
-    windowId: UUID;
+interface MapPanelContentProps {
+    panelId: UUID;
     studyUuid: UUID;
     currentRootNetworkUuid: UUID;
     currentNode: CurrentTreeNode;
 }
 
-export const MapWindowContent = ({
-    windowId,
-    studyUuid,
-    currentRootNetworkUuid,
-    currentNode,
-}: MapWindowContentProps) => {
+export const MapPanelContent = ({ panelId, studyUuid, currentRootNetworkUuid, currentNode }: MapPanelContentProps) => {
     const dispatch = useDispatch();
-    const window = useSelector((state: RootState) => selectWindow(state, windowId));
+    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
 
     useEffect(() => {
         return () => {
@@ -39,8 +34,8 @@ export const MapWindowContent = ({
         };
     }, [dispatch]);
 
-    // Pass window size to trigger map resize when window is resized
-    const triggerMapResize = window?.size ? [window.size.width, window.size.height] : undefined;
+    // Pass panel size to trigger map resize when panel is resized
+    const triggerMapResize = panel?.size ? [panel.size.width, panel.size.height] : undefined;
 
     return (
         <Box sx={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>

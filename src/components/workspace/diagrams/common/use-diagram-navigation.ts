@@ -7,12 +7,12 @@
 
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { showInSpreadsheet, openSLD } from '../../../../../redux/slices/workspace-slice';
+import { showInSpreadsheet, openSLD } from '../../../../redux/slices/workspace-slice';
 import type {
     VoltageLevelDiagramParams,
     SubstationDiagramParams,
-} from '../../../../grid-layout/cards/diagrams/diagram.type';
-import { DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
+} from '../../../grid-layout/cards/diagrams/diagram.type';
+import { DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
 export const useDiagramNavigation = () => {

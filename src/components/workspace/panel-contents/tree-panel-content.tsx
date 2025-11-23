@@ -10,23 +10,23 @@ import { useSelector } from 'react-redux';
 import { useReactFlow } from '@xyflow/react';
 import { Box } from '@mui/material';
 import type { UUID } from 'node:crypto';
-import { selectWindow } from '../../../redux/slices/workspace-selectors';
+import { selectPanel } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
 import NetworkModificationTreePane from '../../network-modification-tree-pane';
 
-interface TreeWindowContentProps {
-    windowId: UUID;
+interface TreePanelContentProps {
+    panelId: UUID;
     studyUuid: UUID;
     currentRootNetworkUuid: UUID;
 }
 
-export const TreeWindowContent = ({ windowId, studyUuid, currentRootNetworkUuid }: TreeWindowContentProps) => {
-    const windowState = useSelector((state: RootState) => selectWindow(state, windowId));
+export const TreePanelContent = ({ panelId, studyUuid, currentRootNetworkUuid }: TreePanelContentProps) => {
+    const panelState = useSelector((state: RootState) => selectPanel(state, panelId));
     const containerRef = useRef<HTMLDivElement>(null);
     const { getViewport, setViewport } = useReactFlow();
     const prevSizeRef = useRef<{ width: number; height: number } | null>(null);
 
-    // Adjust viewport on window resize
+    // Adjust viewport on panel resize
     useEffect(() => {
         const actualWidth = containerRef.current?.offsetWidth;
         const actualHeight = containerRef.current?.offsetHeight;
@@ -53,7 +53,7 @@ export const TreeWindowContent = ({ windowId, studyUuid, currentRootNetworkUuid 
         if (actualWidth && actualHeight) {
             prevSizeRef.current = { width: actualWidth, height: actualHeight };
         }
-    }, [windowState?.size, windowState?.isMaximized, getViewport, setViewport]);
+    }, [panelState?.size, panelState?.isMaximized, getViewport, setViewport]);
 
     return (
         <Box ref={containerRef} sx={{ width: '100%', height: '100%' }}>

@@ -9,21 +9,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { UUID } from 'node:crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
 import { DiagramType } from '../../components/grid-layout/cards/diagrams/diagram.type';
-import {
-    WindowType,
-    type WorkspacesState,
-    type WindowMetadata,
-} from '../../components/workspace/types/workspace.types';
+import { PanelType, type WorkspacesState, type PanelMetadata } from '../../components/workspace/types/workspace.types';
 import {
     createDefaultWorkspaces,
     getActiveWorkspace,
-    updateWindow,
-    createWindow,
+    updatePanel,
+    createPanel,
     bringToFront,
-    findDiagramWindow,
-    findAndFocusWindow,
-    deleteWindow,
-    createSLDMetadata,
+    findDiagramPanel,
+    findAndFocusPanel,
+    deletePanel,
+    createSLDPanelMetadata,
 } from './workspace-helpers';
 
 const STORAGE_KEY_PREFIX = 'gridstudy-workspaces';
@@ -86,117 +82,111 @@ const workspacesSlice = createSlice({
 
         clearWorkspace: (state, action: PayloadAction<UUID>) => {
             const workspace = state.workspaces[action.payload];
-            Object.keys(workspace.windows).forEach((id) => deleteWindow(workspace, id as UUID));
+            Object.keys(workspace.panels).forEach((id) => deletePanel(workspace, id as UUID));
         },
 
-        // ==================== Window Lifecycle ====================
-        toggleWindow: (state, action: PayloadAction<WindowType>) => {
+        // ==================== Panel Lifecycle ====================
+        togglePanel: (state, action: PayloadAction<PanelType>) => {
             const workspace = getActiveWorkspace(state);
-            const existingWindow = Object.values(workspace.windows).find((w) => w.type === action.payload);
+            const existingPanel = Object.values(workspace.panels).find((p) => p.type === action.payload);
 
-            if (existingWindow) {
-                workspace.focusedWindowId === existingWindow.id
-                    ? deleteWindow(workspace, existingWindow.id)
-                    : bringToFront(workspace, existingWindow.id);
+            if (existingPanel) {
+                workspace.focusedPanelId === existingPanel.id
+                    ? deletePanel(workspace, existingPanel.id)
+                    : bringToFront(workspace, existingPanel.id);
             } else {
-                createWindow(workspace, action.payload);
+                createPanel(workspace, action.payload);
             }
         },
 
-        openOrFocusWindow: (
+        openOrFocusPanel: (
             state,
-            action: PayloadAction<{ windowType: WindowType; customTitle?: string; customData?: WindowMetadata }>
+            action: PayloadAction<{ panelType: PanelType; customTitle?: string; customData?: PanelMetadata }>
         ) => {
-            const { windowType, customTitle, customData } = action.payload;
+            const { panelType, customTitle, customData } = action.payload;
             const workspace = getActiveWorkspace(state);
 
-            if (!findAndFocusWindow(workspace, windowType)) {
-                createWindow(workspace, windowType, { title: customTitle, metadata: customData });
+            if (!findAndFocusPanel(workspace, panelType)) {
+                createPanel(workspace, panelType, { title: customTitle, metadata: customData });
             }
         },
 
-        closeWindow: (state, action: PayloadAction<UUID>) => {
+        closePanel: (state, action: PayloadAction<UUID>) => {
             const workspace = getActiveWorkspace(state);
-            deleteWindow(workspace, action.payload);
+            deletePanel(workspace, action.payload);
         },
 
-        closeWindowsByType: (state, action: PayloadAction<WindowType>) => {
+        closePanelsByType: (state, action: PayloadAction<PanelType>) => {
             const workspace = getActiveWorkspace(state);
-            Object.values(workspace.windows)
-                .filter((window) => window.type === action.payload)
-                .forEach((window) => deleteWindow(workspace, window.id));
+            Object.values(workspace.panels)
+                .filter((panel) => panel.type === action.payload)
+                .forEach((panel) => deletePanel(workspace, panel.id));
         },
 
-        // ==================== Window State Management ====================
-        focusWindow: (state, action: PayloadAction<UUID>) => {
+        // ==================== Panel State Management ====================
+        focusPanel: (state, action: PayloadAction<UUID>) => {
             bringToFront(getActiveWorkspace(state), action.payload);
         },
 
-        updateWindowPosition: (
-            state,
-            action: PayloadAction<{ windowId: UUID; position: { x: number; y: number } }>
-        ) => {
-            const { windowId, position } = action.payload;
-            updateWindow(state, windowId, (window) => {
-                window.position = position;
+        updatePanelPosition: (state, action: PayloadAction<{ panelId: UUID; position: { x: number; y: number } }>) => {
+            const { panelId, position } = action.payload;
+            updatePanel(state, panelId, (panel) => {
+                panel.position = position;
             });
         },
 
-        updateWindowSize: (
-            state,
-            action: PayloadAction<{ windowId: UUID; size: { width: number; height: number } }>
-        ) => {
-            const { windowId, size } = action.payload;
-            updateWindow(state, windowId, (window) => {
-                window.size = size;
+        updatePanelSize: (state, action: PayloadAction<{ panelId: UUID; size: { width: number; height: number } }>) => {
+            const { panelId, size } = action.payload;
+            updatePanel(state, panelId, (panel) => {
+                panel.size = size;
             });
         },
 
-        snapWindow: (
+        snapPanel: (
             state,
-            action: PayloadAction<{ windowId: UUID; rect: { x: number; y: number; width: number; height: number } }>
+            action: PayloadAction<{ panelId: UUID; rect: { x: number; y: number; width: number; height: number } }>
         ) => {
-            const { windowId, rect } = action.payload;
-            updateWindow(state, windowId, (window) => {
-                window.position = { x: rect.x, y: rect.y };
-                window.size = { width: rect.width, height: rect.height };
+            const { panelId, rect } = action.payload;
+            updatePanel(state, panelId, (panel) => {
+                panel.position = { x: rect.x, y: rect.y };
+                panel.size = { width: rect.width, height: rect.height };
             });
         },
 
         toggleMinimize: (state, action: PayloadAction<UUID>) => {
-            updateWindow(state, action.payload, (window) => {
-                window.isMinimized = !window.isMinimized;
+            updatePanel(state, action.payload, (panel) => {
+                panel.isMinimized = !panel.isMinimized;
             });
         },
 
         toggleMaximize: (state, action: PayloadAction<UUID>) => {
-            updateWindow(state, action.payload, (window) => {
-                window.isMaximized = !window.isMaximized;
-                if (window.isMaximized) {
-                    window.restorePosition = window.position;
-                    window.restoreSize = window.size;
-                    window.position = { x: 0, y: 0 };
+            updatePanel(state, action.payload, (panel) => {
+                panel.isMaximized = !panel.isMaximized;
+                if (panel.isMaximized) {
+                    panel.restorePosition = panel.position;
+                    panel.restoreSize = panel.size;
+                    panel.position = { x: 0, y: 0 };
                 } else {
-                    window.position = window.restorePosition ?? window.position;
-                    window.size = window.restoreSize ?? window.size;
+                    panel.position = panel.restorePosition ?? panel.position;
+                    panel.size = panel.restoreSize ?? panel.size;
                 }
             });
         },
 
         togglePin: (state, action: PayloadAction<UUID>) => {
-            updateWindow(state, action.payload, (window) => {
-                window.isPinned = !window.isPinned;
+            updatePanel(state, action.payload, (panel) => {
+                panel.isPinned = !panel.isPinned;
             });
         },
 
-        updateWindowMetadata: (
+        updatePanelMetadata: (
             state,
-            action: PayloadAction<{ windowId: UUID; metadata?: WindowMetadata; title?: string }>
+            action: PayloadAction<{ panelId: UUID; metadata?: PanelMetadata; title?: string }>
         ) => {
-            const { windowId, metadata, title } = action.payload;
-            updateWindow(state, windowId, (window) => {
-                if (metadata !== undefined) window.metadata = metadata;
-                if (title !== undefined) window.title = title;
+            const { panelId, metadata, title } = action.payload;
+            updatePanel(state, panelId, (panel) => {
+                if (metadata !== undefined) panel.metadata = metadata;
+                if (title !== undefined) panel.title = title;
             });
         },
 
@@ -210,14 +200,14 @@ const workspacesSlice = createSlice({
         ) => {
             const { id, diagramType } = action.payload;
             const workspace = getActiveWorkspace(state);
-            const existingWindow = findDiagramWindow(workspace, diagramType, id);
+            const existingPanel = findDiagramPanel(workspace, diagramType, id);
 
-            if (existingWindow) {
-                bringToFront(workspace, existingWindow.id);
+            if (existingPanel) {
+                bringToFront(workspace, existingPanel.id);
             } else {
-                createWindow(workspace, WindowType.SLD, {
+                createPanel(workspace, PanelType.SLD, {
                     title: id,
-                    metadata: createSLDMetadata(id, diagramType),
+                    metadata: createSLDPanelMetadata(id, diagramType),
                 });
             }
         },
@@ -232,35 +222,35 @@ const workspacesSlice = createSlice({
             }>
         ) => {
             const { name, nadConfigUuid, filterUuid, initialVoltageLevelIds } = action.payload;
-            createWindow(getActiveWorkspace(state), WindowType.NAD, {
+            createPanel(getActiveWorkspace(state), PanelType.NAD, {
                 title: name,
                 metadata: { nadConfigUuid, filterUuid, initialVoltageLevelIds },
             });
         },
 
-        navigateSLD: (state, action: PayloadAction<{ windowId: UUID; id: string; diagramType: DiagramType }>) => {
-            const { windowId, id, diagramType } = action.payload;
+        navigateSLD: (state, action: PayloadAction<{ panelId: UUID; id: string; diagramType: DiagramType }>) => {
+            const { panelId, id, diagramType } = action.payload;
             const workspace = getActiveWorkspace(state);
 
-            // Check if another window already has this diagram
-            const existingWindow = findDiagramWindow(workspace, diagramType, id, windowId);
-            if (existingWindow) {
-                bringToFront(workspace, existingWindow.id);
+            // Check if another panel already has this diagram
+            const existingPanel = findDiagramPanel(workspace, diagramType, id, panelId);
+            if (existingPanel) {
+                bringToFront(workspace, existingPanel.id);
                 return;
             }
 
-            // Update current SLD window
-            updateWindow(state, windowId, (window) => {
-                window.title = id;
-                window.metadata = createSLDMetadata(id, diagramType);
+            // Update current SLD panel
+            updatePanel(state, panelId, (panel) => {
+                panel.title = id;
+                panel.metadata = createSLDPanelMetadata(id, diagramType);
             });
         },
 
         // ==================== Spreadsheet-Specific Operations ====================
         showInSpreadsheet: (state, action: PayloadAction<{ equipmentId: string; equipmentType: EquipmentType }>) => {
             const workspace = getActiveWorkspace(state);
-            if (!findAndFocusWindow(workspace, WindowType.SPREADSHEET)) {
-                createWindow(workspace, WindowType.SPREADSHEET);
+            if (!findAndFocusPanel(workspace, PanelType.SPREADSHEET)) {
+                createPanel(workspace, PanelType.SPREADSHEET);
             }
             state.pendingSpreadsheetTarget = action.payload;
         },
@@ -278,20 +268,20 @@ export const {
     switchWorkspace,
     renameWorkspace,
     clearWorkspace,
-    // Window Lifecycle
-    toggleWindow,
-    openOrFocusWindow,
-    closeWindow,
-    closeWindowsByType,
-    // Window State Management
-    focusWindow,
-    updateWindowPosition,
-    updateWindowSize,
-    snapWindow,
+    // Panel Lifecycle
+    togglePanel,
+    openOrFocusPanel,
+    closePanel,
+    closePanelsByType,
+    // Panel State Management
+    focusPanel,
+    updatePanelPosition,
+    updatePanelSize,
+    snapPanel,
     toggleMinimize,
     toggleMaximize,
     togglePin,
-    updateWindowMetadata,
+    updatePanelMetadata,
     // Diagram Operations
     openSLD,
     openNAD,

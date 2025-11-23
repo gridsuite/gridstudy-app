@@ -159,7 +159,7 @@ export const WorkspaceSwitcher = memo(() => {
                 <List dense sx={{ width: 300, maxHeight: 400, overflow: 'auto', p: 0 }}>
                     {workspaces.map((workspace, index) => {
                         const isActive = workspace.id === activeWorkspaceId;
-                        const windowCount = Object.keys(workspace.windows).length;
+                        const panelCount = Object.keys(workspace.panels).length;
                         const workspaceName = workspace.name || `Workspace ${index + 1}`;
 
                         return (
@@ -176,7 +176,7 @@ export const WorkspaceSwitcher = memo(() => {
                                         maxLineCount={1}
                                     />
                                     <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                                        {windowCount} <FormattedMessage id={windowCount !== 1 ? 'windows' : 'window'} />
+                                        {panelCount} <FormattedMessage id={panelCount !== 1 ? 'panels' : 'panel'} />
                                     </Typography>
                                 </Box>
                                 <Tooltip title={intl.formatMessage({ id: 'Rename' })}>

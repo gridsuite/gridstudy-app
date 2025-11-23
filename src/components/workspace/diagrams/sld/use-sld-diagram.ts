@@ -8,22 +8,19 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
-import { Diagram, DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
-import { fetchSvg } from '../../../../../services/study';
-import {
-    getSubstationSingleLineDiagram,
-    getVoltageLevelSingleLineDiagram,
-} from '../../../../../services/study/network';
-import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../../utils/config-params';
-import { SLD_DISPLAY_MODE } from '../../../../network/constants';
-import type { SLDWindowMetadata } from '../../../types/workspace.types';
+import { AppState } from '../../../../redux/reducer';
+import { Diagram, DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
+import { fetchSvg } from '../../../../services/study';
+import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../../../services/study/network';
+import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../utils/config-params';
+import { SLD_DISPLAY_MODE } from '../../../network/constants';
+import type { SLDPanelMetadata } from '../../types/workspace.types';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
-import { isNodeBuilt, isStatusBuilt } from '../../../../graph/util/model-functions';
-import { NodeType } from '../../../../graph/tree-node.type';
+import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
+import { NodeType } from '../../../graph/tree-node.type';
 
 interface UseSldDiagramProps {
-    diagramMetadata: SLDWindowMetadata;
+    diagramMetadata: SLDPanelMetadata;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
@@ -113,7 +110,7 @@ export const useSldDiagram = ({
         }
     }, [currentNode, studyUuid, currentNodeId, currentRootNetworkUuid, paramUseName, networkVisuParams, language]);
 
-    // Fetch when diagram data or node changes
+    // Fetch when diagram metadata or node changes
     useEffect(() => {
         if (!currentNode?.id) return;
 

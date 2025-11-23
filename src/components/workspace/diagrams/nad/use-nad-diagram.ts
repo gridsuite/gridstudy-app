@@ -8,21 +8,21 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
-import { DiagramType, NetworkAreaDiagram } from '../../../../grid-layout/cards/diagrams/diagram.type';
-import { fetchSvg, getNetworkAreaDiagramUrl, PREFIX_STUDY_QUERIES } from '../../../../../services/study';
-import { mergePositions } from '../../../../grid-layout/cards/diagrams/diagram-utils';
+import { AppState } from '../../../../redux/reducer';
+import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
+import { fetchSvg, getNetworkAreaDiagramUrl, PREFIX_STUDY_QUERIES } from '../../../../services/study';
+import { mergePositions } from '../../../grid-layout/cards/diagrams/diagram-utils';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
-import type { NADWindowMetadata } from '../../../types/workspace.types';
+import type { NADPanelMetadata } from '../../types/workspace.types';
 import { backendFetchJson } from '@gridsuite/commons-ui';
-import { updateWindowMetadata as updateWindowMetadataAction } from '../../../../../redux/slices/workspace-slice';
-import type { DiagramConfigPosition } from '../../../../../services/explore';
+import { updatePanelMetadata as updatePanelMetadataAction } from '../../../../redux/slices/workspace-slice';
+import type { DiagramConfigPosition } from '../../../../services/explore';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
-import { isNodeBuilt, isStatusBuilt } from '../../../../graph/util/model-functions';
-import { NodeType } from '../../../../graph/tree-node.type';
+import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
+import { NodeType } from '../../../graph/tree-node.type';
 
 interface UseNadDiagramProps {
-    diagramMetadata: NADWindowMetadata;
+    diagramMetadata: NADPanelMetadata;
     windowId: UUID;
     studyUuid: UUID;
     currentNodeId: UUID;
@@ -77,8 +77,8 @@ export const useNadDiagram = ({
                 savedConfigRef.current = response;
                 // Only store UUIDs in Redux, not voluminous data
                 dispatch(
-                    updateWindowMetadataAction({
-                        windowId,
+                    updatePanelMetadataAction({
+                        panelId: windowId,
                         metadata: {
                             savedWorkspaceConfigUuid: response,
                         },

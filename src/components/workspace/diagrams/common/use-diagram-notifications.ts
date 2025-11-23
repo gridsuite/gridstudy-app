@@ -8,7 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { useCallback } from 'react';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
-import { isLoadflowResultNotification, isStudyNotification } from '../../../../../types/notification-types';
+import { isLoadflowResultNotification, isStudyNotification } from '../../../../types/notification-types';
 
 interface UseDiagramNotificationsProps {
     currentRootNetworkUuid: UUID;

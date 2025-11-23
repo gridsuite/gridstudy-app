@@ -15,8 +15,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setHighlightModification } from 'redux/actions';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
-import { WindowType } from 'components/workspace/types/workspace.types';
-import { openOrFocusWindow } from 'redux/slices/workspace-slice';
+import { PanelType } from 'components/workspace/types/workspace.types';
+import { openOrFocusPanel } from 'redux/slices/workspace-slice';
 
 interface ModificationResultsProps {
     modifications: Modification[];
@@ -76,7 +76,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
                 setCurrentTreeNodeWithSync({ ...node });
                 triggerTreeNodeFocus();
             }
-            dispatch(openOrFocusWindow({ windowType: WindowType.NODE_EDITOR }));
+            dispatch(openOrFocusPanel({ panelType: PanelType.NODE_EDITOR }));
             dispatch(setHighlightModification(modification.modificationUuid));
         },
         [dispatch, nodeUuid, setCurrentTreeNodeWithSync, treeNodes, triggerTreeNodeFocus]

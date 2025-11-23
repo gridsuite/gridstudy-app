@@ -7,7 +7,7 @@
 
 import type { UUID } from 'node:crypto';
 
-export enum WindowType {
+export enum PanelType {
     TREE = 'TREE',
     SPREADSHEET = 'SPREADSHEET',
     LOGS = 'LOGS',
@@ -19,49 +19,49 @@ export enum WindowType {
     NODE_EDITOR = 'NODE_EDITOR',
     EVENT_SCENARIO = 'EVENT_SCENARIO',
 }
-export interface SLDWindowMetadata {
+export interface SLDPanelMetadata {
     voltageLevelId?: string;
     substationId?: string;
 }
 
-export interface NADWindowMetadata {
+export interface NADPanelMetadata {
     nadConfigUuid?: UUID;
     filterUuid?: UUID;
     savedWorkspaceConfigUuid?: UUID;
     initialVoltageLevelIds?: string[];
 }
 
-export type WindowMetadata = SLDWindowMetadata | NADWindowMetadata | Record<string, never>;
+export type PanelMetadata = SLDPanelMetadata | NADPanelMetadata | Record<string, never>;
 
-export interface WindowPosition {
+export interface PanelPosition {
     x: number;
     y: number;
 }
 
-export interface WindowSize {
+export interface PanelSize {
     width: number;
     height: number;
 }
 
-export interface WindowState {
+export interface PanelState {
     id: UUID;
-    type: WindowType;
+    type: PanelType;
     title: string;
-    metadata?: WindowMetadata;
-    position: WindowPosition;
-    size: WindowSize;
+    metadata?: PanelMetadata;
+    position: PanelPosition;
+    size: PanelSize;
     isMinimized: boolean;
     isMaximized: boolean;
     isPinned: boolean;
-    restorePosition?: WindowPosition;
-    restoreSize?: WindowSize;
+    restorePosition?: PanelPosition;
+    restoreSize?: PanelSize;
 }
 
 export interface Workspace {
     id: UUID;
     name: string;
-    windows: Record<UUID, WindowState>;
-    focusedWindowId: UUID | null;
+    panels: Record<UUID, PanelState>;
+    focusedPanelId: UUID | null;
 }
 
 export interface WorkspacesState {
