@@ -12,7 +12,7 @@ import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants'
 
 const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();
 const LOCAL_STORAGE_LANGUAGE_KEY = (APP_NAME + '_LANGUAGE').toUpperCase();
-const LOCAL_STORAGE_BASE_VOLTAGES_KEY = 'BASE_VOLTAGES';
+const LOCAL_STORAGE_BASE_VOLTAGES_KEY = (APP_NAME + '_BASE_VOLTAGES').toUpperCase();
 
 export function getLocalStorageTheme() {
     return (localStorage.getItem(LOCAL_STORAGE_THEME_KEY) as GsTheme) || DARK_THEME;
