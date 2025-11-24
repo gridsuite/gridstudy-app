@@ -11,8 +11,7 @@ import { Box } from '@mui/material';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
 
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
 import { AgGridReact } from 'ag-grid-react';

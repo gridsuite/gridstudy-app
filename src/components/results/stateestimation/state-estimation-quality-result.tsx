@@ -11,11 +11,10 @@ import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
 import { RowClassParams } from 'ag-grid-community';
 
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';
 
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
