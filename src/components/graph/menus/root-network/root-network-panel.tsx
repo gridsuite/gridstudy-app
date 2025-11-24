@@ -18,8 +18,8 @@ import RootNetworkSearchPanel from './root-network-panel-search';
 const styles = {
     paper: {
         position: 'absolute',
-        top: 16,
-        left: 16,
+        top: 8,
+        left: 8,
         borderRadius: '8px',
         zIndex: 10,
         overflow: 'hidden',
