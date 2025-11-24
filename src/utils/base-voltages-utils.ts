@@ -23,5 +23,5 @@ export const getBaseVoltageIntervalName = (voltageValue: number): string | undef
 
 export const getBaseVoltagesConfig = (): BaseVoltageConfig[] => {
     const baseVoltages = getLocalStorageBaseVoltages();
-    return baseVoltages.map(({ name, minValue, maxValue, profile }) => ({ name, minValue, maxValue, profile }));
+    return baseVoltages.map(({ name, minValue, maxValue }) => ({ name, minValue, maxValue }));
 };
