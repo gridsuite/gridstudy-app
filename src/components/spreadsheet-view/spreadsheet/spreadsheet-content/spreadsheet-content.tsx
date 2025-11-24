@@ -46,7 +46,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface SpreadsheetContentProps {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];

@@ -28,7 +28,7 @@ interface TreeviewSearchableProps {
     inputRef: RefObject<HTMLInputElement | null>;
     equipmentType: SpreadsheetEquipmentType;
     formulaCursorPosition: number;
-    formulaTextRef: RefObject<HTMLTextAreaElement>;
+    formulaTextRef: RefObject<HTMLTextAreaElement | null>;
 }
 
 export const TreeviewSearchable = ({
