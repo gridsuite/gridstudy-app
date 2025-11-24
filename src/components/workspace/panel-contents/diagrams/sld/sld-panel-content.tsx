@@ -19,7 +19,7 @@ import type { UUID } from 'node:crypto';
 import { useSldDiagram } from '../../../diagrams/sld/use-sld-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
-import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
+import { selectPanelMetadata } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
 import { SLDPanelMetadata } from 'components/workspace/types/workspace.types';
 
@@ -37,8 +37,9 @@ export const SldPanelContent = ({
     currentRootNetworkUuid,
 }: SldPanelContentProps) => {
     const dispatch = useDispatch();
-    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
-    const diagramMetadata = panel?.metadata as SLDPanelMetadata | undefined;
+    const diagramMetadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
+        | SLDPanelMetadata
+        | undefined;
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramMetadata: diagramMetadata!,
@@ -65,7 +66,8 @@ export const SldPanelContent = ({
                 type: DiagramType.VOLTAGE_LEVEL as const,
                 voltageLevelId: diagram.voltageLevelId,
             } as VoltageLevelDiagramParams;
-        } else if (diagram.type === DiagramType.SUBSTATION && 'substationId' in diagram) {
+        }
+        if (diagram.type === DiagramType.SUBSTATION && 'substationId' in diagram) {
             const substationDiag = diagram as any;
             return {
                 type: DiagramType.SUBSTATION as const,

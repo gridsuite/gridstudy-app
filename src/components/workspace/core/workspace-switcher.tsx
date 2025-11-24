@@ -33,12 +33,12 @@ import {
 import { type MuiStyles, OverflowableText, PopupConfirmationDialog, CancelButton } from '@gridsuite/commons-ui';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { WORKSPACE_MENU_VALUE } from '../constants/workspace.constants';
-import type { RootState } from '../../../redux/store';
 import {
     switchWorkspace,
     renameWorkspace as renameWorkspaceAction,
     clearWorkspace as clearWorkspaceAction,
 } from '../../../redux/slices/workspace-slice';
+import { selectWorkspaces, selectActiveWorkspaceId } from '../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 
 const styles = {
@@ -77,8 +77,8 @@ const styles = {
 export const WorkspaceSwitcher = memo(() => {
     const intl = useIntl();
     const dispatch = useDispatch();
-    const workspaces = useSelector((state: RootState) => Object.values(state.workspace.workspaces));
-    const activeWorkspaceId = useSelector((state: RootState) => state.workspace.activeWorkspaceId);
+    const workspaces = useSelector(selectWorkspaces);
+    const activeWorkspaceId = useSelector(selectActiveWorkspaceId);
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [renameDialog, setRenameDialog] = useState<{ workspaceId: UUID; name: string } | null>(null);

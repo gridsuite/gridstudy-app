@@ -13,28 +13,34 @@ import type { UUID } from 'node:crypto';
 const getActiveWorkspace = (state: RootState): Workspace | undefined =>
     state.workspace.activeWorkspaceId ? state.workspace.workspaces[state.workspace.activeWorkspaceId] : undefined;
 
+export const selectPanelsRecord = createSelector([getActiveWorkspace], (workspace) => workspace?.panels ?? {});
+
 export const selectPanel = createSelector(
-    [(state: RootState) => getActiveWorkspace(state)?.panels, (_state: RootState, panelId: UUID) => panelId],
-    (panels, panelId) => panels?.[panelId]
+    [selectPanelsRecord, (_state: RootState, panelId: UUID) => panelId],
+    (panels, panelId) => panels[panelId]
+);
+
+export const selectPanelMetadata = createSelector(
+    [selectPanelsRecord, (_state: RootState, panelId: UUID) => panelId],
+    (panels, panelId) => panels[panelId]?.metadata
 );
 
 export const selectIsPanelTypeOpen = createSelector(
-    [(state: RootState) => getActiveWorkspace(state), (_state: RootState, panelType: PanelType) => panelType],
-    (workspace, panelType): boolean => {
-        if (!workspace) return false;
-        return Object.values(workspace.panels).some((p) => p.type === panelType);
-    }
+    [selectPanelsRecord, (_state: RootState, panelType: PanelType) => panelType],
+    (panels, panelType): boolean => Object.values(panels).some((p) => p.type === panelType)
 );
 
-export const selectPanelIds = createSelector([getActiveWorkspace], (workspace) =>
-    workspace ? (Object.keys(workspace.panels) as UUID[]) : []
-);
+export const selectPanelIds = createSelector([selectPanelsRecord], (panels) => Object.keys(panels) as UUID[]);
 
-export const selectPanels = createSelector([getActiveWorkspace], (workspace) =>
-    workspace ? Object.values(workspace.panels) : []
-);
+export const selectPanels = createSelector([selectPanelsRecord], (panels) => Object.values(panels));
 
 export const selectFocusedPanelId = createSelector(
     [getActiveWorkspace],
     (workspace) => workspace?.focusedPanelId ?? null
 );
+
+export const selectWorkspaces = createSelector([(state: RootState) => state.workspace.workspaces], (workspaces) =>
+    Object.values(workspaces)
+);
+
+export const selectActiveWorkspaceId = (state: RootState) => state.workspace.activeWorkspaceId;

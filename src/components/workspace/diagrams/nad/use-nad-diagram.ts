@@ -8,14 +8,13 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, backendFetchJson } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl, PREFIX_STUDY_QUERIES } from '../../../../services/study';
 import { mergePositions } from '../../../grid-layout/cards/diagrams/diagram-utils';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
 import type { NADPanelMetadata } from '../../types/workspace.types';
-import { backendFetchJson } from '@gridsuite/commons-ui';
 import { updatePanelMetadata as updatePanelMetadataAction } from '../../../../redux/slices/workspace-slice';
 import type { DiagramConfigPosition } from '../../../../services/explore';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';

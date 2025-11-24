@@ -17,7 +17,7 @@ import { useNadDiagram } from '../../../diagrams/nad/use-nad-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import type { DiagramConfigPosition } from '../../../../../services/explore';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
-import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
+import { selectPanelMetadata } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
 
 interface NadPanelContentProps {
@@ -34,8 +34,9 @@ export const NadPanelContent = ({
     currentRootNetworkUuid,
 }: NadPanelContentProps) => {
     const dispatch = useDispatch();
-    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
-    const diagramMetadata = panel?.metadata as NADPanelMetadata | undefined;
+    const diagramMetadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
+        | NADPanelMetadata
+        | undefined;
 
     const { diagram, loading, globalError, updateDiagram, handleSaveNad } = useNadDiagram({
         diagramMetadata: diagramMetadata!,
