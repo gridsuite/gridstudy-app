@@ -1534,6 +1534,8 @@
     "previousStatus": "Previous status",
     "currentStatus": "Modified status",
     "Open": "Open",
+    "areSwitchesOpen": "Open",
+    "areSwitchesClosed": "Closed",
     "Closed": "Closed",
     "GridLayoutPanel": "Grid layout panel",
     "GridLayoutPanelAndTree": "Grid layout panel and tree",

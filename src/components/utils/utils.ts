@@ -16,7 +16,7 @@ import {
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import {
-    APPLICABIlITY,
+    APPLICABILITY_FIELD,
     CURRENT_LIMITS,
     ID,
     LIMITS_PROPERTIES,
@@ -169,7 +169,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsDa
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id + elt.applicability,
                     [NAME]: elt.id,
-                    [APPLICABIlITY]: elt.applicability,
+                    [APPLICABILITY_FIELD]: elt.applicability,
                     [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
                         permanentLimit: elt.permanentLimit,
