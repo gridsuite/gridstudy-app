@@ -29,6 +29,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import SpeakerNotesOffOutlinedIcon from '@mui/icons-material/SpeakerNotesOffOutlined';
 import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
 import SearchIcon from '@mui/icons-material/Search';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -81,9 +82,11 @@ interface DiagramControlsProps {
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     onExpandAllVoltageLevels?: () => void;
     onAddVoltageLevel: (vlId: string) => void;
+    onAddVoltageLevelsFromFilter: (elementUuid: UUID) => void;
     onToggleShowLabels?: () => void;
     isShowLabels?: boolean;
     isDiagramLoading?: boolean;
+    fromNadConfig: boolean;
     svgVoltageLevels?: string[];
     onFocusVoltageLevel?: (vlId: string) => void;
 }
@@ -96,15 +99,18 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     onToggleEditNadMode,
     onExpandAllVoltageLevels,
     onAddVoltageLevel,
+    onAddVoltageLevelsFromFilter,
     onToggleShowLabels,
     isShowLabels,
     isDiagramLoading,
+    fromNadConfig,
     svgVoltageLevels,
     onFocusVoltageLevel,
 }) => {
     const intl = useIntl();
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
+    const [isFilterSelectorOpen, setIsFilterSelectorOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -123,6 +129,14 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
 
     const handleClickLoadIcon = () => {
         setIsLoadSelectorOpen(true);
+    };
+
+    const handleClickFilterIcon = () => {
+        setIsFilterSelectorOpen(true);
+    };
+
+    const handleCloseFilterSelector = () => {
+        setIsFilterSelectorOpen(false);
     };
 
     const handleToggleShowLabels = () => {
@@ -173,6 +187,13 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
             handleLoad(selectedElements[0].id, selectedElements[0].type!, selectedElements[0].name);
         }
         handleCloseLoadSelector();
+    };
+
+    const handleSelectFilter = (selectedElements: TreeViewFinderNodeProps[]) => {
+        if (onAddVoltageLevelsFromFilter && selectedElements.length > 0) {
+            onAddVoltageLevelsFromFilter(selectedElements[0].id);
+        }
+        handleCloseFilterSelector();
     };
 
     const handleToggleEditMode = () => {
@@ -261,6 +282,15 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             <UploadIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
+                    <Tooltip title={<FormattedMessage id={'importAndReplaceFromGridExplore'} />}>
+                        <IconButton
+                            sx={styles.actionIcon}
+                            onClick={handleClickFilterIcon}
+                            disabled={isDiagramLoading || fromNadConfig}
+                        >
+                            <FilterAltIcon sx={styles.icon} />
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip title={<FormattedMessage id={'searchVoltageLevelInNad'} />}>
                         <span>
                             <IconButton
@@ -342,6 +372,18 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             open={isLoadSelectorOpen}
                             onClose={selectElement}
                             types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
+                            equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            title={intl.formatMessage({
+                                id: 'elementSelection',
+                            })}
+                            multiSelect={false}
+                        />
+                    </Box>
+                    <Box minWidth="12em">
+                        <DirectoryItemSelector
+                            open={isFilterSelectorOpen}
+                            onClose={handleSelectFilter}
+                            types={[ElementType.FILTER]}
                             equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
                             title={intl.formatMessage({
                                 id: 'elementSelection',

@@ -295,6 +295,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [diagramParams, onNadChange]
     );
 
+    const handleAddVoltageLevelsFromFilter = useCallback(
+        (filterUuid: UUID) => {
+            onNadChange({
+                ...diagramParams,
+                initializationFilterUuid: filterUuid,
+            });
+        },
+        [diagramParams, onNadChange]
+    );
+
     const handleExpandVoltageLevelId = useCallback(
         (voltageLevelIdToExpand: string) => {
             onNadChange({
@@ -372,6 +382,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 nadConfigUuid: elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
                 filterUuid: elementType === ElementType.FILTER ? elementUuid : undefined,
                 initializationNadConfigUuid: undefined,
+                initializationFilterUuid: undefined,
                 voltageLevelIds: [],
                 voltageLevelToExpandIds: [],
                 voltageLevelToOmitIds: [],
@@ -523,9 +534,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onToggleEditNadMode={setIsEditNadMode}
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                 onAddVoltageLevel={handleAddVoltageLevel}
+                onAddVoltageLevelsFromFilter={handleAddVoltageLevelsFromFilter}
                 onToggleShowLabels={handleToggleShowLabels}
                 isShowLabels={showLabels}
                 isDiagramLoading={loadingState}
+                fromNadConfig={!diagramParams.nadConfigUuid}
                 svgVoltageLevels={svgVoltageLevels}
                 onFocusVoltageLevel={handleFocusVoltageLevel}
             />

@@ -297,7 +297,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const nadRequestInfos = {
                     nadConfigUuid: diagram.initializationNadConfigUuid ?? diagram.nadConfigUuid,
-                    filterUuid: diagram.filterUuid,
+                    filterUuid: diagram.initializationFilterUuid ?? diagram.filterUuid,
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
