@@ -8,6 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { Diagram, DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg } from '../../../../services/study';
@@ -36,6 +37,7 @@ export const useSldDiagram = ({
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const { snackError } = useSnackMessage();
 
     const [diagram, setDiagram] = useState<Diagram>(() => {
         const type = diagramMetadata.voltageLevelId ? DiagramType.VOLTAGE_LEVEL : DiagramType.SUBSTATION;
@@ -55,9 +57,29 @@ export const useSldDiagram = ({
         }
     }, []);
 
-    const handleFetchError = useCallback((error: unknown) => {
-        console.error('Error fetching SLD diagram:', error);
-    }, []);
+    const handleFetchError = useCallback(
+        (error: any) => {
+            console.error('Error fetching SLD diagram:', error);
+            let errorMessage: string;
+            if (error?.status === 404) {
+                setDiagram((current) => {
+                    errorMessage =
+                        current.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
+                    setGlobalError(errorMessage);
+                    return current;
+                });
+            } else if (error?.status === 403) {
+                errorMessage = error.message || 'svgLoadingFail';
+                snackError({ headerId: errorMessage });
+                setGlobalError(errorMessage);
+            } else {
+                errorMessage = 'svgLoadingFail';
+                snackError({ headerId: errorMessage });
+                setGlobalError(errorMessage);
+            }
+        },
+        [snackError]
+    );
 
     const handleFetchComplete = useCallback(() => {
         setLoading(false);
@@ -70,9 +92,9 @@ export const useSldDiagram = ({
         setGlobalError(undefined);
 
         try {
-            let url: string | null = null;
-
             setDiagram((currentDiagram) => {
+                let url: string | null = null;
+
                 if (currentDiagram.type === DiagramType.VOLTAGE_LEVEL && 'voltageLevelId' in currentDiagram) {
                     url = getVoltageLevelSingleLineDiagram({
                         studyUuid,
@@ -101,17 +123,17 @@ export const useSldDiagram = ({
                     });
                 }
 
+                if (url) {
+                    fetchSvg(url, { method: 'GET' })
+                        .then(processSvgData)
+                        .catch(handleFetchError)
+                        .finally(handleFetchComplete);
+                } else {
+                    setLoading(false);
+                }
+
                 return currentDiagram;
             });
-
-            if (url) {
-                fetchSvg(url, { method: 'GET' })
-                    .then(processSvgData)
-                    .catch(handleFetchError)
-                    .finally(handleFetchComplete);
-            } else {
-                setLoading(false);
-            }
         } catch (error) {
             console.error('Error fetching SLD diagram:', error);
             setLoading(false);

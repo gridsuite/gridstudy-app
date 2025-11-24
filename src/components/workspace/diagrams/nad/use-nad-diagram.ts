@@ -8,6 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl, PREFIX_STUDY_QUERIES } from '../../../../services/study';
@@ -39,6 +40,7 @@ export const useNadDiagram = ({
     const dispatch = useDispatch();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const { snackError } = useSnackMessage();
     const savedConfigRef = useRef<UUID | undefined>(diagramMetadata.savedWorkspaceConfigUuid);
 
     const [diagram, setDiagram] = useState<NetworkAreaDiagram>(() => ({
@@ -140,9 +142,26 @@ export const useNadDiagram = ({
         [diagramMetadata.initialVoltageLevelIds, dispatch, saveNadConfig, windowId]
     );
 
-    const handleFetchError = useCallback((error: unknown) => {
-        console.error('Error fetching NAD diagram:', error);
-    }, []);
+    const handleFetchError = useCallback(
+        (error: any) => {
+            console.error('Error fetching NAD diagram:', error);
+            let errorMessage: string;
+            if (error?.status === 400) {
+                errorMessage = 'nadConfiguredPositionsModeFailed';
+                snackError({ headerId: errorMessage });
+            } else if (error?.status === 404) {
+                errorMessage = 'VoltageLevelNotFound';
+            } else if (error?.status === 403) {
+                errorMessage = error.message || 'svgLoadingFail';
+                snackError({ headerId: errorMessage });
+            } else {
+                errorMessage = 'svgLoadingFail';
+                snackError({ headerId: errorMessage });
+            }
+            setGlobalError(errorMessage);
+        },
+        [snackError]
+    );
 
     const handleFetchComplete = useCallback(() => {
         setLoading(false);
