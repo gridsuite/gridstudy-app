@@ -7,7 +7,7 @@
 
 import { sanitizeString } from '../dialog-utils';
 import {
-    APPLICABIlITY,
+    APPLICABILITY_FIELD,
     CURRENT_LIMITS,
     ENABLE_OLG_MODIFICATION,
     ID,
@@ -15,6 +15,7 @@ import {
     LIMITS,
     LIMITS_PROPERTIES,
     NAME,
+    OLG_IS_DUPLICATE,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
     SELECTED_LIMITS_GROUP_1,
@@ -41,14 +42,16 @@ import {
     TemporaryLimit,
 } from '../../../services/network-modification-types';
 import { CurrentLimitsData } from '../../../services/study/network-map.type';
-import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
 import { LineModificationFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
+import { TestContext } from 'yup';
+import { APPLICABILITY } from 'components/network/constants';
 
 const limitsGroupValidationSchema = () => ({
     [ID]: yup.string().nonNullable().required(),
     [NAME]: yup.string().nonNullable().required(),
-    [APPLICABIlITY]: yup.string().nonNullable().required(),
+    [APPLICABILITY_FIELD]: yup.string().nonNullable().required(),
+    [OLG_IS_DUPLICATE]: yup.boolean().nullable().test('testDistincts', 'LimitSetApplicabilityError', hasDuplicate),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema()),
     [LIMITS_PROPERTIES]: yup.array().of(limitsPropertyValidationSchema()),
 });
@@ -78,6 +81,7 @@ const currentLimitsValidationSchema = () => ({
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(temporaryLimitsValidationSchema())
+        .required()
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
             const namesArray = !array
                 ? []
@@ -90,20 +94,49 @@ const currentLimitsValidationSchema = () => ({
         }),
 });
 
+interface OperationalLimitsGroupFormSchemaWithPath extends OperationalLimitsGroupFormSchema {
+    rhfPath: string;
+}
+
+function hasDuplicate(field: boolean | null | undefined, context: TestContext) {
+    return hasDuplicateOperationalLimitsGroups(context);
+}
+
+function hasDuplicateOperationalLimitsGroups(context: TestContext) {
+    const limitsGroup: OperationalLimitsGroupFormSchema = context.parent;
+    const operationalLimitsGroups: OperationalLimitsGroupFormSchema[] =
+        context.from?.[1]?.value?.[OPERATIONAL_LIMITS_GROUPS];
+    const operationalLimitsGroupsWithPath: OperationalLimitsGroupFormSchemaWithPath[] = operationalLimitsGroups.map(
+        (item, index) => {
+            return { ...item, rhfPath: `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}[${index}]` };
+        }
+    );
+
+    const limitsGroupName = sanitizeString(limitsGroup[NAME]);
+    const filtered = operationalLimitsGroupsWithPath.filter(
+        (item: OperationalLimitsGroupFormSchemaWithPath) => sanitizeString(item[NAME]) === limitsGroupName
+    );
+
+    if (filtered.length <= 1) {
+        return true;
+    }
+
+    const applicabilityEquipment: number = filtered.filter(
+        (item) => item[APPLICABILITY_FIELD] === APPLICABILITY.EQUIPMENT.id
+    ).length;
+    const applicabilitySide1: number = filtered.filter(
+        (item) => item[APPLICABILITY_FIELD] === APPLICABILITY.SIDE1.id
+    ).length;
+
+    const isDuplicate =
+        filtered.length > 2 || applicabilityEquipment > 0 || applicabilitySide1 === 0 || applicabilitySide1 > 1;
+
+    return !isDuplicate;
+}
+
 const limitsValidationSchemaCreation = (id: string) => {
     const completeLimitsGroupSchema = {
-        [OPERATIONAL_LIMITS_GROUPS]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema()))
-            .test('distinctNames', 'LimitSetApplicabilityError', (array) => {
-                const namesArray: OperationalLimitsId[] = !array
-                    ? []
-                    : array
-                          .filter((o) => !!sanitizeString(o[NAME]))
-                          .map((o) => {
-                              return { name: sanitizeString(o.name) ?? '', applicability: o.applicability };
-                          });
-                return areOperationalLimitsGroupUnique(namesArray);
-            }),
+        [OPERATIONAL_LIMITS_GROUPS]: yup.array(yup.object().shape(limitsGroupValidationSchema())).required(),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
         [ENABLE_OLG_MODIFICATION]: yup.boolean(),
@@ -254,7 +287,7 @@ export const convertToOperationalLimitsGroupFormSchema = (
     for (const currentLimit of currentLimits) {
         const equivalentFromNetMod = updatedOpLG.find(
             (opLG: OperationalLimitsGroupFormSchema) =>
-                currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
+                currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABILITY_FIELD]
         );
         if (equivalentFromNetMod === undefined) {
             updatedOpLG.push({
@@ -283,7 +316,9 @@ export const addModificationTypeToTemporaryLimits = (
 ): TemporaryLimit[] => {
     return formTemporaryLimits.map((limit: TemporaryLimitFormSchema) => {
         return {
-            ...limit,
+            name: limit?.name ?? '',
+            acceptableDuration: limit?.acceptableDuration ?? null,
+            value: limit?.value ?? null,
             modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
