@@ -183,11 +183,11 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
 
         const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>();
         const [geoData, setGeoData] = useState<GeoData>();
-        const geoDataRef = useRef<any>();
+        const geoDataRef = useRef<any>(null);
 
         const basicDataReady = mapEquipments && geoData;
 
-        const lineFullPathRef = useRef<boolean>();
+        const lineFullPathRef = useRef<boolean>(null);
         const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
         const intl = useIntl();
 
@@ -200,13 +200,13 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
         and this position would need to be requested again.
         It will be possible to have a better mechanism after we improved the notification system.
         */
-        const temporaryGeoDataIdsRef = useRef<Set<string>>();
+        const temporaryGeoDataIdsRef = useRef<Set<string>>(null);
 
         const disabled = !isNodeBuilt(currentNode);
         const reloadMapNeeded = useSelector((state: AppState) => state.reloadMapNeeded);
         const freezeMapUpdates = useSelector((state: AppState) => state.freezeMapUpdates);
         const isMapEquipmentsInitialized = useSelector((state: AppState) => state.isMapEquipmentsInitialized);
-        const refIsMapManualRefreshEnabled = useRef<boolean>();
+        const refIsMapManualRefreshEnabled = useRef<boolean>(null);
         refIsMapManualRefreshEnabled.current = networkVisuParams.mapParameters.mapManualRefresh;
         const [firstRendering, setFirstRendering] = useState<boolean>(true);
 
@@ -966,6 +966,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                     equipmentId={elementId}
                     equipmentType={EQUIPMENT_TYPES.LINE}
                     loadFlowStatus={loadFlowStatus}
+                    anchorPosition={undefined}
                 />
             ),
             [loadFlowStatus, studyUuid]
@@ -1098,6 +1099,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         ref={networkMapRef}
                         mapEquipments={mapEquipments}
                         geoData={geoData}
+                        // @ts-ignore
                         updatedLines={[
                             ...(updatedLines ?? []),
                             ...(updatedTieLines ?? []),
@@ -1173,6 +1175,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                             onDrawEvent(event);
                         }}
                         shouldDisableToolTip={!visible || isInDrawingMode.value}
+                        // @ts-ignore
                         getNominalVoltageColor={getNominalVoltageColor}
                     />
                     {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}

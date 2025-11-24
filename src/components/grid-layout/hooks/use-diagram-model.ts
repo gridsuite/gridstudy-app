@@ -48,10 +48,10 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     // context
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const prevCurrentNodeId = useRef<UUID | undefined>();
-    const prevCurrentNodeStatus = useRef<BUILD_STATUS | undefined>();
+    const prevCurrentNodeId = useRef<UUID | undefined>(undefined);
+    const prevCurrentNodeStatus = useRef<BUILD_STATUS | undefined>(undefined);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const prevCurrentRootNetworkUuid = useRef<UUID | null>();
+    const prevCurrentRootNetworkUuid = useRef<UUID | null>(null);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);

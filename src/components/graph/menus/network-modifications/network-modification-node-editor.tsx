@@ -160,14 +160,14 @@ const NetworkModificationNodeEditor = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
+    const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationMetadata[]>([]);
 
     const [copiedModifications, setCopiedModifications] = useState<UUID[]>([]);
     const [copyInfos, setCopyInfos] = useState<NetworkModificationCopyInfo | null>(null);
-    const copyInfosRef = useRef<NetworkModificationCopyInfo | null>();
+    const copyInfosRef = useRef<NetworkModificationCopyInfo | null>(null);
     copyInfosRef.current = copyInfos;
 
     const [isDragging, setIsDragging] = useState(false);

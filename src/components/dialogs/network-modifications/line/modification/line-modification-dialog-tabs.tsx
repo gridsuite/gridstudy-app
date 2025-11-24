@@ -14,6 +14,7 @@ import { LimitsPane } from '../../../limits/limits-pane';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
+import { JSX } from 'react';
 
 export interface LineModificationDialogTabsProps {
     studyUuid: UUID;

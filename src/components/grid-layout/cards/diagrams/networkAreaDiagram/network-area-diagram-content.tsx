@@ -83,9 +83,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         loadingState,
         showInSpreadsheet,
     } = props;
-    const svgRef = useRef();
+    const svgRef = useRef(null);
     const { snackError, snackInfo } = useSnackMessage();
-    const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>();
+    const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>(null);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [showLabels, setShowLabels] = useState(true);

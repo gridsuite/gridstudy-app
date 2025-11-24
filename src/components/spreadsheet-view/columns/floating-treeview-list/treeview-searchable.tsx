@@ -25,7 +25,7 @@ interface TreeviewSearchableProps {
     properties: JSONSchema4 | null;
     formMethods: UseFormReturn<any>;
     setAnchorEl: Dispatch<SetStateAction<Element | null>>;
-    inputRef: RefObject<HTMLInputElement>;
+    inputRef: RefObject<HTMLInputElement | null>;
     equipmentType: SpreadsheetEquipmentType;
     formulaCursorPosition: number;
     formulaTextRef: RefObject<HTMLTextAreaElement>;
