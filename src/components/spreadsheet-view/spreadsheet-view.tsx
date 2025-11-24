@@ -40,7 +40,7 @@ interface SpreadsheetViewProps {
     disabled: boolean;
 }
 
-const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panelId, currentNode, disabled }) => {
+export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panelId, currentNode, disabled }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -183,6 +183,3 @@ const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panelId, cur
         </Paper>
     );
 };
-
-export { SpreadsheetView };
-export default SpreadsheetView;

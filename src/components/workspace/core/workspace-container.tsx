@@ -7,12 +7,15 @@
 
 import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import type { MuiStyles } from '@gridsuite/commons-ui';
+import { useDebounce } from '@gridsuite/commons-ui';
 import { selectPanelIds, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
 import { WorkspaceDock } from './workspace-dock';
 import { Panel } from './panel';
 import type { SnapRect } from './utils/snap-utils';
+import { saveWorkspacesToStorage } from '../../../redux/slices/workspace-slice';
+import type { RootState } from '../../../redux/store';
 
 const styles = {
     container: {
@@ -43,9 +46,22 @@ const styles = {
 export const WorkspaceContainer = () => {
     const panelIds = useSelector(selectPanelIds);
     const focusedPanelId = useSelector(selectFocusedPanelId);
+    const workspaceState = useSelector((state: RootState) => state.workspace);
+    const studyUuid = useSelector((state: RootState) => state.studyUuid);
     const containerRef = useRef<HTMLDivElement>(null);
     const [snapPreview, setSnapPreview] = useState<SnapRect | null>(null);
     const [draggingPanelId, setDraggingPanelId] = useState<string | null>(null);
+
+    // Save workspaces to localStorage when they change
+    const debouncedSaveWorkspaces = useDebounce(() => {
+        if (studyUuid && workspaceState) {
+            saveWorkspacesToStorage(workspaceState, studyUuid);
+        }
+    }, 500);
+
+    useEffect(() => {
+        debouncedSaveWorkspaces();
+    }, [workspaceState, studyUuid, debouncedSaveWorkspaces]);
 
     const handleSnapPreview = useCallback((panelId: string, preview: SnapRect | null) => {
         setDraggingPanelId(preview ? panelId : null);

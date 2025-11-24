@@ -40,7 +40,7 @@ export const NadPanelContent = ({
 
     const { diagram, loading, globalError, updateDiagram, handleSaveNad } = useNadDiagram({
         diagramMetadata: diagramMetadata!,
-        windowId: panelId,
+        panelId,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
@@ -68,21 +68,20 @@ export const NadPanelContent = ({
     // The useEffect in use-nad-diagram will handle the fetch when diagramData changes
     const handleReplaceNad = useCallback(
         (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
-            const currentMetadata = diagramMetadata;
             dispatch(
                 updatePanelMetadata({
                     panelId,
                     title: name,
                     metadata: {
-                        ...currentMetadata,
                         nadConfigUuid,
                         filterUuid,
                         savedWorkspaceConfigUuid: undefined,
+                        initialVoltageLevelIds: undefined,
                     },
                 })
             );
         },
-        [dispatch, panelId, diagramMetadata]
+        [dispatch, panelId]
     );
 
     if (!diagramMetadata) {

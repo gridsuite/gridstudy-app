@@ -50,7 +50,7 @@ import useComputationDebug from '../../../../../hooks/use-computation-debug';
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly studyUuid: UUID;
-    readonly windowId: UUID;
+    readonly panelId: UUID;
     readonly svg?: string;
     readonly svgMetadata?: SLDMetadata;
     readonly loadingState: boolean;
@@ -77,7 +77,7 @@ const defaultBusMenuState: BusMenuState = {
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const {
         studyUuid,
-        windowId,
+        panelId,
         visible,
         diagramParams,
         onNextVoltageLevelDiagram,
@@ -111,7 +111,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,
-    ] = useOneBusShortcircuitAnalysisLoader(windowId);
+    ] = useOneBusShortcircuitAnalysisLoader(panelId);
 
     /**
      * DIAGRAM INTERACTIVITY

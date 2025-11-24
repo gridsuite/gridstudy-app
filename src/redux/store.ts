@@ -9,25 +9,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 import { setUserStore } from './user-store';
-import workspacesReducer, { saveWorkspacesToStorage } from './slices/workspace-slice';
-import { debounce } from '@mui/material';
-
-const saveWorkspacesDebounced = debounce(saveWorkspacesToStorage, 500);
-
-const workspacesPersistenceMiddleware = (store: any) => (next: any) => (action: any) => {
-    const result = next(action);
-
-    if (action.type?.startsWith('workspace/') && action.type !== 'workspace/initializeWorkspaceSlice') {
-        const state = store.getState();
-        const studyUuid = state.studyUuid;
-
-        if (studyUuid && state.workspace) {
-            saveWorkspacesDebounced(state.workspace, studyUuid);
-        }
-    }
-
-    return result;
-};
+import workspacesReducer from './slices/workspace-slice';
 
 const combineReducers = (state: any, action: any) => {
     const appState = reducer(state, action);
@@ -45,7 +27,7 @@ export const store = configureStore({
         getDefaultMiddleware({
             serializableCheck: false,
             immutableCheck: false,
-        }).concat(workspacesPersistenceMiddleware),
+        }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

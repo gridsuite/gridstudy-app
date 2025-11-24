@@ -199,7 +199,7 @@ const workspacesSlice = createSlice({
         ) => {
             const { panelId, metadata, title } = action.payload;
             updatePanel(state, panelId, (panel) => {
-                if (metadata !== undefined) panel.metadata = metadata;
+                if (metadata !== undefined) panel.metadata = { ...panel.metadata, ...metadata };
                 if (title !== undefined) panel.title = title;
             });
         },
