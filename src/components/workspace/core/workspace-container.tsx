@@ -45,8 +45,10 @@ export const WorkspaceContainer = () => {
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const containerRef = useRef<HTMLDivElement>(null);
     const [snapPreview, setSnapPreview] = useState<SnapRect | null>(null);
+    const [draggingPanelId, setDraggingPanelId] = useState<string | null>(null);
 
-    const handleSnapPreview = useCallback((preview: SnapRect | null) => {
+    const handleSnapPreview = useCallback((panelId: string, preview: SnapRect | null) => {
+        setDraggingPanelId(preview ? panelId : null);
         setSnapPreview(preview);
     }, []);
 
@@ -58,7 +60,7 @@ export const WorkspaceContainer = () => {
                         key={panelId}
                         panelId={panelId}
                         containerRef={containerRef}
-                        snapPreview={snapPreview}
+                        snapPreview={draggingPanelId === panelId ? snapPreview : null}
                         onSnapPreview={handleSnapPreview}
                         isFocused={panelId === focusedPanelId}
                     />

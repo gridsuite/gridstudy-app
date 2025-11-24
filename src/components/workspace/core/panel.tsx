@@ -59,7 +59,7 @@ interface PanelProps {
     panelId: UUID;
     containerRef: RefObject<HTMLDivElement>;
     snapPreview: SnapRect | null;
-    onSnapPreview: (preview: SnapRect | null) => void;
+    onSnapPreview: (panelId: UUID, preview: SnapRect | null) => void;
     isFocused: boolean;
 }
 export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
@@ -73,9 +73,9 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
         (e: MouseEvent) => {
             if (!containerRef.current) return;
             const rect = containerRef.current.getBoundingClientRect();
-            onSnapPreview(getSnapZone(e.clientX, e.clientY, rect));
+            onSnapPreview(panelId, getSnapZone(e.clientX, e.clientY, rect));
         },
-        [containerRef, onSnapPreview]
+        [containerRef, onSnapPreview, panelId]
     );
 
     const handleDragStop: RndDragCallback = useCallback(
@@ -85,7 +85,7 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
             } else {
                 dispatch(updatePanelPosition({ panelId, position: { x: data.x, y: data.y } }));
             }
-            onSnapPreview(null);
+            onSnapPreview(panelId, null);
         },
         [dispatch, panelId, snapPreview, onSnapPreview]
     );
