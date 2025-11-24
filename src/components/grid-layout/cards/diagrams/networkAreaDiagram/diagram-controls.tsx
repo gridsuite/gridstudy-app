@@ -29,7 +29,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import SpeakerNotesOffOutlinedIcon from '@mui/icons-material/SpeakerNotesOffOutlined';
 import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
 import SearchIcon from '@mui/icons-material/Search';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
 import { Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -86,7 +86,7 @@ interface DiagramControlsProps {
     onToggleShowLabels?: () => void;
     isShowLabels?: boolean;
     isDiagramLoading?: boolean;
-    fromNadConfig: boolean;
+    isNadCreationFromFilter: boolean;
     svgVoltageLevels?: string[];
     onFocusVoltageLevel?: (vlId: string) => void;
 }
@@ -103,7 +103,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     onToggleShowLabels,
     isShowLabels,
     isDiagramLoading,
-    fromNadConfig,
+    isNadCreationFromFilter,
     svgVoltageLevels,
     onFocusVoltageLevel,
 }) => {
@@ -131,7 +131,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         setIsLoadSelectorOpen(true);
     };
 
-    const handleClickFilterIcon = () => {
+    const handleClickAddVoltageLevelSIcon = () => {
         setIsFilterSelectorOpen(true);
     };
 
@@ -282,13 +282,13 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             <UploadIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'importAndReplaceFromGridExplore'} />}>
+                    <Tooltip title={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}>
                         <IconButton
                             sx={styles.actionIcon}
-                            onClick={handleClickFilterIcon}
-                            disabled={isDiagramLoading || fromNadConfig}
+                            onClick={handleClickAddVoltageLevelSIcon}
+                            disabled={isDiagramLoading || isNadCreationFromFilter}
                         >
-                            <FilterAltIcon sx={styles.icon} />
+                            <AddLocationAltOutlinedIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title={<FormattedMessage id={'searchVoltageLevelInNad'} />}>

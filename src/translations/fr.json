@@ -1567,6 +1567,7 @@
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "expand": "Étendre",
     "expandAllVoltageLevels": "Étendre tous les postes",
+    "addVoltageLevelsFromFilter": "Ajouter des postes à partir d'un filtre",
     "addVoltageLevel": "Ajouter un poste",
     "searchVoltageLevelInNad": "Rechercher un poste",
     "noResultsFound": "Aucun résultat trouvé",

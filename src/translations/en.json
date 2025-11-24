@@ -1569,6 +1569,7 @@
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
+    "addVoltageLevelsFromFilter": "Add voltage levels from a filter",
     "addVoltageLevel": "Add a voltage level",
     "searchVoltageLevelInNad": "Search voltage level",
     "noResultsFound": "No results found",

@@ -538,7 +538,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onToggleShowLabels={handleToggleShowLabels}
                 isShowLabels={showLabels}
                 isDiagramLoading={loadingState}
-                fromNadConfig={!diagramParams.nadConfigUuid}
+                isNadCreationFromFilter={!!diagramParams.filterUuid}
                 svgVoltageLevels={svgVoltageLevels}
                 onFocusVoltageLevel={handleFocusVoltageLevel}
             />
