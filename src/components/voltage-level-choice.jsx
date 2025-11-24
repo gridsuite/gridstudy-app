@@ -11,7 +11,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { getBaseVoltageMapColor } from '../utils/colors';
+import { getBaseVoltageNetworkMapColor } from '../utils/colors';
 import { useNameOrId } from './utils/equipmentInfosHandler';
 import { Box } from '@mui/material';
 
@@ -64,7 +64,7 @@ const VoltageLevelChoice = ({ handleClose, onClickHandler, substation, position 
             >
                 {substation !== undefined &&
                     substation.voltageLevels.sort(voltageLevelComparator).map((voltageLevel) => {
-                        let color = getBaseVoltageMapColor(voltageLevel.nominalV);
+                        let color = getBaseVoltageNetworkMapColor(voltageLevel.nominalV);
                         let colorString =
                             'rgb(' + color[0].toString() + ',' + color[1].toString() + ',' + color[2].toString() + ')';
 

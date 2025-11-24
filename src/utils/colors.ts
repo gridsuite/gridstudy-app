@@ -6,7 +6,7 @@
  */
 
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
-import { getBaseVoltageIntervalByVoltageValue } from './base-voltages-utils';
+import { getBaseVoltageInterval } from './base-voltages-utils';
 import { getLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
 
 export const INVALID_LOADFLOW_OPACITY = 0.2;
@@ -18,8 +18,8 @@ function parseRGB(stringRGB: string): number[] | undefined {
         .map(Number);
 }
 
-export const getBaseVoltageMapColor = (voltageValue: number): number[] => {
-    const color = getBaseVoltageIntervalByVoltageValue(voltageValue)?.mapColor;
+export const getBaseVoltageNetworkMapColor = (voltageValue: number): number[] => {
+    const color = getBaseVoltageInterval(voltageValue)?.networkMapColor;
     return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
 };
 

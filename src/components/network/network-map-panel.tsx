@@ -70,7 +70,7 @@ import GuidancePopup from './guidance-popup';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
-import { getBaseVoltageMapColor } from 'utils/colors';
+import { getBaseVoltageNetworkMapColor } from 'utils/colors';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -1108,7 +1108,7 @@ export const NetworkMapPanel = ({
                         onDrawEvent(event);
                     }}
                     shouldDisableToolTip={isInDrawingMode.value}
-                    getNominalVoltageColor={getBaseVoltageMapColor}
+                    getNominalVoltageColor={getBaseVoltageNetworkMapColor}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                 {renderSearchEquipment()}
