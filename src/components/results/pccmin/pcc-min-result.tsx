@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ComputingType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { ColumnContext, ComputingType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
@@ -24,6 +24,8 @@ import { FilterType, PaginationType } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
+import { useMemo } from 'react';
+import { setTableSort } from 'redux/actions';
 
 interface PccMinResultProps {
     studyUuid: UUID;
@@ -43,6 +45,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
+    const dispatch = useDispatch();
 
     const [result, setResult] = useState<SinglePccMinResultInfos[]>([]);
 
@@ -57,7 +60,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
 
-    const { filters } = useFilterSelector(FilterType.PccMin, PCCMIN_RESULT);
+    const { filters, dispatchFilters } = useFilterSelector(FilterType.PccMin, PCCMIN_RESULT);
     const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { page, rowsPerPage } = pagination;
 
@@ -79,6 +82,26 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     const memoizedSetPageCallback = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
+
+    // Build store-agnostic sort and filter params for Commons UI
+    const sortParams: ColumnContext['sortParams'] = useMemo(
+        () => ({
+            sortConfig,
+            onChange: (updated: any) => dispatch(setTableSort(PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT, updated)),
+        }),
+        [sortConfig, dispatch]
+    );
+
+    const filterParamsBase = useMemo(
+        () => ({
+            type: FilterType.PccMin,
+            tab: PCCMIN_RESULT,
+            updateFilterCallback: memoizedSetPageCallback,
+            filters,
+            setFilters: dispatchFilters,
+        }),
+        [filters, dispatchFilters, memoizedSetPageCallback]
+    );
 
     useEffect(() => {
         if (pccMinStatus !== RunningStatus.SUCCEED) {
@@ -144,6 +167,8 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 isFetching={isFetching}
                 onFilter={memoizedSetPageCallback}
                 filters={filters}
+                sortParams={sortParams}
+                filterParamsBase={filterParamsBase}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

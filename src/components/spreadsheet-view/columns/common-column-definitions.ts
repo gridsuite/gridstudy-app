@@ -4,26 +4,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
-import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '../../custom-aggrid/cell-renderers';
-import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
-import type { ColDef, IFilterOptionDef, GridApi } from 'ag-grid-community';
-import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import {
+    BooleanCellRenderer,
     BooleanFilterValue,
-    updateFilters,
-} from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { FilterConfig, FilterType } from '../../../types/custom-aggrid-types';
-import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
-import {
+    COLUMN_TYPES,
+    CustomAggridAutocompleteFilter,
+    CustomAggridBooleanFilter,
+    CustomAggridComparatorFilter,
     CustomColDef,
+    CustomHeaderComponent,
+    DefaultCellRenderer,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    NumericCellRenderer,
+    RowIndexCellRenderer,
+    updateFilters,
+} from '@gridsuite/commons-ui';
+import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
+import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { FilterConfig, FilterType } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
 import { ROW_INDEX_COLUMN_ID } from '../constants';
@@ -188,7 +188,12 @@ export const booleanColumnDefinition = (colDef: ColumnDefinition, tab: string): 
     };
 };
 
-export const rowIndexColumnDefinition = (tabUuid: UUID): CustomColDef => {
+type RowIndexContextExtras = {
+    getCalculationSelections?: (tabUuid: string) => string[];
+    setCalculationSelections?: (tabUuid: string, selections: string[]) => void;
+};
+
+export const rowIndexColumnDefinition = (tabUuid: UUID, contextExtras?: RowIndexContextExtras): CustomColDef => {
     return {
         colId: ROW_INDEX_COLUMN_ID,
         headerName: '',
@@ -211,6 +216,8 @@ export const rowIndexColumnDefinition = (tabUuid: UUID): CustomColDef => {
         suppressAutoSize: false,
         context: {
             tabUuid: tabUuid,
+            getCalculationSelections: contextExtras?.getCalculationSelections,
+            setCalculationSelections: contextExtras?.setCalculationSelections,
         },
     };
 };

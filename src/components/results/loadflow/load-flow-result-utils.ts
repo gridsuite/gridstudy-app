@@ -10,7 +10,19 @@ import { IntlShape } from 'react-intl';
 import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
+import {
+    ColumnContext,
+    ComputingType,
+    convertDuration,
+    CustomAggridAutocompleteFilter,
+    CustomAggridComparatorFilter,
+    CustomAggridDurationFilter,
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+    FilterEnumsType,
+    formatNAValue,
+    makeAgGridCustomHeaderColumn,
+} from '@gridsuite/commons-ui';
 import { useEffect, useState } from 'react';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
@@ -20,26 +32,15 @@ import {
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import {
     FilterConfig,
     FilterType as AgGridFilterType,
-    textFilterParams,
     numericFilterParams,
+    textFilterParams,
 } from '../../../types/custom-aggrid-types';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
-import {
-    ColumnContext,
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-    FilterEnumsType,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
@@ -232,17 +233,16 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
+    sortParams: ColumnContext['sortParams'],
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+        // Optional store-agnostic extensions
+        filters?: FilterConfig[];
+        setFilters?: (newFilters: FilterConfig[]) => void;
+    },
     subjectIdRenderer: SubjectIdRendererType
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: LOADFLOW_RESULT_SORT_STORE,
-        tab: mappingTabs(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.Loadflow,
-        tab: mappingTabs(tabIndex),
-    };
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
@@ -267,7 +267,9 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             },
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
-        makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLoading', 'overload', intl, sortParams, filterParams)),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('LimitLoading', 'overload', intl, sortParams, filterParams)
+        ),
         makeAgGridCustomHeaderColumn(
             makeAgGridFloatColumn('PatlLoading', 'patlOverload', intl, sortParams, filterParams)
         ),
@@ -357,17 +359,15 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
+    sortParams: ColumnContext['sortParams'],
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+        filters?: FilterConfig[];
+        setFilters?: (newFilters: FilterConfig[]) => void;
+    },
     subjectIdRenderer: SubjectIdRendererType
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: LOADFLOW_RESULT_SORT_STORE,
-        tab: mappingTabs(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.Loadflow,
-        tab: mappingTabs(tabIndex),
-    };
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipmentBus' }),
@@ -423,18 +423,16 @@ export const loadFlowResultColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
+    sortParams: ColumnContext['sortParams'],
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+        filters?: FilterConfig[];
+        setFilters?: (newFilters: FilterConfig[]) => void;
+    },
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: LOADFLOW_RESULT_SORT_STORE,
-        tab: mappingTabs(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.Loadflow,
-        tab: mappingTabs(tabIndex),
-    };
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'connectedComponentNum' }),

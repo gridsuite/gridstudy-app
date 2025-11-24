@@ -19,26 +19,24 @@ import {
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { CustomAGGrid, unitToKiloUnit, ComputingType, OverflowableText } from '@gridsuite/commons-ui';
-import { convertSide } from '../loadflow/load-flow-result-utils';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
-import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import {
-    FilterType as AgGridFilterType,
-    FilterConfig,
-    numericFilterParams,
-    textFilterParams,
-} from '../../../types/custom-aggrid-types';
-import { mappingTabs } from './shortcircuit-analysis-result-content';
-import { resultsStyles } from '../common/utils';
 import {
     ColumnContext,
+    ComputingType,
+    CustomAGGrid,
+    CustomAggridAutocompleteFilter,
+    CustomAggridComparatorFilter,
+    DefaultCellRenderer,
     FILTER_DATA_TYPES,
     FilterEnumsType,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    makeAgGridCustomHeaderColumn,
+    OverflowableText,
+    unitToKiloUnit,
+} from '@gridsuite/commons-ui';
+import { convertSide } from '../loadflow/load-flow-result-utils';
+import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { FilterConfig, FilterType as AgGridFilterType, numericFilterParams, textFilterParams } from '../../../types/custom-aggrid-types';
+import { mappingTabs } from './shortcircuit-analysis-result-content';
+import { resultsStyles } from '../common/utils';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 interface ShortCircuitAnalysisResultProps {
@@ -49,8 +47,16 @@ interface ShortCircuitAnalysisResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     onFilter: () => void;
-    filters: FilterConfig[];
     openVoltageLevelDiagram: (id: string) => void;
+    // New store-agnostic API params
+    sortParams: ColumnContext['sortParams'];
+    filterParamsBase: {
+        type: AgGridFilterType;
+        tab: string;
+        updateFilterCallback: () => void;
+        filters?: FilterConfig[];
+        setFilters?: (newFilters: FilterConfig[]) => void;
+    };
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -94,8 +100,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     onGridColumnsChanged,
     onRowDataUpdated,
     onFilter,
-    filters,
+    // removed: filters handled via filterParamsBase
     openVoltageLevelDiagram,
+    sortParams,
+    filterParamsBase,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
@@ -135,16 +143,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         const onlyIfIsOneBus = <T,>(data: T, defaultData: T | undefined = {} as T) =>
             !isAllBusesAnalysisType ? data : defaultData;
 
-        const sortParams: ColumnContext['sortParams'] = {
-            table: SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-            tab: mappingTabs(analysisType),
-        };
-
-        const filterParams = {
-            type: AgGridFilterType.ShortcircuitAnalysis,
-            tab: mappingTabs(analysisType),
-            updateFilterCallback: onFilter,
-        };
+        // sort and filter are now provided by caller via store-agnostic API
+        const filterParams = { ...filterParamsBase, updateFilterCallback: onFilter };
 
         const inputFilterParams = (
             filterDefinition: Pick<

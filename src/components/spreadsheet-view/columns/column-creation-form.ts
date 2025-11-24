@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { COLUMN_TYPES } from '@gridsuite/commons-ui';
 import yup from '../../utils/yup-config';
 
 export const COLUMN_ID = 'id';

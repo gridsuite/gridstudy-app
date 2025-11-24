@@ -11,7 +11,7 @@ import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
-import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
+import { FilterEnumsType, OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button } from '@mui/material';
 import {
     RESULT_TYPE,
@@ -19,10 +19,13 @@ import {
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
-import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { setTableSort } from '../../../redux/actions';
+import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -130,6 +133,32 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
         [onClickNmKConstraint]
     );
 
+    const dispatch = useDispatch();
+    // Build sort params (store-agnostic API for commons-ui)
+    const sortConfig = useSelector(
+        (state: AppState) => state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][getStoreFields(tabIndex)]
+    );
+    const sortParams = useMemo(
+        () => ({
+            sortConfig,
+            onChange: (updated: any) => dispatch(setTableSort(SECURITY_ANALYSIS_RESULT_SORT_STORE, getStoreFields(tabIndex), updated)),
+        }),
+        [sortConfig, dispatch, tabIndex]
+    );
+
+    // Build filter params to keep filters in Redux
+    const { filters, dispatchFilters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
+    const filterParams = useMemo(
+        () => ({
+            type: AgGridFilterType.SecurityAnalysis,
+            tab: getStoreFields(tabIndex),
+            updateFilterCallback: onFilter,
+            filters,
+            setFilters: dispatchFilters,
+        }),
+        [filters, dispatchFilters, tabIndex, onFilter]
+    );
+
     const columnDefs = useMemo(() => {
         switch (resultType) {
             case RESULT_TYPE.NMK_CONTINGENCIES:
@@ -138,8 +167,8 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterEnums.nmk,
                     getEnumLabel,
-                    tabIndex,
-                    onFilter
+                    sortParams,
+                    filterParams
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -147,13 +176,13 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterEnums.nmk,
                     getEnumLabel,
-                    tabIndex,
-                    onFilter
+                    sortParams,
+                    filterParams
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex, onFilter);
+                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, sortParams, filterParams);
         }
-    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, onFilter]);
+    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, sortParams, filterParams]);
 
     return columnDefs;
 };

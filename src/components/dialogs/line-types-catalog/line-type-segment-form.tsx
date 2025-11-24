@@ -26,16 +26,21 @@ import {
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog';
-import { roundToDefaultPrecision } from '../../../utils/rounding';
+import { roundToDefaultPrecision } from '@gridsuite/commons-ui';
 import LineTypeSegmentCreation from './line-type-segment-creation';
 import { calculateReactance, calculateResistance, calculateSusceptance } from '../../utils/utils';
-import { CustomAGGrid, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomAGGrid,
+    DefaultCellRenderer,
+    type MuiStyles,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
 import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import { emptyLineSegment, SegmentFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import GridSection from '../commons/grid-section';
 
 const styles = {

@@ -6,8 +6,7 @@
  */
 
 import { GridApi } from 'ag-grid-community';
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { COLUMN_TYPES, CustomColDef } from '@gridsuite/commons-ui';
 import { CalculationRowType, CalculationType } from '../types/calculation.type';
 
 // Types for calculation data

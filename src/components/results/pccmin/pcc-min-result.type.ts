@@ -8,17 +8,10 @@
 import type { UUID } from 'node:crypto';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
-import {
-    FilterConfig,
-    numericFilterParams,
-    textFilterParams,
-    FilterType as AgGridFilterType,
-} from 'types/custom-aggrid-types';
-import { ColumnContext } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { FilterConfig, numericFilterParams, textFilterParams } from 'types/custom-aggrid-types';
+import { ColumnContext, CustomAggridComparatorFilter, makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
@@ -64,18 +57,17 @@ export const FROM_COLUMN_TO_FIELD_PCC_MIN: Record<string, string> = {
     r: 'r',
     x: 'x',
 };
-export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => void) => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: PCCMIN_ANALYSIS_RESULT_SORT_STORE,
-        tab: PCCMIN_RESULT,
-    };
-
-    const pccMinFilterParams = {
-        type: AgGridFilterType.PccMin,
-        tab: PCCMIN_RESULT,
-        updateFilterCallback: onFilter,
-    };
-
+export const getPccMinColumns = (
+    intl: IntlShape,
+    sortParams: ColumnContext['sortParams'],
+    filterParamsBase: {
+        type: string;
+        tab: string;
+        updateFilterCallback: () => void;
+        filters?: FilterConfig[];
+        setFilters?: (newFilters: FilterConfig[]) => void;
+    }
+) => {
     const createFilterContext = (
         filterDefinition: Pick<
             Required<ColumnContext>['filterComponentParams']['filterParams'],
@@ -85,13 +77,12 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
         fractionDigits?: number
     ) => ({
         sortParams,
-        ...pccMinFilterParams,
         ...(numeric ? { numeric: true, fractionDigits } : {}),
         filterComponent: CustomAggridComparatorFilter,
         filterComponentParams: {
             filterParams: {
                 ...filterDefinition,
-                ...pccMinFilterParams,
+                ...filterParamsBase,
             },
         },
     });

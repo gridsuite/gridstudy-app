@@ -23,21 +23,18 @@ import {
     fetchSensitivityAnalysisFilterOptions,
     fetchSensitivityAnalysisResult,
 } from '../../../services/study/sensitivity-analysis';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import {
-    FilterType as AgGridFilterType,
-    PaginationType,
-    SensitivityAnalysisTab,
-    SortWay,
-} from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType, PaginationType, SensitivityAnalysisTab, SortWay } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { setTableSort } from '../../../redux/actions';
+import { ColumnContext } from '@gridsuite/commons-ui';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 
 export type PagedSensitivityAnalysisResultProps = {
@@ -62,6 +59,7 @@ function PagedSensitivityAnalysisResult({
     globalFilters,
 }: Readonly<PagedSensitivityAnalysisResultProps>) {
     const intl = useIntl();
+    const dispatch = useDispatch();
 
     const [count, setCount] = useState<number>(0);
     const [result, setResult] = useState<SensitivityResult | null>(null);
@@ -73,7 +71,10 @@ function PagedSensitivityAnalysisResult({
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { filters, dispatchFilters } = useFilterSelector(
+        AgGridFilterType.SensitivityAnalysis,
+        mappingTabs(sensiKind, nOrNkIndex)
+    );
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SensitivityAnalysis,
         mappingTabs(sensiKind, nOrNkIndex) as SensitivityAnalysisTab
@@ -127,6 +128,33 @@ function PagedSensitivityAnalysisResult({
     const onFilter = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
+
+    // Build store-agnostic sort and filter params for Commons UI
+    const sortParams: ColumnContext['sortParams'] = useMemo(
+        () => ({
+            sortConfig,
+            onChange: (updated: any) =>
+                dispatch(
+                    setTableSort(
+                        SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+                        mappingTabs(sensiKind, nOrNkIndex),
+                        updated
+                    )
+                ),
+        }),
+        [sortConfig, dispatch, sensiKind, nOrNkIndex]
+    );
+
+    const filterParamsBase = useMemo(
+        () => ({
+            type: AgGridFilterType.SensitivityAnalysis,
+            tab: mappingTabs(sensiKind, nOrNkIndex),
+            updateFilterCallback: onFilter,
+            filters,
+            setFilters: dispatchFilters,
+        }),
+        [filters, dispatchFilters, sensiKind, nOrNkIndex, onFilter]
+    );
 
     const fetchFilterOptions = useCallback(() => {
         const selector = {
@@ -224,6 +252,8 @@ function PagedSensitivityAnalysisResult({
                 isLoading={isLoading}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}
+                sortParams={sortParams}
+                filterParamsBase={filterParamsBase}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

@@ -7,20 +7,19 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { SELECTED } from '../../../../utils/field-constants';
-import { AutocompleteInput, DndColumn, DndColumnType, DndTable } from '@gridsuite/commons-ui';
+import { AutocompleteInput, COLUMN_TYPES, DndColumn, DndColumnType, DndTable } from '@gridsuite/commons-ui';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import {
+    COLUMN_DEPENDENCIES,
+    COLUMN_FORMULA,
     COLUMN_ID,
     COLUMN_NAME,
-    COLUMNS_MODEL,
-    COLUMN_TYPE,
     COLUMN_PRECISION,
-    COLUMN_FORMULA,
-    COLUMN_DEPENDENCIES,
+    COLUMN_TYPE,
     COLUMN_VISIBLE,
+    COLUMNS_MODEL,
 } from './spreadsheet-model-global-editor.utils';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { ColumnGlobalModel } from './spreadsheet-model-global-editor.type';
 import DependenciesEditor from './dependencies-editor';
 import FormulaEditor from './formula-editor';

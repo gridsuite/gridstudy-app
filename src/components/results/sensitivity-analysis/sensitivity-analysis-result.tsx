@@ -10,16 +10,24 @@ import { useCallback, useMemo, useRef } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import {
+    ComputingType,
+    CustomAGGrid,
+    CustomAggridComparatorFilter,
+    CustomAGGridProps,
+    DefaultCellRenderer,
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+    ColumnContext,
+    makeAgGridCustomHeaderColumn,
+} from '@gridsuite/commons-ui';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
 import { mappingTabs, SUFFIX_TYPES } from './sensitivity-analysis-result-utils.js';
-import { CustomAGGrid, CustomAGGridProps, ComputingType } from '@gridsuite/commons-ui';
-import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import type {
@@ -32,12 +40,6 @@ import type {
 } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 function isColDef(col: ColDef | ColGroupDef): col is ColDef {
     return (col as ColDef).field !== undefined;
@@ -72,6 +74,15 @@ type SensitivityAnalysisResultProps = CustomAGGridProps & {
     onFilter: () => void;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
+    // New store-agnostic API params
+    sortParams: ColumnContext['sortParams'];
+    filterParamsBase: {
+        type: AgGridFilterType;
+        tab: string;
+        updateFilterCallback: () => void;
+        filters?: any;
+        setFilters?: (newFilters: any) => void;
+    };
 };
 
 function SensitivityAnalysisResult({
@@ -83,6 +94,8 @@ function SensitivityAnalysisResult({
     isLoading,
     setCsvHeaders,
     setIsCsvButtonDisabled,
+    sortParams,
+    filterParamsBase,
     ...props
 }: Readonly<SensitivityAnalysisResultProps>) {
     const gridRef = useRef(null);
@@ -114,20 +127,15 @@ function SensitivityAnalysisResult({
                 context: {
                     numeric: isNum,
                     fractionDigits: isNum ? 2 : undefined,
-                    sortParams: {
-                        table: SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
-                        tab: mappingTabs(sensiKind, nOrNkIndex),
-                    },
+                    sortParams,
                     filterComponent: CustomAggridComparatorFilter,
                     filterComponentParams: {
                         filterParams: {
+                            ...filterParamsBase,
                             dataType: isNum ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
                             comparators: isNum
                                 ? Object.values(FILTER_NUMBER_COMPARATORS)
                                 : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                            type: AgGridFilterType.SensitivityAnalysis,
-                            tab: mappingTabs(sensiKind, nOrNkIndex),
-                            updateFilterCallback: onFilter,
                         },
                     },
                 },
@@ -137,7 +145,7 @@ function SensitivityAnalysisResult({
                 pinned: pinned,
             });
         },
-        [intl, nOrNkIndex, onFilter, sensiKind]
+        [intl, sortParams, filterParamsBase, sensiKind]
     );
 
     const columnsDefs = useMemo(() => {

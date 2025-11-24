@@ -6,7 +6,7 @@
  */
 
 import { memo, useMemo, useRef } from 'react';
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { CustomColDef } from '@gridsuite/commons-ui';
 import { rowIndexColumnDefinition } from '../columns/common-column-definitions';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
@@ -16,6 +16,10 @@ import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
+import type { AppDispatch } from 'redux/store';
+import { setCalculationSelections } from 'redux/actions';
 
 interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
@@ -38,6 +42,8 @@ export const Spreadsheet = memo(
         active,
     }: SpreadsheetProps) => {
         const gridRef = useRef<AgGridReact>(null);
+        const dispatch = useDispatch<AppDispatch>();
+        const calculationSelectionsMap = useSelector((state: AppState) => state.calculationSelections);
 
         const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
         const rowCounterInfos = useFilteredRowCounterInfo({
@@ -59,9 +65,22 @@ export const Spreadsheet = memo(
                 }) || [];
 
             // Return row index column first, followed by visible columns
-            // Pass the table UUID to the rowIndexColumnDefinition
-            return [rowIndexColumnDefinition(tableDefinition?.uuid || ''), ...visibleColDefs];
-        }, [columnsDefinitions, tableDefinition?.columns, tableDefinition?.uuid]);
+            // Pass the table UUID and Redux-backed callbacks to the RowIndex renderer
+            return [
+                rowIndexColumnDefinition(tableDefinition?.uuid || '', {
+                    getCalculationSelections: (tabUuid: string) => calculationSelectionsMap?.[tabUuid] || [],
+                    setCalculationSelections: (tabUuid: string, selections: string[]) =>
+                        dispatch(setCalculationSelections(tabUuid as any, selections)),
+                }),
+                ...visibleColDefs,
+            ];
+        }, [
+            columnsDefinitions,
+            tableDefinition?.columns,
+            tableDefinition?.uuid,
+            calculationSelectionsMap,
+            dispatch,
+        ]);
 
         return (
             <>

@@ -6,7 +6,7 @@
  */
 
 import yup from '../../../../utils/yup-config';
-import { COLUMN_TYPES } from '../../../../custom-aggrid/custom-aggrid-header.type';
+import { COLUMN_TYPES } from '@gridsuite/commons-ui';
 import { TestContext } from 'yup';
 
 export const COLUMNS_MODEL = 'columnsModel';

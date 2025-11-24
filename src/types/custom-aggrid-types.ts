@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { GridApi } from 'ag-grid-community';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-} from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { FILTER_DATA_TYPES, FILTER_NUMBER_COMPARATORS, FILTER_TEXT_COMPARATORS } from '@gridsuite/commons-ui';
 import {
     ALL_BUSES,
     ONE_BUS,

@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
-import { IntlShape } from 'react-intl';
 import type { MuiStyles } from '@gridsuite/commons-ui';
+import { NA_Value } from '@gridsuite/commons-ui';
+import { IntlShape } from 'react-intl';
 import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';

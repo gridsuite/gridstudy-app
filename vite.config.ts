@@ -10,6 +10,7 @@ import { CommonServerOptions, defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import path from 'node:path';
 
 const serverSettings: CommonServerOptions = {
     port: 3004,
@@ -60,5 +61,10 @@ export default defineConfig((_config) => ({
     preview: serverSettings, // for npm run serve (use local build)
     build: {
         outDir: 'build',
+    },
+    resolve: {
+        alias: {
+            '@gridsuite/commons-ui': path.resolve(__dirname, '../commons-ui/src'),
+        },
     },
 }));

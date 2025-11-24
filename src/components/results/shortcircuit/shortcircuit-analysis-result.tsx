@@ -6,7 +6,7 @@
  */
 
 import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     SCAFaultResult,
     SCAFeederResult,
@@ -25,7 +25,7 @@ import {
     PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { useSnackMessage, ComputingType, snackWithFallback } from '@gridsuite/commons-ui';
+import { ComputingType, FilterEnumsType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
@@ -36,9 +36,10 @@ import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType, PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
-import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { ColumnContext } from '@gridsuite/commons-ui';
+import { setTableSort } from '../../../redux/actions';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -65,6 +66,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
 
     const [count, setCount] = useState<number>(0);
     const [isFetching, setIsFetching] = useState<boolean>(false);
@@ -84,7 +86,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
 
-    const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
+    const { filters, dispatchFilters } = useFilterSelector(
+        FilterType.ShortcircuitAnalysis,
+        mappingTabs(analysisType)
+    );
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.ShortcircuitAnalysis,
         mappingTabs(analysisType) as ShortcircuitAnalysisTab
@@ -109,6 +114,27 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     const memoizedSetPageCallback = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
+
+    // Build store-agnostic sort and filter params for Commons UI
+    const sortParams: ColumnContext['sortParams'] = useMemo(
+        () => ({
+            sortConfig,
+            onChange: (updated: any) =>
+                dispatch(setTableSort(SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE, mappingTabs(analysisType), updated)),
+        }),
+        [sortConfig, dispatch, analysisType]
+    );
+
+    const filterParamsBase = useMemo(
+        () => ({
+            type: FilterType.ShortcircuitAnalysis,
+            tab: mappingTabs(analysisType),
+            updateFilterCallback: memoizedSetPageCallback,
+            filters,
+            setFilters: dispatchFilters,
+        }),
+        [filters, dispatchFilters, analysisType, memoizedSetPageCallback]
+    );
 
     // Effects
     useEffect(() => {
@@ -243,8 +269,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 onFilter={memoizedSetPageCallback}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
-                filters={filters}
                 openVoltageLevelDiagram={openVoltageLevelDiagram}
+                sortParams={sortParams}
+                filterParamsBase={filterParamsBase}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

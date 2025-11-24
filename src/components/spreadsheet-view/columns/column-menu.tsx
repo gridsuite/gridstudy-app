@@ -7,12 +7,17 @@
 
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
-import { PopupConfirmationDialog, snackWithFallback, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
+import {
+    DialogMenuProps,
+    PopupConfirmationDialog,
+    snackWithFallback,
+    useSnackMessage,
+    useStateBoolean
+} from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { setRemoveColumnDefinition } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
-import { DialogMenuProps } from '../../custom-aggrid/custom-aggrid-menu';
 import type { UUID } from 'node:crypto';
 import { SpreadsheetTabDefinition } from 'components/spreadsheet-view/types/spreadsheet.type';
 import ColumnCreationDialog from './column-creation-dialog';

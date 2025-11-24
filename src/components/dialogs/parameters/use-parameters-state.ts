@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { snackWithFallback, updateConfigParameter, useSnackMessage } from '@gridsuite/commons-ui';
 import { AppConfigState } from 'redux/reducer';
 
-import { simpleConverterToString } from '../../../utils/types-utils';
+import { simpleConverterToString } from '@gridsuite/commons-ui';
 import { APP_NAME } from '../../../utils/config-params';
 
 // Overload for primitive types: paramValueUpdateConvertor is optional

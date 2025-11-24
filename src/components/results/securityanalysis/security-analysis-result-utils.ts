@@ -16,8 +16,21 @@ import {
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { ContingencyCellRenderer } from 'components/custom-aggrid/cell-renderers';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
+import {
+    ColumnContext,
+    ComputingType,
+    ContingencyCellRenderer,
+    convertDuration,
+    CustomAggridAutocompleteFilter,
+    CustomAggridComparatorFilter,
+    CustomAggridDurationFilter,
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+    FilterEnumsType,
+    formatNAValue,
+    makeAgGridCustomHeaderColumn,
+} from '@gridsuite/commons-ui';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
     SECURITY_ANALYSIS_RESULT_N,
@@ -25,24 +38,12 @@ import {
     SECURITY_ANALYSIS_RESULT_SORT_STORE,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import RunningStatus from 'components/utils/running-status';
 import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
-import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import {
-    ColumnContext,
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-    FilterEnumsType,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
@@ -248,18 +249,16 @@ export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
-    onFilter: () => void
+    sortParams: ColumnContext['sortParams'],
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+        updateFilterCallback: () => void;
+        // Optional store-agnostic extensions
+        filters?: FilterConfig[];
+        setFilters?: (newFilters: FilterConfig[]) => void;
+    }
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
-        tab: getStoreFields(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.SecurityAnalysis,
-        tab: getStoreFields(tabIndex),
-        updateFilterCallback: onFilter,
-    };
     return [
         makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn({
@@ -346,18 +345,15 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
-    onFilter: () => void
+    sortParams: ColumnContext['sortParams'],
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+        updateFilterCallback: () => void;
+        filters?: FilterConfig[];
+        setFilters?: (newFilters: FilterConfig[]) => void;
+    }
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
-        tab: getStoreFields(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.SecurityAnalysis,
-        tab: getStoreFields(tabIndex),
-        updateFilterCallback: onFilter,
-    };
     return [
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn('Contingency', 'contingencyId', intl, filterParams, sortParams),
@@ -517,18 +513,15 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
-    onFilter: () => void
+    sortParams: ColumnContext['sortParams'],
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+        updateFilterCallback: () => void;
+        filters?: FilterConfig[];
+        setFilters?: (newFilters: FilterConfig[]) => void;
+    }
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
-        tab: getStoreFields(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.SecurityAnalysis,
-        tab: getStoreFields(tabIndex),
-        updateFilterCallback: onFilter,
-    };
     return [
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, sortParams),

@@ -6,10 +6,18 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { CustomAGGrid, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
+import {
+    CustomAGGrid,
+    CustomAggridComparatorFilter,
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+    makeAgGridCustomHeaderColumn,
+    MessageLogCellRenderer,
+    type MuiStyles,
+    type SxStyle,
+} from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
@@ -28,14 +36,8 @@ import { ComputingAndNetworkModificationType, Log, SelectedReportLog, SeverityLe
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { MessageLogCellRenderer } from 'components/custom-aggrid/cell-renderers';
-import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-} from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
 import { reportStyles } from './report.styles';

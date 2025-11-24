@@ -6,11 +6,10 @@
  */
 
 import type { RefObject } from 'react';
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { CustomColDef, type MuiStyles } from '@gridsuite/commons-ui';
 import { type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Grid } from '@mui/material';
-import { type MuiStyles } from '@gridsuite/commons-ui';
 import { ColumnsConfig } from './columns-config';
 import ColumnCreationButton from './column-creation-button';
 import SaveSpreadsheetButton from './save/save-spreadsheet-button';

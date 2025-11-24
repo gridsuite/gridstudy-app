@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import { Grid } from '@mui/material';
-import { CustomFormProvider, SelectInput, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
+import { COLUMN_TYPES, CustomFormProvider, SelectInput, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +23,6 @@ import {
     SPREADSHEET_NAME,
 } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { ColumnDefinitionDto, SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import type { DialogComponentProps } from '../types';

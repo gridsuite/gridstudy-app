@@ -7,8 +7,7 @@
 
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { EquipmentTable } from './equipment-table';
-import { type Identifiable, type MuiStyles } from '@gridsuite/commons-ui';
-import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { type CustomColDef, type Identifiable, type MuiStyles, updateFilters } from '@gridsuite/commons-ui';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
@@ -18,7 +17,6 @@ import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
-import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';

@@ -11,8 +11,7 @@ import { Box } from '@mui/material';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ColumnContext, ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
 
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
 import { AgGridReact } from 'ag-grid-react';
@@ -20,13 +19,23 @@ import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv'
 import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
+import { FilterConfig, FilterType as AgGridFilterType } from 'types/custom-aggrid-types';
 
-const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, isFetching, onFilter, filters }) => {
+const PccMinResultTable: FunctionComponent<PccMinResultTableProps & {
+    sortParams: ColumnContext['sortParams'];
+    filterParamsBase: {
+        type: AgGridFilterType;
+        tab: string;
+        updateFilterCallback: () => void;
+        filters?: FilterConfig[];
+        setFilters?: (newFilters: FilterConfig[]) => void;
+    };
+}> = ({ result, isFetching, onFilter, filters, sortParams, filterParamsBase }) => {
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const gridRef = useRef<AgGridReact>(null);
 
-    const columns = useMemo(() => getPccMinColumns(intl, onFilter), [intl, onFilter]);
+    const columns = useMemo(() => getPccMinColumns(intl, sortParams, { ...filterParamsBase, updateFilterCallback: onFilter }), [intl, sortParams, filterParamsBase, onFilter]);
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);
 
