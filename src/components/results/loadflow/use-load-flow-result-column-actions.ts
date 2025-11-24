@@ -66,16 +66,16 @@ export const useLoadFlowResultColumnActions = ({
                             }
                         })
                         .finally(() => {
-                            if (!vlId) {
-                                snackError({
-                                    messageId: 'NetworkEquipmentNotFound',
-                                    messageValues: {
-                                        equipmentId: row.subjectId || '',
-                                    },
-                                });
-                            } else {
+                            if (vlId) {
                                 dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
+                                return;
                             }
+                            snackError({
+                                messageId: 'NetworkEquipmentNotFound',
+                                messageValues: {
+                                    equipmentId: row.subjectId || '',
+                                },
+                            });
                         });
                 }
             }

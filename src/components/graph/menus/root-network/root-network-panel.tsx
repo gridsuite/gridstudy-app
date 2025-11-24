@@ -37,7 +37,15 @@ const RootNetworkPanel: FunctionComponent = () => {
     const panelStyle = useMemo(() => {
         const width = theme.spacing(isRootNetworkPanelMinimized ? 32 : 42);
 
-        const minHeight = theme.spacing(isRootNetworkPanelMinimized ? 5 : isMonoRootStudy ? 14 : 38);
+        let minHeightSpacing: number;
+        if (isRootNetworkPanelMinimized) {
+            minHeightSpacing = 5;
+        } else if (isMonoRootStudy) {
+            minHeightSpacing = 14;
+        } else {
+            minHeightSpacing = 38;
+        }
+        const minHeight = theme.spacing(minHeightSpacing);
 
         return {
             ...styles.paper,

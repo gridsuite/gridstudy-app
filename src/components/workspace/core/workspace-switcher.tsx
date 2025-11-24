@@ -34,7 +34,6 @@ import { type MuiStyles, OverflowableText, PopupConfirmationDialog, CancelButton
 import { useIntl, FormattedMessage } from 'react-intl';
 import { WORKSPACE_MENU_VALUE } from '../constants/workspace.constants';
 import type { RootState } from '../../../redux/store';
-import type { Workspace } from '../types/workspace.types';
 import {
     switchWorkspace,
     renameWorkspace as renameWorkspaceAction,
@@ -78,7 +77,7 @@ const styles = {
 export const WorkspaceSwitcher = memo(() => {
     const intl = useIntl();
     const dispatch = useDispatch();
-    const workspaces = useSelector((state: RootState) => Object.values(state.workspace.workspaces) as Workspace[]);
+    const workspaces = useSelector((state: RootState) => Object.values(state.workspace.workspaces));
     const activeWorkspaceId = useSelector((state: RootState) => state.workspace.activeWorkspaceId);
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -165,7 +164,7 @@ export const WorkspaceSwitcher = memo(() => {
                         return (
                             <ListItem
                                 key={workspace.id}
-                                button
+                                component="button"
                                 onClick={() => handleSwitchWorkspace(workspace.id)}
                                 sx={[styles.workspaceItem, isActive && styles.activeWorkspace]}
                             >
@@ -176,7 +175,7 @@ export const WorkspaceSwitcher = memo(() => {
                                         maxLineCount={1}
                                     />
                                     <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                                        {panelCount} <FormattedMessage id={panelCount !== 1 ? 'panels' : 'panel'} />
+                                        {panelCount} <FormattedMessage id={panelCount === 1 ? 'panel' : 'panels'} />
                                     </Typography>
                                 </Box>
                                 <Tooltip title={intl.formatMessage({ id: 'Rename' })}>

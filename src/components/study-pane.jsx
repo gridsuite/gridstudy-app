@@ -31,7 +31,7 @@ const styles = {
     },
     breadCrumbs: (theme) => ({
         backgroundColor: theme.palette.toolbarBackground,
-        p: 0,
+        pl: 1,
     }),
     '@global': {
         '@keyframes spin': {

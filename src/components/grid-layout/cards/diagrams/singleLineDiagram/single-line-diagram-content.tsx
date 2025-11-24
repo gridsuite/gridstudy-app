@@ -154,7 +154,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     const diagramId =
                         diagramParams.type === DiagramType.VOLTAGE_LEVEL
                             ? diagramParams.voltageLevelId
-                            : (diagramParams as SubstationDiagramParams).substationId;
+                            : diagramParams.substationId;
                     snackWithFallback(snackError, error, {
                         headerId: 'updateSwitchStateError',
                         headerValues: { diagramTitle: diagramId },

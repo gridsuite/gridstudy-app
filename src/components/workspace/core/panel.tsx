@@ -7,7 +7,7 @@
 
 import { useCallback, memo, type RefObject } from 'react';
 import { Box } from '@mui/material';
-import { Rnd, type RndDragCallback, type RndResizeCallback, type Position } from 'react-rnd';
+import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -96,7 +96,10 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
                 updatePanelPositionAndSize({
                     panelId,
                     position,
-                    size: { width: parseInt(ref.style.width, 10), height: parseInt(ref.style.height, 10) },
+                    size: {
+                        width: Number.parseInt(ref.style.width, 10),
+                        height: Number.parseInt(ref.style.height, 10),
+                    },
                 })
             );
         },

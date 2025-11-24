@@ -29,7 +29,7 @@ const workspacesPersistenceMiddleware = (store: any) => (next: any) => (action: 
     return result;
 };
 
-const rootReducer = (state: any, action: any) => {
+const combineReducers = (state: any, action: any) => {
     const appState = reducer(state, action);
     const workspacesState = workspacesReducer(state?.workspace, action);
 
@@ -40,7 +40,7 @@ const rootReducer = (state: any, action: any) => {
 };
 
 export const store = configureStore({
-    reducer: rootReducer,
+    reducer: combineReducers,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: false,
@@ -49,7 +49,6 @@ export const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
-export type AppState = RootState; // For backward compatibility
 export type AppDispatch = typeof store.dispatch;
 
 setCommonStore(store);
@@ -59,15 +58,6 @@ setUserStore(store);
 // https://redux.js.org/usage/configuring-your-store#hot-reloading
 if (import.meta.env.DEV && import.meta.hot) {
     import.meta.hot.accept('./reducer', () => {
-        const newRootReducer = (state: any, action: any) => {
-            const appState = reducer(state, action);
-            const workspacesState = workspacesReducer(state?.workspace, action);
-
-            return {
-                ...appState,
-                workspace: workspacesState,
-            };
-        };
-        store.replaceReducer(newRootReducer as any);
+        store.replaceReducer(combineReducers as any);
     });
 }

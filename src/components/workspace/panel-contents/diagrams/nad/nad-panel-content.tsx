@@ -67,7 +67,7 @@ export const NadPanelContent = ({
     // The useEffect in use-nad-diagram will handle the fetch when diagramData changes
     const handleReplaceNad = useCallback(
         (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
-            const currentMetadata = diagramMetadata as NADPanelMetadata;
+            const currentMetadata = diagramMetadata;
             dispatch(
                 updatePanelMetadata({
                     panelId,

@@ -17,22 +17,31 @@ import type { UUID } from 'node:crypto';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 
-const getHeaderStyles = (theme: Theme, isFocused: boolean) => ({
-    paddingLeft: theme.spacing(1),
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: theme.palette.mode === 'light' ? (isFocused ? theme.palette.grey[200] : 'white') : '#292e33',
-    border:
-        theme.palette.mode === 'light'
-            ? `1px solid ${theme.palette.grey[500]}`
-            : `1px solid ${theme.palette.grey[800]}`,
-    borderRadius: theme.spacing(2) + ' ' + theme.spacing(2) + ' 0 0',
-    cursor: 'grab',
-    userSelect: 'none',
-    '&:active': {
-        cursor: 'grabbing',
-    },
-});
+const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
+    let backgroundColor: string;
+    if (theme.palette.mode === 'light') {
+        backgroundColor = isFocused ? theme.palette.grey[200] : 'white';
+    } else {
+        backgroundColor = '#292e33';
+    }
+
+    return {
+        paddingLeft: theme.spacing(1),
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor,
+        border:
+            theme.palette.mode === 'light'
+                ? `1px solid ${theme.palette.grey[500]}`
+                : `1px solid ${theme.palette.grey[800]}`,
+        borderRadius: theme.spacing(2) + ' ' + theme.spacing(2) + ' 0 0',
+        cursor: 'grab',
+        userSelect: 'none',
+        '&:active': {
+            cursor: 'grabbing',
+        },
+    };
+};
 
 const styles = {
     title: {

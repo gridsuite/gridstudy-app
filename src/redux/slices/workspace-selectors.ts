@@ -7,12 +7,11 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
-import type { PanelState, PanelType, Workspace } from '../../components/workspace/types/workspace.types';
+import type { PanelType, Workspace } from '../../components/workspace/types/workspace.types';
 import type { UUID } from 'node:crypto';
 
-const getActiveWorkspace = (state: RootState): Workspace | undefined => {
-    return state.workspace.workspaces[state.workspace.activeWorkspaceId];
-};
+const getActiveWorkspace = (state: RootState): Workspace | undefined =>
+    state.workspace.activeWorkspaceId ? state.workspace.workspaces[state.workspace.activeWorkspaceId] : undefined;
 
 export const selectPanel = createSelector(
     [(state: RootState) => getActiveWorkspace(state)?.panels, (_state: RootState, panelId: UUID) => panelId],
@@ -27,17 +26,15 @@ export const selectIsPanelTypeOpen = createSelector(
     }
 );
 
-export const selectPanelIds = (state: RootState): UUID[] => {
-    const workspace = getActiveWorkspace(state);
-    return workspace ? (Object.keys(workspace.panels) as UUID[]) : [];
-};
+export const selectPanelIds = createSelector([getActiveWorkspace], (workspace) =>
+    workspace ? (Object.keys(workspace.panels) as UUID[]) : []
+);
 
-export const selectPanels = (state: RootState): PanelState[] => {
-    const workspace = getActiveWorkspace(state);
-    return workspace ? Object.values(workspace.panels) : [];
-};
+export const selectPanels = createSelector([getActiveWorkspace], (workspace) =>
+    workspace ? Object.values(workspace.panels) : []
+);
 
-export const selectFocusedPanelId = (state: RootState): UUID | null => {
-    const workspace = getActiveWorkspace(state);
-    return workspace?.focusedPanelId ?? null;
-};
+export const selectFocusedPanelId = createSelector(
+    [getActiveWorkspace],
+    (workspace) => workspace?.focusedPanelId ?? null
+);

@@ -48,15 +48,31 @@ export const useSldDiagram = ({
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
 
-    const fetchDiagram = useCallback(async () => {
+    // Helper to process SVG data - extracted to reduce nesting
+    const processSvgData = useCallback((svgData: any) => {
+        if (svgData) {
+            setDiagram((prev) => ({ ...prev, svg: svgData }));
+        }
+    }, []);
+
+    const handleFetchError = useCallback((error: unknown) => {
+        console.error('Error fetching SLD diagram:', error);
+    }, []);
+
+    const handleFetchComplete = useCallback(() => {
+        setLoading(false);
+    }, []);
+
+    const fetchDiagram = useCallback(() => {
         if (!currentNode || !isNodeBuilt(currentNode)) return;
 
         setLoading(true);
         setGlobalError(undefined);
 
         try {
+            let url: string | null = null;
+
             setDiagram((currentDiagram) => {
-                let url: string | null = null;
                 if (currentDiagram.type === DiagramType.VOLTAGE_LEVEL && 'voltageLevelId' in currentDiagram) {
                     url = getVoltageLevelSingleLineDiagram({
                         studyUuid,
@@ -85,30 +101,33 @@ export const useSldDiagram = ({
                     });
                 }
 
-                if (url) {
-                    fetchSvg(url, { method: 'GET' })
-                        .then((svgData) => {
-                            if (svgData) {
-                                setDiagram((prev) => ({ ...prev, svg: svgData }));
-                            }
-                        })
-                        .catch((error) => {
-                            console.error('Error fetching SLD diagram:', error);
-                        })
-                        .finally(() => {
-                            setLoading(false);
-                        });
-                } else {
-                    setLoading(false);
-                }
-
                 return currentDiagram;
             });
+
+            if (url) {
+                fetchSvg(url, { method: 'GET' })
+                    .then(processSvgData)
+                    .catch(handleFetchError)
+                    .finally(handleFetchComplete);
+            } else {
+                setLoading(false);
+            }
         } catch (error) {
             console.error('Error fetching SLD diagram:', error);
             setLoading(false);
         }
-    }, [currentNode, studyUuid, currentNodeId, currentRootNetworkUuid, paramUseName, networkVisuParams, language]);
+    }, [
+        currentNode,
+        studyUuid,
+        currentNodeId,
+        currentRootNetworkUuid,
+        paramUseName,
+        networkVisuParams,
+        language,
+        processSvgData,
+        handleFetchError,
+        handleFetchComplete,
+    ]);
 
     // Fetch when diagram metadata or node changes
     useEffect(() => {

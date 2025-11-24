@@ -7,10 +7,10 @@
 
 import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { useRef, useState, useCallback, useMemo } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { selectPanelIds, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
-import { PanelDock } from './panel-dock';
+import { WorkspaceDock } from './workspace-dock';
 import { Panel } from './panel';
 import type { SnapRect } from './utils/snap-utils';
 
@@ -75,7 +75,7 @@ export const WorkspaceContainer = () => {
                     />
                 )}
             </Box>
-            <PanelDock />
+            <WorkspaceDock />
         </Box>
     );
 };

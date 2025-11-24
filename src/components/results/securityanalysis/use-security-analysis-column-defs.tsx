@@ -94,17 +94,17 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                             }
                         })
                         .finally(() => {
-                            if (!vlId) {
-                                console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);
-                                snackError({
-                                    messageId: 'NetworkEquipmentNotFound',
-                                    messageValues: {
-                                        equipmentId: row.subjectId || '',
-                                    },
-                                });
-                            } else {
+                            if (vlId) {
                                 dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
+                                return;
                             }
+                            console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);
+                            snackError({
+                                messageId: 'NetworkEquipmentNotFound',
+                                messageValues: {
+                                    equipmentId: row.subjectId || '',
+                                },
+                            });
                         });
                 }
             }

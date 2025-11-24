@@ -38,7 +38,7 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const PanelDock = memo(() => {
+export const WorkspaceDock = memo(() => {
     const dispatch = useDispatch();
     const allPanels = useSelector(selectPanels);
     const focusedPanelId = useSelector(selectFocusedPanelId);
@@ -60,16 +60,16 @@ export const PanelDock = memo(() => {
         return null;
     }
 
-    const handlePanelClick = (panelId: UUID, isMinimized: boolean) => {
-        if (isMinimized) {
+    const handleMinimizedPanelClick = (panelId: UUID) => {
+        dispatch(toggleMinimize(panelId));
+        dispatch(focusPanel(panelId));
+    };
+
+    const handleActivePanelClick = (panelId: UUID) => {
+        if (panelId === focusedPanelId) {
             dispatch(toggleMinimize(panelId));
-            dispatch(focusPanel(panelId));
         } else {
-            if (panelId === focusedPanelId) {
-                dispatch(toggleMinimize(panelId));
-            } else {
-                dispatch(focusPanel(panelId));
-            }
+            dispatch(focusPanel(panelId));
         }
     };
 
@@ -107,7 +107,9 @@ export const PanelDock = memo(() => {
                                 </Box>
                             </Box>
                         }
-                        onClick={() => handlePanelClick(panel.id, panel.isMinimized)}
+                        onClick={() =>
+                            panel.isMinimized ? handleMinimizedPanelClick(panel.id) : handleActivePanelClick(panel.id)
+                        }
                         sx={{
                             minHeight: 36,
                             textTransform: 'none',
