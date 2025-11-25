@@ -24,9 +24,11 @@ import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useNodeAliases } from '../../hooks/use-node-aliases';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
+import { openSLD, updatePanelMetadata } from '../../../../redux/slices/workspace-slice';
+import type { UUID } from 'node:crypto';
 
 const styles = {
     table: (theme) => ({
@@ -46,29 +48,27 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface SpreadsheetContentProps {
+    panelId: UUID;
     gridRef: RefObject<AgGridReact | null>;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
     disabled: boolean;
     equipmentId: string | null;
-    onEquipmentScrolled: () => void;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
-    openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
 
 export const SpreadsheetContent = memo(
     ({
+        panelId,
         gridRef,
         currentNode,
         tableDefinition,
         columns,
         disabled,
         equipmentId,
-        onEquipmentScrolled,
         registerRowCounterEvents,
-        openDiagram,
         active,
     }: SpreadsheetContentProps) => {
         const [isGridReady, setIsGridReady] = useState(false);
@@ -102,16 +102,27 @@ export const SpreadsheetContent = memo(
                 equipmentType: tableDefinition?.type,
             });
 
+        const dispatch = useDispatch();
+
         const handleEquipmentScroll = useCallback(() => {
             if (equipmentId && gridRef.current?.api && isGridReady) {
                 const selectedRow = gridRef.current.api.getRowNode(equipmentId);
                 if (selectedRow) {
                     gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
                     selectedRow.setSelected(true, true);
-                    onEquipmentScrolled();
+                    // Clear the metadata after successfully scrolling to equipment
+                    dispatch(
+                        updatePanelMetadata({
+                            panelId,
+                            metadata: {
+                                targetEquipmentId: undefined,
+                                targetEquipmentType: undefined,
+                            },
+                        })
+                    );
                 }
             }
-        }, [equipmentId, gridRef, isGridReady, onEquipmentScrolled]);
+        }, [equipmentId, gridRef, isGridReady, dispatch, panelId]);
 
         useEffect(() => {
             handleEquipmentScroll();
@@ -195,9 +206,9 @@ export const SpreadsheetContent = memo(
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? DiagramType.SUBSTATION
                         : DiagramType.VOLTAGE_LEVEL;
-                openDiagram?.(equipmentId, diagramType);
+                dispatch(openSLD({ id: equipmentId, diagramType }));
             },
-            [openDiagram, tableDefinition?.type]
+            [dispatch, tableDefinition?.type]
         );
 
         return (

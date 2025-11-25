@@ -5,18 +5,41 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { legacy_createStore as createStore, Store } from 'redux';
-import { Actions, AppState, reducer } from './reducer';
+import { configureStore } from '@reduxjs/toolkit';
+import { reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 import { setUserStore } from './user-store';
+import workspacesReducer from './slices/workspace-slice';
 
-export const store = createStore(reducer);
+const combineReducers = (state: any, action: any) => {
+    const appState = reducer(state, action);
+    const workspacesState = workspacesReducer(state?.workspace, action);
+
+    return {
+        ...appState,
+        workspace: workspacesState,
+    };
+};
+
+export const store = configureStore({
+    reducer: combineReducers,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+            immutableCheck: false,
+        }),
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
 setCommonStore(store);
 setUserStore(store);
-export type AppDispatch = Store<AppState, Actions>['dispatch'];
 
 // to avoid to reset the state with HMR
 // https://redux.js.org/usage/configuring-your-store#hot-reloading
 if (import.meta.env.DEV && import.meta.hot) {
-    import.meta.hot.accept('./reducer', () => store.replaceReducer(reducer));
+    import.meta.hot.accept('./reducer', () => {
+        store.replaceReducer(combineReducers as any);
+    });
 }
