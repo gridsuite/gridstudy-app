@@ -8,7 +8,11 @@
 import type { UUID } from 'node:crypto';
 import { useCallback } from 'react';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
-import { isLoadflowResultNotification, isStudyNotification } from '../../../../types/notification-types';
+import {
+    isLoadflowResultNotification,
+    isShortCircuitResultNotification,
+    isStudyNotification,
+} from '../../../../types/notification-types';
 
 interface UseDiagramNotificationsProps {
     currentRootNetworkUuid: UUID;
@@ -24,7 +28,9 @@ export const useDiagramNotifications = ({ currentRootNetworkUuid, onNotification
         (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
             if (
-                (isLoadflowResultNotification(eventData) || isStudyNotification(eventData)) &&
+                (isLoadflowResultNotification(eventData) ||
+                    isShortCircuitResultNotification(eventData) ||
+                    isStudyNotification(eventData)) &&
                 eventData.headers.rootNetworkUuid === currentRootNetworkUuid
             ) {
                 onNotification();

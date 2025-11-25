@@ -23,6 +23,7 @@ import {
     Button,
     List,
     ListItem,
+    ListItemButton,
 } from '@mui/material';
 import {
     Dashboard,
@@ -164,44 +165,48 @@ export const WorkspaceSwitcher = memo(() => {
                         return (
                             <ListItem
                                 key={workspace.id}
-                                component="button"
-                                onClick={() => handleSwitchWorkspace(workspace.id)}
-                                sx={[styles.workspaceItem, isActive && styles.activeWorkspace]}
+                                disablePadding
+                                sx={isActive ? styles.activeWorkspace : undefined}
                             >
-                                <Box sx={{ width: 180, mr: 1, overflow: 'hidden' }}>
-                                    <OverflowableText
-                                        text={workspaceName}
-                                        sx={{ fontWeight: isActive ? 'bold' : 'normal', width: '100%' }}
-                                        maxLineCount={1}
-                                    />
-                                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                                        {panelCount} <FormattedMessage id={panelCount === 1 ? 'panel' : 'panels'} />
-                                    </Typography>
-                                </Box>
-                                <Tooltip title={intl.formatMessage({ id: 'Rename' })}>
-                                    <IconButton
-                                        size="small"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleOpenRenameDialog(workspace.id);
-                                        }}
-                                        sx={{ flexShrink: 0 }}
-                                    >
-                                        <EditIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title={intl.formatMessage({ id: 'reset' })}>
-                                    <IconButton
-                                        size="small"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setResetWorkspaceId(workspace.id);
-                                        }}
-                                        sx={{ flexShrink: 0 }}
-                                    >
-                                        <RestartAltIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
+                                <ListItemButton
+                                    onClick={() => handleSwitchWorkspace(workspace.id)}
+                                    sx={styles.workspaceItem}
+                                >
+                                    <Box sx={{ width: 180, mr: 1, overflow: 'hidden' }}>
+                                        <OverflowableText
+                                            text={workspaceName}
+                                            sx={{ fontWeight: isActive ? 'bold' : 'normal', width: '100%' }}
+                                            maxLineCount={1}
+                                        />
+                                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                                            {panelCount} <FormattedMessage id={panelCount === 1 ? 'panel' : 'panels'} />
+                                        </Typography>
+                                    </Box>
+                                    <Tooltip title={intl.formatMessage({ id: 'Rename' })}>
+                                        <IconButton
+                                            size="small"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleOpenRenameDialog(workspace.id);
+                                            }}
+                                            sx={{ flexShrink: 0 }}
+                                        >
+                                            <EditIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title={intl.formatMessage({ id: 'reset' })}>
+                                        <IconButton
+                                            size="small"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setResetWorkspaceId(workspace.id);
+                                            }}
+                                            sx={{ flexShrink: 0 }}
+                                        >
+                                            <RestartAltIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </ListItemButton>
                             </ListItem>
                         );
                     })}

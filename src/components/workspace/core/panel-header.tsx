@@ -7,7 +7,7 @@
 
 import { memo } from 'react';
 import { Box, IconButton, Theme, Typography } from '@mui/material';
-import { Close, Minimize, CropSquare, FilterNone, PushPin, PushPinOutlined } from '@mui/icons-material';
+import { Close, Minimize, PushPin, PushPinOutlined, Fullscreen, FullscreenExit } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { useDispatch } from 'react-redux';
@@ -129,7 +129,7 @@ export const PanelHeader = memo(
                         onClick={() => dispatch(toggleMaximize(panelId))}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
-                        {isMaximized ? <FilterNone fontSize="small" /> : <CropSquare fontSize="small" />}
+                        {isMaximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
                     </IconButton>
                     <IconButton
                         className="panel-header-close-button"
