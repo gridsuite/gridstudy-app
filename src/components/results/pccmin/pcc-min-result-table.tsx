@@ -50,7 +50,6 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
                 const vlId = node?.data?.voltageLevelId;
                 if (vlId) {
                     dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
-                    return;
                 }
             };
             if (value) {
