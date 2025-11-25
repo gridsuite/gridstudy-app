@@ -8,37 +8,6 @@
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 
-const POLYGON_TO_GREY_OUT_SELECTORS = [
-    '.sld-active-power polygon',
-    '.sld-reactive-power polygon',
-    '.sld-voltage polygon',
-    '.sld-angle polygon',
-    '.sld-consumption-sum polygon',
-    '.sld-production-sum polygon',
-].join(', ');
-
-const TEXT_TO_FILL_SELECTORS = [
-    '.sld-active-power text',
-    '.sld-reactive-power text',
-    '.sld-voltage text',
-    '.sld-angle text',
-    '.sld-consumption-sum text',
-    '.sld-production-sum text',
-    '.sld-voltage.sld-bus-legend-info',
-    '.sld-angle.sld-bus-legend-info',
-    '.sld-consumption-sum.sld-bus-legend-info',
-    '.sld-production-sum.sld-bus-legend-info',
-].join(', ');
-
-const DISABLE_ANIMATION_SELECTORS = [
-    '.sld-overload',
-    '.sld-vl-overvoltage',
-    '.sld-vl-undervoltage',
-    '.nad-branch-edges .nad-overload .nad-edge-path',
-    '.nad-vl-nodes .nad-overvoltage',
-    '.nad-vl-nodes .nad-undervoltage',
-].join(', ');
-
 export const styles = {
     divDiagram: {
         '& #nad-viewer, & #svg-container': {
@@ -112,13 +81,15 @@ export const styles = {
         },
     },
     divDiagramInvalid: {
-        [`& ${POLYGON_TO_GREY_OUT_SELECTORS}`]: {
-            opacity: INVALID_LOADFLOW_OPACITY,
-        },
-        [`& ${TEXT_TO_FILL_SELECTORS}`]: {
-            fill: '#787F81',
-        },
-        [`& ${DISABLE_ANIMATION_SELECTORS}`]: {
+        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-voltage polygon, & .sld-angle polygon, & .sld-consumption-sum polygon, & .sld-production-sum polygon':
+            {
+                opacity: INVALID_LOADFLOW_OPACITY,
+            },
+        '& .sld-active-power text, & .sld-reactive-power text, & .sld-voltage text, & .sld-angle text, & .sld-consumption-sum text, & .sld-production-sum text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info, & .sld-consumption-sum.sld-bus-legend-info, & .sld-production-sum.sld-bus-legend-info':
+            {
+                fill: '#787F81',
+            },
+        '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
             animation: 'none !important',
         },
         '& .nad-active': {
