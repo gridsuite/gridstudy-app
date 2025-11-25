@@ -91,6 +91,7 @@
     "Tree": "Tree",
     "modifications": "Modifications",
     "images": "Images",
+    "panels": "Panels",
     "NetworkVisualizations": "Network visualizations",
     "None": "None",
     "EmptyField": "Empty the field",
@@ -1662,5 +1663,13 @@
     "IccMinTri": "Icc min (kA)",
     "rOhm": "r (Ω)",
     "xOhm":"x (Ω)",
-    "importParameters": "Import parameters"
+    "importParameters": "Import parameters",
+    "workspaces": "Workspaces",
+    "resetWorkspaceConfirmation": "Are you sure you want to reset this workspace? All open windows will be closed.",
+    "renameWorkspace": "Rename Workspace",
+    "workspaceName": "Workspace Name",
+    "manageWorkspaces": "Manage workspaces",
+    "window": "window",
+    "windows": "windows",
+    "reset": "Reset"
  }
