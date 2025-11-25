@@ -45,7 +45,8 @@ import {
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
 import { createDiagramConfig, updateDiagramConfig } from 'services/explore';
-import { DiagramType, type NetworkAreaDiagramParams, type VoltageLevelDiagramParams } from '../diagram.type';
+import type { NetworkAreaDiagramParams, VoltageLevelDiagramParams } from '../diagram.type';
+import { DiagramType } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
@@ -53,7 +54,7 @@ import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
-import { v4 } from 'uuid';
+import type { CreateDiagramFuncType } from '../../../hooks/diagram-model.types';
 
 type NetworkAreaDiagramContentProps = {
     readonly diagramParams: NetworkAreaDiagramParams;
@@ -65,7 +66,7 @@ type NetworkAreaDiagramContentProps = {
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly visible: boolean;
-    readonly onVoltageLevelClick: (diagramParams: VoltageLevelDiagramParams) => void;
+    readonly onVoltageLevelClick: CreateDiagramFuncType<VoltageLevelDiagramParams>;
     readonly onNadChange: (nadParams: NetworkAreaDiagramParams, fetch?: boolean) => void;
 };
 
@@ -142,7 +143,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
                 } else {
                     onVoltageLevelClick({
-                        diagramUuid: v4() as UUID,
                         type: DiagramType.VOLTAGE_LEVEL,
                         voltageLevelId: equipmentId,
                         name: '',

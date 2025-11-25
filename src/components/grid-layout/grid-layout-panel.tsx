@@ -8,7 +8,9 @@
 import { useCallback, useRef, useState, useMemo } from 'react';
 import { type ItemCallback, type Layout, type Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
-import { Diagram, DiagramParams, DiagramType } from './cards/diagrams/diagram.type';
+import { type UpdateDiagramFuncType } from './hooks/diagram-model.types';
+
+import { Diagram, DiagramParamsWithoutId, DiagramType, NetworkAreaDiagramParams } from './cards/diagrams/diagram.type';
 import { Box, useTheme } from '@mui/material';
 import {
     ElementType,
@@ -20,18 +22,17 @@ import {
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
-import { v4 } from 'uuid';
 import { GridLayoutToolbar } from './grid-layout-toolbar';
 import './grid-layout-panel.css';
 import { DiagramCard } from './cards/diagrams/diagram-card';
 import { BLINK_LENGTH_MS } from './cards/custom-card-header';
 import CustomResizeHandle from './custom-resize-handle';
 import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
-import { isThereTooManyOpenedNadDiagrams } from './cards/diagrams/diagram-utils';
 import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import MapDialog from './dialog/map-dialog';
+import { isThereTooManyOpenedNadDiagrams } from './hooks/diagram-model-utils';
 
 const styles = {
     container: {
@@ -272,8 +273,8 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
             onDiagramAlreadyExists: focusOnDiagram,
         });
 
-    const handleUpdateDiagram = useCallback(
-        (diagram: DiagramParams, fetch?: boolean) => {
+    const handleUpdateDiagram: UpdateDiagramFuncType = useCallback(
+        (diagram, fetch) => {
             setDisableStoreButton(false);
             updateDiagram(diagram, fetch);
         },
@@ -290,36 +291,38 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
     const showVoltageLevelDiagram = useCallback(
         (element: EquipmentInfos) => {
-            let diagram: DiagramParams | null = null;
-
-            if (element.type === EquipmentType.VOLTAGE_LEVEL || element.voltageLevelId) {
-                diagram = {
-                    diagramUuid: v4() as UUID,
-                    type: DiagramType.VOLTAGE_LEVEL,
-                    voltageLevelId: element.voltageLevelId ?? '',
-                    name: '',
-                };
-            } else if (element.type === EquipmentType.SUBSTATION) {
-                diagram = {
-                    diagramUuid: v4() as UUID,
-                    type: DiagramType.SUBSTATION,
-                    substationId: element.id,
-                    name: '',
-                };
+            if (
+                !(
+                    element.type === EquipmentType.VOLTAGE_LEVEL ||
+                    element.voltageLevelId ||
+                    element.type === EquipmentType.SUBSTATION
+                )
+            ) {
+                return;
             }
 
-            if (diagram) {
-                showGrid();
-                createDiagram(diagram);
-            }
+            const diagram: DiagramParamsWithoutId =
+                element.type === EquipmentType.SUBSTATION && !element.voltageLevelId
+                    ? {
+                          type: DiagramType.SUBSTATION,
+                          substationId: element.id,
+                          name: '',
+                      }
+                    : {
+                          type: DiagramType.VOLTAGE_LEVEL,
+                          voltageLevelId: element.voltageLevelId ?? '',
+                          name: '',
+                      };
+
+            showGrid();
+            createDiagram(diagram);
         },
         [createDiagram, showGrid]
     );
 
     const handleLoadNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
-            const diagram: DiagramParams = {
-                diagramUuid: v4() as UUID,
+            const diagram: DiagramParamsWithoutId<NetworkAreaDiagramParams> = {
                 type: DiagramType.NETWORK_AREA_DIAGRAM,
                 name: elementName,
                 nadConfigUuid: elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
