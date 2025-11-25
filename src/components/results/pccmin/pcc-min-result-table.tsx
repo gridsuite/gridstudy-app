@@ -5,23 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useMemo, useRef } from 'react';
+import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
-import { Box } from '@mui/material';
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
+import { Box, LinearProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
-import { ComputingType } from '@gridsuite/commons-ui';
-
-import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
 import { AgGridReact } from 'ag-grid-react';
-import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv';
+import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
+import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
 import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
+import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
+import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 
-const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, isFetching, onFilter, filters }) => {
+const styles = {
+    gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
+    grid: { flexGrow: 1, minHeight: 0 },
+};
+
+const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
+    result,
+    isFetching,
+    onFilter,
+    filters,
+    setCsvHeaders,
+    setIsCsvButtonDisabled,
+}) => {
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const gridRef = useRef<AgGridReact>(null);
@@ -30,7 +43,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);
 
-    const pccMinDefaultColDef = useMemo(
+    const defaultColDef = useMemo(
         () => ({
             suppressMovable: true,
             resizable: true,
@@ -43,22 +56,51 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
     const rowsToShow = getRows(result, pccMinStatus);
     const noRowMessage = getNoRowsMessage(statusMessage, result, pccMinStatus, !isFetching);
 
-    const openPccMinLoader = useOpenLoaderShortWait({
+    const showLoader = useOpenLoaderShortWait({
         isLoading: pccMinStatus === RunningStatus.RUNNING || isFetching,
         delay: RESULTS_LOADING_DELAY,
     });
+
+    const handleRowDataUpdated = useCallback(
+        (event: RowDataUpdatedEvent) => {
+            if (event?.api) {
+                setIsCsvButtonDisabled(event.api.getDisplayedRowCount() === 0);
+            }
+        },
+        [setIsCsvButtonDisabled]
+    );
+
+    const handleGridReady = useCallback(
+        (event: GridReadyEvent) => {
+            if (event.api) {
+                event.api.sizeColumnsToFit();
+                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
+            }
+        },
+        [setCsvHeaders]
+    );
+
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Box sx={{ flex: 1, minHeight: 0 }}>
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={columns}
-                    defaultColDef={pccMinDefaultColDef}
-                    tableName={intl.formatMessage({ id: 'Results' })}
-                    rows={rowsToShow}
+        <Box sx={styles.gridContainer}>
+            {showLoader && <LinearProgress sx={{ height: 4 }} />}
+
+            <Box sx={styles.grid}>
+                <CustomAGGrid
+                    ref={gridRef}
+                    rowData={rowsToShow}
+                    defaultColDef={defaultColDef}
+                    columnDefs={columns}
+                    onRowDataUpdated={handleRowDataUpdated}
+                    onGridReady={handleGridReady}
+                    onDisplayedColumnsChanged={({ api }) => {
+                        setCsvHeaders(getColumnHeaderDisplayNames(api));
+                    }}
                     overlayNoRowsTemplate={noRowMessage}
-                    skipColumnHeaders={false}
-                    showLinearProgress={openPccMinLoader}
+                    overrideLocales={AGGRID_LOCALES}
+                    onModelUpdated={({ api }) => {
+                        if (api.getDisplayedRowCount()) api.hideOverlay();
+                        else api.showNoRowsOverlay();
+                    }}
                 />
             </Box>
         </Box>
