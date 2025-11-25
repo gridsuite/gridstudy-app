@@ -39,7 +39,14 @@ export function OperationalLimitsGroupTabLabel({
 
     return (
         <Box
-            sx={{ display: 'inline-flex', alignItems: 'center', boxSizing: 'inherit', justifyContent: 'space-between' }}
+            sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                boxSizing: 'inherit',
+                justifyContent: 'space-between',
+                paddingRight: 1,
+                paddingLeft: 1,
+            }}
         >
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                 <Stack spacing={0}>

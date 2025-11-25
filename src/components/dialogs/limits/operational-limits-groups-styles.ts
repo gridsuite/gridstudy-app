@@ -12,7 +12,7 @@ import { blue } from '@mui/material/colors';
 export const limitsStyles = {
     tabs: () => ({
         ...stylesLayout.listDisplay,
-        maxHeight: '50vh',
+        maxHeight: '45vh',
         height: '100%',
         borderRight: 1,
         borderColor: 'divider',
