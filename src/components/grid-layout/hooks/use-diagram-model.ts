@@ -295,31 +295,36 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 return;
             }
             let fetchOptions: RequestInit = { method: 'GET' };
-            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                const nadRequestInfos = {
-                    nadConfigUuid: diagram.initializationNadConfigUuid ?? diagram.nadConfigUuid,
-                    filterUuid: diagram.filterUuid,
-                    voltageLevelIds: diagram.voltageLevelIds,
-                    voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
-                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
-                    positions: diagram.positions,
-                    nadPositionsGenerationMode:
-                        networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
-                    baseVoltagesConfigInfos: getBaseVoltagesConfig(),
-                };
-                fetchOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(nadRequestInfos),
-                };
-            }
-            if (diagram.type === DiagramType.SUBSTATION || diagram.type === DiagramType.VOLTAGE_LEVEL) {
-                const sldRequestInfos = { baseVoltagesConfigInfos: getBaseVoltagesConfig() };
-                fetchOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(sldRequestInfos),
-                };
+            switch (diagram.type) {
+                case DiagramType.NETWORK_AREA_DIAGRAM: {
+                    const nadRequestInfos = {
+                        nadConfigUuid: diagram.initializationNadConfigUuid ?? diagram.nadConfigUuid,
+                        filterUuid: diagram.filterUuid,
+                        voltageLevelIds: diagram.voltageLevelIds,
+                        voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
+                        voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                        positions: diagram.positions,
+                        nadPositionsGenerationMode:
+                            networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+                        baseVoltagesConfigInfos: getBaseVoltagesConfig(),
+                    };
+                    fetchOptions = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(nadRequestInfos),
+                    };
+                    break;
+                }
+                case DiagramType.SUBSTATION:
+                case DiagramType.VOLTAGE_LEVEL: {
+                    const sldRequestInfos = { baseVoltagesConfigInfos: getBaseVoltagesConfig() };
+                    fetchOptions = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(sldRequestInfos),
+                    };
+                    break;
+                }
             }
 
             setLoadingDiagrams((loadingDiagrams) => {
