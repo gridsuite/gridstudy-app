@@ -6,9 +6,8 @@
  */
 
 import { Parameter } from '@gridsuite/commons-ui';
-import { CaseImportParameters } from 'services/network-conversion';
 
-export function formatCaseImportParameters(params: CaseImportParameters[]): CaseImportParameters[] {
+export function formatCaseImportParameters(params: Parameter[]): Parameter[] {
     // sort possible values alphabetically to display select options sorted
     return params?.map((parameter) => ({
         ...parameter,
@@ -22,7 +21,10 @@ export function customizeCurrentParameters(params: Parameter[]): Record<string, 
             // we check if the parameter is for extensions. If so, we select all possible values by default.
             // the only way for the moment to check if the parameter is for extension, is by checking his name.
             // TODO: implement a cleaner way to determine the extensions field
-            if (parameter.type === 'STRING_LIST' && parameter.name?.endsWith('extensions')) {
+            if (
+                parameter.type === 'STRING_LIST' &&
+                (parameter.name?.endsWith('included.extensions') || parameter.name?.endsWith('included-extensions'))
+            ) {
                 return { ...obj, [parameter.name]: parameter.possibleValues.toString() };
             }
             return obj;

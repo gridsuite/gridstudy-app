@@ -14,7 +14,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchHvdcLineWithShuntCompensators } from '../../../../../services/study/network-map';
 
 const useHvdcLccDeletion = () => {
@@ -85,10 +85,7 @@ const useHvdcLccDeletion = () => {
                 })
                 .catch((error) => {
                     setValue(DELETION_SPECIFIC_DATA, null);
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'HVDCLineConverterStationError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'HVDCLineConverterStationError' });
                 });
         },
         [setValue, updateMcsLists, snackError]

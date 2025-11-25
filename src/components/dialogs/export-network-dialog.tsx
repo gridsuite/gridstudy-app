@@ -29,6 +29,7 @@ import {
     fetchDirectoryElementPath,
     FlatParameters,
     Parameter,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
@@ -39,6 +40,8 @@ import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { useParameterState } from './parameters/use-parameters-state';
 import { AppState } from '../../redux/reducer';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+
+import { IGNORED_PARAMS } from './root-network/ignored-params';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -64,7 +67,10 @@ interface ExportNetworkDialogProps {
 // TODO to be removed when extensions param default value corrected in backend to include all possible values
 function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parameter[] {
     return parameters.map((parameter) => {
-        if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
+        if (
+            parameter.type === STRING_LIST &&
+            (parameter.name?.endsWith('included.extensions') || parameter.name?.endsWith('included-extensions'))
+        ) {
             parameter.defaultValue = parameter.possibleValues;
         }
         return parameter;
@@ -99,10 +105,7 @@ export function ExportNetworkDialog({
                     setFileName(`${studyName}_${nodeName}`);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'LoadStudyAndParentsInfoError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
                 });
         }
     }, [studyUuid, nodeName, snackError]);
@@ -128,7 +131,6 @@ export function ExportNetworkDialog({
     };
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
-    const metasAsArray = formatWithParameter?.parameters || [];
     const [currentParameters, setCurrentParameters] = useState({});
     const onChange = useCallback((paramName: string, value: unknown, isInEdition: boolean) => {
         if (!isInEdition) {
@@ -159,6 +161,14 @@ export function ExportNetworkDialog({
         let selected = event.target.value;
         setSelectedFormat(selected);
     };
+
+    const metasAsArray = useMemo(() => {
+        if (formatWithParameter?.parameters) {
+            return formatWithParameter?.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name));
+        } else {
+            return [];
+        }
+    }, [formatWithParameter?.parameters]);
 
     return (
         <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} aria-labelledby="dialog-title-export">

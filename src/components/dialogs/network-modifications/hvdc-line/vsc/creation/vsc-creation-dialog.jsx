@@ -6,7 +6,13 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, ExtendedEquipmentType, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    ExtendedEquipmentType,
+    snackWithFallback,
+    TextInput,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -219,10 +225,7 @@ const VscCreationDialog = ({
                 isUpdate: !!editData,
                 modificationUuid: editData?.uuid ?? null,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'VscCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'VscCreationError' });
             });
         },
         [studyUuid, currentNodeUuid, editData, snackError]

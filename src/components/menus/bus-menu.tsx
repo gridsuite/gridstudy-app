@@ -27,6 +27,7 @@ import {
     CustomMenuItem,
     type EquipmentType,
     type MuiStyles,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
@@ -134,10 +135,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         }
         const equipmentInfos = { id: busId };
         tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'UnableToTripBusbarSection',
-            });
+            snackWithFallback(snackError, error, { headerId: 'UnableToTripBusbarSection' });
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(false);
             }

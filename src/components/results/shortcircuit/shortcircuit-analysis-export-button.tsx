@@ -6,9 +6,12 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ExportCsvButton, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, PARAM_LANGUAGE, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { downloadShortCircuitResultZippedCsv } from '../../../services/study/short-circuit-analysis';
+import {
+    ShortCircuitCsvExportParams,
+    downloadShortCircuitResultZippedCsv,
+} from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import type { UUID } from 'node:crypto';
@@ -20,13 +23,13 @@ interface ShortCircuitExportButtonProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    csvHeaders?: string[];
+    csvHeader: string[];
     analysisType: number;
     disabled?: boolean;
 }
 
 export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButtonProps> = (props) => {
-    const { studyUuid, nodeUuid, currentRootNetworkUuid, csvHeaders, disabled = false, analysisType } = props;
+    const { studyUuid, nodeUuid, currentRootNetworkUuid, csvHeader, disabled = false, analysisType } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
@@ -74,33 +77,23 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
     const exportCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
-        downloadShortCircuitResultZippedCsv(
-            studyUuid,
-            nodeUuid,
-            currentRootNetworkUuid,
-            analysisType,
-            csvHeaders,
+
+        const oneBusCase = analysisType === ShortCircuitAnalysisType.ONE_BUS;
+        const exportParams: ShortCircuitCsvExportParams = {
+            csvHeader,
             enumValueTranslations,
-            language
-        )
+            language,
+            oneBusCase,
+        };
+        downloadShortCircuitResultZippedCsv(studyUuid, nodeUuid, currentRootNetworkUuid, analysisType, exportParams)
             .then((response) => {
                 response.blob().then((fileBlob: Blob) => {
-                    downloadZipFile(
-                        fileBlob,
-                        analysisType === ShortCircuitAnalysisType.ONE_BUS
-                            ? 'oneBus-results.zip'
-                            : 'allBuses_results.zip'
-                    );
+                    downloadZipFile(fileBlob, oneBusCase ? 'oneBus-results.zip' : 'allBuses_results.zip');
                     setIsCsvExportSuccessful(true);
                 });
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'shortCircuitAnalysisCsvResultsError',
-                    }),
-                });
+                snackWithFallback(snackError, error, { headerId: 'shortCircuitAnalysisCsvResultsError' });
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
@@ -108,9 +101,8 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
-        intl,
         snackError,
-        csvHeaders,
+        csvHeader,
         analysisType,
         enumValueTranslations,
         language,

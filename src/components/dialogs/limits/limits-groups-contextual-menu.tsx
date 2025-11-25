@@ -10,7 +10,7 @@ import { FieldValues, UseFieldArrayAppend, UseFieldArrayRemove, useFormContext }
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { ContentCopy, Delete, Edit } from '@mui/icons-material';
+import { ContentCopy, Delete } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
 import { APPLICABILITY } from '../../network/constants';
@@ -50,7 +50,6 @@ export function LimitsGroupsContextualMenu({
     setIndexSelectedLimitSet,
     handleCloseMenu,
     contextMenuCoordinates,
-    startEditingLimitsGroup,
     selectedLimitsGroups1,
     selectedLimitsGroups2,
     operationalLimitsGroups,
@@ -103,20 +102,16 @@ export function LimitsGroupsContextualMenu({
                 [ID]: newName,
             };
             appendToLimitsGroups(newLimitsGroup1);
-            setIndexSelectedLimitSet(operationalLimitsGroups.length - 1);
+            handleCloseMenu();
+            setIndexSelectedLimitSet(operationalLimitsGroups.length);
         }
-        startEditingLimitsGroup(operationalLimitsGroups.length, newName);
     }, [
-        appendToLimitsGroups,
         indexSelectedLimitSet,
-        setIndexSelectedLimitSet,
-        startEditingLimitsGroup,
         operationalLimitsGroups,
+        appendToLimitsGroups,
+        setIndexSelectedLimitSet,
+        handleCloseMenu,
     ]);
-
-    const handleRenameTab = useCallback(() => {
-        contextMenuCoordinates.tabIndex != null && startEditingLimitsGroup(contextMenuCoordinates.tabIndex, null);
-    }, [contextMenuCoordinates.tabIndex, startEditingLimitsGroup]);
 
     return (
         <Menu
@@ -129,12 +124,6 @@ export function LimitsGroupsContextualMenu({
                     : undefined
             }
         >
-            <MenuItem onClick={handleRenameTab}>
-                <ListItemIcon>
-                    <Edit fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{intl.formatMessage({ id: 'Rename' })}</ListItemText>
-            </MenuItem>
             <MenuItem onClick={handleDeleteTab}>
                 <ListItemIcon>
                     <Delete fontSize="small" />

@@ -10,6 +10,7 @@ import {
     convertOutputValue,
     CustomFormProvider,
     FieldType,
+    snackWithFallback,
     TextInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -327,10 +328,7 @@ const LineCreationDialog = ({
                 connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
                 properties: toModificationProperties(line),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LineCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LineCreationError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
