@@ -158,7 +158,7 @@
     "b1": "Susceptance parallèle 1 (μS)",
     "g2": "Conductance parallèle 2 (μS)",
     "b2": "Susceptance parallèle 2 (μS)",
-    "characteristic": "Carac.",
+    "characteristic": "Caractéristique",
     "values": "Valeurs",
     "seriesResistance": "R (Ω)",
     "seriesReactance": "X (Ω)",

@@ -29,12 +29,12 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer';
-import EquipmentPopover from 'components/tooltips/equipment-popover';
 import type { UUID } from 'node:crypto';
 import { Point } from '@svgdotjs/svg.js';
 import {
     ComputingType,
     ElementType,
+    EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
     IElementCreationDialog,
@@ -54,6 +54,10 @@ import { styles } from '../diagram-styles';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { v4 } from 'uuid';
+import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
+import BranchPopoverContent from 'components/tooltips/branch-popover-content';
+import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
+import { useIntl } from 'react-intl';
 
 type NetworkAreaDiagramContentProps = {
     readonly diagramParams: NetworkAreaDiagramParams;
@@ -99,6 +103,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
+    const intl = useIntl();
 
     const handleToggleShowLabels = useCallback(() => {
         setShowLabels((oldShowLabels) => !oldShowLabels);
@@ -482,19 +487,33 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
      * RENDER
      */
 
+    const displayTooltip = () => {
+        const PopoverContent = EquipmentPopoverMap[hoveredEquipmentType] || BranchPopoverContent;
+
+        return (
+            <GenericEquipmentPopover
+                studyUuid={studyUuid}
+                anchorPosition={anchorPosition}
+                anchorEl={null}
+                equipmentId={hoveredEquipmentId}
+                equipmentType={hoveredEquipmentType as EquipmentType}
+                loadFlowStatus={loadFlowStatus}
+            >
+                {(equipmentInfos: EquipmentInfos) => (
+                    <PopoverContent
+                        equipmentInfos={equipmentInfos}
+                        loadFlowStatus={loadFlowStatus}
+                        equipmentType={hoveredEquipmentType}
+                        intl={intl}
+                    />
+                )}
+            </GenericEquipmentPopover>
+        );
+    };
     return (
         <>
             <Box height={2}>{loadingState && <LinearProgress />}</Box>
-            {visible && shouldDisplayTooltip && (
-                <EquipmentPopover
-                    studyUuid={studyUuid}
-                    anchorPosition={anchorPosition}
-                    anchorEl={null}
-                    equipmentType={hoveredEquipmentType}
-                    equipmentId={hoveredEquipmentId}
-                    loadFlowStatus={loadFlowStatus}
-                />
-            )}
+            {visible && shouldDisplayTooltip && displayTooltip()}
             {shouldDisplayMenu && (
                 <NodeContextMenu
                     open={!!menuAnchorPosition}
