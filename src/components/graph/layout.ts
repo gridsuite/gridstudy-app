@@ -414,6 +414,7 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
             const relativeRow = parentPlacement ? placement.row - parentPlacement.row : placement.row;
             const relativeColumn = parentPlacement ? placement.column - parentPlacement.column : placement.column;
 
+            nodePlacements.setPlacement(node.id, { row: relativeRow, column: relativeColumn });
             return {
                 ...node,
                 position: {
