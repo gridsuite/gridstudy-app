@@ -44,24 +44,24 @@ export function OperationalLimitsGroupTabLabel({
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                 <Stack spacing={0}>
                     <Tooltip title={operationalLimitsGroup.name}>
-                    <Stack direction={'row'} spacing={1} sx={{ alignItems: 'stretch' }}>
-                        <Typography
-                            variant="body1"
-                            color={hasError ? red[500] : undefined}
-                            sx={{
-                                maxWidth: '100px',
-                                textOverflow: 'ellipsis',
-                            }}
-                            noWrap
-                        >
-                            {operationalLimitsGroup.name}
-                        </Typography>
-                      {hasError && (
-                            <FormHelperText error>
-                                <ErrorOutlineOutlinedIcon />
-                            </FormHelperText>
-                        )}
-                    </Stack>
+                        <Stack direction={'row'} spacing={1} sx={{ alignItems: 'stretch' }}>
+                            <Typography
+                                variant="body1"
+                                color={hasError ? red[500] : undefined}
+                                sx={{
+                                    maxWidth: '10ch',
+                                    textOverflow: 'ellipsis',
+                                }}
+                                noWrap
+                            >
+                                {operationalLimitsGroup.name}
+                            </Typography>
+                            {hasError && (
+                                <FormHelperText error>
+                                    <ErrorOutlineOutlinedIcon />
+                                </FormHelperText>
+                            )}
+                        </Stack>
                     </Tooltip>
                     {operationalLimitsGroup?.applicability ? (
                         <Typography noWrap align="left" color={grey[500]}>

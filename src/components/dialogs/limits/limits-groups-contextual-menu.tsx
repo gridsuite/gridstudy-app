@@ -30,7 +30,6 @@ export interface LimitsGroupsContextualMenuProps {
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     handleCloseMenu: () => void;
     contextMenuCoordinates: ContextMenuCoordinates;
-    startEditingLimitsGroup: (index: number, name: string | null) => void;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
     currentLimitsToModify: CurrentLimitsData[];

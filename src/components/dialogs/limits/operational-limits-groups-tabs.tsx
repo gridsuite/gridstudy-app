@@ -16,61 +16,11 @@ import {
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
-import { isBlankOrEmpty } from '../../utils/validation-functions';
-import { stylesLayout } from 'components/utils/tab-utils';
-import { APPLICABILITY } from '../../network/constants';
-import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
-import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
-import { tabStyles } from 'components/utils/tab-utils';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
 import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
 import { CurrentLimitsData } from 'services/study/network-map.type';
-import { FormattedMessage } from 'react-intl';
-import { blue } from '@mui/material/colors';
 import { generateEmptyOperationalLimitsGroup, generateUniqueId } from './operational-limits-groups-utils';
 import { limitsStyles } from './operational-limits-groups-styles';
-
-const limitsStyles = {
-    tabs: () => ({
-        ...stylesLayout.listDisplay,
-        maxHeight: '50vh',
-        height: '100%',
-        borderRight: 1,
-        borderColor: 'divider',
-        transition: 'transform 0.3s ease-in-out',
-        '& .MuiTabs-indicator': {
-            borderRight: `3px solid ${blue[700]}`,
-        },
-        '.MuiTab-root.MuiButtonBase-root': {
-            textTransform: 'none',
-            textAlign: 'left',
-            alignItems: 'stretch',
-            p: 0,
-        },
-    }),
-    tabBackground: {
-        '&:hover': {
-            backgroundColor: 'rgba(25, 118, 210, 0.05)', // blue[700]
-        },
-        maxWidth: 600,
-        width: '100%',
-        p: 1,
-        minHeight: 60,
-    },
-    copyLimitsToRightBackground: {
-        height: 200,
-        display: 'flex',
-    },
-    copyLimitsToLeftBackground: {
-        height: '50%',
-    },
-    copyLimitsButtons: {
-        alignSelf: 'flex-end',
-        minWidth: '0px',
-        height: 'auto',
-        padding: '1',
-    },
-} as const satisfies MuiStyles;
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
@@ -202,8 +152,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                             label={
                                 <OperationalLimitsGroupTabLabel
                                     operationalLimitsGroup={opLg}
-                                    showIconButton={index === hoveredRowIndex || index === activatedByMenuTabIndex}
-                                    editable={!editable}
+                                    showIconButton={editable && index === hoveredRowIndex}
                                     limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
                                     handleOpenMenu={handleOpenMenu}
                                     index={index}
@@ -218,7 +167,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     setIndexSelectedLimitSet={setIndexSelectedLimitSet}
                     handleCloseMenu={handleCloseMenu}
                     contextMenuCoordinates={contextMenuCoordinates}
-                    activatedByMenuTabIndex={activatedByMenuTabIndex}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
                     currentLimitsToModify={currentLimitsToModify}
