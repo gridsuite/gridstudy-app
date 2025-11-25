@@ -6,18 +6,8 @@
  */
 
 import { useState } from 'react';
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    Button,
-    IconButton,
-    Tooltip,
-    Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Tooltip, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CloseIcon from '@mui/icons-material/Close';
 import { darken, lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
@@ -93,11 +83,7 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-interface NodeEditorHeaderProps {
-    onClose: () => void;
-}
-
-export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
+export const NodeEditorHeader = () => {
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const label = currentTreeNode?.data?.label ?? '';
@@ -113,10 +99,6 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
                         </Button>
                     </Tooltip>
                 </Box>
-
-                <IconButton size="small" onClick={onClose}>
-                    <CloseIcon />
-                </IconButton>
 
                 <NetworkModificationNodeDialog
                     open={openEditDialog}
