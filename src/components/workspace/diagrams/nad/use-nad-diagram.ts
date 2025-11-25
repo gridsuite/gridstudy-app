@@ -74,7 +74,7 @@ export const useNadDiagram = ({
                 }),
             })
                 .then((response: UUID) => {
-                    // Only store UUIDs in Redux, not voluminous data
+                    // Only store UUIDs in Redux not voluminous data
                     dispatch(
                         updatePanelMetadataAction({
                             panelId,
