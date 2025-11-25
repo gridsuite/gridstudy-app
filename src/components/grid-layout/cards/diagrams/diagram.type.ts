@@ -17,9 +17,7 @@ export enum DiagramType {
 
 // Create diagram parameters
 type DiagramBaseParams = {
-    diagramUuid: UUID;
     type: DiagramType;
-    name: string;
 };
 
 export type VoltageLevelDiagramParams = DiagramBaseParams & {
@@ -45,9 +43,7 @@ export type DiagramParams = VoltageLevelDiagramParams | SubstationDiagramParams 
 
 // diagrams model
 export type DiagramBase = {
-    diagramUuid: UUID;
     type: DiagramType;
-    name: string;
     svg: Svg | null;
 };
 
@@ -62,7 +58,6 @@ export type SubstationDiagram = DiagramBase & {
 export type NetworkAreaDiagram = DiagramBase & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     nadConfigUuid: UUID | undefined;
-    initializationNadConfigUuid?: UUID; // used for initialization, not saved
     filterUuid: UUID | undefined;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
@@ -109,14 +104,3 @@ export interface DiagramSvg {
 }
 
 export type Svg = DiagramSvg | SldSvg;
-
-export const NETWORK_AREA_DIAGRAM_DETAILS_TYPE = 'network-area-diagram-details' as const;
-type NetworkAreaDiagramDto = Omit<
-    NetworkAreaDiagramParams,
-    'nadConfigUuid' | 'initializationNadConfigUuid' | 'voltageLevelToExpandIds' | 'voltageLevelToOmitIds'
-> & {
-    originalNadConfigUuid?: UUID;
-    currentNadConfigUuid?: UUID;
-};
-
-export type DiagramParamsDto = VoltageLevelDiagramParams | SubstationDiagramParams | NetworkAreaDiagramDto;

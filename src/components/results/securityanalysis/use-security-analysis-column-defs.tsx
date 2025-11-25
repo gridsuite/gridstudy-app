@@ -19,10 +19,12 @@ import {
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { openSLD } from '../../../redux/slices/workspace-slice';
+import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -32,7 +34,6 @@ export interface SecurityAnalysisFilterEnumsType {
 type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
-    openVoltageLevelDiagram: (id: string) => void,
     tabIndex: number,
     onFilter: () => void
 ) => ColDef[];
@@ -40,12 +41,12 @@ type UseSecurityAnalysisColumnsDefsProps = (
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
-    openVoltageLevelDiagram,
     tabIndex,
     onFilter
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -93,22 +94,23 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                             }
                         })
                         .finally(() => {
-                            if (!vlId) {
-                                console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);
-                                snackError({
-                                    messageId: 'NetworkEquipmentNotFound',
-                                    messageValues: {
-                                        equipmentId: row.subjectId || '',
-                                    },
-                                });
-                            } else if (openVoltageLevelDiagram) {
-                                openVoltageLevelDiagram(vlId);
+                            if (vlId) {
+                                dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
+                                return;
                             }
+                            console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);
+                            snackError({
+                                messageId: 'NetworkEquipmentNotFound',
+                                messageValues: {
+                                    equipmentId: row.subjectId || '',
+                                },
+                            });
                         });
                 }
             }
         },
-        [nodeUuid, currentRootNetworkUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [nodeUuid, currentRootNetworkUuid, snackError, studyUuid, intl]
     );
 
     // for nmk views, custom view for subjectId cell

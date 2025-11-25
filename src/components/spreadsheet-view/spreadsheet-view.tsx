@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Paper } from '@mui/material';
 import SpreadsheetTabs from './spreadsheet-tabs/spreadsheet-tabs';
 import { AppState } from '../../redux/reducer';
+import type { RootState } from '../../redux/store';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './types/spreadsheet.type';
 import { CurrentTreeNode } from '../graph/tree-node.type';
 import type { UUID } from 'node:crypto';
@@ -22,7 +23,8 @@ import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from '
 import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
 import { type MuiStyles, PopupConfirmationDialog, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
-import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
+import { selectPanel } from '../../redux/slices/workspace-selectors';
+import { SpreadsheetPanelMetadata } from '../workspace/types/workspace.types';
 
 const styles = {
     invalidNode: {
@@ -33,22 +35,12 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface SpreadsheetViewProps {
+    panelId: UUID;
     currentNode: CurrentTreeNode;
-    equipmentId: string;
-    equipmentType: SpreadsheetEquipmentType;
     disabled: boolean;
-    onEquipmentScrolled: () => void;
-    openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
 }
 
-export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
-    currentNode,
-    equipmentId,
-    equipmentType,
-    disabled,
-    onEquipmentScrolled,
-    openDiagram,
-}) => {
+export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panelId, currentNode, disabled }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -58,6 +50,13 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const activeSpreadsheetTabUuid = useSelector((state: AppState) => state.tables.activeTabUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+
+    // Read from panel metadata
+    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
+    const panelMetadata = panel?.metadata as SpreadsheetPanelMetadata | undefined;
+    const targetEquipmentId = panelMetadata?.targetEquipmentId;
+    const targetEquipmentType = panelMetadata?.targetEquipmentType;
+
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
 
     const handleSwitchTab = useCallback(
@@ -67,17 +66,28 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
         [dispatch]
     );
 
-    // Handle tab switching when equipment is shown in spreadsheet (triggered by showInSpreadsheet action from TreeTab)
+    // Handle tab switching when equipment target changes
     useEffect(() => {
-        // Find all tabs of the current equipmentType
-        const matchingTabs = tablesDefinitions.filter((def) => def.type === equipmentType);
+        if (!targetEquipmentId || !targetEquipmentType) {
+            return;
+        }
 
-        // If the active tab is not of the right type, switch to the first matching tab
+        // Convert EquipmentType to SpreadsheetEquipmentType string for comparison
+        const targetType = targetEquipmentType as unknown as SpreadsheetEquipmentType;
+        const matchingTabs = tablesDefinitions.filter((def) => def.type === targetType);
         const activeTab = tablesDefinitions.find((def) => def.uuid === activeSpreadsheetTabUuid);
-        if (matchingTabs.length > 0 && (!activeTab || activeTab.type !== equipmentType)) {
+
+        if (matchingTabs.length > 0 && (!activeTab || (activeTab.type as unknown) !== targetType)) {
             handleSwitchTab(matchingTabs[0].uuid);
         }
-    }, [handleSwitchTab, activeSpreadsheetTabUuid, equipmentId, equipmentType, tablesDefinitions]);
+    }, [
+        targetEquipmentId,
+        targetEquipmentType,
+        panelMetadata,
+        tablesDefinitions,
+        activeSpreadsheetTabUuid,
+        handleSwitchTab,
+    ]);
 
     const getStudySpreadsheetConfigCollection = useCallback(() => {
         if (!studyUuid) {
@@ -136,7 +146,8 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                 nodeAliases &&
                 tablesDefinitions.map((tabDef) => {
                     const isActive = activeSpreadsheetTabUuid === tabDef.uuid;
-                    const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? equipmentId : null;
+                    const equipmentIdToScrollTo =
+                        (tabDef.type as unknown) === targetEquipmentType && isActive ? targetEquipmentId : null;
                     return (
                         <TabPanelLazy key={tabDef.uuid} selected={isActive}>
                             <Paper
@@ -147,13 +158,12 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                                 }}
                             >
                                 <Spreadsheet
+                                    panelId={panelId}
                                     currentNode={currentNode}
                                     tableDefinition={tabDef}
                                     disabled={disabled}
-                                    equipmentId={equipmentIdToScrollTo}
-                                    onEquipmentScrolled={onEquipmentScrolled}
+                                    equipmentId={equipmentIdToScrollTo ?? null}
                                     active={isActive}
-                                    openDiagram={openDiagram}
                                 />
                             </Paper>
                         </TabPanelLazy>
