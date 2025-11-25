@@ -238,6 +238,7 @@ export default class NetworkModificationTreeModel {
     }
 
     updateNodes(updatedNodes: (NetworkModificationNodeData | RootNodeData)[]) {
+        const nodes = [...this.treeNodes];
         updatedNodes.forEach((node) => {
             const indexModifiedNode = this.treeNodes.findIndex((othernode) => othernode.id === node.id);
             if (indexModifiedNode !== -1) {
@@ -246,7 +247,7 @@ export default class NetworkModificationTreeModel {
                 const globalBuildStatus = modificationNodeData?.nodeBuildStatus?.globalBuildStatus;
                 const localBuildStatus = modificationNodeData?.nodeBuildStatus?.localBuildStatus;
 
-                this.treeNodes[indexModifiedNode] = {
+                nodes[indexModifiedNode] = {
                     ...nodeToUpdate,
                     data: {
                         ...this.treeNodes[indexModifiedNode].data,
@@ -259,12 +260,15 @@ export default class NetworkModificationTreeModel {
                 };
             }
         });
-        this.treeNodes = [...this.treeNodes];
+        this.treeNodes = nodes;
     }
 
     setTreeElements(elements: RootNodeData | NetworkModificationNodeData) {
+        const nodes = [...this.treeNodes];
         // handle root node
-        this.treeNodes.push(convertNodetoReactFlowModelNode(elements));
+        nodes.push(convertNodetoReactFlowModelNode(elements));
+        this.treeNodes = nodes;
+
         // handle root children
         elements.children.sort(this.childrenNodeSorter);
         elements.children.forEach((child) => {
