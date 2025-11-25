@@ -9,8 +9,9 @@ import { Box } from '@mui/material';
 import { Controls, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { reorderNetworkModificationTreeNodes, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
+import { reorderNetworkModificationTreeNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import { closePanelsByType, openOrFocusPanel } from '../redux/slices/workspace-slice';
 import { isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
@@ -28,10 +29,10 @@ import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
-import { StudyDisplayMode } from './network-modification.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
+import { PanelType } from './workspace/types/workspace.types';
 
 const styles = {
     modificationTree: (theme) => ({
@@ -67,8 +68,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
-    const toggleOptions = useSelector((state) => state.toggleOptions);
-
     const { fitView, setCenter, getZoom } = useReactFlow();
 
     const draggedBranchIdRef = useRef(null);
@@ -92,34 +91,17 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
         updateNodePositions();
     }, [updateNodePositions]);
 
-    const handleRootNodeClick = useCallback((toggleOptions) => {
-        const hasRemovableOptions =
-            toggleOptions.includes(StudyDisplayMode.MODIFICATIONS) ||
-            toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO);
-
-        if (!hasRemovableOptions) {
-            return toggleOptions;
-        }
-
-        return toggleOptions.filter(
-            (opt) => opt !== StudyDisplayMode.MODIFICATIONS && opt !== StudyDisplayMode.EVENT_SCENARIO
-        );
-    }, []);
-
     // close modifications/ event scenario when current node is root
     useEffect(() => {
         if (currentNode?.type === NodeType.ROOT) {
-            const newOptions = handleRootNodeClick(toggleOptions);
-            if (newOptions !== toggleOptions) {
-                dispatch(setToggleOptions(newOptions));
-            }
+            dispatch(closePanelsByType(PanelType.NODE_EDITOR));
         }
-    }, [currentNode, dispatch, handleRootNodeClick, toggleOptions]);
+    }, [currentNode, dispatch]);
 
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === NodeType.NETWORK_MODIFICATION) {
-                dispatch(setModificationsDrawerOpen());
+                dispatch(openOrFocusPanel({ panelType: PanelType.NODE_EDITOR }));
             }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);
