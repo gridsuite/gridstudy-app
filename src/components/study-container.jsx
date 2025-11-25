@@ -28,6 +28,7 @@ import { fetchRootNetworks } from 'services/root-network';
 import WaitingLoader from './utils/waiting-loader';
 import {
     hasElementPermission,
+    PermissionType,
     NotificationsUrlKeys,
     snackWithFallback,
     useIntlRef,
@@ -62,7 +63,7 @@ function useStudy(studyUuidRequest) {
     const intlRef = useIntlRef();
 
     useEffect(() => {
-        hasElementPermission(studyUuidRequest, 'WRITE')
+        hasElementPermission(studyUuidRequest, PermissionType.WRITE)
             .then((hasWritePermission) => {
                 if (hasWritePermission === false) {
                     setErrMessage(
