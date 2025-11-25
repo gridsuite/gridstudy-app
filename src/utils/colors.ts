@@ -36,7 +36,7 @@ export const getBaseVoltagesCssVars = (theme: string): Record<string, Record<str
         const vlStyleClassName = `.sld-${interval.name}, .nad-${interval.name}`;
         css[vlStyleClassName] = { '--vl-color': themeColors.default };
 
-        for (let i = 1; i <= 9; i++) {
+        for (let i = 1; i < Object.keys(themeColors).length; i++) {
             const busColor = themeColors[`bus-${i}`];
             if (!busColor) continue;
             const busStyleClassName = `.sld-${interval.name}.sld-bus-${i}, .nad-${interval.name}.nad-bus-${i}`;
