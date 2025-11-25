@@ -57,7 +57,7 @@ const styles = {
 
 interface PanelProps {
     panelId: UUID;
-    containerRef: RefObject<HTMLDivElement>;
+    containerRef: RefObject<HTMLDivElement | null>;
     snapPreview: SnapRect | null;
     onSnapPreview: (panelId: UUID, preview: SnapRect | null) => void;
     isFocused: boolean;
