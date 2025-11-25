@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSnackMessage, backendFetchJson } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
-import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
+import { Diagram, DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl, PREFIX_STUDY_QUERIES } from '../../../../services/study';
 import { mergePositions } from '../../../grid-layout/cards/diagrams/diagram-utils';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
@@ -257,16 +257,16 @@ export const useNadDiagram = ({
         setGlobalError(undefined);
 
         // Update diagram from metadata
-        setDiagram({
+        setDiagram((prev) => ({
+            ...prev,
             type: DiagramType.NETWORK_AREA_DIAGRAM,
-            svg: null,
             nadConfigUuid: diagramMetadata.nadConfigUuid,
             filterUuid: diagramMetadata.filterUuid,
             voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
             positions: [],
             voltageLevelToExpandIds: [],
             voltageLevelToOmitIds: [],
-        });
+        }));
 
         fetchDiagram();
         // eslint-disable-next-line react-hooks/exhaustive-deps
