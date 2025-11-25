@@ -53,7 +53,7 @@ const noNodeSelectionForCopy = {
     allChildrenIds: null,
 };
 
-export const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
+export const HTTP_MAX_NODE_BUILDS_EXCEEDED_BUSINESS_CODE = 'study.maxNodeBuildsExceeded';
 
 export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
@@ -452,7 +452,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         (element) => {
             buildNode(studyUuid, element.id, currentRootNetworkUuid).catch((error) => {
                 // TODO: change for snackWithFallback when we integrate values inside backend errors
-                if (error.status === 403 && error.message.includes(HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE)) {
+                if (error.status === 403 && error.message.includes(HTTP_MAX_NODE_BUILDS_EXCEEDED_BUSINESS_CODE)) {
                     // retrieve last word of the message (ex: "MAX_NODE_BUILDS_EXCEEDED max allowed built nodes : 2" -> 2)
                     let limit = error.message.split(/[: ]+/).pop();
                     snackError({
