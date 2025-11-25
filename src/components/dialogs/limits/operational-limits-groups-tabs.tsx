@@ -6,7 +6,7 @@
  */
 
 import { Tab, Tabs } from '@mui/material';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     LIMITS_PROPERTIES,
     OPERATIONAL_LIMITS_GROUPS,
@@ -44,14 +44,11 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         ref
     ) => {
         const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
-        const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
         const [contextMenuCoordinates, setContextMenuCoordinates] = useState<ContextMenuCoordinates>({
             x: null,
             y: null,
             tabIndex: null,
         });
-        const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
-        const [editionError, setEditionError] = useState<string>('');
         const { getValues } = useFormContext();
         const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
         const {
@@ -112,12 +109,12 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
 
         const addNewLimitSet = useCallback(() => {
             const formName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
-            const operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
+            const operationalLimitSetGroups: OperationalLimitsGroup[] = getValues(formName);
             let name = 'DEFAULT';
 
             // Try to generate unique name
-            if (operationalLimiSetGroups?.length > 0) {
-                const ids: string[] = operationalLimiSetGroups.map((l) => l.name);
+            if (operationalLimitSetGroups?.length > 0) {
+                const ids: string[] = operationalLimitSetGroups.map((l) => l.name);
                 name = generateUniqueId('DEFAULT', ids);
             }
             prependEmptyOperationalLimitsGroup(name);
@@ -127,7 +124,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 
         const handleTabChange = useCallback(
-            (event: React.SyntheticEvent, newValue: number): void => {
+            (_event: React.SyntheticEvent, newValue: number): void => {
                 setIndexSelectedLimitSet(newValue);
             },
             [setIndexSelectedLimitSet]
