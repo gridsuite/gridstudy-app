@@ -8,10 +8,10 @@
 import { Box } from '@mui/material';
 import { Controls, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { reorderNetworkModificationTreeNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { closePanelsByType, openOrFocusPanel } from '../redux/slices/workspace-slice';
+import { openOrFocusPanel } from '../redux/slices/workspace-slice';
 import { isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
@@ -90,13 +90,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     useLayoutEffect(() => {
         updateNodePositions();
     }, [updateNodePositions]);
-
-    // close modifications/ event scenario when current node is root
-    useEffect(() => {
-        if (currentNode?.type === NodeType.ROOT) {
-            dispatch(closePanelsByType(PanelType.NODE_EDITOR));
-        }
-    }, [currentNode, dispatch]);
 
     const onNodeClick = useCallback(
         (event, node) => {

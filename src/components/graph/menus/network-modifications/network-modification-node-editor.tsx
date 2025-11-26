@@ -22,7 +22,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -156,6 +156,7 @@ const NetworkModificationNodeEditor = () => {
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
@@ -1183,6 +1184,16 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const renderNetworkModificationsTable = () => {
+        if (isRootNode) {
+            return (
+                <Box sx={styles.rootNodeWarning}>
+                    <Alert severity="warning">
+                        <FormattedMessage id="modificationsForbiddenOnRootNode" />
+                    </Alert>
+                </Box>
+            );
+        }
+
         return (
             <NetworkModificationsTable
                 handleCellClick={debounce(handleCellClick, 300)}
@@ -1297,7 +1308,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             ref={buttonAddRef}
                             onClick={openNetworkModificationConfiguration}
-                            disabled={isAnyNodeBuilding || mapDataLoading}
+                            disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
                         >
                             <AddIcon />
                         </IconButton>
@@ -1308,7 +1319,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openImportModificationsDialog}
                             size={'small'}
-                            disabled={isAnyNodeBuilding || mapDataLoading}
+                            disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
                         >
                             <FileUpload />
                         </IconButton>
@@ -1319,7 +1330,9 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={!(selectedNetworkModifications?.length > 0) || saveInProgress === true}
+                            disabled={
+                                selectedNetworkModifications?.length === 0 || saveInProgress === true || isRootNode
+                            }
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1334,7 +1347,8 @@ const NetworkModificationNodeEditor = () => {
                                 selectedNetworkModifications.length === 0 ||
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
-                                !currentNode
+                                !currentNode ||
+                                isRootNode
                             }
                         >
                             <ContentCutIcon />
@@ -1346,7 +1360,12 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doCopyModifications}
                             size={'small'}
-                            disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
+                            disabled={
+                                selectedNetworkModifications.length === 0 ||
+                                isAnyNodeBuilding ||
+                                mapDataLoading ||
+                                isRootNode
+                            }
                         >
                             <ContentCopyIcon />
                         </IconButton>
@@ -1364,7 +1383,11 @@ const NetworkModificationNodeEditor = () => {
                     }
                 >
                     <span>
-                        <IconButton onClick={doPasteModifications} size={'small'} disabled={isPasteButtonDisabled}>
+                        <IconButton
+                            onClick={doPasteModifications}
+                            size={'small'}
+                            disabled={isPasteButtonDisabled || isRootNode}
+                        >
                             <ContentPasteIcon />
                         </IconButton>
                     </span>
@@ -1379,7 +1402,8 @@ const NetworkModificationNodeEditor = () => {
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
                                 deleteInProgress ||
-                                !currentNode
+                                !currentNode ||
+                                isRootNode
                             }
                         >
                             <DeleteIcon />
@@ -1408,7 +1432,7 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={openRestoreModificationDialog}
                                 size={'small'}
-                                disabled={isRestoreButtonDisabled}
+                                disabled={isRestoreButtonDisabled || isRootNode}
                             >
                                 <RestoreFromTrash />
                             </IconButton>
