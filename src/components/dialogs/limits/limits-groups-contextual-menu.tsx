@@ -10,7 +10,7 @@ import { FieldValues, UseFieldArrayAppend, UseFieldArrayRemove, useFormContext }
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { ContentCopy, Delete, Edit } from '@mui/icons-material';
+import { ContentCopy, Delete } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
 import { PopoverProps } from '@mui/material/Popover';
@@ -26,7 +26,6 @@ export interface LimitsGroupsContextualMenuProps {
     menuAnchorEl: PopoverProps['anchorEl'];
     handleCloseMenu: () => void;
     activatedByMenuTabIndex: number | null;
-    startEditingLimitsGroup: (index: number, name: string | null) => void;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
     currentLimitsToModify: CurrentLimitsData[];
@@ -46,8 +45,6 @@ export function LimitsGroupsContextualMenu({
     setIndexSelectedLimitSet,
     menuAnchorEl,
     handleCloseMenu,
-    activatedByMenuTabIndex,
-    startEditingLimitsGroup,
     selectedLimitsGroups1,
     selectedLimitsGroups2,
     operationalLimitsGroups,
@@ -100,37 +97,25 @@ export function LimitsGroupsContextualMenu({
                 [ID]: newName,
             };
             appendToLimitsGroups(newLimitsGroup1);
-            setIndexSelectedLimitSet(operationalLimitsGroups.length - 1);
+            handleCloseMenu();
+            setIndexSelectedLimitSet(operationalLimitsGroups.length);
         }
-        startEditingLimitsGroup(operationalLimitsGroups.length, newName);
     }, [
-        appendToLimitsGroups,
         indexSelectedLimitSet,
-        setIndexSelectedLimitSet,
-        startEditingLimitsGroup,
         operationalLimitsGroups,
+        appendToLimitsGroups,
+        setIndexSelectedLimitSet,
+        handleCloseMenu,
     ]);
-
-    const handleRenameTab = useCallback(() => {
-        activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null);
-    }, [activatedByMenuTabIndex, startEditingLimitsGroup]);
 
     return (
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-            <>
-                <MenuItem onClick={handleRenameTab}>
-                    <ListItemIcon>
-                        <Edit fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>{intl.formatMessage({ id: 'Rename' })}</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={handleDeleteTab}>
-                    <ListItemIcon>
-                        <Delete fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
-                </MenuItem>
-            </>
+            <MenuItem onClick={handleDeleteTab}>
+                <ListItemIcon>
+                    <Delete fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
+            </MenuItem>
             <MenuItem onClick={handleDuplicateTab}>
                 <ListItemIcon>
                     <ContentCopy fontSize="small" />

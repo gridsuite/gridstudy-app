@@ -45,7 +45,6 @@ import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-secu
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
-import { StudyView, StudyViewType } from './utils/utils';
 import {
     ComputingType,
     fetchSecurityAnalysisProviders,
@@ -82,11 +81,7 @@ enum TAB_VALUES {
     networkVisualizationsParams = 'networkVisualizationsParams',
 }
 
-type ParametersTabsProps = {
-    view: StudyViewType;
-};
-
-const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
+const ParametersTabs: FunctionComponent = () => {
     const dispatch = useDispatch();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
@@ -263,13 +258,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     }, [enableDeveloperMode]);
 
     const displayTab = useCallback(() => {
-        /**
-         * We add view dependency to unmount the component when the user changes the study tab
-         * This is necessary to reset the form when the user changes the study tab
-         */
-        if (view !== StudyView.PARAMETERS) {
-            return null;
-        }
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
                 return (
@@ -348,7 +336,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 );
         }
     }, [
-        view,
         tabValue,
         studyUuid,
         languageLocal,
