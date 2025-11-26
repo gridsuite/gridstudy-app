@@ -19,6 +19,7 @@ import type { SLDPanelMetadata } from '../../types/workspace.types';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
+import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
 
 interface UseSldDiagramProps {
     diagramMetadata: SLDPanelMetadata;
@@ -124,7 +125,14 @@ export const useSldDiagram = ({
                 }
 
                 if (url) {
-                    fetchSvg(url, { method: 'GET' })
+                    const fetchOptions: RequestInit = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            baseVoltagesConfigInfos: getBaseVoltagesConfig(),
+                        }),
+                    };
+                    fetchSvg(url, fetchOptions)
                         .then(processSvgData)
                         .catch(handleFetchError)
                         .finally(handleFetchComplete);

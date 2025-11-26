@@ -145,7 +145,6 @@ export const NetworkMapPanel = ({
     const lineParallelPath = networkVisuParams.mapParameters.lineParallelPath;
     const lineFlowMode = networkVisuParams.mapParameters.lineFlowMode as LineFlowMode;
     const isInDrawingMode = useStateBoolean(false);
-    const baseVoltages = useSelector((state: AppState) => state.baseVoltages);
     const theme = useTheme();
 
     const rootNodeId = useMemo(() => {
