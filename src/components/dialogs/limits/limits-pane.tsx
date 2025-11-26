@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     ENABLE_OLG_MODIFICATION,
     LIMITS,
@@ -141,7 +141,7 @@ export function LimitsPane({
             {/* limits */}
             <Grid container item xs={12} columns={10.25}>
                 <Grid item xs={4}>
-                    <Grid
+                    <Box
                         sx={{
                             display: 'flex',
                             alignItems: 'center',
@@ -151,7 +151,7 @@ export function LimitsPane({
                         <IconButton color="primary" onClick={onAddClick} disabled={!olgEditable}>
                             <AddIcon />
                         </IconButton>
-                    </Grid>
+                    </Box>
                 </Grid>
                 <Grid container item xs={6.25} />
                 <Grid item xs={4}>
