@@ -235,7 +235,12 @@ export function LimitsSidePane({
                         sx={{ paddingBottom: '15px' }}
                     >
                         <Grid item xs={4}>
-                            <TextInput name={`${name}.${NAME}`} label="name" formProps={{ error: !!error?.message }} />
+                            <TextInput
+                                name={`${name}.${NAME}`}
+                                label="name"
+                                formProps={error?.message ? { error: true } : {}}
+                                disabled={disabled}
+                            />
                         </Grid>
                         <Grid item xs={4}>
                             <SelectInput

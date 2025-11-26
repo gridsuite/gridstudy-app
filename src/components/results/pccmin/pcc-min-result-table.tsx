@@ -7,11 +7,11 @@
 
 import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
-import { Box, LinearProgress } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { Box, Button, LinearProgress } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
-import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
+import { CustomAGGrid, ComputingType, OverflowableText } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
@@ -19,8 +19,11 @@ import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
+import { resultsStyles } from '../common/utils';
+import { openSLD } from '../../../redux/slices/workspace-slice';
+import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -38,8 +41,32 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const gridRef = useRef<AgGridReact>(null);
+    const dispatch = useDispatch();
 
-    const columns = useMemo(() => getPccMinColumns(intl, onFilter), [intl, onFilter]);
+    const voltageLevelIdRenderer = useCallback(
+        (props: ICellRendererParams) => {
+            const { value, node } = props || {};
+            const onClick = () => {
+                const vlId = node?.data?.voltageLevelId;
+                if (vlId) {
+                    dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
+                }
+            };
+            if (value) {
+                return (
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
+                );
+            }
+        },
+        [dispatch]
+    );
+
+    const columns = useMemo(
+        () => getPccMinColumns(intl, onFilter, voltageLevelIdRenderer),
+        [intl, onFilter, voltageLevelIdRenderer]
+    );
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);
 

@@ -91,6 +91,7 @@
     "Map": "Carte",
     "Tree": "Arbre",
     "modifications": "Modifications",
+    "modificationsForbiddenOnRootNode": "Modifications interdites sur le noeud racine",
     "images": "Images",
     "panels": "Panneaux",
     "NetworkVisualizations": "Images réseau",
