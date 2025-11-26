@@ -1186,14 +1186,7 @@ const NetworkModificationNodeEditor = () => {
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
             return (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '40%',
-                    }}
-                >
+                <Box sx={styles.rootNodeWarning}>
                     <Alert severity="warning">
                         <FormattedMessage id="modificationsForbiddenOnRootNode" />
                     </Alert>
