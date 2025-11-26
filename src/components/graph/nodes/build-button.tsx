@@ -12,7 +12,6 @@ import { Button, CircularProgress } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
 import type { UUID } from 'node:crypto';
 import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { HTTP_MAX_NODE_BUILDS_EXCEEDED_BUSINESS_CODE } from 'components/network-modification-tree-pane';
 
 type BuildButtonProps = {
     buildStatus?: BUILD_STATUS;
