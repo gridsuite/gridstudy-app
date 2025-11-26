@@ -23,7 +23,6 @@ import { GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-gri
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
-import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 import { PanelType } from 'components/workspace/types/workspace.types';
 
 const styles = {

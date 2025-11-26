@@ -45,7 +45,6 @@ import {
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
 import { createDiagramConfig, updateDiagramConfig, type DiagramConfigPosition } from 'services/explore';
-import { DiagramType, type VoltageLevelDiagramParams } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
