@@ -27,6 +27,7 @@ export interface SLDPanelMetadata {
 export interface NADPanelMetadata {
     nadConfigUuid?: UUID;
     filterUuid?: UUID;
+    currentFilterUuid?: UUID;
     savedWorkspaceConfigUuid?: UUID;
     initialVoltageLevelIds?: string[];
 }

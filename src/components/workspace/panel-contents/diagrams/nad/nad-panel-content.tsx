@@ -56,6 +56,21 @@ export const NadPanelContent = ({
         [updateDiagram]
     );
 
+    // Update voltage levels from a filter in local state only - no Redux dispatch
+    const handleUpdateVoltageLevelsFromFilter = useCallback(
+        (filterUuid?: UUID) => {
+            dispatch(
+                updatePanelMetadata({
+                    panelId,
+                    metadata: {
+                        currentFilterUuid: filterUuid,
+                    },
+                })
+            );
+        },
+        [dispatch, panelId]
+    );
+
     // Update positions in local state only - no Redux dispatch, no fetch
     const handleUpdatePositions = useCallback(
         (positions: DiagramConfigPosition[]) => {
@@ -103,9 +118,11 @@ export const NadPanelContent = ({
                 }
                 svgVoltageLevels={diagram.voltageLevelIds}
                 loadingState={loading}
+                isNadCreationFromFilter={!!diagram.filterUuid}
                 visible
                 onVoltageLevelClick={handleOpenDiagram}
                 onUpdateVoltageLevels={handleUpdateVoltageLevels}
+                onUpdateVoltageLevelsFromFilter={handleUpdateVoltageLevelsFromFilter}
                 onUpdatePositions={handleUpdatePositions}
                 onReplaceNad={handleReplaceNad}
                 onSaveNad={handleSaveNad}

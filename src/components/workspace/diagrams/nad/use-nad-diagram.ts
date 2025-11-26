@@ -46,6 +46,7 @@ export const useNadDiagram = ({
         svg: null,
         nadConfigUuid: diagramMetadata.nadConfigUuid,
         filterUuid: diagramMetadata.filterUuid,
+        currentFilterUuid: diagramMetadata.currentFilterUuid,
         voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
         positions: [],
         voltageLevelToExpandIds: [],
@@ -197,7 +198,7 @@ export const useNadDiagram = ({
                         nadConfigUuid: useSavedConfig
                             ? diagramMetadata.savedWorkspaceConfigUuid
                             : currentDiagram.nadConfigUuid,
-                        filterUuid: currentDiagram.filterUuid,
+                        filterUuid: currentDiagram.currentFilterUuid ?? currentDiagram.filterUuid,
                         ...(useSavedConfig
                             ? {}
                             : {
@@ -262,6 +263,7 @@ export const useNadDiagram = ({
             type: DiagramType.NETWORK_AREA_DIAGRAM,
             nadConfigUuid: diagramMetadata.nadConfigUuid,
             filterUuid: diagramMetadata.filterUuid,
+            currentFilterUuid: diagramMetadata.currentFilterUuid,
             voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
             positions: [],
             voltageLevelToExpandIds: [],
@@ -278,6 +280,7 @@ export const useNadDiagram = ({
         currentRootNetworkUuid,
         diagramMetadata.nadConfigUuid,
         diagramMetadata.filterUuid,
+        diagramMetadata.currentFilterUuid,
     ]);
 
     // Listen for notifications and refetch
