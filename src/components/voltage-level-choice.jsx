@@ -63,7 +63,7 @@ const VoltageLevelChoice = ({ handleClose, onClickHandler, substation, position 
                 onClose={handleClose}
             >
                 {substation !== undefined &&
-                    [...substation.voltageLevels].sort(voltageLevelComparator).map((voltageLevel) => {
+                    substation.voltageLevels.sort(voltageLevelComparator).map((voltageLevel) => {
                         let color = getNominalVoltageColor(voltageLevel.nominalV);
                         let colorString =
                             'rgb(' + color[0].toString() + ',' + color[1].toString() + ',' + color[2].toString() + ')';

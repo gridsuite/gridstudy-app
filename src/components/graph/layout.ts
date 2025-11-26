@@ -405,21 +405,20 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const nodesWithUpdatedPositions = newNodes.map((node) => {
         const placement = nodePlacements.getPlacement(node.id);
         if (placement) {
-            // Reactflow draws its nodes with a position relative to the node's parent (the parent is in the node's parentId field).
-            // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
-            // the parent's position from the current node's position, this gives us the relative position to the parent.
-            const parentPlacement = node.parentId ? nodePlacements.getPlacement(node.parentId) : undefined;
+            if (node.parentId) {
+                // Reactflow draws its nodes with a position relative to the node's parent (the parent is in the node's parentId field).
+                // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
+                // the parent's position from the current node's position, this gives us the relative position to the parent.
+                const parentPlacement = nodePlacements.getPlacement(node.parentId);
+                if (parentPlacement) {
+                    placement.row -= parentPlacement.row;
+                    placement.column -= parentPlacement.column;
+                }
+            }
 
-            // compute relative placement without mutating the placement object
-            const relativeRow = parentPlacement ? placement.row - parentPlacement.row : placement.row;
-            const relativeColumn = parentPlacement ? placement.column - parentPlacement.column : placement.column;
-
-            return {
-                ...node,
-                position: {
-                    x: relativeColumn * nodeWidth,
-                    y: relativeRow * nodeHeight,
-                },
+            node.position = {
+                x: placement.column * nodeWidth,
+                y: placement.row * nodeHeight,
             };
         }
         return {
