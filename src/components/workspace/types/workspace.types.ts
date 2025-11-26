@@ -21,13 +21,9 @@ export enum PanelType {
     EVENT_SCENARIO = 'EVENT_SCENARIO',
 }
 
-export interface VoltageLevelPanelMetadata {
-    voltageLevelId: string;
+export interface SLDPanelMetadata {
+    diagramId: string;
     navigationHistory?: string[];
-}
-
-export interface SubstationPanelMetadata {
-    substationId: string;
 }
 
 export interface NADPanelMetadata {
@@ -42,12 +38,7 @@ export interface SpreadsheetPanelMetadata {
     targetEquipmentType?: string;
 }
 
-export type PanelMetadata =
-    | VoltageLevelPanelMetadata
-    | SubstationPanelMetadata
-    | NADPanelMetadata
-    | SpreadsheetPanelMetadata
-    | Record<string, never>;
+export type PanelMetadata = SLDPanelMetadata | NADPanelMetadata | SpreadsheetPanelMetadata | Record<string, never>;
 
 export interface PanelPosition {
     x: number;

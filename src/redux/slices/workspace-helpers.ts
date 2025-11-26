@@ -14,8 +14,7 @@ import {
     PanelState,
     PanelType,
     PanelMetadata,
-    VoltageLevelPanelMetadata,
-    SubstationPanelMetadata,
+    SLDPanelMetadata,
 } from '../../components/workspace/types/workspace.types';
 
 // ==================== Workspace ====================
@@ -136,12 +135,8 @@ export const findDiagramPanel = (workspace: Workspace, panelType: PanelType, id:
             return false;
         }
 
-        if (panelType === PanelType.SLD_VOLTAGE_LEVEL) {
-            return (panel.metadata as VoltageLevelPanelMetadata).voltageLevelId === id;
-        }
-
-        if (panelType === PanelType.SLD_SUBSTATION) {
-            return (panel.metadata as SubstationPanelMetadata).substationId === id;
+        if (panelType === PanelType.SLD_VOLTAGE_LEVEL || panelType === PanelType.SLD_SUBSTATION) {
+            return (panel.metadata as SLDPanelMetadata).diagramId === id;
         }
 
         return false;

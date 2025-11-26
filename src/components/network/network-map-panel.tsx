@@ -66,7 +66,6 @@ import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import GuidancePopup from './guidance-popup';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';

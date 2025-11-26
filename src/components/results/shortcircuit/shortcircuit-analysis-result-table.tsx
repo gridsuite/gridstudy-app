@@ -36,7 +36,6 @@ import {
 } from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
 import { resultsStyles } from '../common/utils';
-import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,

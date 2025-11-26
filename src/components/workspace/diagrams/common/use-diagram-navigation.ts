@@ -8,11 +8,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { showInSpreadsheet, openSLD } from '../../../../redux/slices/workspace-slice';
-import type {
-    VoltageLevelDiagramParams,
-    SubstationDiagramParams,
-} from '../../../grid-layout/cards/diagrams/diagram.type';
-import { DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { PanelType } from '../../../workspace/types/workspace.types';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
@@ -30,19 +25,15 @@ export const useDiagramNavigation = () => {
         [dispatch]
     );
 
-    const handleOpenDiagram = useCallback(
-        (params: VoltageLevelDiagramParams | SubstationDiagramParams) => {
-            if (params.type === DiagramType.VOLTAGE_LEVEL && params.voltageLevelId) {
-                dispatch(openSLD({ id: params.voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
-            } else if (params.type === DiagramType.SUBSTATION && params.substationId) {
-                dispatch(openSLD({ id: params.substationId, panelType: PanelType.SLD_SUBSTATION }));
-            }
+    const handleOpenVoltageLevelDiagram = useCallback(
+        (voltageLevelId: string) => {
+            dispatch(openSLD({ id: voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
         },
         [dispatch]
     );
 
     return {
         handleShowInSpreadsheet,
-        handleOpenDiagram,
+        handleOpenVoltageLevelDiagram,
     };
 };

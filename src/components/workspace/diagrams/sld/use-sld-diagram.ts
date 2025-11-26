@@ -15,7 +15,6 @@ import { fetchSvg } from '../../../../services/study';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../../../services/study/network';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../utils/config-params';
 import { SLD_DISPLAY_MODE } from '../../../network/constants';
-import type { VoltageLevelPanelMetadata, SubstationPanelMetadata } from '../../types/workspace.types';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
@@ -46,9 +45,7 @@ export const useSldDiagram = ({
             ({
                 type: diagramType,
                 svg: null,
-                ...(diagramType === DiagramType.VOLTAGE_LEVEL
-                    ? { voltageLevelId: diagramId }
-                    : { substationId: diagramId }),
+                diagramId,
             }) as Diagram
     );
     const [loading, setLoading] = useState(false);
@@ -99,12 +96,12 @@ export const useSldDiagram = ({
             setDiagram((currentDiagram) => {
                 let url: string | null = null;
 
-                if (currentDiagram.type === DiagramType.VOLTAGE_LEVEL && 'voltageLevelId' in currentDiagram) {
+                if (currentDiagram.type === DiagramType.VOLTAGE_LEVEL) {
                     url = getVoltageLevelSingleLineDiagram({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        voltageLevelId: currentDiagram.voltageLevelId,
+                        voltageLevelId: currentDiagram.diagramId,
                         useName: paramUseName,
                         centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
                         diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
@@ -112,12 +109,12 @@ export const useSldDiagram = ({
                         sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
                         language,
                     });
-                } else if (currentDiagram.type === DiagramType.SUBSTATION && 'substationId' in currentDiagram) {
+                } else if (currentDiagram.type === DiagramType.SUBSTATION) {
                     url = getSubstationSingleLineDiagram({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        substationId: currentDiagram.substationId,
+                        substationId: currentDiagram.diagramId,
                         useName: paramUseName,
                         centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
                         diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
@@ -172,9 +169,7 @@ export const useSldDiagram = ({
                 ({
                     ...prev,
                     type: diagramType,
-                    ...(diagramType === DiagramType.VOLTAGE_LEVEL
-                        ? { voltageLevelId: diagramId }
-                        : { substationId: diagramId }),
+                    diagramId,
                 }) as Diagram
         );
 

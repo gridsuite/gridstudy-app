@@ -8,7 +8,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box } from '@mui/material';
-import type { VoltageLevelDiagramParams } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import { DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import SingleLineDiagramContent from '../../../../grid-layout/cards/diagrams/singleLineDiagram/single-line-diagram-content';
 import { navigateSLD } from '../../../../../redux/slices/workspace-slice';
@@ -19,7 +18,7 @@ import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 import { selectPanelMetadata } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
-import { VoltageLevelPanelMetadata } from 'components/workspace/types/workspace.types';
+import { SLDPanelMetadata } from 'components/workspace/types/workspace.types';
 import { SldNavigationSidebar } from '../../../diagrams/sld/sld-navigation-sidebar';
 
 interface VoltageLevelPanelContentProps {
@@ -37,24 +36,22 @@ export const VoltageLevelPanelContent = ({
 }: VoltageLevelPanelContentProps) => {
     const dispatch = useDispatch();
     const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
-        | VoltageLevelPanelMetadata
+        | SLDPanelMetadata
         | undefined;
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.VOLTAGE_LEVEL,
-        diagramId: metadata!.voltageLevelId,
+        diagramId: metadata!.diagramId,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
     });
 
-    const { handleShowInSpreadsheet, handleOpenDiagram } = useDiagramNavigation();
+    const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
 
     const handleNavigateDiagram = useCallback(
-        (params: VoltageLevelDiagramParams) => {
-            if (params.voltageLevelId) {
-                dispatch(navigateSLD({ panelId, voltageLevelId: params.voltageLevelId }));
-            }
+        (voltageLevelId: string) => {
+            dispatch(navigateSLD({ panelId, voltageLevelId }));
         },
         [dispatch, panelId]
     );
@@ -77,7 +74,7 @@ export const VoltageLevelPanelContent = ({
                     <SingleLineDiagramContent
                         diagramParams={{
                             type: DiagramType.VOLTAGE_LEVEL,
-                            voltageLevelId: metadata.voltageLevelId,
+                            voltageLevelId: metadata.diagramId,
                         }}
                         showInSpreadsheet={handleShowInSpreadsheet}
                         studyUuid={studyUuid}
@@ -86,14 +83,14 @@ export const VoltageLevelPanelContent = ({
                         svgMetadata={diagram.svg?.metadata as SLDMetadata}
                         loadingState={loading}
                         visible
-                        onNewVoltageLevelDiagram={handleOpenDiagram}
+                        onNewVoltageLevelDiagram={handleOpenVoltageLevelDiagram}
                         onNextVoltageLevelDiagram={handleNavigateDiagram}
                     />
                 </DiagramWrapper>
             </Box>
             <SldNavigationSidebar
                 navigationHistory={metadata.navigationHistory || []}
-                currentVoltageLevelId={metadata.voltageLevelId}
+                currentVoltageLevelId={metadata.diagramId}
                 onNavigate={handleNavigateFromHistory}
             />
         </Box>

@@ -1665,7 +1665,7 @@
     "xOhm":"x (Ω)",
     "importParameters": "Import parameters",
     "workspaces": "Workspaces",
-    "resetWorkspaceConfirmation": "Are you sure you want to reset this workspace? All open windows will be closed.",
+    "resetWorkspaceConfirmation": "Are you sure you want to reset this workspace? All open panels will be closed.",
     "renameWorkspace": "Rename Workspace",
     "workspaceName": "Workspace Name",
     "manageWorkspaces": "Manage workspaces",

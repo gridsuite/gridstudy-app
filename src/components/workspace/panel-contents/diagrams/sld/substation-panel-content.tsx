@@ -5,16 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Box } from '@mui/material';
 import { DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
-import type {
-    VoltageLevelDiagramParams,
-    SubstationDiagramParams,
-} from '../../../../grid-layout/cards/diagrams/diagram.type';
 import SingleLineDiagramContent from '../../../../grid-layout/cards/diagrams/singleLineDiagram/single-line-diagram-content';
-import { navigateSLD } from '../../../../../redux/slices/workspace-slice';
 import { SLDMetadata } from '@powsybl/network-viewer';
 import type { UUID } from 'node:crypto';
 import { useSldDiagram } from '../../../diagrams/sld/use-sld-diagram';
@@ -22,7 +16,7 @@ import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 import { selectPanelMetadata } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
-import { SubstationPanelMetadata } from 'components/workspace/types/workspace.types';
+import { SLDPanelMetadata } from 'components/workspace/types/workspace.types';
 
 interface SubstationPanelContentProps {
     panelId: UUID;
@@ -38,18 +32,18 @@ export const SubstationPanelContent = ({
     currentRootNetworkUuid,
 }: SubstationPanelContentProps) => {
     const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
-        | SubstationPanelMetadata
+        | SLDPanelMetadata
         | undefined;
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.SUBSTATION,
-        diagramId: metadata!.substationId,
+        diagramId: metadata!.diagramId,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
     });
 
-    const { handleShowInSpreadsheet, handleOpenDiagram } = useDiagramNavigation();
+    const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
 
     if (!metadata) {
         return null;
@@ -61,7 +55,7 @@ export const SubstationPanelContent = ({
                 <SingleLineDiagramContent
                     diagramParams={{
                         type: DiagramType.SUBSTATION,
-                        substationId: metadata.substationId,
+                        substationId: metadata.diagramId,
                     }}
                     showInSpreadsheet={handleShowInSpreadsheet}
                     studyUuid={studyUuid}
@@ -70,8 +64,8 @@ export const SubstationPanelContent = ({
                     svgMetadata={diagram.svg?.metadata as SLDMetadata}
                     loadingState={loading}
                     visible
-                    onNewVoltageLevelDiagram={handleOpenDiagram}
-                    onNextVoltageLevelDiagram={handleOpenDiagram}
+                    onNewVoltageLevelDiagram={handleOpenVoltageLevelDiagram}
+                    onNextVoltageLevelDiagram={handleOpenVoltageLevelDiagram}
                 />
             </DiagramWrapper>
         </Box>

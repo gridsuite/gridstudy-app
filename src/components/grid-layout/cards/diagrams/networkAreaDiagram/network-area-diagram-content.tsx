@@ -66,7 +66,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
     readonly visible: boolean;
-    readonly onVoltageLevelClick: (diagramParams: VoltageLevelDiagramParams) => void;
+    readonly onVoltageLevelClick: (voltageLevelId: string) => void;
     readonly onUpdateVoltageLevels: (params: {
         voltageLevelIds: string[];
         voltageLevelToExpandIds: string[];
@@ -165,10 +165,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     setShouldDisplayMenu(true);
                     setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
                 } else {
-                    onVoltageLevelClick({
-                        type: DiagramType.VOLTAGE_LEVEL,
-                        voltageLevelId: equipmentId,
-                    });
+                    onVoltageLevelClick(equipmentId);
                 }
             }
         },
