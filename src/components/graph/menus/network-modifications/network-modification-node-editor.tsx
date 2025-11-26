@@ -185,7 +185,6 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isInitiatingCopyTab = useRef(false);
 
@@ -373,7 +372,6 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS.type,
                             label: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
-                            hide: !enableDeveloperMode,
                             action: () => withDefaultParams(MoveVoltageLevelFeederBaysDialog),
                         },
                         {
