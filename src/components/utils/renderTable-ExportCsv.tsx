@@ -73,7 +73,7 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
                     disabled={isRowsEmpty}
                     skipColumnHeaders={skipColumnHeaders}
                     language={language}
-                    exportDataAsCsv={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
+                    getData={(params: any) => gridRef.current?.api?.exportDataAsCsv(params)}
                 />
             </Box>
 

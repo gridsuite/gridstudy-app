@@ -10,7 +10,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
-import { StudyView } from 'components/utils/utils';
 import { IService } from '../result-view-tab.type';
 
 export enum ResultsTabsRootLevel {
@@ -32,20 +31,18 @@ export type ResultTabIndexRedirection = ResultsTabsRootLevel | ResultsTabsLevelO
  * handles redirection to specific tab
  * @param resultTabIndexRedirection array holding the desired tabs to be redirected to [2, 1] would redirect to tab number 2, subtab number 1
  * @param setTabIndex setter allowing to set the tab in the current component
- * @param view display context (cf StudyView)
  */
 export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
-    setTabIndex: React.Dispatch<React.SetStateAction<number>>,
-    view: string
+    setTabIndex: React.Dispatch<React.SetStateAction<number>>
 ): Dispatch<SetStateAction<boolean>> => {
     const [redirectionLock, setRedirectionLock] = useResultsTabRedirectionLock();
 
     useEffect(() => {
-        if (view !== StudyView.RESULTS && !redirectionLock) {
+        if (!redirectionLock) {
             setTabIndex(resultTabIndexRedirection);
         }
-    }, [resultTabIndexRedirection, setTabIndex, view, redirectionLock]);
+    }, [resultTabIndexRedirection, setTabIndex, redirectionLock]);
 
     return setRedirectionLock;
 };
