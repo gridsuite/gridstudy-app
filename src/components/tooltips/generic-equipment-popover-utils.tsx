@@ -13,22 +13,20 @@ import { RunningStatus } from '../utils/running-status';
 import { IntlShape } from 'react-intl';
 import { CurrentLimits } from 'services/network-modification-types';
 
-export const formatValue = (value: number | string | null | undefined, fixed?: number) => {
-    if (value === null || value === undefined || value === '') return '_';
-
-    if (typeof value === 'number' && !Number.isNaN(value)) {
-        return fixed !== null ? value.toFixed(fixed) : value.toString();
-    }
-
-    if (typeof value === 'string') {
-        const num = Number(value);
-        if (!Number.isNaN(num)) {
-            return fixed !== null ? num.toFixed(fixed) : num.toString();
+export const formatValue = (value: number | string | null, fixed?: number | string | null) => {
+    if (value != null && !Number.isNaN(value)) {
+        if (typeof value === 'number') {
+            if (typeof fixed === 'number') {
+                return value.toFixed(fixed);
+            } else {
+                return value.toString();
+            }
+        } else {
+            return value;
         }
-        return value;
+    } else {
+        return '_';
     }
-
-    return '_';
 };
 
 /**
@@ -47,8 +45,8 @@ export const renderTableCell = ({
     colStyle: React.CSSProperties;
     intl: IntlShape;
 }) => {
-    const cellContent = isLabel ? (label ? intl.formatMessage({ id: label }) : '') : value;
-    return <TableCell sx={colStyle}>{cellContent}</TableCell>;
+    const cellLabel = label ? intl.formatMessage({ id: label }) : '';
+    return <TableCell sx={colStyle}>{isLabel ? cellLabel : value}</TableCell>;
 };
 
 /**
