@@ -19,6 +19,7 @@ import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-ag
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
+import { ICellRendererParams } from 'ag-grid-community';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
@@ -66,7 +67,11 @@ export const FROM_COLUMN_TO_FIELD_PCC_MIN: Record<string, string> = {
     r: 'r',
     x: 'x',
 };
-export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => void) => {
+export const getPccMinColumns = (
+    intl: IntlShape,
+    onFilter: (filters: any) => void,
+    voltageLevelIdRenderer: (cellData: ICellRendererParams) => React.JSX.Element | undefined
+) => {
     const sortParams: ColumnContext['sortParams'] = {
         table: PCCMIN_ANALYSIS_RESULT_SORT_STORE,
         tab: PCCMIN_RESULT,
@@ -100,7 +105,12 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
 
     let columnsMeta = [
         { colId: 'busId', headerKey: 'Bus', filterDef: textFilterParams },
-        { colId: 'voltageLevelId', headerKey: 'busVoltageLevel', filterDef: textFilterParams },
+        {
+            colId: 'voltageLevelId',
+            headerKey: 'busVoltageLevel',
+            filterDef: textFilterParams,
+            cellRenderer: voltageLevelIdRenderer,
+        },
         { colId: 'limitingEquipment', headerKey: 'Contingency', filterDef: textFilterParams },
         {
             colId: 'pccMinTri',
@@ -120,13 +130,14 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
         { colId: 'x', headerKey: 'xOhm', filterDef: numericFilterParams, numeric: true, fractionDigits: 2 },
     ];
 
-    return columnsMeta.map(({ colId, headerKey, filterDef, numeric, fractionDigits }) =>
+    return columnsMeta.map(({ colId, headerKey, filterDef, numeric, fractionDigits, cellRenderer }) =>
         makeAgGridCustomHeaderColumn({
             colId,
             field: FROM_COLUMN_TO_FIELD_PCC_MIN[colId],
             headerName: intl.formatMessage({ id: headerKey }),
             context: createFilterContext(filterDef, numeric, fractionDigits),
             minWidth: numeric ? undefined : 180,
+            cellRenderer,
         })
     );
 };
