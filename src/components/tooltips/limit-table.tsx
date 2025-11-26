@@ -1,9 +1,15 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import React from 'react';
-import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Grid } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
 import { RunningStatus } from '../utils/running-status';
 import { IntlShape } from 'react-intl';
 import { generateRows, styles } from './generic-equipment-popover-utils';
-import { EquipmentInfos } from '@gridsuite/commons-ui';
 
 interface LimitsTableProps {
     equipmentInfos: any;

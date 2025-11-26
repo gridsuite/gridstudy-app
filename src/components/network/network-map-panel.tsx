@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -923,8 +922,6 @@ export const NetworkMapPanel = ({
         );
     }
 
-
-
     const loadMapManually = useCallback(() => {
         if (!isMapEquipmentsInitialized) {
             // load default node map equipments
@@ -948,31 +945,31 @@ export const NetworkMapPanel = ({
         updateMapEquipmentsAndGeoData,
     ]);
 
-        const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
-            (elementId, ref) => {
-                const PopoverContent = EquipmentPopoverMap[EQUIPMENT_TYPES.LINE] || BranchPopoverContent;
+    const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
+        (elementId, ref) => {
+            const PopoverContent = EquipmentPopoverMap[EQUIPMENT_TYPES.LINE] || BranchPopoverContent;
 
-                return (
-                    <GenericEquipmentPopover
-                        studyUuid={studyUuid}
-                        anchorEl={ref.current}
-                        equipmentId={elementId}
-                        equipmentType={EquipmentType.LINE}
-                        loadFlowStatus={loadFlowStatus}
-                    >
-                        {(equipmentInfos: EquipmentInfos) => (
-                            <PopoverContent
-                                equipmentInfos={equipmentInfos}
-                                loadFlowStatus={loadFlowStatus}
-                                equipmentType={EQUIPMENT_TYPES.LINE}
-                                intl={intl}
-                            />
-                        )}
-                    </GenericEquipmentPopover>
-                );
-            },
-            [loadFlowStatus, studyUuid, intl]
-        );
+            return (
+                <GenericEquipmentPopover
+                    studyUuid={studyUuid}
+                    anchorEl={ref.current}
+                    equipmentId={elementId}
+                    equipmentType={EquipmentType.LINE}
+                    loadFlowStatus={loadFlowStatus}
+                >
+                    {(equipmentInfos: EquipmentInfos) => (
+                        <PopoverContent
+                            equipmentInfos={equipmentInfos}
+                            loadFlowStatus={loadFlowStatus}
+                            equipmentType={EQUIPMENT_TYPES.LINE}
+                            intl={intl}
+                        />
+                    )}
+                </GenericEquipmentPopover>
+            );
+        },
+        [loadFlowStatus, studyUuid, intl]
+    );
     const leaveDrawingMode = useCallback(() => {
         // clear the user drawing and go back to simple select.
         networkMapRef.current?.getMapDrawer().deleteAll();

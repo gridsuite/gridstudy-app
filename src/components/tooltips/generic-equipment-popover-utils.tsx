@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { TableCell, TableRow } from '@mui/material';
-import { mergeSx, convertInputValue, FieldType, EquipmentInfos, MuiStyles, LIGHT_THEME } from '@gridsuite/commons-ui';
+import { mergeSx, convertInputValue, FieldType, MuiStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { RunningStatus } from '../utils/running-status';
 import { IntlShape } from 'react-intl';
