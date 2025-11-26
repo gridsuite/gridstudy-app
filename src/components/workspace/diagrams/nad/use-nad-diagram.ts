@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSnackMessage, backendFetchJson } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
-import { Diagram, DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
+import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl, PREFIX_STUDY_QUERIES } from '../../../../services/study';
 import { mergePositions } from '../../../grid-layout/cards/diagrams/diagram-utils';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
