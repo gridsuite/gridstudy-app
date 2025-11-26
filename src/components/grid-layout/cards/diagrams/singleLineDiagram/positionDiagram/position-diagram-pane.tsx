@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../../../utils/config-params';
 import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../../../../network/constants';
-import { getVoltageLevelSingleLineDiagram } from '../../../../../../services/study/network';
+import { getVoltageLevelSingleLineDiagramUrl } from '../../../../../../services/study/network';
 import { AppState } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
@@ -41,30 +41,23 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
         if (!voltageLevelId) {
             return '';
         }
-        return getVoltageLevelSingleLineDiagram({
+        return getVoltageLevelSingleLineDiagramUrl({
             studyUuid: studyUuid,
             currentNodeUuid: currentNodeUuid,
             currentRootNetworkUuid: currentRootNetworkUuid,
             voltageLevelId: voltageLevelId,
-            useName: useName,
-            centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-            diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-            componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
-            sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
-            language: language,
         });
-    }, [
-        voltageLevelId,
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        useName,
-        networkVisuParams.singleLineDiagramParameters.centerLabel,
-        networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-        networkVisuParams.singleLineDiagramParameters.componentLibrary,
-        language,
-    ]);
-    const sldRequestInfos = { baseVoltagesConfigInfos: getBaseVoltagesConfig() };
+    }, [voltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+    const sldRequestInfos = {
+        useName: useName,
+        centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
+        diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+        componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+        sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
+        topologicalColoring: true,
+        language: language,
+        baseVoltagesConfigInfos: getBaseVoltagesConfig(),
+    };
     const fetchOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
