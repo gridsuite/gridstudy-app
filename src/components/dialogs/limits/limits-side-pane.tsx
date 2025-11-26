@@ -238,7 +238,7 @@ export function LimitsSidePane({
                             <TextInput
                                 name={`${name}.${NAME}`}
                                 label="name"
-                                formProps={{ error: !!error?.message }}
+                                formProps={error?.message ? { error: true } : {}}
                                 disabled={disabled}
                             />
                         </Grid>
