@@ -81,14 +81,8 @@ const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
     const debouncedNetworkElementInfos = useDebounce(getNetworkElementInfos, 200);
 
     useEffect(() => {
-        if (currentRootNetworkUuid && currentNode && studyUuid && equipmentId && equipmentId !== '') {
-            debouncedNetworkElementInfos(
-                equipmentId,
-                equipmentType!,
-                currentRootNetworkUuid,
-                currentNode.id,
-                studyUuid
-            );
+        if (currentRootNetworkUuid && currentNode && studyUuid && equipmentId && equipmentType && equipmentId !== '') {
+            debouncedNetworkElementInfos(equipmentId, equipmentType, currentRootNetworkUuid, currentNode.id, studyUuid);
         } else {
             setEquipmentInfo(null);
         }
@@ -131,7 +125,7 @@ const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
                         }
                     />
 
-                    <CardContent>{children && children(equipmentInfos)}</CardContent>
+                    <CardContent>{children?.(equipmentInfos)}</CardContent>
                 </Card>
             )}
         </Popover>

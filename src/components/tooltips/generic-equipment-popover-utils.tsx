@@ -17,13 +17,13 @@ export const formatValue = (value: number | string | null | undefined, fixed?: n
     if (value === null || value === undefined || value === '') return '_';
 
     if (typeof value === 'number' && !Number.isNaN(value)) {
-        return fixed !== undefined ? value.toFixed(fixed) : value.toString();
+        return fixed !== null ? value.toFixed(fixed) : value.toString();
     }
 
     if (typeof value === 'string') {
         const num = Number(value);
         if (!Number.isNaN(num)) {
-            return fixed !== undefined ? num.toFixed(fixed) : num.toString();
+            return fixed !== null ? num.toFixed(fixed) : num.toString();
         }
         return value;
     }
@@ -46,7 +46,10 @@ export const renderTableCell = ({
     isLabel: boolean;
     colStyle: React.CSSProperties;
     intl: IntlShape;
-}) => <TableCell sx={colStyle}>{isLabel ? (label ? intl.formatMessage({ id: label }) : '') : value}</TableCell>;
+}) => {
+    const cellContent = isLabel ? (label ? intl.formatMessage({ id: label }) : '') : value;
+    return <TableCell sx={colStyle}>{cellContent}</TableCell>;
+};
 
 /**
  * Render common characteristics
@@ -100,6 +103,8 @@ export const styles = {
         fontSize: 10,
         padding: '6px 10px',
     },
+    layout: { width: '100%', tableLayout: 'auto' },
+    grid: { width: '100%' },
 } as const satisfies MuiStyles;
 
 /**

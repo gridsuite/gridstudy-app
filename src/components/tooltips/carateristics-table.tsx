@@ -22,9 +22,9 @@ export const CharacteristicsTable: React.FC<CharacteristicsTableProps> = ({
     renderVoltageLevelCharacteristics,
 }) => {
     return (
-        <Grid item sx={{ width: '100%' }}>
+        <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>
-                <Table size="small" sx={{ width: '100%', tableLayout: 'auto' }}>
+                <Table size="small" sx={styles.layout}>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={styles.cell} />
@@ -38,7 +38,7 @@ export const CharacteristicsTable: React.FC<CharacteristicsTableProps> = ({
                     </TableHead>
                     <TableBody>
                         {renderCommonCharacteristics(equipmentInfos, intl)}
-                        {renderVoltageLevelCharacteristics && renderVoltageLevelCharacteristics(equipmentInfos, intl)}
+                        {renderVoltageLevelCharacteristics?.(equipmentInfos, intl)}
                     </TableBody>
                 </Table>
             </TableContainer>

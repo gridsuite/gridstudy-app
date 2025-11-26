@@ -20,9 +20,9 @@ interface CurrentTableProps {
 
 export const CurrentTable: React.FC<CurrentTableProps> = ({ equipmentInfos, intl, loadFlowStatus }) => {
     return (
-        <Grid item sx={{ width: '100%' }}>
+        <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>
-                <Table size="small" sx={{ width: '100%', tableLayout: 'auto' }}>
+                <Table size="small" sx={styles.layout}>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
