@@ -47,6 +47,7 @@ import {
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
 import { openSLD, showInSpreadsheet } from '../../redux/slices/workspace-slice';
+import { PanelType } from '../workspace/types/workspace.types';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -991,21 +992,14 @@ export const NetworkMapPanel = ({
         [isInDrawingMode, leaveDrawingMode]
     );
 
-    const openSLDInTheGrid = useCallback(
-        (equipmentId: string, diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION) => {
-            dispatch(openSLD({ id: equipmentId, diagramType }));
-        },
-        [dispatch]
-    );
-
     const handleOpenVoltageLevel = useCallback(
         (vlId: string) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode.value) {
-                openSLDInTheGrid(vlId, DiagramType.VOLTAGE_LEVEL);
+                dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
             }
         },
-        [isInDrawingMode, openSLDInTheGrid]
+        [dispatch, isInDrawingMode]
     );
 
     const getHvdcExtendedEquipmentType = (hvdcType: string): ExtendedEquipmentType | null => {
@@ -1184,10 +1178,10 @@ export const NetworkMapPanel = ({
             if (!id) {
                 return;
             }
-            const diagramType = isSubstation ? DiagramType.SUBSTATION : DiagramType.VOLTAGE_LEVEL;
-            openSLDInTheGrid(id, diagramType);
+            const panelType = isSubstation ? PanelType.SLD_SUBSTATION : PanelType.SLD_VOLTAGE_LEVEL;
+            dispatch(openSLD({ id, panelType }));
         },
-        [openSLDInTheGrid]
+        [dispatch]
     );
 
     return (

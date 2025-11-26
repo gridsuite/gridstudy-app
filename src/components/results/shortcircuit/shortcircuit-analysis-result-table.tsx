@@ -27,6 +27,7 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { PanelType } from '../../workspace/types/workspace.types';
 import {
     FilterType as AgGridFilterType,
     FilterConfig,
@@ -105,7 +106,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         (props: ICellRendererParams) => {
             const { value } = props || {};
             const onClick = () => {
-                dispatch(openSLD({ id: value, diagramType: DiagramType.VOLTAGE_LEVEL }));
+                dispatch(openSLD({ id: value, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
             };
             if (value) {
                 return (

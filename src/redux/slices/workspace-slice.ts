@@ -8,8 +8,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { UUID } from 'node:crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { DiagramType } from '../../components/grid-layout/cards/diagrams/diagram.type';
-import { PanelType, type WorkspacesState, type PanelMetadata } from '../../components/workspace/types/workspace.types';
+import {
+    PanelType,
+    type WorkspacesState,
+    type PanelMetadata,
+    type VoltageLevelPanelMetadata,
+    type SubstationPanelMetadata,
+} from '../../components/workspace/types/workspace.types';
 import {
     createDefaultWorkspaces,
     getActiveWorkspace,
@@ -19,7 +24,6 @@ import {
     findDiagramPanel,
     findAndFocusPanel,
     deletePanel,
-    createSLDPanelMetadata,
 } from './workspace-helpers';
 
 const STORAGE_KEY_PREFIX = 'gridstudy-workspaces';
@@ -209,19 +213,24 @@ const workspacesSlice = createSlice({
             state,
             action: PayloadAction<{
                 id: string;
-                diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
+                panelType: PanelType.SLD_VOLTAGE_LEVEL | PanelType.SLD_SUBSTATION;
             }>
         ) => {
-            const { id, diagramType } = action.payload;
+            const { id, panelType } = action.payload;
             const workspace = getActiveWorkspace(state);
-            const existingPanel = findDiagramPanel(workspace, diagramType, id);
+            const existingPanel = findDiagramPanel(workspace, panelType, id);
 
             if (existingPanel) {
                 bringToFront(workspace, existingPanel.id);
             } else {
-                createPanel(workspace, PanelType.SLD, {
+                const metadata: VoltageLevelPanelMetadata | SubstationPanelMetadata =
+                    panelType === PanelType.SLD_VOLTAGE_LEVEL
+                        ? { voltageLevelId: id, navigationHistory: [] }
+                        : { substationId: id };
+
+                createPanel(workspace, panelType, {
                     title: id,
-                    metadata: createSLDPanelMetadata(id, diagramType),
+                    metadata,
                 });
             }
         },
@@ -242,21 +251,28 @@ const workspacesSlice = createSlice({
             });
         },
 
-        navigateSLD: (state, action: PayloadAction<{ panelId: UUID; id: string; diagramType: DiagramType }>) => {
-            const { panelId, id, diagramType } = action.payload;
-            const workspace = getActiveWorkspace(state);
+        navigateSLD: (
+            state,
+            action: PayloadAction<{ panelId: UUID; voltageLevelId: string; skipHistory?: boolean }>
+        ) => {
+            const { panelId, voltageLevelId, skipHistory } = action.payload;
 
-            // Check if another panel already has this diagram
-            const existingPanel = findDiagramPanel(workspace, diagramType, id, panelId);
-            if (existingPanel) {
-                bringToFront(workspace, existingPanel.id);
-                return;
-            }
-
-            // Update current SLD panel
+            // Navigate within voltage level panel (substations open new windows via openSLD)
             updatePanel(state, panelId, (panel) => {
-                panel.title = id;
-                panel.metadata = createSLDPanelMetadata(id, diagramType);
+                const currentMetadata = panel.metadata as VoltageLevelPanelMetadata;
+                const history = currentMetadata.navigationHistory || [];
+
+                // Add to history only if this is a different voltage level and not skipping history
+                const updatedHistory =
+                    !skipHistory && currentMetadata.voltageLevelId !== voltageLevelId
+                        ? [voltageLevelId, ...history].slice(0, 10)
+                        : history;
+
+                panel.title = voltageLevelId;
+                panel.metadata = {
+                    voltageLevelId,
+                    navigationHistory: updatedHistory,
+                };
             });
         },
 

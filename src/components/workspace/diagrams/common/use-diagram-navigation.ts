@@ -13,6 +13,7 @@ import type {
     SubstationDiagramParams,
 } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
+import { PanelType } from '../../../workspace/types/workspace.types';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
 export const useDiagramNavigation = () => {
@@ -31,9 +32,10 @@ export const useDiagramNavigation = () => {
 
     const handleOpenDiagram = useCallback(
         (params: VoltageLevelDiagramParams | SubstationDiagramParams) => {
-            const id = params.type === DiagramType.VOLTAGE_LEVEL ? params.voltageLevelId : params.substationId;
-            if (id) {
-                dispatch(openSLD({ id, diagramType: params.type }));
+            if (params.type === DiagramType.VOLTAGE_LEVEL && params.voltageLevelId) {
+                dispatch(openSLD({ id: params.voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+            } else if (params.type === DiagramType.SUBSTATION && params.substationId) {
+                dispatch(openSLD({ id: params.substationId, panelType: PanelType.SLD_SUBSTATION }));
             }
         },
         [dispatch]

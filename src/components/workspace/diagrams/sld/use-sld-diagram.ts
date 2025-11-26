@@ -15,20 +15,22 @@ import { fetchSvg } from '../../../../services/study';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../../../services/study/network';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../utils/config-params';
 import { SLD_DISPLAY_MODE } from '../../../network/constants';
-import type { SLDPanelMetadata } from '../../types/workspace.types';
+import type { VoltageLevelPanelMetadata, SubstationPanelMetadata } from '../../types/workspace.types';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
 
 interface UseSldDiagramProps {
-    diagramMetadata: SLDPanelMetadata;
+    diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
+    diagramId: string;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
 }
 
 export const useSldDiagram = ({
-    diagramMetadata,
+    diagramType,
+    diagramId,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
@@ -39,14 +41,16 @@ export const useSldDiagram = ({
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const { snackError } = useSnackMessage();
 
-    const [diagram, setDiagram] = useState<Diagram>(() => {
-        const type = diagramMetadata.voltageLevelId ? DiagramType.VOLTAGE_LEVEL : DiagramType.SUBSTATION;
-        return {
-            ...diagramMetadata,
-            type,
-            svg: null,
-        } as Diagram;
-    });
+    const [diagram, setDiagram] = useState<Diagram>(
+        () =>
+            ({
+                type: diagramType,
+                svg: null,
+                ...(diagramType === DiagramType.VOLTAGE_LEVEL
+                    ? { voltageLevelId: diagramId }
+                    : { substationId: diagramId }),
+            }) as Diagram
+    );
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
 
@@ -162,24 +166,28 @@ export const useSldDiagram = ({
 
         setGlobalError(undefined);
 
-        // Update diagram from diagramData
-        const type = diagramMetadata.voltageLevelId ? DiagramType.VOLTAGE_LEVEL : DiagramType.SUBSTATION;
-        setDiagram({
-            ...diagramMetadata,
-            type,
-            svg: null,
-        } as Diagram);
+        // Update diagram from diagramId
+        setDiagram(
+            (prev) =>
+                ({
+                    ...prev,
+                    type: diagramType,
+                    ...(diagramType === DiagramType.VOLTAGE_LEVEL
+                        ? { voltageLevelId: diagramId }
+                        : { substationId: diagramId }),
+                }) as Diagram
+        );
 
         fetchDiagram();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
+        diagramType,
         currentNodeId,
         currentNode?.id,
         currentNode?.type,
         currentNode?.data?.globalBuildStatus,
         currentRootNetworkUuid,
-        diagramMetadata.voltageLevelId,
-        diagramMetadata.substationId,
+        diagramId,
     ]);
 
     // Listen for notifications and refetch

@@ -1665,5 +1665,6 @@
     "renameWorkspace": "Renommer l'espace de travail",
     "workspaceName": "Nom de l'espace de travail",
     "manageWorkspaces": "Gérer les espaces de travail",
-    "reset": "Réinitialiser"
+    "reset": "Réinitialiser",
+    "history": "Historique"
 }

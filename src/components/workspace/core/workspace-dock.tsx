@@ -45,7 +45,13 @@ export const WorkspaceDock = memo(() => {
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);
 
     const panels = useMemo(
-        () => allPanels.filter((panel) => panel.type === PanelType.SLD || panel.type === PanelType.NAD),
+        () =>
+            allPanels.filter(
+                (panel) =>
+                    panel.type === PanelType.SLD_VOLTAGE_LEVEL ||
+                    panel.type === PanelType.SLD_SUBSTATION ||
+                    panel.type === PanelType.NAD
+            ),
         [allPanels]
     );
 

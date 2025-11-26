@@ -13,15 +13,21 @@ export enum PanelType {
     LOGS = 'LOGS',
     RESULTS = 'RESULTS',
     PARAMETERS = 'PARAMETERS',
-    SLD = 'SLD',
+    SLD_VOLTAGE_LEVEL = 'SLD_VOLTAGE_LEVEL',
+    SLD_SUBSTATION = 'SLD_SUBSTATION',
     NAD = 'NAD',
     MAP = 'MAP',
     NODE_EDITOR = 'NODE_EDITOR',
     EVENT_SCENARIO = 'EVENT_SCENARIO',
 }
-export interface SLDPanelMetadata {
-    voltageLevelId?: string;
-    substationId?: string;
+
+export interface VoltageLevelPanelMetadata {
+    voltageLevelId: string;
+    navigationHistory?: string[];
+}
+
+export interface SubstationPanelMetadata {
+    substationId: string;
 }
 
 export interface NADPanelMetadata {
@@ -36,7 +42,12 @@ export interface SpreadsheetPanelMetadata {
     targetEquipmentType?: string;
 }
 
-export type PanelMetadata = SLDPanelMetadata | NADPanelMetadata | SpreadsheetPanelMetadata | Record<string, never>;
+export type PanelMetadata =
+    | VoltageLevelPanelMetadata
+    | SubstationPanelMetadata
+    | NADPanelMetadata
+    | SpreadsheetPanelMetadata
+    | Record<string, never>;
 
 export interface PanelPosition {
     x: number;

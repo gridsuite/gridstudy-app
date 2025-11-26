@@ -7,7 +7,6 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import type { UUID } from 'node:crypto';
-import { DiagramType } from '../../components/grid-layout/cards/diagrams/diagram.type';
 import { getPanelConfig } from '../../components/workspace/constants/workspace.constants';
 import {
     Workspace,
@@ -15,7 +14,8 @@ import {
     PanelState,
     PanelType,
     PanelMetadata,
-    SLDPanelMetadata,
+    VoltageLevelPanelMetadata,
+    SubstationPanelMetadata,
 } from '../../components/workspace/types/workspace.types';
 
 // ==================== Workspace ====================
@@ -129,20 +129,21 @@ export const deletePanel = (workspace: Workspace, panelId: UUID): void => {
     }
 };
 
-// Find diagram panel by type and id (voltage level or substation)
-export const findDiagramPanel = (workspace: Workspace, diagramType: DiagramType, id: string, excludePanelId?: UUID) => {
+// Find diagram panel by panel type and id
+export const findDiagramPanel = (workspace: Workspace, panelType: PanelType, id: string, excludePanelId?: UUID) => {
     return Object.values(workspace.panels).find((panel) => {
-        if (panel.id === excludePanelId || (panel.type !== PanelType.SLD && panel.type !== PanelType.NAD)) {
+        if (panel.id === excludePanelId || panel.type !== panelType) {
             return false;
         }
-        const metadata = panel.metadata as SLDPanelMetadata;
-        return (
-            (diagramType === DiagramType.VOLTAGE_LEVEL && metadata.voltageLevelId === id) ||
-            (diagramType === DiagramType.SUBSTATION && metadata.substationId === id)
-        );
+
+        if (panelType === PanelType.SLD_VOLTAGE_LEVEL) {
+            return (panel.metadata as VoltageLevelPanelMetadata).voltageLevelId === id;
+        }
+
+        if (panelType === PanelType.SLD_SUBSTATION) {
+            return (panel.metadata as SubstationPanelMetadata).substationId === id;
+        }
+
+        return false;
     });
 };
-export const createSLDPanelMetadata = (id: string, diagramType: DiagramType): SLDPanelMetadata => ({
-    voltageLevelId: diagramType === DiagramType.VOLTAGE_LEVEL ? id : undefined,
-    substationId: diagramType === DiagramType.SUBSTATION ? id : undefined,
-});
