@@ -120,8 +120,6 @@ import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modificat
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 
