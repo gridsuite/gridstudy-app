@@ -25,6 +25,16 @@ const panelSizeSchema = object({
     height: number().required(),
 }).required();
 
+const optionalPanelPositionSchema = object({
+    x: number().notRequired(),
+    y: number().notRequired(),
+});
+
+const optionalPanelSizeSchema = object({
+    width: number().notRequired(),
+    height: number().notRequired(),
+});
+
 const sldMetadataSchema = object({
     diagramId: string().required(),
     navigationHistory: array(string()).optional(),
@@ -34,7 +44,6 @@ const nadMetadataSchema = object({
     nadConfigUuid: string().optional(),
     filterUuid: string().optional(),
     savedWorkspaceConfigUuid: string().optional(),
-    initialVoltageLevelIds: array(string()).optional(),
 });
 
 const panelMetadataSchema = yup.lazy((value) => {
@@ -60,16 +69,16 @@ const panelStateSchema = object({
     zIndex: number().required(),
     isMinimized: boolean().required(),
     isMaximized: boolean().required(),
-    isPinned: boolean().required(),
-    restorePosition: panelPositionSchema.optional(),
-    restoreSize: panelSizeSchema.optional(),
+    isPinned: boolean().default(false),
+    restorePosition: optionalPanelPositionSchema.notRequired(),
+    restoreSize: optionalPanelSizeSchema.notRequired(),
 }).required();
 
 const workspaceSchema = object({
     id: string().required(),
     name: string().required(),
     panels: yup.lazy((obj) => object(Object.fromEntries(Object.keys(obj || {}).map((key) => [key, panelStateSchema])))),
-    focusedPanelId: string().nullable().required(),
+    focusedPanelId: string().nullable().notRequired(),
     nextZIndex: number().required(),
 }).required();
 
