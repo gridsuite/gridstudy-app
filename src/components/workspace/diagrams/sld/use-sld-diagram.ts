@@ -185,11 +185,14 @@ export const useSldDiagram = ({
 
         // Update diagram from diagramData
         const type = diagramMetadata.voltageLevelId ? DiagramType.VOLTAGE_LEVEL : DiagramType.SUBSTATION;
-        setDiagram({
-            ...diagramMetadata,
-            type,
-            svg: null,
-        } as Diagram);
+        setDiagram(
+            (prev) =>
+                ({
+                    ...prev,
+                    ...diagramMetadata,
+                    type,
+                }) as Diagram
+        );
 
         fetchDiagram();
         // eslint-disable-next-line react-hooks/exhaustive-deps

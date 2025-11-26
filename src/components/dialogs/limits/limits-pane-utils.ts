@@ -81,7 +81,6 @@ const currentLimitsValidationSchema = () => ({
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(temporaryLimitsValidationSchema())
-        .required()
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
             const namesArray = !array
                 ? []

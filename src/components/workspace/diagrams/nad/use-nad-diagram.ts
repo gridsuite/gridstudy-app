@@ -259,16 +259,16 @@ export const useNadDiagram = ({
         setGlobalError(undefined);
 
         // Update diagram from metadata
-        setDiagram({
+        setDiagram((prev) => ({
+            ...prev,
             type: DiagramType.NETWORK_AREA_DIAGRAM,
-            svg: null,
             nadConfigUuid: diagramMetadata.nadConfigUuid,
             filterUuid: diagramMetadata.filterUuid,
             voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
             positions: [],
             voltageLevelToExpandIds: [],
             voltageLevelToOmitIds: [],
-        });
+        }));
 
         fetchDiagram();
         // eslint-disable-next-line react-hooks/exhaustive-deps
