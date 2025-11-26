@@ -1671,5 +1671,6 @@
     "manageWorkspaces": "Manage workspaces",
     "window": "window",
     "windows": "windows",
-    "reset": "Reset"
+    "reset": "Reset",
+    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default drrop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)"
  }
