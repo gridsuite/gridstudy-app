@@ -80,6 +80,12 @@ export const styles = {
     iconEdit: (theme) => ({
         marginRight: theme.spacing(1),
     }),
+    rootNodeWarning: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '20%',
+    },
 } as const satisfies MuiStyles;
 
 export function isChecked(s1: number) {
