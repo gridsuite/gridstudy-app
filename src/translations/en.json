@@ -90,6 +90,7 @@
     "Map": "Map",
     "Tree": "Tree",
     "modifications": "Modifications",
+    "modificationsForbiddenOnRootNode": "Modifications forbidden on root node",
     "images": "Images",
     "panels": "Panels",
     "NetworkVisualizations": "Network visualizations",
