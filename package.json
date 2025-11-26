@@ -9,8 +9,7 @@
         "npm": "^10.9.2"
     },
     "_comments": {
-        "rimraf": "TEMP: Required by @powsybl/network-viewer@2.x postinstall script to fix deck.gl@8 type conflicts. Remove when upgrading to network-viewer with deck.gl@9",
-        "@reduxjs/toolkit": "Version is fixed to 2.9.0, because the react 19 upgrade this package, and it causes pbs with in place modifications of objects stored in the redux store"
+        "rimraf": "TEMP: Required by @powsybl/network-viewer@2.x postinstall script to fix deck.gl@8 type conflicts. Remove when upgrading to network-viewer with deck.gl@9"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
