@@ -30,7 +30,6 @@ import type {
     AppState,
     ComputationFiltersState,
     ComputingStatusParameters,
-    DiagramGridLayoutConfig,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
@@ -49,7 +48,6 @@ import {
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
-import { StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
@@ -70,7 +68,6 @@ import {
     ShortcircuitAnalysisTab,
     SortConfig,
 } from '../types/custom-aggrid-types';
-import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
@@ -115,8 +112,6 @@ export type AppActions =
     | AddNotificationAction
     | RemoveNotificationByNodeAction
     | SetModificationsInProgressAction
-    | OpenDiagramAction
-    | OpenNadListAction
     | SetComputingStatusAction
     | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
@@ -775,18 +770,6 @@ export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     };
 }
 
-export const SET_TOGGLE_OPTIONS = 'SET_TOGGLE_OPTIONS';
-export type SetToggleOptionsAction = Readonly<Action<typeof SET_TOGGLE_OPTIONS>> & {
-    toggleOptions: StudyDisplayMode[];
-};
-
-export function setToggleOptions(toggleOptions: StudyDisplayMode[]): SetToggleOptionsAction {
-    return {
-        type: SET_TOGGLE_OPTIONS,
-        toggleOptions: toggleOptions,
-    };
-}
-
 export const SET_MONO_ROOT_STUDY = 'SET_MONO_ROOT_STUDY';
 export type SetMonoRootStudyAction = Readonly<Action<typeof SET_MONO_ROOT_STUDY>> & {
     isMonoRootStudy: boolean;
@@ -844,34 +827,6 @@ export function setModificationsInProgress(isModificationsInProgress: boolean): 
     return {
         type: SET_MODIFICATIONS_IN_PROGRESS,
         isModificationsInProgress: isModificationsInProgress,
-    };
-}
-
-export const OPEN_DIAGRAM = 'OPEN_DIAGRAM';
-export type OpenDiagramAction = Readonly<Action<typeof OPEN_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction {
-    return {
-        type: OPEN_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
-export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
-    name: string;
-    ids: string[];
-};
-
-export function openNadList(name: string, ids: string[]): OpenNadListAction {
-    return {
-        type: OPEN_NAD_LIST,
-        name: name,
-        ids: ids,
     };
 }
 
@@ -952,10 +907,10 @@ export function setOptionalServices(optionalServices: IOptionalService[]): SetOp
 }
 
 export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type SetOneBusShortcircuitAnalysisDiagramAction = Readonly<
-    Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
-> &
-    OneBusShortCircuitAnalysisDiagram;
+export type SetOneBusShortcircuitAnalysisDiagramAction = Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM> &
+    OneBusShortCircuitAnalysisDiagram & {
+        [key: string]: any;
+    };
 export function setOneBusShortcircuitAnalysisDiagram(
     diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'],
     studyUuid: OneBusShortCircuitAnalysisDiagram['studyUuid'],
@@ -972,9 +927,11 @@ export function setOneBusShortcircuitAnalysisDiagram(
 }
 
 export const RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type ResetOneBusShortcircuitAnalysisDiagramAction = Readonly<
-    Action<typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
->;
+export type ResetOneBusShortcircuitAnalysisDiagramAction = Action<
+    typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM
+> & {
+    [key: string]: any;
+};
 export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircuitAnalysisDiagramAction {
     return {
         type: RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
@@ -1462,27 +1419,6 @@ export type ResetAllSpreadsheetGlobalFiltersAction = Readonly<Action<typeof RESE
 export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
-    };
-}
-
-export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
-export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
-
-export function resetDiagramEvent(): ResetDiagramEventAction {
-    return {
-        type: RESET_DIAGRAM_EVENT,
-    };
-}
-
-export const SET_DIAGRAM_GRID_LAYOUT = 'SET_DIAGRAM_GRID_LAYOUT';
-export type SetDiagramGridLayoutAction = Readonly<Action<typeof SET_DIAGRAM_GRID_LAYOUT>> & {
-    diagramGridLayout: DiagramGridLayoutConfig;
-};
-
-export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig): SetDiagramGridLayoutAction {
-    return {
-        type: SET_DIAGRAM_GRID_LAYOUT,
-        diagramGridLayout: diagramGridLayout,
     };
 }
 

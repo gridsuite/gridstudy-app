@@ -81,6 +81,7 @@ export const RATED_U2 = 'ratedU2';
 export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
 export const LIMITS_PROPERTIES = 'limitsProperties';
+export const OLG_IS_DUPLICATE = 'operationalLimitsGroupsIsDuplicate';
 export const ENABLE_OLG_MODIFICATION = 'enableOLGModification';
 export const OLGS_MODIFICATION_TYPE = 'operationalLimitsGroupsModificationType';
 export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
@@ -238,7 +239,7 @@ export const AERIAL_TEMPERATURES = 'aerialTemperatures';
 export const UNDERGROUND_AREAS = 'undergroundAreas';
 export const UNDERGROUND_SHAPE_FACTORS = 'undergroundShapeFactors';
 export const FINAL_CURRENT_LIMITS = 'finalCurrentLimits';
-export const APPLICABIlITY = 'applicability';
+export const APPLICABILITY_FIELD = 'applicability';
 export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
 
 // Voltage level

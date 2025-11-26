@@ -49,9 +49,7 @@ interface IResultViewTabProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    openVoltageLevelDiagram: (voltageLevelId: string) => void;
     disabled: boolean;
-    view: string;
 }
 
 /**
@@ -59,7 +57,6 @@ interface IResultViewTabProps {
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
  * @param currentRootNetworkUuid : uuid of current root network
- * @param openVoltageLevelDiagram : function
  * @param resultTabIndexRedirection : ResultTabIndexRedirection to specific tab [RootTab, LevelOneTab, ...]
  * @param disabled
  * @returns {JSX.Element}
@@ -69,9 +66,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
-    openVoltageLevelDiagram,
     disabled,
-    view,
 }) => {
     const intl = useIntl();
 
@@ -95,11 +90,10 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, currentRootNetworkUuid, openVoltageLevelDiagram]);
+    }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
     const renderSecurityAnalysisResult = useMemo(() => {
         return (
@@ -108,11 +102,10 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, currentRootNetworkUuid, openVoltageLevelDiagram]);
+    }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
     const renderVoltageInitResult = useMemo(() => {
         return (
@@ -145,12 +138,10 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    view={view}
-                    openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, view, openVoltageLevelDiagram]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (
@@ -285,7 +276,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
 
-    const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex, view);
+    const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex);
 
     const renderTab = (service: IService) => {
         return (

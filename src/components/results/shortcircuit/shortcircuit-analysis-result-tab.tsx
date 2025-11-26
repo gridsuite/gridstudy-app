@@ -39,8 +39,6 @@ interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    view: string;
-    openVoltageLevelDiagram: (id: string) => void;
 }
 
 const getDisplayedColumns = (params: GridReadyEvent) => {
@@ -56,8 +54,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    view,
-    openVoltageLevelDiagram,
 }) => {
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
 
@@ -82,7 +78,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
-    const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex, view);
+    const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex);
 
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
@@ -205,13 +201,11 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
                         globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
-                        openVoltageLevelDiagram={openVoltageLevelDiagram}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
-                        openVoltageLevelDiagram={openVoltageLevelDiagram}
                     />
                 ))}
             {resultOrLogIndex === LOGS_TAB_INDEX && (

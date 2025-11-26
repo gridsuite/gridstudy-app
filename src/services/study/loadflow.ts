@@ -182,7 +182,6 @@ export function fetchLimitViolations(
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
     }
-console.debug('=================fetchLimitViolations=======globalFilters', globalFilters);
     if (globalFilters && Object.keys(globalFilters).length > 0) {
         params.append('globalFilters', JSON.stringify(globalFilters));
     }

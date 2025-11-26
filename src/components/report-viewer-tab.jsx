@@ -20,6 +20,8 @@ import { ReportType } from 'utils/report/report.type';
 import { sortSeverityList } from 'utils/report/report-severity';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Box, Switch } from '@mui/material';
+import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { isStudyNotification } from '../types/notification-types';
 
 const styles = {
     div: {
@@ -46,6 +48,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
     const [resetFilters, setResetFilters] = useState(false);
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
     const intl = useIntl();
     const [isReportLoading, fetchReport, fetchReportSeverities] = useReportFetcher(
         COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION
@@ -67,28 +70,48 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
         return rootNode?.id;
     }, [treeModel]);
 
-    // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
-    // and when the application receives a notification.
+    const fetchReportAndSeverities = useCallback(() => {
+        fetchReport(nodeOnlyReport).then((r) => {
+            if (r !== undefined) {
+                setReport(r);
+                fetchReportSeverities(r.id, r.parentId ? ReportType.NODE : ReportType.GLOBAL).then((severities) => {
+                    setSeverities(sortSeverityList(severities));
+                });
+            }
+        });
+    }, [fetchReport, nodeOnlyReport, fetchReportSeverities]);
+
+    // Listen for STUDY notifications
+    const handleNotification = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            if (
+                visible &&
+                !disabled &&
+                isStudyNotification(eventData) &&
+                eventData.headers.rootNetworkUuid === currentRootNetworkUuid &&
+                eventData.headers.node === currentNode?.id
+            ) {
+                fetchReportAndSeverities();
+            }
+        },
+        [visible, disabled, currentRootNetworkUuid, currentNode?.id, fetchReportAndSeverities]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleNotification });
+
+    // This useEffect is responsible for updating the reports when the user opens the LOGS panel
     useEffect(() => {
         // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
         if (visible && !disabled) {
-            fetchReport(nodeOnlyReport).then((r) => {
-                if (r !== undefined) {
-                    setReport(r);
-                    fetchReportSeverities(r.id, r.parentId ? ReportType.NODE : ReportType.GLOBAL).then((severities) => {
-                        setSeverities(sortSeverityList(severities));
-                    });
-                }
-            });
+            fetchReportAndSeverities();
         } else {
             // if the user unbuilds a node, the report needs to be reset.
             // otherwise, the report will be kept in the state and useless report fetches with previous id will be made when the user rebuilds the node.
             setReport();
             setSeverities();
         }
-        // It is important to keep the notifications in the useEffect's dependencies (even if it is not
-        // apparent that they are used) to trigger the update of reports when a notification happens.
-    }, [visible, currentNode, disabled, fetchReport, nodeOnlyReport, fetchReportSeverities]);
+    }, [visible, currentNode?.id, disabled, nodeOnlyReport, fetchReportAndSeverities]);
 
     return (
         <>
