@@ -29,16 +29,16 @@ export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
 }) => {
     return (
         <Grid container direction="column" rowSpacing={2} alignItems="center">
-             <CharacteristicsTable
+            <CharacteristicsTable
                 equipmentInfos={equipmentInfos}
                 intl={intl}
                 renderVoltageLevelCharacteristics={(equipmentInfos, intl) =>
                     renderVoltageLevelCharacteristics(equipmentInfos, equipmentType, intl)
                 }
             />
-             <CurrentTable equipmentInfos={equipmentInfos} intl={intl} loadFlowStatus={loadFlowStatus} />
+            <CurrentTable equipmentInfos={equipmentInfos} intl={intl} loadFlowStatus={loadFlowStatus} />
 
-             <LimitsTable equipmentInfos={equipmentInfos} intl={intl} loadFlowStatus={loadFlowStatus} />
+            <LimitsTable equipmentInfos={equipmentInfos} intl={intl} loadFlowStatus={loadFlowStatus} />
         </Grid>
     );
 };
