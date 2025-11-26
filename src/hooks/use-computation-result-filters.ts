@@ -4,23 +4,42 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterType, FilterConfig } from '../types/custom-aggrid-types';
+import { FilterConfig, FilterType } from '../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import { updateColumnFiltersAction, updateGlobalFiltersAction } from '../redux/actions';
-import useGlobalFilters from '../components/results/common/global-filter/use-global-filters';
 import { useCallback, useMemo } from 'react';
+import { updateComputationResultFilters } from '../services/study/study-config';
+import { createSelector } from '@reduxjs/toolkit';
+import useGlobalFilters from '../components/results/common/global-filter/use-global-filters';
+
+export const makeSelectColumnFilters = () =>
+    createSelector(
+        (state: AppState) => state.computationFilters,
+        (_: AppState, filterType: FilterType) => filterType,
+        (_: AppState, __: FilterType, tabId: string) => tabId,
+        (computationFilters, filterType, tabId) => computationFilters?.[filterType]?.columnsFilters?.[tabId]
+    );
+
+export const makeSelectGlobalFilters = () =>
+    createSelector(
+        (state: AppState) => state.computationFilters,
+        (_: AppState, filterType: FilterType) => filterType,
+        (computationFilters, filterType) => computationFilters?.[filterType]?.globalFilters
+    );
 
 export function useComputationFilters(filterType: FilterType, tabId: string) {
     const dispatch = useDispatch();
     const { buildGlobalFilters } = useGlobalFilters();
-
+    const selectColumnFilters = useMemo(makeSelectColumnFilters, []);
+    const selectGlobalFilters = useMemo(makeSelectGlobalFilters, []);
+    const studyUuid = useSelector((state: any) => state.studyUuid);
     const config = useSelector((state: AppState) => state.computationFilters?.[filterType]);
 
-    const columnFilters = useMemo(() => config?.columnsFilters?.[tabId] || [], [config?.columnsFilters, tabId]);
+    const columnFilters = useSelector((state: AppState) => selectColumnFilters(state, filterType, tabId));
 
-    const globalFilters = useMemo(() => config?.globalFilters ?? undefined, [config?.globalFilters]);
+    const globalFilters = useSelector((state: AppState) => selectGlobalFilters(state, filterType));
 
     const updateColumnFilters = useCallback(
         (filters: FilterConfig[]) => {
@@ -31,19 +50,23 @@ export function useComputationFilters(filterType: FilterType, tabId: string) {
 
     const updateGlobalFilters = useCallback(
         (rawGlobalFilters: GlobalFilter[]) => {
-            const newGlobalFilters = buildGlobalFilters(rawGlobalFilters);
-            dispatch(updateGlobalFiltersAction(filterType, newGlobalFilters));
+            if (!config?.id) return;
+            dispatch(updateGlobalFiltersAction(filterType, rawGlobalFilters));
+            updateComputationResultFilters(studyUuid, config.id, rawGlobalFilters).then();
         },
-        [dispatch, filterType, buildGlobalFilters]
+        [dispatch, filterType, studyUuid, config?.id]
     );
+    const builtGlobalFilters = useMemo(() => {
+        return globalFilters ? buildGlobalFilters(globalFilters) : {};
+    }, [globalFilters, buildGlobalFilters]);
 
     return useMemo(
         () => ({
             columnFilters,
-            globalFilters,
+            globalFilters: builtGlobalFilters,
             updateColumnFilters,
             updateGlobalFilters,
         }),
-        [columnFilters, globalFilters, updateColumnFilters, updateGlobalFilters]
+        [builtGlobalFilters, columnFilters, updateColumnFilters, updateGlobalFilters]
     );
 }

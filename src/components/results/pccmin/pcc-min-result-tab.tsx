@@ -37,9 +37,11 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
 
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
-
+    const globalFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.computationFilters?.[AgGridFilterType.PccMin]?.globalFilters
+    );
     const { globalFilters, updateGlobalFilters } = useComputationFilters(
-        AgGridFilterType.ShortcircuitAnalysis,
+        AgGridFilterType.PccMin,
         getStoreFields(resultOrLogIndex)
     );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
@@ -80,6 +82,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                             onChange={updateGlobalFilters}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
+                            preloadedGlobalFilters={globalFilterSpreadsheetState}
                             genericFiltersStrictMode
                         />
                     </Box>

@@ -30,7 +30,7 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -44,7 +44,7 @@ import {
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { ICellRendererParams } from 'ag-grid-community';
 import { Button } from '@mui/material';
@@ -80,6 +80,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+
+    const globalFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.computationFilters?.[AgGridFilterType.Loadflow]?.globalFilters
+    );
 
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
@@ -272,6 +276,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         onChange={updateGlobalFilters}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
+                        preloadedGlobalFilters={globalFilterSpreadsheetState}
                         genericFiltersStrictMode={true}
                     />
                 </Box>

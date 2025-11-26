@@ -560,12 +560,15 @@ export interface DiagramGridLayoutConfig {
     params: DiagramParams[];
 }
 
-export type ComputationFiltersState = Partial<
+export type ComputationFiltersState = {
+    id?: string;
+} & Partial<
     Record<
         FilterType,
         {
+            id: string;
             columnsFilters: Record<string, FilterConfig[]>;
-            globalFilters: GlobalFilters;
+            globalFilters: GlobalFilter[];
         }
     >
 >;
@@ -1934,22 +1937,30 @@ export const reducer = createReducer(initialState, (builder) => {
         state.nodeAliases = action.nodeAliases;
     });
     builder.addCase(INIT_COMPUTATION_RESULT_FILTERS, (state, action: InitComputationResultFiltersAction) => {
-        for (const [filterTypeKey, f] of Object.entries(action.filters)) {
-            const filterType = filterTypeKey as FilterType;
+        const filtersState = action.filters;
+        state.computationFilters.id = filtersState.id;
+        (Object.keys(filtersState) as (keyof ComputationFiltersState)[])
+            .filter((k) => k !== 'id')
+            .forEach((filterTypeKey) => {
+                const f = filtersState[filterTypeKey as FilterType];
 
-            state.computationFilters[filterType] = {
-                columnsFilters: f.columnsFilters ?? {},
-                globalFilters: f.globalFilters ?? [],
-            };
-        }
+                if (!f) return;
+
+                state.computationFilters[filterTypeKey as FilterType] = {
+                    id: f.id,
+                    columnsFilters: f.columnsFilters ?? {},
+                    globalFilters: f.globalFilters ?? {},
+                };
+            });
     });
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
         const { filterType, tabId, filters } = action;
 
         if (!state.computationFilters[filterType]) {
             state.computationFilters[filterType] = {
+                id: '',
                 columnsFilters: {},
-                globalFilters: {} as GlobalFilters,
+                globalFilters: {} as GlobalFilter[],
             };
         }
 
@@ -1961,8 +1972,9 @@ export const reducer = createReducer(initialState, (builder) => {
 
         if (!state.computationFilters[filterType]) {
             state.computationFilters[filterType] = {
+                id: '',
                 columnsFilters: {},
-                globalFilters: {} as GlobalFilters,
+                globalFilters: {} as GlobalFilter[],
             };
         }
 

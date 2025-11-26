@@ -35,6 +35,9 @@ export function VoltageInitResultTab({
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+    const globalFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.computationFilters?.[AgGridFilterType.VoltageInit]?.globalFilters
+    );
     const { globalFilters, updateGlobalFilters } = useComputationFilters(AgGridFilterType.VoltageInit, '');
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
@@ -69,6 +72,7 @@ export function VoltageInitResultTab({
             status={voltageInitStatus}
             handleGlobalFilterChange={updateGlobalFilters}
             globalFilterOptions={globalFilterOptions}
+            globalFilterSpreadsheetState={globalFilterSpreadsheetState}
         />
     );
 }

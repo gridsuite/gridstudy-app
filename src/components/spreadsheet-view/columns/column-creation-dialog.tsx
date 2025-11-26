@@ -217,7 +217,7 @@ export default function ColumnCreationDialog({
             if (existingColumn) {
                 isUpdate = true;
                 const updatedFilters = columnFilters?.filter((filter) => filter.column !== existingColumn.id);
-                updateColumnFilters(updatedFilters);
+                updatedFilters && updateColumnFilters(updatedFilters);
             }
 
             const formattedParams = {

@@ -95,7 +95,9 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
-
+    const globalFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.computationFilters?.[AgGridFilterType.ShortcircuitAnalysis]?.globalFilters
+    );
     const { globalFilters, updateGlobalFilters } = useComputationFilters(
         AgGridFilterType.ShortcircuitAnalysis,
         getStoreFields(tabIndex)
@@ -179,6 +181,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                         onChange={updateGlobalFilters}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
+                        preloadedGlobalFilters={globalFilterSpreadsheetState}
                         genericFiltersStrictMode={true}
                     />
                 )}

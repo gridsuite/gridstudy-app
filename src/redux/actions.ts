@@ -1150,7 +1150,7 @@ export type UpdateColumnFiltersAction = {
 export type UpdateGlobalFiltersAction = {
     type: typeof UPDATE_GLOBAL_FILTERS;
     filterType: FilterType;
-    globalFilters: GlobalFilters;
+    globalFilters: GlobalFilter[];
 };
 export function initComputationResultFilters(filters: ComputationFiltersState): InitComputationResultFiltersAction {
     return { type: INIT_COMPUTATION_RESULT_FILTERS, filters };
@@ -1169,7 +1169,7 @@ export const updateColumnFiltersAction = (
 
 export const updateGlobalFiltersAction = (
     filterType: FilterType,
-    globalFilters: GlobalFilters
+    globalFilters: GlobalFilter[]
 ): UpdateGlobalFiltersAction => ({
     type: UPDATE_GLOBAL_FILTERS,
     filterType,

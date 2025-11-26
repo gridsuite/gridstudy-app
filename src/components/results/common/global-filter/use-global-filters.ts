@@ -22,45 +22,35 @@ export function isGlobalFilterParameter(globalFilters: GlobalFilters | undefined
 export default function useGlobalFilters() {
     const buildGlobalFilters = useCallback((value: GlobalFilter[]): GlobalFilters => {
         const newGlobalFilter: GlobalFilters = {};
+        const nominalVs = new Set<string>();
+        const genericFilters = new Set<string>();
+        const countryCodes = new Set<string>();
+        const substationProperties: Record<string, string[]> = {};
 
-        const nominalVs = new Set(
-            value
-                .filter((filter: GlobalFilter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
-                .map((filter: GlobalFilter) => filter.label)
-        );
-
-        const genericFilters = new Set(
-            value
-                .filter((filter: GlobalFilter) => filter.filterType === FilterType.GENERIC_FILTER)
-                .map((filter: GlobalFilter) => filter.uuid ?? '')
-                .filter((uuid: string) => uuid !== '')
-        );
-
-        const countryCodes = new Set(
-            value
-                .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
-                .map((filter: GlobalFilter) => filter.label)
-        );
-
-        const substationProperties: Map<string, string[]> = new Map();
-        value
-            .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
-            .forEach((filter: GlobalFilter) => {
-                if (filter.filterSubtype) {
-                    const subtypeProps = substationProperties.get(filter.filterSubtype);
-                    if (subtypeProps) {
-                        subtypeProps.push(filter.label);
-                    } else {
-                        substationProperties.set(filter.filterSubtype, [filter.label]);
+        value.forEach((filter) => {
+            switch (filter.filterType) {
+                case FilterType.VOLTAGE_LEVEL:
+                    nominalVs.add(filter.label);
+                    break;
+                case FilterType.COUNTRY:
+                    countryCodes.add(filter.label);
+                    break;
+                case FilterType.GENERIC_FILTER:
+                    if (filter.uuid) genericFilters.add(filter.uuid);
+                    break;
+                case FilterType.SUBSTATION_PROPERTY:
+                    if (filter.filterSubtype) {
+                        substationProperties[filter.filterSubtype] ??= [];
+                        substationProperties[filter.filterSubtype].push(filter.label);
                     }
-                }
-            });
-
+                    break;
+            }
+        });
         if (nominalVs.size > 0) newGlobalFilter.nominalV = [...nominalVs];
         if (countryCodes.size > 0) newGlobalFilter.countryCode = [...countryCodes];
         if (genericFilters.size > 0) newGlobalFilter.genericFilter = [...genericFilters];
-        if (substationProperties.size > 0) {
-            newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
+        if (Object.keys(substationProperties).length) {
+            newGlobalFilter.substationProperty = substationProperties;
         }
 
         return newGlobalFilter;

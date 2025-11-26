@@ -123,6 +123,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         getStoreFields(tabIndex) as SecurityAnalysisTab
     );
     const { page, rowsPerPage } = pagination;
+    const globalFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.computationFilters?.[AgGridFilterType.SecurityAnalysis]?.globalFilters
+    );
     const { globalFilters, updateGlobalFilters, columnFilters } = useComputationFilters(
         AgGridFilterType.SecurityAnalysis,
         getStoreFields(tabIndex)
@@ -293,6 +296,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}
+                            preloadedGlobalFilters={globalFilterSpreadsheetState}
                             genericFiltersStrictMode={true}
                         />
                     </Box>

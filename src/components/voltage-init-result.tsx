@@ -89,6 +89,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     status,
     handleGlobalFilterChange,
     globalFilterOptions,
+    globalFilterSpreadsheetState,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

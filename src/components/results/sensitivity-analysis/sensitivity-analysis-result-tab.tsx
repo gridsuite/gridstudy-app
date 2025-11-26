@@ -49,7 +49,13 @@ function SensitivityAnalysisResultTab({
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const { globalFilters, updateGlobalFilters } = useComputationFilters(AgGridFilterType.SecurityAnalysis, sensiTab);
+    const globalFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.computationFilters?.[AgGridFilterType.SensitivityAnalysis]?.globalFilters
+    );
+    const { globalFilters, updateGlobalFilters } = useComputationFilters(
+        AgGridFilterType.SensitivityAnalysis,
+        sensiTab
+    );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
@@ -95,6 +101,7 @@ function SensitivityAnalysisResultTab({
                                 onChange={updateGlobalFilters}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
+                                preloadedGlobalFilters={globalFilterSpreadsheetState}
                                 genericFiltersStrictMode={true}
                                 disableGenericFilters={sensiTab === SENSITIVITY_AT_NODE}
                             />
