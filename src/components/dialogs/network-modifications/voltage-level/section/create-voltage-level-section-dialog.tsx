@@ -249,7 +249,7 @@ export default function CreateVoltageLevelSectionDialog({
                     voltageLevelSection?.isAfterBusBarSectionId === POSITION_NEW_SECTION_SIDE.AFTER.id,
                 leftSwitchKind: voltageLevelSection?.switchesBeforeSections || null,
                 rightSwitchKind: voltageLevelSection?.switchesAfterSections || null,
-                switchOpen: !voltageLevelSection?.newSwitchStates || false,
+                switchOpen: !voltageLevelSection?.newSwitchStates || true,
             } satisfies CreateVoltageLevelSectionInfos;
             createVoltageLevelSection({
                 voltageLevelSectionInfos: voltageLevelSectionInfos,
