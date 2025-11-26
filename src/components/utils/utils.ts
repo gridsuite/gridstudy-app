@@ -16,7 +16,7 @@ import {
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import {
-    APPLICABIlITY,
+    APPLICABILITY_FIELD,
     CURRENT_LIMITS,
     ID,
     LIMITS_PROPERTIES,
@@ -169,7 +169,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsDa
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id + elt.applicability,
                     [NAME]: elt.id,
-                    [APPLICABIlITY]: elt.applicability,
+                    [APPLICABILITY_FIELD]: elt.applicability,
                     [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
                         permanentLimit: elt.permanentLimit,
@@ -305,24 +305,6 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
     const length = (stop - start) / step + 1;
     return Array.from({ length }, (_, index) => start + index * step);
 }
-
-export const StudyView = {
-    TREE: 'Tree',
-    SPREADSHEET: 'Spreadsheet',
-    RESULTS: 'Results',
-    LOGS: 'Logs',
-    PARAMETERS: 'Parameters',
-};
-
-export const STUDY_VIEWS = [
-    StudyView.TREE,
-    StudyView.SPREADSHEET,
-    StudyView.RESULTS,
-    StudyView.LOGS,
-    StudyView.PARAMETERS,
-];
-
-export type StudyViewType = (typeof StudyView)[keyof typeof StudyView];
 
 export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
     return rows?.map((row) => {

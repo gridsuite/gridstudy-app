@@ -6,14 +6,12 @@
  */
 
 import { EditableTitle } from '../network-modifications/editable-title';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { setToggleOptions } from '../../../../redux/actions';
 import { useIntl } from 'react-intl';
 import { AppState } from '../../../../redux/reducer';
 import EventModificationScenarioEditor from './event-modification-scenario-editor';
 import { Box } from '@mui/material';
-import { StudyDisplayMode } from 'components/network-modification.type';
 
 const styles = {
     paper: (theme) => ({
@@ -25,17 +23,10 @@ const styles = {
     }),
 } as const satisfies MuiStyles;
 
-export interface ScenarioEditorProps {}
-
-const ScenarioEditor = (props: ScenarioEditorProps) => {
-    const dispatch = useDispatch();
+const ScenarioEditor = () => {
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
-    const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const intl = useIntl();
-    const closeEventScenarioDrawer = () => {
-        dispatch(setToggleOptions(toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO)));
-    };
 
     return (
         <Box sx={styles.paper}>
@@ -45,7 +36,6 @@ const ScenarioEditor = (props: ScenarioEditorProps) => {
                         id: 'DynamicSimulationEventScenario',
                     }) + ` (${currentTreeNode?.data?.label})`
                 }
-                onClose={closeEventScenarioDrawer}
             />
             <EventModificationScenarioEditor />
         </Box>

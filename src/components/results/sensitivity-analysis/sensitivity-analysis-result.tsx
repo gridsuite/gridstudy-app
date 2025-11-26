@@ -21,14 +21,7 @@ import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-typ
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
-import type {
-    ColDef,
-    ColGroupDef,
-    GridApi,
-    GridColumnsChangedEvent,
-    GridReadyEvent,
-    RowDataUpdatedEvent,
-} from 'ag-grid-community';
+import type { GridColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -37,21 +30,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-
-function isColDef(col: ColDef | ColGroupDef): col is ColDef {
-    return (col as ColDef).field !== undefined;
-}
-
-function getColumnHeaderDisplayNames(gridApi: GridApi): string[] {
-    return (
-        gridApi.getColumnDefs()?.map((c) => {
-            if (isColDef(c)) {
-                return c.headerComponentParams?.displayName;
-            }
-            return '';
-        }) ?? []
-    );
-}
+import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));

@@ -39,7 +39,12 @@ export default function StudyPathBreadcrumbs({
     const currentRootNetworkTag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
 
     return (
-        <MuiBreadcrumbs aria-label="breadcrumb" color="text" separator={<KeyboardArrowRightIcon fontSize="small" />}>
+        <MuiBreadcrumbs
+            aria-label="breadcrumb"
+            color="text"
+            separator={<KeyboardArrowRightIcon fontSize="small" />}
+            sx={{ p: 0.25 }}
+        >
             <Tooltip
                 componentsProps={{
                     tooltip: {
@@ -75,7 +80,9 @@ export default function StudyPathBreadcrumbs({
             <Box>{studyName}</Box>
             <Box>{currentNode?.data?.label}</Box>
             {rootNetworks && rootNetworks.length > 1 && (
-                <RootNetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <RootNetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
+                </Box>
             )}
         </MuiBreadcrumbs>
     );

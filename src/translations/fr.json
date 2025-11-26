@@ -91,6 +91,7 @@
     "Tree": "Arbre",
     "modifications": "Modifications",
     "images": "Images",
+    "panels": "Panneaux",
     "NetworkVisualizations": "Images réseau",
     "None": "Aucun",
     "EmptyField": "Vider le champ",
@@ -1532,6 +1533,8 @@
     "previousStatus": "État précédent",
     "currentStatus": "État modifié",
     "Open": "Ouvert",
+    "areSwitchesOpen": "Ouverts",
+    "areSwitchesClosed": "Fermés",
     "Closed": "Fermé",
     "GridLayoutPanel": "Grille des images",
     "GridLayoutPanelAndTree": "Grille des images et arbre décisionnel",
@@ -1656,5 +1659,11 @@
     "IccMinTri": "Icc min (kA)",
     "rOhm": "r (Ω)",
     "xOhm":"x (Ω)",
-    "importParameters": "Paramètres d'import"
+    "importParameters": "Paramètres d'import",
+    "workspaces": "Espaces",
+    "resetWorkspaceConfirmation": "Êtes-vous sûr de vouloir réinitialiser cet espace de travail ? Toutes les fenêtres ouvertes seront fermées.",
+    "renameWorkspace": "Renommer l'espace de travail",
+    "workspaceName": "Nom de l'espace de travail",
+    "manageWorkspaces": "Gérer les espaces de travail",
+    "reset": "Réinitialiser"
 }
