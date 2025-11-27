@@ -962,13 +962,12 @@ export const NetworkMapPanel = ({
                             equipmentInfos={equipmentInfos}
                             loadFlowStatus={loadFlowStatus}
                             equipmentType={EQUIPMENT_TYPES.LINE}
-                            intl={intl}
                         />
                     )}
                 </GenericEquipmentPopover>
             );
         },
-        [loadFlowStatus, studyUuid, intl]
+        [loadFlowStatus, studyUuid]
     );
     const leaveDrawingMode = useCallback(() => {
         // clear the user drawing and go back to simple select.

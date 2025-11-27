@@ -9,25 +9,26 @@ import React from 'react';
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../utils/running-status';
-import { IntlShape } from 'react-intl';
 import { formatValue, styles } from './generic-equipment-popover-utils';
+import { CellRender } from './cell-render';
 
 interface CurrentTableProps {
     equipmentInfos: any;
-    intl: IntlShape;
     loadFlowStatus?: RunningStatus;
 }
 
-export const CurrentTable: React.FC<CurrentTableProps> = ({ equipmentInfos, intl, loadFlowStatus }) => {
+export const CurrentTable: React.FC<CurrentTableProps> = ({ equipmentInfos, loadFlowStatus }) => {
     return (
         <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>
                 <Table size="small" sx={styles.layout}>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {intl.formatMessage({ id: 'CURRENT' })}
-                            </TableCell>
+                            <CellRender
+                                isLabel={true}
+                                label="CURRENT"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            ></CellRender>
                             <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
                                 {formatValue(equipmentInfos?.voltageLevelId1)}
                             </TableCell>
@@ -38,7 +39,11 @@ export const CurrentTable: React.FC<CurrentTableProps> = ({ equipmentInfos, intl
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell sx={styles.cell}>{intl.formatMessage({ id: 'I_(A)' })}</TableCell>
+                            <CellRender
+                                isLabel={true}
+                                label="I_(A)"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            ></CellRender>
                             <TableCell
                                 sx={mergeSx(styles.cell, {
                                     opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,

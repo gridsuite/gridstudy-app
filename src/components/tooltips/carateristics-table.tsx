@@ -7,18 +7,16 @@
 
 import { EquipmentInfos } from '@gridsuite/commons-ui';
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
-import { IntlShape } from 'react-intl';
 import { renderCommonCharacteristics, styles } from './generic-equipment-popover-utils';
+import { CellRender } from './cell-render';
 
 interface CharacteristicsTableProps {
     equipmentInfos: EquipmentInfos;
-    intl: IntlShape;
-    renderVoltageLevelCharacteristics?: (equipmentInfos: EquipmentInfos, intl: IntlShape) => JSX.Element;
+    renderVoltageLevelCharacteristics?: (equipmentInfos: EquipmentInfos) => JSX.Element;
 }
 
 export const CharacteristicsTable: React.FC<CharacteristicsTableProps> = ({
     equipmentInfos,
-    intl,
     renderVoltageLevelCharacteristics,
 }) => {
     return (
@@ -28,17 +26,21 @@ export const CharacteristicsTable: React.FC<CharacteristicsTableProps> = ({
                     <TableHead>
                         <TableRow>
                             <TableCell sx={styles.cell} />
-                            <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {intl.formatMessage({ id: 'characteristic' })}
-                            </TableCell>
-                            <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {intl.formatMessage({ id: 'values' })}
-                            </TableCell>
+                            <CellRender
+                                isLabel={true}
+                                label="characteristic"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            ></CellRender>
+                            <CellRender
+                                isLabel={true}
+                                label="values"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            ></CellRender>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {renderCommonCharacteristics(equipmentInfos, intl)}
-                        {renderVoltageLevelCharacteristics?.(equipmentInfos, intl)}
+                        {renderCommonCharacteristics(equipmentInfos)}
+                        {renderVoltageLevelCharacteristics?.(equipmentInfos)}
                     </TableBody>
                 </Table>
             </TableContainer>

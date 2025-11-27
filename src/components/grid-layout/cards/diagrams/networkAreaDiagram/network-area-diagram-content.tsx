@@ -473,6 +473,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         setMenuAnchorPosition(null);
         setShouldDisplayMenu(false);
     };
+
     /**
      * RENDER
      */
@@ -494,7 +495,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                         equipmentInfos={equipmentInfos}
                         loadFlowStatus={loadFlowStatus}
                         equipmentType={hoveredEquipmentType}
-                        intl={intl}
                     />
                 )}
             </GenericEquipmentPopover>

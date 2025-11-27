@@ -327,7 +327,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
     const displayTooltip = () => {
         const PopoverContent = EquipmentPopoverMap[hoveredEquipmentType] || BranchPopoverContent;
-
         return (
             <GenericEquipmentPopover
                 studyUuid={studyUuid}
@@ -341,7 +340,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                         equipmentInfos={equipmentInfos}
                         loadFlowStatus={loadFlowStatus}
                         equipmentType={hoveredEquipmentType}
-                        intl={intl}
                     />
                 )}
             </GenericEquipmentPopover>

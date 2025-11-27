@@ -8,39 +8,48 @@
 import React from 'react';
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
 import { RunningStatus } from '../utils/running-status';
-import { IntlShape } from 'react-intl';
 import { generateRows, styles } from './generic-equipment-popover-utils';
+import { CellRender } from './cell-render';
 
 interface LimitsTableProps {
     equipmentInfos: any;
-    intl: IntlShape;
     loadFlowStatus?: RunningStatus;
 }
 
-export const LimitsTable: React.FC<LimitsTableProps> = ({ equipmentInfos, intl, loadFlowStatus }) => {
+export const LimitsTable: React.FC<LimitsTableProps> = ({ equipmentInfos, loadFlowStatus }) => {
     return (
         <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>
                 <Table size="small" sx={styles.layout}>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {intl.formatMessage({ id: 'Limit_name' })}
-                            </TableCell>
-                            <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {intl.formatMessage({ id: 'LimitLabel' })}
-                            </TableCell>
-                            <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {intl.formatMessage({ id: 'Loading' })}
-                            </TableCell>
-                            <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {intl.formatMessage({ id: 'Side' })}
-                            </TableCell>
+                            <CellRender
+                                isLabel={true}
+                                label="Limit_name"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            ></CellRender>
+
+                            <CellRender
+                                isLabel={true}
+                                label="LimitLabel"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            ></CellRender>
+                            <CellRender
+                                isLabel={true}
+                                label="Loading"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            ></CellRender>
+
+                            <CellRender
+                                isLabel={true}
+                                label="Side"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            ></CellRender>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {generateRows(equipmentInfos, equipmentInfos?.currentLimits1, '1', intl, loadFlowStatus)}
-                        {generateRows(equipmentInfos, equipmentInfos?.currentLimits2, '2', intl, loadFlowStatus)}
+                        {generateRows(equipmentInfos, equipmentInfos?.currentLimits1, '1', loadFlowStatus)}
+                        {generateRows(equipmentInfos, equipmentInfos?.currentLimits2, '2', loadFlowStatus)}
                     </TableBody>
                 </Table>
             </TableContainer>

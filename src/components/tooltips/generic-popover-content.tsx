@@ -6,7 +6,6 @@
  */
 
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { useIntl } from 'react-intl';
 import { EquipmentPopoverMap } from './equipment-popover-map';
 import RunningStatus from 'components/utils/running-status';
 
@@ -21,8 +20,6 @@ export const GenericPopoverContent: React.FC<GenericPopoverContentProps> = ({
     equipmentInfos,
     loadFlowStatus,
 }) => {
-    const intl = useIntl();
-
     if (!equipmentType) return null;
 
     const PopoverComponent = EquipmentPopoverMap[equipmentType];
@@ -33,7 +30,6 @@ export const GenericPopoverContent: React.FC<GenericPopoverContentProps> = ({
             equipmentType={equipmentType}
             equipmentInfos={equipmentInfos}
             loadFlowStatus={loadFlowStatus}
-            intl={intl}
         />
     );
 };

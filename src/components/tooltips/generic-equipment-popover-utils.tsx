@@ -10,8 +10,8 @@ import { TableCell, TableRow } from '@mui/material';
 import { mergeSx, convertInputValue, FieldType, MuiStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { RunningStatus } from '../utils/running-status';
-import { IntlShape } from 'react-intl';
 import { CurrentLimits } from 'services/network-modification-types';
+import { CellRender } from './cell-render';
 
 export const formatValue = (value: number | string | null, fixed?: number | string | null) => {
     if (value != null && !Number.isNaN(value)) {
@@ -30,59 +30,24 @@ export const formatValue = (value: number | string | null, fixed?: number | stri
 };
 
 /**
- * Render one <TableCell> that can be either a label or a value
- */
-export const renderTableCell = ({
-    label,
-    value,
-    isLabel,
-    colStyle,
-    intl,
-}: {
-    label?: string;
-    value?: string | number;
-    isLabel: boolean;
-    colStyle: React.CSSProperties;
-    intl: IntlShape;
-}) => {
-    const cellLabel = label ? intl.formatMessage({ id: label }) : '';
-    return <TableCell sx={colStyle}>{isLabel ? cellLabel : value}</TableCell>;
-};
-
-/**
  * Render common characteristics
  */
-export const renderCommonCharacteristics = (equipmentInfo: any, intl: IntlShape) => (
+export const renderCommonCharacteristics = (equipmentInfo: any) => (
     <>
         <TableRow>
             <TableCell sx={styles.cell} />
-            {renderTableCell({
-                label: 'seriesResistance',
-                isLabel: true,
-                colStyle: styles.cell,
-                intl,
-            })}
-            {renderTableCell({
-                value: formatValue(equipmentInfo.r, 2),
-                isLabel: false,
-                colStyle: styles.cell,
-                intl,
-            })}
+
+            <CellRender label="seriesResistance" isLabel={true} colStyle={styles.cell} />
+
+            <CellRender value={formatValue(equipmentInfo.r, 2)} isLabel={false} colStyle={styles.cell} />
         </TableRow>
+
         <TableRow>
             <TableCell sx={styles.cell} />
-            {renderTableCell({
-                label: 'seriesReactance',
-                isLabel: true,
-                colStyle: styles.cell,
-                intl,
-            })}
-            {renderTableCell({
-                value: formatValue(equipmentInfo.x, 2),
-                isLabel: false,
-                colStyle: styles.cell,
-                intl,
-            })}
+
+            <CellRender label="seriesReactance" isLabel={true} colStyle={styles.cell} />
+
+            <CellRender value={formatValue(equipmentInfo.x, 2)} isLabel={false} colStyle={styles.cell} />
         </TableRow>
     </>
 );
@@ -108,27 +73,14 @@ export const styles = {
 /**
  * Render voltage-level dependent characteristics (shunt susceptance, etc.)
  */
-export const renderVoltageLevelCharacteristics = (equipmentInfo: any, equipmentType: any, intl: IntlShape) => {
+export const renderVoltageLevelCharacteristics = (equipmentInfo: any, equipmentType: any) => {
     const renderShuntRow = (voltageLevelId: any, value: any, type: any) => (
         <TableRow key={`${voltageLevelId}-${type}`}>
-            {renderTableCell({
-                value: voltageLevelId,
-                isLabel: false,
-                colStyle: styles.cell,
-                intl,
-            })}
-            {renderTableCell({
-                label: 'shuntSusceptance',
-                isLabel: true,
-                colStyle: styles.cell,
-                intl,
-            })}
-            {renderTableCell({
-                value: convertInputValue(type, value)?.toFixed(2),
-                isLabel: false,
-                colStyle: styles.cell,
-                intl,
-            })}
+            <CellRender value={voltageLevelId} isLabel={false} colStyle={styles.cell} />
+
+            <CellRender label="shuntSusceptance" isLabel={true} colStyle={styles.cell} />
+
+            <CellRender value={convertInputValue(type, value)?.toFixed(2)} isLabel={false} colStyle={styles.cell} />
         </TableRow>
     );
 
@@ -149,7 +101,6 @@ export const generateRows = (
     equipmentInfos: any,
     currentLimits: CurrentLimits,
     side: '1' | '2',
-    intl: IntlShape,
     loadFlowStatus?: RunningStatus
 ) => {
     if (!equipmentInfos || !currentLimits) return null;
@@ -158,7 +109,7 @@ export const generateRows = (
         <>
             {currentLimits?.permanentLimit && (
                 <TableRow key={currentLimits.permanentLimit + side}>
-                    <TableCell sx={styles.cell}>{intl.formatMessage({ id: 'PermanentCurrentLimitText' })}</TableCell>
+                    <CellRender isLabel={true} label="PermanentCurrentLimitText" colStyle={styles.cell}></CellRender>
                     <TableCell sx={styles.cell}>{formatValue(Math.round(currentLimits.permanentLimit))}</TableCell>
                     <TableCell
                         sx={mergeSx(styles.cell, {
