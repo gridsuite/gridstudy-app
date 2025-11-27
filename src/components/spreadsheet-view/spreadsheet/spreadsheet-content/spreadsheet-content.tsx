@@ -21,7 +21,7 @@ import { FilterType } from 'types/custom-aggrid-types';
 import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
-import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
+import { PanelType } from 'components/workspace/types/workspace.types';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useNodeAliases } from '../../hooks/use-node-aliases';
 import { useSelector, useDispatch } from 'react-redux';
@@ -202,11 +202,11 @@ export const SpreadsheetContent = memo(
 
         const handleOpenDiagram = useCallback(
             (equipmentId: string) => {
-                const diagramType =
+                const panelType =
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
-                        ? DiagramType.SUBSTATION
-                        : DiagramType.VOLTAGE_LEVEL;
-                dispatch(openSLD({ id: equipmentId, diagramType }));
+                        ? PanelType.SLD_SUBSTATION
+                        : PanelType.SLD_VOLTAGE_LEVEL;
+                dispatch(openSLD({ id: equipmentId, panelType }));
             },
             [dispatch, tableDefinition?.type]
         );

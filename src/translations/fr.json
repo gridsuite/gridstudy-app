@@ -1662,9 +1662,10 @@
     "xOhm":"x (Ω)",
     "importParameters": "Paramètres d'import",
     "workspaces": "Espaces",
-    "resetWorkspaceConfirmation": "Êtes-vous sûr de vouloir réinitialiser cet espace de travail ? Toutes les fenêtres ouvertes seront fermées.",
+    "resetWorkspaceConfirmation": "Êtes-vous sûr de vouloir réinitialiser cet espace de travail ? Tous les panneaux ouverts seront fermés.",
     "renameWorkspace": "Renommer l'espace de travail",
     "workspaceName": "Nom de l'espace de travail",
     "manageWorkspaces": "Gérer les espaces de travail",
-    "reset": "Réinitialiser"
+    "reset": "Réinitialiser",
+    "history": "Historique"
 }

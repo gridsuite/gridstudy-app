@@ -56,8 +56,8 @@ interface SingleLineDiagramContentProps {
     readonly loadingState: boolean;
     readonly visible: boolean;
     readonly diagramParams: VoltageLevelDiagramParams | SubstationDiagramParams;
-    readonly onNextVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
-    readonly onNewVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
+    readonly onNextVoltageLevelDiagram?: (voltageLevelId: string) => void;
+    readonly onNewVoltageLevelDiagram?: (voltageLevelId: string) => void;
 }
 
 type BusMenuState = {
@@ -196,15 +196,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const handleNextVoltageLevelClick: OnNextVoltageCallbackType = useCallback(
         (vlId, event) => {
             if (event.ctrlKey) {
-                onNewVoltageLevelDiagram?.({
-                    type: DiagramType.VOLTAGE_LEVEL,
-                    voltageLevelId: vlId,
-                });
+                onNewVoltageLevelDiagram?.(vlId);
             } else {
-                onNextVoltageLevelDiagram?.({
-                    type: DiagramType.VOLTAGE_LEVEL,
-                    voltageLevelId: vlId,
-                });
+                onNextVoltageLevelDiagram?.(vlId);
             }
         },
         [onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
