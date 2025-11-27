@@ -100,7 +100,7 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
     useEffect(() => {
         if (event && eventDefinition) {
             const formData = Object.fromEntries(
-                Object.entries(eventDefinition).map(([key, value]) => [
+                Object.entries(eventDefinition).map(([key]) => [
                     key,
                     event.properties.find((property) => property.name === key)?.value,
                 ])

@@ -149,15 +149,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
         );
     };
 
-    const doCreateRootNetwork = ({
-        name,
-        tag,
-        description,
-        caseName,
-        caseId,
-        currentParameters,
-        caseFormat,
-    }: FormData) => {
+    const doCreateRootNetwork = ({ name, tag, description, caseId, currentParameters, caseFormat }: FormData) => {
         if (!studyUuid) {
             return;
         }

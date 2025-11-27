@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
+import { CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
@@ -36,20 +36,17 @@ export const getTwoWindingsTransformerEmptyFormData = () => {
     return twoWindingsTransformerEmptyFormData();
 };
 
-export const getTwoWindingsTransformerFormData = (
-    {
-        r = null,
-        x = null,
-        g = null,
-        b = null,
-        ratedS = null,
-        ratedU1 = null,
-        ratedU2 = null,
-        connectivity1 = null,
-        connectivity2 = null,
-    },
-    id = CHARACTERISTICS
-) =>
+export const getTwoWindingsTransformerFormData = ({
+    r = null,
+    x = null,
+    g = null,
+    b = null,
+    ratedS = null,
+    ratedU1 = null,
+    ratedU2 = null,
+    connectivity1 = null,
+    connectivity2 = null,
+}) =>
     getCharacteristicsFormData(
         {
             r,

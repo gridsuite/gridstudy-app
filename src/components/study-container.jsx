@@ -85,7 +85,7 @@ function useStudy(studyUuidRequest) {
                             );
                         }
                     })
-                    .catch((error) => {
+                    .catch(() => {
                         // Handle errors when fetching root networks
                         setErrMessage(
                             intlRef.current.formatMessage(

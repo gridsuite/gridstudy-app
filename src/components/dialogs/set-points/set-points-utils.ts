@@ -14,7 +14,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
-export const getSetPointsEmptyFormData = (isEquipmentModification = false) => ({
+export const getSetPointsEmptyFormData = (_isEquipmentModification = false) => ({
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
 });

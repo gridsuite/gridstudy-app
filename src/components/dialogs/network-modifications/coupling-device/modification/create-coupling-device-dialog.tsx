@@ -144,7 +144,7 @@ export default function CreateCouplingDeviceDialog({
                         );
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
-                    .catch((error: Error) => {
+                    .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
                     });
             } else {

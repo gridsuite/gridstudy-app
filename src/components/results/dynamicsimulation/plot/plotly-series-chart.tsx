@@ -56,7 +56,7 @@ export type PlotlySeriesChartProps = {
 function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Readonly<PlotlySeriesChartProps>) {
     // these states used for responsible
     const plotRef = useRef<CustomPlotParams>(null);
-    const debouncedResizeHandler = useDebounce((entries) => {
+    const debouncedResizeHandler = useDebounce(() => {
         plotRef.current?.resizeHandler?.();
     }, 500);
     const resizeObserverRef = useRef(new ResizeObserver(debouncedResizeHandler));

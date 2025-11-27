@@ -49,7 +49,7 @@ const styles = {
             backgroundColor: theme.palette.background.paper,
         },
     }),
-    labelBox: (theme) => ({
+    labelBox: () => ({
         flexGrow: 1,
         display: 'flex',
         alignItems: 'flex-end',
