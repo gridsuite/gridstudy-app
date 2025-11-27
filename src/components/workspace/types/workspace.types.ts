@@ -61,6 +61,7 @@ export interface PanelState {
     isMinimized: boolean;
     isMaximized: boolean;
     isPinned: boolean;
+    isClosed: boolean;
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;
 }
