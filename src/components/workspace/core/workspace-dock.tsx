@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Box, Tabs, Tab, Theme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import { selectPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
+import { selectOpenPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
 import { closePanel, focusPanel, toggleMinimize } from '../../../redux/slices/workspace-slice';
 import { PanelType } from '../types/workspace.types';
 import type { UUID } from 'node:crypto';
@@ -40,7 +40,7 @@ const styles = {
 
 export const WorkspaceDock = memo(() => {
     const dispatch = useDispatch();
-    const allPanels = useSelector(selectPanels);
+    const allPanels = useSelector(selectOpenPanels);
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);
 

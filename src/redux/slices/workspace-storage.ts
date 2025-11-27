@@ -70,6 +70,7 @@ const panelStateSchema = object({
     isMinimized: boolean().required(),
     isMaximized: boolean().required(),
     isPinned: boolean().default(false),
+    isClosed: boolean().default(false),
     restorePosition: optionalPanelPositionSchema.notRequired(),
     restoreSize: optionalPanelSizeSchema.notRequired(),
 }).required();
