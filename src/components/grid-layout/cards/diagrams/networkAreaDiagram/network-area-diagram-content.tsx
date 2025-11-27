@@ -45,7 +45,6 @@ import {
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
 import { createDiagramConfig, updateDiagramConfig, type DiagramConfigPosition } from 'services/explore';
-import { DiagramType, type VoltageLevelDiagramParams } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
@@ -71,7 +70,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
     readonly visible: boolean;
-    readonly onVoltageLevelClick: (diagramParams: VoltageLevelDiagramParams) => void;
+    readonly onVoltageLevelClick: (voltageLevelId: string) => void;
     readonly onUpdateVoltageLevels: (params: {
         voltageLevelIds: string[];
         voltageLevelToExpandIds: string[];
@@ -171,10 +170,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     setShouldDisplayMenu(true);
                     setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
                 } else {
-                    onVoltageLevelClick({
-                        type: DiagramType.VOLTAGE_LEVEL,
-                        voltageLevelId: equipmentId,
-                    });
+                    onVoltageLevelClick(equipmentId);
                 }
             }
         },
@@ -523,7 +519,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
+                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramLoadflowInvalid : undefined,
                     isEditNadMode && !showLabels ? styles.hideLabels : undefined,
                     isEditNadMode ? styles.nadEditModeCursors : undefined
                 )}

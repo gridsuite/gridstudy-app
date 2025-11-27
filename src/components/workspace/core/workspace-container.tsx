@@ -14,7 +14,7 @@ import { selectPanelIds, selectFocusedPanelId } from '../../../redux/slices/work
 import { WorkspaceDock } from './workspace-dock';
 import { Panel } from './panel';
 import type { SnapRect } from './utils/snap-utils';
-import { saveWorkspacesToStorage } from '../../../redux/slices/workspace-slice';
+import { saveWorkspacesToStorage } from '../../../redux/slices/workspace-storage';
 import type { RootState } from '../../../redux/store';
 
 const styles = {
