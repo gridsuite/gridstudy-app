@@ -36,8 +36,17 @@ export const columnCreationFormSchema = yup.object().shape({
         .number()
         .integer()
         .when(COLUMN_TYPE, ([type]) => {
-            return type === COLUMN_TYPES.NUMBER ? yup.number().integer().required() : yup.number().nullable().integer();
-        }),
+            return type === COLUMN_TYPES.NUMBER
+                ? yup
+                      .number()
+                      .integer()
+                      .required()
+                      .min(0, 'spreadsheet/custom_column/error/precision_0')
+                      .max(100, 'spreadsheet/custom_column/error/precision_100')
+                : yup.number().nullable().integer();
+        })
+        .min(0)
+        .max(100, 'spreadsheet/custom_column/error/precision_100'), //Upper limit before Number.toPrecision error
     [FORMULA]: yup.string().required(),
     [COLUMN_DEPENDENCIES]: yup.array().of(yup.string().required()).required(),
 });
