@@ -20,10 +20,13 @@ import type { AppState } from '../../../redux/reducer';
 
 const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
     let backgroundColor: string;
+    let border: string;
     if (theme.palette.mode === 'light') {
         backgroundColor = isFocused ? theme.palette.grey[200] : 'white';
+        border = `1px solid ${theme.palette.grey[500]}`;
     } else {
         backgroundColor = '#292e33';
+        border = isFocused ? `2px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
     }
 
     return {
@@ -31,11 +34,9 @@ const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
         display: 'flex',
         alignItems: 'center',
         backgroundColor,
-        border:
-            theme.palette.mode === 'light'
-                ? `1px solid ${theme.palette.grey[500]}`
-                : `1px solid ${theme.palette.grey[800]}`,
+        border,
         borderRadius: theme.spacing(2) + ' ' + theme.spacing(2) + ' 0 0',
+        borderBottom: 'none',
         cursor: 'grab',
         userSelect: 'none',
         '&:active': {
