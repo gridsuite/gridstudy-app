@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, memo, type RefObject } from 'react';
-import { Box } from '@mui/material';
+import { useCallback, memo, type RefObject, useState } from 'react';
+import { Box, DialogContentText } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +15,7 @@ import {
     updatePanelPosition,
     updatePanelPositionAndSize,
     snapPanel,
+    closePanel,
 } from '../../../redux/slices/workspace-slice';
 import { selectPanel } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
@@ -24,6 +25,10 @@ import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
+import { PanelType } from '../types/workspace.types';
+import { SelectOptionsDialog } from 'utils/dialogs';
+import { FormattedMessage } from 'react-intl';
+import { cancelLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
 
 const styles = {
     panel: {
@@ -68,7 +73,8 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-
+    const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
+    const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
     const handleDrag = useCallback(
         (e: MouseEvent) => {
             if (!containerRef.current) return;
@@ -106,11 +112,31 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
         [dispatch, panelId]
     );
 
+    const handlePopupClosePanel = useCallback(() => {
+        dispatch(setDirtyComputationParameters(false));
+        setIsLeavingPopupOpen(false);
+
+        dispatch(closePanel(panelId));
+    }, [dispatch, panelId]);
+
+    const handleLeavingPopupClose = useCallback(() => {
+        setIsLeavingPopupOpen(false);
+    }, []);
+
     const handleFocus = useCallback(() => {
         if (!isFocused) {
             dispatch(focusPanel(panelId));
         }
     }, [dispatch, panelId, isFocused]);
+
+    const handleClose = useCallback(() => {
+        // Special behavior for PARAMETERS panel
+        if (panel.type === PanelType.PARAMETERS && isDirtyComputationParameters) {
+            setIsLeavingPopupOpen(true);
+            return false;
+        }
+        return true;
+    }, [isDirtyComputationParameters, panel.type]);
 
     if (!panel) {
         return null;
@@ -121,56 +147,71 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
     const minHeight = config.minSize?.height || 200;
 
     return (
-        <Rnd
-            default={{
-                x: panel.position.x,
-                y: panel.position.y,
-                width: panel.size.width,
-                height: panel.size.height,
-            }}
-            position={{
-                x: panel.position.x,
-                y: panel.position.y,
-            }}
-            size={{
-                width: panel.isMaximized ? '100%' : panel.size.width,
-                height: panel.isMaximized ? '100%' : panel.size.height,
-            }}
-            onDrag={handleDrag as any}
-            onDragStop={handleDragStop}
-            onResizeStop={handleResizeStop}
-            dragHandleClassName="panel-header"
-            disableDragging={panel.isMaximized || panel.isPinned}
-            enableResizing={!panel.isMaximized && !panel.isPinned}
-            bounds="parent"
-            minWidth={minWidth}
-            minHeight={minHeight}
-            style={{
-                display: panel.isMinimized ? 'none' : 'block',
-                zIndex: panel.zIndex,
-            }}
-        >
-            <Box sx={{ ...styles.panel, boxShadow: isFocused ? 14 : 0 }}>
-                <PanelHeader
-                    panelId={panelId}
-                    title={panel.title}
-                    panelType={panel.type}
-                    isPinned={panel.isPinned}
-                    isMaximized={panel.isMaximized}
-                    isFocused={isFocused}
-                    onFocus={handleFocus}
-                />
-                <Box className="panel-content" sx={styles.content}>
-                    {studyUuid && currentRootNetworkUuid && currentNode
-                        ? PANEL_CONTENT_REGISTRY[panel.type]({
-                              panelId,
-                              studyUuid: studyUuid as UUID,
-                              currentRootNetworkUuid: currentRootNetworkUuid as UUID,
-                              currentNode,
-                          })
-                        : null}
+        <>
+            <Rnd
+                default={{
+                    x: panel.position.x,
+                    y: panel.position.y,
+                    width: panel.size.width,
+                    height: panel.size.height,
+                }}
+                position={{
+                    x: panel.position.x,
+                    y: panel.position.y,
+                }}
+                size={{
+                    width: panel.isMaximized ? '100%' : panel.size.width,
+                    height: panel.isMaximized ? '100%' : panel.size.height,
+                }}
+                onDrag={handleDrag as any}
+                onDragStop={handleDragStop}
+                onResizeStop={handleResizeStop}
+                dragHandleClassName="panel-header"
+                disableDragging={panel.isMaximized || panel.isPinned}
+                enableResizing={!panel.isMaximized && !panel.isPinned}
+                bounds="parent"
+                minWidth={minWidth}
+                minHeight={minHeight}
+                style={{
+                    display: panel.isMinimized ? 'none' : 'block',
+                    zIndex: panel.zIndex,
+                }}
+            >
+                <Box sx={{ ...styles.panel, boxShadow: isFocused ? 14 : 0 }}>
+                    <PanelHeader
+                        panelId={panelId}
+                        title={panel.title}
+                        panelType={panel.type}
+                        isPinned={panel.isPinned}
+                        isMaximized={panel.isMaximized}
+                        isFocused={isFocused}
+                        onFocus={handleFocus}
+                        onClose={handleClose}
+                    />
+                    <Box className="panel-content" sx={styles.content}>
+                        {studyUuid && currentRootNetworkUuid && currentNode
+                            ? PANEL_CONTENT_REGISTRY[panel.type]({
+                                  panelId,
+                                  studyUuid: studyUuid as UUID,
+                                  currentRootNetworkUuid: currentRootNetworkUuid as UUID,
+                                  currentNode,
+                              })
+                            : null}
+                    </Box>
                 </Box>
-            </Box>
-        </Rnd>
+            </Rnd>
+            <SelectOptionsDialog
+                title={''}
+                open={isLeavingPopupOpen}
+                onClose={handleLeavingPopupClose}
+                onClick={handlePopupClosePanel}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage id="genericConfirmQuestion" />
+                    </DialogContentText>
+                }
+                validateKey={'dialog.button.leave'}
+            />
+        </>
     );
 });

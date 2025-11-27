@@ -80,22 +80,24 @@ interface PanelHeaderProps {
     isMaximized: boolean;
     isFocused: boolean;
     onFocus: () => void;
+    onClose?: () => boolean;
 }
 
 export const PanelHeader = memo(
-    ({ panelId, title, panelType, isPinned, isMaximized, isFocused, onFocus }: PanelHeaderProps) => {
+    ({ panelId, title, panelType, isPinned, isMaximized, isFocused, onFocus, onClose }: PanelHeaderProps) => {
         const dispatch = useDispatch();
         const intl = useIntl();
         const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
-        const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
         const handleClose = () => {
-            // If it's a parameters panel with unsaved changes, trigger confirmation dialog
-            if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
-                globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
-            } else {
-                dispatch(closePanel(panelId));
+            if (onClose) {
+                const shouldClose = onClose();
+                if (shouldClose === false) {
+                    return;
+                }
             }
+            // Default behavior: close panel
+            dispatch(closePanel(panelId));
         };
 
         return (
