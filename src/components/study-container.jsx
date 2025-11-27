@@ -65,64 +65,50 @@ function useStudy(studyUuidRequest) {
     const intlRef = useIntlRef();
 
     useEffect(() => {
-        hasElementPermission(studyUuidRequest, PermissionType.WRITE)
-            .then((hasWritePermission) => {
-                if (hasWritePermission === false) {
+        const loadStudy = async () => {
+            try {
+                // 1) check accesss right
+                const hasWritePermission = await hasElementPermission(studyUuidRequest, PermissionType.WRITE);
+                if (!hasWritePermission) {
                     setErrMessage(
                         intlRef.current.formatMessage(
                             { id: 'noWritePermissionOnStudy' },
                             { studyUuid: studyUuidRequest }
                         )
                     );
-                } else {
-                    fetchStudy(studyUuidRequest)
-                        .then((res) => {
-                            setStudyUuid(studyUuidRequest);
-                            dispatch(setMonoRootStudy(res.monoRoot));
-
-                            // Fetch root networks and set the first one as the current root network
-                            fetchRootNetworks(studyUuidRequest)
-                                .then((rootNetworks) => {
-                                    if (rootNetworks && rootNetworks.length > 0) {
-                                        // Validate that currentRootNetworkUuid is set
-                                        dispatch(setCurrentRootNetworkUuid(rootNetworks[0].rootNetworkUuid));
-                                        dispatch(setRootNetworks(rootNetworks));
-                                    } else {
-                                        // Handle case where no root networks are available
-                                        setErrMessage(
-                                            intlRef.current.formatMessage(
-                                                { id: 'rootNetworkNotFound' },
-                                                { studyUuid: studyUuidRequest }
-                                            )
-                                        );
-                                    }
-                                })
-                                .catch((error) => {
-                                    // Handle errors when fetching root networks
-                                    setErrMessage(
-                                        intlRef.current.formatMessage(
-                                            { id: 'rootNetworkNotFound' },
-                                            { studyUuid: studyUuidRequest }
-                                        )
-                                    );
-                                });
-                        })
-                        .catch((error) => {
-                            // Handle errors when fetching study existence
-                            if (error.status === HttpStatusCode.NOT_FOUND) {
-                                setErrMessage(
-                                    intlRef.current.formatMessage(
-                                        { id: 'studyNotFound' },
-                                        { studyUuid: studyUuidRequest }
-                                    )
-                                );
-                            } else {
-                                setErrMessage(error.message);
-                            }
-                        });
+                    return;
                 }
-            })
-            .finally(() => setPending(false));
+
+                // 2) fetch study
+                const res = await fetchStudy(studyUuidRequest);
+                setStudyUuid(studyUuidRequest);
+                dispatch(setMonoRootStudy(res.monoRoot));
+
+                // 3) fetch root networks and set the first one as the current root network
+                const rootNetworks = await fetchRootNetworks(studyUuidRequest);
+                if (rootNetworks && rootNetworks.length > 0) {
+                    dispatch(setCurrentRootNetworkUuid(rootNetworks[0].rootNetworkUuid));
+                    dispatch(setRootNetworks(rootNetworks));
+                } else {
+                    setErrMessage(
+                        intlRef.current.formatMessage({ id: 'rootNetworkNotFound' }, { studyUuid: studyUuidRequest })
+                    );
+                }
+            } catch (error) {
+                if (error.status === HttpStatusCode.NOT_FOUND) {
+                    setErrMessage(
+                        intlRef.current.formatMessage({ id: 'studyNotFound' }, { studyUuid: studyUuidRequest })
+                    );
+                } else {
+                    // any other unmanaged error
+                    setErrMessage(error.message);
+                }
+            } finally {
+                setPending(false);
+            }
+        };
+
+        loadStudy();
     }, [studyUuidRequest, dispatch, intlRef]);
 
     return [studyUuid, pending, errMessage];
