@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { ComputingType, mergeSx, type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
@@ -134,11 +134,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
         setDisableApplyModifications(true);
         if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
             cloneVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errCloneVoltageInitModificationMsg',
-                    });
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'errCloneVoltageInitModificationMsg' });
                     setDisableApplyModifications(false);
                 })
                 .finally(() => {
@@ -157,11 +154,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     setVoltageInitModification(modificationList.at(0));
                     setPreviewModificationsDialogOpen(true);
                 })
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errPreviewVoltageInitModificationMsg',
-                    });
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'errPreviewVoltageInitModificationMsg' });
                 })
                 .finally(() => {
                     setDisableApplyModifications(false);

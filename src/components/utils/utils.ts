@@ -16,9 +16,8 @@ import {
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import {
-    APPLICABIlITY,
+    APPLICABILITY_FIELD,
     CURRENT_LIMITS,
-    DELETION_MARK,
     ID,
     LIMITS_PROPERTIES,
     MODIFICATION_TYPE,
@@ -138,7 +137,7 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): T
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [MODIFICATION_TYPE]: null,
+            [MODIFICATION_TYPE]: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
 
@@ -148,7 +147,6 @@ export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimi
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [DELETION_MARK]: limit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
         };
     });
 
@@ -160,7 +158,6 @@ export const formatMapInfosToTemporaryLimitsFormSchema = (
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [DELETION_MARK]: false,
         };
     });
 
@@ -172,7 +169,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsDa
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id + elt.applicability,
                     [NAME]: elt.id,
-                    [APPLICABIlITY]: elt.applicability,
+                    [APPLICABILITY_FIELD]: elt.applicability,
                     [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
                         permanentLimit: elt.permanentLimit,
@@ -309,26 +306,13 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
     return Array.from({ length }, (_, index) => start + index * step);
 }
 
-export const StudyView = {
-    TREE: 'Tree',
-    SPREADSHEET: 'Spreadsheet',
-    RESULTS: 'Results',
-    LOGS: 'Logs',
-    PARAMETERS: 'Parameters',
-};
-
-export const STUDY_VIEWS = [
-    StudyView.TREE,
-    StudyView.SPREADSHEET,
-    StudyView.RESULTS,
-    StudyView.LOGS,
-    StudyView.PARAMETERS,
-];
-
-export type StudyViewType = (typeof StudyView)[keyof typeof StudyView];
-
 export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
     return rows?.map((row) => {
         return { ...row, [SELECTED]: false };
     });
 };
+
+//Escapes regex special characters to avoid misinterpreting user prompts
+export function escapeRegExp(string: string): string {
+    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}

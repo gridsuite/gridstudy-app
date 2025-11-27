@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { Box, Popover, Slide, Tooltip } from '@mui/material';
 import { UseFormReturn } from 'react-hook-form';
 import Button from '@mui/material/Button';
@@ -15,7 +15,7 @@ import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
 import { TreeviewSearchable } from './treeview-searchable';
 import { usePopoverToggle } from './utils/use-popover-toggle';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 
 interface FormulaAutocompleteFieldProps {
@@ -31,27 +31,42 @@ export function FloatingPopoverTreeviewWrapper({
 }: Readonly<FormulaAutocompleteFieldProps>) {
     const [anchorEl, setAnchorEl] = useState<Element | null>(null);
     const [properties, setProperties] = useState<JSONSchema4 | null>(null);
+    const [formulaCursorPosition, setFormulaCursorPosition] = useState<number>(0);
     const quickSearchRef = useRef<HTMLInputElement>(null);
+    const formulaTextRef = useRef<HTMLTextAreaElement | null>(null);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
     useEffect(() => {
         fetchSpreadsheetEquipmentTypeSchema(spreadsheetEquipmentType)
             .then((result) => setProperties(result))
-            .catch((error) => snackError({ headerId: 'FetchingEquipmentSchemaError', messageTxt: error }));
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'FetchingEquipmentSchemaError' }));
     }, [snackError, spreadsheetEquipmentType]);
 
     const { handleKeyDown } = usePopoverToggle(properties, setAnchorEl);
 
+    const handleFormulaButtonClick = (e: React.MouseEvent) => {
+        // Find the formula text field and get the cursor position
+        const anchor = e.currentTarget.closest('[data-popover-anchor]');
+        if (anchor) {
+            const formulaTextElement = anchor.querySelector('textarea') as HTMLTextAreaElement;
+            if (formulaTextElement) {
+                formulaTextRef.current = formulaTextElement;
+                setFormulaCursorPosition(formulaTextElement.selectionStart || 0);
+            }
+        }
+        setAnchorEl(anchor);
+    };
+
     const open = Boolean(anchorEl);
     return (
         <>
-            <Box onKeyDown={handleKeyDown} sx={{ position: 'relative' }}>
+            <Box onKeyDown={handleKeyDown} sx={{ position: 'relative' }} data-popover-anchor>
                 {children}
                 <Tooltip title={intl.formatMessage({ id: 'EquipmentSchemaPopoverSchema' })}>
                     <Box sx={{ position: 'absolute', left: '-2.5rem', top: 0 }}>
                         <Button
-                            onClick={(e) => setAnchorEl(e.currentTarget.closest('[data-popover-anchor]'))}
+                            onClick={handleFormulaButtonClick}
                             disabled={properties === null}
                             sx={{
                                 minWidth: 0,
@@ -85,6 +100,8 @@ export function FloatingPopoverTreeviewWrapper({
                     setAnchorEl={setAnchorEl}
                     inputRef={quickSearchRef}
                     equipmentType={spreadsheetEquipmentType}
+                    formulaCursorPosition={formulaCursorPosition}
+                    formulaTextRef={formulaTextRef}
                 />
             </Popover>
         </>

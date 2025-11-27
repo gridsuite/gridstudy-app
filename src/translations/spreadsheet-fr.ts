@@ -45,7 +45,12 @@ const spreadsheetFr = {
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/filter': 'En tant que filtre',
     'spreadsheet/save/options/collection': 'Collection',
-    'spreadsheet/save/options/csv': 'Export CSV',
+    'spreadsheet/save/options/csv/export': 'Export CSV',
+    'spreadsheet/save/options/csv/clipboard': 'Copie CSV',
+    'spreadsheet/save/options/csv/clipboard/success':
+        'Le contenu de la feuille a été copié dans le presse-papier système',
+    'spreadsheet/save/options/csv/clipboard/error':
+        "Le contenu de la feuille n'a pas pu être copié dans le presse-papier système",
     'spreadsheet/save/dialog_title': 'Enregistrer un modèle de tableur',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Enregistrer une collection de tableurs',
     'spreadsheet/save/error_message': 'Une erreur est survenue lors de la création du modèle de tableur',
@@ -153,6 +158,22 @@ const spreadsheetFr = {
     'spreadsheet/calculation/average_abbrev': 'Moy',
     'spreadsheet/calculation/min_abbrev': 'Min',
     'spreadsheet/calculation/max_abbrev': 'Max',
+
+    //Formula errors
+    'spreadsheet/formula/error': '#ERREUR',
+    'spreadsheet/formula/import/disabled': 'La fonction import est désactivée',
+    'spreadsheet/formula/createUnit/disabled': 'La fonction createUnit est désactivée',
+    'spreadsheet/formula/evaluate/disabled': 'La fonction evaluate est désactivée',
+    'spreadsheet/formula/parse/disabled': 'La fonction parse est désactivée',
+    'spreadsheet/formula/simplify/disabled': 'La fonction simplify est désactivée',
+    'spreadsheet/formula/derivative/disabled': 'La fonction derivative est désactivée',
+    'spreadsheet/formula/compile/disabled': 'La fonction compile est désactivée',
+    'spreadsheet/formula/help/disabled': 'La fonction help est désactivée',
+    'spreadsheet/formula/length/error': 'La fonction length attend une donnée de type tableau ou objet',
+    'spreadsheet/formula/type/number': 'La formule doit exprimer une donnée numérique',
+    'spreadsheet/formula/type/boolean': 'La formule doit exprimer une donnée booléenne',
+    'spreadsheet/formula/type/enum': 'La formule doit exprimer une donnée textuelle ou numérique',
+    'spreadsheet/formula/type/unknown': 'Type de donnée inconnu',
 
     // Column types
     TEXT: 'Texte',

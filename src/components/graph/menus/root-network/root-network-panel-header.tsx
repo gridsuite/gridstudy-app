@@ -14,7 +14,7 @@ import {
     LeftPanelOpenIcon,
     type MuiStyles,
     OverflowableText,
-    type Parameter,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
@@ -22,30 +22,29 @@ import { FileUpload } from '@mui/icons-material';
 import RootNetworkDialog, { FormData } from '../../../dialogs/root-network/root-network-dialog';
 import { createRootNetwork } from 'services/root-network';
 import type { UUID } from 'node:crypto';
-import { getCaseImportParameters, GetCaseImportParametersReturn } from 'services/network-conversion';
-import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 import { useDispatch, useSelector } from 'react-redux';
 import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
+import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 
 const styles = {
     headerPanel: (theme) => ({
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(1),
+        padding: theme.spacing(0.5),
     }),
     rootNameTitle: {
         fontWeight: 'bold',
     },
     headerLeftContainer: (theme) => ({
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.spacing(0.5),
         display: 'flex',
         alignItems: 'center',
         flexGrow: 1,
     }),
     uploadButton: (theme) => ({
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.spacing(0.5),
     }),
 } as const satisfies MuiStyles;
 
@@ -89,10 +88,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                     setStudyName(studyName);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'LoadStudyAndParentsInfoError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
                 });
         }
         setRootNetworkConfirmCreationDialogOpen(true);
@@ -153,40 +149,36 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
         );
     };
 
-    const doCreateRootNetwork = ({ name, tag, description, caseName, caseId }: FormData) => {
+    const doCreateRootNetwork = ({
+        name,
+        tag,
+        description,
+        caseName,
+        caseId,
+        currentParameters,
+        caseFormat,
+    }: FormData) => {
         if (!studyUuid) {
             return;
         }
         setIsRootNetworksProcessing(true);
-        getCaseImportParameters(caseId as UUID)
-            .then((params: GetCaseImportParametersReturn) => {
-                // Format the parameters
-                const formattedParams = formatCaseImportParameters(params.parameters);
-                const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
-                // Call createRootNetwork with formatted parameters
-                createRootNetwork(studyUuid, {
-                    name,
-                    tag,
-                    description,
-                    importParametersRaw: customizedCurrentParameters,
-                    caseInfos: {
-                        originalCaseUuid: caseId as UUID,
-                        caseFormat: params.formatName,
-                    },
-                });
+        createRootNetwork(studyUuid, {
+            name,
+            tag,
+            description,
+            importParametersRaw: currentParameters,
+            caseInfos: {
+                originalCaseUuid: caseId as UUID,
+                caseFormat: caseFormat ?? null,
+            },
+        }).catch((error) => {
+            snackWithFallback(snackError, error, { headerId: 'createRootNetworksError' });
+            setIsRootNetworksProcessing(false);
+        });
 
-                if (isMonoRootStudy && rootNetworks.length === 1) {
-                    dispatch(setMonoRootStudy(false));
-                }
-            })
-
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'createRootNetworksError',
-                });
-                setIsRootNetworksProcessing(false);
-            });
+        if (isMonoRootStudy && rootNetworks.length === 1) {
+            dispatch(setMonoRootStudy(false));
+        }
     };
     const minimizeRootNetworkPanel = useCallback(() => {
         setIsSearchActive(false);
@@ -204,6 +196,9 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
             <Box sx={styles.headerPanel}>
                 <Box sx={styles.headerLeftContainer}>
                     <OverflowableText sx={styles.rootNameTitle} text={intl.formatMessage({ id: 'root' })} />
+                    {isRootNetworkPanelMinimized && !isMonoRootStudy && (
+                        <RootNetworkMinimizedPanelContent isRootNetworkPanelMinimized={isRootNetworkPanelMinimized} />
+                    )}
 
                     <Tooltip title={<FormattedMessage id={'addNetwork'} />}>
                         <span>
@@ -213,12 +208,12 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                                 sx={styles.uploadButton}
                                 disabled={rootNetworks.length >= MAX_ROOT_NETWORKS_NUMBER || isRootNetworksProcessing}
                             >
-                                <FileUpload />
+                                <FileUpload fontSize="small" />
                             </IconButton>
                         </span>
                     </Tooltip>
                     <IconButton size={'small'} onClick={openSearch}>
-                        <SearchIcon />
+                        <SearchIcon fontSize="small" />
                     </IconButton>
                 </Box>
                 <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>

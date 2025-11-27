@@ -59,7 +59,7 @@ import {
     setCurrentReactiveCapabilityCurveTable,
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ExtendedEquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -286,10 +286,7 @@ const VscModificationDialog: React.FC<any> = ({
             isUpdate: !!editData,
             modificationUuid: editData?.uuid ?? null,
         }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'VscModificationError',
-            });
+            snackWithFallback(snackError, error, { headerId: 'VscModificationError' });
         });
     };
 

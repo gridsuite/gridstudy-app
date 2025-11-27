@@ -10,23 +10,21 @@ import { equipmentStyles, TagRenderer, TagRendererProps } from '@gridsuite/commo
 import { IconButton } from '@mui/material';
 import { GpsFixed as GpsFixedIcon, Timeline as TimelineIcon } from '@mui/icons-material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
-import { centerOnSubstation, openDiagram } from '../../redux/actions';
+import { centerOnSubstation } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
-import { DiagramType } from '../grid-layout/cards/diagrams/diagram.type';
+import { openNAD } from '../../redux/slices/workspace-slice';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
     disablCenterSubstation: boolean;
-    onOpenNetworkAreaDiagram?: (elementId?: string) => void;
 }
 
 export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> = ({
     element,
     onClose,
     disablCenterSubstation,
-    onOpenNetworkAreaDiagram,
     ...tagRendererProps
 }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -63,12 +61,11 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
 
     const openNetworkAreaDiagramCB = useCallback(
         (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
-            dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
-            onClose?.();
             e.stopPropagation();
-            onOpenNetworkAreaDiagram?.(element.id);
+            onClose?.();
+            dispatch(openNAD({ name: element.id, initialVoltageLevelIds: [element.id] }));
         },
-        [dispatch, element.id, onClose, onOpenNetworkAreaDiagram]
+        [dispatch, element.id, onClose]
     );
 
     if (

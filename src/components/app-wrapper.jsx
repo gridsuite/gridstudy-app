@@ -35,6 +35,10 @@ import {
     filterExpertFr,
     equipmentSearchEn,
     equipmentSearchFr,
+    equipmentShortEn,
+    equipmentShortFr,
+    equipmentTagEn,
+    equipmentTagFr,
     directoryItemsInputEn,
     directoryItemsInputFr,
     treeviewFinderEn,
@@ -69,10 +73,13 @@ import {
     MAP_BASEMAP_MAPBOX,
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
+    businessErrorsFr,
+    businessErrorsEn,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
 import { Provider, useSelector } from 'react-redux';
+import { store } from '../redux/store';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import messages_plugins from '../plugins/translations';
@@ -96,7 +103,6 @@ import events_locale_fr from '../translations/dynamic/events-locale-fr';
 import events_locale_en from '../translations/dynamic/events-locale-en';
 import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
-import { store } from '../redux/store';
 import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
@@ -382,6 +388,8 @@ const messages = {
         ...elementSearchEn,
         ...filterExpertEn,
         ...equipmentSearchEn,
+        ...equipmentShortEn,
+        ...equipmentTagEn,
         ...directoryItemsInputEn,
         ...cardErrorBoundaryEn,
         ...flatParametersEn,
@@ -403,6 +411,7 @@ const messages = {
         ...parametersEn,
         ...useUniqueNameValidationEn,
         ...filterEn,
+        ...businessErrorsEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -418,6 +427,8 @@ const messages = {
         ...elementSearchFr,
         ...filterExpertFr,
         ...equipmentSearchFr,
+        ...equipmentShortFr,
+        ...equipmentTagFr,
         ...directoryItemsInputFr,
         ...cardErrorBoundaryFr,
         ...flatParametersFr,
@@ -439,6 +450,7 @@ const messages = {
         ...parametersFr,
         ...useUniqueNameValidationFr,
         ...filterFr,
+        ...businessErrorsFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

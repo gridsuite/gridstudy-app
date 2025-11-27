@@ -8,7 +8,7 @@
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, MuiStyles, useSnackMessage, snackWithFallback } from '@gridsuite/commons-ui';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
@@ -24,6 +24,8 @@ import { FilterType, PaginationType } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
+import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import { PccMinExportButton } from './pcc-min-export-button';
 
 interface PccMinResultProps {
     studyUuid: UUID;
@@ -32,6 +34,22 @@ interface PccMinResultProps {
     globalFilters?: GlobalFilters;
     customTablePaginationProps: any;
 }
+
+const styles = {
+    gridContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    csvExport: {
+        display: 'flex',
+        alignItems: 'baseline',
+        marginTop: '-45px',
+    },
+    grid: {
+        flexGrow: '1',
+    },
+} as const satisfies MuiStyles;
 
 export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     studyUuid,
@@ -60,6 +78,8 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     const { filters } = useFilterSelector(FilterType.PccMin, PCCMIN_RESULT);
     const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { page, rowsPerPage } = pagination;
+    const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+    const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -112,12 +132,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                     setCount(totalElements);
                 }
             })
-            .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'PccMinResultsError',
-                })
-            )
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'PccMinResultsError' }))
             .finally(() => {
                 if (isMounted) {
                     setIsFetching(false);
@@ -143,10 +158,24 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     ]);
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box sx={styles.gridContainer}>
+            <Box sx={styles.csvExport}>
+                <Box style={styles.grid}></Box>
+                <PccMinExportButton
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    csvHeaders={csvHeaders}
+                    globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
+                    disabled={isCsvButtonDisabled}
+                />
+            </Box>
+
             <PccMinResultTable
                 result={result}
                 isFetching={isFetching}
+                setCsvHeaders={setCsvHeaders}
+                setIsCsvButtonDisabled={setIsCsvButtonDisabled}
                 onFilter={memoizedSetPageCallback}
                 filters={filters}
             />

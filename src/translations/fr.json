@@ -4,7 +4,7 @@
     "debug.header.fileError": "Échec du téléchargement des données de calcul",
     "export.message.started": "Export du {fileName} a commencé",
     "export.message.succeeded": "Export du {fileName} a réussi",
-    "export.message.failed": "Échec du téléchargement du fichier {error}",
+    "export.message.failed": "Échec du téléchargement du fichier",
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
@@ -27,11 +27,16 @@
 
     "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
-    "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
-    "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
-    "CopiedModificationInvalidationMessageFromAnotherStudy": "Suite à un changement des modifications dans une autre étude, le contenu du presse papier a été supprimé",
-    "CopiedModificationUpdateMessageFromAnotherStudy": "Suite à la copie de modifications dans une autre étude, le presse papier a été modifié",
-    "CopiedModificationInvalidationMessageAfterTabClosure": "Suite à la fermeture de l'onglet d'une autre étude, le presse papier a été supprimé",
+    "copiedNodeInvalidationMsg": "Contenu du presse-papier supprimé, suite à un changement dans les noeuds",
+    "copiedNodeInvalidationMsgFromOtherStudy": "Contenu du presse-papier supprimé, suite à un changement dans les noeuds dans une autre étude",
+    "copiedNodeInvalidationMsgFromStudyClosure": "Contenu du presse-papier supprimé, suite à la fermeture d'une étude",
+    "copiedNodeUpdateMsg": "Contenu du presse-papier mis à jour, suite à la copie d'un noeud dans une autre étude",
+
+    "copiedModificationsInvalidationMsg": "Contenu du presse-papier supprimé, suite à un changement dans les modifications",
+    "copiedModificationsInvalidationMsgFromOtherStudy": "Contenu du presse-papier supprimé, suite à un changement dans les modifications dans une autre étude",
+    "copiedModificationsInvalidationMsgFromStudyClosure": "Contenu du presse-papier supprimé, suite à la fermeture d'une étude",
+    "copiedModificationsUpdateMsg": "Contenu du presse-papier mis à jour, suite à la copie de modifications dans une autre étude",
+
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "download.fileName": "Nom de fichier",
@@ -85,7 +90,9 @@
     "Map": "Carte",
     "Tree": "Arbre",
     "modifications": "Modifications",
+    "modificationsForbiddenOnRootNode": "Modifications interdites sur le noeud racine",
     "images": "Images",
+    "panelsCount": "{count, plural, =0 {aucun panneau} =1 {# panneau} other {# panneaux}}",
     "NetworkVisualizations": "Images réseau",
     "None": "Aucun",
     "EmptyField": "Vider le champ",
@@ -153,7 +160,7 @@
     "b1": "Susceptance parallèle 1 (μS)",
     "g2": "Conductance parallèle 2 (μS)",
     "b2": "Susceptance parallèle 2 (μS)",
-    "characteristic": "Carac.",
+    "characteristic": "Caractéristique",
     "values": "Valeurs",
     "seriesResistance": "R (Ω)",
     "seriesReactance": "X (Ω)",
@@ -702,7 +709,7 @@
     "stepUpTransformerX": "Réactance du transformateur (Ω)",
     "TransformerReactanceForm": "Réactance du transformateur",
     "FrequencyRegulation": "Compensation",
-    "Droop": "Participation",
+    "Droop": "Statisme",
     "PlannedActivePowerSetPointForm": "Puissance imposée",
     "plannedActivePowerSetPoint": "P imposée (MW)",
     "MarginalCost": "Coût de démarrage",
@@ -1035,7 +1042,6 @@
 
     "CopyFromExisting": "Copier depuis un ouvrage existant",
     "EquipmentCopied": "Données copiées depuis l'ouvrage {equipmentId}",
-    "EquipmentCopyFailed404": "Erreur lors de la copie de l'ouvrage : l'ouvrage n'a pas été trouvé",
     "EquipmentCopyFailed": "Erreur lors de la copie de l'ouvrage",
 
     "insertNodeAbove": "Au-dessus",
@@ -1528,6 +1534,8 @@
     "previousStatus": "État précédent",
     "currentStatus": "État modifié",
     "Open": "Ouvert",
+    "areSwitchesOpen": "Ouverts",
+    "areSwitchesClosed": "Fermés",
     "Closed": "Fermé",
     "GridLayoutPanel": "Grille des images",
     "GridLayoutPanelAndTree": "Grille des images et arbre décisionnel",
@@ -1651,5 +1659,14 @@
     "PccMinTri": "Pcc min (MVA) ",
     "IccMinTri": "Icc min (kA)",
     "rOhm": "r (Ω)",
-    "xOhm":"x (Ω)"
+    "xOhm":"x (Ω)",
+    "importParameters": "Paramètres d'import",
+    "workspaces": "Espaces",
+    "resetWorkspaceConfirmation": "Êtes-vous sûr de vouloir réinitialiser cet espace de travail ? Tous les panneaux ouverts seront fermés.",
+    "renameWorkspace": "Renommer l'espace de travail",
+    "workspaceName": "Nom de l'espace de travail",
+    "manageWorkspaces": "Gérer les espaces de travail",
+    "reset": "Réinitialiser",
+    "history": "Historique",
+    "activePowerControlTooltip": "Clé de distribution de la puissance au nœud bilan : maxP/Statisme, statisme par défaut = 4 (valable pour le mode compensation proportionnel à la puissance maximale des groupes)"
 }

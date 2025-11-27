@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { CheckBoxList, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -37,7 +37,7 @@ import {
     fetchDynamicSimulationEvents,
 } from '../../../../services/study/dynamic-simulation';
 
-const EventModificationScenarioEditor = () => {
+const EventModificationScenarioEditor = memo(() => {
     const intl = useIntl();
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -128,9 +128,7 @@ const EventModificationScenarioEditor = () => {
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -186,11 +184,8 @@ const EventModificationScenarioEditor = () => {
             return;
         }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((errMsg) => {
-            snackError({
-                messageTxt: errMsg,
-                headerId: 'DynamicSimulationEventDeleteError',
-            });
+        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((error) => {
+            snackWithFallback(snackError, error, { headerId: 'DynamicSimulationEventDeleteError' });
         });
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
@@ -372,6 +367,6 @@ const EventModificationScenarioEditor = () => {
             )}
         </>
     );
-};
+});
 
 export default EventModificationScenarioEditor;
