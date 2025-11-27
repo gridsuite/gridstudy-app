@@ -27,12 +27,17 @@ export const selectPanelMetadata = createSelector(
 
 export const selectIsPanelTypeOpen = createSelector(
     [selectPanelsRecord, (_state: RootState, panelType: PanelType) => panelType],
-    (panels, panelType): boolean => Object.values(panels).some((p) => p.type === panelType)
+    (panels, panelType): boolean => Object.values(panels).some((p) => p.type === panelType && !p.isClosed)
 );
 
-export const selectPanelIds = createSelector([selectPanelsRecord], (panels) => Object.keys(panels) as UUID[]);
+export const selectOpenPanelIds = createSelector(
+    [selectPanelsRecord],
+    (panels) => Object.keys(panels).filter((id) => !panels[id as UUID].isClosed) as UUID[]
+);
 
-export const selectPanels = createSelector([selectPanelsRecord], (panels) => Object.values(panels));
+export const selectOpenPanels = createSelector([selectPanelsRecord], (panels) =>
+    Object.values(panels).filter((p) => !p.isClosed)
+);
 
 export const selectFocusedPanelId = createSelector(
     [getActiveWorkspace],

@@ -36,7 +36,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import { PanelType } from '../types/workspace.types';
 import { togglePanel, closePanel, openSLD, openNAD } from '../../../redux/slices/workspace-slice';
-import { selectIsPanelTypeOpen, selectPanels } from '../../../redux/slices/workspace-selectors';
+import { selectIsPanelTypeOpen, selectOpenPanels } from '../../../redux/slices/workspace-selectors';
 
 const styles = {
     container: {
@@ -82,7 +82,7 @@ export const WorkspaceToolbar = () => {
         selectIsPanelTypeOpen(state, PanelType.EVENT_SCENARIO)
     );
     const isMapOpen = useSelector((state: RootState) => selectIsPanelTypeOpen(state, PanelType.MAP));
-    const allPanels = useSelector(selectPanels);
+    const allPanels = useSelector(selectOpenPanels);
 
     // Close EVENT_SCENARIO panel when developer mode is disabled
     useEffect(() => {
