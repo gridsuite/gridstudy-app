@@ -10,12 +10,13 @@ import { Box, IconButton, Theme, Typography } from '@mui/material';
 import { Close, Minimize, PushPin, PushPinOutlined, Fullscreen, FullscreenExit } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { closePanel, toggleMinimize, toggleMaximize, togglePin } from '../../../redux/slices/workspace-slice';
 import type { UUID } from 'node:crypto';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
+import type { AppState } from '../../../redux/reducer';
 
 const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
     let backgroundColor: string;
@@ -86,6 +87,16 @@ export const PanelHeader = memo(
         const dispatch = useDispatch();
         const intl = useIntl();
         const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
+        const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
+
+        const handleClose = () => {
+            // If it's a parameters panel with unsaved changes, trigger confirmation dialog
+            if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
+                window.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
+            } else {
+                dispatch(closePanel(panelId));
+            }
+        };
 
         return (
             <Box onMouseDown={onFocus} className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused)}>
@@ -137,7 +148,7 @@ export const PanelHeader = memo(
                         className="panel-header-close-button"
                         size="small"
                         sx={styles.iconButton}
-                        onClick={() => dispatch(closePanel(panelId))}
+                        onClick={handleClose}
                         onMouseDown={(e) => e.stopPropagation()}
                         disabled={isPinned}
                     >
