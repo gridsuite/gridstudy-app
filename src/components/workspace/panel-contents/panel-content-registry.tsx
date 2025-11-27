@@ -14,7 +14,8 @@ import { isNodeBuilt } from '../../graph/util/model-functions';
 import { PanelType } from '../types/workspace.types';
 import type { UUID } from 'node:crypto';
 import { NadPanelContent } from './diagrams/nad/nad-panel-content';
-import { SldPanelContent } from './diagrams/sld/sld-panel-content';
+import { VoltageLevelPanelContent } from './diagrams/sld/voltage-level-panel-content';
+import { SubstationPanelContent } from './diagrams/sld/substation-panel-content';
 import { MapPanelContent } from './map-panel-content';
 import { TreePanelContent } from './tree-panel-content';
 import NodeEditor from 'components/graph/menus/network-modifications/node-editor';
@@ -57,8 +58,17 @@ export const PANEL_CONTENT_REGISTRY: Record<PanelType, PanelRenderer> = {
 
     [PanelType.PARAMETERS]: () => <ParametersTabs />,
 
-    [PanelType.SLD]: ({ panelId, studyUuid, currentNode, currentRootNetworkUuid }) => (
-        <SldPanelContent
+    [PanelType.SLD_VOLTAGE_LEVEL]: ({ panelId, studyUuid, currentNode, currentRootNetworkUuid }) => (
+        <VoltageLevelPanelContent
+            panelId={panelId}
+            studyUuid={studyUuid}
+            currentNodeId={currentNode.id}
+            currentRootNetworkUuid={currentRootNetworkUuid}
+        />
+    ),
+
+    [PanelType.SLD_SUBSTATION]: ({ panelId, studyUuid, currentNode, currentRootNetworkUuid }) => (
+        <SubstationPanelContent
             panelId={panelId}
             studyUuid={studyUuid}
             currentNodeId={currentNode.id}
