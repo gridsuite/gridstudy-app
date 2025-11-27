@@ -1666,12 +1666,13 @@
     "xOhm":"x (Ω)",
     "importParameters": "Import parameters",
     "workspaces": "Workspaces",
-    "resetWorkspaceConfirmation": "Are you sure you want to reset this workspace? All open windows will be closed.",
+    "resetWorkspaceConfirmation": "Are you sure you want to reset this workspace? All open panels will be closed.",
     "renameWorkspace": "Rename Workspace",
     "workspaceName": "Workspace Name",
     "manageWorkspaces": "Manage workspaces",
     "window": "window",
     "windows": "windows",
     "reset": "Reset",
-    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default drrop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)"
+    "history": "History",
+    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default drop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)"
  }

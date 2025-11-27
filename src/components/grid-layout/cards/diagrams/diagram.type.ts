@@ -49,11 +49,11 @@ export type DiagramBase = {
 
 export type VoltageLevelDiagram = DiagramBase & {
     type: DiagramType.VOLTAGE_LEVEL;
-    voltageLevelId: string;
+    diagramId: string;
 };
 export type SubstationDiagram = DiagramBase & {
     type: DiagramType.SUBSTATION;
-    substationId: string;
+    diagramId: string;
 };
 export type NetworkAreaDiagram = DiagramBase & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
