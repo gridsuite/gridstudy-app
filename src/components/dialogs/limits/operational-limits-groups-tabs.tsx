@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Tab, Tabs } from '@mui/material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     LIMITS_PROPERTIES,
@@ -131,7 +131,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         );
 
         return (
-            <>
+            <Grid>
                 <Tabs
                     orientation="vertical"
                     variant="scrollable"
@@ -171,7 +171,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     appendToLimitsGroups={appendToLimitsGroups}
                     removeLimitsGroups={removeLimitsGroups}
                 />
-            </>
+            </Grid>
         );
     }
 );

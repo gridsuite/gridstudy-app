@@ -152,9 +152,6 @@ export function LimitsPane({
                             <AddIcon />
                         </IconButton>
                     </Box>
-                </Grid>
-                <Grid container item xs={6.25} />
-                <Grid item xs={4}>
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
                         parentFormName={id}
