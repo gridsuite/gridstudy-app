@@ -19,7 +19,7 @@ import { updateSpreadsheetParameters } from '../../../../services/study/spreadsh
 import { spreadsheetStyles } from '../../spreadsheet.style';
 
 const styles = {
-    headers: (theme) => ({
+    headers: () => ({
         backgroundColor: 'transparent',
     }),
 } as const satisfies MuiStyles;
