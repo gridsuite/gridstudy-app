@@ -17,6 +17,15 @@ import {
     SLDPanelMetadata,
 } from '../../components/workspace/types/workspace.types';
 
+// ==================== Utilities ====================
+export const isDiagramPanel = (panelType: PanelType): boolean => {
+    return (
+        panelType === PanelType.SLD_VOLTAGE_LEVEL ||
+        panelType === PanelType.SLD_SUBSTATION ||
+        panelType === PanelType.NAD
+    );
+};
+
 // ==================== Workspace ====================
 export const createDefaultWorkspaces = (): Record<UUID, Workspace> => {
     const workspaces: Record<UUID, Workspace> = {};
@@ -44,6 +53,7 @@ export const createDefaultWorkspaces = (): Record<UUID, Workspace> => {
                 isMinimized: false,
                 isMaximized: true,
                 isPinned: false,
+                isClosed: false,
             };
 
             workspace.focusedPanelId = treeId;
@@ -95,6 +105,7 @@ export const createPanel = (
         isMinimized: false,
         isMaximized: false,
         isPinned: false,
+        isClosed: false,
     };
     workspace.focusedPanelId = newId;
     return newId;
@@ -115,6 +126,7 @@ export const bringToFront = (workspace: Workspace, panelId: UUID) => {
 export const findAndFocusPanel = (workspace: Workspace, panelType: PanelType): boolean => {
     const existingPanel = Object.values(workspace.panels).find((p) => p.type === panelType);
     if (existingPanel) {
+        existingPanel.isClosed = false;
         bringToFront(workspace, existingPanel.id);
         return true;
     }
@@ -125,6 +137,20 @@ export const deletePanel = (workspace: Workspace, panelId: UUID): void => {
     delete workspace.panels[panelId];
     if (workspace.focusedPanelId === panelId) {
         workspace.focusedPanelId = null;
+    }
+};
+
+export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
+    const panel = workspace.panels[panelId];
+    if (!panel) return;
+
+    if (isDiagramPanel(panel.type)) {
+        deletePanel(workspace, panelId);
+    } else {
+        panel.isClosed = true;
+        if (workspace.focusedPanelId === panelId) {
+            workspace.focusedPanelId = null;
+        }
     }
 };
 
