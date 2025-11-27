@@ -23,7 +23,7 @@ import {
     setRootNetworks,
     studyUpdated,
 } from '../redux/actions';
-import { initializeWorkspaces, loadWorkspacesFromStorage } from '../redux/slices/workspace-slice';
+import { initializeWorkspaces } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
@@ -53,6 +53,7 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
+import { loadWorkspacesFromStorage } from 'redux/slices/workspace-storage';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();

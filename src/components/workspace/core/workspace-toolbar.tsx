@@ -37,7 +37,6 @@ import type { RootState } from '../../../redux/store';
 import { PanelType } from '../types/workspace.types';
 import { togglePanel, closePanel, openSLD, openNAD } from '../../../redux/slices/workspace-slice';
 import { selectIsPanelTypeOpen, selectPanels } from '../../../redux/slices/workspace-selectors';
-import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 
 const styles = {
     container: {
@@ -110,9 +109,9 @@ export const WorkspaceToolbar = () => {
     const handleSearchEquipment = (equipment: EquipmentInfos) => {
         if (equipment.type === EquipmentType.VOLTAGE_LEVEL || equipment.voltageLevelId) {
             const vlId = equipment.voltageLevelId || equipment.id;
-            dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
+            dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
         } else if (equipment.type === EquipmentType.SUBSTATION) {
-            dispatch(openSLD({ id: equipment.id, diagramType: DiagramType.SUBSTATION }));
+            dispatch(openSLD({ id: equipment.id, panelType: PanelType.SLD_SUBSTATION }));
         }
     };
 
