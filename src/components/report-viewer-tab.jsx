@@ -19,7 +19,7 @@ import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { ReportType } from 'utils/report/report.type';
 import { sortSeverityList } from 'utils/report/report-severity';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { Box, Switch } from '@mui/material';
+import { Paper, Switch } from '@mui/material';
 
 const styles = {
     div: {
@@ -28,6 +28,11 @@ const styles = {
     },
     reportOnlyNode: {
         margin: '5px',
+    },
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
     },
 };
 
@@ -91,7 +96,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
             {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
             {!disabled && !!report && (
                 <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <Paper sx={styles.container}>
                         <FormControlLabel
                             sx={styles.reportOnlyNode}
                             control={
@@ -114,7 +119,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                             severities={severities}
                             resetFilters={resetFilters}
                         />
-                    </Box>
+                    </Paper>
                 </WaitingLoader>
             )}
         </>

@@ -97,6 +97,11 @@ declare module '@mui/material/styles' {
         formFiller: {
             background: string;
         };
+        workspace: {
+            panel: {
+                background: string;
+            };
+        };
     }
     export interface Theme extends MuiTheme, Required<ThemeExtension> {}
 
