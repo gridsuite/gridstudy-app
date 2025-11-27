@@ -13,6 +13,7 @@ import { PARAMS_LOADED } from '../utils/config-params';
 import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
+    networkModificationTreeNodesUpdated,
     openStudy,
     resetEquipmentsPostComputation,
     setCurrentRootNetworkUuid,
@@ -37,7 +38,7 @@ import NetworkModificationTreeModel from './graph/network-modification-tree-mode
 import { getFirstNodeOfType } from './graph/util/model-functions';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { fetchNetworkModificationTree, fetchNetworkModificationTreeNode } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
@@ -271,9 +272,26 @@ export function StudyContainer() {
             }
             displayErrorNotifications(eventData);
             dispatch(studyUpdated(eventData));
+
+            // Handle build status updates globally so all workspaces open in other browser tabs update currentTreeNode
+            // This fixes the issue where tabs without tree panel don't get updates
+            if (
+                updateTypeHeader === NotificationType.NODE_BUILD_STATUS_UPDATED &&
+                eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current
+            ) {
+                // Fetch updated nodes and dispatch to Redux to sync currentTreeNode
+                const updatedNodeIds = eventData.headers.nodes;
+                Promise.all(
+                    updatedNodeIds.map((nodeId) =>
+                        fetchNetworkModificationTreeNode(studyUuid, nodeId, currentRootNetworkUuidRef.current)
+                    )
+                ).then((values) => {
+                    dispatch(networkModificationTreeNodesUpdated(values));
+                });
+            }
         },
         // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications, sendAlert]
+        [dispatch, displayErrorNotifications, sendAlert, studyUuid]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyUpdate });
