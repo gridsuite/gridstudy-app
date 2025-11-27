@@ -44,7 +44,7 @@ export function LimitsPane({
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
-    const { setValue } = useFormContext();
+    const { getValues, reset } = useFormContext();
 
     const myRef: any = useRef<any>(null);
 
@@ -80,50 +80,22 @@ export function LimitsPane({
         }
         return null;
     };
-    /**
-     * returns an error message id if :
-     * - there are more than 2 limit sets with the same name
-     * - there are exactly 2 limit set with this name but they have the same applicability side
-     */
-    const checkLimitSetUnicity = useCallback(
-        (editedLimitGroupName: string, newSelectedApplicability: string): string => {
-            if (indexSelectedLimitSet == null) {
-                return '';
-            }
-
-            // checks if limit sets with that name already exist
-            const sameNameInLs: OperationalLimitsGroupFormSchema[] = limitsGroups
-                .filter((_ls, index: number) => index !== indexSelectedLimitSet)
-                .filter(
-                    (limitsGroup: OperationalLimitsGroupFormSchema) =>
-                        limitsGroup.name.trim() === editedLimitGroupName.trim()
-                );
-
-            // only 2 limit sets with the same name are allowed and only if there have SIDE1 and SIDE2 applicability
-            if (sameNameInLs.length > 0) {
-                if (sameNameInLs.length > 1) {
-                    return 'LimitSetNamingError';
-                }
-
-                if (
-                    sameNameInLs[0].applicability === newSelectedApplicability ||
-                    sameNameInLs[0].applicability === APPLICABILITY.EQUIPMENT.id ||
-                    newSelectedApplicability === APPLICABILITY.EQUIPMENT.id
-                ) {
-                    // only one limit set with this name exist => their applicability has to be different
-                    return 'LimitSetApplicabilityError';
-                }
-            }
-            return '';
-        },
-        [indexSelectedLimitSet, limitsGroups]
-    );
 
     const handlePopupConfirmation = () => {
         const resetOLGs: OperationalLimitsGroupFormSchema[] = mapServerLimitsGroupsToFormInfos(
             equipmentToModify?.currentLimits ?? []
         );
-        setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, resetOLGs);
+        const currentValues = getValues();
+        reset(
+            {
+                ...currentValues,
+                [LIMITS]: {
+                    [OPERATIONAL_LIMITS_GROUPS]: resetOLGs,
+                    [ENABLE_OLG_MODIFICATION]: false,
+                },
+            },
+            { keepDefaultValues: true }
+        );
     };
 
     return (
@@ -199,7 +171,6 @@ export function LimitsPane({
                         limitsGroups={limitsGroups}
                         indexSelectedLimitSet={indexSelectedLimitSet}
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
-                        checkLimitSetUnicity={checkLimitSetUnicity}
                         editable={olgEditable}
                         currentLimitsToModify={equipmentToModify?.currentLimits ?? []}
                     />
@@ -211,8 +182,7 @@ export function LimitsPane({
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
                                         key={operationalLimitsGroup.id}
-                                        opLimitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
-                                        limitsGroupApplicabilityName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
+                                        name={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
                                         clearableFields={clearableFields}
                                         permanentCurrentLimitPreviousValue={
                                             getCurrentLimits(equipmentToModify, operationalLimitsGroup.id)
@@ -227,8 +197,6 @@ export function LimitsPane({
                                                 ?.temporaryLimits ?? []
                                         }
                                         currentNode={currentNode}
-                                        selectedLimitSetName={operationalLimitsGroup.name}
-                                        checkLimitSetUnicity={checkLimitSetUnicity}
                                         disabled={!olgEditable}
                                     />
                                 )

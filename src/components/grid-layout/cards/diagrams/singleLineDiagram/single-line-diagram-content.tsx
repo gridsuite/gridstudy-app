@@ -29,10 +29,16 @@ import {
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
 import { useTheme } from '@mui/material/styles';
-import { ComputingType, EquipmentType, mergeSx, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentInfos,
+    EquipmentType,
+    mergeSx,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import EquipmentPopover from '../../../../tooltips/equipment-popover';
 import { updateSwitchState } from '../../../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
@@ -46,19 +52,22 @@ import { DiagramType, type SubstationDiagramParams, type VoltageLevelDiagramPara
 import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import useComputationDebug from '../../../../../hooks/use-computation-debug';
-import { v4 } from 'uuid';
+
+import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
+import { BranchPopoverContent } from 'components/tooltips/branch-popover-content';
+import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
 
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly studyUuid: UUID;
+    readonly panelId: UUID;
     readonly svg?: string;
     readonly svgMetadata?: SLDMetadata;
     readonly loadingState: boolean;
-    readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly visible: boolean;
     readonly diagramParams: VoltageLevelDiagramParams | SubstationDiagramParams;
-    readonly onNextVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
-    readonly onNewVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
+    readonly onNextVoltageLevelDiagram?: (voltageLevelId: string) => void;
+    readonly onNewVoltageLevelDiagram?: (voltageLevelId: string) => void;
 }
 
 type BusMenuState = {
@@ -77,8 +86,8 @@ const defaultBusMenuState: BusMenuState = {
 
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const {
-        diagramSizeSetter,
         studyUuid,
+        panelId,
         visible,
         diagramParams,
         onNextVoltageLevelDiagram,
@@ -106,13 +115,14 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const shortCircuitStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]);
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,
-    ] = useOneBusShortcircuitAnalysisLoader(diagramParams.diagramUuid);
+    ] = useOneBusShortcircuitAnalysisLoader(panelId);
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -152,9 +162,13 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 setLocallySwitchedBreaker(switchElement?.id);
 
                 updateSwitchState(studyUuid, currentNode?.id, breakerId, newSwitchState).catch((error) => {
+                    const diagramId =
+                        diagramParams.type === DiagramType.VOLTAGE_LEVEL
+                            ? diagramParams.voltageLevelId
+                            : diagramParams.substationId;
                     snackWithFallback(snackError, error, {
                         headerId: 'updateSwitchStateError',
-                        headerValues: { diagramTitle: diagramParams.name },
+                        headerValues: { diagramTitle: diagramId },
                     });
                     setLocallySwitchedBreaker(undefined);
                     // revert the DOM visual state of the breaker
@@ -163,7 +177,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 });
             }
         },
-        [modificationInProgress, studyUuid, currentNode?.id, snackError, toggleBreakerDomClasses, diagramParams.name]
+        [modificationInProgress, studyUuid, currentNode?.id, snackError, toggleBreakerDomClasses, diagramParams]
     );
 
     const [busMenu, setBusMenu] = useState<BusMenuState>(defaultBusMenuState);
@@ -193,22 +207,12 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const handleNextVoltageLevelClick: OnNextVoltageCallbackType = useCallback(
         (vlId, event) => {
             if (event.ctrlKey) {
-                onNewVoltageLevelDiagram?.({
-                    diagramUuid: v4() as UUID,
-                    type: DiagramType.VOLTAGE_LEVEL,
-                    voltageLevelId: vlId,
-                    name: '',
-                });
+                onNewVoltageLevelDiagram?.(vlId);
             } else {
-                onNextVoltageLevelDiagram?.({
-                    ...diagramParams,
-                    type: DiagramType.VOLTAGE_LEVEL,
-                    voltageLevelId: vlId,
-                    name: '',
-                });
+                onNextVoltageLevelDiagram?.(vlId);
             }
         },
-        [diagramParams, onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
+        [onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
     );
 
     // --- for running in debug mode --- //
@@ -228,7 +232,10 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     debug && subscribeDebug(ComputingType.SHORT_CIRCUIT_ONE_BUS);
                 })
                 .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'startShortCircuitError' });
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'startShortCircuitError',
+                    });
                     dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
                     resetOneBusShortcircuitAnalysisLoader();
                 })
@@ -317,14 +324,23 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     );
 
     const displayTooltip = () => {
+        const PopoverContent = EquipmentPopoverMap[hoveredEquipmentType] || BranchPopoverContent;
         return (
-            <EquipmentPopover
+            <GenericEquipmentPopover
                 studyUuid={studyUuid}
-                anchorEl={equipmentPopoverAnchorEl}
-                equipmentType={hoveredEquipmentType}
+                anchorEl={equipmentPopoverAnchorEl as HTMLElement}
                 equipmentId={hoveredEquipmentId}
+                equipmentType={hoveredEquipmentType as EquipmentType}
                 loadFlowStatus={loadFlowStatus}
-            />
+            >
+                {(equipmentInfos: EquipmentInfos) => (
+                    <PopoverContent
+                        equipmentInfos={equipmentInfos}
+                        loadFlowStatus={loadFlowStatus}
+                        equipmentType={hoveredEquipmentType}
+                    />
+                )}
+            </GenericEquipmentPopover>
         );
     };
 
@@ -370,14 +386,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 handleTogglePopover
             );
 
-            // Update the diagram-pane's list of sizes with the width and height from the backend
-            diagramSizeSetter(
-                diagramParams.diagramUuid,
-                diagramParams.type,
-                diagramViewer.getWidth(),
-                diagramViewer.getHeight()
-            );
-
             // Rotate clicked switch while waiting for updated sld data
             if (locallySwitchedBreaker) {
                 toggleBreakerDomClasses(locallySwitchedBreaker);
@@ -406,14 +414,12 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         showEquipmentMenu,
         showBusMenu,
         enableDeveloperMode,
-        diagramParams.diagramUuid,
         diagramParams.type,
         theme,
         modificationInProgress,
         loadingState,
         locallySwitchedBreaker,
         handleBreakerClick,
-        diagramSizeSetter,
         handleTogglePopover,
         computationStarting,
         handleNextVoltageLevelClick,
@@ -449,7 +455,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
+                    loadFlowStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramLoadflowInvalid,
+                    shortCircuitStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramShortCircuitInvalid,
                     // TODO - lock and strip are hidden on single line diagram temporarly
                     !enableDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
                 )}

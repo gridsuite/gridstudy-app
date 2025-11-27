@@ -67,10 +67,8 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
         return rootNode?.id;
     }, [treeModel]);
 
-    // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
-    // and when the application receives a notification.
     useEffect(() => {
-        // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
+        // Visible and !disabled ensure that the current node is built.
         if (visible && !disabled) {
             fetchReport(nodeOnlyReport).then((r) => {
                 if (r !== undefined) {
@@ -86,8 +84,6 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
             setReport();
             setSeverities();
         }
-        // It is important to keep the notifications in the useEffect's dependencies (even if it is not
-        // apparent that they are used) to trigger the update of reports when a notification happens.
     }, [visible, currentNode, disabled, fetchReport, nodeOnlyReport, fetchReportSeverities]);
 
     return (
