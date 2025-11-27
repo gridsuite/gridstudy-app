@@ -90,6 +90,7 @@
     "Map": "Map",
     "Tree": "Tree",
     "modifications": "Modifications",
+    "modificationsForbiddenOnRootNode": "Modifications forbidden on root node",
     "images": "Images",
     "panels": "Panels",
     "NetworkVisualizations": "Network visualizations",
@@ -159,7 +160,7 @@
     "b1": "Shunt susceptance 1 (μS)",
     "g2": "Shunt conductance 2 (μS)",
     "b2": "Shunt susceptance 2 (μS)",
-    "characteristic": "Carac.",
+    "characteristic": "Characteristic",
     "values": "Values",
     "seriesResistance": "R (Ω)",
     "seriesReactance": "X (Ω)",
@@ -1665,11 +1666,13 @@
     "xOhm":"x (Ω)",
     "importParameters": "Import parameters",
     "workspaces": "Workspaces",
-    "resetWorkspaceConfirmation": "Are you sure you want to reset this workspace? All open windows will be closed.",
+    "resetWorkspaceConfirmation": "Are you sure you want to reset this workspace? All open panels will be closed.",
     "renameWorkspace": "Rename Workspace",
     "workspaceName": "Workspace Name",
     "manageWorkspaces": "Manage workspaces",
     "window": "window",
     "windows": "windows",
-    "reset": "Reset"
+    "reset": "Reset",
+    "history": "History",
+    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default drop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)"
  }

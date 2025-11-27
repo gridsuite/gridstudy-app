@@ -29,12 +29,12 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer';
-import EquipmentPopover from 'components/tooltips/equipment-popover';
 import type { UUID } from 'node:crypto';
 import { Point } from '@svgdotjs/svg.js';
 import {
     ComputingType,
     ElementType,
+    EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
     IElementCreationDialog,
@@ -45,7 +45,6 @@ import {
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
 import { createDiagramConfig, updateDiagramConfig, type DiagramConfigPosition } from 'services/explore';
-import { DiagramType, type VoltageLevelDiagramParams } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
@@ -53,6 +52,10 @@ import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
+
+import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
+import BranchPopoverContent from 'components/tooltips/branch-popover-content';
+import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 
 type NetworkAreaDiagramContentProps = {
     readonly voltageLevelIds: string[];
@@ -66,7 +69,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
     readonly visible: boolean;
-    readonly onVoltageLevelClick: (diagramParams: VoltageLevelDiagramParams) => void;
+    readonly onVoltageLevelClick: (voltageLevelId: string) => void;
     readonly onUpdateVoltageLevels: (params: {
         voltageLevelIds: string[];
         voltageLevelToExpandIds: string[];
@@ -165,10 +168,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     setShouldDisplayMenu(true);
                     setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
                 } else {
-                    onVoltageLevelClick({
-                        type: DiagramType.VOLTAGE_LEVEL,
-                        voltageLevelId: equipmentId,
-                    });
+                    onVoltageLevelClick(equipmentId);
                 }
             }
         },
@@ -471,23 +471,37 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         setMenuAnchorPosition(null);
         setShouldDisplayMenu(false);
     };
+
     /**
      * RENDER
      */
 
+    const displayTooltip = () => {
+        const PopoverContent = EquipmentPopoverMap[hoveredEquipmentType] || BranchPopoverContent;
+
+        return (
+            <GenericEquipmentPopover
+                studyUuid={studyUuid}
+                anchorPosition={anchorPosition}
+                anchorEl={null}
+                equipmentId={hoveredEquipmentId}
+                equipmentType={hoveredEquipmentType as EquipmentType}
+                loadFlowStatus={loadFlowStatus}
+            >
+                {(equipmentInfos: EquipmentInfos) => (
+                    <PopoverContent
+                        equipmentInfos={equipmentInfos}
+                        loadFlowStatus={loadFlowStatus}
+                        equipmentType={hoveredEquipmentType}
+                    />
+                )}
+            </GenericEquipmentPopover>
+        );
+    };
     return (
         <>
             <Box height={2}>{loadingState && <LinearProgress />}</Box>
-            {visible && shouldDisplayTooltip && (
-                <EquipmentPopover
-                    studyUuid={studyUuid}
-                    anchorPosition={anchorPosition}
-                    anchorEl={null}
-                    equipmentType={hoveredEquipmentType}
-                    equipmentId={hoveredEquipmentId}
-                    loadFlowStatus={loadFlowStatus}
-                />
-            )}
+            {visible && shouldDisplayTooltip && displayTooltip()}
             {shouldDisplayMenu && (
                 <NodeContextMenu
                     open={!!menuAnchorPosition}
@@ -503,7 +517,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
+                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramLoadflowInvalid : undefined,
                     isEditNadMode && !showLabels ? styles.hideLabels : undefined,
                     isEditNadMode ? styles.nadEditModeCursors : undefined
                 )}
