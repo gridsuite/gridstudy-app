@@ -22,7 +22,7 @@ import { GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-gri
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
-import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
+import { PanelType } from 'components/workspace/types/workspace.types';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -48,7 +48,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
             const onClick = () => {
                 const vlId = node?.data?.voltageLevelId;
                 if (vlId) {
-                    dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
+                    dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
                 }
             };
             if (value) {
