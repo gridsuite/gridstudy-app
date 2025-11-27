@@ -22,7 +22,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -120,8 +120,6 @@ import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modificat
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 
@@ -158,6 +156,7 @@ const NetworkModificationNodeEditor = () => {
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
@@ -185,7 +184,6 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isInitiatingCopyTab = useRef(false);
 
@@ -373,7 +371,6 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS.type,
                             label: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
-                            hide: !enableDeveloperMode,
                             action: () => withDefaultParams(MoveVoltageLevelFeederBaysDialog),
                         },
                         {
@@ -1187,6 +1184,16 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const renderNetworkModificationsTable = () => {
+        if (isRootNode) {
+            return (
+                <Box sx={styles.rootNodeWarning}>
+                    <Alert severity="warning">
+                        <FormattedMessage id="modificationsForbiddenOnRootNode" />
+                    </Alert>
+                </Box>
+            );
+        }
+
         return (
             <NetworkModificationsTable
                 handleCellClick={debounce(handleCellClick, 300)}
@@ -1301,7 +1308,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             ref={buttonAddRef}
                             onClick={openNetworkModificationConfiguration}
-                            disabled={isAnyNodeBuilding || mapDataLoading}
+                            disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
                         >
                             <AddIcon />
                         </IconButton>
@@ -1312,7 +1319,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openImportModificationsDialog}
                             size={'small'}
-                            disabled={isAnyNodeBuilding || mapDataLoading}
+                            disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
                         >
                             <FileUpload />
                         </IconButton>
@@ -1323,7 +1330,9 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={!(selectedNetworkModifications?.length > 0) || saveInProgress === true}
+                            disabled={
+                                selectedNetworkModifications?.length === 0 || saveInProgress === true || isRootNode
+                            }
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1338,7 +1347,8 @@ const NetworkModificationNodeEditor = () => {
                                 selectedNetworkModifications.length === 0 ||
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
-                                !currentNode
+                                !currentNode ||
+                                isRootNode
                             }
                         >
                             <ContentCutIcon />
@@ -1350,7 +1360,12 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doCopyModifications}
                             size={'small'}
-                            disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
+                            disabled={
+                                selectedNetworkModifications.length === 0 ||
+                                isAnyNodeBuilding ||
+                                mapDataLoading ||
+                                isRootNode
+                            }
                         >
                             <ContentCopyIcon />
                         </IconButton>
@@ -1368,7 +1383,11 @@ const NetworkModificationNodeEditor = () => {
                     }
                 >
                     <span>
-                        <IconButton onClick={doPasteModifications} size={'small'} disabled={isPasteButtonDisabled}>
+                        <IconButton
+                            onClick={doPasteModifications}
+                            size={'small'}
+                            disabled={isPasteButtonDisabled || isRootNode}
+                        >
                             <ContentPasteIcon />
                         </IconButton>
                     </span>
@@ -1383,7 +1402,8 @@ const NetworkModificationNodeEditor = () => {
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
                                 deleteInProgress ||
-                                !currentNode
+                                !currentNode ||
+                                isRootNode
                             }
                         >
                             <DeleteIcon />
@@ -1412,7 +1432,7 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={openRestoreModificationDialog}
                                 size={'small'}
-                                disabled={isRestoreButtonDisabled}
+                                disabled={isRestoreButtonDisabled || isRootNode}
                             >
                                 <RestoreFromTrash />
                             </IconButton>

@@ -14,29 +14,20 @@ import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
-import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
+import type { UUID } from 'node:crypto';
 
 interface SpreadsheetProps {
+    panelId: UUID;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
     equipmentId: string | null;
-    onEquipmentScrolled: () => void;
-    openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
 
 export const Spreadsheet = memo(
-    ({
-        currentNode,
-        tableDefinition,
-        disabled,
-        equipmentId,
-        onEquipmentScrolled,
-        openDiagram,
-        active,
-    }: SpreadsheetProps) => {
+    ({ panelId, currentNode, tableDefinition, disabled, equipmentId, active }: SpreadsheetProps) => {
         const gridRef = useRef<AgGridReact>(null);
 
         const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
@@ -74,15 +65,14 @@ export const Spreadsheet = memo(
                 />
 
                 <SpreadsheetContent
+                    panelId={panelId}
                     gridRef={gridRef}
                     currentNode={currentNode}
                     tableDefinition={tableDefinition}
                     columns={displayedColsDefs}
                     disabled={disabled}
                     equipmentId={equipmentId}
-                    onEquipmentScrolled={onEquipmentScrolled}
                     registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
-                    openDiagram={openDiagram}
                     active={active}
                 />
             </>

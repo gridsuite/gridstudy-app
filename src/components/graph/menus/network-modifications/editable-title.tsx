@@ -8,7 +8,6 @@
 import { useState } from 'react';
 import { Box, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
 import { darken, lighten } from '@mui/material/styles';
 import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import NodeNameEditDialog from '../node-name-edit-dialog';
@@ -33,11 +32,10 @@ const styles = {
 
 interface EditableTitleProps {
     name: string;
-    onClose: () => void;
     onChange?: (value: string) => void;
 }
 
-export const EditableTitle = ({ name, onClose, onChange }: EditableTitleProps) => {
+export const EditableTitle = ({ name, onChange }: EditableTitleProps) => {
     const [openEditTitle, setOpenEditTitle] = useState(false);
 
     return (
@@ -46,9 +44,6 @@ export const EditableTitle = ({ name, onClose, onChange }: EditableTitleProps) =
                 <EditIcon />
             </IconButton>
             <OverflowableText text={name} sx={styles.nodeNameTitle} />
-            <IconButton size="small" onClick={onClose}>
-                <CloseIcon />
-            </IconButton>
             <NodeNameEditDialog
                 open={openEditTitle}
                 titleId={'NewName'}

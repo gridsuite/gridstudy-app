@@ -34,6 +34,7 @@ export function OperationalLimitsGroupTabLabel({
     const { errors } = useFormState<LimitsFormSchema>({ name: `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}` });
 
     const hasError =
+        errors?.limits?.operationalLimitsGroups?.[index]?.name?.message ||
         errors?.limits?.operationalLimitsGroups?.[index]?.currentLimits?.permanentLimit?.message ||
         errors?.limits?.operationalLimitsGroups?.[index]?.[OLG_IS_DUPLICATE]?.message;
 
