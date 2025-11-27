@@ -54,7 +54,6 @@ import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { deleteEquipment } from '../../services/study/network-modifications';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
-import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
@@ -71,6 +70,9 @@ import SelectionCreationPanel from './selection-creation-panel/selection-creatio
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { getNominalVoltageColor } from 'utils/colors';
+import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
+import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
+import BranchPopoverContent from 'components/tooltips/branch-popover-content';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -919,19 +921,6 @@ export const NetworkMapPanel = ({
         );
     }
 
-    const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
-        (elementId, ref) => (
-            <EquipmentPopover
-                studyUuid={studyUuid}
-                anchorEl={ref.current}
-                equipmentId={elementId}
-                equipmentType={EQUIPMENT_TYPES.LINE}
-                loadFlowStatus={loadFlowStatus}
-            />
-        ),
-        [loadFlowStatus, studyUuid]
-    );
-
     const loadMapManually = useCallback(() => {
         if (!isMapEquipmentsInitialized) {
             // load default node map equipments
@@ -955,6 +944,30 @@ export const NetworkMapPanel = ({
         updateMapEquipmentsAndGeoData,
     ]);
 
+    const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
+        (elementId, ref) => {
+            const PopoverContent = EquipmentPopoverMap[EQUIPMENT_TYPES.LINE] || BranchPopoverContent;
+
+            return (
+                <GenericEquipmentPopover
+                    studyUuid={studyUuid}
+                    anchorEl={ref.current}
+                    equipmentId={elementId}
+                    equipmentType={EquipmentType.LINE}
+                    loadFlowStatus={loadFlowStatus}
+                >
+                    {(equipmentInfos: EquipmentInfos) => (
+                        <PopoverContent
+                            equipmentInfos={equipmentInfos}
+                            loadFlowStatus={loadFlowStatus}
+                            equipmentType={EQUIPMENT_TYPES.LINE}
+                        />
+                    )}
+                </GenericEquipmentPopover>
+            );
+        },
+        [loadFlowStatus, studyUuid]
+    );
     const leaveDrawingMode = useCallback(() => {
         // clear the user drawing and go back to simple select.
         networkMapRef.current?.getMapDrawer().deleteAll();

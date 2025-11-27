@@ -161,7 +161,7 @@
     "b1": "Shunt susceptance 1 (μS)",
     "g2": "Shunt conductance 2 (μS)",
     "b2": "Shunt susceptance 2 (μS)",
-    "characteristic": "Carac.",
+    "characteristic": "Characteristic",
     "values": "Values",
     "seriesResistance": "R (Ω)",
     "seriesReactance": "X (Ω)",
