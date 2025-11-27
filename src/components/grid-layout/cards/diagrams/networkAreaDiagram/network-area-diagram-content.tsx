@@ -56,7 +56,6 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
 import BranchPopoverContent from 'components/tooltips/branch-popover-content';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
-import { useIntl } from 'react-intl';
 
 type NetworkAreaDiagramContentProps = {
     readonly voltageLevelIds: string[];
@@ -116,7 +115,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
-    const intl = useIntl();
 
     // save nad when exiting edit mode
     const handleSetIsEditNadMode = useCallback(

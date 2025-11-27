@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
+import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
 import { RunningStatus } from '../utils/running-status';
 import { generateRows, styles } from './generic-equipment-popover-utils';
 import { CellRender } from './cell-render';

@@ -55,7 +55,6 @@ import useComputationDebug from '../../../../../hooks/use-computation-debug';
 
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { BranchPopoverContent } from 'components/tooltips/branch-popover-content';
-import { useIntl } from 'react-intl';
 import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
 
 interface SingleLineDiagramContentProps {
@@ -105,7 +104,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const intl = useIntl();
 
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();

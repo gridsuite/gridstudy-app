@@ -62,7 +62,7 @@ import { AppState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import GuidancePopup from './guidance-popup';
@@ -148,7 +148,6 @@ export const NetworkMapPanel = ({
     const lineFlowMode = networkVisuParams.mapParameters.lineFlowMode as LineFlowMode;
     const isInDrawingMode = useStateBoolean(false);
     const theme = useTheme();
-    const intl = useIntl();
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel?.treeNodes.find((node) => node?.data?.label === ROOT_NODE_LABEL);
