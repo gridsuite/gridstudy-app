@@ -105,6 +105,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const shortCircuitStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]);
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
@@ -432,7 +433,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
+                    loadFlowStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramLoadflowInvalid,
+                    shortCircuitStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramShortCircuitInvalid,
                     // TODO - lock and strip are hidden on single line diagram temporarly
                     !enableDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
                 )}
