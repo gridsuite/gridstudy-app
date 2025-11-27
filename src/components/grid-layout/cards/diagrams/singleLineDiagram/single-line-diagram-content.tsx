@@ -433,8 +433,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramLoadflowInvalid : undefined,
-                    shortCircuitStatus !== RunningStatus.SUCCEED ? styles.divDiagramShortCircuitInvalid : undefined,
+                    loadFlowStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramLoadflowInvalid,
+                    shortCircuitStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramShortCircuitInvalid,
                     // TODO - lock and strip are hidden on single line diagram temporarly
                     !enableDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
                 )}
