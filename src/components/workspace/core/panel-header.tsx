@@ -92,7 +92,7 @@ export const PanelHeader = memo(
         const handleClose = () => {
             // If it's a parameters panel with unsaved changes, trigger confirmation dialog
             if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
-                window.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
+                globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
             } else {
                 dispatch(closePanel(panelId));
             }

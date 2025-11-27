@@ -193,8 +193,8 @@ const ParametersTabs: FunctionComponent = () => {
             setIsLeavingPopupOpen(true);
         };
 
-        window.addEventListener('parametersPanel:requestClose', handleCloseRequest);
-        return () => window.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
+        globalThis.addEventListener('parametersPanel:requestClose', handleCloseRequest);
+        return () => globalThis.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
     }, []);
 
     useEffect(() => {
