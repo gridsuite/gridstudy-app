@@ -709,7 +709,7 @@
     "stepUpTransformerX": "Réactance du transformateur (Ω)",
     "TransformerReactanceForm": "Réactance du transformateur",
     "FrequencyRegulation": "Compensation",
-    "Droop": "Participation",
+    "Droop": "Statisme",
     "PlannedActivePowerSetPointForm": "Puissance imposée",
     "plannedActivePowerSetPoint": "P imposée (MW)",
     "MarginalCost": "Coût de démarrage",
@@ -1667,5 +1667,6 @@
     "workspaceName": "Nom de l'espace de travail",
     "manageWorkspaces": "Gérer les espaces de travail",
     "reset": "Réinitialiser",
-    "history": "Historique"
+    "history": "Historique",
+    "activePowerControlTooltip": "Clé de distribution de la puissance au nœud bilan : maxP/Statisme, statisme par défaut = 4 (valable pour le mode compensation proportionnel à la puissance maximale des groupes)"
 }
