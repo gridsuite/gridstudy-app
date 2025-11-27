@@ -1670,6 +1670,9 @@
     "renameWorkspace": "Rename Workspace",
     "workspaceName": "Workspace Name",
     "manageWorkspaces": "Manage workspaces",
+    "window": "window",
+    "windows": "windows",
     "reset": "Reset",
-    "history": "History"
+    "history": "History",
+    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default drop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)"
  }
