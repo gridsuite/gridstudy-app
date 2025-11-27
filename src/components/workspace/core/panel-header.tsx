@@ -79,13 +79,25 @@ interface PanelHeaderProps {
     isMaximized: boolean;
     isFocused: boolean;
     onFocus: () => void;
+    onClose?: () => boolean;
 }
 
 export const PanelHeader = memo(
-    ({ panelId, title, panelType, isPinned, isMaximized, isFocused, onFocus }: PanelHeaderProps) => {
+    ({ panelId, title, panelType, isPinned, isMaximized, isFocused, onFocus, onClose }: PanelHeaderProps) => {
         const dispatch = useDispatch();
         const intl = useIntl();
         const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
+
+        const handleClose = () => {
+            if (onClose) {
+                const shouldClose = onClose();
+                if (shouldClose === false) {
+                    return;
+                }
+            }
+            // Default behavior: close panel
+            dispatch(closePanel(panelId));
+        };
 
         return (
             <Box onMouseDown={onFocus} className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused)}>
@@ -137,7 +149,7 @@ export const PanelHeader = memo(
                         className="panel-header-close-button"
                         size="small"
                         sx={styles.iconButton}
-                        onClick={() => dispatch(closePanel(panelId))}
+                        onClick={handleClose}
                         onMouseDown={(e) => e.stopPropagation()}
                         disabled={isPinned}
                     >
