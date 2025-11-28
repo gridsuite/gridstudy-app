@@ -52,8 +52,10 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
                 equipmentType: EquipmentType.HVDC_LINE,
                 equipmentSubtype: ExtendedEquipmentType.HVDC_LINE_VSC,
             };
-        case FEEDER_TYPES.HVDC_LINE:
-            return { equipmentType: EquipmentType.HVDC_LINE };
+        case FEEDER_TYPES.HVDC_LINE_VSC:
+            return { equipmentType: EquipmentType.HVDC_LINE, equipmentSubtype: ExtendedEquipmentType.HVDC_LINE_VSC };
+        case FEEDER_TYPES.HVDC_LINE_LCC:
+            return { equipmentType: EquipmentType.HVDC_LINE, equipmentSubtype: ExtendedEquipmentType.HVDC_LINE_LCC };
         case FEEDER_TYPES.CAPACITOR:
         case FEEDER_TYPES.INDUCTOR:
             return { equipmentType: EquipmentType.SHUNT_COMPENSATOR };
