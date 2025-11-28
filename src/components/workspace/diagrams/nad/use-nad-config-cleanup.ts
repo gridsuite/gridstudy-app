@@ -11,7 +11,7 @@ import { PREFIX_STUDY_QUERIES } from '../../../../services/study';
 import { backendFetch } from '@gridsuite/commons-ui';
 
 export const useSavedNadConfigCleanup = (studyUuid: UUID, savedWorkspaceConfigUuid?: UUID) => {
-    const previousConfigUuidRef = useRef<UUID | undefined>();
+    const previousConfigUuidRef = useRef<UUID | undefined>(undefined);
 
     useEffect(() => {
         previousConfigUuidRef.current = savedWorkspaceConfigUuid;
