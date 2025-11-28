@@ -75,6 +75,6 @@ export interface Workspace {
 }
 
 export interface WorkspacesState {
-    workspaces: Record<UUID, Workspace>;
+    workspaces: Workspace[];
     activeWorkspaceId: UUID;
 }
