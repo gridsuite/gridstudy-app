@@ -8,7 +8,6 @@
 import { useCallback, memo, type RefObject } from 'react';
 import { Box, Theme } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
-import type { MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     focusPanel,
@@ -24,6 +23,8 @@ import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
+
+const RESIZE_HANDLE_SIZE = 12;
 
 const getBorder = (theme: Theme, isFocused: boolean) => {
     if (theme.palette.mode === 'light') {
@@ -66,11 +67,17 @@ const styles = {
         borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
         borderTop: 'none',
     }),
-} as const satisfies MuiStyles;
+    resizeHandles: {
+        bottomRight: { width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE, right: 0, bottom: 0 },
+        bottomLeft: { width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE, left: 0, bottom: 0 },
+        topRight: { width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE, right: 0, top: 0 },
+        topLeft: { width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE, left: 0, top: 0 },
+    },
+} as const;
 
 interface PanelProps {
     panelId: UUID;
-    containerRef: RefObject<HTMLDivElement>;
+    containerRef: RefObject<HTMLDivElement | null>;
     snapPreview: SnapRect | null;
     onSnapPreview: (panelId: UUID, preview: SnapRect | null) => void;
     isFocused: boolean;
@@ -158,6 +165,7 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
             bounds="parent"
             minWidth={minWidth}
             minHeight={minHeight}
+            resizeHandleStyles={styles.resizeHandles}
             style={{
                 display: panel.isMinimized ? 'none' : 'block',
                 zIndex: panel.zIndex,

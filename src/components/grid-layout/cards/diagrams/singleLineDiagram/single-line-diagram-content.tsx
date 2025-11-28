@@ -99,8 +99,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
-    const svgRef = useRef<HTMLDivElement>();
-    const diagramViewerRef = useRef<SingleLineDiagramViewer>();
+    const svgRef = useRef<HTMLDivElement>(null);
+    const diagramViewerRef = useRef<SingleLineDiagramViewer>(null);
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -332,6 +332,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 equipmentId={hoveredEquipmentId}
                 equipmentType={hoveredEquipmentType as EquipmentType}
                 loadFlowStatus={loadFlowStatus}
+                anchorPosition={undefined}
             >
                 {(equipmentInfos: EquipmentInfos) => (
                     <PopoverContent
