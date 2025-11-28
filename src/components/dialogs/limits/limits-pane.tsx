@@ -48,7 +48,7 @@ export function LimitsPane({
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups: OperationalLimitsGroupFormSchema[] = useWatch({
+    const limitsGroups = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const olgEditable: boolean = useWatch({
@@ -154,7 +154,7 @@ export function LimitsPane({
                     <Box
                         sx={{
                             display: 'flex',
-                            justifyContent: 'space-between',
+                            alignItems: 'center',
                         }}
                     >
                         <GridSection title="LimitSets" />
@@ -162,9 +162,6 @@ export function LimitsPane({
                             <AddIcon />
                         </IconButton>
                     </Box>
-                </Grid>
-                <Grid container item xs={6.25} />
-                <Grid item xs={4}>
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
                         parentFormName={id}

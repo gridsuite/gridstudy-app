@@ -24,6 +24,8 @@ const spreadsheetEn = {
         'Column ID must not contain spaces, special characters or start with a number',
     'spreadsheet/custom_column/error/id_le_60': 'Column ID must be at most 60 characters',
     'spreadsheet/custom_column/error/name_le_60': 'Column name must be at most 60 characters',
+    'spreadsheet/custom_column/error/precision_0': 'Column precision must be at least 0',
+    'spreadsheet/custom_column/error/precision_100': 'Column precision must be at most 100',
     'spreadsheet/custom_column/update_custom_column': 'Update',
     'spreadsheet/custom_column/delete_custom_column': 'Delete',
     'spreadsheet/custom_column/duplicate_custom_column': 'Duplicate',

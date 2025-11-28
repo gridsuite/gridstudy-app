@@ -27,11 +27,10 @@ import {
 } from './workspace-helpers';
 
 const DEFAULT_WORKSPACES = createDefaultWorkspaces();
-const DEFAULT_WORKSPACE_IDS = Object.keys(DEFAULT_WORKSPACES);
 
 const initialState: WorkspacesState = {
     workspaces: DEFAULT_WORKSPACES,
-    activeWorkspaceId: DEFAULT_WORKSPACE_IDS[0] as UUID,
+    activeWorkspaceId: DEFAULT_WORKSPACES[0].id,
 };
 
 const workspacesSlice = createSlice({
@@ -49,12 +48,17 @@ const workspacesSlice = createSlice({
         },
 
         renameWorkspace: (state, action: PayloadAction<{ workspaceId: UUID; newName: string }>) => {
-            state.workspaces[action.payload.workspaceId].name = action.payload.newName;
+            const workspace = state.workspaces.find((w) => w.id === action.payload.workspaceId);
+            if (workspace) {
+                workspace.name = action.payload.newName;
+            }
         },
 
         clearWorkspace: (state, action: PayloadAction<UUID>) => {
-            const workspace = state.workspaces[action.payload];
-            Object.keys(workspace.panels).forEach((id) => deletePanel(workspace, id as UUID));
+            const workspace = state.workspaces.find((w) => w.id === action.payload);
+            if (workspace) {
+                Object.keys(workspace.panels).forEach((id) => deletePanel(workspace, id as UUID));
+            }
         },
 
         // ==================== Panel Lifecycle ====================

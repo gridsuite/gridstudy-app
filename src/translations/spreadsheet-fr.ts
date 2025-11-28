@@ -24,6 +24,8 @@ const spreadsheetFr = {
         'Un ID de colonne ne doit contenir ni espace ni caractère spécial et ne doit pas commencer par un chiffre',
     'spreadsheet/custom_column/error/id_le_60': 'Un ID de colonne ne peut dépasser 60 caractères',
     'spreadsheet/custom_column/error/name_le_60': 'Un nom de colonne ne peut dépasser 60 caractères',
+    'spreadsheet/custom_column/error/precision_0': 'La précision de la colonne doit être au moins 0',
+    'spreadsheet/custom_column/error/precision_100': 'La précision de la colonne ne peut dépasser 100',
     'spreadsheet/custom_column/update_custom_column': 'Modifier',
     'spreadsheet/custom_column/delete_custom_column': 'Supprimer',
     'spreadsheet/custom_column/duplicate_custom_column': 'Dupliquer',

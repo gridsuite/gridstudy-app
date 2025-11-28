@@ -19,7 +19,10 @@ import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { ReportType } from 'utils/report/report.type';
 import { sortSeverityList } from 'utils/report/report-severity';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { Box, Switch } from '@mui/material';
+import { Paper, Switch } from '@mui/material';
+import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { isStudyNotification } from '../types/notification-types';
+import { NodeType } from './graph/tree-node.type';
 
 const styles = {
     div: {
@@ -28,6 +31,11 @@ const styles = {
     },
     reportOnlyNode: {
         margin: '5px',
+    },
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
     },
 };
 
@@ -46,10 +54,18 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
     const [resetFilters, setResetFilters] = useState(false);
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
     const intl = useIntl();
     const [isReportLoading, fetchReport, fetchReportSeverities] = useReportFetcher(
         COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION
     );
+
+    const isRootNode = currentNode?.type === NodeType.ROOT;
+    useEffect(() => {
+        if (isRootNode) {
+            setNodeOnlyReport(true);
+        }
+    }, [isRootNode]);
 
     const handleChangeNodeOnlySwitch = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
@@ -67,31 +83,58 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
         return rootNode?.id;
     }, [treeModel]);
 
+    const fetchReportAndSeverities = useCallback(() => {
+        fetchReport(nodeOnlyReport).then((r) => {
+            if (r !== undefined) {
+                setReport(r);
+                fetchReportSeverities(r.id, r.parentId ? ReportType.NODE : ReportType.GLOBAL).then((severities) => {
+                    setSeverities(sortSeverityList(severities));
+                });
+            }
+        });
+    }, [fetchReport, nodeOnlyReport, fetchReportSeverities]);
+
+    // Listen for STUDY notifications
+    const handleNotification = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            if (
+                visible &&
+                !disabled &&
+                isStudyNotification(eventData) &&
+                eventData.headers.rootNetworkUuid === currentRootNetworkUuid &&
+                eventData.headers.node === currentNode?.id
+            ) {
+                fetchReportAndSeverities();
+            }
+        },
+        [visible, disabled, currentRootNetworkUuid, currentNode?.id, fetchReportAndSeverities]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleNotification });
+
+    // This useEffect is responsible for updating the reports when the user opens the LOGS panel
     useEffect(() => {
-        // Visible and !disabled ensure that the current node is built.
+        if (isRootNode && !nodeOnlyReport) {
+            return;
+        }
+        // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
         if (visible && !disabled) {
-            fetchReport(nodeOnlyReport).then((r) => {
-                if (r !== undefined) {
-                    setReport(r);
-                    fetchReportSeverities(r.id, r.parentId ? ReportType.NODE : ReportType.GLOBAL).then((severities) => {
-                        setSeverities(sortSeverityList(severities));
-                    });
-                }
-            });
+            fetchReportAndSeverities();
         } else {
             // if the user unbuilds a node, the report needs to be reset.
             // otherwise, the report will be kept in the state and useless report fetches with previous id will be made when the user rebuilds the node.
             setReport();
             setSeverities();
         }
-    }, [visible, currentNode, disabled, fetchReport, nodeOnlyReport, fetchReportSeverities]);
+    }, [visible, currentNode.id, disabled, nodeOnlyReport, fetchReportAndSeverities, isRootNode]);
 
     return (
         <>
             {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
             {!disabled && !!report && (
                 <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <Paper sx={styles.container}>
                         <FormControlLabel
                             sx={styles.reportOnlyNode}
                             control={
@@ -114,7 +157,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                             severities={severities}
                             resetFilters={resetFilters}
                         />
-                    </Box>
+                    </Paper>
                 </WaitingLoader>
             )}
         </>
