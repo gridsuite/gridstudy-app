@@ -61,6 +61,7 @@ export interface PanelState {
     isMinimized: boolean;
     isMaximized: boolean;
     isPinned: boolean;
+    isClosed: boolean;
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;
 }
@@ -74,6 +75,6 @@ export interface Workspace {
 }
 
 export interface WorkspacesState {
-    workspaces: Record<UUID, Workspace>;
+    workspaces: Workspace[];
     activeWorkspaceId: UUID;
 }

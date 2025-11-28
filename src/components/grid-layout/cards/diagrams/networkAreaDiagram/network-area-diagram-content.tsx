@@ -29,12 +29,12 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer';
-import EquipmentPopover from 'components/tooltips/equipment-popover';
 import type { UUID } from 'node:crypto';
 import { Point } from '@svgdotjs/svg.js';
 import {
     ComputingType,
     ElementType,
+    EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
     IElementCreationDialog,
@@ -52,6 +52,10 @@ import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
+
+import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
+import BranchPopoverContent from 'components/tooltips/branch-popover-content';
+import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 
 type NetworkAreaDiagramContentProps = {
     readonly voltageLevelIds: string[];
@@ -95,9 +99,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         showInSpreadsheet,
         onSaveNad,
     } = props;
-    const svgRef = useRef();
+    const svgRef = useRef(null);
     const { snackError, snackInfo } = useSnackMessage();
-    const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>();
+    const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>(null);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [showLabels, setShowLabels] = useState(true);
@@ -467,23 +471,37 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         setMenuAnchorPosition(null);
         setShouldDisplayMenu(false);
     };
+
     /**
      * RENDER
      */
 
+    const displayTooltip = () => {
+        const PopoverContent = EquipmentPopoverMap[hoveredEquipmentType] || BranchPopoverContent;
+
+        return (
+            <GenericEquipmentPopover
+                studyUuid={studyUuid}
+                anchorPosition={anchorPosition}
+                anchorEl={null}
+                equipmentId={hoveredEquipmentId}
+                equipmentType={hoveredEquipmentType as EquipmentType}
+                loadFlowStatus={loadFlowStatus}
+            >
+                {(equipmentInfos: EquipmentInfos) => (
+                    <PopoverContent
+                        equipmentInfos={equipmentInfos}
+                        loadFlowStatus={loadFlowStatus}
+                        equipmentType={hoveredEquipmentType}
+                    />
+                )}
+            </GenericEquipmentPopover>
+        );
+    };
     return (
         <>
             <Box height={2}>{loadingState && <LinearProgress />}</Box>
-            {visible && shouldDisplayTooltip && (
-                <EquipmentPopover
-                    studyUuid={studyUuid}
-                    anchorPosition={anchorPosition}
-                    anchorEl={null}
-                    equipmentType={hoveredEquipmentType}
-                    equipmentId={hoveredEquipmentId}
-                    loadFlowStatus={loadFlowStatus}
-                />
-            )}
+            {visible && shouldDisplayTooltip && displayTooltip()}
             {shouldDisplayMenu && (
                 <NodeContextMenu
                     open={!!menuAnchorPosition}
@@ -499,7 +517,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
+                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramLoadflowInvalid : undefined,
                     isEditNadMode && !showLabels ? styles.hideLabels : undefined,
                     isEditNadMode ? styles.nadEditModeCursors : undefined
                 )}

@@ -22,6 +22,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { Box, Switch } from '@mui/material';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { isStudyNotification } from '../types/notification-types';
+import { NodeType } from './graph/tree-node.type';
 
 const styles = {
     div: {
@@ -53,6 +54,13 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     const [isReportLoading, fetchReport, fetchReportSeverities] = useReportFetcher(
         COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION
     );
+
+    const isRootNode = currentNode?.type === NodeType.ROOT;
+    useEffect(() => {
+        if (isRootNode) {
+            setNodeOnlyReport(true);
+        }
+    }, [isRootNode]);
 
     const handleChangeNodeOnlySwitch = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
@@ -102,6 +110,9 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
 
     // This useEffect is responsible for updating the reports when the user opens the LOGS panel
     useEffect(() => {
+        if (isRootNode && !nodeOnlyReport) {
+            return;
+        }
         // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
         if (visible && !disabled) {
             fetchReportAndSeverities();
@@ -111,7 +122,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
             setReport();
             setSeverities();
         }
-    }, [visible, currentNode?.id, disabled, nodeOnlyReport, fetchReportAndSeverities]);
+    }, [visible, currentNode.id, disabled, nodeOnlyReport, fetchReportAndSeverities, isRootNode]);
 
     return (
         <>

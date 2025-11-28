@@ -65,6 +65,7 @@
     "createDiagramConfigLabel": "Create a new network area diagram",
     "updateDiagramConfigLabel": "Replace an existing network area diagram",
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
+    "noWritePermissionOnStudy": "The user has no access right on study with id \"{studyUuid}\"",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
     "nadConfiguredPositionsModeFailed": "The configured positions have not been initialized. You need to change the initialization parameter of the network area diagrams.",
@@ -92,6 +93,7 @@
     "modifications": "Modifications",
     "modificationsForbiddenOnRootNode": "Modifications forbidden on root node",
     "images": "Images",
+    "panelsCount": "{count, plural, =0 {no panel} =1 {# panel} other {# panels}}",
     "panels": "Panels",
     "NetworkVisualizations": "Network visualizations",
     "None": "None",
@@ -160,7 +162,7 @@
     "b1": "Shunt susceptance 1 (μS)",
     "g2": "Shunt conductance 2 (μS)",
     "b2": "Shunt susceptance 2 (μS)",
-    "characteristic": "Carac.",
+    "characteristic": "Characteristic",
     "values": "Values",
     "seriesResistance": "R (Ω)",
     "seriesReactance": "X (Ω)",
@@ -1672,5 +1674,8 @@
     "workspaceName": "Workspace Name",
     "manageWorkspaces": "Manage workspaces",
     "reset": "Reset",
-    "history": "History"
+    "history": "History",
+    "window": "window",
+    "windows": "windows",
+    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default droop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)"
  }

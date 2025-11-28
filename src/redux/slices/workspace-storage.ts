@@ -70,6 +70,7 @@ const panelStateSchema = object({
     isMinimized: boolean().required(),
     isMaximized: boolean().required(),
     isPinned: boolean().default(false),
+    isClosed: boolean().default(false),
     restorePosition: optionalPanelPositionSchema.notRequired(),
     restoreSize: optionalPanelSizeSchema.notRequired(),
 }).required();
@@ -83,9 +84,7 @@ const workspaceSchema = object({
 }).required();
 
 const workspacesStateSchema = object({
-    workspaces: yup.lazy((obj) =>
-        object(Object.fromEntries(Object.keys(obj || {}).map((key) => [key, workspaceSchema])))
-    ),
+    workspaces: array().of(workspaceSchema).required(),
     activeWorkspaceId: string().required(),
 }).required();
 

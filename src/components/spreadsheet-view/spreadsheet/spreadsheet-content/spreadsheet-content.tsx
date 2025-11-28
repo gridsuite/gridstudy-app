@@ -49,7 +49,7 @@ const styles = {
 
 interface SpreadsheetContentProps {
     panelId: UUID;
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];

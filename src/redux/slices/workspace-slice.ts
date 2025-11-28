@@ -23,14 +23,14 @@ import {
     findDiagramPanel,
     findAndFocusPanel,
     deletePanel,
+    closeOrHidePanel,
 } from './workspace-helpers';
 
 const DEFAULT_WORKSPACES = createDefaultWorkspaces();
-const DEFAULT_WORKSPACE_IDS = Object.keys(DEFAULT_WORKSPACES);
 
 const initialState: WorkspacesState = {
     workspaces: DEFAULT_WORKSPACES,
-    activeWorkspaceId: DEFAULT_WORKSPACE_IDS[0] as UUID,
+    activeWorkspaceId: DEFAULT_WORKSPACES[0].id,
 };
 
 const workspacesSlice = createSlice({
@@ -48,12 +48,17 @@ const workspacesSlice = createSlice({
         },
 
         renameWorkspace: (state, action: PayloadAction<{ workspaceId: UUID; newName: string }>) => {
-            state.workspaces[action.payload.workspaceId].name = action.payload.newName;
+            const workspace = state.workspaces.find((w) => w.id === action.payload.workspaceId);
+            if (workspace) {
+                workspace.name = action.payload.newName;
+            }
         },
 
         clearWorkspace: (state, action: PayloadAction<UUID>) => {
-            const workspace = state.workspaces[action.payload];
-            Object.keys(workspace.panels).forEach((id) => deletePanel(workspace, id as UUID));
+            const workspace = state.workspaces.find((w) => w.id === action.payload);
+            if (workspace) {
+                Object.keys(workspace.panels).forEach((id) => deletePanel(workspace, id as UUID));
+            }
         },
 
         // ==================== Panel Lifecycle ====================
@@ -62,9 +67,14 @@ const workspacesSlice = createSlice({
             const existingPanel = Object.values(workspace.panels).find((p) => p.type === action.payload);
 
             if (existingPanel) {
-                workspace.focusedPanelId === existingPanel.id
-                    ? deletePanel(workspace, existingPanel.id)
-                    : bringToFront(workspace, existingPanel.id);
+                if (existingPanel.isClosed) {
+                    existingPanel.isClosed = false;
+                    bringToFront(workspace, existingPanel.id);
+                } else if (workspace.focusedPanelId === existingPanel.id) {
+                    closeOrHidePanel(workspace, existingPanel.id);
+                } else {
+                    bringToFront(workspace, existingPanel.id);
+                }
             } else {
                 createPanel(workspace, action.payload);
             }
@@ -84,14 +94,14 @@ const workspacesSlice = createSlice({
 
         closePanel: (state, action: PayloadAction<UUID>) => {
             const workspace = getActiveWorkspace(state);
-            deletePanel(workspace, action.payload);
+            closeOrHidePanel(workspace, action.payload);
         },
 
         closePanelsByType: (state, action: PayloadAction<PanelType>) => {
             const workspace = getActiveWorkspace(state);
             Object.values(workspace.panels)
                 .filter((panel) => panel.type === action.payload)
-                .forEach((panel) => deletePanel(workspace, panel.id));
+                .forEach((panel) => closeOrHidePanel(workspace, panel.id));
         },
 
         // ==================== Panel State Management ====================
