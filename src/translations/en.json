@@ -1676,5 +1676,5 @@
     "windows": "windows",
     "reset": "Reset",
     "history": "History",
-    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default drop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)"
+    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default droop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)"
  }
