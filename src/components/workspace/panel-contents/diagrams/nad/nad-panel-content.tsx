@@ -46,7 +46,7 @@ export const NadPanelContent = ({
         currentRootNetworkUuid,
     });
 
-    const { handleShowInSpreadsheet, handleOpenDiagram } = useDiagramNavigation();
+    const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
 
     // Update voltage levels in local state only - no Redux dispatch
     const handleUpdateVoltageLevels = useCallback(
@@ -120,7 +120,7 @@ export const NadPanelContent = ({
                 loadingState={loading}
                 isNadCreationFromFilter={!!diagram.filterUuid}
                 visible
-                onVoltageLevelClick={handleOpenDiagram}
+                onVoltageLevelClick={handleOpenVoltageLevelDiagram}
                 onUpdateVoltageLevels={handleUpdateVoltageLevels}
                 onUpdateVoltageLevelsFromFilter={handleUpdateVoltageLevelsFromFilter}
                 onUpdatePositions={handleUpdatePositions}

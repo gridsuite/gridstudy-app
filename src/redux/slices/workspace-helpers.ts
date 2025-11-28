@@ -7,7 +7,6 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import type { UUID } from 'node:crypto';
-import { DiagramType } from '../../components/grid-layout/cards/diagrams/diagram.type';
 import { getPanelConfig } from '../../components/workspace/constants/workspace.constants';
 import {
     Workspace,
@@ -17,6 +16,15 @@ import {
     PanelMetadata,
     SLDPanelMetadata,
 } from '../../components/workspace/types/workspace.types';
+
+// ==================== Utilities ====================
+export const isDiagramPanel = (panelType: PanelType): boolean => {
+    return (
+        panelType === PanelType.SLD_VOLTAGE_LEVEL ||
+        panelType === PanelType.SLD_SUBSTATION ||
+        panelType === PanelType.NAD
+    );
+};
 
 // ==================== Workspace ====================
 export const createDefaultWorkspaces = (): Record<UUID, Workspace> => {
@@ -45,6 +53,7 @@ export const createDefaultWorkspaces = (): Record<UUID, Workspace> => {
                 isMinimized: false,
                 isMaximized: true,
                 isPinned: false,
+                isClosed: false,
             };
 
             workspace.focusedPanelId = treeId;
@@ -96,6 +105,7 @@ export const createPanel = (
         isMinimized: false,
         isMaximized: false,
         isPinned: false,
+        isClosed: false,
     };
     workspace.focusedPanelId = newId;
     return newId;
@@ -116,6 +126,7 @@ export const bringToFront = (workspace: Workspace, panelId: UUID) => {
 export const findAndFocusPanel = (workspace: Workspace, panelType: PanelType): boolean => {
     const existingPanel = Object.values(workspace.panels).find((p) => p.type === panelType);
     if (existingPanel) {
+        existingPanel.isClosed = false;
         bringToFront(workspace, existingPanel.id);
         return true;
     }
@@ -129,20 +140,31 @@ export const deletePanel = (workspace: Workspace, panelId: UUID): void => {
     }
 };
 
-// Find diagram panel by type and id (voltage level or substation)
-export const findDiagramPanel = (workspace: Workspace, diagramType: DiagramType, id: string, excludePanelId?: UUID) => {
+export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
+    const panel = workspace.panels[panelId];
+    if (!panel) return;
+
+    if (isDiagramPanel(panel.type)) {
+        deletePanel(workspace, panelId);
+    } else {
+        panel.isClosed = true;
+        if (workspace.focusedPanelId === panelId) {
+            workspace.focusedPanelId = null;
+        }
+    }
+};
+
+// Find diagram panel by panel type and id
+export const findDiagramPanel = (workspace: Workspace, panelType: PanelType, id: string, excludePanelId?: UUID) => {
     return Object.values(workspace.panels).find((panel) => {
-        if (panel.id === excludePanelId || (panel.type !== PanelType.SLD && panel.type !== PanelType.NAD)) {
+        if (panel.id === excludePanelId || panel.type !== panelType) {
             return false;
         }
-        const metadata = panel.metadata as SLDPanelMetadata;
-        return (
-            (diagramType === DiagramType.VOLTAGE_LEVEL && metadata.voltageLevelId === id) ||
-            (diagramType === DiagramType.SUBSTATION && metadata.substationId === id)
-        );
+
+        if (panelType === PanelType.SLD_VOLTAGE_LEVEL || panelType === PanelType.SLD_SUBSTATION) {
+            return (panel.metadata as SLDPanelMetadata).diagramId === id;
+        }
+
+        return false;
     });
 };
-export const createSLDPanelMetadata = (id: string, diagramType: DiagramType): SLDPanelMetadata => ({
-    voltageLevelId: diagramType === DiagramType.VOLTAGE_LEVEL ? id : undefined,
-    substationId: diagramType === DiagramType.SUBSTATION ? id : undefined,
-});

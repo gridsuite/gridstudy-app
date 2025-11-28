@@ -8,8 +8,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { UUID } from 'node:crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { DiagramType } from '../../components/grid-layout/cards/diagrams/diagram.type';
-import { PanelType, type WorkspacesState, type PanelMetadata } from '../../components/workspace/types/workspace.types';
+import {
+    PanelType,
+    type WorkspacesState,
+    type PanelMetadata,
+    type SLDPanelMetadata,
+} from '../../components/workspace/types/workspace.types';
 import {
     createDefaultWorkspaces,
     getActiveWorkspace,
@@ -19,39 +23,8 @@ import {
     findDiagramPanel,
     findAndFocusPanel,
     deletePanel,
-    createSLDPanelMetadata,
+    closeOrHidePanel,
 } from './workspace-helpers';
-
-const STORAGE_KEY_PREFIX = 'gridstudy-workspaces';
-
-const getStorageKey = (studyUuid: string | null) =>
-    studyUuid ? `${STORAGE_KEY_PREFIX}-${studyUuid}` : STORAGE_KEY_PREFIX;
-
-export const loadWorkspacesFromStorage = (studyUuid: string | null): Partial<WorkspacesState> | null => {
-    try {
-        const key = getStorageKey(studyUuid);
-        const data = localStorage.getItem(key);
-        return data ? (JSON.parse(data) as Partial<WorkspacesState>) : null;
-    } catch (error) {
-        console.warn('Failed to load workspaces from storage:', error);
-        return null;
-    }
-};
-
-export const saveWorkspacesToStorage = (state: WorkspacesState, studyUuid: string | null) => {
-    try {
-        const key = getStorageKey(studyUuid);
-        localStorage.setItem(
-            key,
-            JSON.stringify({
-                workspaces: state.workspaces,
-                activeWorkspaceId: state.activeWorkspaceId,
-            })
-        );
-    } catch (error) {
-        console.warn('Failed to save workspaces to storage:', error);
-    }
-};
 
 const DEFAULT_WORKSPACES = createDefaultWorkspaces();
 const DEFAULT_WORKSPACE_IDS = Object.keys(DEFAULT_WORKSPACES);
@@ -90,9 +63,14 @@ const workspacesSlice = createSlice({
             const existingPanel = Object.values(workspace.panels).find((p) => p.type === action.payload);
 
             if (existingPanel) {
-                workspace.focusedPanelId === existingPanel.id
-                    ? deletePanel(workspace, existingPanel.id)
-                    : bringToFront(workspace, existingPanel.id);
+                if (existingPanel.isClosed) {
+                    existingPanel.isClosed = false;
+                    bringToFront(workspace, existingPanel.id);
+                } else if (workspace.focusedPanelId === existingPanel.id) {
+                    closeOrHidePanel(workspace, existingPanel.id);
+                } else {
+                    bringToFront(workspace, existingPanel.id);
+                }
             } else {
                 createPanel(workspace, action.payload);
             }
@@ -112,14 +90,14 @@ const workspacesSlice = createSlice({
 
         closePanel: (state, action: PayloadAction<UUID>) => {
             const workspace = getActiveWorkspace(state);
-            deletePanel(workspace, action.payload);
+            closeOrHidePanel(workspace, action.payload);
         },
 
         closePanelsByType: (state, action: PayloadAction<PanelType>) => {
             const workspace = getActiveWorkspace(state);
             Object.values(workspace.panels)
                 .filter((panel) => panel.type === action.payload)
-                .forEach((panel) => deletePanel(workspace, panel.id));
+                .forEach((panel) => closeOrHidePanel(workspace, panel.id));
         },
 
         // ==================== Panel State Management ====================
@@ -209,19 +187,24 @@ const workspacesSlice = createSlice({
             state,
             action: PayloadAction<{
                 id: string;
-                diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
+                panelType: PanelType.SLD_VOLTAGE_LEVEL | PanelType.SLD_SUBSTATION;
             }>
         ) => {
-            const { id, diagramType } = action.payload;
+            const { id, panelType } = action.payload;
             const workspace = getActiveWorkspace(state);
-            const existingPanel = findDiagramPanel(workspace, diagramType, id);
+            const existingPanel = findDiagramPanel(workspace, panelType, id);
 
             if (existingPanel) {
                 bringToFront(workspace, existingPanel.id);
             } else {
-                createPanel(workspace, PanelType.SLD, {
+                const metadata: SLDPanelMetadata = {
+                    diagramId: id,
+                    navigationHistory: panelType === PanelType.SLD_VOLTAGE_LEVEL ? [] : undefined,
+                };
+
+                createPanel(workspace, panelType, {
                     title: id,
-                    metadata: createSLDPanelMetadata(id, diagramType),
+                    metadata,
                 });
             }
         },
@@ -242,21 +225,35 @@ const workspacesSlice = createSlice({
             });
         },
 
-        navigateSLD: (state, action: PayloadAction<{ panelId: UUID; id: string; diagramType: DiagramType }>) => {
-            const { panelId, id, diagramType } = action.payload;
-            const workspace = getActiveWorkspace(state);
+        navigateSLD: (
+            state,
+            action: PayloadAction<{ panelId: UUID; voltageLevelId: string; skipHistory?: boolean }>
+        ) => {
+            const { panelId, voltageLevelId, skipHistory } = action.payload;
 
-            // Check if another panel already has this diagram
-            const existingPanel = findDiagramPanel(workspace, diagramType, id, panelId);
-            if (existingPanel) {
-                bringToFront(workspace, existingPanel.id);
-                return;
-            }
-
-            // Update current SLD panel
+            // Navigate within voltage level panel (substations open new windows via openSLD)
             updatePanel(state, panelId, (panel) => {
-                panel.title = id;
-                panel.metadata = createSLDPanelMetadata(id, diagramType);
+                const currentMetadata = panel.metadata as SLDPanelMetadata;
+                const history = currentMetadata.navigationHistory || [];
+
+                // Add current voltage level to history if:
+                // 1. Not skipping history (navigating from history itself)
+                // 2. Navigating to a different voltage level
+                // 3. Current voltage level is not already at the first position in history
+                const shouldAddToHistory =
+                    !skipHistory &&
+                    currentMetadata.diagramId !== voltageLevelId &&
+                    history[0] !== currentMetadata.diagramId;
+
+                const updatedHistory = shouldAddToHistory
+                    ? [currentMetadata.diagramId, ...history].slice(0, 10)
+                    : history;
+
+                panel.title = voltageLevelId;
+                panel.metadata = {
+                    diagramId: voltageLevelId,
+                    navigationHistory: updatedHistory,
+                };
             });
         },
 
