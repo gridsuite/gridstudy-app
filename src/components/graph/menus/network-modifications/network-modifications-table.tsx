@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, SetStateAction, useRef } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
     CustomAGGrid,
     type MuiStyles,
     type NetworkModificationMetadata,
+    NetworkModificationNameCellRenderer,
     useModificationLabelComputer,
 } from '@gridsuite/commons-ui';
 import type {
@@ -37,7 +38,6 @@ import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { ExcludedNetworkModifications } from './network-modification-menu.type';
-import { NetworkModificationNameCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import { AgGridReact } from 'ag-grid-react';
 
 const styles = {
