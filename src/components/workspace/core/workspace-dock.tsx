@@ -7,7 +7,7 @@
 
 import { useState, useMemo, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Tabs, Tab, Theme } from '@mui/material';
+import { Box, Tabs, Tab, Theme, Tooltip } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { selectOpenPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
@@ -35,6 +35,17 @@ const styles = {
             backgroundColor: 'action.hover',
         },
         '& .MuiSvgIcon-root': { fontSize: 14 },
+    },
+    tabLabel: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+    },
+    tabTitle: {
+        width: 80,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     },
 } as const satisfies MuiStyles;
 
@@ -95,23 +106,28 @@ export const WorkspaceDock = memo(() => {
                         onMouseEnter={() => setHoveredTab(panel.id)}
                         onMouseLeave={() => setHoveredTab(null)}
                         label={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                {getPanelConfig(panel.type).icon}
-                                <span>{panel.title}</span>
-                                <Box
-                                    component="span"
-                                    sx={{
-                                        ...styles.closeButton,
-                                        visibility: hoveredTab === panel.id && !panel.isPinned ? 'visible' : 'hidden',
-                                    }}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        dispatch(closePanel(panel.id));
-                                    }}
-                                >
-                                    <Close />
+                            <Tooltip title={panel.title} placement="top">
+                                <Box sx={styles.tabLabel}>
+                                    {getPanelConfig(panel.type).icon}
+                                    <Box component="span" sx={styles.tabTitle}>
+                                        {panel.title}
+                                    </Box>
+                                    <Box
+                                        component="span"
+                                        sx={{
+                                            ...styles.closeButton,
+                                            visibility:
+                                                hoveredTab === panel.id && !panel.isPinned ? 'visible' : 'hidden',
+                                        }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            dispatch(closePanel(panel.id));
+                                        }}
+                                    >
+                                        <Close />
+                                    </Box>
                                 </Box>
-                            </Box>
+                            </Tooltip>
                         }
                         onClick={() =>
                             panel.isMinimized ? handleMinimizedPanelClick(panel.id) : handleActivePanelClick(panel.id)
