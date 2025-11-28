@@ -41,10 +41,13 @@ const LineAttachToVoltageLevelForm = ({
     lineToEdit,
     onVoltageLevelCreationDo,
     voltageLevelToEdit,
+    onAttachmentPointModificationDo,
+    attachmentPoint,
     allVoltageLevelOptions,
 }) => {
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
+    const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
 
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
@@ -56,6 +59,14 @@ const LineAttachToVoltageLevelForm = ({
 
     const openLineDialog = () => {
         setLineDialogOpen(true);
+    };
+
+    const onAttachmentPointDialogClose = () => {
+        setAttachmentPointDialogOpen(false);
+    };
+
+    const openAttachmentPointDialog = () => {
+        setAttachmentPointDialogOpen(true);
     };
 
     const onVoltageLevelDialogClose = () => {
@@ -120,6 +131,18 @@ const LineAttachToVoltageLevelForm = ({
             <Grid container spacing={2}>
                 <GridItem>{attachmentPointIdField}</GridItem>
                 <GridItem>{attachmentPointNameField}</GridItem>
+                <GridItem>
+                    {
+                        <Button
+                            onClick={openAttachmentPointDialog}
+                            startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
+                        >
+                            <Typography align="left">
+                                <FormattedMessage id="SpecifyAttachmentPoint" />
+                            </Typography>
+                        </Button>
+                    }
+                </GridItem>
             </Grid>
             <GridSection title="VOLTAGE_LEVEL" />
             <Grid container spacing={2}>
@@ -161,6 +184,18 @@ const LineAttachToVoltageLevelForm = ({
                 <GridItem>{newLine2IdField}</GridItem>
                 <GridItem>{newLine2NameField}</GridItem>
             </Grid>
+            {attachmentPointDialogOpen && (
+                <VoltageLevelCreationDialog
+                    open={true}
+                    onClose={onAttachmentPointDialogClose}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    onCreateVoltageLevel={onAttachmentPointModificationDo}
+                    editData={attachmentPoint}
+                    isAttachementPointModification={true}
+                />
+            )}
             {voltageLevelDialogOpen && (
                 <VoltageLevelCreationDialog
                     open={true}
