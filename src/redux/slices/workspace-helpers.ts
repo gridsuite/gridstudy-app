@@ -27,8 +27,8 @@ export const isDiagramPanel = (panelType: PanelType): boolean => {
 };
 
 // ==================== Workspace ====================
-export const createDefaultWorkspaces = (): Record<UUID, Workspace> => {
-    const workspaces: Record<UUID, Workspace> = {};
+export const createDefaultWorkspaces = (): Workspace[] => {
+    const workspaces: Workspace[] = [];
     for (let i = 0; i < 3; i++) {
         const id = uuidv4() as UUID;
         const workspace: Workspace = {
@@ -59,13 +59,13 @@ export const createDefaultWorkspaces = (): Record<UUID, Workspace> => {
             workspace.focusedPanelId = treeId;
         }
 
-        workspaces[id] = workspace;
+        workspaces.push(workspace);
     }
     return workspaces;
 };
 
 export const getActiveWorkspace = (state: WorkspacesState): Workspace => {
-    const workspace = state.workspaces[state.activeWorkspaceId];
+    const workspace = state.workspaces.find((w) => w.id === state.activeWorkspaceId);
     if (!workspace) {
         throw new Error(`Active workspace ${state.activeWorkspaceId} not found`);
     }
