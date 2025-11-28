@@ -5,10 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -61,7 +66,7 @@ import {
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     REMOVE,
-    setCurrentReactiveCapabilityCurveChoice,
+    toReactiveCapabilityCurveChoiceForGeneratorModification,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
@@ -95,6 +100,12 @@ import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { toModificationOperation } from '../../../../utils/utils';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import {
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormData,
+    getShortCircuitFormSchema,
+} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -102,8 +113,7 @@ const emptyFormData = {
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
     [RATED_NOMINAL_POWER]: null,
-    [TRANSIENT_REACTANCE]: null,
-    [TRANSFORMER_REACTANCE]: null,
+    ...getShortCircuitEmptyFormData(),
     [PLANNED_ACTIVE_POWER_SET_POINT]: null,
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
@@ -131,8 +141,7 @@ const formSchema = yup
                     schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
             }),
         [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [TRANSIENT_REACTANCE]: yup.number().nullable(),
-        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+        ...getShortCircuitFormSchema(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [MARGINAL_COST]: yup.number().nullable(),
 
@@ -167,12 +176,12 @@ export default function GeneratorModificationDialog({
     const [generatorToModify, setGeneratorToModify] = useState<GeneratorFormInfos | null>();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const formMethods = useForm<DeepNullable<GeneratorModificationDialogSchemaForm>>({
+    const formMethods = useFormWithDirtyTracking<DeepNullable<GeneratorModificationDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<GeneratorModificationDialogSchemaForm>>(formSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (editData: GeneratorModificationInfos) => {
@@ -195,8 +204,10 @@ export default function GeneratorModificationDialog({
                 [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
-                [TRANSIENT_REACTANCE]: editData?.directTransX?.value ?? null,
-                [TRANSFORMER_REACTANCE]: editData?.stepUpTransformerX?.value ?? null,
+                ...getShortCircuitFormData({
+                    directTransX: editData?.directTransX?.value ?? null,
+                    stepUpTransformerX: editData?.stepUpTransformerX?.value ?? null,
+                }),
                 [VOLTAGE_REGULATION_TYPE]: editData?.voltageRegulationType?.value ?? null,
                 [Q_PERCENT]: editData?.qPercent?.value ?? null,
                 ...getConnectivityFormData({
@@ -277,18 +288,7 @@ export default function GeneratorModificationDialog({
                     .then((value: GeneratorFormInfos) => {
                         if (value) {
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
-                            if (previousReactiveCapabilityCurveTable) {
-                                setValue(
-                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    previousReactiveCapabilityCurveTable
-                                );
-                            } else {
-                                setCurrentReactiveCapabilityCurveChoice(
-                                    previousReactiveCapabilityCurveTable,
-                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    setValue
-                                );
-                            }
+
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,
@@ -296,6 +296,16 @@ export default function GeneratorModificationDialog({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
+                                    ...(!isUpdate && previousReactiveCapabilityCurveTable
+                                        ? {
+                                              [REACTIVE_LIMITS]: {
+                                                  ...formValues[REACTIVE_LIMITS],
+                                                  [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
+                                                  [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                                                      previousReactiveCapabilityCurveTable,
+                                              },
+                                          }
+                                        : {}),
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
                                 { keepDirty: true }
@@ -307,7 +317,6 @@ export default function GeneratorModificationDialog({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setGeneratorToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {
@@ -315,7 +324,7 @@ export default function GeneratorModificationDialog({
                 setGeneratorToModify(null);
             }
         },
-        [studyUuid, currentNode, currentRootNetworkUuid, reset, getValues, setValue, setValuesAndEmptyOthers, editData]
+        [studyUuid, currentNode, currentRootNetworkUuid, reset, getValues, setValuesAndEmptyOthers, isUpdate, editData]
     );
 
     useEffect(() => {
@@ -327,7 +336,12 @@ export default function GeneratorModificationDialog({
     const onSubmit = useCallback(
         (generator: GeneratorModificationDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits?.[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn =
+                toReactiveCapabilityCurveChoiceForGeneratorModification(
+                    reactiveLimits,
+                    editData,
+                    generatorToModify?.reactiveCapabilityCurvePoints
+                ) === 'CURVE';
 
             const generatorModificationInfos = {
                 type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
@@ -369,7 +383,7 @@ export default function GeneratorModificationDialog({
                     isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MINIMUM_REACTIVE_POWER]
                 ),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? (reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
+                    ? (reactiveLimits?.[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
                 properties: toModificationProperties(generator) ?? null,
             } satisfies GeneratorModificationInfos;
@@ -381,13 +395,10 @@ export default function GeneratorModificationDialog({
                 modificationUuid: editData?.uuid ?? null,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'GeneratorModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'GeneratorModificationError' });
             });
         },
-        [selectedId, studyUuid, currentNodeUuid, editData, snackError]
+        [editData, generatorToModify, selectedId, studyUuid, currentNodeUuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({

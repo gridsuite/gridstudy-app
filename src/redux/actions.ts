@@ -22,14 +22,13 @@ import {
     type Identifiable,
     type NetworkVisualizationParameters,
 } from '@gridsuite/commons-ui';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { UnknownArray } from 'type-fest';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
     ComputingStatusParameters,
-    DiagramGridLayoutConfig,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
@@ -44,6 +43,8 @@ import {
     LOADFLOW_RESULT_STORE_FIELD,
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
+    PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
+    PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
@@ -53,7 +54,6 @@ import {
     SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
-import { StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
@@ -67,15 +67,16 @@ import {
     FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
+    PccminTab,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
     SortConfig,
 } from '../types/custom-aggrid-types';
-import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
+import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -116,14 +117,13 @@ export type AppActions =
     | AddNotificationAction
     | RemoveNotificationByNodeAction
     | SetModificationsInProgressAction
-    | OpenDiagramAction
-    | OpenNadListAction
     | SetComputingStatusAction
     | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
+    | ResetOneBusShortcircuitAnalysisDiagramAction
     | AddToRecentGlobalFiltersAction
     | RemoveFromRecentGlobalFiltersAction
     | SetLastCompletedComputationAction
@@ -150,7 +150,6 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | DeletedOrRenamedNodesAction
     | RemoveEquipmentDataAction
     | SetOpenMapAction
     | SecurityAnalysisResultPaginationAction
@@ -218,15 +217,39 @@ export function setDirtyComputationParameters(isDirty: boolean): SetDirtyComputa
     };
 }
 
+export const ADD_SPREADSHEET_LOADED_NODES_IDS = 'ADD_SPREADSHEET_LOADED_NODES_IDS';
+export type AddSpreadsheetLoadedNodesIdsAction = Readonly<Action<typeof ADD_SPREADSHEET_LOADED_NODES_IDS>> & {
+    nodesIds: UUID[];
+};
+
+export function addSpreadsheetLoadedNodesIds(nodesIds: UUID[]): AddSpreadsheetLoadedNodesIdsAction {
+    return {
+        type: ADD_SPREADSHEET_LOADED_NODES_IDS,
+        nodesIds,
+    };
+}
+
+export const REMOVE_SPREADSHEET_LOADED_NODES_IDS = 'REMOVE_SPREADSHEET_LOADED_NODES_IDS';
+export type RemoveSpreadsheetLoadedNodesIdsAction = Readonly<Action<typeof REMOVE_SPREADSHEET_LOADED_NODES_IDS>> & {
+    nodesIds: UUID[];
+};
+
+export function removeSpreadsheetLoadedNodesIds(nodesIds: UUID[]): RemoveSpreadsheetLoadedNodesIdsAction {
+    return {
+        type: REMOVE_SPREADSHEET_LOADED_NODES_IDS,
+        nodesIds,
+    };
+}
+
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
     equipmentType: SpreadsheetEquipmentType;
-    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes;
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes['equipmentsByNodeId'];
 };
 
 export function loadEquipments(
     equipmentType: SpreadsheetEquipmentType,
-    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes['equipmentsByNodeId']
 ): LoadEquipmentsAction {
     return {
         type: LOAD_EQUIPMENTS,
@@ -237,12 +260,14 @@ export function loadEquipments(
 
 export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
 export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
+    spreadsheetEquipmentType: SpreadsheetEquipmentType;
     nodesIdToRemove: string[];
 };
 
-export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction {
+export function removeNodeData(type: SpreadsheetEquipmentType, nodesIdToRemove: string[]): RemoveNodeDataAction {
     return {
         type: REMOVE_NODE_DATA,
+        spreadsheetEquipmentType: type,
         nodesIdToRemove,
     };
 }
@@ -333,6 +358,23 @@ export function cleanEquipments(equipmentType: SpreadsheetEquipmentType): CleanE
     return {
         type: CLEAN_EQUIPMENTS,
         equipmentType,
+    };
+}
+
+export const SET_SPREADSHEET_FETCHING = 'SET_SPREADSHEET_FETCHING';
+export type SetSpreadsheetFetchingAction = Readonly<Action<typeof SET_SPREADSHEET_FETCHING>> & {
+    spreadsheetEquipmentType: SpreadsheetEquipmentType;
+    isFetching: boolean;
+};
+
+export function setSpreadsheetFetching(
+    type: SpreadsheetEquipmentType,
+    isFetching: boolean
+): SetSpreadsheetFetchingAction {
+    return {
+        type: SET_SPREADSHEET_FETCHING,
+        spreadsheetEquipmentType: type,
+        isFetching,
     };
 }
 
@@ -677,6 +719,18 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
+export const HIGHLIGHT_MODIFICATION = 'HIGHLIGHT_MODIFICATION';
+export type HighlightModificationAction = Readonly<Action<typeof HIGHLIGHT_MODIFICATION>> & {
+    highlightedModificationUuid: UUID | null;
+};
+
+export function setHighlightModification(modificationUuid: UUID | null): HighlightModificationAction {
+    return {
+        type: HIGHLIGHT_MODIFICATION,
+        highlightedModificationUuid: modificationUuid,
+    };
+}
+
 export const CURRENT_ROOT_NETWORK_UUID = 'CURRENT_ROOT_NETWORK_UUID';
 export type CurrentRootNetworkUuidAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK_UUID>> & {
     currentRootNetworkUuid: UUID;
@@ -721,18 +775,6 @@ export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFI
 export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
-    };
-}
-
-export const SET_TOGGLE_OPTIONS = 'SET_TOGGLE_OPTIONS';
-export type SetToggleOptionsAction = Readonly<Action<typeof SET_TOGGLE_OPTIONS>> & {
-    toggleOptions: StudyDisplayMode[];
-};
-
-export function setToggleOptions(toggleOptions: StudyDisplayMode[]): SetToggleOptionsAction {
-    return {
-        type: SET_TOGGLE_OPTIONS,
-        toggleOptions: toggleOptions,
     };
 }
 
@@ -793,34 +835,6 @@ export function setModificationsInProgress(isModificationsInProgress: boolean): 
     return {
         type: SET_MODIFICATIONS_IN_PROGRESS,
         isModificationsInProgress: isModificationsInProgress,
-    };
-}
-
-export const OPEN_DIAGRAM = 'OPEN_DIAGRAM';
-export type OpenDiagramAction = Readonly<Action<typeof OPEN_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction {
-    return {
-        type: OPEN_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
-export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
-    name: string;
-    ids: string[];
-};
-
-export function openNadList(name: string, ids: string[]): OpenNadListAction {
-    return {
-        type: OPEN_NAD_LIST,
-        name: name,
-        ids: ids,
     };
 }
 
@@ -901,25 +915,34 @@ export function setOptionalServices(optionalServices: IOptionalService[]): SetOp
 }
 
 export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type SetOneBusShortcircuitAnalysisDiagramAction = Readonly<
-    Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
-> &
-    (OneBusShortCircuitAnalysisDiagram | { diagramId: null });
-
-export function setOneBusShortcircuitAnalysisDiagram(diagramId: null): SetOneBusShortcircuitAnalysisDiagramAction;
+export type SetOneBusShortcircuitAnalysisDiagramAction = Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM> &
+    OneBusShortCircuitAnalysisDiagram & {
+        [key: string]: any;
+    };
 export function setOneBusShortcircuitAnalysisDiagram(
     diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'],
+    studyUuid: OneBusShortCircuitAnalysisDiagram['studyUuid'],
+    rootNetworkUuid: OneBusShortCircuitAnalysisDiagram['rootNetworkUuid'],
     nodeId: OneBusShortCircuitAnalysisDiagram['nodeId']
-): SetOneBusShortcircuitAnalysisDiagramAction;
-export function setOneBusShortcircuitAnalysisDiagram(
-    diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'] | null,
-    nodeId?: OneBusShortCircuitAnalysisDiagram['nodeId']
 ): SetOneBusShortcircuitAnalysisDiagramAction {
     return {
         type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         diagramId: diagramId,
-        // @ts-expect-error: function overload protect call
+        studyUuid: studyUuid,
+        rootNetworkUuid: rootNetworkUuid,
         nodeId: nodeId,
+    };
+}
+
+export const RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
+export type ResetOneBusShortcircuitAnalysisDiagramAction = Action<
+    typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM
+> & {
+    [key: string]: any;
+};
+export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircuitAnalysisDiagramAction {
+    return {
+        type: RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     };
 }
 
@@ -1029,6 +1052,23 @@ export function setShortcircuitAnalysisResultFilter(
     };
 }
 
+export const PCCMIN_ANALYSIS_RESULT_FILTER = 'PCCMIN_ANALYSIS_RESULT_FILTER';
+export type PccminAnalysisResultFilterAction = Readonly<Action<typeof PCCMIN_ANALYSIS_RESULT_FILTER>> & {
+    filterTab: keyof AppState[typeof PCCMIN_ANALYSIS_RESULT_STORE_FIELD];
+    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
+};
+
+export function setPccminAnalysisResultFilter(
+    filterTab: keyof AppState[typeof PCCMIN_ANALYSIS_RESULT_STORE_FIELD],
+    pccminAnalysisResultFilter: FilterConfig[]
+): PccminAnalysisResultFilterAction {
+    return {
+        type: PCCMIN_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: pccminAnalysisResultFilter,
+    };
+}
+
 export const DYNAMIC_SIMULATION_RESULT_FILTER = 'DYNAMIC_SIMULATION_RESULT_FILTER';
 export type DynamicSimulationResultFilterAction = Readonly<Action<typeof DYNAMIC_SIMULATION_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
@@ -1125,6 +1165,32 @@ export type ResetShortcircuitAnalysisPaginationAction = Readonly<Action<typeof R
 export function resetShortcircuitAnalysisPagination(): ResetShortcircuitAnalysisPaginationAction {
     return {
         type: RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
+    };
+}
+
+export const RESET_PCCMIN_ANALYSIS_PAGINATION = 'RESET_PCCMIN_ANALYSIS_PAGINATION';
+export type ResetPccminAnalysisPaginationAction = Readonly<Action<typeof RESET_PCCMIN_ANALYSIS_PAGINATION>>;
+
+export function resetPccminAnalysisPagination(): ResetPccminAnalysisPaginationAction {
+    return {
+        type: RESET_PCCMIN_ANALYSIS_PAGINATION,
+    };
+}
+
+export const PCCMIN_ANALYSIS_RESULT_PAGINATION = 'PCCMIN_ANALYSIS_RESULT_PAGINATION';
+export type PccminAnalysisResultPaginationAction = Readonly<Action<typeof PCCMIN_ANALYSIS_RESULT_PAGINATION>> & {
+    paginationTab: PccminTab;
+    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: PaginationConfig;
+};
+
+export function setPccminAnalysisResultPagination(
+    paginationTab: PccminTab,
+    pccminAnalysisPagination: PaginationConfig
+): PccminAnalysisResultPaginationAction {
+    return {
+        type: PCCMIN_ANALYSIS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: pccminAnalysisPagination,
     };
 }
 
@@ -1451,39 +1517,6 @@ export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFil
     };
 }
 
-export const DELETED_OR_RENAMED_NODES = 'DELETED_OR_RENAMED_NODES';
-export type DeletedOrRenamedNodesAction = Readonly<Action<typeof DELETED_OR_RENAMED_NODES>> & {
-    deletedOrRenamedNodes: UUID[];
-};
-
-export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrRenamedNodesAction {
-    return {
-        type: DELETED_OR_RENAMED_NODES,
-        deletedOrRenamedNodes,
-    };
-}
-
-export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
-export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
-
-export function resetDiagramEvent(): ResetDiagramEventAction {
-    return {
-        type: RESET_DIAGRAM_EVENT,
-    };
-}
-
-export const SET_DIAGRAM_GRID_LAYOUT = 'SET_DIAGRAM_GRID_LAYOUT';
-export type SetDiagramGridLayoutAction = Readonly<Action<typeof SET_DIAGRAM_GRID_LAYOUT>> & {
-    diagramGridLayout: DiagramGridLayoutConfig;
-};
-
-export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig): SetDiagramGridLayoutAction {
-    return {
-        type: SET_DIAGRAM_GRID_LAYOUT,
-        diagramGridLayout: diagramGridLayout,
-    };
-}
-
 export const SELECT_SYNC_ENABLED = 'SELECT_SYNC_ENABLED';
 export type SelectSyncEnabledAction = Readonly<Action<typeof SELECT_SYNC_ENABLED>> & {
     syncEnabled: boolean;
@@ -1493,5 +1526,17 @@ export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction
     return {
         type: SELECT_SYNC_ENABLED,
         syncEnabled,
+    };
+}
+
+export const UPDATE_NODE_ALIASES = 'UPDATE_NODE_ALIASES';
+export type UpdateNodeAliasesAction = Readonly<Action<typeof UPDATE_NODE_ALIASES>> & {
+    nodeAliases: NodeAlias[];
+};
+
+export function updateNodeAliases(nodeAliases: NodeAlias[]): UpdateNodeAliasesAction {
+    return {
+        type: UPDATE_NODE_ALIASES,
+        nodeAliases,
     };
 }

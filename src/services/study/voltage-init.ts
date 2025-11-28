@@ -6,9 +6,8 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
-import { VoltageInitStudyParameters } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
+import { backendFetch, backendFetchJson, backendFetchText, VoltageInitStudyParameters } from '@gridsuite/commons-ui';
 import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 
 export function startVoltageInit(
@@ -16,7 +15,7 @@ export function startVoltageInit(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     debug: boolean
-): Promise<void> {
+): Promise<Response> {
     console.info(
         `Running voltage init on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );

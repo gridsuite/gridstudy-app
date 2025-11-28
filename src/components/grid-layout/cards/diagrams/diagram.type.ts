@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { DiagramConfigPosition } from '../../../../services/explore';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 
@@ -17,20 +17,18 @@ export enum DiagramType {
 
 // Create diagram parameters
 type DiagramBaseParams = {
-    diagramUuid: UUID;
     type: DiagramType;
-    name: string;
 };
 
-type VoltageLevelDiagramParams = DiagramBaseParams & {
+export type VoltageLevelDiagramParams = DiagramBaseParams & {
     type: DiagramType.VOLTAGE_LEVEL;
     voltageLevelId: string;
 };
-type SubstationDiagramParams = DiagramBaseParams & {
+export type SubstationDiagramParams = DiagramBaseParams & {
     type: DiagramType.SUBSTATION;
     substationId: string;
 };
-type NetworkAreaDiagramParams = DiagramBaseParams & {
+export type NetworkAreaDiagramParams = DiagramBaseParams & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     nadConfigUuid: UUID | undefined;
     initializationNadConfigUuid?: UUID; // used for initialization, not saved
@@ -45,24 +43,21 @@ export type DiagramParams = VoltageLevelDiagramParams | SubstationDiagramParams 
 
 // diagrams model
 export type DiagramBase = {
-    diagramUuid: UUID;
     type: DiagramType;
-    name: string;
     svg: Svg | null;
 };
 
 export type VoltageLevelDiagram = DiagramBase & {
     type: DiagramType.VOLTAGE_LEVEL;
-    voltageLevelId: string;
+    diagramId: string;
 };
 export type SubstationDiagram = DiagramBase & {
     type: DiagramType.SUBSTATION;
-    substationId: string;
+    diagramId: string;
 };
 export type NetworkAreaDiagram = DiagramBase & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     nadConfigUuid: UUID | undefined;
-    initializationNadConfigUuid?: UUID; // used for initialization, not saved
     filterUuid: UUID | undefined;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
@@ -109,14 +104,3 @@ export interface DiagramSvg {
 }
 
 export type Svg = DiagramSvg | SldSvg;
-
-export const NETWORK_AREA_DIAGRAM_DETAILS_TYPE = 'network-area-diagram-details' as const;
-type NetworkAreaDiagramDto = Omit<
-    NetworkAreaDiagramParams,
-    'nadConfigUuid' | 'initializationNadConfigUuid' | 'voltageLevelToExpandIds' | 'voltageLevelToOmitIds'
-> & {
-    originalNadConfigUuid?: UUID;
-    currentNadConfigUuid?: UUID;
-};
-
-export type DiagramParamsDto = VoltageLevelDiagramParams | SubstationDiagramParams | NetworkAreaDiagramDto;

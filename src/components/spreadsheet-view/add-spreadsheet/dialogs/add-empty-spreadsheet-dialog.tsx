@@ -13,7 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { dialogStyles } from '../styles/styles';
 import { ModificationDialog, type ModificationDialogProps } from 'components/dialogs/commons/modificationDialog';
 import {

@@ -10,7 +10,7 @@ import { ModificationsSearchResult } from './root-network.types';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ModificationResults } from './root-network-modification-results';
 
 const styles = {
@@ -60,7 +60,7 @@ export const RootNetworkModificationsSearchResults: React.FC<RootNetworkModifica
                         <DeviceHubIcon style={styles.iconMinSize} />
                         <OverflowableText text={getName(result.nodeUuid)} sx={styles.text} maxLineCount={1} />
                     </Box>
-                    <ModificationResults modifications={result.modifications} />
+                    <ModificationResults modifications={result.modifications} nodeUuid={result.nodeUuid} />
                     <Divider sx={{ mt: 2 }} />
                 </Box>
             ))}

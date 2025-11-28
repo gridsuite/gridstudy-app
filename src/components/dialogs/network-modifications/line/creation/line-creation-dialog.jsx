@@ -10,6 +10,7 @@ import {
     convertOutputValue,
     CustomFormProvider,
     FieldType,
+    snackWithFallback,
     TextInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -91,7 +92,7 @@ import { LimitsPane } from '../../../limits/limits-pane.tsx';
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(false),
     ...emptyProperties,
 };
 
@@ -124,10 +125,10 @@ const LineCreationDialog = ({
     const [tabIndex, setTabIndex] = useState(LineCreationDialogTab.CHARACTERISTICS_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
-    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
+    const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
 
     const handleCloseLineTypesCatalogDialog = () => {
-        setOpenLineTypesCatalogDialog(false);
+        setIsOpenLineTypesCatalogDialog(false);
     };
 
     const formSchema = yup
@@ -135,7 +136,7 @@ const LineCreationDialog = ({
         .shape({
             ...getHeaderValidationSchema(),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity),
-            ...getLimitsValidationSchema(false),
+            ...getLimitsValidationSchema(),
         })
         .concat(creationPropertiesSchema)
         .required();
@@ -327,10 +328,7 @@ const LineCreationDialog = ({
                 connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
                 properties: toModificationProperties(line),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LineCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LineCreationError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
@@ -346,11 +344,14 @@ const LineCreationDialog = ({
             tabsInError.push(LineCreationDialogTab.LIMITS_TAB);
         }
 
-        if (tabsInError.length > 0) {
+        if (tabsInError.includes(tabIndex)) {
+            // error in current tab => do not change tab systematically but remove current tab in error list
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+        } else if (tabsInError.length > 0) {
+            // switch to the first tab in the list then remove the tab in the error list
             setTabIndex(tabsInError[0]);
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
         }
-
-        setTabIndexesWithError(tabsInError);
     };
 
     const clear = useCallback(() => {
@@ -401,7 +402,7 @@ const LineCreationDialog = ({
                 maxWidth={'xl'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
-                onOpenCatalogDialog={() => setOpenLineTypesCatalogDialog(true)}
+                onOpenCatalogDialog={() => setIsOpenLineTypesCatalogDialog(true)}
                 searchCopy={searchCopy}
                 PaperProps={{
                     sx: {

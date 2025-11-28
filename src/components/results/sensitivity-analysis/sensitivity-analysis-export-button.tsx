@@ -6,9 +6,9 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ExportCsvButton, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, PARAM_LANGUAGE, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { useFilterSelector } from 'hooks/use-filter-selector';
@@ -121,10 +121,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
                 });
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'csvExportSensitivityResultError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'csvExportSensitivityResultError' });
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));

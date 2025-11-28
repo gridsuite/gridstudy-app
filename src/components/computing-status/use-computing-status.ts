@@ -6,7 +6,7 @@
  */
 
 import { RunningStatus } from 'components/utils/running-status';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from '@gridsuite/commons-ui';
@@ -48,9 +48,9 @@ interface LastUpdateProps {
 function isWorthUpdate(
     studyUpdatedForce: StudyUpdated,
     computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
-    lastUpdateRef: RefObject<LastUpdateProps>,
-    nodeUuidRef: RefObject<UUID>,
-    rootNetworkUuidRef: RefObject<UUID>,
+    lastUpdateRef: RefObject<LastUpdateProps | null>,
+    nodeUuidRef: RefObject<UUID | null>,
+    rootNetworkUuidRef: RefObject<UUID | null>,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     invalidations: string[]

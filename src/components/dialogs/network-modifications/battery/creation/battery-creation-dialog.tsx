@@ -10,7 +10,13 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -34,6 +40,8 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
+    TRANSFORMER_REACTANCE,
+    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import {
@@ -68,6 +76,11 @@ import { BatteryCreationInfos } from '../../../../../services/network-modificati
 import BatteryCreationForm from './battery-creation-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import {
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormData,
+    getShortCircuitFormSchema,
+} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -79,6 +92,7 @@ const emptyFormData = {
     ...getReactiveLimitsEmptyFormData(),
     ...getActivePowerControlEmptyFormData(),
     ...emptyProperties,
+    ...getShortCircuitEmptyFormData(),
 };
 
 const formSchema = yup
@@ -92,6 +106,7 @@ const formSchema = yup
         [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(),
         ...getSetPointsSchema(),
         ...getActivePowerControlSchema(),
+        ...getShortCircuitFormSchema(),
     })
     .concat(creationPropertiesSchema)
     .required();
@@ -144,6 +159,10 @@ export default function BatteryCreationDialog({
                     reactiveCapabilityCurvePoints: battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
                 }),
                 ...copyEquipmentPropertiesForCreation(battery),
+                ...getShortCircuitFormData({
+                    directTransX: battery.batteryShortCircuit?.directTransX,
+                    stepUpTransformerX: battery.batteryShortCircuit?.stepUpTransformerX,
+                }),
             },
             { keepDefaultValues: true }
         );
@@ -179,6 +198,10 @@ export default function BatteryCreationDialog({
                         : [{}, {}],
                 }),
                 ...getPropertiesFromModification(editData?.properties ?? undefined),
+                ...getShortCircuitFormData({
+                    directTransX: editData.directTransX,
+                    stepUpTransformerX: editData.stepUpTransformerX,
+                }),
             });
         }
     }, [editData, reset]);
@@ -215,6 +238,8 @@ export default function BatteryCreationDialog({
                 participate: battery[FREQUENCY_REGULATION] ?? null,
                 droop: battery[DROOP] ?? null,
                 properties: toModificationProperties(battery) ?? null,
+                directTransX: battery[TRANSIENT_REACTANCE] ?? null,
+                stepUpTransformerX: battery[TRANSFORMER_REACTANCE] ?? null,
             } satisfies BatteryCreationInfos;
             createBattery({
                 batteryCreationInfos: batteryCreationInfos,
@@ -223,8 +248,7 @@ export default function BatteryCreationDialog({
                 modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
+                snackWithFallback(snackError, error, {
                     headerId: 'BatteryCreationError',
                 });
             });

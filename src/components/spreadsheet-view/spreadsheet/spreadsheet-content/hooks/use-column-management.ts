@@ -14,10 +14,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { updateTableDefinition } from 'redux/actions';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { reorderSpreadsheetColumns } from 'services/study/study-config';
 
-export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, tableDefinition: SpreadsheetTabDefinition) {
+export function useColumnManagement(
+    gridRef: React.RefObject<AgGridReact | null>,
+    tableDefinition: SpreadsheetTabDefinition
+) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -97,10 +100,7 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
-                        headerId: 'spreadsheet/reorder_columns/error',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'spreadsheet/reorder_columns/error' });
                 });
         },
         [studyUuid, tableDefinition, dispatch, snackError]

@@ -6,9 +6,9 @@
  */
 import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '@gridsuite/commons-ui';
 import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
-import type { ColDef, IFilterOptionDef, GridApi } from 'ag-grid-community';
+import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
@@ -24,7 +24,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
 import { ROW_INDEX_COLUMN_ID } from '../constants';
 import { updateSpreadsheetColumn } from 'services/study/study-config';

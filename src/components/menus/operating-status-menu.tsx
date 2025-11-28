@@ -26,6 +26,7 @@ import {
     type ExtendedEquipmentType,
     type MuiStyles,
     OperatingStatus,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
@@ -45,7 +46,7 @@ import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
 import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { CurrentTreeNode } from '../graph/tree-node.type';
 
@@ -146,10 +147,7 @@ const withOperatingStatusMenu =
         );
 
         function handleError(error: Error, translationKey: string) {
-            snackError({
-                messageTxt: error.message,
-                headerId: getTranslationKey(translationKey),
-            });
+            snackWithFallback(snackError, error, { headerId: getTranslationKey(translationKey) });
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(false);
             }

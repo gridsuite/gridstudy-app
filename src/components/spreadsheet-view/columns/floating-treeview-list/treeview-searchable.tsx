@@ -10,31 +10,44 @@ import { QuickSearch } from '../../../report-viewer/QuickSearch';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { ChevronRight, ExpandMore } from '@mui/icons-material';
 import Button from '@mui/material/Button';
-import { Dispatch, MouseEvent, RefObject, SetStateAction, useCallback, useMemo, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { FORMULA } from '../column-creation-form';
 import { useFormulaQuickSearch } from './use-formula-quicksearch';
-import { buildTreeData } from './utils/json-schema-parser';
+import { buildTreeData, sortData } from './utils/json-schema-parser';
 import { JSONSchema4 } from 'json-schema';
 import { UseFormReturn } from 'react-hook-form';
 import { renderTreeData } from './utils/render-tree-data';
 import { usePopoverToggle } from './utils/use-popover-toggle';
 import { useIntl } from 'react-intl';
+import { SpreadsheetEquipmentType } from 'components/spreadsheet-view/types/spreadsheet.type';
 
 interface TreeviewSearchableProps {
     properties: JSONSchema4 | null;
     formMethods: UseFormReturn<any>;
     setAnchorEl: Dispatch<SetStateAction<Element | null>>;
-    inputRef: RefObject<HTMLInputElement>;
+    inputRef: RefObject<HTMLInputElement | null>;
+    equipmentType: SpreadsheetEquipmentType;
+    formulaCursorPosition: number;
+    formulaTextRef: RefObject<HTMLTextAreaElement | null>;
 }
 
-const MOUSE_EVENT_DETAIL_DOUBLE_CLICK = 2;
-
-export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl, inputRef }: TreeviewSearchableProps) => {
+export const TreeviewSearchable = ({
+    properties,
+    formMethods,
+    setAnchorEl,
+    inputRef,
+    equipmentType,
+    formulaCursorPosition,
+    formulaTextRef,
+}: TreeviewSearchableProps) => {
     const intl = useIntl();
     const [pendingSelection, setPendingSelection] = useState<string | null>(null);
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-    const treeData = useMemo(() => buildTreeData(properties, properties), [properties]);
+    const treeData = useMemo(
+        () => sortData(buildTreeData(properties, properties, intl, equipmentType)),
+        [equipmentType, intl, properties]
+    );
     const { currentResultIndex, matches, handleSearch, handleNavigate, handleResetSearch, itemRefs, filter } =
         useFormulaQuickSearch(treeData, setExpandedItems);
 
@@ -42,23 +55,31 @@ export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl, input
 
     const handleConfirm = useCallback(() => {
         if (pendingSelection) {
-            const newValue = getValues(FORMULA) ? `${getValues(FORMULA)}${pendingSelection}` : pendingSelection;
-            setValue(FORMULA, newValue, { shouldValidate: true });
+            const currentFormulaValue = getValues(FORMULA) || '';
+            const before = currentFormulaValue.slice(0, formulaCursorPosition);
+            const after = currentFormulaValue.slice(formulaCursorPosition);
+            const newFormulaValue = before + pendingSelection + after;
+            const newFormulaCursorPosition = formulaCursorPosition + pendingSelection.length;
+
+            setValue(FORMULA, newFormulaValue, { shouldValidate: true });
+
+            setPendingSelection(null);
+            setAnchorEl(null);
+
+            // Focus and set cursor on formula text field
+            requestAnimationFrame(() => {
+                if (formulaTextRef.current) {
+                    formulaTextRef.current.focus();
+                    formulaTextRef.current.setSelectionRange(newFormulaCursorPosition, newFormulaCursorPosition);
+                }
+            });
+        } else {
+            setPendingSelection(null);
+            setAnchorEl(null);
         }
-        setPendingSelection(null);
-        setAnchorEl(null);
-    }, [getValues, pendingSelection, setAnchorEl, setPendingSelection, setValue]);
+    }, [getValues, pendingSelection, setAnchorEl, setValue, formulaTextRef, formulaCursorPosition]);
 
     const { handleKeyDown, handleTreeviewKeyDown } = usePopoverToggle(properties, setAnchorEl, handleConfirm);
-
-    const handleDoubleClick = useCallback(
-        (e: MouseEvent) => {
-            if (e.detail === MOUSE_EVENT_DETAIL_DOUBLE_CLICK) {
-                handleConfirm();
-            }
-        },
-        [handleConfirm]
-    );
 
     return (
         <>
@@ -80,7 +101,6 @@ export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl, input
                     onExpandedItemsChange={(_, ids) => setExpandedItems(ids)}
                     onKeyDown={handleTreeviewKeyDown}
                     onItemFocus={(e, itemId) => setPendingSelection(itemId)}
-                    onItemClick={handleDoubleClick}
                     slots={{
                         expandIcon: ChevronRight,
                         collapseIcon: ExpandMore,

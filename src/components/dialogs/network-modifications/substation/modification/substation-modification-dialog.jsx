@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
@@ -29,6 +28,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -70,7 +70,7 @@ const SubstationModificationDialog = ({
     const [substationToModify, setSubstationToModify] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -126,7 +126,6 @@ const SubstationModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setSubstationToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             }
@@ -151,10 +150,7 @@ const SubstationModificationDialog = ({
                 country: substation[COUNTRY],
                 properties: toModificationProperties(substation),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'SubstationModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'SubstationModificationError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid, selectedId]

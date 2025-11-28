@@ -6,8 +6,8 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
+import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
 import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 
 export function getDefaultLoadFlowProvider() {
@@ -74,7 +74,7 @@ export function startLoadFlow(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     withRatioTapChangers: boolean
-): Promise<void> {
+): Promise<Response> {
     console.info(
         'Running loadflow on study ' +
             studyUuid +

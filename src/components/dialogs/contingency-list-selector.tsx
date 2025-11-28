@@ -21,7 +21,7 @@ import { fetchContingencyCount } from '../../services/study';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { toggleElementFromList } from 'components/utils/utils';
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from '@mui/material';
 import { AppState } from '../../redux/reducer';
@@ -30,7 +30,7 @@ import { useParameterState } from './parameters/use-parameters-state';
 function makeButton(onClick: () => void, message: string, disabled: boolean) {
     return (
         <Grid item>
-            <Button onClick={onClick} variant="contained" disabled={disabled}>
+            <Button onClick={onClick} variant="contained" disabled={disabled} data-testid={`${message}Button`}>
                 <FormattedMessage id={message} />
             </Button>
         </Grid>
@@ -181,7 +181,7 @@ export function ContingencyListSelector({ open, onClose, onStart }: Readonly<Con
     return (
         <>
             <Dialog open={open} onClose={handleClose} maxWidth={'sm'} fullWidth={true}>
-                <DialogTitle>
+                <DialogTitle data-testid="DialogTitle">
                     <Typography component="span" variant="h5">
                         <FormattedMessage id="ContingencyListsSelection" />
                     </Typography>

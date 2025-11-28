@@ -9,11 +9,11 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
-import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { RowClassParams } from 'ag-grid-community';
 
 import { LimitViolationResultProps } from './load-flow-result.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
@@ -21,7 +21,6 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 
 export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> = ({
@@ -65,12 +64,6 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
         []
     );
 
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
             if (params?.data?.elementId) {
@@ -82,9 +75,6 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
         [theme.selectedRow.background]
     );
 
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
     const messages = useIntlResultStatusMessages(intl);
 
     const renderLoadFlowLimitViolations = () => {
@@ -100,8 +90,6 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
                     defaultColDef={defaultColDef}
                     tableName={tableName}
                     rows={rowsToShow}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}

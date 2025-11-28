@@ -6,7 +6,7 @@
  */
 import {
     AMOUNT_TEMPORARY_LIMITS,
-    APPLICABIlITY,
+    APPLICABILITY_FIELD,
     CSV_FILENAME,
     EQUIPMENT_ID,
     IS_ACTIVE,
@@ -27,7 +27,7 @@ import {
 } from '../../../utils/field-constants';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import yup from '../../../utils/yup-config';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { toModificationOperation } from '../../../utils/utils';
 import { AttributeModification } from '../../../../services/network-modification-types';
@@ -180,7 +180,7 @@ const mapOperationalLimitGroupBackToFront = (
         (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2]?.value === group.id &&
             modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1]?.value === group.id &&
             group.applicability === APPLICABILITY.EQUIPMENT.id);
-    row[SIDE] = group[APPLICABIlITY];
+    row[SIDE] = group[APPLICABILITY_FIELD];
     row[LIMIT_GROUP_NAME] = group.id;
     row[MODIFICATION_TYPE] = group.modificationType;
     row[TEMPORARY_LIMITS_MODIFICATION_TYPE] = group.temporaryLimitsModificationType;

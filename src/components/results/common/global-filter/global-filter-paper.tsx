@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Chip, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
+import { Box, Button, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
 import {
     getResultsGlobalFiltersChipStyle,
     GLOBAL_FILTERS_CELL_HEIGHT,
@@ -28,6 +28,7 @@ import {
     ElementType,
     fetchElementsInfos,
     mergeSx,
+    OverflowableChip,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
@@ -37,7 +38,7 @@ const XS_COLUMN2: number = 4;
 const XS_COLUMN3: number = 4.5;
 
 type GlobalFilterPaperProps = PropsWithChildren<{
-    autocompleteRef?: RefObject<HTMLElement>;
+    autocompleteRef?: RefObject<HTMLElement | null>;
 }>;
 
 function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterPaperProps>) {
@@ -213,8 +214,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                             <List sx={mergeSx(resultsGlobalFilterStyles.list, { overflowY: 'auto' })}>
                                 {selectedGlobalFilters.map((element: GlobalFilter) => (
                                     <ListItem key={element.label} sx={{ height: '1.8em' }}>
-                                        <Chip
-                                            size="small"
+                                        <OverflowableChip
                                             label={getOptionLabel(element, translate)}
                                             sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                                             onDelete={() => {

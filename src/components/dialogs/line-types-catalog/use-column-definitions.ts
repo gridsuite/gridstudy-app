@@ -7,7 +7,7 @@
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
 import { ColDef } from 'ag-grid-community';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { DefaultCellRenderer } from '@gridsuite/commons-ui';
 
 export const useColumnDefinitions = () => {
     const intl = useIntl();

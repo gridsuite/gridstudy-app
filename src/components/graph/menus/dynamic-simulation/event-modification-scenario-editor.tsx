@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { CheckBoxList, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -14,7 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
@@ -37,7 +37,7 @@ import {
     fetchDynamicSimulationEvents,
 } from '../../../../services/study/dynamic-simulation';
 
-const EventModificationScenarioEditor = () => {
+const EventModificationScenarioEditor = memo(() => {
     const intl = useIntl();
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -45,7 +45,7 @@ const EventModificationScenarioEditor = () => {
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
+    const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState<Event[]>([]);
@@ -128,9 +128,7 @@ const EventModificationScenarioEditor = () => {
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -186,11 +184,8 @@ const EventModificationScenarioEditor = () => {
             return;
         }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((errMsg) => {
-            snackError({
-                messageTxt: errMsg,
-                headerId: 'DynamicSimulationEventDeleteError',
-            });
+        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((error) => {
+            snackWithFallback(snackError, error, { headerId: 'DynamicSimulationEventDeleteError' });
         });
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
@@ -372,6 +367,6 @@ const EventModificationScenarioEditor = () => {
             )}
         </>
     );
-};
+});
 
 export default EventModificationScenarioEditor;

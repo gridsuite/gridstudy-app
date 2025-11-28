@@ -5,15 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'crypto';
-import { EquipmentType, ExtendedEquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    EquipmentType,
+    ExtendedEquipmentType,
+    type GsLang,
+    type Identifiable,
+} from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
-import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
-import { SwitchInfos } from './network-map.type';
+import { getQueryParamsList } from '../utils';
+import { BusBarSectionsInfos, FeederBaysInfos, SwitchInfos } from './network-map.type';
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
+import { isBlankOrEmpty } from '../../components/utils/validation-functions';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -151,6 +160,54 @@ export function fetchSwitchesOfVoltageLevel(
 
     console.debug(fetchSwitchesUrl);
     return backendFetchJson(fetchSwitchesUrl);
+}
+
+export function fetchVoltageLevelBusBarSectionsInfos(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: string
+): Promise<BusBarSectionsInfos> {
+    console.info(
+        `Fetching bus bar sections information of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
+
+    const fetchTopologyUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network/voltage-levels/' +
+        encodeURIComponent(voltageLevelId) +
+        '/bus-bar-sections' +
+        '?' +
+        urlSearchParams.toString();
+
+    console.debug(fetchTopologyUrl);
+    return backendFetchJson(fetchTopologyUrl);
+}
+
+export function fetchVoltageLevelFeederBaysInfos(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: string
+): Promise<FeederBaysInfos> {
+    console.info(
+        `Fetching feeder bays infos of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
+
+    const fetchTopologyUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network/voltage-levels/' +
+        encodeURIComponent(voltageLevelId) +
+        '/feeder-bays' +
+        '?' +
+        urlSearchParams.toString();
+
+    console.debug(fetchTopologyUrl);
+    return backendFetchJson(fetchTopologyUrl);
 }
 
 /* substations */
@@ -388,14 +445,31 @@ export const fetchRootNetworkIndexationStatus = (studyUuid: UUID, rootNetworkUui
     return backendFetchText(fetchRootNetworkIndexationUrl);
 };
 
-/* export-network */
-
-export function getExportUrl(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID, exportFormat: string) {
+export function exportNetworkFile(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    rootNetworkUuid: UUID,
+    params: Record<string, any>,
+    selectedFormat: string,
+    fileName: string
+): Promise<UUID> {
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
         '/export-network/' +
-        exportFormat;
-    return getUrlWithToken(url);
+        selectedFormat;
+
+    const urlSearchParams = new URLSearchParams();
+    if (Object.keys(params).length > 0) {
+        const paramsJson = JSON.stringify(params);
+        urlSearchParams.append('formatParameters', paramsJson);
+    }
+    if (!isBlankOrEmpty(fileName)) {
+        urlSearchParams.append('fileName', fileName);
+    }
+
+    const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';
+
+    return backendFetchJson(url + suffix);
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {

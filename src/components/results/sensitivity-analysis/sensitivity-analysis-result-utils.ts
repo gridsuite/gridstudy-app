@@ -37,8 +37,8 @@ export const SUFFIX_TYPES = {
     [SENSITIVITY_AT_NODE]: 'kV',
 };
 
-export const PAGE_OPTIONS = [10, 25, 100, { label: 'All', value: -1 }];
-export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[1];
+export const PAGE_OPTIONS = [25, 100, 500, 1000];
+export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
 export const DATA_KEY_TO_FILTER_KEY_N = {
     funcId: 'functionId',
     varId: 'variableId',

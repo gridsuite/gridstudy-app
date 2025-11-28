@@ -5,18 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    Alert,
     Collapse,
     Dialog,
     DialogTitle,
+    FormControl,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Typography,
-    InputLabel,
-    Alert,
-    FormControl,
-    Select,
-    MenuItem,
-    CircularProgress,
-    IconButton,
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -25,17 +24,24 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CancelButton, FlatParameters, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CancelButton,
+    fetchDirectoryElementPath,
+    FlatParameters,
+    Parameter,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
-import { getExportUrl } from '../../services/study/network';
-import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import TextField from '@mui/material/TextField';
 import { useSelector } from 'react-redux';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { useParameterState } from './parameters/use-parameters-state';
 import { AppState } from '../../redux/reducer';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+
+import { IGNORED_PARAMS } from './root-network/ignored-params';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -51,10 +57,24 @@ const STRING_LIST = 'STRING_LIST';
 interface ExportNetworkDialogProps {
     open: boolean;
     onClose: () => void;
-    onClick: (url: string) => void;
+    onClick: (nodeUuid: UUID, params: Record<string, any>, selectedFormat: string, fileName: string) => void;
     studyUuid: UUID;
     nodeUuid: UUID;
-    rootNetworkUuid: UUID;
+}
+
+// we check if the param is for extension, if it is, we select all possible values by default.
+// the only way for the moment to check if the param is for extension, is by checking his type is name.
+// TODO to be removed when extensions param default value corrected in backend to include all possible values
+function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parameter[] {
+    return parameters.map((parameter) => {
+        if (
+            parameter.type === STRING_LIST &&
+            (parameter.name?.endsWith('included.extensions') || parameter.name?.endsWith('included-extensions'))
+        ) {
+            parameter.defaultValue = parameter.possibleValues;
+        }
+        return parameter;
+    });
 }
 
 export function ExportNetworkDialog({
@@ -63,15 +83,13 @@ export function ExportNetworkDialog({
     onClick,
     studyUuid,
     nodeUuid,
-    rootNetworkUuid,
 }: Readonly<ExportNetworkDialogProps>) {
     const intl = useIntl();
     const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
     const [selectedFormat, setSelectedFormat] = useState('');
-    const [loading, setLoading] = useState(false);
     const [exportStudyErr, setExportStudyErr] = useState('');
     const { snackError } = useSnackMessage();
-    const [fileName, setFileName] = useState<string>();
+    const [fileName, setFileName] = useState<string>('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [unfolded, setUnfolded] = useState(false);
 
@@ -87,10 +105,7 @@ export function ExportNetworkDialog({
                     setFileName(`${studyName}_${nodeName}`);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'LoadStudyAndParentsInfoError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
                 });
         }
     }, [studyUuid, nodeName, snackError]);
@@ -102,16 +117,9 @@ export function ExportNetworkDialog({
                 const availableFormats = enableDeveloperMode
                     ? formats
                     : Object.fromEntries(Object.entries(formats).filter(([key]) => key === XIIDM_FORMAT));
-                // we check if the param is for extension, if it is, we select all possible values by default.
-                // the only way for the moment to check if the param is for extension, is by checking his type is name.
-                //TODO to be removed when extensions param default value corrected in backend to include all possible values
+
                 Object.values(availableFormats).forEach((format) => {
-                    format.parameters = format.parameters.map((parameter) => {
-                        if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
-                            parameter.defaultValue = parameter.possibleValues;
-                        }
-                        return parameter;
-                    });
+                    format.parameters = getDefaultValuesForExtensionsParameter(format.parameters);
                 });
                 setFormatsWithParameters(availableFormats);
             });
@@ -123,7 +131,6 @@ export function ExportNetworkDialog({
     };
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
-    const metasAsArray = formatWithParameter?.parameters || [];
     const [currentParameters, setCurrentParameters] = useState({});
     const onChange = useCallback((paramName: string, value: unknown, isInEdition: boolean) => {
         if (!isInEdition) {
@@ -137,21 +144,7 @@ export function ExportNetworkDialog({
     }, []);
     const handleExportClick = () => {
         if (fileName && selectedFormat) {
-            const downloadUrl = getExportUrl(studyUuid, nodeUuid, rootNetworkUuid, selectedFormat);
-            let suffix;
-            const urlSearchParams = new URLSearchParams();
-            if (Object.keys(currentParameters).length > 0) {
-                const jsoned = JSON.stringify(currentParameters);
-                urlSearchParams.append('formatParameters', jsoned);
-            }
-            if (!isBlankOrEmpty(fileName)) {
-                urlSearchParams.append('fileName', fileName);
-            }
-
-            // we have already as parameters, the access tokens, so use '&' instead of '?'
-            suffix = urlSearchParams.toString() ? '&' + urlSearchParams.toString() : '';
-            setLoading(true);
-            onClick(downloadUrl + suffix);
+            onClick(nodeUuid, currentParameters, selectedFormat, fileName);
         } else {
             setExportStudyErr(intl.formatMessage({ id: 'exportStudyErrorMsg' }));
         }
@@ -161,7 +154,6 @@ export function ExportNetworkDialog({
         setCurrentParameters({});
         setExportStudyErr('');
         setSelectedFormat('');
-        setLoading(false);
         onClose();
     };
 
@@ -169,6 +161,14 @@ export function ExportNetworkDialog({
         let selected = event.target.value;
         setSelectedFormat(selected);
     };
+
+    const metasAsArray = useMemo(() => {
+        if (formatWithParameter?.parameters) {
+            return formatWithParameter?.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name));
+        } else {
+            return [];
+        }
+    }, [formatWithParameter?.parameters]);
 
     return (
         <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} aria-labelledby="dialog-title-export">
@@ -234,17 +234,6 @@ export function ExportNetworkDialog({
                     />
                 </Collapse>
                 {exportStudyErr !== '' && <Alert severity="error">{exportStudyErr}</Alert>}
-                {loading && (
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            marginTop: '5px',
-                        }}
-                    >
-                        <CircularProgress />
-                    </div>
-                )}
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />

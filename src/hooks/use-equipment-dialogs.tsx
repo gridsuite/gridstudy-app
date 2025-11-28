@@ -6,12 +6,12 @@
  */
 
 import { useCallback, useState } from 'react';
-import { EquipmentType, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 import { deleteEquipment } from '../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../services/study/network';
 import { CurrentTreeNode } from '../components/graph/tree-node.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 import BatteryModificationDialog from '../components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import GeneratorModificationDialog from '../components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
@@ -95,10 +95,7 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
         (equipmentType: string, equipmentId: string) => {
             if (studyUuid) {
                 deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'UnableToDeleteEquipment',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
                 });
             }
         },

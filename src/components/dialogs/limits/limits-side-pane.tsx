@@ -7,16 +7,24 @@
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    DndColumnType,
     ColumnNumeric,
     ColumnText,
     DndColumn,
+    DndColumnType,
+    ErrorInput,
+    FieldErrorAlert,
     FloatInput,
     SelectInput,
-    Option,
+    TextInput,
 } from '@gridsuite/commons-ui';
 import {
-    APPLICABIlITY,
+    APPLICABILITY_FIELD,
+    CURRENT_LIMITS,
+    LIMITS,
+    LIMITS_PROPERTIES,
+    NAME,
+    OLG_IS_DUPLICATE,
+    OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -25,42 +33,39 @@ import {
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { AmpereAdornment } from '../dialog-utils';
-import { useCallback, useMemo } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useController, useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
-import GridSection from '../commons/grid-section';
 import { APPLICABILITY } from '../../network/constants';
+import { LimitsPropertiesSideStack } from './limits-properties-side-stack';
 
 export interface LimitsSidePaneProps {
-    limitsGroupFormName: string;
-    limitsGroupApplicabilityName?: string;
+    name?: string;
     permanentCurrentLimitPreviousValue: number | null | undefined;
     temporaryLimitsPreviousValues: TemporaryLimit[];
     applicabilityPreviousValue?: string;
     clearableFields: boolean | undefined;
     currentNode?: CurrentTreeNode;
-    selectedLimitSetName?: string;
-    checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
+    disabled: boolean;
 }
 
 export function LimitsSidePane({
-    limitsGroupFormName,
-    limitsGroupApplicabilityName,
+    name,
     permanentCurrentLimitPreviousValue,
     temporaryLimitsPreviousValues,
     applicabilityPreviousValue,
     clearableFields,
     currentNode,
-    selectedLimitSetName,
-    checkLimitSetUnicity,
+    disabled,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
-    const { setError, getValues } = useFormContext();
+    const { getValues, subscribe, trigger } = useFormContext();
+    const limitsGroupFormName = useMemo((): string => `${name}.${CURRENT_LIMITS}`, [name]);
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
@@ -163,31 +168,6 @@ export function LimitsSidePane({
         [findTemporaryLimit, shouldReturnPreviousValue]
     );
 
-    const disableTableCell = useCallback(
-        (
-            rowIndex: number,
-            column: ColumnText | ColumnNumeric,
-            arrayFormName: string,
-            temporaryLimits?: TemporaryLimit[]
-        ) => {
-            // If the temporary limit is added, all fields are editable
-            // otherwise, only the value field is editable
-            let disable: boolean =
-                temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
-                column.dataKey !== TEMPORARY_LIMIT_VALUE;
-
-            if (
-                getValues(arrayFormName) &&
-                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
-            ) {
-                disable = false;
-            }
-
-            return disable;
-        },
-        [getValues, temporaryLimitHasPreviousValue]
-    );
-
     const isValueModified = useCallback(
         (rowIndex: number, arrayFormName: string) => {
             const temporaryLimits = getValues(arrayFormName);
@@ -211,54 +191,77 @@ export function LimitsSidePane({
                 label="PermanentCurrentLimitText"
                 adornment={AmpereAdornment}
                 previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                clearable={clearableFields}
+                clearable={!disabled && clearableFields}
+                disabled={disabled}
             />
         ),
-        [clearableFields, limitsGroupFormName, permanentCurrentLimitPreviousValue]
+        [clearableFields, disabled, limitsGroupFormName, permanentCurrentLimitPreviousValue]
     );
+
+    // Trigger all OLG_IS_DUPLICATE fields when change on applicability or name field
+    useEffect(() => {
+        const unsubscribeCallBack = subscribe({
+            name: [`${name}.${APPLICABILITY_FIELD}`, `${name}.${NAME}`],
+            formState: {
+                values: true,
+            },
+            callback: ({ isSubmitted }) => {
+                if (isSubmitted) {
+                    const operationalLimitsGroups = getValues(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`);
+                    for (let index = 0; index < operationalLimitsGroups?.length; index++) {
+                        trigger(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${OLG_IS_DUPLICATE}`).then();
+                    }
+                }
+            },
+        });
+        return () => unsubscribeCallBack();
+    }, [trigger, subscribe, name, getValues]);
+
+    const {
+        fieldState: { error },
+    } = useController({
+        name: `${name}.${OLG_IS_DUPLICATE}`,
+    });
 
     return (
         <Box sx={{ p: 2 }}>
-            {limitsGroupApplicabilityName && (
-                <>
-                    <GridSection title={selectedLimitSetName ?? ''} isLiteralText />
-                    <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
-                        <Grid item xs={2}>
-                            <FormattedMessage id="Applicability" />
+            <LimitsChart
+                limitsGroupFormName={limitsGroupFormName}
+                previousPermanentLimit={permanentCurrentLimitPreviousValue}
+            />
+            {name && (
+                <Box>
+                    <Grid container justifyContent="flex-start" alignItems="stretch" spacing={2} sx={{ paddingY: 1 }}>
+                        <Grid item xs={4}>
+                            <TextInput
+                                name={`${name}.${NAME}`}
+                                label="name"
+                                formProps={error?.message ? { error: true } : {}}
+                                disabled={disabled}
+                            />
                         </Grid>
                         <Grid item xs={4}>
                             <SelectInput
+                                label="Applicability"
                                 options={Object.values(APPLICABILITY)}
-                                name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
+                                name={`${name}.${APPLICABILITY_FIELD}`}
                                 previousValue={applicabilityPreviousValue}
                                 sx={{ flexGrow: 1 }}
                                 disableClearable
                                 size="small"
-                                onCheckNewValue={(value: Option | null) => {
-                                    if (value) {
-                                        const errorMessage: string = checkLimitSetUnicity(
-                                            selectedLimitSetName ?? '',
-                                            typeof value === 'string' ? value : value.id
-                                        );
-                                        setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
-                                            message: errorMessage,
-                                        });
-                                    }
-                                    return true;
-                                }}
+                                disabled={disabled}
+                                formProps={{ error: !!error?.message }}
                             />
                         </Grid>
+                        <Grid item xs={4}>
+                            {PermanentLimitBox}
+                        </Grid>
                     </Grid>
-                </>
+                    <ErrorInput InputField={FieldErrorAlert} name={`${name}.${OLG_IS_DUPLICATE}`} />
+                </Box>
             )}
-            <Box>
-                <LimitsChart
-                    limitsGroupFormName={limitsGroupFormName}
-                    previousPermanentLimit={permanentCurrentLimitPreviousValue}
-                />
-            </Box>
-            <Box sx={{ maxWidth: 300, paddingTop: 2 }}>{PermanentLimitBox}</Box>
-            <Box component={`h4`}>
+
+            <Box component={`h4`} margin={1}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
             <TemporaryLimitsTable
@@ -266,10 +269,11 @@ export function LimitsSidePane({
                 createRow={createRows}
                 columnsDefinition={columnsDefinition}
                 previousValues={temporaryLimitsPreviousValues}
-                disableTableCell={disableTableCell}
                 getPreviousValue={getPreviousValue}
                 isValueModified={isValueModified}
+                disabled={disabled}
             />
+            <LimitsPropertiesSideStack name={`${name}.${LIMITS_PROPERTIES}`} disabled={disabled} />
         </Box>
     );
 }

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     ColumnDefinition,
     ColumnDefinitionDto,
@@ -15,7 +15,7 @@ import {
     SpreadsheetTabDefinition,
 } from '../../types/spreadsheet.type';
 import { Dispatch } from 'redux';
-import { UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { snackWithFallback, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
@@ -72,6 +72,10 @@ export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
         type: column.type,
         precision: column?.precision,
         formula: column.formula,
+        filterDataType: column.filterDataType,
+        filterTolerance: column.filterTolerance,
+        filterType: column.filterType,
+        filterValue: column.filterValue,
         visible: column.visible,
         [COLUMN_DEPENDENCIES]: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
     }));
@@ -132,8 +136,7 @@ const handleSuccess = (
             dispatch(addSortForNewSpreadsheet(uuid, [{ colId: 'id', sort: SortWay.ASC }]));
         })
         .catch((error) => {
-            snackError({
-                messageTxt: error,
+            snackWithFallback(snackError, error, {
                 headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
             });
         })
@@ -181,8 +184,7 @@ export const addNewSpreadsheet = ({
             handleSuccess(uuid, newTableDefinition, dispatch, snackError, open, nodeAliases, resetNodeAliases);
         })
         .catch((error) => {
-            snackError({
-                messageTxt: error,
+            snackWithFallback(snackError, error, {
                 headerId: 'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet',
             });
             open.setFalse();

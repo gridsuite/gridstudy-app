@@ -5,22 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
-import { backendFetchJson } from './utils';
+import type { UUID } from 'node:crypto';
+import { backendFetch, backendFetchJson, Parameter } from '@gridsuite/commons-ui';
 
 const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-conversion';
 
-export interface CaseImportParameters {
-    name: string;
-    description: string;
-    type: string;
-    defaultValue: any;
-    possibleValues?: string[] | null;
-}
-
 export interface GetCaseImportParametersReturn {
     formatName: string;
-    parameters: CaseImportParameters[];
+    parameters: Parameter[];
 }
 
 export function getCaseImportParameters(caseUuid: UUID): Promise<GetCaseImportParametersReturn> {
@@ -29,4 +21,9 @@ export function getCaseImportParameters(caseUuid: UUID): Promise<GetCaseImportPa
         PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/cases/' + caseUuid + '/import-parameters';
     console.debug(getExportFormatsUrl);
     return backendFetchJson(getExportFormatsUrl);
+}
+
+export function fetchExportNetworkFile(exportUuid: UUID) {
+    const url = PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/download-file/' + exportUuid;
+    return backendFetch(url);
 }

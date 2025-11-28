@@ -9,7 +9,6 @@ import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
 import {
     AttributeModification,
-    CurrentLimits,
     OperationalLimitsGroup,
     OperationType,
     TemporaryLimit,
@@ -17,10 +16,10 @@ import {
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import {
-    APPLICABIlITY,
+    APPLICABILITY_FIELD,
     CURRENT_LIMITS,
-    DELETION_MARK,
     ID,
+    LIMITS_PROPERTIES,
     MODIFICATION_TYPE,
     NAME,
     SELECTED,
@@ -29,7 +28,8 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
 } from './field-constants';
-import { TemporaryLimitFormInfos } from '../dialogs/network-modifications/line/modification/line-modification-type';
+import { TemporaryLimitFormSchema } from '../dialogs/limits/operational-limits-groups-types';
+import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -131,43 +131,53 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): TemporaryLimit[] =>
+export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): TemporaryLimit[] =>
+    temporaryLimits?.map((limit: TemporaryLimitsData) => {
+        return {
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [MODIFICATION_TYPE]: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
+        };
+    });
+
+export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [MODIFICATION_TYPE]: limit?.[MODIFICATION_TYPE] ?? null,
         };
     });
 
-export const formatToTemporaryLimitsFormInfos = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormInfos[] =>
-    temporaryLimits?.map((limit: TemporaryLimit) => {
+export const formatMapInfosToTemporaryLimitsFormSchema = (
+    temporaryLimits: TemporaryLimitsData[]
+): TemporaryLimitFormSchema[] =>
+    temporaryLimits?.map((limit: TemporaryLimitsData) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [DELETION_MARK]: limit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
         };
     });
 
-export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimits[]) => {
+export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsData[]) => {
     const formattedCompleteLimitsGroups: OperationalLimitsGroup[] = [];
     if (completeLimitsGroups) {
-        completeLimitsGroups.forEach((elt) => {
+        for (const elt of completeLimitsGroups) {
             if (isNotBlankOrEmpty(elt.id)) {
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id + elt.applicability,
                     [NAME]: elt.id,
-                    [APPLICABIlITY]: elt.applicability,
+                    [APPLICABILITY_FIELD]: elt.applicability,
+                    [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
-                        [ID]: elt.id,
                         permanentLimit: elt.permanentLimit,
                         temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
                     },
                 });
             }
-        });
+        }
     }
     return formattedCompleteLimitsGroups;
 };
@@ -296,26 +306,13 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
     return Array.from({ length }, (_, index) => start + index * step);
 }
 
-export const StudyView = {
-    TREE: 'Tree',
-    SPREADSHEET: 'Spreadsheet',
-    RESULTS: 'Results',
-    LOGS: 'Logs',
-    PARAMETERS: 'Parameters',
-};
-
-export const STUDY_VIEWS = [
-    StudyView.TREE,
-    StudyView.SPREADSHEET,
-    StudyView.RESULTS,
-    StudyView.LOGS,
-    StudyView.PARAMETERS,
-];
-
-export type StudyViewType = (typeof StudyView)[keyof typeof StudyView];
-
 export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
     return rows?.map((row) => {
         return { ...row, [SELECTED]: false };
     });
 };
+
+//Escapes regex special characters to avoid misinterpreting user prompts
+export function escapeRegExp(string: string): string {
+    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}

@@ -5,24 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
 import { OperationalLimitsGroup } from '../../../../../services/network-modification-types';
+import type { UUID } from 'node:crypto';
 import { Property } from '../../common/properties/property-utils';
-import {
-    APPLICABIlITY,
-    CURRENT_LIMITS,
-    DELETION_MARK,
-    ID,
-    NAME,
-    OPERATIONAL_LIMITS_GROUPS,
-    PERMANENT_LIMIT,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
-    TEMPORARY_LIMIT_DURATION,
-    TEMPORARY_LIMIT_NAME,
-    TEMPORARY_LIMIT_VALUE,
-    TEMPORARY_LIMITS,
-} from '../../../../utils/field-constants';
+import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
 
 export interface LineModificationFormInfos {
     equipmentId?: string;
@@ -66,33 +52,5 @@ export interface LineModificationFormInfos {
     AdditionalProperties: any;
     characteristics: any;
     stateEstimation: any;
-    limits: LimitsDialogFormInfos;
-}
-
-export interface LimitsDialogFormInfos {
-    [SELECTED_LIMITS_GROUP_1]: string | null;
-    [SELECTED_LIMITS_GROUP_2]: string | null;
-    [OPERATIONAL_LIMITS_GROUPS]: OperationalLimitsGroupFormInfos[];
-}
-
-export interface OperationalLimitsGroupFormInfos {
-    // here 'id' is a concatenation of NAME and APPLICABIlITY because 2 limits sets on side1 and 2 may have the same name
-    // "ID" from the map server is stored as NAME in the form because of this
-    [ID]: string;
-    [APPLICABIlITY]?: string;
-    [NAME]: string;
-    [CURRENT_LIMITS]: CurrentLimitsFormInfos;
-}
-
-export interface CurrentLimitsFormInfos {
-    [ID]: string;
-    [PERMANENT_LIMIT]: number | null;
-    [TEMPORARY_LIMITS]: TemporaryLimitFormInfos[];
-}
-
-export interface TemporaryLimitFormInfos {
-    [TEMPORARY_LIMIT_NAME]: string;
-    [TEMPORARY_LIMIT_DURATION]: number | null;
-    [TEMPORARY_LIMIT_VALUE]: number | null;
-    [DELETION_MARK]: boolean;
+    limits: OperationalLimitsGroupsFormSchema;
 }

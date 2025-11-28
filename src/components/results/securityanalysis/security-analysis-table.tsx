@@ -10,10 +10,9 @@ import { SecurityAnalysisResultProps } from './security-analysis.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { GridReadyEvent } from 'ag-grid-community';
 import { IntlShape, useIntl } from 'react-intl';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { ComputingType, CustomAGGrid, DefaultCellRenderer } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({

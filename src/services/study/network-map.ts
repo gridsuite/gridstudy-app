@@ -6,9 +6,11 @@
  */
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
+import { getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
 import {
+    backendFetchJson,
+    backendFetchText,
     createFilter,
     EquipmentInfos,
     EquipmentType,
@@ -19,7 +21,7 @@ import {
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid: UUID,

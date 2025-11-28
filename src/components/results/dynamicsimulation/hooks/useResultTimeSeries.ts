@@ -9,9 +9,9 @@ import {
     fetchDynamicSimulationTimeSeriesMetadata,
 } from '../../../../services/study/dynamic-simulation';
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { SimpleTimeSeriesMetadata, Timeseries } from '../types/dynamic-simulation-result.type';
 import { dynamicSimulationResultInvalidations } from '../../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
@@ -108,10 +108,7 @@ const useResultTimeSeries = ({
                         }));
                     })
                     .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'DynamicSimulationResults',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'DynamicSimulationResults' });
                         return undefined;
                     });
             }

@@ -17,7 +17,7 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -33,7 +33,7 @@ import {
     SensitivityAnalysisTab,
     SortWay,
 } from '../../../types/custom-aggrid-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
@@ -139,14 +139,9 @@ function PagedSensitivityAnalysisResult({
                 setOptions(res);
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'SensitivityAnalysisResultsError',
-                    }),
-                });
+                snackWithFallback(snackError, error, { headerId: 'SensitivityAnalysisResultsError' });
             });
-    }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, currentRootNetworkUuid, snackError, intl]);
+    }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, currentRootNetworkUuid, snackError]);
 
     const fetchResult = useCallback(() => {
         const sortSelector = sortConfig?.length
@@ -189,12 +184,7 @@ function PagedSensitivityAnalysisResult({
                 setCount(filteredSensitivitiesCount);
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'SensitivityAnalysisResultsError',
-                    }),
-                });
+                snackWithFallback(snackError, error, { headerId: 'SensitivityAnalysisResultsError' });
             })
             .finally(() => {
                 setIsLoading(false);
@@ -211,8 +201,10 @@ function PagedSensitivityAnalysisResult({
         nodeUuid,
         currentRootNetworkUuid,
         snackError,
-        intl,
     ]);
+
+    // Debounce the fetch to avoid excessive calls
+    const debouncedFetchResult = useDebounce(fetchResult, 1000);
 
     useEffect(() => {
         if (sensiStatus === RunningStatus.RUNNING) {
@@ -220,9 +212,9 @@ function PagedSensitivityAnalysisResult({
         }
         if (sensiStatus === RunningStatus.SUCCEED) {
             fetchFilterOptions();
-            fetchResult();
+            debouncedFetchResult();
         }
-    }, [sensiStatus, fetchResult, fetchFilterOptions, globalFilters]);
+    }, [sensiStatus, debouncedFetchResult, fetchFilterOptions, globalFilters]);
 
     return (
         <>

@@ -25,19 +25,17 @@ import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcirc
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    view: string;
-    openVoltageLevelDiagram: (id: string) => void;
 }
 
 const getDisplayedColumns = (params: GridReadyEvent) => {
@@ -53,12 +51,10 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    view,
-    openVoltageLevelDiagram,
 }) => {
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
 
-    const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+    const [csvHeader, setCsvHeader] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
 
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
@@ -79,7 +75,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
-    const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex, view);
+    const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex);
 
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
@@ -93,7 +89,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
-    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSubTabChange = useCallback(
@@ -127,7 +123,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     const handleGridColumnsChanged = useCallback((params: GridReadyEvent) => {
         if (params?.api) {
-            setCsvHeaders(getDisplayedColumns(params));
+            setCsvHeader(getDisplayedColumns(params));
         }
     }, []);
 
@@ -184,7 +180,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             currentRootNetworkUuid={currentRootNetworkUuid}
-                            csvHeaders={csvHeaders}
+                            csvHeader={csvHeader}
                             analysisType={tabIndex}
                             disabled={isCsvButtonDisabled}
                         />
@@ -195,14 +191,12 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
-                        globalFilters={getGlobalFilterParameter(globalFilters)}
-                        openVoltageLevelDiagram={openVoltageLevelDiagram}
+                        globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
-                        openVoltageLevelDiagram={openVoltageLevelDiagram}
                     />
                 ))}
             {resultOrLogIndex === LOGS_TAB_INDEX && (

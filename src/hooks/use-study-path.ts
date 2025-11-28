@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     fetchDirectoryElementPath,
     NotificationsUrlKeys,
+    snackWithFallback,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
@@ -17,7 +18,7 @@ import { computeFullPath } from '../utils/compute-title';
 import { studyUpdated } from '../redux/actions';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { useDispatch, useSelector } from 'react-redux';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from '../redux/reducer';
 import { isMetadataUpdatedNotification } from 'types/notification-types';
 
@@ -58,10 +59,7 @@ export default function useStudyPath(studyUuid: UUID | null) {
                 })
                 .catch((error) => {
                     document.title = initialTitle;
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'LoadStudyAndParentsInfoError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
                 });
     }, [initialTitle, snackError, studyUuid]);
     const onStudyUpdated = useCallback(

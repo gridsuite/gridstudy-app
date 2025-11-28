@@ -5,9 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -34,6 +39,8 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
+    TRANSFORMER_REACTANCE,
+    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialog-utils';
@@ -74,6 +81,12 @@ import BatteryModificationForm from './battery-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import {
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormData,
+    getShortCircuitFormSchema,
+} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -84,6 +97,7 @@ const emptyFormData = {
     ...getSetPointsEmptyFormData(true),
     ...getActivePowerControlEmptyFormData(true),
     ...emptyProperties,
+    ...getShortCircuitEmptyFormData(),
 };
 
 const formSchema = yup
@@ -103,6 +117,7 @@ const formSchema = yup
         [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
         ...getSetPointsSchema(true),
         ...getActivePowerControlSchema(true),
+        ...getShortCircuitFormSchema(true),
     })
     .concat(modificationPropertiesSchema)
     .required();
@@ -126,8 +141,7 @@ export default function BatteryModificationDialog({
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [batteryToModify, setBatteryToModify] = useState<BatteryFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-
-    const formMethods = useForm<DeepNullable<BatteryModificationDialogSchemaForm>>({
+    const formMethods = useFormWithDirtyTracking<DeepNullable<BatteryModificationDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<BatteryModificationDialogSchemaForm>>(formSchema),
     });
@@ -163,6 +177,10 @@ export default function BatteryModificationDialog({
                     reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurvePoints ?? null,
                 }),
                 ...getPropertiesFromModification(editData?.properties ?? undefined),
+                ...getShortCircuitFormData({
+                    directTransX: editData?.directTransX?.value ?? null,
+                    stepUpTransformerX: editData?.stepUpTransformerX?.value ?? null,
+                }),
             });
         },
         [reset]
@@ -248,7 +266,6 @@ export default function BatteryModificationDialog({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setBatteryToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {
@@ -297,6 +314,8 @@ export default function BatteryModificationDialog({
                     ? (reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
                 properties: toModificationProperties(battery) ?? null,
+                directTransX: toModificationOperation(battery[TRANSIENT_REACTANCE]),
+                stepUpTransformerX: toModificationOperation(battery[TRANSFORMER_REACTANCE]),
             } satisfies BatteryModificationInfos;
             modifyBattery({
                 batteryModificationInfos: batteryModificationInfos,
@@ -305,10 +324,7 @@ export default function BatteryModificationDialog({
                 modificationUuid: editData?.uuid ?? null,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'BatteryModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'BatteryModificationError' });
             });
         },
         [selectedId, studyUuid, currentNodeUuid, editData, snackError]

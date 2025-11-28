@@ -10,8 +10,8 @@ import React, { useCallback, useState } from 'react';
 import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
-import { UUID } from 'crypto';
-import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
+import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE } from 'components/network-modification-tree-pane';
 
 type BuildButtonProps = {
@@ -19,6 +19,7 @@ type BuildButtonProps = {
     studyUuid: UUID | null;
     currentRootNetworkUuid: UUID | null;
     nodeUuid: UUID;
+    onClick?: () => void;
 };
 
 const styles = {
@@ -30,13 +31,20 @@ const styles = {
     }),
 } as const satisfies MuiStyles;
 
-export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, nodeUuid }: BuildButtonProps) => {
+export const BuildButton = ({
+    buildStatus,
+    studyUuid,
+    currentRootNetworkUuid,
+    nodeUuid,
+    onClick,
+}: BuildButtonProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
             event.stopPropagation();
+            onClick?.();
             if (!studyUuid || !currentRootNetworkUuid || isLoading) {
                 return;
             }
@@ -54,10 +62,7 @@ export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, no
                                 messageValues: { limit: limit },
                             });
                         } else {
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'NodeBuildingError',
-                            });
+                            snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' });
                         }
                     })
                     .finally(() => {
@@ -66,17 +71,14 @@ export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, no
             } else {
                 unbuildNode(studyUuid, nodeUuid, currentRootNetworkUuid)
                     .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'NodeUnbuildingError',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'NodeUnbuildingError' });
                     })
                     .finally(() => {
                         setIsLoading(false);
                     });
             }
         },
-        [studyUuid, currentRootNetworkUuid, nodeUuid, buildStatus, isLoading, snackError]
+        [onClick, studyUuid, currentRootNetworkUuid, isLoading, buildStatus, nodeUuid, snackError]
     );
 
     const getIcon = () => {

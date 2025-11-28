@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     FieldType,
     MODIFICATION_TYPES,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -51,7 +52,6 @@ import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
-import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -143,7 +143,11 @@ const formSchema = yup
         [COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
         [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-        [LOW_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [LOW_VOLTAGE_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'mustBeGreaterOrEqualToZero')
+            .max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
         [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
@@ -167,17 +171,16 @@ const formSchema = yup
                 is: (sectionCount) => sectionCount > 1,
                 then: (schema) => schema.required(),
             }),
-        [COUPLING_OMNIBUS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
-                    [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
-                })
-            )
-            .test('coupling-omnibus-between-sections', (values) =>
-                controlCouplingOmnibusBetweenSections(values, 'CouplingOmnibusBetweenSameBusbar')
-            ),
+        [COUPLING_OMNIBUS]: yup.array().of(
+            yup.object().shape({
+                [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
+                [BUS_BAR_SECTION_ID2]: yup
+                    .string()
+                    .nullable()
+                    .required()
+                    .notOneOf([yup.ref(BUS_BAR_SECTION_ID1), null], 'CreateCouplingDeviceIdenticalBusBar'),
+            })
+        ),
     })
     .concat(creationPropertiesSchema);
 const VoltageLevelCreationDialog = ({
@@ -198,7 +201,24 @@ const VoltageLevelCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, getValues, watch, trigger } = formMethods;
+    const { reset, setValue, getValues, watch, trigger, subscribe } = formMethods;
+
+    // Watch LOW_VOLTAGE_LIMIT changed
+    useEffect(() => {
+        const callback = subscribe({
+            name: [`${HIGH_VOLTAGE_LIMIT}`],
+            formState: {
+                values: true,
+            },
+            callback: ({ isSubmitted }) => {
+                if (isSubmitted) {
+                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
+                }
+            },
+        });
+        return () => callback();
+    }, [trigger, subscribe]);
+
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
@@ -217,7 +237,6 @@ const VoltageLevelCreationDialog = ({
                 voltageLevel.switchKinds?.map((switchKind) => ({
                     [SWITCH_KIND]: switchKind,
                 })) || [];
-
             const switchesBetweenSections =
                 voltageLevel.switchKinds?.map((switchKind) => intl.formatMessage({ id: switchKind })).join(' / ') || '';
 
@@ -266,7 +285,7 @@ const VoltageLevelCreationDialog = ({
             } else {
                 setValue(ADD_SUBSTATION_CREATION, false);
             }
-            if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
+            if (!voltageLevel.isSymmetrical && fromCopy) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
                 });
@@ -341,10 +360,7 @@ const VoltageLevelCreationDialog = ({
                 topologyKind: voltageLevel[TOPOLOGY_KIND],
                 properties: toModificationProperties(voltageLevel),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'VoltageLevelCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'VoltageLevelCreationError' });
             });
         },
         [getValues, onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]

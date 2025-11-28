@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'crypto';
-import { backendFetchJson, backendFetch } from '../utils';
+import type { UUID } from 'node:crypto';
+import { backendFetchJson, backendFetch } from '@gridsuite/commons-ui';
 import { getStudyUrl } from './index';
 import type { SpreadsheetOptionalLoadingParameters } from '../../components/spreadsheet-view/types/spreadsheet.type';
 
@@ -17,7 +17,7 @@ export function fetchSpreadsheetParameters(studyUuid: UUID): Promise<Spreadsheet
 export function updateSpreadsheetParameters(
     studyUuid: UUID,
     parameters: SpreadsheetOptionalLoadingParameters
-): Promise<void> {
+): Promise<Response> {
     return backendFetch(`${getStudyUrl(studyUuid)}/spreadsheet/parameters`, {
         method: 'PUT',
         body: JSON.stringify(parameters),

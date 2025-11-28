@@ -8,9 +8,10 @@
 import { Box } from '@mui/material';
 import { Controls, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { reorderNetworkModificationTreeNodes, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
+import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import { reorderNetworkModificationTreeNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import { openOrFocusPanel } from '../redux/slices/workspace-slice';
 import { isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
@@ -26,28 +27,39 @@ import {
 import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
-import { StudyDisplayMode } from './network-modification.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
+import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
+import { PanelType } from './workspace/types/workspace.types';
 
-const styles = (theme) => ({
-    flexGrow: 1,
-    height: '100%',
-    backgroundColor: theme.reactflow.backgroundColor,
-    '.react-flow': {
-        '--xy-edge-stroke': theme.reactflow.edge.stroke,
-    },
-    '.react-flow__attribution a': {
-        color: theme.palette.text.primary,
-    },
-    '.react-flow__attribution': {
-        backgroundColor: theme.palette.background.paper,
-    },
-});
+const styles = {
+    modificationTree: (theme) => ({
+        flexGrow: 1,
+        height: '100%',
+        backgroundColor: theme.reactflow.backgroundColor,
+        '.react-flow': {
+            '--xy-edge-stroke': theme.reactflow.edge.stroke,
+        },
+        '.react-flow__attribution a': {
+            color: theme.palette.text.primary,
+        },
+        '.react-flow__attribution': {
+            backgroundColor: theme.palette.background.paper,
+        },
+    }),
+    labelBox: (theme) => ({
+        flexGrow: 1,
+        display: 'flex',
+        alignItems: 'flex-end',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+        fontWeight: 'bold',
+    }),
+};
 
-const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResize }) => {
+const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
@@ -55,8 +67,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
-
-    const toggleOptions = useSelector((state) => state.toggleOptions);
 
     const { fitView, setCenter, getZoom } = useReactFlow();
 
@@ -81,34 +91,10 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         updateNodePositions();
     }, [updateNodePositions]);
 
-    const handleRootNodeClick = useCallback((toggleOptions) => {
-        const hasRemovableOptions =
-            toggleOptions.includes(StudyDisplayMode.MODIFICATIONS) ||
-            toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO);
-
-        if (!hasRemovableOptions) {
-            return toggleOptions;
-        }
-
-        return toggleOptions.filter(
-            (opt) => opt !== StudyDisplayMode.MODIFICATIONS && opt !== StudyDisplayMode.EVENT_SCENARIO
-        );
-    }, []);
-
-    // close modifications/ event scenario when current node is root
-    useEffect(() => {
-        if (currentNode?.type === NodeType.ROOT) {
-            const newOptions = handleRootNodeClick(toggleOptions);
-            if (newOptions !== toggleOptions) {
-                dispatch(setToggleOptions(newOptions));
-            }
-        }
-    }, [currentNode, dispatch, handleRootNodeClick, toggleOptions]);
-
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === NodeType.NETWORK_MODIFICATION) {
-                dispatch(setModificationsDrawerOpen());
+                dispatch(openOrFocusPanel({ panelType: PanelType.NODE_EDITOR }));
             }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);
@@ -211,10 +197,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
                 columnPosition: index,
             }));
             updateNodesColumnPositions(studyUuid, parentNodeId, children).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'NodeUpdateColumnPositions',
-                });
+                snackWithFallback(snackError, error, { headerId: 'NodeUpdateColumnPositions' });
             });
         },
         [studyUuid, treeModel, snackError]
@@ -298,14 +281,11 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         setCenter(centerX, centerY, { zoom: getZoom() });
     }, [currentNode, nodes, setCenter, getZoom]);
 
-    useEffect(() => {
-        if (onTreePanelResize) {
-            onTreePanelResize.current = handleFocusNode;
-        }
-    }, [onTreePanelResize, handleFocusNode]);
+    // trigger focus when requested from outside (ex: from root network modification results)
+    useTreeNodeFocus(handleFocusNode);
 
     return (
-        <Box sx={styles}>
+        <Box sx={styles.modificationTree}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}

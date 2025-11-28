@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -28,6 +29,7 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
+    ENABLE_OLG_MODIFICATION,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_NAME,
@@ -71,7 +73,6 @@ import {
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import {
     FORM_LOADING_DELAY,
@@ -91,11 +92,12 @@ import {
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
+    convertToOperationalLimitsGroupFormSchema,
     formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    combineFormAndMapServerLimitsGroups,
+    getOpLimitsGroupInfosFromBranchModification,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -151,6 +153,7 @@ import {
 } from './state-estimation-form-utils';
 import { LimitsPane } from '../../../limits/limits-pane';
 import { useIntl } from 'react-intl';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -169,7 +172,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         ...getCon1andCon2WithPositionValidationSchema(true),
         ...getCharacteristicsValidationSchema(true),
-        ...getLimitsValidationSchema(true),
+        ...getLimitsValidationSchema(),
         ...getStateEstimationValidationSchema(STATE_ESTIMATION),
         ...getRatioTapChangerValidationSchema(true),
         ...getPhaseTapChangerValidationSchema(true),
@@ -207,7 +210,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const [twtToModify, setTwtToModify] = useState(null);
     const intl = useIntl();
 
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -249,7 +252,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getAllLimitsFormData(
                     formatOpLimitGroupsToFormInfos(twtModification.operationalLimitsGroups),
                     twtModification.selectedOperationalLimitsGroup1?.value ?? null,
-                    twtModification.selectedOperationalLimitsGroup2?.value ?? null
+                    twtModification.selectedOperationalLimitsGroup2?.value ?? null,
+                    twtModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getRatioTapChangerFormData({
                     enabled: twtModification?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
@@ -483,7 +487,9 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
-                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
+                operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
+                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
+                    : [],
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
@@ -496,6 +502,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         id: 'None',
                     })
                 ),
+                [ENABLE_OLG_MODIFICATION]: limits[ENABLE_OLG_MODIFICATION],
                 ratioTapChanger: computeRatioTapForSubmit(twt),
                 phaseTapChanger: computePhaseTapForSubmit(twt),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
@@ -522,10 +529,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][RATIO_TAP_CHANGER_STATUS],
                 phaseTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][PHASE_TAP_CHANGER_STATUS],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TwoWindingsTransformerModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TwoWindingsTransformerModificationError' });
             });
         },
         [
@@ -561,11 +565,14 @@ const TwoWindingsTransformerModificationDialog = ({
             tabsInError.push(TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB);
         }
 
-        if (tabsInError.length > 0) {
+        if (tabsInError.includes(tabIndex)) {
+            // error in current tab => do not change tab systematically but remove current tab in error list
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+        } else if (tabsInError.length > 0) {
+            // switch to the first tab in the list then remove the tab in the error list
             setTabIndex(tabsInError[0]);
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
         }
-
-        setTabIndexesWithError(tabsInError);
     };
 
     const clear = useCallback(() => {
@@ -652,12 +659,19 @@ const TwoWindingsTransformerModificationDialog = ({
                                 (formValues) => ({
                                     ...formValues,
                                     ...{
-                                        [LIMITS]: {
-                                            [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
-                                                formValues,
-                                                twt
-                                            ),
-                                        },
+                                        [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
+                                            ? {
+                                                  [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      getOpLimitsGroupInfosFromBranchModification(formValues),
+                                              }
+                                            : {
+                                                  [ENABLE_OLG_MODIFICATION]: false,
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      convertToOperationalLimitsGroupFormSchema(
+                                                          twt?.currentLimits ?? []
+                                                      ),
+                                              },
                                     },
                                     ...getRatioTapChangerFormData({
                                         enabled: isRatioTapChangerEnabled(twt),
@@ -711,7 +725,6 @@ const TwoWindingsTransformerModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setTwtToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {

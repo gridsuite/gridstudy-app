@@ -5,51 +5,82 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FC, useMemo } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import {
     AutocompleteInput,
     DirectoryItemsInput,
     ElementType,
+    FieldType,
     FloatInput,
     IntegerInput,
+    Option,
     SelectInput,
     SwitchInput,
     TextInput,
     useFormatLabelWithUnit,
+    usePredefinedProperties,
     usePrevious,
 } from '@gridsuite/commons-ui';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
-import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
+import {
+    EDITED_FIELD,
+    EQUIPMENT_TYPE_FIELD,
+    FILTERS,
+    PROPERTY_NAME_FIELD,
+    VALUE_FIELD,
+} from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { getIdOrValue } from '../../../../commons/utils';
-import { DataType, FieldOptionType } from './assignment.type';
+import { DataType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
-import { PredefinedProperties } from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
+import { useIntl } from 'react-intl';
+import { EQUIPMENTS_FIELDS } from './assignment-constants';
+
+type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;
 
 interface AssignmentFormProps {
     name: string;
     index: number;
-    predefinedProperties: PredefinedProperties;
-    equipmentFields: FieldOptionType[];
-    equipmentType: string;
 }
 
-const AssignmentForm: FC<AssignmentFormProps> = ({
-    name,
-    index,
-    predefinedProperties,
-    equipmentFields,
-    equipmentType,
-}) => {
-    const { setValue } = useFormContext();
+const AssignmentForm: FC<AssignmentFormProps> = ({ name, index }) => {
+    const { setError, setValue } = useFormContext();
+    const intl = useIntl();
 
     const watchEditedField = useWatch({
         name: `${name}.${index}.${EDITED_FIELD}`,
     });
 
+    const watchEquipmentType: EquipmentTypeOptionType = useWatch({
+        name: EQUIPMENT_TYPE_FIELD,
+    });
+
+    const equipmentFields = useMemo(
+        () => Object.values(EQUIPMENTS_FIELDS[watchEquipmentType] ?? []),
+        [watchEquipmentType]
+    );
+
+    const networkEquipmentType = useMemo(() => {
+        if (
+            [
+                FieldType.OPERATIONAL_LIMITS_GROUP_1_WITH_PROPERTIES,
+                FieldType.OPERATIONAL_LIMITS_GROUP_2_WITH_PROPERTIES,
+            ].includes(watchEditedField)
+        ) {
+            return 'limitsGroup'; // found in the predefined properties metadata object
+        }
+        return watchEquipmentType;
+    }, [watchEquipmentType, watchEditedField]);
+
+    const [predefinedProperties] = usePredefinedProperties(networkEquipmentType);
+
     const dataType = useMemo(() => {
         return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.dataType;
+    }, [watchEditedField, equipmentFields]);
+
+    const settable_to_none: boolean = useMemo(() => {
+        return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.settableToNone ?? false;
     }, [watchEditedField, equipmentFields]);
 
     const watchPropertyName = useWatch({
@@ -75,16 +106,50 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
 
+    const emptyValueStr = useMemo(() => {
+        return intl.formatMessage({ id: 'EmptyField' });
+    }, [intl]);
+
     const formatLabelWithUnit = useFormatLabelWithUnit();
+
+    const AutoCompleteSettableToNone = useCallback(
+        ({ numberOnly }: { numberOnly?: boolean }) => (
+            <AutocompleteInput
+                name={`${name}.${index}.${VALUE_FIELD}`}
+                label={'ValueOrEmptyField'}
+                options={[emptyValueStr]}
+                size={'small'}
+                onCheckNewValue={
+                    numberOnly
+                        ? (option: Option | null) => {
+                              if (option && option !== emptyValueStr && Number.isNaN(Number(option))) {
+                                  setError(`${name}.${index}.${VALUE_FIELD}`, {
+                                      message: 'NumericValueOrEmptyField',
+                                  });
+                              } else {
+                                  setError(`${name}.${index}.${VALUE_FIELD}`, {
+                                      message: '',
+                                  });
+                              }
+                              return true;
+                          }
+                        : undefined
+                }
+                getOptionLabel={(option: Option) => (typeof option !== 'string' ? (option?.label ?? option) : option)}
+                allowNewValue
+            />
+        ),
+        [emptyValueStr, index, name, setError]
+    );
 
     const filtersField = (
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
-            equipmentTypes={[equipmentType]}
+            equipmentTypes={[watchEquipmentType]}
             elementType={ElementType.FILTER}
             label={'filter'}
             titleId={'FiltersListsSelection'}
-            disable={!equipmentType}
+            disable={!watchEquipmentType}
         />
     );
 
@@ -139,12 +204,20 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         }
 
         if (dataType === DataType.STRING) {
-            return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
+            if (settable_to_none) {
+                return <AutoCompleteSettableToNone />;
+            } else {
+                return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
+            }
+        }
+
+        if (dataType === DataType.DOUBLE && settable_to_none) {
+            return <AutoCompleteSettableToNone numberOnly />;
         }
 
         // by default is a numeric type
         return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
-    }, [dataType, name, index, predefinedPropertiesValues, options]);
+    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, AutoCompleteSettableToNone]);
 
     return (
         <>

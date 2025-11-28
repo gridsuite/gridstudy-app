@@ -5,60 +5,63 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ID,
-    OPERATIONAL_LIMITS_GROUPS,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
-} from '../../utils/field-constants';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { ID, SELECTED_LIMITS_GROUP_1, SELECTED_LIMITS_GROUP_2 } from '../../utils/field-constants';
+import { FieldValues, UseFieldArrayAppend, UseFieldArrayRemove, useFormContext } from 'react-hook-form';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { ContentCopy, Delete, Edit } from '@mui/icons-material';
+import { ContentCopy, Delete } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
-import { PopoverProps } from '@mui/material/Popover';
 import { APPLICABILITY } from '../../network/constants';
-import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { useCallback } from 'react';
+import { CurrentLimitsData } from '../../../services/study/network-map.type';
+import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
+
+export interface ContextMenuCoordinates {
+    x: null | number;
+    y: null | number;
+    tabIndex: null | number;
+}
 
 export interface LimitsGroupsContextualMenuProps {
     parentFormName: string;
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
-    menuAnchorEl: PopoverProps['anchorEl'];
     handleCloseMenu: () => void;
-    activatedByMenuTabIndex: number | null;
-    startEditingLimitsGroup: (index: number, name: string | null) => void;
+    contextMenuCoordinates: ContextMenuCoordinates;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
-    isModification: boolean;
+    currentLimitsToModify: CurrentLimitsData[];
+    operationalLimitsGroups: FieldValues;
+    appendToLimitsGroups: UseFieldArrayAppend<
+        {
+            [p: string]: OperationalLimitsGroupFormSchema[];
+        },
+        string
+    >;
+    removeLimitsGroups: UseFieldArrayRemove;
 }
 
 export function LimitsGroupsContextualMenu({
     parentFormName,
     indexSelectedLimitSet,
     setIndexSelectedLimitSet,
-    menuAnchorEl,
     handleCloseMenu,
-    activatedByMenuTabIndex,
-    startEditingLimitsGroup,
+    contextMenuCoordinates,
     selectedLimitsGroups1,
     selectedLimitsGroups2,
-    isModification,
+    operationalLimitsGroups,
+    appendToLimitsGroups,
+    removeLimitsGroups,
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
-    const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
-    const { append: appendToLimitsGroups, remove: removeLimitsGroups } = useFieldArray({
-        name: operationalLimitsGroupsFormName,
-    });
-    const { getValues, setValue } = useFormContext();
+    const { setValue } = useFormContext();
 
-    const handleDeleteTab = () => {
+    const handleDeleteTab = useCallback(() => {
         if (indexSelectedLimitSet !== null) {
-            const tabName: string = getValues(operationalLimitsGroupsFormName)?.[indexSelectedLimitSet]?.name;
-            const applicability: string = getValues(operationalLimitsGroupsFormName)?.[indexSelectedLimitSet]
-                ?.applicability;
+            const tabName: string = operationalLimitsGroups[indexSelectedLimitSet]?.name;
+            const applicability: string = operationalLimitsGroups[indexSelectedLimitSet]?.applicability ?? '';
             // if this operational limit was selected, deselect it
             if (
                 selectedLimitsGroups1 === tabName &&
@@ -76,47 +79,56 @@ export function LimitsGroupsContextualMenu({
             setIndexSelectedLimitSet(null);
         }
         handleCloseMenu();
-    };
+    }, [
+        handleCloseMenu,
+        indexSelectedLimitSet,
+        operationalLimitsGroups,
+        parentFormName,
+        removeLimitsGroups,
+        selectedLimitsGroups1,
+        selectedLimitsGroups2,
+        setIndexSelectedLimitSet,
+        setValue,
+    ]);
 
-    const handleDuplicateTab = () => {
+    const handleDuplicateTab = useCallback(() => {
         let newName: string = '';
         if (indexSelectedLimitSet !== null) {
-            const duplicatedLimits1: OperationalLimitsGroupFormInfos = getValues(
-                `${operationalLimitsGroupsFormName}[${indexSelectedLimitSet}]`
-            );
+            const duplicatedLimits1: OperationalLimitsGroupFormSchema = operationalLimitsGroups[indexSelectedLimitSet];
             newName = duplicatedLimits1.name + '_COPY';
-            const newLimitsGroup1: OperationalLimitsGroupFormInfos = {
+            const newLimitsGroup1: OperationalLimitsGroupFormSchema = {
                 ...duplicatedLimits1,
                 [ID]: newName,
             };
             appendToLimitsGroups(newLimitsGroup1);
-            setIndexSelectedLimitSet(getValues(`${operationalLimitsGroupsFormName}`).length - 1);
+            handleCloseMenu();
+            setIndexSelectedLimitSet(operationalLimitsGroups.length);
         }
-        startEditingLimitsGroup(getValues(operationalLimitsGroupsFormName).length - 1, newName);
-    };
+    }, [
+        indexSelectedLimitSet,
+        operationalLimitsGroups,
+        appendToLimitsGroups,
+        setIndexSelectedLimitSet,
+        handleCloseMenu,
+    ]);
 
     return (
-        <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-            {!isModification /* TODO : Remove this when the removal of operational limits groups will be possible in powsybl network store */ && (
-                <>
-                    <MenuItem
-                        onClick={() =>
-                            activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null)
-                        }
-                    >
-                        <ListItemIcon>
-                            <Edit fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>{intl.formatMessage({ id: 'Rename' })}</ListItemText>
-                    </MenuItem>
-                    <MenuItem onClick={handleDeleteTab}>
-                        <ListItemIcon>
-                            <Delete fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
-                    </MenuItem>
-                </>
-            )}
+        <Menu
+            open={contextMenuCoordinates.tabIndex != null}
+            onClose={handleCloseMenu}
+            anchorReference="anchorPosition"
+            anchorPosition={
+                contextMenuCoordinates.y !== null && contextMenuCoordinates.x !== null
+                    ? { top: contextMenuCoordinates.y, left: contextMenuCoordinates.x }
+                    : undefined
+            }
+        >
+            <MenuItem onClick={handleDeleteTab}>
+                <ListItemIcon>
+                    <Delete fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
+            </MenuItem>
             <MenuItem onClick={handleDuplicateTab}>
                 <ListItemIcon>
                     <ContentCopy fontSize="small" />

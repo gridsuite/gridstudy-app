@@ -7,7 +7,7 @@
 
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState, StudyUpdated } from '../redux/reducer';
 import { identity, useDebounce } from '@gridsuite/commons-ui';
 import { StudyUpdatedEventData } from 'types/notification-types';
@@ -111,10 +111,10 @@ export function useNodeData<T, R = T>({
     const [result, setResult] = useState<R | undefined>(defaultValue);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
-    const nodeUuidRef = useRef<UUID>();
-    const rootNetworkUuidRef = useRef<UUID>();
+    const nodeUuidRef = useRef<UUID>(undefined);
+    const rootNetworkUuidRef = useRef<UUID>(undefined);
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const lastUpdateRef = useRef<LastUpdateParams<T>>();
+    const lastUpdateRef = useRef<LastUpdateParams<T>>(undefined);
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;

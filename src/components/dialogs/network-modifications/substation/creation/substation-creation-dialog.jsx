@@ -10,7 +10,7 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect } from 'react';
-import { CustomFormProvider, fetchDefaultCountry, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, fetchDefaultCountry, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
@@ -88,17 +88,19 @@ const SubstationCreationDialog = ({
         }
     }, [reset, editData]);
 
-    // We set the default country if there is one
+    // We set the default country only in creation mode
     useEffect(() => {
-        fetchDefaultCountry().then((country) => {
-            if (country) {
-                reset({
-                    ...getValues(),
-                    [COUNTRY]: country,
-                });
-            }
-        });
-    }, [reset, getValues]);
+        if (!isUpdate) {
+            fetchDefaultCountry().then((country) => {
+                if (country) {
+                    reset({
+                        ...getValues(),
+                        [COUNTRY]: country,
+                    });
+                }
+            });
+        }
+    }, [reset, getValues, isUpdate]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -116,10 +118,7 @@ const SubstationCreationDialog = ({
                 modificationUuid: editData ? editData.uuid : undefined,
                 properties: toModificationProperties(substation),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'SubstationCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'SubstationCreationError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]

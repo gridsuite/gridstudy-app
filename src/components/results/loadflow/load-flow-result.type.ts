@@ -6,7 +6,7 @@
  */
 
 import { ColDef } from 'ag-grid-community';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { BranchSide } from '../../utils/constants';
 
 export interface ComponentResult {
@@ -40,7 +40,6 @@ export interface LoadFlowTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    openVoltageLevelDiagram: (id: string) => void;
 }
 
 export interface LoadflowResultTap {

@@ -8,10 +8,10 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType, snackWithFallback } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { StateEstimationParameters } from './state-estimation-parameters-utils';
 import { getStateEstimationStudyParameters } from '../../../../services/study/state-estimation';
 import { isComputationParametersUpdated } from '../use-parameters-notification';
@@ -38,10 +38,7 @@ export const useGetStateEstimationParameters = (): UseGetStateEstimationParamete
                     setStateEstimationParams(params);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' });
                 });
         },
         [snackError]

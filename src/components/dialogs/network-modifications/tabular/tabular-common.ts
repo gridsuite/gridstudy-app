@@ -34,24 +34,16 @@ import {
     PredefinedProperties,
 } from '@gridsuite/commons-ui';
 import yup from 'components/utils/yup-config';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
-type TabularModificationCommonType = {
+export type TabularModificationEditDataType = {
     uuid: UUID;
+    type: ModificationType.TABULAR_MODIFICATION | ModificationType.TABULAR_CREATION;
     properties: TabularProperty[];
     csvFilename: string;
-};
-export type TabularModificationModificationType = TabularModificationCommonType & {
-    type: 'TABULAR_MODIFICATION';
     modificationType: ModificationType;
     modifications: Modification[];
 };
-export type TabularModificationCreationType = TabularModificationCommonType & {
-    type: 'TABULAR_CREATION';
-    creationType: ModificationType;
-    creations: Modification[];
-};
-export type TabularModificationEditDataType = TabularModificationModificationType | TabularModificationCreationType;
 
 export enum TabularModificationType {
     CREATION = 'creation',

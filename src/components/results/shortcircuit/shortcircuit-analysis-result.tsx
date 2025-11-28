@@ -25,7 +25,7 @@ import {
     PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType, snackWithFallback } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
@@ -49,7 +49,6 @@ interface IShortCircuitAnalysisGlobalResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     globalFilters?: GlobalFilters;
-    openVoltageLevelDiagram: (id: string) => void;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysisGlobalResultProps> = ({
@@ -61,7 +60,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     onGridColumnsChanged,
     onRowDataUpdated,
     globalFilters,
-    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -151,12 +149,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                     setCount(totalElements);
                 }
             })
-            .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ShortCircuitAnalysisResultsError',
-                })
-            )
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'ShortCircuitAnalysisResultsError' }))
             .finally(() => {
                 if (active) {
                     setIsFetching(false);
@@ -221,12 +214,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                     });
                 }
             })
-            .catch((err) =>
-                snackError({
-                    messageTxt: err.message,
-                    headerId: 'ShortCircuitAnalysisResultsError',
-                })
-            );
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'ShortCircuitAnalysisResultsError' }));
     }, [
         analysisStatus,
         intl,
@@ -254,7 +242,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 filters={filters}
-                openVoltageLevelDiagram={openVoltageLevelDiagram}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

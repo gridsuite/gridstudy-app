@@ -15,7 +15,7 @@ import { AppState } from '../../../../../redux/reducer';
 import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
 
 type UseFilteredRowCounterInfoParams = {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
 };
@@ -26,6 +26,7 @@ export type UseFilteredRowCounterInfoReturn = {
     rowCountLabel: string | undefined;
     tooltipContent: ReactElement | undefined;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
+    displayedRows: number | null;
 };
 
 export function useFilteredRowCounterInfo({
@@ -39,8 +40,9 @@ export function useFilteredRowCounterInfo({
     const [isLoading, setIsLoading] = useState(true);
     const [isAnyFilterPresent, setIsAnyFilterPresent] = useState(false);
 
-    const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[tableDefinition?.type]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+
     const globalFilterSpreadsheetState = useSelector(
         (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
     );
@@ -60,11 +62,15 @@ export function useFilteredRowCounterInfo({
                 }
                 const api = gridRef.current.api;
                 setDisplayedRows(api.getDisplayedRowCount());
-                setTotalRows(Object.values(equipments.equipmentsByNodeId[currentNode.id]).length ?? 0);
+                setTotalRows(api.getGridOption('rowData')?.length ?? 0);
                 setIsLoading(false);
             }, 600),
-        [gridRef, currentNode, disabled, equipments.equipmentsByNodeId]
+        [gridRef, currentNode, disabled]
     );
+
+    useEffect(() => {
+        setIsLoading(true);
+    }, [currentRootNetworkUuid]);
 
     const onFilterChanged = useCallback((event: FilterChangedEvent) => {
         setIsAnyFilterPresent(event.api.isAnyFilterPresent());
@@ -101,8 +107,8 @@ export function useFilteredRowCounterInfo({
         if (displayedRows === 0 && isAnyFilterPresent) {
             return intl.formatMessage({ id: 'NoMatch' });
         } else {
-            const plural = `${intl.formatMessage({ id: 'Rows' })}${totalRows === 1 ? '' : 's'}`;
-            return displayedRows !== totalRows ? `${displayedRows} / ${totalRows} ${plural}` : `${totalRows} ${plural}`;
+            const plural = intl.formatMessage({ id: 'Rows' }, { count: totalRows });
+            return displayedRows === totalRows ? `${totalRows} ${plural}` : `${displayedRows} / ${totalRows} ${plural}`;
         }
     }, [displayedRows, totalRows, intl, isAnyFilterPresent]);
 
@@ -119,16 +125,15 @@ export function useFilteredRowCounterInfo({
         const lines: string[] = [`${intl.formatMessage({ id: 'ClickToReset' })}`];
         if (Object.keys(gsFilterByType)?.length > 0) {
             lines.push(`${intl.formatMessage({ id: 'ExternalFilters' })} : `);
-
-            Object.entries(gsFilterByType).forEach(([filterType, labels]) => {
+            for (const [filterType, labels] of Object.entries(gsFilterByType)) {
                 const formattedLabels = labels.map((label) => intl.formatMessage({ id: label })).join(', ');
                 lines.push(`- ${intl.formatMessage({ id: filterType })} : "${formattedLabels}"`);
-            });
+            }
         }
 
         if (spreadsheetColumnsFiltersState?.length > 0) {
             lines.push(`${intl.formatMessage({ id: 'ColumnsFilters' })} : `);
-            spreadsheetColumnsFiltersState.forEach((filterModel) => {
+            for (const filterModel of spreadsheetColumnsFiltersState) {
                 const headerName =
                     gridRef.current?.api.getColumn(filterModel.column)?.getColDef()?.headerName ?? filterModel.column;
                 lines.push(
@@ -137,7 +142,7 @@ export function useFilteredRowCounterInfo({
                         ', '
                     )
                 );
-            });
+            }
         }
         return <span style={{ whiteSpace: 'pre-line' }}>{lines.join('\n')}</span>;
     }, [globalFilterSpreadsheetState, gridRef, intl, isAnyFilterPresent, isLoading, spreadsheetColumnsFiltersState]);
@@ -158,5 +163,6 @@ export function useFilteredRowCounterInfo({
         rowCountLabel,
         tooltipContent,
         registerRowCounterEvents,
+        displayedRows,
     };
 }

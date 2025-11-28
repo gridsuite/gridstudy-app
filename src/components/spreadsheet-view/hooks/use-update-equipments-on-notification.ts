@@ -20,18 +20,17 @@ import { fetchAllEquipments } from '../../../services/study/network-map';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
-import { NodeAlias } from '../types/node-alias.type';
 import { useBuiltNodesIds } from './use-built-nodes-ids';
 
 const SPREADSHEET_EQUIPMENTS_LISTENER_ID = 'spreadsheet-equipments-listener';
 
-export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | undefined) {
+export function useUpdateEquipmentsOnNotification() {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const builtNodesIds = useBuiltNodesIds(nodeAliases);
+    const builtNodesIds = useBuiltNodesIds();
 
     const updateEquipmentsLocal = useCallback(
         (
@@ -47,7 +46,7 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
                     return;
                 }
                 const impactedSpreadsheetEquipmentsTypes = impactedElementTypes.filter((type) =>
-                    Object.keys(allEquipments).includes(type)
+                    Object.keys(allEquipments.equipments).includes(type)
                 );
                 if (impactedSpreadsheetEquipmentsTypes.length > 0) {
                     dispatch(
@@ -58,11 +57,17 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
             }
 
             if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid) {
-                fetchAllEquipments(studyUuid, nodeUuid, currentRootNetworkUuid, impactedSubstationsIds).then(
-                    (values) => {
+                fetchAllEquipments(studyUuid, nodeUuid, currentRootNetworkUuid, impactedSubstationsIds)
+                    .then((values) => {
                         dispatch(updateEquipments(values, nodeUuid));
-                    }
-                );
+                    })
+                    .catch((error: unknown) => {
+                        console.warn(
+                            `Failed to update spreadsheet equipments on notification, it will be reset`,
+                            error
+                        );
+                        dispatch(resetEquipments());
+                    });
             }
 
             if (deletedEquipments.length > 0) {
@@ -105,21 +110,31 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
                     currentRootNetworkUuid === eventRootNetworkUuid &&
                     builtNodesIds.has(eventNodeUuid)
                 ) {
-                    const networkImpacts = JSON.parse(eventData.payload) as NetworkImpactsInfos;
-                    updateEquipmentsLocal(
-                        eventNodeUuid,
-                        networkImpacts.impactedSubstationsIds,
-                        networkImpacts.deletedEquipments,
-                        networkImpacts.impactedElementTypes ?? []
-                    );
+                    try {
+                        const networkImpacts = JSON.parse(eventData.payload) as NetworkImpactsInfos;
+                        updateEquipmentsLocal(
+                            eventNodeUuid,
+                            networkImpacts.impactedSubstationsIds,
+                            networkImpacts.deletedEquipments,
+                            networkImpacts.impactedElementTypes ?? []
+                        );
+                    } catch (error: unknown) {
+                        console.warn(`Something failed during spreadsheet update, it will be reset`, error);
+                        dispatch(resetEquipments());
+                    }
                 }
             }
         },
-        [builtNodesIds, currentRootNetworkUuid, studyUuid, updateEquipmentsLocal]
+        [builtNodesIds, currentRootNetworkUuid, dispatch, studyUuid, updateEquipmentsLocal]
     );
+
+    const listenerResetEquipments = useCallback(() => {
+        dispatch(resetEquipments());
+    }, [dispatch]);
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: listenerUpdateEquipmentsLocal,
+        listenerCallbackOnReopen: listenerResetEquipments,
         propsId: SPREADSHEET_EQUIPMENTS_LISTENER_ID,
     });
 }

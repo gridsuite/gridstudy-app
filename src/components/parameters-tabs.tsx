@@ -37,30 +37,24 @@ import {
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import {
-    fetchDefaultNonEvacuatedEnergyProvider,
-    fetchNonEvacuatedEnergyProvider,
-    getNonEvacuatedEnergyParameters,
-    updateNonEvacuatedEnergyProvider,
-} from 'services/study/non-evacuated-energy';
-import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
-import { useGetNonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/use-get-non-evacuated-energy-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
-import { StudyView, StudyViewType } from './utils/utils';
+import { closePanel } from 'redux/slices/workspace-slice';
+import type { UUID } from 'node:crypto';
 import {
     ComputingType,
     fetchSecurityAnalysisProviders,
     getSecurityAnalysisDefaultLimitReductions,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
+    PccMinParametersInLine,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
     ShortCircuitParametersInLine,
@@ -69,25 +63,22 @@ import {
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
+import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
     securityAnalysisParamsTabValue = 'SECURITY_ANALYSIS',
     sensitivityAnalysisParamsTabValue = 'SENSITIVITY_ANALYSIS',
-    nonEvacuatedEnergyParamsTabValue = 'NON_EVACUATED_ENERGY_ANALYSIS',
     shortCircuitParamsTabValue = 'SHORT_CIRCUIT',
     dynamicSimulationParamsTabValue = 'DYNAMIC_SIMULATION',
     dynamicSecurityAnalysisParamsTabValue = 'DYNAMIC_SECURITY_ANALYSIS',
     voltageInitParamsTabValue = 'VOLTAGE_INITIALIZATION',
     stateEstimationTabValue = 'STATE_ESTIMATION',
+    pccMinTabValue = 'PCC_MIN',
     networkVisualizationsParams = 'networkVisualizationsParams',
 }
 
-type ParametersTabsProps = {
-    view: StudyViewType;
-};
-
-const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
+const ParametersTabs: FunctionComponent = () => {
     const dispatch = useDispatch();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
@@ -100,18 +91,19 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
+    const [pendingClosePanelId, setPendingClosePanelId] = useState<UUID | null>(null);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
-    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+    const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
 
     const networkVisualizationsParameters = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
@@ -188,22 +180,22 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         sensitivityAnalysisBackend
     );
 
-    const nonEvacuatedEnergyBackend = useParametersBackend(
-        user,
-        studyUuid,
-        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
-        nonEvacuatedEnergyAvailability,
-        fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
-        fetchNonEvacuatedEnergyProvider,
-        fetchDefaultNonEvacuatedEnergyProvider,
-        updateNonEvacuatedEnergyProvider,
-        getNonEvacuatedEnergyParameters
-    );
-
-    const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();
     const shortCircuitParameters = useGetShortCircuitParameters();
+    const pccMinParameters = useGetPccMinParameters();
     const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
+
+    // Listen for panel close requests from panel header
+    useEffect(() => {
+        const handleCloseRequest = (event: Event) => {
+            const customEvent = event as CustomEvent<UUID>;
+            setPendingClosePanelId(customEvent.detail);
+            setIsLeavingPopupOpen(true);
+        };
+
+        globalThis.addEventListener('parametersPanel:requestClose', handleCloseRequest);
+        return () => globalThis.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
+    }, []);
 
     useEffect(() => {
         if (attemptedLeaveParametersTabIndex !== null) {
@@ -230,14 +222,19 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
             setNextTabValue(undefined);
         } else if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(confirmLeaveParametersTab());
+        } else if (pendingClosePanelId !== null) {
+            // User confirmed close - actually close the panel
+            dispatch(closePanel(pendingClosePanelId));
+            setPendingClosePanelId(null);
         }
         dispatch(setDirtyComputationParameters(false));
         setIsLeavingPopupOpen(false);
-    }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch]);
 
     const handleLeavingPopupClose = useCallback(() => {
         setIsLeavingPopupOpen(false);
         setNextTabValue(undefined);
+        setPendingClosePanelId(null);
 
         if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(cancelLeaveParametersTab());
@@ -249,8 +246,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
             if (
                 (!enableDeveloperMode &&
                     (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
-                        oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
                         oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
+                        oldValue === TAB_VALUES.pccMinTabValue ||
                         oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
                         oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue)) ||
                 oldValue === TAB_VALUES.stateEstimationTabValue
@@ -262,13 +259,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     }, [enableDeveloperMode]);
 
     const displayTab = useCallback(() => {
-        /**
-         * We add view dependency to unmount the component when the user changes the study tab
-         * This is necessary to reset the form when the user changes the study tab
-         */
-        if (view !== StudyView.PARAMETERS) {
-            return null;
-        }
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
                 return (
@@ -300,19 +290,21 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                         enableDeveloperMode={enableDeveloperMode}
                     />
                 );
-            case TAB_VALUES.nonEvacuatedEnergyParamsTabValue:
-                return (
-                    <NonEvacuatedEnergyParameters
-                        parametersBackend={nonEvacuatedEnergyBackend}
-                        useNonEvacuatedEnergyParameters={useNonEvacuatedEnergyParameters}
-                    />
-                );
             case TAB_VALUES.shortCircuitParamsTabValue:
                 return (
                     <ShortCircuitParametersInLine
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         shortCircuitParameters={shortCircuitParameters}
+                        enableDeveloperMode={enableDeveloperMode}
+                    />
+                );
+            case TAB_VALUES.pccMinTabValue:
+                return (
+                    <PccMinParametersInLine
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        pccMinParameters={pccMinParameters}
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
@@ -345,7 +337,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 );
         }
     }, [
-        view,
         tabValue,
         studyUuid,
         languageLocal,
@@ -356,9 +347,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,
-        nonEvacuatedEnergyBackend,
-        useNonEvacuatedEnergyParameters,
         shortCircuitParameters,
+        pccMinParameters,
         user,
         voltageInitParameters,
         useStateEstimationParameters,
@@ -401,18 +391,18 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                                 label={<FormattedMessage id="SensitivityAnalysis" />}
                                 value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
                             />
-                            {enableDeveloperMode ? (
-                                <Tab
-                                    disabled={nonEvacuatedEnergyAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="NonEvacuatedEnergyAnalysis" />}
-                                    value={TAB_VALUES.nonEvacuatedEnergyParamsTabValue}
-                                />
-                            ) : null}
                             <Tab
                                 disabled={shortCircuitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
                             />
+                            {enableDeveloperMode ? (
+                                <Tab
+                                    disabled={pccMinAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="PccMin" />}
+                                    value={TAB_VALUES.pccMinTabValue}
+                                />
+                            ) : null}
                             {enableDeveloperMode ? (
                                 <Tab
                                     disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}

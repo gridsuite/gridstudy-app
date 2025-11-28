@@ -10,7 +10,7 @@ import {
     getDynamicSecurityAnalysisRunningStatus,
     getDynamicSimulationRunningStatus,
     getLoadFlowRunningStatus,
-    getNonEvacuatedEnergyRunningStatus,
+    getPccMinRunningStatus,
     getSecurityAnalysisRunningStatus,
     getSensitivityAnalysisRunningStatus,
     getShortCircuitAnalysisRunningStatus,
@@ -18,7 +18,7 @@ import {
     getVoltageInitRunningStatus,
 } from '../utils/running-status';
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
@@ -31,10 +31,10 @@ import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
 import { fetchLoadFlowStatus, fetchLoadFlowComputationInfos } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
-import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
 import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
 import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic-security-analysis';
 import { NotificationType } from 'types/notification-types';
+import { fetchPccMinStatus } from 'services/study/pcc-min';
 
 // status invalidations
 const loadFlowStatusInvalidations = [NotificationType.LOADFLOW_STATUS, NotificationType.LOADFLOW_FAILED];
@@ -45,10 +45,6 @@ const securityAnalysisStatusInvalidations = [
 const sensitivityAnalysisStatusInvalidations = [
     NotificationType.SENSITIVITY_ANALYSIS_STATUS,
     NotificationType.SENSITIVITY_ANALYSIS_FAILED,
-];
-const nonEvacuatedEnergyStatusInvalidations = [
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_STATUS,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED,
 ];
 const shortCircuitAnalysisStatusInvalidations = [
     NotificationType.SHORTCIRCUIT_ANALYSIS_STATUS,
@@ -71,6 +67,7 @@ const stateEstimationStatusInvalidations = [
     NotificationType.STATE_ESTIMATION_STATUS,
     NotificationType.STATE_ESTIMATION_FAILED,
 ];
+const pccMinStatusInvalidations = [NotificationType.PCC_MIN_STATUS, NotificationType.PCC_MIN_FAILED];
 
 // status completions
 const loadFlowStatusCompletions = [NotificationType.LOADFLOW_RESULT, NotificationType.LOADFLOW_FAILED];
@@ -81,10 +78,6 @@ const securityAnalysisStatusCompletions = [
 const sensitivityAnalysisStatusCompletions = [
     NotificationType.SENSITIVITY_ANALYSIS_RESULT,
     NotificationType.SENSITIVITY_ANALYSIS_FAILED,
-];
-const nonEvacuatedEnergyStatusCompletions = [
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED,
 ];
 const shortCircuitAnalysisStatusCompletions = [
     NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT,
@@ -107,26 +100,27 @@ const stateEstimationStatusCompletions = [
     NotificationType.STATE_ESTIMATION_RESULT,
     NotificationType.STATE_ESTIMATION_FAILED,
 ];
+const pccMinStatusCompletions = [NotificationType.PCC_MIN_RESULT, NotificationType.PCC_MIN_FAILED];
 
 // result invalidations
 export const loadflowResultInvalidations = [NotificationType.LOADFLOW_RESULT];
 export const securityAnalysisResultInvalidations = [NotificationType.SECURITY_ANALYSIS_RESULT];
-export const nonEvacuatedEnergyResultInvalidations = [NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT];
 export const dynamicSimulationResultInvalidations = [NotificationType.DYNAMIC_SIMULATION_RESULT];
 export const dynamicSecurityAnalysisResultInvalidations = [NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT];
 export const voltageInitResultInvalidations = [NotificationType.VOLTAGE_INIT_RESULT];
 export const stateEstimationResultInvalidations = [NotificationType.STATE_ESTIMATION_RESULT];
+export const pccMinResultInvalidations = [NotificationType.PCC_MIN_RESULT];
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): void => {
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
-    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+    const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
 
     useComputingStatus(
         studyUuid,
@@ -164,19 +158,6 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         ComputingType.SENSITIVITY_ANALYSIS,
         undefined,
         sensitivityAnalysisAvailability
-    );
-
-    useComputingStatus(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        fetchNonEvacuatedEnergyStatus,
-        nonEvacuatedEnergyStatusInvalidations,
-        nonEvacuatedEnergyStatusCompletions,
-        getNonEvacuatedEnergyRunningStatus,
-        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
-        undefined,
-        nonEvacuatedEnergyAvailability
     );
 
     useComputingStatus(
@@ -255,5 +236,18 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         ComputingType.STATE_ESTIMATION,
         undefined,
         stateEstimationAvailability
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        fetchPccMinStatus,
+        pccMinStatusInvalidations,
+        pccMinStatusCompletions,
+        getPccMinRunningStatus,
+        ComputingType.PCC_MIN,
+        undefined,
+        pccMinAvailability
     );
 };

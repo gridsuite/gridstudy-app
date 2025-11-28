@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
-import { backendFetch } from './utils';
+import type { UUID } from 'node:crypto';
+import { backendFetch } from '@gridsuite/commons-ui';
 
 const PREFIX_VOLTAGE_INIT_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/voltage-init';
 

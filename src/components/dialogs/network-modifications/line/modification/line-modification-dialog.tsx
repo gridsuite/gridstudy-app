@@ -12,6 +12,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -28,6 +29,7 @@ import {
     CONNECTIVITY,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
+    ENABLE_OLG_MODIFICATION,
     EQUIPMENT_NAME,
     G1,
     G2,
@@ -36,7 +38,10 @@ import {
     MEASUREMENT_P2,
     MEASUREMENT_Q1,
     MEASUREMENT_Q2,
+    OPERATIONAL_LIMITS_GROUPS,
     R,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     STATE_ESTIMATION,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
@@ -45,22 +50,20 @@ import {
     VALUE,
     VOLTAGE_LEVEL,
     X,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
-    OPERATIONAL_LIMITS_GROUPS,
 } from 'components/utils/field-constants';
-import { FieldErrors, useForm } from 'react-hook-form';
+import { FieldErrors } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
+    addModificationTypeToOpLimitsGroups,
+    addOperationTypeToSelectedOpLG,
+    convertToOperationalLimitsGroupFormSchema,
+    formatOpLimitGroupsToFormInfos,
+    getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    addModificationTypeToOpLimitsGroups,
-    getAllLimitsFormData,
-    formatOpLimitGroupsToFormInfos,
-    combineFormAndMapServerLimitsGroups,
-    addOperationTypeToSelectedOpLG,
+    getOpLimitsGroupInfosFromBranchModification,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -97,13 +100,15 @@ import {
 } from '../../common/measurements/branch-active-reactive-power-form-utils';
 import { LineModificationDialogTab } from '../line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LimitsDialogFormInfos, LineModificationFormInfos } from './line-modification-type';
+import { LineModificationFormInfos } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../utils/utils';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -151,8 +156,8 @@ const LineModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState<BranchInfos | null>(null);
-    const [tabIndex, setTabIndex] = useState<number | null>(LineModificationDialogTab.CONNECTIVITY_TAB);
-    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
+    const [tabIndex, setTabIndex] = useState<number>(LineModificationDialogTab.CONNECTIVITY_TAB);
+    const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
     const emptyFormData: any = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
@@ -171,13 +176,13 @@ const LineModificationDialog = ({
             [EQUIPMENT_NAME]: yup.string().nullable(),
             ...getCon1andCon2WithPositionValidationSchema(true),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
-            ...getLimitsValidationSchema(true),
+            ...getLimitsValidationSchema(),
             ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
         })
         .concat(modificationPropertiesSchema)
         .required();
 
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -207,7 +212,8 @@ const LineModificationDialog = ({
                 ...getAllLimitsFormData(
                     formatOpLimitGroupsToFormInfos(lineModification.operationalLimitsGroups),
                     lineModification.selectedOperationalLimitsGroup1?.value ?? null,
-                    lineModification.selectedOperationalLimitsGroup2?.value ?? null
+                    lineModification.selectedOperationalLimitsGroup2?.value ?? null,
+                    lineModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
             });
@@ -227,8 +233,7 @@ const LineModificationDialog = ({
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
-            const limits: LimitsDialogFormInfos = line[LIMITS];
-
+            const limits: OperationalLimitsGroupsFormSchema = line[LIMITS];
             modifyLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -241,7 +246,9 @@ const LineModificationDialog = ({
                 b1: convertOutputValue(FieldType.B1, characteristics[B1]),
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
-                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
+                operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
+                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
+                    : [],
                 selectedOperationalLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
@@ -254,6 +261,7 @@ const LineModificationDialog = ({
                         id: 'None',
                     })
                 ),
+                [ENABLE_OLG_MODIFICATION]: limits[ENABLE_OLG_MODIFICATION],
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
@@ -276,10 +284,7 @@ const LineModificationDialog = ({
                 q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][VALUE],
                 q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LineModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LineModificationError' });
             });
         },
         [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError]
@@ -309,12 +314,19 @@ const LineModificationDialog = ({
                                 (formValues: LineModificationFormInfos) => ({
                                     ...formValues,
                                     ...{
-                                        [LIMITS]: {
-                                            [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
-                                                formValues,
-                                                line
-                                            ),
-                                        },
+                                        [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
+                                            ? {
+                                                  [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      getOpLimitsGroupInfosFromBranchModification(formValues),
+                                              }
+                                            : {
+                                                  [ENABLE_OLG_MODIFICATION]: false,
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      convertToOperationalLimitsGroupFormSchema(
+                                                          line?.currentLimits ?? []
+                                                      ),
+                                              },
                                     },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),
@@ -327,7 +339,6 @@ const LineModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setLineToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {
@@ -358,10 +369,15 @@ const LineModificationDialog = ({
         if (errors?.[STATE_ESTIMATION] !== undefined) {
             tabsInError.push(LineModificationDialogTab.STATE_ESTIMATION_TAB);
         }
-        if (tabsInError.length > 0) {
+
+        if (tabsInError.includes(tabIndex)) {
+            // error in current tab => do not change tab systematically but remove current tab in error list
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+        } else if (tabsInError.length > 0) {
+            // switch to the first tab in the list then remove the tab in the error list
             setTabIndex(tabsInError[0]);
+            setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
         }
-        setTabIndexesWithError(tabsInError);
     };
 
     const open = useOpenShortWaitFetching({
@@ -373,7 +389,7 @@ const LineModificationDialog = ({
     });
 
     const handleCloseLineTypesCatalogDialog = () => {
-        setOpenLineTypesCatalogDialog(false);
+        setIsOpenLineTypesCatalogDialog(false);
     };
 
     const handleLineSegmentsBuildSubmit = (data: any) => {
@@ -427,7 +443,7 @@ const LineModificationDialog = ({
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
-                onOpenCatalogDialog={selectedId != null ? () => setOpenLineTypesCatalogDialog(true) : undefined}
+                onOpenCatalogDialog={selectedId != null ? () => setIsOpenLineTypesCatalogDialog(true) : undefined}
                 {...dialogProps}
             >
                 {selectedId == null && (
