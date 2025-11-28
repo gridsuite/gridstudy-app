@@ -62,9 +62,9 @@ import { ExcludedNetworkModifications } from 'components/graph/menus/network-mod
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
-    ENABLE_OLG_MODIFICATION,
-    OLGS_MODIFICATION_TYPE,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
+    OLGS_MODIFICATION_TYPE,
+    ENABLE_OLG_MODIFICATION,
 } from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
