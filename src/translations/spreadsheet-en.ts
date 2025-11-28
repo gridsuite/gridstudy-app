@@ -168,6 +168,8 @@ const spreadsheetEn = {
     'spreadsheet/formula/type/boolean': 'Formula must evaluate to a boolean',
     'spreadsheet/formula/type/enum': 'Formula must evaluate to a string or a number',
     'spreadsheet/formula/type/unknown': 'Unknown column type',
+    'spreadsheet/formula/function-reference/disabled':
+        'Function references are disabled. Functions must be called with parameters',
 
     // Column types
     TEXT: 'Text',

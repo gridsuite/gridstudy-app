@@ -175,6 +175,8 @@ const spreadsheetFr = {
     'spreadsheet/formula/type/boolean': 'La formule doit exprimer une donnée booléenne',
     'spreadsheet/formula/type/enum': 'La formule doit exprimer une donnée textuelle ou numérique',
     'spreadsheet/formula/type/unknown': 'Type de donnée inconnu',
+    'spreadsheet/formula/function-reference/disabled':
+        'Les références de fonctions sont désactivée, elles doivent êtres appelées avec des paramètres',
 
     // Column types
     TEXT: 'Texte',
