@@ -191,11 +191,6 @@ const lightTheme = createTheme({
     formFiller: {
         background: '#e6e6e6',
     },
-    workspace: {
-        panel: {
-            background: '#FFFFFF',
-        },
-    },
     searchedText: {
         highlightColor: '#53AAFF',
         currentHighlightColor: '#FFA853',
@@ -308,11 +303,6 @@ const darkTheme = createTheme({
     },
     formFiller: {
         background: '#2C2C2C',
-    },
-    workspace: {
-        panel: {
-            background: '#292e33',
-        },
     },
     searchedText: {
         highlightColor: '#123FBB',

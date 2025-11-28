@@ -26,7 +26,7 @@ const styles = {
     sidebar: (theme: Theme, shouldBeCollapsed: boolean) => ({
         width: shouldBeCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
         borderLeft: `1px solid ${theme.palette.divider}`,
-        backgroundColor: theme.workspace.panel.background,
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         display: 'flex',
         flexDirection: 'column' as const,
         flexShrink: 0,

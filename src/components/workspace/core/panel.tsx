@@ -63,7 +63,7 @@ const styles = {
         flexGrow: 1,
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor: theme.workspace.panel.background,
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
         borderTop: 'none',
     }),
