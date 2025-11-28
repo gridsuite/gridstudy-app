@@ -6,9 +6,10 @@
  */
 
 import { memo } from 'react';
-import { Box, IconButton, Theme, Typography, Tooltip } from '@mui/material';
+import { Box, IconButton, Theme, Typography } from '@mui/material';
 import { Close, Minimize, PushPin, PushPinOutlined, Fullscreen, FullscreenExit } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
+import { OverflowableText } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { closePanel, toggleMinimize, toggleMaximize, togglePin } from '../../../redux/slices/workspace-slice';
@@ -62,6 +63,7 @@ const styles = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
+        fontSize: '0.75rem',
     },
     headerActions: {
         display: 'flex',
@@ -69,6 +71,9 @@ const styles = {
     },
     iconButton: {
         visibility: 'hidden',
+    },
+    tooltip: {
+        maxWidth: '720px',
     },
 } as const satisfies MuiStyles;
 
@@ -101,14 +106,10 @@ export const PanelHeader = memo(
         return (
             <Box onMouseDown={onFocus} className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused)}>
                 <Box sx={styles.title}>
-                    <Tooltip title={displayTitle} placement="top">
-                        <Box sx={styles.titleContent}>
-                            {getPanelConfig(panelType).icon}
-                            <Typography variant="caption" sx={styles.titleText}>
-                                {displayTitle}
-                            </Typography>
-                        </Box>
-                    </Tooltip>
+                    <Box sx={styles.titleContent}>
+                        {getPanelConfig(panelType).icon}
+                        <OverflowableText text={displayTitle} sx={styles.titleText} tooltipSx={styles.tooltip} />
+                    </Box>
                 </Box>
                 <Box sx={styles.headerActions}>
                     <IconButton
