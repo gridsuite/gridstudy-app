@@ -65,7 +65,7 @@
     "createDiagramConfigLabel": "Create a new network area diagram",
     "updateDiagramConfigLabel": "Replace an existing network area diagram",
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
-    "noWritePermissionOnStudy": "The user does not have the write permission on study with id \"{studyUuid}\"",
+    "noWritePermissionOnStudy": "The user has no access right on study with id \"{studyUuid}\"",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
     "nadConfiguredPositionsModeFailed": "The configured positions have not been initialized. You need to change the initialization parameter of the network area diagrams.",
