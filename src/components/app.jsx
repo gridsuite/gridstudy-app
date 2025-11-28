@@ -41,6 +41,7 @@ import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/util
 import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
+    initComputationResultFilters,
     initTableDefinitions,
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
@@ -55,7 +56,11 @@ import {
     setUpdateNetworkVisualizationParameters,
     updateTableColumns,
 } from '../redux/actions';
-import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
+import {
+    getComputationResultFilters,
+    getNetworkVisualizationParameters,
+    getSpreadsheetConfigCollection,
+} from '../services/study/study-config';
 import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
@@ -68,6 +73,7 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
+import { processComputationResultFilters } from './results/computing-result-filters.type.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -313,6 +319,11 @@ const App = () => {
                 resetTableDefinitions(collection);
             });
 
+            const fetchComputationResultFiltersPromise = getComputationResultFilters(studyUuid).then((collection) => {
+                const processed = processComputationResultFilters(collection);
+                dispatch(initComputationResultFilters(processed));
+            });
+
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
                     dispatch(setOptionalServices(retrieveOptionalServices(services)));
@@ -331,6 +342,7 @@ const App = () => {
                 fetchAppConfigPromise,
                 fetchOptionalServices,
                 fetchSpreadsheetConfigPromise,
+                fetchComputationResultFiltersPromise,
             ])
                 .then(() => {
                     dispatch(setParamsLoaded());

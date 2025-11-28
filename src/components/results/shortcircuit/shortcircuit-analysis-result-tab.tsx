@@ -29,8 +29,11 @@ import type { UUID } from 'node:crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
+import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { getStoreFields } from '../securityanalysis/security-analysis-result-utils';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -88,8 +91,13 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
-
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const globalFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.computationFilters?.[AgGridFilterType.ShortcircuitAnalysis]?.globalFilters
+    );
+    const { globalFilters, updateGlobalFilters } = useComputationFilters(
+        AgGridFilterType.ShortcircuitAnalysis,
+        getStoreFields(tabIndex)
+    );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSubTabChange = useCallback(
@@ -139,8 +147,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     useEffect(() => {
         // Clear the globalfilter when tab changes
-        handleGlobalFilterChange([]);
-    }, [handleGlobalFilterChange, tabIndex]);
+        updateGlobalFilters([]);
+    }, [updateGlobalFilters, tabIndex]);
 
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
@@ -166,9 +174,10 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                 </Tabs>
                 {resultOrLogIndex === RESULTS_TAB_INDEX && tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
                     <GlobalFilterSelector
-                        onChange={handleGlobalFilterChange}
+                        onChange={updateGlobalFilters}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
+                        preloadedGlobalFilters={globalFilterSpreadsheetState}
                         genericFiltersStrictMode={true}
                     />
                 )}

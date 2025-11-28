@@ -29,7 +29,6 @@ import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.con
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
 import {
     FILTER_DATA_TYPES,
@@ -39,6 +38,7 @@ import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
 import { reportStyles } from './report.styles';
 import { useLogsPagination } from './use-logs-pagination';
+import { useComputationFilters } from '../../hooks/use-computation-result-filters';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -107,7 +107,7 @@ const LogTable = ({
     const [, , , fetchLogs, fetchLogMatches] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
-    const { filters } = useFilterSelector(FilterType.Logs, reportType);
+    const { columnFilters } = useComputationFilters(FilterType.Logs, reportType);
     const { pagination, setPagination } = useLogsPagination(reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
@@ -129,8 +129,8 @@ const LogTable = ({
         setFiltersInitialized(false);
     }, [reportType, severities]);
 
-    const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
-    const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
+    const severityFilter = useMemo(() => getColumnFilterValue(columnFilters ?? [], 'severity') ?? [], [columnFilters]);
+    const messageFilter = useMemo(() => getColumnFilterValue(columnFilters ?? [], 'message'), [columnFilters]);
 
     const resetSearch = useCallback(() => {
         setSearchMatches([]);
@@ -197,7 +197,7 @@ const LogTable = ({
 
     useEffect(() => {
         onFiltersChanged();
-    }, [filters, onFiltersChanged]);
+    }, [columnFilters, onFiltersChanged]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [

@@ -58,21 +58,19 @@ import {
     type CurrentTreeNodeAction,
     DELETE_EQUIPMENTS,
     type DeleteEquipmentsAction,
-    DYNAMIC_SIMULATION_RESULT_FILTER,
-    type DynamicSimulationResultFilterAction,
     ENABLE_DEVELOPER_MODE,
     type EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
     type FavoriteContingencyListsAction,
     HIGHLIGHT_MODIFICATION,
     HighlightModificationAction,
+    INIT_COMPUTATION_RESULT_FILTERS,
     INIT_TABLE_DEFINITIONS,
+    type InitComputationResultFiltersAction,
     type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     type LoadEquipmentsAction,
-    LOADFLOW_RESULT_FILTER,
-    type LoadflowResultFilterAction,
     type LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LOGS_RESULT_PAGINATION,
@@ -101,6 +99,8 @@ import {
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
+    PCCMIN_ANALYSIS_RESULT_PAGINATION,
+    PccminAnalysisResultPaginationAction,
     REMOVE_COLUMN_DEFINITION,
     REMOVE_EQUIPMENT_DATA,
     REMOVE_FROM_RECENT_GLOBAL_FILTERS,
@@ -126,10 +126,11 @@ import {
     RESET_LOGS_FILTER,
     RESET_LOGS_PAGINATION,
     RESET_MAP_EQUIPMENTS,
+    RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    RESET_PCCMIN_ANALYSIS_PAGINATION,
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
     RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
-    RESET_PCCMIN_ANALYSIS_PAGINATION,
     type ResetAllSpreadsheetGlobalFiltersAction,
     type ResetEquipmentsAction,
     type ResetEquipmentsByTypesAction,
@@ -137,16 +138,13 @@ import {
     type ResetLogsFilterAction,
     ResetLogsPaginationAction,
     type ResetMapEquipmentsAction,
+    type ResetOneBusShortcircuitAnalysisDiagramAction,
+    ResetPccminAnalysisPaginationAction,
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
     ResetShortcircuitAnalysisPaginationAction,
-    ResetPccminAnalysisPaginationAction,
     SAVE_SPREADSHEET_GS_FILTER,
     type SaveSpreadSheetGlobalFilterAction,
-    SECURITY_ANALYSIS_RESULT_FILTER,
-    SECURITY_ANALYSIS_RESULT_PAGINATION,
-    type SecurityAnalysisResultFilterAction,
-    SecurityAnalysisResultPaginationAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
     SELECT_SYNC_ENABLED,
@@ -155,9 +153,7 @@ import {
     type SelectLanguageAction,
     type SelectSyncEnabledAction,
     type SelectThemeAction,
-    SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
-    type SensitivityAnalysisResultFilterAction,
     SensitivityAnalysisResultPaginationAction,
     SET_ACTIVE_SPREADSHEET_TAB,
     SET_ADDED_SPREADSHEET_TAB,
@@ -171,7 +167,6 @@ import {
     SET_MODIFICATIONS_IN_PROGRESS,
     SET_MONO_ROOT_STUDY,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-    RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
     SET_RELOAD_MAP_NEEDED,
@@ -190,38 +185,33 @@ import {
     type SetModificationsInProgressAction,
     type SetMonoRootStudyAction,
     type SetOneBusShortcircuitAnalysisDiagramAction,
-    type ResetOneBusShortcircuitAnalysisDiagramAction,
     type SetOptionalServicesAction,
     type SetParamsLoadedAction,
     type SetReloadMapNeededAction,
     type SetRootNetworkIndexationStatusAction,
     type SetRootNetworksAction,
     SetSpreadsheetFetchingAction,
-    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
-    type ShortcircuitAnalysisResultFilterAction,
     ShortcircuitAnalysisResultPaginationAction,
-    PCCMIN_ANALYSIS_RESULT_FILTER,
-    PCCMIN_ANALYSIS_RESULT_PAGINATION,
-    type PccminAnalysisResultFilterAction,
-    PccminAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
-    STATEESTIMATION_RESULT_FILTER,
-    type StateEstimationResultFilterAction,
     STUDY_UPDATED,
     type StudyUpdatedAction,
     TABLE_SORT,
     type TableSortAction,
+    UPDATE_COLUMN_FILTERS,
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
+    UPDATE_GLOBAL_FILTERS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UPDATE_NODE_ALIASES,
     UPDATE_SPREADSHEET_PARTIAL_DATA,
     UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
+    UpdateColumnFiltersAction,
     type UpdateColumnsDefinitionsAction,
     type UpdateEquipmentsAction,
+    UpdateGlobalFiltersAction,
     type UpdateNetworkVisualizationParametersAction,
     UpdateNodeAliasesAction,
     type UpdateSpreadsheetPartialDataAction,
@@ -259,27 +249,22 @@ import {
 import {
     ALL_BUSES,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_CURRENT_LIMIT_VIOLATION,
     LOADFLOW_RESULT,
     LOADFLOW_RESULT_SORT_STORE,
-    LOADFLOW_RESULT_STORE_FIELD,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     ONE_BUS,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     PCCMIN_ANALYSIS_RESULT_SORT_STORE,
-    PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
     PCCMIN_RESULT,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
     SECURITY_ANALYSIS_RESULT_SORT_STORE,
-    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_AT_NODE_N,
     SENSITIVITY_AT_NODE_N_K,
     SENSITIVITY_IN_DELTA_A_N,
@@ -288,13 +273,11 @@ import {
     SENSITIVITY_IN_DELTA_MW_N_K,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_SORT_STORE,
     SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
     STATEESTIMATION_RESULT_SORT_STORE,
-    STATEESTIMATION_RESULT_STORE_FIELD,
     TABLE_SORT_STORE,
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
@@ -320,6 +303,7 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
+    FilterType,
     LogsPaginationConfig,
     PaginationConfig,
     PCCMIN_ANALYSIS_TABS,
@@ -506,6 +490,19 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
+export type ComputationFiltersState = {
+    id?: string;
+} & Partial<
+    Record<
+        FilterType,
+        {
+            id: string;
+            columnsFilters: Record<string, FilterConfig[]>;
+            globalFilters: GlobalFilter[];
+        }
+    >
+>;
+
 export type LogsPaginationState = Record<string, LogsPaginationConfig>;
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
@@ -553,40 +550,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
     spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
     networkVisualizationsParameters: NetworkVisualizationParameters;
-
     syncEnabled: boolean;
-
-    [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterConfig[];
-        [LOADFLOW_RESULT]: FilterConfig[];
-    };
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: FilterConfig[];
-        [SECURITY_ANALYSIS_RESULT_N_K]: FilterConfig[];
-    };
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: FilterConfig[];
-        [SENSITIVITY_IN_DELTA_MW_N_K]: FilterConfig[];
-        [SENSITIVITY_IN_DELTA_A_N]: FilterConfig[];
-        [SENSITIVITY_IN_DELTA_A_N_K]: FilterConfig[];
-        [SENSITIVITY_AT_NODE_N]: FilterConfig[];
-        [SENSITIVITY_AT_NODE_N_K]: FilterConfig[];
-    };
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: FilterConfig[];
-        [ALL_BUSES]: FilterConfig[];
-    };
-    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: {
-        [PCCMIN_RESULT]: FilterConfig[];
-    };
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: FilterConfig[];
-    };
-    [STATEESTIMATION_RESULT_STORE_FIELD]: {
-        [STATEESTIMATION_QUALITY_CRITERION]: FilterConfig[];
-        [STATEESTIMATION_QUALITY_PER_REGION]: FilterConfig[];
-    };
     [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SecurityAnalysisTab, PaginationConfig>;
     [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SensitivityAnalysisTab, PaginationConfig>;
     [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
@@ -599,6 +563,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     highlightedModificationUuid: UUID | null;
+    mapOpen: boolean;
+    computationFilters: ComputationFiltersState;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -779,36 +745,6 @@ const initialState: AppState = {
 
     recentGlobalFilters: [],
     lastCompletedComputation: null,
-
-    // Results filters
-    [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [],
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [],
-        [LOADFLOW_RESULT]: [],
-    },
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: [],
-        [SECURITY_ANALYSIS_RESULT_N_K]: [],
-    },
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: [],
-        [SENSITIVITY_IN_DELTA_MW_N_K]: [],
-        [SENSITIVITY_IN_DELTA_A_N]: [],
-        [SENSITIVITY_IN_DELTA_A_N_K]: [],
-        [SENSITIVITY_AT_NODE_N]: [],
-        [SENSITIVITY_AT_NODE_N_K]: [],
-    },
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: [],
-        [ALL_BUSES]: [],
-    },
-
-    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: {
-        [PCCMIN_RESULT]: [],
-    },
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: [],
-    },
     [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: {
         [SECURITY_ANALYSIS_RESULT_N]: { ...DEFAULT_PAGINATION },
         [SECURITY_ANALYSIS_RESULT_N_K]: { ...DEFAULT_PAGINATION },
@@ -827,10 +763,6 @@ const initialState: AppState = {
     },
     [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: {
         [PCCMIN_RESULT]: { ...DEFAULT_PAGINATION },
-    },
-    [STATEESTIMATION_RESULT_STORE_FIELD]: {
-        [STATEESTIMATION_QUALITY_CRITERION]: [],
-        [STATEESTIMATION_QUALITY_PER_REGION]: [],
     },
 
     // Spreadsheet filters
@@ -908,6 +840,7 @@ const initialState: AppState = {
             ],
         },
     },
+    computationFilters: {},
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -1671,40 +1604,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.lastCompletedComputation = action.lastCompletedComputation;
     });
 
-    builder.addCase(LOADFLOW_RESULT_FILTER, (state, action: LoadflowResultFilterAction) => {
-        state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] = action[LOADFLOW_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(SECURITY_ANALYSIS_RESULT_FILTER, (state, action: SecurityAnalysisResultFilterAction) => {
-        state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] = action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(SENSITIVITY_ANALYSIS_RESULT_FILTER, (state, action: SensitivityAnalysisResultFilterAction) => {
-        state[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-            action[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(SHORTCIRCUIT_ANALYSIS_RESULT_FILTER, (state, action: ShortcircuitAnalysisResultFilterAction) => {
-        state[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-            action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(PCCMIN_ANALYSIS_RESULT_FILTER, (state, action: PccminAnalysisResultFilterAction) => {
-        state[PCCMIN_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] = action[PCCMIN_ANALYSIS_RESULT_STORE_FIELD];
-    });
-    builder.addCase(DYNAMIC_SIMULATION_RESULT_FILTER, (state, action: DynamicSimulationResultFilterAction) => {
-        state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(STATEESTIMATION_RESULT_FILTER, (state, action: StateEstimationResultFilterAction) => {
-        state[STATEESTIMATION_RESULT_STORE_FIELD][action.filterTab] = action[STATEESTIMATION_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(SECURITY_ANALYSIS_RESULT_PAGINATION, (state, action: SecurityAnalysisResultPaginationAction) => {
-        state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
-            action[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD];
-    });
-
     builder.addCase(RESET_SECURITY_ANALYSIS_PAGINATION, (state, _action: ResetSecurityAnalysisPaginationAction) => {
         // Reset all security analysis tabs to page 0 but keep their rowsPerPage
         SECURITY_ANALYSIS_TABS.forEach((tab) => {
@@ -1884,6 +1783,50 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_NODE_ALIASES, (state, action: UpdateNodeAliasesAction) => {
         state.nodeAliases = action.nodeAliases;
+    });
+    builder.addCase(INIT_COMPUTATION_RESULT_FILTERS, (state, action: InitComputationResultFiltersAction) => {
+        const filtersState = action.filters;
+        state.computationFilters.id = filtersState.id;
+        (Object.keys(filtersState) as (keyof ComputationFiltersState)[])
+            .filter((k) => k !== 'id')
+            .forEach((filterTypeKey) => {
+                const f = filtersState[filterTypeKey as FilterType];
+
+                if (!f) return;
+
+                state.computationFilters[filterTypeKey as FilterType] = {
+                    id: f.id,
+                    columnsFilters: f.columnsFilters ?? {},
+                    globalFilters: f.globalFilters ?? {},
+                };
+            });
+    });
+    builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
+        const { filterType, tabId, filters } = action;
+
+        if (!state.computationFilters[filterType]) {
+            state.computationFilters[filterType] = {
+                id: '',
+                columnsFilters: {},
+                globalFilters: {} as GlobalFilter[],
+            };
+        }
+
+        state.computationFilters[filterType]!.columnsFilters[tabId] = filters;
+    });
+
+    builder.addCase(UPDATE_GLOBAL_FILTERS, (state, action: UpdateGlobalFiltersAction) => {
+        const { filterType, globalFilters } = action;
+
+        if (!state.computationFilters[filterType]) {
+            state.computationFilters[filterType] = {
+                id: '',
+                columnsFilters: {},
+                globalFilters: {} as GlobalFilter[],
+            };
+        }
+
+        state.computationFilters[filterType]!.globalFilters = globalFilters;
     });
 });
 

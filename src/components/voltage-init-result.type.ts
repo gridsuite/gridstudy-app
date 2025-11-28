@@ -14,6 +14,7 @@ export interface VoltageInitResultProps {
     status: RunningStatus;
     handleGlobalFilterChange: (value: GlobalFilter[]) => void;
     globalFilterOptions: GlobalFilter[];
+    globalFilterSpreadsheetState?: GlobalFilter[];
 }
 
 export interface ReactiveSlack {

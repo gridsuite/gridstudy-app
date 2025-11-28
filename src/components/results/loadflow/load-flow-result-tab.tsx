@@ -30,11 +30,10 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
@@ -45,12 +44,13 @@ import {
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { ICellRendererParams } from 'ag-grid-community';
 import { Button } from '@mui/material';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
+import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
 
 const styles = {
     flexWrapper: {
@@ -80,14 +80,18 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
+    const globalFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.computationFilters?.[AgGridFilterType.Loadflow]?.globalFilters
+    );
+
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
-
-    const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
-
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFilters, updateGlobalFilters, columnFilters } = useComputationFilters(
+        AgGridFilterType.Loadflow,
+        mappingTabs(tabIndex)
+    );
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
@@ -108,7 +112,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => {
             const limitTypeValues =
                 tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
-            const initialFilters = filters || [];
+            const initialFilters = columnFilters || [];
             let updatedFilters = convertFilterValues(initialFilters, intl);
             let limitTypeFilter = initialFilters.find((f) => f.column === 'limitType');
 
@@ -140,16 +144,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     : {}),
             });
         },
-        [tabIndex, filters, intl, sortConfig, globalFilters]
+        [tabIndex, columnFilters, intl, sortConfig, globalFilters]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {
         return (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) =>
             fetchLoadFlowResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 sort: sortConfig,
-                filters,
+                filters: columnFilters ?? [],
             });
-    }, [sortConfig, filters]);
+    }, [sortConfig, columnFilters]);
 
     const fetchResult = useMemo(() => {
         if (tabIndex === 0 || tabIndex === 1) {
@@ -267,9 +271,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <GlobalFilterSelector
-                        onChange={handleGlobalFilterChange}
+                        onChange={updateGlobalFilters}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
+                        preloadedGlobalFilters={globalFilterSpreadsheetState}
                         genericFiltersStrictMode={true}
                     />
                 </Box>

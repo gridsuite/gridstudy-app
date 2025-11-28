@@ -7,10 +7,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { debounce } from '@mui/material';
 import { GridApi } from 'ag-grid-community';
-import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
 import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
+import { useComputationFilters } from '../../../../hooks/use-computation-result-filters';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -40,7 +40,7 @@ export const useCustomAggridFilter = (
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
     const [tolerance, setTolerance] = useState<number | undefined>();
 
-    const { filters, dispatchFilters } = useFilterSelector(type, tab);
+    const { columnFilters, updateColumnFilters } = useComputationFilters(type, tab);
 
     const updateFilter = useCallback(
         (colId: string, data: FilterData): void => {
@@ -54,15 +54,15 @@ export const useCustomAggridFilter = (
 
             let updatedFilters: FilterConfig[];
             if (!data.value) {
-                updatedFilters = removeElementFromArrayWithFieldValue(filters, colId);
+                updatedFilters = removeElementFromArrayWithFieldValue(columnFilters ?? [], colId);
             } else {
-                updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
+                updatedFilters = changeValueFromArrayWithFieldValue(columnFilters ?? [], colId, newFilter);
             }
 
             updateFilterCallback && updateFilterCallback(api, updatedFilters);
-            dispatchFilters(updatedFilters);
+            updateColumnFilters(updatedFilters);
         },
-        [updateFilterCallback, api, dispatchFilters, filters]
+        [updateFilterCallback, api, updateColumnFilters, columnFilters]
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,14 +107,14 @@ export const useCustomAggridFilter = (
     }, [selectedFilterComparator, comparators]);
 
     useEffect(() => {
-        const filterObject = filters?.find((filter) => filter.column === colId);
+        const filterObject = columnFilters?.find((filter) => filter.column === colId);
         if (filterObject) {
             setSelectedFilterData(filterObject.value);
             setSelectedFilterComparator(filterObject.type ?? '');
         } else {
             setSelectedFilterData(undefined);
         }
-    }, [filters, colId]);
+    }, [columnFilters, colId]);
 
     return {
         selectedFilterData,
