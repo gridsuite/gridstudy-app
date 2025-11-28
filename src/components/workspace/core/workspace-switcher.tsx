@@ -179,7 +179,12 @@ export const WorkspaceSwitcher = memo(() => {
                                             maxLineCount={1}
                                         />
                                         <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                                            {panelCount} <FormattedMessage id={panelCount === 1 ? 'panel' : 'panels'} />
+                                            <FormattedMessage
+                                                id="panelsCount"
+                                                values={{
+                                                    count: panelCount,
+                                                }}
+                                            />
                                         </Typography>
                                     </Box>
                                     <Tooltip title={intl.formatMessage({ id: 'Rename' })}>
