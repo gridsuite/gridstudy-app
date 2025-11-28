@@ -231,13 +231,7 @@ export function LimitsSidePane({
             />
             {name && (
                 <Box>
-                    <Grid
-                        container
-                        justifyContent="flex-start"
-                        alignItems="stretch"
-                        spacing={2}
-                        sx={{ paddingY: 1 }}
-                    >
+                    <Grid container justifyContent="flex-start" alignItems="stretch" spacing={2} sx={{ paddingY: 1 }}>
                         <Grid item xs={4}>
                             <TextInput
                                 name={`${name}.${NAME}`}
