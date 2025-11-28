@@ -48,7 +48,7 @@ export function LimitsPane({
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups: OperationalLimitsGroupFormSchema[] = useWatch({
+    const limitsGroups = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const olgEditable: boolean = useWatch({
