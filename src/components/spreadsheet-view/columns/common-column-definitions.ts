@@ -76,9 +76,13 @@ export const enumColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
                 {
                     displayKey: 'customInRange',
                     displayName: 'customInRange', // translation key
-                    predicate: (filterValues: string[], cellValue: string) =>
+                    predicate: (filterValues: string[], cellValue: string | number) => {
+                        if (!filterValues[0]) return false;
+
                         // We receive here the filter enum values as a string (filterValue)
-                        filterValues[0]?.includes(cellValue) ?? false,
+                        const allowedValues = filterValues[0].split(',');
+                        return allowedValues.includes(String(cellValue));
+                    },
                 },
             ] as IFilterOptionDef[],
         },
