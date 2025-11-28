@@ -25,15 +25,22 @@ import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
 
-const getBorder = (theme: Theme, isFocused: boolean) =>
-    theme.palette.mode === 'light'
-        ? `1px solid ${theme.palette.grey[500]}`
-        : isFocused
-          ? `2px solid ${theme.palette.grey[100]}`
-          : `1px solid ${theme.palette.grey[800]}`;
+const getBorder = (theme: Theme, isFocused: boolean) => {
+    if (theme.palette.mode === 'light') {
+        return `1px solid ${theme.palette.grey[500]}`;
+    }
+    if (isFocused) {
+        return `2px solid ${theme.palette.grey[100]}`;
+    }
+    return `1px solid ${theme.palette.grey[800]}`;
+};
 
-const getBoxShadow = (theme: Theme, isFocused: boolean) =>
-    isFocused ? (theme.palette.mode === 'light' ? theme.shadows[14] : theme.shadows[18]) : 0;
+const getBoxShadow = (theme: Theme, isFocused: boolean) => {
+    if (!isFocused) {
+        return 0;
+    }
+    return theme.palette.mode === 'light' ? theme.shadows[14] : theme.shadows[18];
+};
 
 const styles = {
     panel: {
