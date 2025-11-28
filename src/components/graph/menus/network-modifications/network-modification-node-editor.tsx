@@ -58,13 +58,7 @@ import NetworkModificationsMenu from 'components/graph/menus/network-modificatio
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    addNotification,
-    removeNotificationByNode,
-    resetLogsFilter,
-    resetLogsPagination,
-    setModificationsInProgress,
-} from '../../../../redux/actions';
+import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
@@ -869,11 +863,6 @@ const NetworkModificationNodeEditor = () => {
             setModificationsToRestore([]);
             dofetchNetworkModifications();
             dofetchExcludedNetworkModifications();
-            // reset the network modification and computing logs filter when the user changes the current node
-            if (hasNodeChanged) {
-                dispatch(resetLogsFilter());
-                dispatch(resetLogsPagination());
-            }
         }
     }, [
         createdRootNetworksLength,
