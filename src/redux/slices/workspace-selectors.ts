@@ -11,7 +11,7 @@ import type { PanelType, Workspace } from '../../components/workspace/types/work
 import type { UUID } from 'node:crypto';
 
 const getActiveWorkspace = (state: RootState): Workspace | undefined =>
-    state.workspace.activeWorkspaceId ? state.workspace.workspaces[state.workspace.activeWorkspaceId] : undefined;
+    state.workspace.workspaces.find((w) => w.id === state.workspace.activeWorkspaceId);
 
 export const selectPanelsRecord = createSelector([getActiveWorkspace], (workspace) => workspace?.panels ?? {});
 
@@ -44,8 +44,6 @@ export const selectFocusedPanelId = createSelector(
     (workspace) => workspace?.focusedPanelId ?? null
 );
 
-export const selectWorkspaces = createSelector([(state: RootState) => state.workspace.workspaces], (workspaces) =>
-    Object.values(workspaces)
-);
+export const selectWorkspaces = (state: RootState) => state.workspace.workspaces;
 
 export const selectActiveWorkspaceId = (state: RootState) => state.workspace.activeWorkspaceId;
