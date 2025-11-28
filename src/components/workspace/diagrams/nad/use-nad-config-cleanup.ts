@@ -5,17 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import type { UUID } from 'node:crypto';
 import { PREFIX_STUDY_QUERIES } from '../../../../services/study';
 import { backendFetch } from '@gridsuite/commons-ui';
 
 export const useSavedNadConfigCleanup = (studyUuid: UUID, savedWorkspaceConfigUuid?: UUID) => {
-    const previousConfigUuidRef = useRef<UUID | undefined>(undefined);
-
     useEffect(() => {
-        previousConfigUuidRef.current = savedWorkspaceConfigUuid;
-        // Cleanup function: delete current config when it changes or on unmount
         return () => {
             if (savedWorkspaceConfigUuid) {
                 const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/nad-configs/${savedWorkspaceConfigUuid}`;
