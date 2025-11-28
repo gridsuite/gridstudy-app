@@ -94,6 +94,7 @@
     "modificationsForbiddenOnRootNode": "Modifications interdites sur le noeud racine",
     "images": "Images",
     "panelsCount": "{count, plural, =0 {aucun panneau} =1 {# panneau} other {# panneaux}}",
+    "panels": "Panneaux",
     "NetworkVisualizations": "Images réseau",
     "None": "Aucun",
     "EmptyField": "Vider le champ",

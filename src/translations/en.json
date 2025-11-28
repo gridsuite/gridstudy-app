@@ -94,6 +94,7 @@
     "modificationsForbiddenOnRootNode": "Modifications forbidden on root node",
     "images": "Images",
     "panelsCount": "{count, plural, =0 {no panel} =1 {# panel} other {# panels}}",
+    "panels": "Panels",
     "NetworkVisualizations": "Network visualizations",
     "None": "None",
     "EmptyField": "Empty the field",
