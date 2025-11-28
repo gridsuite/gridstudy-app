@@ -88,7 +88,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const intl = useIntl();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [tabIndex, setTabIndex] = useState(enableDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
-    const tabIndexRef = useRef<number>();
+    const tabIndexRef = useRef<number>(null);
     tabIndexRef.current = tabIndex;
     const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
