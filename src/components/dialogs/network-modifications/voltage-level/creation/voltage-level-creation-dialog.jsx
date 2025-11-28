@@ -191,6 +191,8 @@ const VoltageLevelCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     onCreateVoltageLevel = createVoltageLevel,
+    isAttachementPointModification = false,
+    overrideTitle = null,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -203,6 +205,10 @@ const VoltageLevelCreationDialog = ({
 
     const { reset, setValue, getValues, watch, trigger, subscribe } = formMethods;
 
+    if (isAttachementPointModification) {
+        setValue(ADD_SUBSTATION_CREATION, true);
+        setValue(NOMINAL_V, 0); // need a value to pass yup but not taken into account for attachmentLine
+    }
     // Watch LOW_VOLTAGE_LIMIT changed
     useEffect(() => {
         const callback = subscribe({
@@ -393,6 +399,7 @@ const VoltageLevelCreationDialog = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
+                    isAttachementPointModification={isAttachementPointModification}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

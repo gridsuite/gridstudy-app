@@ -111,7 +111,9 @@ export const PanelHeader = memo(
                     >
                         {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                     </IconButton>
-                    {(panelType === PanelType.SLD || panelType === PanelType.NAD) && (
+                    {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
+                        panelType === PanelType.SLD_SUBSTATION ||
+                        panelType === PanelType.NAD) && (
                         <IconButton
                             className="panel-header-close-button"
                             size="small"

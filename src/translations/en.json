@@ -896,6 +896,7 @@
     "AttachmentPoint": "Attachment point",
     "AttachmentPointId": "Attachment point ID",
     "AttachmentPointName": "Attachment point name",
+    "SpecifyAttachmentPoint": "Add attachment point information (option)",
     "AttachedLine": "Attached line",
     "LineAttached": "Attached line",
     "AttachedLineId": "Attached line ID",
@@ -1666,11 +1667,10 @@
     "xOhm":"x (Ω)",
     "importParameters": "Import parameters",
     "workspaces": "Workspaces",
-    "resetWorkspaceConfirmation": "Are you sure you want to reset this workspace? All open windows will be closed.",
+    "resetWorkspaceConfirmation": "Are you sure you want to reset this workspace? All open panels will be closed.",
     "renameWorkspace": "Rename Workspace",
     "workspaceName": "Workspace Name",
     "manageWorkspaces": "Manage workspaces",
-    "window": "window",
-    "windows": "windows",
-    "reset": "Reset"
+    "reset": "Reset",
+    "history": "History"
  }

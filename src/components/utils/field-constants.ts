@@ -281,6 +281,7 @@ export const REGULATING_TERMINAL_TYPE = 'regulatingTerminalType';
 export const GENERATOR = 'generator';
 //line-attach-to-voltage-level
 export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
+export const ATTACHMENT_POINT = 'attachmentPoint';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
 export const ATTACHMENT_POINT_NAME = 'attachmentPointName';
 export const ATTACHMENT_LINE_ID = 'attachmentLineId';

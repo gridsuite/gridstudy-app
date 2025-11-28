@@ -657,6 +657,7 @@ export interface AttachLineInfo {
     percent: number;
     attachmentPointId: string;
     attachmentPointName: string | null;
+    attachmentPointDetailInformation: any;
     mayNewVoltageLevelInfos: any;
     existingVoltageLevelId: string;
     bbsOrBusId: string;

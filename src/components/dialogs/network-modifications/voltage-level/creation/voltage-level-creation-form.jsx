@@ -40,12 +40,17 @@ import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selectio
 import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
+const VoltageLevelCreationForm = ({
+    currentNode,
+    studyUuid,
+    currentRootNetworkUuid,
+    isAttachementPointModification,
+}) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const { setValue, getValues } = useFormContext();
     const [substations, setSubstations] = useState([]);
-    const [isWithSubstationCreation, setIsWithSubstationCreation] = useState(false);
+    const [isWithSubstationCreation, setIsWithSubstationCreation] = useState(isAttachementPointModification);
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
@@ -211,7 +216,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
             )}
             <GridSection title={intl.formatMessage({ id: 'VoltageText' })} />
             <Grid container spacing={2}>
-                <GridItem size={4}>{nominalVoltageField}</GridItem>
+                {!isAttachementPointModification && <GridItem size={4}>{nominalVoltageField}</GridItem>}
                 <GridItem size={4}>{lowVoltageLimitField}</GridItem>
                 <GridItem size={4}>{highVoltageLimitField}</GridItem>
             </Grid>
@@ -221,18 +226,22 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
                 <GridItem size={4}>{highShortCircuitCurrentLimitField}</GridItem>
                 <Box sx={{ width: '100%' }} />
             </Grid>
-            <GridSection title={'BusBarSections'} />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{busBarCountField}</GridItem>
-                <GridItem size={4}>{sectionCountField}</GridItem>
-                <SwitchesBetweenSections />
-            </Grid>
-            {displayOmnibus && (
+            {!isAttachementPointModification && (
                 <>
-                    <GridSection title={'Coupling_Omnibus'} />
-                    <Grid container>
-                        <GridItem size={12}>{couplingOmnibusForm}</GridItem>
+                    <GridSection title={'BusBarSections'} />
+                    <Grid container spacing={2}>
+                        <GridItem size={4}>{busBarCountField}</GridItem>
+                        <GridItem size={4}>{sectionCountField}</GridItem>
+                        <SwitchesBetweenSections />
                     </Grid>
+                    {displayOmnibus && (
+                        <>
+                            <GridSection title={'Coupling_Omnibus'} />
+                            <Grid container>
+                                <GridItem size={12}>{couplingOmnibusForm}</GridItem>
+                            </Grid>
+                        </>
+                    )}
                 </>
             )}
             <PropertiesForm networkElementType={'voltageLevel'} />

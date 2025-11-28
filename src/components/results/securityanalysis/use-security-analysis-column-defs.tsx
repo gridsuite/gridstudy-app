@@ -24,7 +24,7 @@ import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { openSLD } from '../../../redux/slices/workspace-slice';
-import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
+import { PanelType } from '../../workspace/types/workspace.types';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -95,7 +95,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                         })
                         .finally(() => {
                             if (vlId) {
-                                dispatch(openSLD({ id: vlId, diagramType: DiagramType.VOLTAGE_LEVEL }));
+                                dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
                                 return;
                             }
                             console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);
