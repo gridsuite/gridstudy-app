@@ -25,15 +25,6 @@ import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
 
-const getBorder = (theme: any, isFocused: boolean) =>
-    theme.palette.mode === 'light'
-        ? `1px solid ${theme.palette.grey[500]}`
-        : isFocused
-          ? `2px solid ${theme.palette.grey[100]}`
-          : `1px solid ${theme.palette.grey[800]}`;
-
-const getBoxShadow = (theme: any, isFocused: boolean) => (isFocused ? (theme.palette.mode === 'light' ? 14 : 18) : 0);
-
 const styles = {
     panel: {
         display: 'flex',
@@ -56,6 +47,10 @@ const styles = {
         position: 'relative',
         backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
+        border:
+            theme.palette.mode === 'light'
+                ? `1px solid ${theme.palette.grey[500]}`
+                : `1px solid ${theme.palette.grey[800]}`,
         borderTop: 'none',
     }),
 } as const satisfies MuiStyles;
@@ -73,7 +68,6 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const theme = useSelector((state: AppState) => state.theme);
 
     const handleDrag = useCallback(
         (e: MouseEvent) => {
@@ -156,7 +150,7 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
                 zIndex: panel.zIndex,
             }}
         >
-            <Box sx={(theme) => ({ ...styles.panel, boxShadow: getBoxShadow(theme, isFocused) })}>
+            <Box sx={{ ...styles.panel, boxShadow: isFocused ? 14 : 0 }}>
                 <PanelHeader
                     panelId={panelId}
                     title={panel.title}
@@ -166,13 +160,7 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
                     isFocused={isFocused}
                     onFocus={handleFocus}
                 />
-                <Box
-                    className="panel-content"
-                    sx={(theme) => ({
-                        ...styles.content(theme),
-                        border: getBorder(theme, isFocused),
-                    })}
-                >
+                <Box className="panel-content" sx={styles.content}>
                     {studyUuid && currentRootNetworkUuid && currentNode
                         ? PANEL_CONTENT_REGISTRY[panel.type]({
                               panelId,

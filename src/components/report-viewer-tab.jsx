@@ -29,14 +29,9 @@ const styles = {
         display: 'flex',
         flexShrink: 0,
     },
-    reportOnlyNode: (theme) => ({
+    reportOnlyNode: {
         margin: '5px',
-    }),
-    container: (theme) => ({
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    }),
+    },
 };
 
 /**
@@ -134,7 +129,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
             {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
             {!disabled && !!report && (
                 <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
-                    <Paper sx={styles.container}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         <FormControlLabel
                             sx={styles.reportOnlyNode}
                             control={
@@ -157,7 +152,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                             severities={severities}
                             resetFilters={resetFilters}
                         />
-                    </Paper>
+                    </Box>
                 </WaitingLoader>
             )}
         </>
