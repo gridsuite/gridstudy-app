@@ -68,6 +68,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svgScalingFactor?: number;
     readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
+    readonly isNadCreationFromFilter: boolean;
     readonly visible: boolean;
     readonly onVoltageLevelClick: (voltageLevelId: string) => void;
     readonly onUpdateVoltageLevels: (params: {
@@ -75,6 +76,8 @@ type NetworkAreaDiagramContentProps = {
         voltageLevelToExpandIds: string[];
         voltageLevelToOmitIds: string[];
     }) => void;
+    readonly onHideVoltageLevels: (voltageLevelIds: string[]) => void;
+    readonly onUpdateVoltageLevelsFromFilter: (filterUuid: UUID) => void;
     readonly onUpdatePositions: (positions: DiagramConfigPosition[]) => void;
     readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
     readonly onSaveNad?: () => void;
@@ -89,6 +92,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         positions,
         onVoltageLevelClick,
         onUpdateVoltageLevels,
+        onHideVoltageLevels,
+        onUpdateVoltageLevelsFromFilter,
         onUpdatePositions,
         onReplaceNad,
         svg,
@@ -96,6 +101,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         svgScalingFactor,
         svgVoltageLevels,
         loadingState,
+        isNadCreationFromFilter,
         showInSpreadsheet,
         onSaveNad,
     } = props;
@@ -317,6 +323,13 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, onUpdateVoltageLevels]
     );
 
+    const handleAddVoltageLevelsFromFilter = useCallback(
+        (filterUuid: UUID) => {
+            onUpdateVoltageLevelsFromFilter(filterUuid);
+        },
+        [onUpdateVoltageLevelsFromFilter]
+    );
+
     const handleExpandVoltageLevelId = useCallback(
         (voltageLevelIdToExpand: string) => {
             onUpdateVoltageLevels({
@@ -338,13 +351,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const handleHideVoltageLevelId = useCallback(
         (voltageLevelIdToOmit: string) => {
-            onUpdateVoltageLevels({
-                voltageLevelIds: voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
-                voltageLevelToExpandIds,
-                voltageLevelToOmitIds: [...voltageLevelToOmitIds, voltageLevelIdToOmit],
-            });
+            onHideVoltageLevels([...voltageLevelToOmitIds, voltageLevelIdToOmit]);
         },
-        [voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, onUpdateVoltageLevels]
+        [voltageLevelToOmitIds, onHideVoltageLevels]
     );
 
     const handleMoveNode = useCallback(
@@ -530,9 +539,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onToggleEditNadMode={handleSetIsEditNadMode}
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                 onAddVoltageLevel={handleAddVoltageLevel}
+                onAddVoltageLevelsFromFilter={handleAddVoltageLevelsFromFilter}
                 onToggleShowLabels={handleToggleShowLabels}
                 isShowLabels={showLabels}
                 isDiagramLoading={loadingState}
+                isNadCreationFromFilter={isNadCreationFromFilter}
                 svgVoltageLevels={svgVoltageLevels}
                 onFocusVoltageLevel={handleFocusVoltageLevel}
             />
