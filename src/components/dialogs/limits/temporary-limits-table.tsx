@@ -157,11 +157,7 @@ function TemporaryLimitsTable({
     return (
         <Grid item container spacing={1}>
             <Grid item container>
-                <TableContainer
-                    sx={{
-                        border: 'solid 1px rgba(0,0,0,0.1)',
-                    }}
-                >
+                <TableContainer>
                     <Table stickyHeader size="small" padding="none">
                         {renderTableHead()}
                         {renderTableBody()}

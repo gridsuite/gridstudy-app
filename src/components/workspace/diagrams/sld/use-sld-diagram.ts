@@ -18,21 +18,22 @@ import {
 } from '../../../../services/study/network';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../utils/config-params';
 import { SLD_DISPLAY_MODE } from '../../../network/constants';
-import type { SLDPanelMetadata } from '../../types/workspace.types';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
 import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
 
 interface UseSldDiagramProps {
-    diagramMetadata: SLDPanelMetadata;
+    diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
+    diagramId: string;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
 }
 
 export const useSldDiagram = ({
-    diagramMetadata,
+    diagramType,
+    diagramId,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
@@ -43,14 +44,14 @@ export const useSldDiagram = ({
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const { snackError } = useSnackMessage();
 
-    const [diagram, setDiagram] = useState<Diagram>(() => {
-        const type = diagramMetadata.voltageLevelId ? DiagramType.VOLTAGE_LEVEL : DiagramType.SUBSTATION;
-        return {
-            ...diagramMetadata,
-            type,
-            svg: null,
-        } as Diagram;
-    });
+    const [diagram, setDiagram] = useState<Diagram>(
+        () =>
+            ({
+                type: diagramType,
+                svg: null,
+                diagramId,
+            }) as Diagram
+    );
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
 
@@ -100,12 +101,12 @@ export const useSldDiagram = ({
                 let url: string | null = null;
                 let fetchOptions: RequestInit | null = null;
 
-                if (currentDiagram.type === DiagramType.VOLTAGE_LEVEL && 'voltageLevelId' in currentDiagram) {
+                if (currentDiagram.type === DiagramType.VOLTAGE_LEVEL) {
                     url = getVoltageLevelSingleLineDiagramUrl({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        voltageLevelId: currentDiagram.voltageLevelId,
+                        voltageLevelId: currentDiagram.diagramId,
                     });
                     fetchOptions = {
                         method: 'POST',
@@ -121,12 +122,12 @@ export const useSldDiagram = ({
                             baseVoltagesConfigInfos: getBaseVoltagesConfig(),
                         }),
                     };
-                } else if (currentDiagram.type === DiagramType.SUBSTATION && 'substationId' in currentDiagram) {
+                } else if (currentDiagram.type === DiagramType.SUBSTATION) {
                     url = getSubstationSingleLineDiagramUrl({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        substationId: currentDiagram.substationId,
+                        substationId: currentDiagram.diagramId,
                     });
                     fetchOptions = {
                         method: 'POST',
@@ -183,27 +184,26 @@ export const useSldDiagram = ({
 
         setGlobalError(undefined);
 
-        // Update diagram from diagramData
-        const type = diagramMetadata.voltageLevelId ? DiagramType.VOLTAGE_LEVEL : DiagramType.SUBSTATION;
+        // Update diagram from diagramId
         setDiagram(
             (prev) =>
                 ({
                     ...prev,
-                    ...diagramMetadata,
-                    type,
+                    type: diagramType,
+                    diagramId,
                 }) as Diagram
         );
 
         fetchDiagram();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
+        diagramType,
         currentNodeId,
         currentNode?.id,
         currentNode?.type,
         currentNode?.data?.globalBuildStatus,
         currentRootNetworkUuid,
-        diagramMetadata.voltageLevelId,
-        diagramMetadata.substationId,
+        diagramId,
     ]);
 
     // Listen for notifications and refetch

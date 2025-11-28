@@ -13,6 +13,7 @@ import { PARAMS_LOADED } from '../utils/config-params';
 import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
+    networkModificationTreeNodesUpdated,
     openStudy,
     resetEquipmentsPostComputation,
     setCurrentRootNetworkUuid,
@@ -22,11 +23,13 @@ import {
     setRootNetworks,
     studyUpdated,
 } from '../redux/actions';
-import { initializeWorkspaces, loadWorkspacesFromStorage } from '../redux/slices/workspace-slice';
+import { initializeWorkspaces } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
+    hasElementPermission,
+    PermissionType,
     NotificationsUrlKeys,
     snackWithFallback,
     useIntlRef,
@@ -37,7 +40,7 @@ import NetworkModificationTreeModel from './graph/network-modification-tree-mode
 import { getFirstNodeOfType } from './graph/util/model-functions';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { fetchNetworkModificationTree, fetchNetworkModificationTreeNode } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
@@ -52,6 +55,7 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
+import { loadWorkspacesFromStorage } from 'redux/slices/workspace-storage';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -61,49 +65,50 @@ function useStudy(studyUuidRequest) {
     const intlRef = useIntlRef();
 
     useEffect(() => {
-        fetchStudy(studyUuidRequest)
-            .then((res) => {
+        const loadStudy = async () => {
+            try {
+                // 1) check accesss right
+                const hasWritePermission = await hasElementPermission(studyUuidRequest, PermissionType.WRITE);
+                if (!hasWritePermission) {
+                    setErrMessage(
+                        intlRef.current.formatMessage(
+                            { id: 'noWritePermissionOnStudy' },
+                            { studyUuid: studyUuidRequest }
+                        )
+                    );
+                    return;
+                }
+
+                // 2) fetch study
+                const res = await fetchStudy(studyUuidRequest);
                 setStudyUuid(studyUuidRequest);
                 dispatch(setMonoRootStudy(res.monoRoot));
 
-                // Fetch root networks and set the first one as the current root network
-                fetchRootNetworks(studyUuidRequest)
-                    .then((rootNetworks) => {
-                        if (rootNetworks && rootNetworks.length > 0) {
-                            // Validate that currentRootNetworkUuid is set
-                            dispatch(setCurrentRootNetworkUuid(rootNetworks[0].rootNetworkUuid));
-                            dispatch(setRootNetworks(rootNetworks));
-                        } else {
-                            // Handle case where no root networks are available
-                            setErrMessage(
-                                intlRef.current.formatMessage(
-                                    { id: 'rootNetworkNotFound' },
-                                    { studyUuid: studyUuidRequest }
-                                )
-                            );
-                        }
-                    })
-                    .catch((error) => {
-                        // Handle errors when fetching root networks
-                        setErrMessage(
-                            intlRef.current.formatMessage(
-                                { id: 'rootNetworkNotFound' },
-                                { studyUuid: studyUuidRequest }
-                            )
-                        );
-                    });
-            })
-            .catch((error) => {
-                // Handle errors when fetching study existence
+                // 3) fetch root networks and set the first one as the current root network
+                const rootNetworks = await fetchRootNetworks(studyUuidRequest);
+                if (rootNetworks && rootNetworks.length > 0) {
+                    dispatch(setCurrentRootNetworkUuid(rootNetworks[0].rootNetworkUuid));
+                    dispatch(setRootNetworks(rootNetworks));
+                } else {
+                    setErrMessage(
+                        intlRef.current.formatMessage({ id: 'rootNetworkNotFound' }, { studyUuid: studyUuidRequest })
+                    );
+                }
+            } catch (error) {
                 if (error.status === HttpStatusCode.NOT_FOUND) {
                     setErrMessage(
                         intlRef.current.formatMessage({ id: 'studyNotFound' }, { studyUuid: studyUuidRequest })
                     );
                 } else {
+                    // any other unmanaged error
                     setErrMessage(error.message);
                 }
-            })
-            .finally(() => setPending(false));
+            } finally {
+                setPending(false);
+            }
+        };
+
+        loadStudy();
     }, [studyUuidRequest, dispatch, intlRef]);
 
     return [studyUuid, pending, errMessage];
@@ -271,9 +276,26 @@ export function StudyContainer() {
             }
             displayErrorNotifications(eventData);
             dispatch(studyUpdated(eventData));
+
+            // Handle build status updates globally so all workspaces open in other browser tabs update currentTreeNode
+            // This fixes the issue where tabs without tree panel don't get updates
+            if (
+                updateTypeHeader === NotificationType.NODE_BUILD_STATUS_UPDATED &&
+                eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current
+            ) {
+                // Fetch updated nodes and dispatch to Redux to sync currentTreeNode
+                const updatedNodeIds = eventData.headers.nodes;
+                Promise.all(
+                    updatedNodeIds.map((nodeId) =>
+                        fetchNetworkModificationTreeNode(studyUuid, nodeId, currentRootNetworkUuidRef.current)
+                    )
+                ).then((values) => {
+                    dispatch(networkModificationTreeNodesUpdated(values));
+                });
+            }
         },
         // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications, sendAlert]
+        [dispatch, displayErrorNotifications, sendAlert, studyUuid]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyUpdate });

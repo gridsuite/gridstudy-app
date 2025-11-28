@@ -9,7 +9,7 @@ import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import { getBaseVoltageInterval } from './base-voltages-utils';
 import { getLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
 
-export const INVALID_LOADFLOW_OPACITY = 0.2;
+export const INVALID_COMPUTATION_OPACITY = 0.2;
 
 function parseRGB(stringRGB: string): number[] | undefined {
     return stringRGB

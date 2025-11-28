@@ -10,11 +10,11 @@ import { useSelector } from 'react-redux';
 import { useRef, useState, useCallback, useEffect } from 'react';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { useDebounce } from '@gridsuite/commons-ui';
-import { selectPanelIds, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
+import { selectOpenPanelIds, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
 import { WorkspaceDock } from './workspace-dock';
 import { Panel } from './panel';
 import type { SnapRect } from './utils/snap-utils';
-import { saveWorkspacesToStorage } from '../../../redux/slices/workspace-slice';
+import { saveWorkspacesToStorage } from '../../../redux/slices/workspace-storage';
 import type { RootState } from '../../../redux/store';
 
 const styles = {
@@ -44,7 +44,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const WorkspaceContainer = () => {
-    const panelIds = useSelector(selectPanelIds);
+    const panelIds = useSelector(selectOpenPanelIds);
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const workspaceState = useSelector((state: RootState) => state.workspace);
     const studyUuid = useSelector((state: RootState) => state.studyUuid);

@@ -15,7 +15,8 @@ import {
     OfflineBolt,
     Public,
     Hub,
-    GridGoldenratio,
+    Adjust,
+    Radar,
 } from '@mui/icons-material';
 import { PanelType } from '../types/workspace.types';
 import type { PanelSize, PanelPosition } from '../types/workspace.types';
@@ -41,18 +42,25 @@ export const DEFAULT_PANEL_CONFIGS: Record<PanelType, PanelConfig> = {
         defaultPosition: { x: 0, y: 0 },
         icon: <AccountTree fontSize="inherit" sx={{ transform: 'scaleY(-1) rotate(-90deg)' }} />,
     },
-    [PanelType.SLD]: {
-        title: 'SLD',
+    [PanelType.SLD_SUBSTATION]: {
+        title: 'SUBSTATION',
         defaultSize: { width: 700, height: 500 },
         minSize: { width: 500, height: 400 },
         defaultPosition: { x: 50, y: 0 },
-        icon: <GridGoldenratio fontSize="inherit" />,
+        icon: <Radar fontSize="inherit" />,
+    },
+    [PanelType.SLD_VOLTAGE_LEVEL]: {
+        title: 'VOLTAGE LEVEL',
+        defaultSize: { width: 700, height: 500 },
+        minSize: { width: 500, height: 400 },
+        defaultPosition: { x: 60, y: 0 },
+        icon: <Adjust fontSize="inherit" />,
     },
     [PanelType.NAD]: {
         title: 'NAD',
         defaultSize: { width: 700, height: 500 },
         minSize: { width: 500, height: 400 },
-        defaultPosition: { x: 50, y: 0 },
+        defaultPosition: { x: 70, y: 0 },
         icon: <Hub fontSize="inherit" />,
     },
     [PanelType.MAP]: {
@@ -110,7 +118,7 @@ export const getPanelConfig = (type: PanelType): PanelConfig => {
     const config = DEFAULT_PANEL_CONFIGS[type];
 
     // Randomize position for SLD and NAD windows to avoid stacking
-    if (type === PanelType.SLD || type === PanelType.NAD) {
+    if (type === PanelType.SLD_VOLTAGE_LEVEL || type === PanelType.SLD_SUBSTATION || type === PanelType.NAD) {
         // secure random number between 0 and range
         const range = DEFAULT_WINDOW_POSITION_OFFSET_MAX - DEFAULT_WINDOW_POSITION_OFFSET_MIN;
         const randomValue = crypto.getRandomValues(new Uint32Array(1))[0];
