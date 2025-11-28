@@ -80,10 +80,11 @@ interface PanelHeaderProps {
     isMaximized: boolean;
     isFocused: boolean;
     onFocus: () => void;
+    onClose?: () => boolean;
 }
 
 export const PanelHeader = memo(
-    ({ panelId, title, panelType, isPinned, isMaximized, isFocused, onFocus }: PanelHeaderProps) => {
+    ({ panelId, title, panelType, isPinned, isMaximized, isFocused, onFocus, onClose }: PanelHeaderProps) => {
         const dispatch = useDispatch();
         const intl = useIntl();
         const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
@@ -96,6 +97,17 @@ export const PanelHeader = memo(
             } else {
                 dispatch(closePanel(panelId));
             }
+        };
+
+        const handleClose = () => {
+            if (onClose) {
+                const shouldClose = onClose();
+                if (shouldClose === false) {
+                    return;
+                }
+            }
+            // Default behavior: close panel
+            dispatch(closePanel(panelId));
         };
 
         return (
