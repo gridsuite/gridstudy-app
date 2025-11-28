@@ -5,22 +5,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export function getNominalVoltageColor(nominalVoltage: number): number[] {
-    if (nominalVoltage >= 300) {
-        return [255, 0, 0];
-    } else if (nominalVoltage >= 180 && nominalVoltage < 300) {
-        return [34, 139, 34];
-    } else if (nominalVoltage >= 120 && nominalVoltage < 180) {
-        return [1, 175, 175];
-    } else if (nominalVoltage >= 70 && nominalVoltage < 120) {
-        return [204, 85, 0];
-    } else if (nominalVoltage >= 50 && nominalVoltage < 70) {
-        return [160, 32, 240];
-    } else if (nominalVoltage >= 30 && nominalVoltage < 50) {
-        return [255, 130, 144];
-    } else {
-        return [171, 175, 40];
-    }
-}
+import { LIGHT_THEME } from '@gridsuite/commons-ui';
+import { getBaseVoltageInterval } from './base-voltages-utils';
+import { getLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
 
 export const INVALID_COMPUTATION_OPACITY = 0.2;
+
+function parseRGB(stringRGB: string): number[] | undefined {
+    return stringRGB
+        .match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
+        ?.slice(1)
+        .map(Number);
+}
+
+export const getBaseVoltageNetworkMapColor = (voltageValue: number): number[] => {
+    const color = getBaseVoltageInterval(voltageValue)?.networkMapColor;
+    return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
+};
+
+export const getBaseVoltagesCssVars = (theme: string): Record<string, Record<string, string>> => {
+    const baseVoltages = getLocalStorageBaseVoltages();
+    const css: Record<string, Record<string, string>> = {};
+
+    for (const interval of baseVoltages) {
+        const themeColors =
+            theme === LIGHT_THEME
+                ? interval.sldAndNadColors.lightThemeColors
+                : interval.sldAndNadColors.darkThemeColors;
+
+        const vlStyleClassName = `.sld-${interval.name}, .nad-${interval.name}`;
+        css[vlStyleClassName] = { '--vl-color': themeColors.default };
+
+        for (let i = 1; i < Object.keys(themeColors).length; i++) {
+            const busColor = themeColors[`bus-${i}`];
+            if (!busColor) continue;
+            const busStyleClassName = `.sld-${interval.name}.sld-bus-${i}, .nad-${interval.name}.nad-bus-${i}`;
+            css[busStyleClassName] = { '--vl-color': busColor };
+        }
+    }
+    return css;
+};

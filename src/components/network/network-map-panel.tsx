@@ -69,7 +69,7 @@ import GuidancePopup from './guidance-popup';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
-import { getNominalVoltageColor } from 'utils/colors';
+import { getBaseVoltageNetworkMapColor } from 'utils/colors';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
 import BranchPopoverContent from 'components/tooltips/branch-popover-content';
@@ -1116,7 +1116,7 @@ export const NetworkMapPanel = ({
                     }}
                     shouldDisableToolTip={isInDrawingMode.value}
                     // @ts-ignore
-                    getNominalVoltageColor={getNominalVoltageColor}
+                    getNominalVoltageColor={getBaseVoltageNetworkMapColor}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                 {renderSearchEquipment()}

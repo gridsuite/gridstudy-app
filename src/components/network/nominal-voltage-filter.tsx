@@ -8,9 +8,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { type MuiStyles } from '@gridsuite/commons-ui';
-import { BASE_VOLTAGES, MAX_VOLTAGE, VoltageLevelInterval } from './constants';
-import { getNominalVoltageIntervalName } from './utils/nominal-voltage-filter-utils';
+import { BaseVoltage, type MuiStyles } from '@gridsuite/commons-ui';
+import { getBaseVoltageIntervalName } from 'utils/base-voltages-utils';
+import { getLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
 
 const styles = {
     nominalVoltageZone: {
@@ -40,15 +40,15 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
+type VoltageLevelValuesInterval = Pick<BaseVoltage, 'name' | 'minValue' | 'maxValue'> & {
+    vlListValues: number[];
+    isChecked: boolean;
+};
+
 export type NominalVoltageFilterProps = {
     nominalVoltages: number[];
     filteredNominalVoltages: number[];
     onChange: (filteredNominalVoltages: number[]) => void;
-};
-
-type VoltageLevelValuesInterval = VoltageLevelInterval & {
-    vlListValues: number[];
-    isChecked: boolean;
 };
 
 export default function NominalVoltageFilter({
@@ -57,13 +57,18 @@ export default function NominalVoltageFilter({
     onChange,
 }: Readonly<NominalVoltageFilterProps>) {
     const [voltageLevelIntervals, setVoltageLevelIntervals] = useState<VoltageLevelValuesInterval[]>(
-        BASE_VOLTAGES.map((interval) => ({ ...interval, vlListValues: [], isChecked: true }))
+        getLocalStorageBaseVoltages().map(({ name, minValue, maxValue }) => ({
+            name,
+            minValue,
+            maxValue,
+            vlListValues: [],
+            isChecked: true,
+        }))
     );
+
     useEffect(() => {
-        const newIntervals = BASE_VOLTAGES.map((interval) => {
-            const vlListValues = nominalVoltages.filter(
-                (vnom) => getNominalVoltageIntervalName(vnom) === interval.name
-            );
+        const newIntervals = getLocalStorageBaseVoltages().map((interval) => {
+            const vlListValues = nominalVoltages.filter((vnom) => getBaseVoltageIntervalName(vnom) === interval.name);
             return { ...interval, vlListValues, isChecked: true };
         });
         setVoltageLevelIntervals(newIntervals);
@@ -114,10 +119,11 @@ export default function NominalVoltageFilter({
                                     id={'voltageLevelInterval'}
                                     values={{
                                         lowBound: interval.minValue,
-                                        highBound: interval.maxValue === Infinity ? MAX_VOLTAGE : interval.maxValue,
+                                        highBound: interval.maxValue,
                                     }}
                                 />
                             }
+                            placement="left"
                         >
                             <ListItemButton
                                 role={undefined}
@@ -134,7 +140,7 @@ export default function NominalVoltageFilter({
                                 <ListItemText
                                     sx={styles.nominalVoltageText}
                                     disableTypography
-                                    primary={`${interval.vlValue} kV`}
+                                    primary={<FormattedMessage id={interval.name} />}
                                 ></ListItemText>
                             </ListItemButton>
                         </Tooltip>

@@ -12,12 +12,16 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { Diagram, DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg } from '../../../../services/study';
-import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../../../services/study/network';
+import {
+    getSubstationSingleLineDiagramUrl,
+    getVoltageLevelSingleLineDiagramUrl,
+} from '../../../../services/study/network';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../utils/config-params';
 import { SLD_DISPLAY_MODE } from '../../../network/constants';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
+import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
 
 interface UseSldDiagramProps {
     diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
@@ -95,37 +99,54 @@ export const useSldDiagram = ({
         try {
             setDiagram((currentDiagram) => {
                 let url: string | null = null;
+                let fetchOptions: RequestInit | null = null;
 
                 if (currentDiagram.type === DiagramType.VOLTAGE_LEVEL) {
-                    url = getVoltageLevelSingleLineDiagram({
+                    url = getVoltageLevelSingleLineDiagramUrl({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
                         voltageLevelId: currentDiagram.diagramId,
-                        useName: paramUseName,
-                        centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-                        diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                        componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
-                        sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
-                        language,
                     });
+                    fetchOptions = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            useName: paramUseName,
+                            centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
+                            diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                            componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                            sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
+                            topologicalColoring: true,
+                            language,
+                            baseVoltagesConfigInfos: getBaseVoltagesConfig(),
+                        }),
+                    };
                 } else if (currentDiagram.type === DiagramType.SUBSTATION) {
-                    url = getSubstationSingleLineDiagram({
+                    url = getSubstationSingleLineDiagramUrl({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
                         substationId: currentDiagram.diagramId,
-                        useName: paramUseName,
-                        centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-                        diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                        substationLayout: networkVisuParams.singleLineDiagramParameters.substationLayout,
-                        componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
-                        language,
                     });
+                    fetchOptions = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            useName: paramUseName,
+                            centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
+                            diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                            substationLayout: networkVisuParams.singleLineDiagramParameters.substationLayout,
+                            componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                            topologicalColoring: true,
+                            language,
+                            baseVoltagesConfigInfos: getBaseVoltagesConfig(),
+                        }),
+                    };
                 }
 
-                if (url) {
-                    fetchSvg(url, { method: 'GET' })
+                if (url && fetchOptions) {
+                    fetchSvg(url, fetchOptions)
                         .then(processSvgData)
                         .catch(handleFetchError)
                         .finally(handleFetchComplete);
