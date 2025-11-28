@@ -9,7 +9,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import { useCallback, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { CurrentLimits, Limit, TemporaryLimit } from '../../../services/network-modification-types';
+import { Limit, TemporaryLimit } from '../../../services/network-modification-types';
 import { BarSeriesType } from '@mui/x-charts/models/seriesType/bar';
 import { AxisValueFormatterContext } from '@mui/x-charts/models/axis';
 
