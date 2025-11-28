@@ -236,7 +236,7 @@ export function LimitsSidePane({
                         justifyContent="flex-start"
                         alignItems="stretch"
                         spacing={2}
-                        sx={{ paddingBottom: 1, paddingTop: 1 }}
+                        sx={{ paddingY: 1 }}
                     >
                         <Grid item xs={4}>
                             <TextInput
@@ -267,7 +267,7 @@ export function LimitsSidePane({
                 </Box>
             )}
 
-            <Box component={`h4`} sx={{ margin: 1 }}>
+            <Box component={`h4`} margin={1}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
             <TemporaryLimitsTable
