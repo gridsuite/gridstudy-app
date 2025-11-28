@@ -50,7 +50,7 @@ export const useNadDiagram = ({
         voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
         positions: [],
         voltageLevelToExpandIds: [],
-        voltageLevelToOmitIds: [],
+        voltageLevelToOmitIds: diagramMetadata.voltageLevelToOmitIds || [],
     }));
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
@@ -267,7 +267,7 @@ export const useNadDiagram = ({
             voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
             positions: [],
             voltageLevelToExpandIds: [],
-            voltageLevelToOmitIds: [],
+            voltageLevelToOmitIds: diagramMetadata.voltageLevelToOmitIds || [],
         }));
 
         fetchDiagram();
@@ -281,6 +281,7 @@ export const useNadDiagram = ({
         diagramMetadata.nadConfigUuid,
         diagramMetadata.filterUuid,
         diagramMetadata.currentFilterUuid,
+        diagramMetadata.voltageLevelToOmitIds,
     ]);
 
     // Listen for notifications and refetch
