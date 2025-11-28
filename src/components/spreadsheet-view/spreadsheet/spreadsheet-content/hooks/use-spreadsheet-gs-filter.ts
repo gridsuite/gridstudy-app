@@ -22,7 +22,7 @@ export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) 
 
 type ObjWithId<T extends string = string> = { id: T };
 export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
-    gridRef: RefObject<AgGridReact<TData>>,
+    gridRef: RefObject<AgGridReact<TData> | null>,
     tabUuid: UUID,
     equipmentType: SpreadsheetEquipmentType
 ) {

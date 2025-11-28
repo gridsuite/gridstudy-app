@@ -26,7 +26,7 @@ import { useRowData } from './use-row-data';
 import { AgGridReact } from 'ag-grid-react';
 
 interface LineTypesCatalogSelectorFormProps {
-    gridRef: React.RefObject<AgGridReact>;
+    gridRef: React.RefObject<AgGridReact | null>;
     selectedRow: LineTypeInfo | null;
     preselectedRowId: string;
     rowData: LineTypeInfo[];

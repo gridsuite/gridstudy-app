@@ -16,7 +16,7 @@ import {
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { ContingencyCellRenderer } from 'components/custom-aggrid/cell-renderers';
+import { ComputingType, ContingencyCellRenderer } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
@@ -25,7 +25,6 @@ import {
     SECURITY_ANALYSIS_RESULT_SORT_STORE,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';

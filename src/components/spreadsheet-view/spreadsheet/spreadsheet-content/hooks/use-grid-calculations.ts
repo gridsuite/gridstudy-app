@@ -22,7 +22,7 @@ const DEFAULT_ROWS = [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
  * Hook for managing calculation rows
  */
 export const useGridCalculations = (
-    gridRef: React.RefObject<AgGridReact>,
+    gridRef: React.RefObject<AgGridReact | null>,
     tabUuid: UUID | null,
     columnDefs: CustomColDef[]
 ) => {
