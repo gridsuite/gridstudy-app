@@ -11,7 +11,7 @@ import { ListImperativeAPI } from 'react-window';
 export const useTreeViewScroll = (
     highlightedReportId: string | undefined,
     nodes: ReportItem[],
-    listRef: RefObject<ListImperativeAPI>
+    listRef: RefObject<ListImperativeAPI | null>
 ) => {
     const scrollLocked = useRef(false);
 

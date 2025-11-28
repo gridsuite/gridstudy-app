@@ -164,11 +164,11 @@ export const NetworkMapPanel = ({
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>();
     const [geoData, setGeoData] = useState<GeoData>();
-    const geoDataRef = useRef<any>();
+    const geoDataRef = useRef<any>(null);
 
     const basicDataReady = mapEquipments && geoData;
 
-    const lineFullPathRef = useRef<boolean>();
+    const lineFullPathRef = useRef<boolean>(null);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
     /*
@@ -180,13 +180,13 @@ export const NetworkMapPanel = ({
         and this position would need to be requested again.
         It will be possible to have a better mechanism after we improved the notification system.
         */
-    const temporaryGeoDataIdsRef = useRef<Set<string>>();
+    const temporaryGeoDataIdsRef = useRef<Set<string>>(null);
 
     const disabled = !isNodeBuilt(currentNode);
     const reloadMapNeeded = useSelector((state: AppState) => state.reloadMapNeeded);
     const freezeMapUpdates = useSelector((state: AppState) => state.freezeMapUpdates);
     const isMapEquipmentsInitialized = useSelector((state: AppState) => state.isMapEquipmentsInitialized);
-    const refIsMapManualRefreshEnabled = useRef<boolean>();
+    const refIsMapManualRefreshEnabled = useRef<boolean>(null);
     refIsMapManualRefreshEnabled.current = networkVisuParams.mapParameters.mapManualRefresh;
     const [firstRendering, setFirstRendering] = useState<boolean>(true);
 
@@ -955,6 +955,7 @@ export const NetworkMapPanel = ({
                     equipmentId={elementId}
                     equipmentType={EquipmentType.LINE}
                     loadFlowStatus={loadFlowStatus}
+                    anchorPosition={undefined}
                 >
                     {(equipmentInfos: EquipmentInfos) => (
                         <PopoverContent
@@ -1047,6 +1048,7 @@ export const NetworkMapPanel = ({
                     ref={networkMapRef}
                     mapEquipments={mapEquipments}
                     geoData={geoData}
+                    // @ts-ignore
                     updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
                     displayOverlayLoader={!basicDataReady && mapDataLoading}
                     filteredNominalVoltages={filteredNominalVoltages}
@@ -1113,6 +1115,7 @@ export const NetworkMapPanel = ({
                         onDrawEvent(event);
                     }}
                     shouldDisableToolTip={isInDrawingMode.value}
+                    // @ts-ignore
                     getNominalVoltageColor={getNominalVoltageColor}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}

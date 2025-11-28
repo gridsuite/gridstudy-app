@@ -9,6 +9,7 @@ import { EquipmentInfos } from '@gridsuite/commons-ui';
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
 import { renderCommonCharacteristics, styles } from './generic-equipment-popover-utils';
 import { CellRender } from './cell-render';
+import { JSX } from 'react';
 
 interface CharacteristicsTableProps {
     equipmentInfos: EquipmentInfos;
