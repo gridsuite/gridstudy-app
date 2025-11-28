@@ -47,7 +47,6 @@ const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
 const styles = {
     title: {
         flexGrow: 1,
-        paddingBottom: '2px',
         display: 'flex',
         alignItems: 'center',
         gap: 0.5,
@@ -60,7 +59,6 @@ const styles = {
         overflow: 'hidden',
     },
     titleText: {
-        lineHeight: 1,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
