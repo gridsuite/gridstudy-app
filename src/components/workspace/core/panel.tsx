@@ -31,7 +31,7 @@ const getBorder = (theme: Theme, isFocused: boolean) => {
         return `1px solid ${theme.palette.grey[500]}`;
     }
     if (isFocused) {
-        return `2px solid ${theme.palette.grey[100]}`;
+        return `1px solid ${theme.palette.grey[100]}`;
     }
     return `1px solid ${theme.palette.grey[800]}`;
 };

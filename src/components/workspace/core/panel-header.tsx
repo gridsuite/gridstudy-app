@@ -25,7 +25,7 @@ const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
         border = `1px solid ${theme.palette.grey[500]}`;
     } else {
         backgroundColor = theme.workspace.panel.background;
-        border = isFocused ? `2px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
+        border = isFocused ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
     }
 
     return {
