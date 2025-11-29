@@ -156,6 +156,7 @@ const spreadsheetEn = {
 
     //Formula errors
     'spreadsheet/formula/error': '#ERROR',
+    'spreadsheet/formula/error/generic': 'Formula returns an error',
     'spreadsheet/formula/import/disabled': 'Function import is disabled',
     'spreadsheet/formula/createUnit/disabled': 'Function createUnit is disabled',
     'spreadsheet/formula/evaluate/disabled': 'Function evaluate is disabled',
@@ -169,6 +170,8 @@ const spreadsheetEn = {
     'spreadsheet/formula/type/boolean': 'Formula must evaluate to a boolean',
     'spreadsheet/formula/type/enum': 'Formula must evaluate to a string or a number',
     'spreadsheet/formula/type/unknown': 'Unknown column type',
+    'spreadsheet/formula/function-reference/disabled':
+        'Function references are disabled. Functions must be called with parameters',
 
     // Column types
     TEXT: 'Text',
