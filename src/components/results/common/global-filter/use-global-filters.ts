@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { FilterType } from '../utils';
 
@@ -20,7 +20,9 @@ export function isGlobalFilterParameter(globalFilters: GlobalFilters | undefined
 }
 
 export default function useGlobalFilters() {
-    const buildGlobalFilters = useCallback((value: GlobalFilter[]): GlobalFilters => {
+    const [globalFilters, setGlobalFilters] = useState<GlobalFilters>();
+
+    const handleGlobalFilterChange = useCallback((value: GlobalFilter[]): void => {
         const newGlobalFilter: GlobalFilters = {};
         const nominalVs = new Set<string>();
         const genericFilters = new Set<string>();
@@ -46,15 +48,16 @@ export default function useGlobalFilters() {
                     break;
             }
         });
+
         if (nominalVs.size > 0) newGlobalFilter.nominalV = [...nominalVs];
         if (countryCodes.size > 0) newGlobalFilter.countryCode = [...countryCodes];
         if (genericFilters.size > 0) newGlobalFilter.genericFilter = [...genericFilters];
-        if (Object.keys(substationProperties).length) {
+        if (Object.keys(substationProperties).length > 0) {
             newGlobalFilter.substationProperty = substationProperties;
         }
 
-        return newGlobalFilter;
+        setGlobalFilters(newGlobalFilter);
     }, []);
 
-    return { buildGlobalFilters };
+    return { handleGlobalFilterChange, globalFilters };
 }

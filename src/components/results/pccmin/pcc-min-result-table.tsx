@@ -11,7 +11,7 @@ import { Box, Button, LinearProgress } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
-import { CustomAGGrid, ComputingType, OverflowableText } from '@gridsuite/commons-ui';
+import { ComputingType, CustomAGGrid, OverflowableText } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
@@ -19,11 +19,14 @@ import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GridApi, GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
+import { useComputationColumnsFilters } from '../../../hooks/use-computation-columns-filters';
+import { FilterConfig, FilterType } from '../../../types/custom-aggrid-types';
+import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -33,7 +36,7 @@ const styles = {
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     result,
     isFetching,
-    onFilter,
+    memoizedSetPageCallback,
     filters,
     setCsvHeaders,
     setIsCsvButtonDisabled,
@@ -63,6 +66,15 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [dispatch]
     );
 
+    const { persistFilters } = useComputationColumnsFilters(FilterType.PccMin, PCCMIN_RESULT);
+
+    const onFilter = useCallback(
+        (colId: string, api: GridApi, filters: FilterConfig[]) => {
+            memoizedSetPageCallback();
+            persistFilters(colId, api, filters);
+        },
+        [memoizedSetPageCallback, persistFilters]
+    );
     const columns = useMemo(
         () => getPccMinColumns(intl, onFilter, voltageLevelIdRenderer),
         [intl, onFilter, voltageLevelIdRenderer]

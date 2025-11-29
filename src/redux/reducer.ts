@@ -490,6 +490,11 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
+export type ColumnFilterEntry = {
+    id: string;
+    columns: FilterConfig[];
+};
+
 export type ComputationFiltersState = {
     id?: string;
 } & Partial<
@@ -497,7 +502,7 @@ export type ComputationFiltersState = {
         FilterType,
         {
             id: string;
-            columnsFilters: Record<string, FilterConfig[]>;
+            columnsFilters: Record<string, ColumnFilterEntry>;
             globalFilters: GlobalFilter[];
         }
     >
@@ -563,7 +568,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     highlightedModificationUuid: UUID | null;
-    mapOpen: boolean;
     computationFilters: ComputationFiltersState;
 }
 
@@ -1787,17 +1791,24 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(INIT_COMPUTATION_RESULT_FILTERS, (state, action: InitComputationResultFiltersAction) => {
         const filtersState = action.filters;
         state.computationFilters.id = filtersState.id;
-        (Object.keys(filtersState) as (keyof ComputationFiltersState)[])
-            .filter((k) => k !== 'id')
-            .forEach((filterTypeKey) => {
-                const f = filtersState[filterTypeKey as FilterType];
 
-                if (!f) return;
+        Object.entries(filtersState)
+            .filter(([key]) => key !== 'id')
+            .forEach(([filterTypeKey, filterData]) => {
+                if (!filterData || typeof filterData === 'string') return;
+                const normalizedColumnsFilters: Record<string, ColumnFilterEntry> = {};
+
+                Object.entries(filterData.columnsFilters ?? {}).forEach(([tab, entry]: any) => {
+                    normalizedColumnsFilters[tab] = {
+                        id: entry.id ?? tab,
+                        columns: entry.columns ?? [],
+                    };
+                });
 
                 state.computationFilters[filterTypeKey as FilterType] = {
-                    id: f.id,
-                    columnsFilters: f.columnsFilters ?? {},
-                    globalFilters: f.globalFilters ?? {},
+                    id: filterData.id,
+                    columnsFilters: normalizedColumnsFilters,
+                    globalFilters: filterData.globalFilters ?? [],
                 };
             });
     });
@@ -1808,11 +1819,18 @@ export const reducer = createReducer(initialState, (builder) => {
             state.computationFilters[filterType] = {
                 id: '',
                 columnsFilters: {},
-                globalFilters: {} as GlobalFilter[],
+                globalFilters: [],
             };
         }
 
-        state.computationFilters[filterType]!.columnsFilters[tabId] = filters;
+        if (!state.computationFilters[filterType]!.columnsFilters[tabId]) {
+            state.computationFilters[filterType]!.columnsFilters[tabId] = {
+                id: tabId,
+                columns: [],
+            };
+        }
+
+        state.computationFilters[filterType]!.columnsFilters[tabId].columns = filters;
     });
 
     builder.addCase(UPDATE_GLOBAL_FILTERS, (state, action: UpdateGlobalFiltersAction) => {

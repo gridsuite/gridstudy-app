@@ -17,8 +17,7 @@ import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-so
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN } from './pcc-min-result.type';
-import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
-import { mappingTabs } from '../loadflow/load-flow-result-utils';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 interface PccMinExportButtonProps {
     studyUuid: UUID;
@@ -36,7 +35,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
-    const { columnFilters } = useComputationFilters(AgGridFilterType.PccMin, PCCMIN_RESULT);
+    const { filters } = useFilterSelector(AgGridFilterType.PccMin, PCCMIN_RESULT);
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
@@ -58,7 +57,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
     const exportCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
-        const filter = columnFilters ? mapFieldsToColumnsFilter(columnFilters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null;
+        const filter = filters ? mapFieldsToColumnsFilter(filters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null;
 
         exportPccMinResultsAsCsv(
             studyUuid,
@@ -85,7 +84,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
             })
             .finally(() => setIsCsvExportLoading(false));
     }, [
-        columnFilters,
+        filters,
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,

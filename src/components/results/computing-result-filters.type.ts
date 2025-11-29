@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
+import { FilterConfig, FilterSubType, FilterType } from '../../types/custom-aggrid-types';
 import { GlobalFilter } from './common/global-filter/global-filter-types';
 import { ComputationFiltersState } from '../../redux/reducer';
 
@@ -19,6 +19,12 @@ const backendToFrontendFilterTypeMap: Record<string, FilterType> = {
     VOLTAGE_INITIALIZATION: FilterType.VoltageInit,
 };
 
+const backendToFrontendFilterSubTypeMap: Record<string, FilterSubType> = {
+    LOADFLOW_CURRENT_LIMIT_VIOLATION: FilterSubType.LOADFLOW_CURRENT_LIMIT_VIOLATION,
+    LOADFLOW_VOLTAGE_LIMIT_VIOLATION: FilterSubType.LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    SECURITY_ANALYSIS_RESULT_N: FilterSubType.SECURITY_ANALYSIS_RESULT_N,
+};
+
 export type ComputationResultFiltersInfos = {
     id: string;
     computationResultFilters: {
@@ -28,7 +34,13 @@ export type ComputationResultFiltersInfos = {
         globalFilters: GlobalFilter[];
     }[];
 };
-
+const mapColumn = (c: any): FilterConfig => ({
+    column: c.name,
+    type: c.filterType,
+    value: c.filterValue,
+    dataType: c.filterDataType,
+    tolerance: c.filterTolerance ?? undefined,
+});
 export function processComputationResultFilters(dto: ComputationResultFiltersInfos): ComputationFiltersState {
     const state: ComputationFiltersState = {
         id: dto.id,
@@ -37,12 +49,24 @@ export function processComputationResultFilters(dto: ComputationResultFiltersInf
     dto.computationResultFilters?.forEach((entry) => {
         const mappedType = backendToFrontendFilterTypeMap[entry.computationType];
         if (!mappedType) return;
+        const columnsFilters = Object.fromEntries(
+            (entry.columnsFilters ?? []).map((cf) => {
+                // Key = subType (frontend mapping) OR cf.id as fallback
+                const key = backendToFrontendFilterSubTypeMap[cf.computationSubType] ?? cf.id;
+
+                return [
+                    key,
+                    {
+                        id: cf.id,
+                        columns: (cf.columns ?? []).map(mapColumn),
+                    },
+                ];
+            })
+        );
 
         state[mappedType] = {
             id: entry.id,
-            columnsFilters: Object.fromEntries(
-                (entry.columnsFilters ?? []).map((cf) => [cf.computationSubType ?? cf.id, cf.columns ?? []])
-            ),
+            columnsFilters,
             globalFilters: entry.globalFilters ?? {},
         };
     });

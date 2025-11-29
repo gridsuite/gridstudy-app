@@ -43,11 +43,12 @@ import { securityAnalysisResultInvalidations } from '../../computing-status/use-
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
+import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -122,13 +123,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         getStoreFields(tabIndex) as SecurityAnalysisTab
     );
     const { page, rowsPerPage } = pagination;
-    const globalFilterSpreadsheetState = useSelector(
-        (state: AppState) => state.computationFilters?.[AgGridFilterType.SecurityAnalysis]?.globalFilters
-    );
-    const { globalFilters, updateGlobalFilters, columnFilters } = useComputationFilters(
-        AgGridFilterType.SecurityAnalysis,
-        getStoreFields(tabIndex)
-    );
+
+    const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
+    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.SecurityAnalysis);
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const globalFilterOptions = useMemo(
@@ -163,8 +161,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 }));
             }
 
-            if (columnFilters) {
-                const updatedFilters = convertFilterValues(intl, columnFilters);
+            if (filters) {
+                const updatedFilters = convertFilterValues(intl, filters);
                 const columnToFieldMapping = mappingColumnToField(resultType);
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
@@ -176,17 +174,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
 
-        [
-            tabIndex,
-            resultType,
-            sortConfig,
-            columnFilters,
-            globalFilters,
-            currentRootNetworkUuid,
-            page,
-            rowsPerPage,
-            intl,
-        ]
+        [tabIndex, resultType, sortConfig, filters, globalFilters, currentRootNetworkUuid, page, rowsPerPage, intl]
     );
 
     const {
@@ -285,11 +273,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode)) && (
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
-                            onChange={updateGlobalFilters}
+                            onChange={handleGlobalFilterChange}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}
-                            preloadedGlobalFilters={globalFilterSpreadsheetState}
+                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode={true}
                         />
                     </Box>

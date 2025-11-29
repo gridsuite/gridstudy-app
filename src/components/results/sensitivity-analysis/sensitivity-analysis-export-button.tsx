@@ -25,7 +25,7 @@ import { SensiKind } from './sensitivity-analysis-result.type';
 import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
-import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 interface SensitivityExportButtonProps {
     studyUuid: UUID;
@@ -56,10 +56,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
 
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
-    const { columnFilters } = useComputationFilters(
-        AgGridFilterType.SensitivityAnalysis,
-        mappingTabs(sensiKind, nOrNkIndex)
-    );
+    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
@@ -80,7 +77,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
         const mappedFilters =
-            columnFilters?.map((elem) => {
+            filters?.map((elem) => {
                 const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
                 const newColumn = keyMap[elem.column as keyof typeof keyMap];
                 return { ...elem, column: newColumn };
@@ -130,7 +127,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
             })
             .finally(() => setIsCsvExportLoading(false));
     }, [
-        columnFilters,
+        filters,
         sortConfig,
         nOrNkIndex,
         sensiKind,

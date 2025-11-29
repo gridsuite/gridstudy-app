@@ -1215,6 +1215,17 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
     };
 }
 
+export function setSpreadsheetFilter(
+    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
+    spreadsheetFilter: FilterConfig[]
+): SpreadsheetFilterAction {
+    return {
+        type: SPREADSHEET_FILTER,
+        filterTab: filterTab,
+        [SPREADSHEET_STORE_FIELD]: spreadsheetFilter,
+    };
+}
+
 export const UPDATE_COLUMNS_DEFINITION = 'UPDATE_COLUMNS_DEFINITION';
 export type UpdateColumnsDefinitionsAction = Readonly<Action<typeof UPDATE_COLUMNS_DEFINITION>> & {
     colData: TableValue<ColumnDefinition>;

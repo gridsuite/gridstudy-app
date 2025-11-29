@@ -23,13 +23,13 @@ import {
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
-import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
 import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
-import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
+import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
 export type SensitivityAnalysisResultTabProps = {
@@ -48,14 +48,8 @@ function SensitivityAnalysisResultTab({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-
-    const globalFilterSpreadsheetState = useSelector(
-        (state: AppState) => state.computationFilters?.[AgGridFilterType.SensitivityAnalysis]?.globalFilters
-    );
-    const { globalFilters, updateGlobalFilters } = useComputationFilters(
-        AgGridFilterType.SensitivityAnalysis,
-        sensiTab
-    );
+    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.SensitivityAnalysis);
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
@@ -98,10 +92,10 @@ function SensitivityAnalysisResultTab({
                         </Tabs>
                         <Box sx={{ display: 'flex', flexGrow: 0 }}>
                             <GlobalFilterSelector
-                                onChange={updateGlobalFilters}
+                                onChange={handleGlobalFilterChange}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
-                                preloadedGlobalFilters={globalFilterSpreadsheetState}
+                                preloadedGlobalFilters={globalFiltersFromState}
                                 genericFiltersStrictMode={true}
                                 disableGenericFilters={sensiTab === SENSITIVITY_AT_NODE}
                             />

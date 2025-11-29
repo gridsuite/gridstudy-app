@@ -15,9 +15,6 @@ import type { AppState } from '../../../../redux/reducer';
 import useGlobalFilters, { isGlobalFilterParameter } from './use-global-filters';
 import type { FilterEquipmentType } from '../../../../types/filter-lib/filter';
 import { isStatusBuilt } from '../../../graph/util/model-functions';
-import { useComputationFilters } from '../../../../hooks/use-computation-result-filters';
-import { FilterType as AgGridFilterType } from '../../../../types/custom-aggrid-types';
-import { getStoreFields } from '../../securityanalysis/security-analysis-result-utils';
 
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */
@@ -61,7 +58,7 @@ function useGlobalFiltersResults(
 }
 
 export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
-    const { globalFilters, updateGlobalFilters } = useComputationFilters(AgGridFilterType.Spreadsheet, '');
-    useEffect(() => updateGlobalFilters(filters), [filters, updateGlobalFilters]);
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
+    useEffect(() => handleGlobalFilterChange(filters), [filters, handleGlobalFilterChange]);
     return useGlobalFiltersResults(globalFilters, equipmentTypes);
 }

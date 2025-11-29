@@ -10,7 +10,7 @@ import { GridApi } from 'ag-grid-community';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
 import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
-import { useComputationFilters } from '../../../../hooks/use-computation-result-filters';
+import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -40,7 +40,7 @@ export const useCustomAggridFilter = (
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
     const [tolerance, setTolerance] = useState<number | undefined>();
 
-    const { columnFilters, updateColumnFilters } = useComputationFilters(type, tab);
+    const { filters, dispatchFilters } = useFilterSelector(type, tab);
 
     const updateFilter = useCallback(
         (colId: string, data: FilterData): void => {
@@ -54,15 +54,15 @@ export const useCustomAggridFilter = (
 
             let updatedFilters: FilterConfig[];
             if (!data.value) {
-                updatedFilters = removeElementFromArrayWithFieldValue(columnFilters ?? [], colId);
+                updatedFilters = removeElementFromArrayWithFieldValue(filters, colId);
             } else {
-                updatedFilters = changeValueFromArrayWithFieldValue(columnFilters ?? [], colId, newFilter);
+                updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
             }
 
             updateFilterCallback && updateFilterCallback(api, updatedFilters);
-            updateColumnFilters(updatedFilters);
+            dispatchFilters(updatedFilters);
         },
-        [updateFilterCallback, api, updateColumnFilters, columnFilters]
+        [updateFilterCallback, api, dispatchFilters, filters]
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,14 +107,14 @@ export const useCustomAggridFilter = (
     }, [selectedFilterComparator, comparators]);
 
     useEffect(() => {
-        const filterObject = columnFilters?.find((filter) => filter.column === colId);
+        const filterObject = filters?.find((filter) => filter?.column === colId);
         if (filterObject) {
             setSelectedFilterData(filterObject.value);
             setSelectedFilterComparator(filterObject.type ?? '');
         } else {
             setSelectedFilterData(undefined);
         }
-    }, [columnFilters, colId]);
+    }, [filters, colId]);
 
     return {
         selectedFilterData,

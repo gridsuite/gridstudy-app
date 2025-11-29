@@ -33,7 +33,7 @@ import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-rend
 import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
@@ -44,13 +44,16 @@ import {
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
-import { ICellRendererParams } from 'ag-grid-community';
+import { GridApi, ICellRendererParams } from 'ag-grid-community';
 import { Button } from '@mui/material';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
-import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
+import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
+import { useComputationColumnsFilters } from 'hooks/use-computation-columns-filters';
 
 const styles = {
     flexWrapper: {
@@ -80,25 +83,26 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const globalFilterSpreadsheetState = useSelector(
-        (state: AppState) => state.computationFilters?.[AgGridFilterType.Loadflow]?.globalFilters
-    );
-
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
+    const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, updateGlobalFilters, columnFilters } = useComputationFilters(
-        AgGridFilterType.Loadflow,
-        mappingTabs(tabIndex)
-    );
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
     });
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
-
+    const handleGlobalFilterChangeAndUpdate = useCallback(
+        (newFilters: GlobalFilter[]) => {
+            handleGlobalFilterChange(newFilters);
+            updateGlobalFilters(newFilters);
+        },
+        [handleGlobalFilterChange, updateGlobalFilters]
+    );
     const getEnumLabel = useCallback(
         (value: string) =>
             intl.formatMessage({
@@ -112,7 +116,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => {
             const limitTypeValues =
                 tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
-            const initialFilters = columnFilters || [];
+            const initialFilters = filters || [];
             let updatedFilters = convertFilterValues(initialFilters, intl);
             let limitTypeFilter = initialFilters.find((f) => f.column === 'limitType');
 
@@ -144,16 +148,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     : {}),
             });
         },
-        [tabIndex, columnFilters, intl, sortConfig, globalFilters]
+        [tabIndex, filters, intl, sortConfig, globalFilters]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {
         return (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) =>
             fetchLoadFlowResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 sort: sortConfig,
-                filters: columnFilters ?? [],
+                filters: filters,
             });
-    }, [sortConfig, columnFilters]);
+    }, [sortConfig, filters]);
 
     const fetchResult = useMemo(() => {
         if (tabIndex === 0 || tabIndex === 1) {
@@ -174,6 +178,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         fetcher: fetchResult,
         invalidations: loadflowResultInvalidations,
     });
+
+    const { persistFilters } = useComputationColumnsFilters(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
+
+    const onFilter = useCallback(
+        (colId: string, api: GridApi, filters: FilterConfig[]) => {
+            persistFilters(colId, api, filters);
+        },
+        [persistFilters]
+    );
 
     const SubjectIdRenderer = useCallback(
         (props: ICellRendererParams) => {
@@ -201,7 +214,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     filterEnums,
                     getEnumLabel,
                     tabIndex,
-                    SubjectIdRenderer
+                    SubjectIdRenderer,
+                    onFilter
                 );
             case 1:
                 return loadFlowVoltageViolationsColumnsDefinition(
@@ -209,7 +223,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     filterEnums,
                     getEnumLabel,
                     tabIndex,
-                    SubjectIdRenderer
+                    SubjectIdRenderer,
+                    onFilter
                 );
             case 2:
                 return loadFlowResultColumnsDefinition(
@@ -218,13 +233,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     getEnumLabel,
                     tabIndex,
                     StatusCellRender,
-                    NumberCellRenderer
+                    NumberCellRenderer,
+                    onFilter
                 );
 
             default:
                 return [];
         }
-    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer]);
+    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer, onFilter]);
 
     const resetResultStates = useCallback(() => {
         setResult(null);
@@ -271,10 +287,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <GlobalFilterSelector
-                        onChange={updateGlobalFilters}
+                        onChange={handleGlobalFilterChangeAndUpdate}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
-                        preloadedGlobalFilters={globalFilterSpreadsheetState}
+                        preloadedGlobalFilters={globalFiltersFromState}
                         genericFiltersStrictMode={true}
                     />
                 </Box>

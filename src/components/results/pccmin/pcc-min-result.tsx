@@ -8,7 +8,7 @@
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ComputingType, MuiStyles, useSnackMessage, snackWithFallback } from '@gridsuite/commons-ui';
+import { ComputingType, MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
@@ -23,9 +23,9 @@ import { FilterType as AgGridFilterType, PaginationType } from 'types/custom-agg
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
-import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
 import { PccMinExportButton } from './pcc-min-export-button';
 import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 interface PccMinResultProps {
     studyUuid: UUID;
@@ -75,7 +75,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
 
-    const { columnFilters } = useComputationFilters(AgGridFilterType.PccMin, PCCMIN_RESULT);
+    const { filters } = useFilterSelector(AgGridFilterType.PccMin, PCCMIN_RESULT);
     const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { page, rowsPerPage } = pagination;
     const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
@@ -114,7 +114,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         const selector = {
             page,
             size: rowsPerPage as number,
-            filter: columnFilters ? mapFieldsToColumnsFilter(columnFilters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null,
+            filter: filters ? mapFieldsToColumnsFilter(filters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null,
             sort: sortConfig,
         };
 
@@ -152,7 +152,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         nodeUuid,
         currentRootNetworkUuid,
         intl,
-        columnFilters,
+        filters,
         sortConfig,
         globalFilters,
     ]);
@@ -176,8 +176,8 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 isFetching={isFetching}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                onFilter={memoizedSetPageCallback}
-                filters={columnFilters ?? []}
+                memoizedSetPageCallback={memoizedSetPageCallback}
+                filters={filters}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

@@ -23,12 +23,12 @@ import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useNodeAliases } from '../../hooks/use-node-aliases';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
 import { openSLD, updatePanelMetadata } from '../../../../redux/slices/workspace-slice';
 import type { UUID } from 'node:crypto';
-import { useComputationFilters } from '../../../../hooks/use-computation-result-filters';
+import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 
 const styles = {
     table: (theme) => ({
@@ -174,7 +174,7 @@ export const SpreadsheetContent = memo(
             }
         }, [transformedRowData, gridRef, isGridReady]);
 
-        const { columnFilters } = useComputationFilters(FilterType.Spreadsheet, tableDefinition?.uuid);
+        const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
 
         useEffect(() => {
             const api = gridRef.current?.api;
@@ -190,8 +190,8 @@ export const SpreadsheetContent = memo(
             if (!api || !isGridReady) {
                 return;
             }
-            updateFilters(api, columnFilters);
-        }, [columnFilters, gridRef, isGridReady, equipments, tableDefinition?.columns]);
+            updateFilters(api, filters);
+        }, [filters, gridRef, isGridReady, equipments, tableDefinition?.columns]);
 
         const handleModify = useCallback(
             (equipmentId: string) => {

@@ -8,23 +8,26 @@
 import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import { ColDef, GridApi, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button } from '@mui/material';
 import {
+    getStoreFields,
     RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
+import { FilterConfig, FilterType } from '../../../types/custom-aggrid-types';
+import { useComputationColumnsFilters } from '../../../hooks/use-computation-columns-filters';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -35,14 +38,14 @@ type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
     tabIndex: number,
-    onFilter: () => void
+    memoizedSetPageCallback: () => void
 ) => ColDef[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
     tabIndex,
-    onFilter
+    memoizedSetPageCallback
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -59,6 +62,16 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                 defaultMessage: value,
             }),
         [intl]
+    );
+
+    const { persistFilters } = useComputationColumnsFilters(FilterType.SecurityAnalysis, getStoreFields(tabIndex));
+
+    const onFilter = useCallback(
+        (colId: string, api: GridApi, filters: FilterConfig[]) => {
+            memoizedSetPageCallback();
+            persistFilters(colId, api, filters);
+        },
+        [memoizedSetPageCallback, persistFilters]
     );
 
     // for nmk views, click handler on subjectId cell

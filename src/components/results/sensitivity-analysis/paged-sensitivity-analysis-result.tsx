@@ -17,7 +17,7 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useSnackMessage, ComputingType, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
+import { ComputingType, snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -27,6 +27,8 @@ import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import {
+    FilterConfig,
+    FilterType,
     FilterType as AgGridFilterType,
     PaginationType,
     SensitivityAnalysisTab,
@@ -38,7 +40,9 @@ import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { useComputationColumnsFilters } from '../../../hooks/use-computation-columns-filters';
+import { GridApi } from 'ag-grid-community';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -73,10 +77,7 @@ function PagedSensitivityAnalysisResult({
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
-    const { columnFilters } = useComputationFilters(
-        AgGridFilterType.SensitivityAnalysis,
-        mappingTabs(sensiKind, nOrNkIndex)
-    );
+    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SensitivityAnalysis,
         mappingTabs(sensiKind, nOrNkIndex) as SensitivityAnalysisTab
@@ -127,9 +128,22 @@ function PagedSensitivityAnalysisResult({
         [dispatchPagination]
     );
 
-    const onFilter = useCallback(() => {
+    const memoizedSetPageCallback = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
+
+    const { persistFilters } = useComputationColumnsFilters(
+        FilterType.SecurityAnalysis,
+        mappingTabs(sensiKind, nOrNkIndex)
+    );
+
+    const onFilter = useCallback(
+        (colId: string, api: GridApi, filters: FilterConfig[]) => {
+            memoizedSetPageCallback();
+            persistFilters(colId, api, filters);
+        },
+        [memoizedSetPageCallback, persistFilters]
+    );
 
     const fetchFilterOptions = useCallback(() => {
         const selector = {
@@ -166,7 +180,7 @@ function PagedSensitivityAnalysisResult({
             pageNumber: page,
             ...sortSelector,
         };
-        const mappedFilters = columnFilters?.map((elem) => {
+        const mappedFilters = filters?.map((elem) => {
             const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
             const newColumn = keyMap[elem.column as keyof typeof keyMap];
             return { ...elem, column: newColumn };
@@ -198,7 +212,7 @@ function PagedSensitivityAnalysisResult({
         sensiKind,
         rowsPerPage,
         page,
-        columnFilters,
+        filters,
         globalFilters,
         studyUuid,
         nodeUuid,

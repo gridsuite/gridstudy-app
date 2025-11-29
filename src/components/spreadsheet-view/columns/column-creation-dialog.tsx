@@ -48,7 +48,7 @@ import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../servi
 import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floating-popover-treeview-wrapper';
 import { isFormulaContentSizeOk } from './utils/formula-validator';
 import { MAX_FORMULA_CHARACTERS } from '../constants';
-import { useComputationFilters } from '../../../hooks/use-computation-result-filters';
+import { useFilterSelector } from 'hooks/use-filter-selector';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -154,7 +154,7 @@ export default function ColumnCreationDialog({
         </FloatingPopoverTreeviewWrapper>
     );
 
-    const { columnFilters, updateColumnFilters } = useComputationFilters(FilterType.Spreadsheet, spreadsheetConfigUuid);
+    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
 
     const validateParams = (
         columnsDefinitions: ColumnDefinition[],
@@ -216,8 +216,8 @@ export default function ColumnCreationDialog({
 
             if (existingColumn) {
                 isUpdate = true;
-                const updatedFilters = columnFilters?.filter((filter) => filter.column !== existingColumn.id);
-                updatedFilters && updateColumnFilters(updatedFilters);
+                const updatedFilters = filters?.filter((filter) => filter.column !== existingColumn.id);
+                dispatchFilters(updatedFilters);
             }
 
             const formattedParams = {
@@ -268,8 +268,8 @@ export default function ColumnCreationDialog({
             spreadsheetConfigUuid,
             reset,
             open,
-            columnFilters,
-            updateColumnFilters,
+            filters,
+            dispatchFilters,
             dispatch,
             tableDefinition,
             snackError,

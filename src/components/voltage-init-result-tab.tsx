@@ -15,9 +15,9 @@ import { AppState } from '../redux/reducer';
 import { VoltageInitResult } from './voltage-init-result';
 import { useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
-import { isGlobalFilterParameter } from './results/common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from './results/common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options';
-import { useComputationFilters } from '../hooks/use-computation-result-filters';
+import { useComputationGlobalFilters } from '../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../types/custom-aggrid-types';
 
 export type VoltageInitResultTabProps = {
@@ -35,10 +35,8 @@ export function VoltageInitResultTab({
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const globalFilterSpreadsheetState = useSelector(
-        (state: AppState) => state.computationFilters?.[AgGridFilterType.VoltageInit]?.globalFilters
-    );
-    const { globalFilters, updateGlobalFilters } = useComputationFilters(AgGridFilterType.VoltageInit, '');
+    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.VoltageInit);
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
@@ -70,9 +68,9 @@ export function VoltageInitResultTab({
         <VoltageInitResult
             result={voltageInitResultToShow}
             status={voltageInitStatus}
-            handleGlobalFilterChange={updateGlobalFilters}
+            handleGlobalFilterChange={handleGlobalFilterChange}
             globalFilterOptions={globalFilterOptions}
-            globalFilterSpreadsheetState={globalFilterSpreadsheetState}
+            globalFilterSpreadsheetState={globalFiltersFromState}
         />
     );
 }

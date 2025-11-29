@@ -10,6 +10,7 @@ import { useIntl } from 'react-intl';
 import { Box, Button, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import {
+    GridApi,
     GridReadyEvent,
     ICellRendererParams,
     RowClassParams,
@@ -17,19 +18,19 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { CustomAGGrid, unitToKiloUnit, ComputingType, OverflowableText } from '@gridsuite/commons-ui';
+import { ComputingType, CustomAGGrid, OverflowableText, unitToKiloUnit } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import {
-    FilterType as AgGridFilterType,
     FilterConfig,
+    FilterType as AgGridFilterType,
     numericFilterParams,
     textFilterParams,
 } from '../../../types/custom-aggrid-types';
@@ -50,7 +51,7 @@ interface ShortCircuitAnalysisResultProps {
     filterEnums: FilterEnumsType;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
-    onFilter: () => void;
+    onFilter: (fieldId: string, api: GridApi, filters: FilterConfig[]) => void;
     filters: FilterConfig[];
 }
 
@@ -148,6 +149,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         };
 
         const inputFilterParams = (
+            field: string,
             filterDefinition: Pick<
                 Required<ColumnContext>['filterComponentParams']['filterParams'],
                 'dataType' | 'comparators'
@@ -159,6 +161,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         ...filterDefinition,
                         ...filterParams,
+                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
+                            if (!api || !filters) return;
+                            onFilter(field, api, filters);
+                        },
                     },
                 },
             };
@@ -171,6 +177,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
+                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
+                            if (!api || !filters) return;
+                            onFilter(colId, api, filters);
+                        },
                     },
                     options: filterEnums[colId] ?? [],
                     getOptionLabel: getEnumLabel,
@@ -185,7 +195,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     colId: 'elementId',
                     field: 'elementId',
                     context: {
-                        ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(textFilterParams) }),
+                        ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('elementId', textFilterParams) }),
                     },
                 }),
                 minWidth: 180,
@@ -196,7 +206,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 field: 'voltageLevel',
                 cellRenderer: voltageLevelIdRenderer,
                 context: {
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(textFilterParams) }),
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('voltageLevel', textFilterParams) }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -213,7 +223,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 field: 'connectableId',
                 context: {
                     sortParams: onlyIfIsAllBuses({ ...sortParams, isChildren: true }, sortParams),
-                    ...inputFilterParams(textFilterParams),
+                    ...inputFilterParams('connectableId', textFilterParams),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -224,7 +234,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     numeric: true,
                     fractionDigits: 2,
                     sortParams,
-                    ...inputFilterParams(numericFilterParams),
+                    ...inputFilterParams('current', numericFilterParams),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.current),
             }),
@@ -255,7 +265,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('limitMin', numericFilterParams) }),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMin),
             }),
@@ -266,7 +276,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('limitMax', numericFilterParams) }),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMax),
             }),
@@ -277,7 +287,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('shortCircuitPower', numericFilterParams) }),
                 },
             }),
             {
@@ -288,7 +298,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     context: {
                         numeric: true,
                         fractionDigits: 2,
-                        ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                        ...onlyIfIsAllBuses({
+                            sortParams,
+                            ...inputFilterParams('deltaCurrentIpMin', numericFilterParams),
+                        }),
                     },
                     valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMin),
                 }),
@@ -302,7 +315,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     context: {
                         numeric: true,
                         fractionDigits: 2,
-                        ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                        ...onlyIfIsAllBuses({
+                            sortParams,
+                            ...inputFilterParams('deltaCurrentIpMax', numericFilterParams),
+                        }),
                     },
                     valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMax),
                 }),

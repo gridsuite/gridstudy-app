@@ -10,16 +10,16 @@ import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
 import {
     FilterConfig,
+    FilterType as AgGridFilterType,
     numericFilterParams,
     textFilterParams,
-    FilterType as AgGridFilterType,
 } from 'types/custom-aggrid-types';
 import { ColumnContext } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
-import { ICellRendererParams } from 'ag-grid-community';
+import { GridApi, ICellRendererParams } from 'ag-grid-community';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
@@ -41,7 +41,7 @@ export type PagedPccMinResults = Page<SinglePccMinResultInfos>;
 export interface PccMinResultTableProps {
     result: SinglePccMinResultInfos[];
     isFetching: boolean;
-    onFilter: () => void;
+    memoizedSetPageCallback: () => void;
     filters: FilterConfig[];
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
@@ -69,7 +69,7 @@ export const FROM_COLUMN_TO_FIELD_PCC_MIN: Record<string, string> = {
 };
 export const getPccMinColumns = (
     intl: IntlShape,
-    onFilter: (filters: any) => void,
+    onFilter: (fieldId: string, api: GridApi, filters: FilterConfig[]) => void,
     voltageLevelIdRenderer: (cellData: ICellRendererParams) => React.JSX.Element | undefined
 ) => {
     const sortParams: ColumnContext['sortParams'] = {
@@ -84,6 +84,7 @@ export const getPccMinColumns = (
     };
 
     const createFilterContext = (
+        colId: string,
         filterDefinition: Pick<
             Required<ColumnContext>['filterComponentParams']['filterParams'],
             'dataType' | 'comparators'
@@ -99,6 +100,10 @@ export const getPccMinColumns = (
             filterParams: {
                 ...filterDefinition,
                 ...pccMinFilterParams,
+                updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
+                    if (!api || !filters) return;
+                    onFilter(colId, api, filters);
+                },
             },
         },
     });
@@ -135,7 +140,7 @@ export const getPccMinColumns = (
             colId,
             field: FROM_COLUMN_TO_FIELD_PCC_MIN[colId],
             headerName: intl.formatMessage({ id: headerKey }),
-            context: createFilterContext(filterDef, numeric, fractionDigits),
+            context: createFilterContext(colId, filterDef, numeric, fractionDigits),
             minWidth: numeric ? undefined : 180,
             cellRenderer,
         })

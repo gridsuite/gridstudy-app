@@ -232,3 +232,19 @@ export function updateComputationResultFilters(studyUuid: UUID, id: string | und
         body: JSON.stringify(filters),
     });
 }
+
+export function updateComputationResultFiltersColumn(
+    studyUuid: UUID,
+    computationResultFilterUuid: UUID,
+    columnUuid: UUID,
+    column: any
+) {
+    const url = `${getStudyUrl(studyUuid)}/computation-result-filters/${computationResultFilterUuid}/columns/${columnUuid}`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(column),
+    });
+}
