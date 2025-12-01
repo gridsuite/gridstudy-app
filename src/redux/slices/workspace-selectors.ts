@@ -11,7 +11,7 @@ import type { PanelType, Workspace } from '../../components/workspace/types/work
 import type { UUID } from 'node:crypto';
 
 const getActiveWorkspace = (state: RootState): Workspace | undefined =>
-    state.workspace.activeWorkspaceId ? state.workspace.workspaces[state.workspace.activeWorkspaceId] : undefined;
+    state.workspace.workspaces.find((w) => w.id === state.workspace.activeWorkspaceId);
 
 export const selectPanelsRecord = createSelector([getActiveWorkspace], (workspace) => workspace?.panels ?? {});
 
@@ -27,20 +27,23 @@ export const selectPanelMetadata = createSelector(
 
 export const selectIsPanelTypeOpen = createSelector(
     [selectPanelsRecord, (_state: RootState, panelType: PanelType) => panelType],
-    (panels, panelType): boolean => Object.values(panels).some((p) => p.type === panelType)
+    (panels, panelType): boolean => Object.values(panels).some((p) => p.type === panelType && !p.isClosed)
 );
 
-export const selectPanelIds = createSelector([selectPanelsRecord], (panels) => Object.keys(panels) as UUID[]);
+export const selectOpenPanelIds = createSelector(
+    [selectPanelsRecord],
+    (panels) => Object.keys(panels).filter((id) => !panels[id as UUID].isClosed) as UUID[]
+);
 
-export const selectPanels = createSelector([selectPanelsRecord], (panels) => Object.values(panels));
+export const selectOpenPanels = createSelector([selectPanelsRecord], (panels) =>
+    Object.values(panels).filter((p) => !p.isClosed)
+);
 
 export const selectFocusedPanelId = createSelector(
     [getActiveWorkspace],
     (workspace) => workspace?.focusedPanelId ?? null
 );
 
-export const selectWorkspaces = createSelector([(state: RootState) => state.workspace.workspaces], (workspaces) =>
-    Object.values(workspaces)
-);
+export const selectWorkspaces = (state: RootState) => state.workspace.workspaces;
 
 export const selectActiveWorkspaceId = (state: RootState) => state.workspace.activeWorkspaceId;

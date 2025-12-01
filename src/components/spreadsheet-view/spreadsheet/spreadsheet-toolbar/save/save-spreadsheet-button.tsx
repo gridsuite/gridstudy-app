@@ -43,7 +43,7 @@ interface SpreadsheetSaveOption {
 }
 
 interface SaveSpreadsheetButtonProps {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     columns: ColDef[];
     disabled: boolean;
     tableDefinition: SpreadsheetTabDefinition;

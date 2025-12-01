@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { LimitsTagChip } from './limits-tag-chip';
-import { Autocomplete, AutocompleteRenderInputParams, Box, Stack, TextField, IconButton } from '@mui/material';
+import { Autocomplete, AutocompleteRenderInputParams, Box, Stack, TextField, IconButton, Button } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
 import { Delete } from '@mui/icons-material';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { LimitsProperty } from '../../../services/network-modification-types';
 import { useFieldArray } from 'react-hook-form';
 import { usePredefinedProperties } from '@gridsuite/commons-ui';
@@ -78,7 +78,7 @@ export function LimitsPropertiesSideStack({ name, disabled }: Readonly<LimitsPro
     }, []);
 
     return (
-        <Stack direction="column" spacing={2} paddingBottom={2} flexWrap="wrap">
+        <Stack direction="column" spacing={2} paddingTop={2} flexWrap="wrap">
             <Stack direction="row" sx={{ display: 'flex', flexWrap: 'wrap' }}>
                 {limitsProperties?.map((property: LimitsProperty, index: number) => (
                     <LimitsTagChip
@@ -90,14 +90,15 @@ export function LimitsPropertiesSideStack({ name, disabled }: Readonly<LimitsPro
                     />
                 ))}
                 {!isEditing && (
-                    <IconButton
+                    <Button
                         color="primary"
                         sx={{ verticalAlign: 'center' }}
                         onClick={() => setIsEditing(true)}
+                        startIcon={<AddIcon />}
                         disabled={disabled}
                     >
-                        <AddIcon />
-                    </IconButton>
+                        <FormattedMessage id="AddProperty" />
+                    </Button>
                 )}
             </Stack>
             {isEditing && !disabled ? (

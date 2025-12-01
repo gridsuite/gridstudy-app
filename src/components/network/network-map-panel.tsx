@@ -54,7 +54,6 @@ import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { deleteEquipment } from '../../services/study/network-modifications';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
-import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
@@ -71,6 +70,9 @@ import SelectionCreationPanel from './selection-creation-panel/selection-creatio
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { getNominalVoltageColor } from 'utils/colors';
+import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
+import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
+import BranchPopoverContent from 'components/tooltips/branch-popover-content';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -162,11 +164,11 @@ export const NetworkMapPanel = ({
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>();
     const [geoData, setGeoData] = useState<GeoData>();
-    const geoDataRef = useRef<any>();
+    const geoDataRef = useRef<any>(null);
 
     const basicDataReady = mapEquipments && geoData;
 
-    const lineFullPathRef = useRef<boolean>();
+    const lineFullPathRef = useRef<boolean>(null);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
     /*
@@ -178,13 +180,13 @@ export const NetworkMapPanel = ({
         and this position would need to be requested again.
         It will be possible to have a better mechanism after we improved the notification system.
         */
-    const temporaryGeoDataIdsRef = useRef<Set<string>>();
+    const temporaryGeoDataIdsRef = useRef<Set<string>>(null);
 
     const disabled = !isNodeBuilt(currentNode);
     const reloadMapNeeded = useSelector((state: AppState) => state.reloadMapNeeded);
     const freezeMapUpdates = useSelector((state: AppState) => state.freezeMapUpdates);
     const isMapEquipmentsInitialized = useSelector((state: AppState) => state.isMapEquipmentsInitialized);
-    const refIsMapManualRefreshEnabled = useRef<boolean>();
+    const refIsMapManualRefreshEnabled = useRef<boolean>(null);
     refIsMapManualRefreshEnabled.current = networkVisuParams.mapParameters.mapManualRefresh;
     const [firstRendering, setFirstRendering] = useState<boolean>(true);
 
@@ -919,19 +921,6 @@ export const NetworkMapPanel = ({
         );
     }
 
-    const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
-        (elementId, ref) => (
-            <EquipmentPopover
-                studyUuid={studyUuid}
-                anchorEl={ref.current}
-                equipmentId={elementId}
-                equipmentType={EQUIPMENT_TYPES.LINE}
-                loadFlowStatus={loadFlowStatus}
-            />
-        ),
-        [loadFlowStatus, studyUuid]
-    );
-
     const loadMapManually = useCallback(() => {
         if (!isMapEquipmentsInitialized) {
             // load default node map equipments
@@ -955,6 +944,31 @@ export const NetworkMapPanel = ({
         updateMapEquipmentsAndGeoData,
     ]);
 
+    const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
+        (elementId, ref) => {
+            const PopoverContent = EquipmentPopoverMap[EQUIPMENT_TYPES.LINE] || BranchPopoverContent;
+
+            return (
+                <GenericEquipmentPopover
+                    studyUuid={studyUuid}
+                    anchorEl={ref.current}
+                    equipmentId={elementId}
+                    equipmentType={EquipmentType.LINE}
+                    loadFlowStatus={loadFlowStatus}
+                    anchorPosition={undefined}
+                >
+                    {(equipmentInfos: EquipmentInfos) => (
+                        <PopoverContent
+                            equipmentInfos={equipmentInfos}
+                            loadFlowStatus={loadFlowStatus}
+                            equipmentType={EQUIPMENT_TYPES.LINE}
+                        />
+                    )}
+                </GenericEquipmentPopover>
+            );
+        },
+        [loadFlowStatus, studyUuid]
+    );
     const leaveDrawingMode = useCallback(() => {
         // clear the user drawing and go back to simple select.
         networkMapRef.current?.getMapDrawer().deleteAll();
@@ -1034,6 +1048,7 @@ export const NetworkMapPanel = ({
                     ref={networkMapRef}
                     mapEquipments={mapEquipments}
                     geoData={geoData}
+                    // @ts-ignore
                     updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
                     displayOverlayLoader={!basicDataReady && mapDataLoading}
                     filteredNominalVoltages={filteredNominalVoltages}
@@ -1100,6 +1115,7 @@ export const NetworkMapPanel = ({
                         onDrawEvent(event);
                     }}
                     shouldDisableToolTip={isInDrawingMode.value}
+                    // @ts-ignore
                     getNominalVoltageColor={getNominalVoltageColor}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
