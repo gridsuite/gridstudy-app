@@ -35,6 +35,7 @@ import {
     LOW_VOLTAGE_LIMIT,
     NAME,
     NOMINAL_V,
+    NOMINAL_VOLTAGE,
     SECTION_COUNT,
     SUBSTATION_CREATION,
     SUBSTATION_CREATION_ID,
@@ -47,7 +48,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
@@ -197,20 +198,20 @@ const VoltageLevelCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError, snackWarning } = useSnackMessage();
-    const [isAttachementPointModificationState] = useState(isAttachementPointModification);
+
+    const defaultValues = useMemo(() => {
+        if (isAttachementPointModification) {
+            return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true, [NOMINAL_VOLTAGE]: 0 };
+        } else return emptyFormData;
+    }, [isAttachementPointModification]);
+
     const formMethods = useForm({
-        defaultValues: emptyFormData,
+        defaultValues: defaultValues,
         resolver: yupResolver(formSchema),
     });
 
     const { reset, setValue, getValues, watch, trigger, subscribe } = formMethods;
 
-    useEffect(() => {
-        if (isAttachementPointModificationState) {
-            setValue(ADD_SUBSTATION_CREATION, true);
-            setValue(NOMINAL_V, 0); // need a value to pass yup but not taken into account for attachmentLine
-        }
-    }, [isAttachementPointModificationState, setValue]);
     // Watch LOW_VOLTAGE_LIMIT changed
     useEffect(() => {
         const callback = subscribe({
