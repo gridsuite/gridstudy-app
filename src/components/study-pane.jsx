@@ -5,37 +5,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Box } from '@mui/material';
-import PropTypes from 'prop-types';
-import { ReportViewerTab } from './report-viewer-tab';
-import { ResultViewTab } from './result-view-tab';
-import TabPanelLazy from './results/common/tab-panel-lazy';
-import { isNodeBuilt } from './graph/util/model-functions';
-import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view';
-import ParametersTabs from './parameters-tabs';
-import TreeTab from './tree-tab';
-import { StudyView } from './utils/utils';
-import { DiagramType } from './grid-layout/cards/diagrams/diagram.type';
-import HorizontalToolbar from './horizontal-toolbar';
-import { openDiagram, setToggleOptions } from '../redux/actions';
-import { useDispatch, useSelector } from 'react-redux';
-import { StudyDisplayMode } from './network-modification.type';
+import { useSelector } from 'react-redux';
 import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases';
 import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification';
 import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network';
 import { useNodeAliasesUpdateOnNotification } from './spreadsheet-view/hooks/use-node-aliases-update-on-notification';
 import { useSpreadsheetEquipments } from './spreadsheet-view/hooks/use-spreadsheet-equipments';
 import WaitingLoader from './utils/waiting-loader';
+import { WorkspaceContainer } from './workspace/core/workspace-container';
+import useStudyPath from 'hooks/use-study-path';
+import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 
 const styles = {
-    tabsContainer: (theme) => {
-        return {
-            flexGrow: 1,
-            height: '100%',
-            background: theme.palette.tabBackground,
-        };
+    paneContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
     },
+    workspaceContainer: {
+        flex: 1,
+        position: 'relative',
+        overflow: 'hidden',
+    },
+    breadCrumbs: (theme) => ({
+        backgroundColor: theme.palette.toolbarBackground,
+        pl: 1,
+    }),
     '@global': {
         '@keyframes spin': {
             '0%': {
@@ -46,55 +43,13 @@ const styles = {
             },
         },
     },
-    paneContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
 };
 
-const StudyPane = ({
-    studyUuid,
-    currentNode,
-    currentRootNetworkUuid,
-    view = StudyView.TREE,
-    onChangeTab,
-    ...props
-}) => {
-    const toggleOptions = useSelector((state) => state.toggleOptions);
+const StudyPane = () => {
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
-    const dispatch = useDispatch();
-    const [tableEquipment, setTableEquipment] = useState({
-        id: null,
-        type: null,
-    });
+    const studyUuid = useSelector((state) => state.studyUuid);
 
-    const disabled = !isNodeBuilt(currentNode);
-    const showGrid = useCallback(() => {
-        // switch to tree view
-        onChangeTab(0);
-        // toggle diagram grid layout
-        if (!toggleOptions.includes(StudyDisplayMode.GRID_LAYOUT_PANEL)) {
-            dispatch(setToggleOptions([...toggleOptions, StudyDisplayMode.GRID_LAYOUT_PANEL]));
-        }
-    }, [dispatch, onChangeTab, toggleOptions]);
-
-    const openVoltageLevelDiagram = useCallback(
-        (equipmentId, diagramType = DiagramType.VOLTAGE_LEVEL) => {
-            // TODO code factorization for displaying a VL via a hook
-            if (equipmentId) {
-                showGrid();
-                dispatch(openDiagram(equipmentId, diagramType));
-            }
-        },
-        [dispatch, showGrid]
-    );
-
-    const unsetTableEquipment = useCallback(() => {
-        setTableEquipment({ id: null, type: null });
-    }, []);
-
-    const handleTableEquipmentChanged = useCallback((newTableEquipment) => setTableEquipment(newTableEquipment), []);
+    const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
 
     const { fetchNodeAliases } = useNodeAliases();
     // Initializing node aliases from backend fetch
@@ -108,59 +63,15 @@ const StudyPane = ({
 
     return (
         <Box sx={styles.paneContainer}>
-            <HorizontalToolbar />
-            <Box sx={styles.tabsContainer}>
-                <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
-                <TabPanelLazy selected={view === StudyView.TREE}>
-                    <TreeTab
-                        studyUuid={studyUuid}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        tableEquipment={tableEquipment}
-                        onTableEquipementChanged={handleTableEquipmentChanged}
-                        onChangeTab={onChangeTab}
-                        showGrid={showGrid}
-                    />
-                </TabPanelLazy>
-                {/* using a key in these TabPanelLazy because we can change the nodeUuid in these components,
-                 and we want to reset the components at each node change*/}
-                <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>
-                    <SpreadsheetView
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        equipmentId={tableEquipment.id}
-                        equipmentType={tableEquipment.type}
-                        disabled={disabled}
-                        onEquipmentScrolled={unsetTableEquipment}
-                        openDiagram={openVoltageLevelDiagram}
-                    />
-                </TabPanelLazy>
-                <TabPanelLazy key={`results-${currentNode?.id}`} selected={view === StudyView.RESULTS}>
-                    <ResultViewTab
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        openVoltageLevelDiagram={openVoltageLevelDiagram}
-                        disabled={disabled}
-                        view={view}
-                    />
-                </TabPanelLazy>
-                <TabPanelLazy selected={view === StudyView.LOGS} key={`logs-${currentNode?.id}`}>
-                    <ReportViewerTab visible={view === StudyView.LOGS} currentNode={currentNode} disabled={disabled} />
-                </TabPanelLazy>
-                <TabPanelLazy key={`parameters-${currentNode?.id}`} selected={view === StudyView.PARAMETERS}>
-                    <ParametersTabs view={view} />
-                </TabPanelLazy>
+            <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
+            <Box sx={styles.breadCrumbs}>
+                <StudyPathBreadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
+            </Box>
+            <Box sx={styles.workspaceContainer}>
+                <WorkspaceContainer />
             </Box>
         </Box>
     );
-};
-
-StudyPane.propTypes = {
-    view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
-    onChangeTab: PropTypes.func,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
 };
 
 export default StudyPane;

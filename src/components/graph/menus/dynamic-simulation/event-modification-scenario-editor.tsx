@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckBoxList, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { CheckBoxList, snackWithFallback, useSnackMessage, type MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -37,7 +37,16 @@ import {
     fetchDynamicSimulationEvents,
 } from '../../../../services/study/dynamic-simulation';
 
-const EventModificationScenarioEditor = () => {
+const paperStyles = {
+    paper: (theme) => ({
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: theme.palette.background.paper,
+    }),
+} as const satisfies MuiStyles;
+
+const EventModificationScenarioEditor = memo(() => {
     const intl = useIntl();
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -45,7 +54,7 @@ const EventModificationScenarioEditor = () => {
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
+    const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState<Event[]>([]);
@@ -326,7 +335,7 @@ const EventModificationScenarioEditor = () => {
     };
 
     return (
-        <>
+        <Box sx={paperStyles.paper}>
             <Toolbar sx={styles.toolbar}>
                 <Checkbox
                     sx={styles.toolbarCheckbox}
@@ -365,8 +374,8 @@ const EventModificationScenarioEditor = () => {
                     )}
                 />
             )}
-        </>
+        </Box>
     );
-};
+});
 
 export default EventModificationScenarioEditor;

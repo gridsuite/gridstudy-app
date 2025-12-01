@@ -17,18 +17,25 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import {
+    ComputingType,
+    CustomAGGrid,
+    DefaultCellRenderer,
+    OverflowableText,
+    unitToKiloUnit,
+} from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { CustomAGGrid, unitToKiloUnit, ComputingType, OverflowableText } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { openSLD } from '../../../redux/slices/workspace-slice';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { PanelType } from '../../workspace/types/workspace.types';
 import {
-    FilterType as AgGridFilterType,
     FilterConfig,
+    FilterType as AgGridFilterType,
     numericFilterParams,
     textFilterParams,
 } from '../../../types/custom-aggrid-types';
@@ -50,7 +57,6 @@ interface ShortCircuitAnalysisResultProps {
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     onFilter: () => void;
     filters: FilterConfig[];
-    openVoltageLevelDiagram: (id: string) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -95,16 +101,16 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     onRowDataUpdated,
     onFilter,
     filters,
-    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
+    const dispatch = useDispatch();
 
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value } = props || {};
             const onClick = () => {
-                openVoltageLevelDiagram(value);
+                dispatch(openSLD({ id: value, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
             };
             if (value) {
                 return (
@@ -114,7 +120,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 );
             }
         },
-        [openVoltageLevelDiagram]
+        [dispatch]
     );
 
     const getEnumLabel = useCallback(

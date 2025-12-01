@@ -12,9 +12,11 @@ import { Box, Theme, Typography } from '@mui/material';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { setHighlightModification, setModificationsDrawerOpen } from 'redux/actions';
+import { setHighlightModification } from 'redux/actions';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
+import { PanelType } from 'components/workspace/types/workspace.types';
+import { openOrFocusPanel } from 'redux/slices/workspace-slice';
 
 interface ModificationResultsProps {
     modifications: Modification[];
@@ -74,7 +76,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
                 setCurrentTreeNodeWithSync({ ...node });
                 triggerTreeNodeFocus();
             }
-            dispatch(setModificationsDrawerOpen());
+            dispatch(openOrFocusPanel({ panelType: PanelType.NODE_EDITOR }));
             dispatch(setHighlightModification(modification.modificationUuid));
         },
         [dispatch, nodeUuid, setCurrentTreeNodeWithSync, treeNodes, triggerTreeNodeFocus]

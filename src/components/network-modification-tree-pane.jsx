@@ -111,7 +111,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     }, [studyUuid]);
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
-        window.addEventListener('beforeunload', (event) => {
+        window.addEventListener('beforeunload', () => {
             if (true === isInitiatingCopyTab.current) {
                 broadcastChannel.postMessage({
                     nodeToCopy: noNodeSelectionForCopy,
@@ -311,7 +311,9 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 studyUpdatedForce.eventData.headers.updateType === NotificationType.NODE_BUILD_STATUS_UPDATED &&
                 studyUpdatedForce.eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current
             ) {
-                updateNodes(studyUpdatedForce.eventData.headers.nodes);
+                // Note: The actual node updates are now handled globally in study-container.jsx
+                // to ensure all workspaces open in other browser tabs (including those without tree panel) stay synchronized.
+                // Here we only handle tree-specific cleanup operations.
                 if (studyUpdatedForce.eventData.headers.nodes.some((nodeId) => nodeId === currentNodeRef.current?.id)) {
                     dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
                     // when the current node is updated, we need to reset the logs filter
