@@ -271,6 +271,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     equipmentSubtype
                 );
             };
+            setShouldDisplayTooltip(false);
 
             if (equipmentType === EquipmentType.HVDC_LINE) {
                 // need a query to know the HVDC converters type (LCC vs VSC)
@@ -306,7 +307,15 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 }
             }
         },
-        [isEditNadMode, openEquipmentMenu, currentNode?.id, currentRootNetworkUuid, studyUuid, snackError]
+        [
+            isEditNadMode,
+            openEquipmentMenu,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            studyUuid,
+            snackError,
+            setShouldDisplayTooltip,
+        ]
     );
 
     const handleAddVoltageLevel = useCallback(
