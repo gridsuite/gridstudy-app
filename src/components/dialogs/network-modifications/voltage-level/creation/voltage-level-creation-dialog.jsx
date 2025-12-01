@@ -201,13 +201,25 @@ const VoltageLevelCreationDialog = ({
 
     const defaultValues = useMemo(() => {
         if (isAttachementPointModification) {
-            return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true, [NOMINAL_VOLTAGE]: 0 };
-        } else return emptyFormData;
+            return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true };
+        } else {
+            return emptyFormData;
+        }
+    }, [isAttachementPointModification]);
+
+    const overrideFormSchema = useMemo(() => {
+        if (isAttachementPointModification) {
+            return formSchema.shape({
+                [NOMINAL_V]: yup.number().nullable(),
+            });
+        } else {
+            return formSchema;
+        }
     }, [isAttachementPointModification]);
 
     const formMethods = useForm({
         defaultValues: defaultValues,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver(overrideFormSchema),
     });
 
     const { reset, setValue, getValues, watch, trigger, subscribe } = formMethods;
