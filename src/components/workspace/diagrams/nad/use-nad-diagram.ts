@@ -20,6 +20,7 @@ import type { DiagramConfigPosition } from '../../../../services/explore';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
+import { useSavedNadConfigCleanup } from './use-nad-config-cleanup';
 
 interface UseNadDiagramProps {
     diagramMetadata: NADPanelMetadata;
@@ -53,6 +54,9 @@ export const useNadDiagram = ({
     }));
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
+
+    // Automatic cleanup of NAD configs when they change or component unmounts
+    useSavedNadConfigCleanup(studyUuid, diagramMetadata.savedWorkspaceConfigUuid);
 
     // Save NAD config to backend - only store UUID in Redux
     const saveNadConfig = useCallback(
