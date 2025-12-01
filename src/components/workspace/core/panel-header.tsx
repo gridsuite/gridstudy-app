@@ -47,17 +47,18 @@ const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
 
 const styles = {
     title: {
-        flexGrow: 1,
         display: 'flex',
         alignItems: 'center',
         gap: 0.5,
+        flexShrink: 1,
+        minWidth: 0,
     },
     titleContent: {
         display: 'flex',
         alignItems: 'center',
         gap: 0.5,
-        width: 500,
         overflow: 'hidden',
+        minWidth: 0,
     },
     titleText: {
         overflow: 'hidden',
@@ -68,6 +69,8 @@ const styles = {
     headerActions: {
         display: 'flex',
         flexDirection: 'row',
+        marginLeft: 'auto',
+        flexShrink: 0,
     },
     iconButton: {
         visibility: 'hidden',
