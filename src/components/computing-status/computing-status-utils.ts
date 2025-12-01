@@ -17,7 +17,7 @@ export const isParameterizedComputingType = (
 
 export function toComputingStatusParameters<K extends ParameterizedComputingType>(
     computingStatusParameters: unknown,
-    computingType: K
+    _computingType: K
 ): ComputingStatusParameters[K] | null {
     return computingStatusParameters as ComputingStatusParameters[K];
 }
