@@ -100,66 +100,64 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         const exchangesResultRowsToShow = getRows(formattedExchangesResults, loadFlowStatus);
 
         return (
-            <>
-                <div style={styles.gridContainer}>
-                    <Box sx={{ height: '4px' }}>{openLoaderStatusTab && <LinearProgress />}</Box>
-                    <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
-                        <FormattedMessage id="LoadFlowResultsSynchronousComponents" />
-                    </h4>
-                    <div style={{ minHeight: '350px', height: '100%' }}>
-                        <RenderTableAndExportCsv
-                            gridRef={gridRef}
-                            columns={componentColumnDefs}
-                            defaultColDef={defaultColDef}
-                            tableName={intl.formatMessage({
-                                id: 'LoadFlowResultsSynchronousComponents',
-                            })}
-                            rows={componentResultRowsToShow}
-                            getRowStyle={getRowStyle}
-                            overlayNoRowsTemplate={message}
-                            skipColumnHeaders={false}
-                        />
-                    </div>
-                    <br />
-
-                    <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
-                        <FormattedMessage id="LoadFlowResultsCountryAdequacies" />
-                    </h4>
-                    <div style={{ minHeight: '350px', height: '100%' }}>
-                        <RenderTableAndExportCsv
-                            gridRef={gridRef}
-                            columns={countryAdequaciesColumnDefs}
-                            defaultColDef={defaultColDef}
-                            tableName={intl.formatMessage({
-                                id: 'LoadFlowResultsCountryAdequacies',
-                            })}
-                            rows={countryAdequaciesResultRowsToShow}
-                            getRowStyle={getRowStyle}
-                            overlayNoRowsTemplate={message}
-                            skipColumnHeaders={false}
-                        />
-                    </div>
-                    <br />
-
-                    <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
-                        <FormattedMessage id="LoadFlowResultsExchanges" />
-                    </h4>
-                    <div style={{ minHeight: '350px', height: '100%', paddingBottom: '32px' }}>
-                        <RenderTableAndExportCsv
-                            gridRef={gridRef}
-                            columns={exchangesColumnDefs}
-                            defaultColDef={defaultColDef}
-                            tableName={intl.formatMessage({
-                                id: 'LoadFlowResultsExchanges',
-                            })}
-                            rows={exchangesResultRowsToShow}
-                            getRowStyle={getRowStyle}
-                            overlayNoRowsTemplate={message}
-                            skipColumnHeaders={false}
-                        />
-                    </div>
+            <div style={styles.gridContainer}>
+                <Box sx={{ height: '4px' }}>{openLoaderStatusTab && <LinearProgress />}</Box>
+                <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
+                    <FormattedMessage id="LoadFlowResultsSynchronousComponents" />
+                </h4>
+                <div style={{ minHeight: '350px', height: '100%' }}>
+                    <RenderTableAndExportCsv
+                        gridRef={gridRef}
+                        columns={componentColumnDefs}
+                        defaultColDef={defaultColDef}
+                        tableName={intl.formatMessage({
+                            id: 'LoadFlowResultsSynchronousComponents',
+                        })}
+                        rows={componentResultRowsToShow}
+                        getRowStyle={getRowStyle}
+                        overlayNoRowsTemplate={message}
+                        skipColumnHeaders={false}
+                    />
                 </div>
-            </>
+                <br />
+
+                <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
+                    <FormattedMessage id="LoadFlowResultsCountryAdequacies" />
+                </h4>
+                <div style={{ minHeight: '350px', height: '100%' }}>
+                    <RenderTableAndExportCsv
+                        gridRef={gridRef}
+                        columns={countryAdequaciesColumnDefs}
+                        defaultColDef={defaultColDef}
+                        tableName={intl.formatMessage({
+                            id: 'LoadFlowResultsCountryAdequacies',
+                        })}
+                        rows={countryAdequaciesResultRowsToShow}
+                        getRowStyle={getRowStyle}
+                        overlayNoRowsTemplate={message}
+                        skipColumnHeaders={false}
+                    />
+                </div>
+                <br />
+
+                <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
+                    <FormattedMessage id="LoadFlowResultsExchanges" />
+                </h4>
+                <div style={{ minHeight: '350px', height: '100%', paddingBottom: '32px' }}>
+                    <RenderTableAndExportCsv
+                        gridRef={gridRef}
+                        columns={exchangesColumnDefs}
+                        defaultColDef={defaultColDef}
+                        tableName={intl.formatMessage({
+                            id: 'LoadFlowResultsExchanges',
+                        })}
+                        rows={exchangesResultRowsToShow}
+                        getRowStyle={getRowStyle}
+                        overlayNoRowsTemplate={message}
+                        skipColumnHeaders={false}
+                    />
+                </div>
+            </div>
         );
     };
 

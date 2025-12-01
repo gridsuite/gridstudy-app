@@ -680,7 +680,7 @@ export const exchangesColumnsDefinition = (
 
 export const formatComponentResult = (componentResults: ComponentResult[]) => {
     return componentResults
-        ?.sort(
+        ?.toSorted(
             (a, b) =>
                 a.connectedComponentNum - b.connectedComponentNum ||
                 a.synchronousComponentNum - b.synchronousComponentNum
