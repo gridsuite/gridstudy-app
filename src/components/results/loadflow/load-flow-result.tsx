@@ -8,7 +8,7 @@ import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { RowClassParams } from 'ag-grid-community';
 
 import { LoadflowResultProps } from './load-flow-result.type';
