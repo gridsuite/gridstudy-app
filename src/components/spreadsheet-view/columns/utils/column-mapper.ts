@@ -28,8 +28,7 @@ function isSingleSymbol(formula: string) {
     try {
         const node = parse(formula);
         return isSymbolNode(node) || isAccessorNode(node);
-    } catch (error) {
-        console.warn(`Error while parsing formula ${error}`);
+    } catch {
         return false;
     }
 }
@@ -49,9 +48,10 @@ const createValueGetter =
             });
             const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
             const result = limitedEvaluate(escapedFormula, scope);
-            return result ? validateFormulaResult(result, colDef.type) : undefined;
+            return result == null ? undefined : validateFormulaResult(result, colDef.type);
         } catch (e) {
             if (e instanceof Error) {
+                console.warn(`Error while evaluating formula : ${e.message}`);
                 if (e instanceof MathJsValidationError) {
                     return { error: e.error };
                 }
