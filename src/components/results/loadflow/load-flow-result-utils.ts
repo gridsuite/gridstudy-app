@@ -29,8 +29,8 @@ import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filter
 import {
     FilterConfig,
     FilterType as AgGridFilterType,
-    textFilterParams,
     numericFilterParams,
+    textFilterParams,
 } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
@@ -209,7 +209,7 @@ const makeAgGridFloatColumn = (
     fieldId: string,
     intl: IntlShape,
     sortParams: ColumnContext['sortParams'],
-    filterParamsBase: {
+    filterParams: {
         type: AgGridFilterType;
         tab: string;
     },
@@ -227,7 +227,7 @@ const makeAgGridFloatColumn = (
             filterComponentParams: {
                 filterParams: {
                     ...numericFilterParams,
-                    ...filterParamsBase,
+                    ...filterParams,
                     updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
                         if (!api || !filters) return;
                         onFilter(fieldId, api, filters);
@@ -250,10 +250,14 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         table: LOADFLOW_RESULT_SORT_STORE,
         tab: mappingTabs(tabIndex),
     };
-    const filterParamsBase = {
+    const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
         updateFilterCallback: onFilter,
+    };
+    const createUpdateFilterCallback = (colId: string) => (api?: GridApi, filters?: FilterConfig[]) => {
+        if (!api || !filters) return;
+        onFilter(colId, api, filters);
     };
     return [
         makeAgGridCustomHeaderColumn({
@@ -267,12 +271,9 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        ...filterParamsBase,
+                        ...filterParams,
                         ...textFilterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('subjectId', api, filters);
-                        },
+                        updateFilterCallback: createUpdateFilterCallback('subjectId'),
                     },
                 },
             },
@@ -286,22 +287,19 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        ...filterParamsBase,
+                        ...filterParams,
                         ...translatedFilterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('limitName', api, filters);
-                        },
+                        updateFilterCallback: createUpdateFilterCallback('limitName'),
                     },
                 },
             },
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('LimitLoading', 'overload', intl, sortParams, filterParamsBase, onFilter)
+            makeAgGridFloatColumn('LimitLoading', 'overload', intl, sortParams, filterParams, onFilter)
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLoading', 'patlOverload', intl, sortParams, filterParamsBase, onFilter)
+            makeAgGridFloatColumn('PatlLoading', 'patlOverload', intl, sortParams, filterParams, onFilter)
         ),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'actualOverloadDuration' }),
@@ -312,12 +310,9 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 filterComponent: CustomAggridDurationFilter,
                 filterComponentParams: {
                     filterParams: {
-                        ...filterParamsBase,
+                        ...filterParams,
                         ...numericFilterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('actualOverloadDuration', api, filters);
-                        },
+                        updateFilterCallback: createUpdateFilterCallback('actualOverloadDuration'),
                     },
                 },
             },
@@ -332,12 +327,9 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 filterComponent: CustomAggridDurationFilter,
                 filterComponentParams: {
                     filterParams: {
-                        ...filterParamsBase,
+                        ...filterParams,
                         ...numericFilterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('upComingOverloadDuration', api, filters);
-                        },
+                        updateFilterCallback: createUpdateFilterCallback('upComingOverloadDuration'),
                     },
                 },
             },
@@ -359,25 +351,22 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        ...filterParamsBase,
+                        ...filterParams,
                         ...translatedFilterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('nextLimitName', api, filters);
-                        },
+                        updateFilterCallback: createUpdateFilterCallback('nextLimitName'),
                     },
                 },
             },
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('CurrentViolationLimit', 'limit', intl, sortParams, filterParamsBase, onFilter)
+            makeAgGridFloatColumn('CurrentViolationLimit', 'limit', intl, sortParams, filterParams, onFilter)
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, sortParams, filterParamsBase, onFilter)
+            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, sortParams, filterParams, onFilter)
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('CurrentViolationValue', 'value', intl, sortParams, filterParamsBase, onFilter)
+            makeAgGridFloatColumn('CurrentViolationValue', 'value', intl, sortParams, filterParams, onFilter)
         ),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -389,11 +378,8 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParamsBase,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('side', api, filters);
-                        },
+                        ...filterParams,
+                        updateFilterCallback: createUpdateFilterCallback('side'),
                     },
                     options: filterEnums['side'] ?? [],
                     getOptionLabel: getEnumLabel,
@@ -418,10 +404,14 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
         table: LOADFLOW_RESULT_SORT_STORE,
         tab: mappingTabs(tabIndex),
     };
-    const filterParamsBase = {
+    const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
         updateFilterCallback: onFilter,
+    };
+    const createUpdateFilterCallback = (colId: string) => (api?: GridApi, filters?: FilterConfig[]) => {
+        if (!api || !filters) return;
+        onFilter(colId, api, filters);
     };
     return [
         makeAgGridCustomHeaderColumn({
@@ -433,12 +423,9 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        ...filterParamsBase,
+                        ...filterParams,
                         ...textFilterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('locationId', api, filters);
-                        },
+                        updateFilterCallback: createUpdateFilterCallback('locationId'),
                     },
                 },
             },
@@ -453,12 +440,9 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        ...filterParamsBase,
+                        ...filterParams,
                         ...textFilterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('subjectId', api, filters);
-                        },
+                        updateFilterCallback: createUpdateFilterCallback('subjectId'),
                     },
                 },
             },
@@ -473,11 +457,8 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParamsBase,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('limitType', api, filters);
-                        },
+                        ...filterParams,
+                        updateFilterCallback: createUpdateFilterCallback('limitType'),
                     },
                     options: filterEnums['limitType'] ?? [],
                     getOptionLabel: getEnumLabel,
@@ -488,10 +469,10 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('VoltageViolationLimit', 'limit', intl, sortParams, filterParamsBase, onFilter)
+            makeAgGridFloatColumn('VoltageViolationLimit', 'limit', intl, sortParams, filterParams, onFilter)
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('VoltageViolationValue', 'value', intl, sortParams, filterParamsBase, onFilter)
+            makeAgGridFloatColumn('VoltageViolationValue', 'value', intl, sortParams, filterParams, onFilter)
         ),
     ];
 };
@@ -509,10 +490,14 @@ export const loadFlowResultColumnsDefinition = (
         table: LOADFLOW_RESULT_SORT_STORE,
         tab: mappingTabs(tabIndex),
     };
-    const filterParamsBase = {
+    const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
         updateFilterCallback: onFilter,
+    };
+    const createUpdateFilterCallback = (colId: string) => (api?: GridApi, filters?: FilterConfig[]) => {
+        if (!api || !filters) return;
+        onFilter(colId, api, filters);
     };
     return [
         makeAgGridCustomHeaderColumn({
@@ -525,11 +510,8 @@ export const loadFlowResultColumnsDefinition = (
                 filterComponentParams: {
                     filterParams: {
                         ...numericFilterParams,
-                        ...filterParamsBase,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('connectedComponentNum', api, filters);
-                        },
+                        ...filterParams,
+                        updateFilterCallback: createUpdateFilterCallback('connectedComponentNum'),
                     },
                 },
             },
@@ -544,11 +526,8 @@ export const loadFlowResultColumnsDefinition = (
                 filterComponentParams: {
                     filterParams: {
                         ...numericFilterParams,
-                        ...filterParamsBase,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('synchronousComponentNum', api, filters);
-                        },
+                        ...filterParams,
+                        updateFilterCallback: createUpdateFilterCallback('synchronousComponentNum'),
                     },
                 },
             },
@@ -563,11 +542,8 @@ export const loadFlowResultColumnsDefinition = (
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParamsBase,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('status', api, filters);
-                        },
+                        ...filterParams,
+                        updateFilterCallback: createUpdateFilterCallback('status'),
                     },
                     options: filterEnums['status'] ?? [],
                     getOptionLabel: getEnumLabel,
@@ -585,11 +561,8 @@ export const loadFlowResultColumnsDefinition = (
                 filterComponentParams: {
                     filterParams: {
                         ...numericFilterParams,
-                        ...filterParamsBase,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('iterationCount', api, filters);
-                        },
+                        ...filterParams,
+                        updateFilterCallback: createUpdateFilterCallback('iterationCount'),
                     },
                 },
             },
@@ -603,11 +576,8 @@ export const loadFlowResultColumnsDefinition = (
                 filterComponentParams: {
                     filterParams: {
                         ...textFilterParams,
-                        ...filterParamsBase,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('id', api, filters);
-                        },
+                        ...filterParams,
+                        updateFilterCallback: createUpdateFilterCallback('id'),
                     },
                 },
             },
@@ -625,11 +595,8 @@ export const loadFlowResultColumnsDefinition = (
                 filterComponentParams: {
                     filterParams: {
                         ...numericFilterParams,
-                        ...filterParamsBase,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter('activePowerMismatch', api, filters);
-                        },
+                        ...filterParams,
+                        updateFilterCallback: createUpdateFilterCallback('activePowerMismatch'),
                     },
                 },
             },
