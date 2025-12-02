@@ -30,7 +30,7 @@ interface LoadflowModificationsProps extends DialogProps {
     onClose: () => void;
 }
 
-export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps> = ({ open, onClose }) => {
+export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps> = ({ onClose }) => {
     const intl = useIntl();
     const [tabIndex, setTabIndex] = useState(0);
     const [data, isLoading] = useLoadflowModifications();
