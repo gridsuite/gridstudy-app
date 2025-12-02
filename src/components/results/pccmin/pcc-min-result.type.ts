@@ -10,9 +10,9 @@ import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
 import {
     FilterConfig,
-    FilterType as AgGridFilterType,
     numericFilterParams,
     textFilterParams,
+    FilterType as AgGridFilterType,
 } from 'types/custom-aggrid-types';
 import { ColumnContext } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';

@@ -58,7 +58,7 @@ function useGlobalFiltersResults(
 }
 
 export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
-    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     useEffect(() => handleGlobalFilterChange(filters), [filters, handleGlobalFilterChange]);
     return useGlobalFiltersResults(globalFilters, equipmentTypes);
 }

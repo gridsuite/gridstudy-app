@@ -22,7 +22,8 @@ export function isGlobalFilterParameter(globalFilters: GlobalFilters | undefined
 export default function useGlobalFilters() {
     const [globalFilters, setGlobalFilters] = useState<GlobalFilters>();
 
-    const handleGlobalFilterChange = useCallback((value: GlobalFilter[]): void => {
+    // see <GlobalFilterSelector onChange={...} .../>
+    const handleGlobalFilterChange = useCallback((value: GlobalFilter[]) => {
         const newGlobalFilter: GlobalFilters = {};
         const nominalVs = new Set<string>();
         const genericFilters = new Set<string>();
@@ -59,5 +60,5 @@ export default function useGlobalFilters() {
         setGlobalFilters(newGlobalFilter);
     }, []);
 
-    return { handleGlobalFilterChange, globalFilters };
+    return { globalFilters, handleGlobalFilterChange };
 }

@@ -29,6 +29,7 @@ import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.con
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
 import {
     FILTER_DATA_TYPES,
@@ -38,7 +39,6 @@ import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
 import { reportStyles } from './report.styles';
 import { useLogsPagination } from './use-logs-pagination';
-import { useFilterSelector } from '../../hooks/use-filter-selector';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;

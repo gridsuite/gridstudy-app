@@ -30,10 +30,11 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
@@ -51,7 +52,6 @@ import { Button } from '@mui/material';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { useComputationColumnsFilters } from 'hooks/use-computation-columns-filters';
 
@@ -86,16 +86,19 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
+
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
-    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
-    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
+
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
     });
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
+
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
             handleGlobalFilterChange(newFilters);
@@ -155,7 +158,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) =>
             fetchLoadFlowResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 sort: sortConfig,
-                filters: filters,
+                filters,
             });
     }, [sortConfig, filters]);
 

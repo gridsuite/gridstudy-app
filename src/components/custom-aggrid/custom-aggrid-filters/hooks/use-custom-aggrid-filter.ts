@@ -7,10 +7,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { debounce } from '@mui/material';
 import { GridApi } from 'ag-grid-community';
+import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
 import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
-import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -107,7 +107,7 @@ export const useCustomAggridFilter = (
     }, [selectedFilterComparator, comparators]);
 
     useEffect(() => {
-        const filterObject = filters?.find((filter) => filter?.column === colId);
+        const filterObject = filters?.find((filter) => filter.column === colId);
         if (filterObject) {
             setSelectedFilterData(filterObject.value);
             setSelectedFilterComparator(filterObject.type ?? '');

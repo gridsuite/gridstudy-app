@@ -29,8 +29,8 @@ import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filter
 import {
     FilterConfig,
     FilterType as AgGridFilterType,
-    numericFilterParams,
     textFilterParams,
+    numericFilterParams,
 } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {

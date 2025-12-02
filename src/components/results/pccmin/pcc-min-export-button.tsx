@@ -12,12 +12,12 @@ import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN } from './pcc-min-result.type';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 interface PccMinExportButtonProps {
     studyUuid: UUID;
