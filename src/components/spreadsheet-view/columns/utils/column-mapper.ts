@@ -21,7 +21,7 @@ import {
     type CustomColDef,
 } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
-import { ErrorCellRenderer } from '../../../custom-aggrid/cell-renderers';
+import { ErrorCellRenderer } from '@gridsuite/commons-ui';
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>

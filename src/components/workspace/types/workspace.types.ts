@@ -13,15 +13,17 @@ export enum PanelType {
     LOGS = 'LOGS',
     RESULTS = 'RESULTS',
     PARAMETERS = 'PARAMETERS',
-    SLD = 'SLD',
+    SLD_VOLTAGE_LEVEL = 'SLD_VOLTAGE_LEVEL',
+    SLD_SUBSTATION = 'SLD_SUBSTATION',
     NAD = 'NAD',
     MAP = 'MAP',
     NODE_EDITOR = 'NODE_EDITOR',
     EVENT_SCENARIO = 'EVENT_SCENARIO',
 }
+
 export interface SLDPanelMetadata {
-    voltageLevelId?: string;
-    substationId?: string;
+    diagramId: string;
+    navigationHistory?: string[];
 }
 
 export interface NADPanelMetadata {
@@ -59,6 +61,7 @@ export interface PanelState {
     isMinimized: boolean;
     isMaximized: boolean;
     isPinned: boolean;
+    isClosed: boolean;
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;
 }
@@ -72,6 +75,6 @@ export interface Workspace {
 }
 
 export interface WorkspacesState {
-    workspaces: Record<UUID, Workspace>;
+    workspaces: Workspace[];
     activeWorkspaceId: UUID;
 }

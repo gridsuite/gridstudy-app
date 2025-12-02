@@ -23,4 +23,4 @@ export function getNominalVoltageColor(nominalVoltage: number): number[] {
     }
 }
 
-export const INVALID_LOADFLOW_OPACITY = 0.2;
+export const INVALID_COMPUTATION_OPACITY = 0.2;

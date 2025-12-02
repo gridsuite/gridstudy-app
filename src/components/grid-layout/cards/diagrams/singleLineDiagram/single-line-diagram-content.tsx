@@ -29,10 +29,16 @@ import {
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
 import { useTheme } from '@mui/material/styles';
-import { ComputingType, EquipmentType, mergeSx, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentInfos,
+    EquipmentType,
+    mergeSx,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import EquipmentPopover from '../../../../tooltips/equipment-popover';
 import { updateSwitchState } from '../../../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
@@ -47,6 +53,10 @@ import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import useComputationDebug from '../../../../../hooks/use-computation-debug';
 
+import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
+import { BranchPopoverContent } from 'components/tooltips/branch-popover-content';
+import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
+
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly studyUuid: UUID;
@@ -56,8 +66,8 @@ interface SingleLineDiagramContentProps {
     readonly loadingState: boolean;
     readonly visible: boolean;
     readonly diagramParams: VoltageLevelDiagramParams | SubstationDiagramParams;
-    readonly onNextVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
-    readonly onNewVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
+    readonly onNextVoltageLevelDiagram?: (voltageLevelId: string) => void;
+    readonly onNewVoltageLevelDiagram?: (voltageLevelId: string) => void;
 }
 
 type BusMenuState = {
@@ -89,8 +99,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
-    const svgRef = useRef<HTMLDivElement>();
-    const diagramViewerRef = useRef<SingleLineDiagramViewer>();
+    const svgRef = useRef<HTMLDivElement>(null);
+    const diagramViewerRef = useRef<SingleLineDiagramViewer>(null);
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -105,6 +115,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const shortCircuitStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]);
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
@@ -196,15 +207,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const handleNextVoltageLevelClick: OnNextVoltageCallbackType = useCallback(
         (vlId, event) => {
             if (event.ctrlKey) {
-                onNewVoltageLevelDiagram?.({
-                    type: DiagramType.VOLTAGE_LEVEL,
-                    voltageLevelId: vlId,
-                });
+                onNewVoltageLevelDiagram?.(vlId);
             } else {
-                onNextVoltageLevelDiagram?.({
-                    type: DiagramType.VOLTAGE_LEVEL,
-                    voltageLevelId: vlId,
-                });
+                onNextVoltageLevelDiagram?.(vlId);
             }
         },
         [onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
@@ -227,7 +232,10 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     debug && subscribeDebug(ComputingType.SHORT_CIRCUIT_ONE_BUS);
                 })
                 .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'startShortCircuitError' });
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'startShortCircuitError',
+                    });
                     dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
                     resetOneBusShortcircuitAnalysisLoader();
                 })
@@ -316,14 +324,24 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     );
 
     const displayTooltip = () => {
+        const PopoverContent = EquipmentPopoverMap[hoveredEquipmentType] || BranchPopoverContent;
         return (
-            <EquipmentPopover
+            <GenericEquipmentPopover
                 studyUuid={studyUuid}
-                anchorEl={equipmentPopoverAnchorEl}
-                equipmentType={hoveredEquipmentType}
+                anchorEl={equipmentPopoverAnchorEl as HTMLElement}
                 equipmentId={hoveredEquipmentId}
+                equipmentType={hoveredEquipmentType as EquipmentType}
                 loadFlowStatus={loadFlowStatus}
-            />
+                anchorPosition={undefined}
+            >
+                {(equipmentInfos: EquipmentInfos) => (
+                    <PopoverContent
+                        equipmentInfos={equipmentInfos}
+                        loadFlowStatus={loadFlowStatus}
+                        equipmentType={hoveredEquipmentType}
+                    />
+                )}
+            </GenericEquipmentPopover>
         );
     };
 
@@ -438,7 +456,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
+                    loadFlowStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramLoadflowInvalid,
+                    shortCircuitStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramShortCircuitInvalid,
                     // TODO - lock and strip are hidden on single line diagram temporarly
                     !enableDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
                 )}
