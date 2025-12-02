@@ -4,44 +4,33 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    Alert,
-    Collapse,
-    Dialog,
-    DialogTitle,
-    FormControl,
-    IconButton,
-    InputLabel,
-    MenuItem,
-    Select,
-    Stack,
-    Typography,
-} from '@mui/material';
+import { Alert, Collapse, IconButton, Stack, Typography } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, useIntl } from 'react-intl';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    CancelButton,
+    CustomMuiDialog,
     fetchDirectoryElementPath,
     FlatParameters,
     Parameter,
+    SelectInput,
     snackWithFallback,
+    TextInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
-import TextField from '@mui/material/TextField';
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { useParameterState } from './parameters/use-parameters-state';
 import { AppState } from '../../redux/reducer';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 
 import { IGNORED_PARAMS } from './root-network/ignored-params';
+import { EXPORT_FORMAT, EXPORT_PARAMETERS, FILE_NAME } from 'components/utils/field-constants';
+import yup from 'components/utils/yup-config';
+import { useForm, useFormContext, useWatch } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -53,6 +42,24 @@ const STRING_LIST = 'STRING_LIST';
  * @param {String} studyUuid the uuid of the study to export
  * @param {String} nodeUuid the uuid of the selected node
  */
+
+export interface ExportNetworkFormData {
+    [FILE_NAME]: string;
+    [EXPORT_FORMAT]: string;
+    [EXPORT_PARAMETERS]?: Record<string, any>[];
+}
+
+const schema = yup.object().shape({
+    [FILE_NAME]: yup.string().required(),
+    [EXPORT_FORMAT]: yup.string().required(),
+    [EXPORT_PARAMETERS]: yup.array().of(yup.object().shape({})),
+});
+
+const emptyData = () => ({
+    [FILE_NAME]: '',
+    [EXPORT_FORMAT]: '',
+    [EXPORT_PARAMETERS]: [],
+});
 
 interface ExportNetworkDialogProps {
     open: boolean;
@@ -76,6 +83,75 @@ function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parame
         return parameter;
     });
 }
+interface FlatParametersFormProps {
+    exportStudyErr?: string;
+    formatsWithParameters: Record<string, ExportFormatProperties>;
+}
+
+function FlatParametersForm({ exportStudyErr, formatsWithParameters }: Readonly<FlatParametersFormProps>) {
+    const [unfolded, setUnfolded] = useState(false);
+    const { getValues, setValue } = useFormContext();
+    const [metasAsArray, setMetasAsArray] = useState<Parameter[]>([]);
+    const [currentParams, setCurrentParams] = useState<Record<string, any>>([]);
+
+    useEffect(() => {
+        setValue(EXPORT_PARAMETERS, currentParams);
+    }, [currentParams, setValue]);
+
+    const onChange = useCallback(
+        (paramName: string, value: unknown, isInEdition: boolean) => {
+            if (!isInEdition) {
+                setCurrentParams({ ...getValues(EXPORT_PARAMETERS), [paramName]: value });
+            }
+        },
+        [getValues]
+    );
+
+    const handleFoldChange = () => {
+        setUnfolded((prev) => !prev);
+    };
+
+    const exportValue = useWatch({ name: EXPORT_FORMAT });
+
+    useEffect(() => {
+        const formatWithParameter = formatsWithParameters?.[exportValue];
+        if (formatWithParameter?.parameters) {
+            setMetasAsArray(
+                formatWithParameter?.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name))
+            );
+        } else {
+            setMetasAsArray([]);
+        }
+    }, [formatsWithParameters, exportValue]);
+
+    return (
+        <>
+            <Collapse in={unfolded}>
+                <FlatParameters
+                    paramsAsArray={metasAsArray}
+                    initValues={currentParams}
+                    onChange={onChange}
+                    variant="standard"
+                    selectionWithDialog={(param) => param?.possibleValues?.length > 10}
+                />
+            </Collapse>
+            {exportStudyErr !== '' && <Alert severity="error">{exportStudyErr}</Alert>}
+
+            <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
+                <Typography
+                    component="span"
+                    color={exportValue ? 'text.main' : 'text.disabled'}
+                    sx={{ fontWeight: 'bold' }}
+                >
+                    <FormattedMessage id="parameters" />
+                </Typography>
+                <IconButton onClick={handleFoldChange} disabled={!exportValue}>
+                    {unfolded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+            </Stack>
+        </>
+    );
+}
 
 export function ExportNetworkDialog({
     open,
@@ -86,15 +162,19 @@ export function ExportNetworkDialog({
 }: Readonly<ExportNetworkDialogProps>) {
     const intl = useIntl();
     const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
-    const [selectedFormat, setSelectedFormat] = useState('');
     const [exportStudyErr, setExportStudyErr] = useState('');
     const { snackError } = useSnackMessage();
-    const [fileName, setFileName] = useState<string>('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [unfolded, setUnfolded] = useState(false);
 
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
     const nodeName = useMemo(() => treeNodes?.find((node) => node.id === nodeUuid)?.data.label, [treeNodes, nodeUuid]);
+
+    const methods = useForm<ExportNetworkFormData>({
+        defaultValues: emptyData(),
+        resolver: yupResolver(schema),
+    });
+
+    const { reset } = methods;
 
     // fetch study name to build default file name
     useEffect(() => {
@@ -102,13 +182,13 @@ export function ExportNetworkDialog({
             fetchDirectoryElementPath(studyUuid)
                 .then((response) => {
                     const studyName = response[response.length - 1]?.elementName;
-                    setFileName(`${studyName}_${nodeName}`);
+                    reset({ [FILE_NAME]: `${studyName}_${nodeName}`, [EXPORT_FORMAT]: '', [EXPORT_PARAMETERS]: [] });
                 })
                 .catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
                 });
         }
-    }, [studyUuid, nodeName, snackError]);
+    }, [studyUuid, nodeName, snackError, reset]);
 
     useEffect(() => {
         if (open) {
@@ -126,121 +206,34 @@ export function ExportNetworkDialog({
         }
     }, [open, enableDeveloperMode]);
 
-    const handleFoldChange = () => {
-        setUnfolded((prev) => !prev);
-    };
-
-    const formatWithParameter = formatsWithParameters?.[selectedFormat];
-    const [currentParameters, setCurrentParameters] = useState({});
-    const onChange = useCallback((paramName: string, value: unknown, isInEdition: boolean) => {
-        if (!isInEdition) {
-            setCurrentParameters((prevCurrentParameters) => {
-                return {
-                    ...prevCurrentParameters,
-                    ...{ [paramName]: value },
-                };
-            });
-        }
-    }, []);
-    const handleExportClick = () => {
-        if (fileName && selectedFormat) {
-            onClick(nodeUuid, currentParameters, selectedFormat, fileName);
-        } else {
-            setExportStudyErr(intl.formatMessage({ id: 'exportStudyErrorMsg' }));
-        }
-    };
-
-    const handleClose = () => {
-        setCurrentParameters({});
-        setExportStudyErr('');
-        setSelectedFormat('');
-        onClose();
-    };
-
-    const handleFormatSelectionChange = (event: SelectChangeEvent) => {
-        let selected = event.target.value;
-        setSelectedFormat(selected);
-    };
-
-    const metasAsArray = useMemo(() => {
-        if (formatWithParameter?.parameters) {
-            return formatWithParameter?.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name));
-        } else {
-            return [];
-        }
-    }, [formatWithParameter?.parameters]);
+    const onSubmit = useCallback(
+        (data: ExportNetworkFormData) => {
+            if (data[FILE_NAME] && data[EXPORT_FORMAT]) {
+                onClick(nodeUuid, data[EXPORT_PARAMETERS] ?? [], data[EXPORT_FORMAT], data[FILE_NAME]);
+            } else {
+                setExportStudyErr(intl.formatMessage({ id: 'exportStudyErrorMsg' }));
+            }
+        },
+        [intl, nodeUuid, onClick]
+    );
 
     return (
-        <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} aria-labelledby="dialog-title-export">
-            <DialogTitle>
-                {intl.formatMessage({
-                    id: 'exportNetwork',
-                })}
-            </DialogTitle>
-            <DialogContent>
-                <TextField
-                    key="fileName"
-                    margin="dense"
-                    label={<FormattedMessage id="download.fileName" />}
-                    id="fileName"
-                    value={fileName}
-                    sx={{ width: '100%', marginBottom: 1 }}
-                    fullWidth
-                    variant="filled"
-                    InputLabelProps={{ shrink: true }}
-                    onChange={(event) => setFileName(event.target.value)}
-                />
-                <FormControl fullWidth size="small">
-                    <InputLabel id="select-format-label" margin={'dense'} variant={'filled'}>
-                        <FormattedMessage id="exportFormat" />
-                    </InputLabel>
-                    <Select
-                        labelId="select-format-label"
-                        label={<FormattedMessage id="exportFormat" />}
-                        variant="filled"
-                        id="controlled-select-format"
-                        onChange={handleFormatSelectionChange}
-                        defaultValue=""
-                        inputProps={{
-                            id: 'select-format',
-                        }}
-                    >
-                        {Object.keys(formatsWithParameters).map((formatKey) => (
-                            <MenuItem key={formatKey} value={formatKey}>
-                                {formatKey}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
-                        <Typography
-                            component="span"
-                            color={selectedFormat ? 'text.main' : 'text.disabled'}
-                            sx={{ fontWeight: 'bold' }}
-                        >
-                            <FormattedMessage id="parameters" />
-                        </Typography>
-                        <IconButton onClick={handleFoldChange} disabled={!selectedFormat}>
-                            {unfolded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                        </IconButton>
-                    </Stack>
-                </FormControl>
-                <Collapse in={unfolded}>
-                    <FlatParameters
-                        paramsAsArray={metasAsArray}
-                        initValues={currentParameters}
-                        onChange={onChange}
-                        variant="standard"
-                        selectionWithDialog={(param) => param?.possibleValues?.length > 10}
-                    />
-                </Collapse>
-                {exportStudyErr !== '' && <Alert severity="error">{exportStudyErr}</Alert>}
-            </DialogContent>
-            <DialogActions>
-                <CancelButton onClick={handleClose} />
-                <Button onClick={handleExportClick} variant="outlined" disabled={!selectedFormat || !fileName}>
-                    <FormattedMessage id="export" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <CustomMuiDialog
+            onClose={onClose}
+            open={open}
+            formSchema={schema}
+            formMethods={methods}
+            onSave={onSubmit}
+            titleId="exportNetwork"
+        >
+            <TextInput name={FILE_NAME} label="download.fileName" />
+            <SelectInput
+                name={EXPORT_FORMAT}
+                label="exportFormat"
+                options={Object.keys(formatsWithParameters)}
+                size="small"
+            />
+            <FlatParametersForm exportStudyErr={exportStudyErr} formatsWithParameters={formatsWithParameters} />
+        </CustomMuiDialog>
     );
 }
