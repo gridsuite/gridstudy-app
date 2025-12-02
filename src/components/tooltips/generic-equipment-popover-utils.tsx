@@ -96,7 +96,7 @@ export const renderVoltageLevelCharacteristics = (equipmentInfo: any, equipmentT
 /**
  * Generate the rows for current limits (permanent and temporary)
  */
-export const generateRows = (
+export const generateCurrentLimitsRows = (
     equipmentInfos: BranchEquipmentInfos,
     currentLimits: CurrentLimits,
     side: '1' | '2',

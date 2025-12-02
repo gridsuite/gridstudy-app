@@ -49,14 +49,14 @@ export const CurrentTable: React.FC<CurrentTableProps> = ({ equipmentInfos, load
                                     opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
                                 })}
                             >
-                                {equipmentInfos?.i1 && formatValue(Math.round(equipmentInfos?.i1))}
+                                {formatValue(Math.round(equipmentInfos?.i1))}
                             </TableCell>
                             <TableCell
                                 sx={mergeSx(styles.cell, {
                                     opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
                                 })}
                             >
-                                {equipmentInfos?.i2 && formatValue(Math.round(equipmentInfos?.i2))}
+                                {formatValue(Math.round(equipmentInfos?.i2))}
                             </TableCell>
                         </TableRow>
                     </TableBody>
