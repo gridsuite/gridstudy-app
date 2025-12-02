@@ -36,7 +36,6 @@ import {
     ElementType,
     EquipmentType,
     ExtendedEquipmentType,
-    GenericEquipmentInfos,
     IElementCreationDialog,
     IElementUpdateDialog,
     mergeSx,
@@ -56,6 +55,7 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
 import BranchPopoverContent from 'components/tooltips/branch-popover-content';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
+import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 
 type NetworkAreaDiagramContentProps = {
     readonly voltageLevelIds: string[];

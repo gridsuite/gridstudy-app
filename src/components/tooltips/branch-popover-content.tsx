@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BranchEquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { RunningStatus } from '../utils/running-status';
 import { CharacteristicsTable } from './carateristics-table';
@@ -13,6 +13,7 @@ import { CurrentTable } from './current-table';
 import { LimitsTable } from './limit-table';
 import { TwoCharacteristicsByVoltageLevel } from './twt-carateristics-by-VoltageLevel';
 import { TwoCharacteristicsMode } from './twt-carateristics-mode';
+import { BranchEquipmentInfos } from './equipment-popover-type';
 
 interface BranchPopoverContentProps {
     equipmentInfos: BranchEquipmentInfos;

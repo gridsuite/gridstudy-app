@@ -10,7 +10,7 @@ import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mu
 import { RunningStatus } from '../utils/running-status';
 import { generateCurrentLimitsRows, styles } from './generic-equipment-popover-utils';
 import { CellRender } from './cell-render';
-import { BranchEquipmentInfos } from '@gridsuite/commons-ui';
+import { BranchEquipmentInfos } from './equipment-popover-type';
 
 interface LimitsTableProps {
     equipmentInfos: BranchEquipmentInfos;

@@ -8,7 +8,7 @@
 import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
 import { CellRender } from './cell-render';
 import { styles } from './generic-equipment-popover-utils';
-import { BranchEquipmentInfos } from '@gridsuite/commons-ui';
+import { BranchEquipmentInfos } from './equipment-popover-type';
 
 interface TwoCharacteristicsByVoltageLevelProps {
     equipmentInfos: BranchEquipmentInfos;

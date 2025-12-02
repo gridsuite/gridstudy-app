@@ -9,7 +9,7 @@ import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mu
 import { CellRender } from './cell-render';
 import { styles } from './generic-equipment-popover-utils';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
-import { BranchEquipmentInfos } from '@gridsuite/commons-ui';
+import { BranchEquipmentInfos } from './equipment-popover-type';
 
 interface TwoCharacteristicsModeProps {
     equipmentInfos: BranchEquipmentInfos;

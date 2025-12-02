@@ -6,11 +6,12 @@
  */
 
 import { TableCell, TableRow } from '@mui/material';
-import { mergeSx, convertInputValue, FieldType, MuiStyles, BranchEquipmentInfos } from '@gridsuite/commons-ui';
+import { mergeSx, convertInputValue, FieldType, MuiStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { RunningStatus } from '../utils/running-status';
 import { CurrentLimits } from 'services/network-modification-types';
 import { CellRender } from './cell-render';
+import { BranchEquipmentInfos } from './equipment-popover-type';
 
 export const formatValue = (value?: number | string | null, fixed?: number | string | null) => {
     if (value && value != null && !Number.isNaN(value)) {

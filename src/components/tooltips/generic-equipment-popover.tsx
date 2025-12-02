@@ -11,9 +11,10 @@ import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { BranchEquipmentInfos, EquipmentType, GenericEquipmentInfos, useDebounce } from '@gridsuite/commons-ui';
+import { EquipmentType, useDebounce } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'node:crypto';
+import { BranchEquipmentInfos, GenericEquipmentInfos } from './equipment-popover-type';
 
 interface MenuAnchorPosition {
     top: number;

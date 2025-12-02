@@ -36,7 +36,6 @@ import {
     type EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
-    GenericEquipmentInfos,
     HvdcType,
     type MuiStyles,
     NotificationsUrlKeys,
@@ -74,6 +73,7 @@ import { getNominalVoltageColor } from 'utils/colors';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
 import BranchPopoverContent from 'components/tooltips/branch-popover-content';
+import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
