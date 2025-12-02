@@ -20,9 +20,14 @@ import {
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import {
+    ComputingType,
+    CustomAGGrid,
+    DefaultCellRenderer,
+    OverflowableText,
+    unitToKiloUnit,
+} from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { ComputingType, CustomAGGrid, OverflowableText, unitToKiloUnit } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { openSLD } from '../../../redux/slices/workspace-slice';
@@ -36,13 +41,13 @@ import {
 } from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
 import { resultsStyles } from '../common/utils';
-import { DiagramType } from '../../grid-layout/cards/diagrams/diagram.type';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { PanelType } from '../../workspace/types/workspace.types';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -106,7 +111,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         (props: ICellRendererParams) => {
             const { value } = props || {};
             const onClick = () => {
-                dispatch(openSLD({ id: value, diagramType: DiagramType.VOLTAGE_LEVEL }));
+                dispatch(openSLD({ id: value, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
             };
             if (value) {
                 return (

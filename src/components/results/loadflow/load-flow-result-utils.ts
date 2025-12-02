@@ -11,7 +11,7 @@ import { ColDef, GridApi, ICellRendererParams, ValueFormatterParams, ValueGetter
 import { BranchSide } from '../../utils/constants';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
     LOADFLOW_CURRENT_LIMIT_VIOLATION,

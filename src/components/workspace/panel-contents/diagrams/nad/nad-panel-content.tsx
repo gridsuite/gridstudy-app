@@ -38,7 +38,7 @@ export const NadPanelContent = ({
         | NADPanelMetadata
         | undefined;
 
-    const { diagram, loading, globalError, updateDiagram, handleSaveNad } = useNadDiagram({
+    const { diagram, loading, globalError, updateDiagram, handleSaveNad, cleanupSavedNadConfig } = useNadDiagram({
         diagramMetadata: diagramMetadata!,
         panelId,
         studyUuid,
@@ -46,7 +46,7 @@ export const NadPanelContent = ({
         currentRootNetworkUuid,
     });
 
-    const { handleShowInSpreadsheet, handleOpenDiagram } = useDiagramNavigation();
+    const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
 
     // Update voltage levels in local state only - no Redux dispatch
     const handleUpdateVoltageLevels = useCallback(
@@ -68,6 +68,9 @@ export const NadPanelContent = ({
     // The useEffect in use-nad-diagram will handle the fetch when diagramData changes
     const handleReplaceNad = useCallback(
         (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
+            // Delete the old saved config before replacing
+            cleanupSavedNadConfig();
+
             dispatch(
                 updatePanelMetadata({
                     panelId,
@@ -81,7 +84,7 @@ export const NadPanelContent = ({
                 })
             );
         },
-        [dispatch, panelId]
+        [dispatch, panelId, cleanupSavedNadConfig]
     );
 
     if (!diagramMetadata) {
@@ -104,7 +107,7 @@ export const NadPanelContent = ({
                 svgVoltageLevels={diagram.voltageLevelIds}
                 loadingState={loading}
                 visible
-                onVoltageLevelClick={handleOpenDiagram}
+                onVoltageLevelClick={handleOpenVoltageLevelDiagram}
                 onUpdateVoltageLevels={handleUpdateVoltageLevels}
                 onUpdatePositions={handleUpdatePositions}
                 onReplaceNad={handleReplaceNad}

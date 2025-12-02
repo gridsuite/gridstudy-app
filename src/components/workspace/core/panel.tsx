@@ -6,9 +6,8 @@
  */
 
 import { useCallback, memo, type RefObject } from 'react';
-import { Box } from '@mui/material';
+import { Box, Theme } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
-import type { MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     focusPanel,
@@ -24,6 +23,25 @@ import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
+
+const RESIZE_HANDLE_SIZE = 12;
+
+const getBorder = (theme: Theme, isFocused: boolean) => {
+    if (theme.palette.mode === 'light') {
+        return `1px solid ${theme.palette.grey[500]}`;
+    }
+    if (isFocused) {
+        return `1px solid ${theme.palette.grey[100]}`;
+    }
+    return `1px solid ${theme.palette.grey[800]}`;
+};
+
+const getBoxShadow = (theme: Theme, isFocused: boolean) => {
+    if (!isFocused) {
+        return 0;
+    }
+    return theme.palette.mode === 'light' ? theme.shadows[14] : theme.shadows[18];
+};
 
 const styles = {
     panel: {
@@ -47,17 +65,19 @@ const styles = {
         position: 'relative',
         backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
-        border:
-            theme.palette.mode === 'light'
-                ? `1px solid ${theme.palette.grey[500]}`
-                : `1px solid ${theme.palette.grey[800]}`,
         borderTop: 'none',
     }),
-} as const satisfies MuiStyles;
+    resizeHandles: {
+        bottomRight: { width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE, right: 0, bottom: 0 },
+        bottomLeft: { width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE, left: 0, bottom: 0 },
+        topRight: { width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE, right: 0, top: 0 },
+        topLeft: { width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE, left: 0, top: 0 },
+    },
+} as const;
 
 interface PanelProps {
     panelId: UUID;
-    containerRef: RefObject<HTMLDivElement>;
+    containerRef: RefObject<HTMLDivElement | null>;
     snapPreview: SnapRect | null;
     onSnapPreview: (panelId: UUID, preview: SnapRect | null) => void;
     isFocused: boolean;
@@ -145,12 +165,13 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
             bounds="parent"
             minWidth={minWidth}
             minHeight={minHeight}
+            resizeHandleStyles={styles.resizeHandles}
             style={{
                 display: panel.isMinimized ? 'none' : 'block',
                 zIndex: panel.zIndex,
             }}
         >
-            <Box sx={{ ...styles.panel, boxShadow: isFocused ? 14 : 0 }}>
+            <Box sx={(theme) => ({ ...styles.panel, boxShadow: getBoxShadow(theme, isFocused) })}>
                 <PanelHeader
                     panelId={panelId}
                     title={panel.title}
@@ -160,7 +181,13 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
                     isFocused={isFocused}
                     onFocus={handleFocus}
                 />
-                <Box className="panel-content" sx={styles.content}>
+                <Box
+                    className="panel-content"
+                    sx={(theme) => ({
+                        ...styles.content(theme),
+                        border: getBorder(theme, isFocused),
+                    })}
+                >
                     {studyUuid && currentRootNetworkUuid && currentNode
                         ? PANEL_CONTENT_REGISTRY[panel.type]({
                               panelId,

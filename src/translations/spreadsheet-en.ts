@@ -24,6 +24,8 @@ const spreadsheetEn = {
         'Column ID must not contain spaces, special characters or start with a number',
     'spreadsheet/custom_column/error/id_le_60': 'Column ID must be at most 60 characters',
     'spreadsheet/custom_column/error/name_le_60': 'Column name must be at most 60 characters',
+    'spreadsheet/custom_column/error/precision_0': 'Column precision must be at least 0',
+    'spreadsheet/custom_column/error/precision_100': 'Column precision must be at most 100',
     'spreadsheet/custom_column/update_custom_column': 'Update',
     'spreadsheet/custom_column/delete_custom_column': 'Delete',
     'spreadsheet/custom_column/duplicate_custom_column': 'Duplicate',
@@ -154,6 +156,7 @@ const spreadsheetEn = {
 
     //Formula errors
     'spreadsheet/formula/error': '#ERROR',
+    'spreadsheet/formula/error/generic': 'Formula returns an error',
     'spreadsheet/formula/import/disabled': 'Function import is disabled',
     'spreadsheet/formula/createUnit/disabled': 'Function createUnit is disabled',
     'spreadsheet/formula/evaluate/disabled': 'Function evaluate is disabled',
@@ -167,6 +170,8 @@ const spreadsheetEn = {
     'spreadsheet/formula/type/boolean': 'Formula must evaluate to a boolean',
     'spreadsheet/formula/type/enum': 'Formula must evaluate to a string or a number',
     'spreadsheet/formula/type/unknown': 'Unknown column type',
+    'spreadsheet/formula/function-reference/disabled':
+        'Function references are disabled. Functions must be called with parameters',
 
     // Column types
     TEXT: 'Text',

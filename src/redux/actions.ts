@@ -38,7 +38,7 @@ import type {
 } from './reducer';
 import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
-import type { GlobalFilter, GlobalFilters } from '../components/results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
@@ -58,8 +58,8 @@ import {
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
-    FilterType,
     FilterConfig,
+    FilterType,
     LogsPaginationConfig,
     PaginationConfig,
     PccminTab,

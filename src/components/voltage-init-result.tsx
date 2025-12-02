@@ -400,6 +400,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                             onChange={handleGlobalFilterChange}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            preloadedGlobalFilters={globalFilterSpreadsheetState}
                             genericFiltersStrictMode={true}
                         />
                     </Box>

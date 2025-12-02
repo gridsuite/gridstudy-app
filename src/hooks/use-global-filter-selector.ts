@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import { updateGlobalFiltersAction } from '../redux/actions';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 const getGlobalFiltersFromState = (state: AppState, filterType: FilterType): GlobalFilter[] => {
     return state.computationFilters?.[filterType]?.globalFilters || [];

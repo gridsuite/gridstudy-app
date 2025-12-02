@@ -13,7 +13,7 @@ import { RowClassParams } from 'ag-grid-community';
 
 import { LoadflowResultProps } from './load-flow-result.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
@@ -22,7 +22,6 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result, isLoadingResult, columnDefs }) => {

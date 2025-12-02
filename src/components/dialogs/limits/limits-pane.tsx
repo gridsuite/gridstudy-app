@@ -44,11 +44,11 @@ export function LimitsPane({
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
-    const { setValue } = useFormContext();
+    const { getValues, reset } = useFormContext();
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups: OperationalLimitsGroupFormSchema[] = useWatch({
+    const limitsGroups = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const olgEditable: boolean = useWatch({
@@ -85,7 +85,17 @@ export function LimitsPane({
         const resetOLGs: OperationalLimitsGroupFormSchema[] = mapServerLimitsGroupsToFormInfos(
             equipmentToModify?.currentLimits ?? []
         );
-        setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, resetOLGs);
+        const currentValues = getValues();
+        reset(
+            {
+                ...currentValues,
+                [LIMITS]: {
+                    [OPERATIONAL_LIMITS_GROUPS]: resetOLGs,
+                    [ENABLE_OLG_MODIFICATION]: false,
+                },
+            },
+            { keepDefaultValues: true }
+        );
     };
 
     return (
@@ -144,7 +154,7 @@ export function LimitsPane({
                     <Box
                         sx={{
                             display: 'flex',
-                            justifyContent: 'space-between',
+                            alignItems: 'center',
                         }}
                     >
                         <GridSection title="LimitSets" />
@@ -152,9 +162,6 @@ export function LimitsPane({
                             <AddIcon />
                         </IconButton>
                     </Box>
-                </Grid>
-                <Grid container item xs={6.25} />
-                <Grid item xs={4}>
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
                         parentFormName={id}

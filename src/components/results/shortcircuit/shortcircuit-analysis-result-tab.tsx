@@ -33,8 +33,6 @@ import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filt
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { getStoreFields } from '../securityanalysis/security-analysis-result-utils';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;

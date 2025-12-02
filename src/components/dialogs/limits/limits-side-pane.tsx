@@ -225,15 +225,13 @@ export function LimitsSidePane({
 
     return (
         <Box sx={{ p: 2 }}>
+            <LimitsChart
+                limitsGroupFormName={limitsGroupFormName}
+                previousPermanentLimit={permanentCurrentLimitPreviousValue}
+            />
             {name && (
                 <Box>
-                    <Grid
-                        container
-                        justifyContent="flex-start"
-                        alignItems="stretch"
-                        spacing={2}
-                        sx={{ paddingBottom: '15px' }}
-                    >
+                    <Grid container justifyContent="flex-start" alignItems="stretch" spacing={2} sx={{ paddingY: 1 }}>
                         <Grid item xs={4}>
                             <TextInput
                                 name={`${name}.${NAME}`}
@@ -262,15 +260,8 @@ export function LimitsSidePane({
                     <ErrorInput InputField={FieldErrorAlert} name={`${name}.${OLG_IS_DUPLICATE}`} />
                 </Box>
             )}
-            <LimitsPropertiesSideStack name={`${name}.${LIMITS_PROPERTIES}`} disabled={disabled} />
-            <Box>
-                <LimitsChart
-                    limitsGroupFormName={limitsGroupFormName}
-                    previousPermanentLimit={permanentCurrentLimitPreviousValue}
-                />
-            </Box>
 
-            <Box component={`h4`}>
+            <Box component={`h4`} margin={1}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
             <TemporaryLimitsTable
@@ -282,6 +273,7 @@ export function LimitsSidePane({
                 isValueModified={isValueModified}
                 disabled={disabled}
             />
+            <LimitsPropertiesSideStack name={`${name}.${LIMITS_PROPERTIES}`} disabled={disabled} />
         </Box>
     );
 }

@@ -905,7 +905,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.mapEquipments = newMapEquipments;
     });
 
-    builder.addCase(RESET_MAP_EQUIPMENTS, (state, action: ResetMapEquipmentsAction) => {
+    builder.addCase(RESET_MAP_EQUIPMENTS, (state, _action: ResetMapEquipmentsAction) => {
         state.mapEquipments = undefined;
         state.isMapEquipmentsInitialized = false;
     });
@@ -1571,7 +1571,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(
         RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-        (state, action: ResetOneBusShortcircuitAnalysisDiagramAction) => {
+        (state, _action: ResetOneBusShortcircuitAnalysisDiagramAction) => {
             state.oneBusShortCircuitAnalysisDiagram = null;
         }
     );

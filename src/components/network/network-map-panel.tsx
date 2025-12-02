@@ -47,13 +47,13 @@ import {
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
 import { openSLD, showInSpreadsheet } from '../../redux/slices/workspace-slice';
+import { PanelType } from '../workspace/types/workspace.types';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { deleteEquipment } from '../../services/study/network-modifications';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
-import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
@@ -65,12 +65,14 @@ import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import GuidancePopup from './guidance-popup';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { getNominalVoltageColor } from 'utils/colors';
+import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
+import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
+import BranchPopoverContent from 'components/tooltips/branch-popover-content';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -162,11 +164,11 @@ export const NetworkMapPanel = ({
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>();
     const [geoData, setGeoData] = useState<GeoData>();
-    const geoDataRef = useRef<any>();
+    const geoDataRef = useRef<any>(null);
 
     const basicDataReady = mapEquipments && geoData;
 
-    const lineFullPathRef = useRef<boolean>();
+    const lineFullPathRef = useRef<boolean>(null);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
     /*
@@ -178,13 +180,13 @@ export const NetworkMapPanel = ({
         and this position would need to be requested again.
         It will be possible to have a better mechanism after we improved the notification system.
         */
-    const temporaryGeoDataIdsRef = useRef<Set<string>>();
+    const temporaryGeoDataIdsRef = useRef<Set<string>>(null);
 
     const disabled = !isNodeBuilt(currentNode);
     const reloadMapNeeded = useSelector((state: AppState) => state.reloadMapNeeded);
     const freezeMapUpdates = useSelector((state: AppState) => state.freezeMapUpdates);
     const isMapEquipmentsInitialized = useSelector((state: AppState) => state.isMapEquipmentsInitialized);
-    const refIsMapManualRefreshEnabled = useRef<boolean>();
+    const refIsMapManualRefreshEnabled = useRef<boolean>(null);
     refIsMapManualRefreshEnabled.current = networkVisuParams.mapParameters.mapManualRefresh;
     const [firstRendering, setFirstRendering] = useState<boolean>(true);
 
@@ -919,19 +921,6 @@ export const NetworkMapPanel = ({
         );
     }
 
-    const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
-        (elementId, ref) => (
-            <EquipmentPopover
-                studyUuid={studyUuid}
-                anchorEl={ref.current}
-                equipmentId={elementId}
-                equipmentType={EQUIPMENT_TYPES.LINE}
-                loadFlowStatus={loadFlowStatus}
-            />
-        ),
-        [loadFlowStatus, studyUuid]
-    );
-
     const loadMapManually = useCallback(() => {
         if (!isMapEquipmentsInitialized) {
             // load default node map equipments
@@ -955,6 +944,31 @@ export const NetworkMapPanel = ({
         updateMapEquipmentsAndGeoData,
     ]);
 
+    const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
+        (elementId, ref) => {
+            const PopoverContent = EquipmentPopoverMap[EQUIPMENT_TYPES.LINE] || BranchPopoverContent;
+
+            return (
+                <GenericEquipmentPopover
+                    studyUuid={studyUuid}
+                    anchorEl={ref.current}
+                    equipmentId={elementId}
+                    equipmentType={EquipmentType.LINE}
+                    loadFlowStatus={loadFlowStatus}
+                    anchorPosition={undefined}
+                >
+                    {(equipmentInfos: EquipmentInfos) => (
+                        <PopoverContent
+                            equipmentInfos={equipmentInfos}
+                            loadFlowStatus={loadFlowStatus}
+                            equipmentType={EQUIPMENT_TYPES.LINE}
+                        />
+                    )}
+                </GenericEquipmentPopover>
+            );
+        },
+        [loadFlowStatus, studyUuid]
+    );
     const leaveDrawingMode = useCallback(() => {
         // clear the user drawing and go back to simple select.
         networkMapRef.current?.getMapDrawer().deleteAll();
@@ -991,21 +1005,14 @@ export const NetworkMapPanel = ({
         [isInDrawingMode, leaveDrawingMode]
     );
 
-    const openSLDInTheGrid = useCallback(
-        (equipmentId: string, diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION) => {
-            dispatch(openSLD({ id: equipmentId, diagramType }));
-        },
-        [dispatch]
-    );
-
     const handleOpenVoltageLevel = useCallback(
         (vlId: string) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode.value) {
-                openSLDInTheGrid(vlId, DiagramType.VOLTAGE_LEVEL);
+                dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
             }
         },
-        [isInDrawingMode, openSLDInTheGrid]
+        [dispatch, isInDrawingMode]
     );
 
     const getHvdcExtendedEquipmentType = (hvdcType: string): ExtendedEquipmentType | null => {
@@ -1041,6 +1048,7 @@ export const NetworkMapPanel = ({
                     ref={networkMapRef}
                     mapEquipments={mapEquipments}
                     geoData={geoData}
+                    // @ts-ignore
                     updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
                     displayOverlayLoader={!basicDataReady && mapDataLoading}
                     filteredNominalVoltages={filteredNominalVoltages}
@@ -1107,6 +1115,7 @@ export const NetworkMapPanel = ({
                         onDrawEvent(event);
                     }}
                     shouldDisableToolTip={isInDrawingMode.value}
+                    // @ts-ignore
                     getNominalVoltageColor={getNominalVoltageColor}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
@@ -1184,10 +1193,10 @@ export const NetworkMapPanel = ({
             if (!id) {
                 return;
             }
-            const diagramType = isSubstation ? DiagramType.SUBSTATION : DiagramType.VOLTAGE_LEVEL;
-            openSLDInTheGrid(id, diagramType);
+            const panelType = isSubstation ? PanelType.SLD_SUBSTATION : PanelType.SLD_VOLTAGE_LEVEL;
+            dispatch(openSLD({ id, panelType }));
         },
-        [openSLDInTheGrid]
+        [dispatch]
     );
 
     return (

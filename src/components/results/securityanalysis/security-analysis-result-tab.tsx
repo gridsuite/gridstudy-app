@@ -32,7 +32,6 @@ import {
     PaginationType,
     SecurityAnalysisTab,
 } from '../../../types/custom-aggrid-types';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -89,7 +88,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const intl = useIntl();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [tabIndex, setTabIndex] = useState(enableDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
-    const tabIndexRef = useRef<number>();
+    const tabIndexRef = useRef<number>(null);
     tabIndexRef.current = tabIndex;
     const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
@@ -194,7 +193,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setCount(0);
     }, [setResult]);
 
-    const handleChangeNmkType = (event: SelectChangeEvent) => {
+    const handleChangeNmkType = () => {
         dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
         setNmkType(
