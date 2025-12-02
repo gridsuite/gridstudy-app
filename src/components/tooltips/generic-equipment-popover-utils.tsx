@@ -37,7 +37,7 @@ export const renderCommonCharacteristics = (equipmentInfo: any) => (
         <TableRow>
             <TableCell sx={styles.cell} />
 
-            <CellRender label="seriesResistance" isLabel={true} colStyle={styles.cell} />
+            <CellRender label="SeriesResistanceOhm" isLabel={true} colStyle={styles.cell} />
 
             <CellRender value={formatValue(equipmentInfo.r, 2)} isLabel={false} colStyle={styles.cell} />
         </TableRow>
@@ -45,9 +45,9 @@ export const renderCommonCharacteristics = (equipmentInfo: any) => (
         <TableRow>
             <TableCell sx={styles.cell} />
 
-            <CellRender label="seriesReactance" isLabel={true} colStyle={styles.cell} />
+            <CellRender label="SeriesReactanceOhm" isLabel={true} colStyle={styles.cell} />
 
-            <CellRender value={formatValue(equipmentInfo.x, 2)} isLabel={false} colStyle={styles.cell} />
+            <CellRender value={formatValue(equipmentInfo.x, 2)} colStyle={styles.cell} />
         </TableRow>
     </>
 );

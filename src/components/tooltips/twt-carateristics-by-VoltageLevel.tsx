@@ -7,7 +7,7 @@
 
 import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
 import { CellRender } from './cell-render';
-import { styles } from './generic-equipment-popover-utils';
+import { formatValue, styles } from './generic-equipment-popover-utils';
 import { BranchEquipmentInfos } from './equipment-popover-type';
 
 interface TwoCharacteristicsByVoltageLevelProps {
@@ -39,33 +39,39 @@ export const TwoCharacteristicsByVoltageLevel: React.FC<TwoCharacteristicsByVolt
 
                     <TableBody>
                         <TableRow>
-                            <CellRender isLabel label="ID Poste" colStyle={styles.cell} />
-                            <CellRender value={equipmentInfos.voltageLevelId1} colStyle={styles.cell} />
-                            <CellRender value={equipmentInfos.voltageLevelId2} colStyle={styles.cell} />
+                            <CellRender isLabel label="I_(A)" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                            <CellRender value={formatValue(equipmentInfos.i1, 3)} colStyle={styles.cell} />
+                            <CellRender value={formatValue(equipmentInfos.i2, 3)} colStyle={styles.cell} />
                         </TableRow>
 
                         <TableRow>
-                            <CellRender isLabel label="I_(A)" colStyle={styles.cell} />
-                            <CellRender value={equipmentInfos.i1} colStyle={styles.cell} />
-                            <CellRender value={equipmentInfos.i2} colStyle={styles.cell} />
+                            <CellRender isLabel label="activePower" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                            <CellRender value={formatValue(equipmentInfos.p1, 3)} colStyle={styles.cell} />
+                            <CellRender value={formatValue(equipmentInfos.p2, 3)} colStyle={styles.cell} />
                         </TableRow>
 
                         <TableRow>
-                            <CellRender isLabel label="activePower" colStyle={styles.cell} />
-                            <CellRender value={equipmentInfos.p1} colStyle={styles.cell} />
-                            <CellRender value={equipmentInfos.p2} colStyle={styles.cell} />
+                            <CellRender isLabel label="Q (Mvar)" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                            <CellRender value={formatValue(equipmentInfos.q1, 3)} colStyle={styles.cell} />
+                            <CellRender value={formatValue(equipmentInfos.q1, 3)} colStyle={styles.cell} />
                         </TableRow>
 
                         <TableRow>
-                            <CellRender isLabel label="Q (Mvar)" colStyle={styles.cell} />
-                            <CellRender value={equipmentInfos.q1} colStyle={styles.cell} />
-                            <CellRender value={equipmentInfos.q1} colStyle={styles.cell} />
-                        </TableRow>
-
-                        <TableRow>
-                            <CellRender isLabel label="SelectedOperationalLimitGroups" colStyle={styles.cell} />
-                            <CellRender value={''} colStyle={styles.cell} />
-                            <CellRender value={''} colStyle={styles.cell} />
+                            <CellRender
+                                isLabel
+                                label="SelectedOperationalLimitGroups"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
+                            <CellRender
+                                isLabel={true}
+                                label={equipmentInfos?.currentLimits1?.id ?? 'None'}
+                                colStyle={styles.cell}
+                            />
+                            <CellRender
+                                isLabel={true}
+                                label={equipmentInfos?.currentLimits2?.id ?? 'None'}
+                                colStyle={styles.cell}
+                            />
                         </TableRow>
                     </TableBody>
                 </Table>

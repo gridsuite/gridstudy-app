@@ -19,6 +19,8 @@ export interface BranchEquipmentInfos extends EquipmentInfos {
     phaseTapChanger: any;
     currentLimits1: CurrentLimits;
     currentLimits2: CurrentLimits;
+    selectedOperationalLimitsGroup1?: string;
+    selectedOperationalLimitsGroup2?: string;
 }
 
 export type GenericEquipmentInfos = BranchEquipmentInfos;

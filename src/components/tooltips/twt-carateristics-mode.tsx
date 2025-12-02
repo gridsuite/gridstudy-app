@@ -7,7 +7,7 @@
 
 import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
 import { CellRender } from './cell-render';
-import { styles } from './generic-equipment-popover-utils';
+import { formatValue, styles } from './generic-equipment-popover-utils';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
 import { BranchEquipmentInfos } from './equipment-popover-type';
 
@@ -33,11 +33,14 @@ export const TwoCharacteristicsMode: React.FC<TwoCharacteristicsModeProps> = ({ 
     }
 
     if (phase) {
+        const phaseRegulationMode =
+            PHASE_REGULATION_MODES[phase.regulationMode as keyof typeof PHASE_REGULATION_MODES].label;
+
         rows.push({
             tap: phase.tapPosition ?? '-',
-            rho: phase.steps[phase.tapPosition].rho,
-            alpha: phase.tapPosition ?? '-',
-            mode: phase.isRegulating ? phase.regulationMode : PHASE_REGULATION_MODES.OFF.label,
+            rho: '-',
+            alpha: phase.steps[phase.tapPosition].alpha,
+            mode: phase.isRegulating ? phaseRegulationMode : PHASE_REGULATION_MODES.OFF.label,
         });
     }
 
@@ -48,7 +51,7 @@ export const TwoCharacteristicsMode: React.FC<TwoCharacteristicsModeProps> = ({ 
                     <TableHead>
                         <TableRow>
                             <CellRender isLabel label="Tap" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender isLabel label="twtReport" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                            <CellRender isLabel label="Ratio" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                             <CellRender isLabel label="twtAlpha" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                             <CellRender
                                 isLabel
@@ -61,9 +64,9 @@ export const TwoCharacteristicsMode: React.FC<TwoCharacteristicsModeProps> = ({ 
                     <TableBody>
                         {rows.map((r, idx) => (
                             <TableRow key={idx}>
-                                <CellRender value={r.tap} colStyle={styles.cell} />
-                                <CellRender value={r.rho} colStyle={styles.cell} />
-                                <CellRender value={r.alpha} colStyle={styles.cell} />
+                                <CellRender value={formatValue(r.tap, 3)} colStyle={styles.cell} />
+                                <CellRender value={formatValue(r.rho, 3)} colStyle={styles.cell} />
+                                <CellRender value={formatValue(r.alpha, 3)} colStyle={styles.cell} />
                                 <CellRender isLabel label={r.mode} colStyle={styles.cell} />
                             </TableRow>
                         ))}
