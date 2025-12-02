@@ -403,7 +403,7 @@ const VoltageLevelCreationDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 maxWidth={'md'}
-                titleId={overrideTitle ? overrideTitle : 'CreateVoltageLevel'}
+                titleId={overrideTitle || 'CreateVoltageLevel'}
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
