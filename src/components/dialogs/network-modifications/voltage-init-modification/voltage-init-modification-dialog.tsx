@@ -7,7 +7,13 @@
 
 import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
 import { BasicModificationDialog } from '../../commons/basicModificationDialog';
-import { BooleanCellRenderer, DefaultCellRenderer } from '../../../custom-aggrid/cell-renderers';
+import {
+    BooleanCellRenderer,
+    CsvExport,
+    CustomAGGrid,
+    DefaultCellRenderer,
+    type MuiStyles,
+} from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
@@ -24,7 +30,6 @@ import {
     V,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import { CustomAGGrid, CsvExport, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { FetchStatus } from '../../../../services/utils.type';
 import type { ColDef, RowDataUpdatedEvent } from 'ag-grid-community';

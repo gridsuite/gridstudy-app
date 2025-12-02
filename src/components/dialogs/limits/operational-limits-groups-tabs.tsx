@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Tab, Tabs } from '@mui/material';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import { Grid, Tab, Tabs } from '@mui/material';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     LIMITS_PROPERTIES,
     OPERATIONAL_LIMITS_GROUPS,
@@ -15,8 +15,7 @@ import {
 } from '../../utils/field-constants';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
-import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
-import { tabStyles } from 'components/utils/tab-utils';
+import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
 import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
 import { CurrentLimitsData } from 'services/study/network-map.type';
@@ -45,8 +44,11 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         ref
     ) => {
         const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
-        const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
-        const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
+        const [contextMenuCoordinates, setContextMenuCoordinates] = useState<ContextMenuCoordinates>({
+            x: null,
+            y: null,
+            tabIndex: null,
+        });
         const { getValues } = useFormContext();
         const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
         const {
@@ -67,19 +69,29 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         });
 
         const handleOpenMenu = useCallback(
-            (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
+            (event: React.MouseEvent<HTMLElement>, index: number): void => {
+                if (!editable) {
+                    return;
+                }
+                event.preventDefault();
                 event.stopPropagation();
-                setMenuAnchorEl(event.currentTarget);
                 setIndexSelectedLimitSet(index);
-                setActivatedByMenuTabIndex(index);
+                setContextMenuCoordinates({
+                    x: event.clientX,
+                    y: event.clientY,
+                    tabIndex: index,
+                });
             },
-            [setMenuAnchorEl, setIndexSelectedLimitSet, setActivatedByMenuTabIndex]
+            [editable, setIndexSelectedLimitSet]
         );
 
         const handleCloseMenu = useCallback(() => {
-            setMenuAnchorEl(null);
-            setActivatedByMenuTabIndex(null);
-        }, [setMenuAnchorEl, setActivatedByMenuTabIndex]);
+            setContextMenuCoordinates({
+                x: null,
+                y: null,
+                tabIndex: null,
+            });
+        }, [setContextMenuCoordinates]);
 
         useEffect(() => {
             // as long as there are limit sets, one should be selected
@@ -97,12 +109,12 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
 
         const addNewLimitSet = useCallback(() => {
             const formName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
-            const operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
+            const operationalLimitSetGroups: OperationalLimitsGroup[] = getValues(formName);
             let name = 'DEFAULT';
 
             // Try to generate unique name
-            if (operationalLimiSetGroups?.length > 0) {
-                const ids: string[] = operationalLimiSetGroups.map((l) => l.name);
+            if (operationalLimitSetGroups?.length > 0) {
+                const ids: string[] = operationalLimitSetGroups.map((l) => l.name);
                 name = generateUniqueId('DEFAULT', ids);
             }
             prependEmptyOperationalLimitsGroup(name);
@@ -112,38 +124,37 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 
         const handleTabChange = useCallback(
-            (event: React.SyntheticEvent, newValue: number): void => {
+            (_event: React.SyntheticEvent, newValue: number): void => {
                 setIndexSelectedLimitSet(newValue);
             },
             [setIndexSelectedLimitSet]
         );
 
         return (
-            <>
+            <Grid>
                 <Tabs
                     orientation="vertical"
-                    variant="fullWidth"
+                    variant="scrollable"
                     value={indexSelectedLimitSet !== null && indexSelectedLimitSet}
                     onChange={handleTabChange}
-                    sx={tabStyles.listDisplay}
-                    visibleScrollbar
+                    sx={limitsStyles.tabs}
                 >
                     {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
                         <Tab
                             onMouseEnter={() => setHoveredRowIndex(index)}
-                            onMouseLeave={() => setHoveredRowIndex(-1)}
+                            onContextMenu={(e) => handleOpenMenu(e, index)}
                             key={opLg.id + index}
+                            disableRipple
+                            sx={limitsStyles.tabBackground}
                             label={
                                 <OperationalLimitsGroupTabLabel
                                     operationalLimitsGroup={opLg}
-                                    showIconButton={index === hoveredRowIndex || index === activatedByMenuTabIndex}
-                                    editable={!editable}
+                                    showIconButton={editable && index === hoveredRowIndex}
                                     limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
                                     handleOpenMenu={handleOpenMenu}
                                     index={index}
                                 />
                             }
-                            sx={limitsStyles.limitsBackground}
                         />
                     ))}
                 </Tabs>
@@ -151,9 +162,8 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     parentFormName={parentFormName}
                     indexSelectedLimitSet={indexSelectedLimitSet}
                     setIndexSelectedLimitSet={setIndexSelectedLimitSet}
-                    menuAnchorEl={menuAnchorEl}
                     handleCloseMenu={handleCloseMenu}
-                    activatedByMenuTabIndex={activatedByMenuTabIndex}
+                    contextMenuCoordinates={contextMenuCoordinates}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
                     currentLimitsToModify={currentLimitsToModify}
@@ -161,7 +171,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     appendToLimitsGroups={appendToLimitsGroups}
                     removeLimitsGroups={removeLimitsGroups}
                 />
-            </>
+            </Grid>
         );
     }
 );

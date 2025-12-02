@@ -10,7 +10,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Box, Tabs, Tab, Theme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import { selectPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
+import { OverflowableText } from '@gridsuite/commons-ui';
+import { selectOpenPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
 import { closePanel, focusPanel, toggleMinimize } from '../../../redux/slices/workspace-slice';
 import { PanelType } from '../types/workspace.types';
 import type { UUID } from 'node:crypto';
@@ -36,16 +37,43 @@ const styles = {
         },
         '& .MuiSvgIcon-root': { fontSize: 14 },
     },
+    tabLabel: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+    },
+    tabContent: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 0.5,
+        width: 100,
+        overflow: 'hidden',
+    },
+    tabText: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+    tooltip: {
+        maxWidth: '720px',
+    },
 } as const satisfies MuiStyles;
 
 export const WorkspaceDock = memo(() => {
     const dispatch = useDispatch();
-    const allPanels = useSelector(selectPanels);
+    const allPanels = useSelector(selectOpenPanels);
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);
 
     const panels = useMemo(
-        () => allPanels.filter((panel) => panel.type === PanelType.SLD || panel.type === PanelType.NAD),
+        () =>
+            allPanels.filter(
+                (panel) =>
+                    panel.type === PanelType.SLD_VOLTAGE_LEVEL ||
+                    panel.type === PanelType.SLD_SUBSTATION ||
+                    panel.type === PanelType.NAD
+            ),
         [allPanels]
     );
 
@@ -89,9 +117,15 @@ export const WorkspaceDock = memo(() => {
                         onMouseEnter={() => setHoveredTab(panel.id)}
                         onMouseLeave={() => setHoveredTab(null)}
                         label={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                {getPanelConfig(panel.type).icon}
-                                <span>{panel.title}</span>
+                            <Box sx={styles.tabLabel}>
+                                <Box sx={styles.tabContent}>
+                                    {getPanelConfig(panel.type).icon}
+                                    <OverflowableText
+                                        text={panel.title}
+                                        sx={styles.tabText}
+                                        tooltipSx={styles.tooltip}
+                                    />
+                                </Box>
                                 <Box
                                     component="span"
                                     sx={{
