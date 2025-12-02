@@ -7,27 +7,29 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Badge, ListSubheader, Menu } from '@mui/material';
-import { Dataset as DatasetIcon, DatasetOutlined as DatasetDisabled } from '@mui/icons-material';
-import TooltipIconButton, { type TooltipIconButtonProps } from '../../../common/tooltip-icon-button';
+import { Badge, Button, ListSubheader, Menu, Tooltip } from '@mui/material';
+import { Dataset as DatasetIcon } from '@mui/icons-material';
+import { type TooltipIconButtonProps } from '../../../common/tooltip-icon-button';
 import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import type { AppState } from '../../../../redux/reducer';
 import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import PartialLoadingMenuItem from './PartialLoadingMenuItem';
 import { updateSpreadsheetParameters } from '../../../../services/study/spreadsheet';
+import { spreadsheetStyles } from '../../spreadsheet.style';
 
 const styles = {
-    headers: (theme) => ({
+    headers: () => ({
         backgroundColor: 'transparent',
     }),
 } as const satisfies MuiStyles;
 
-export type PartialLoadingMenuButtonProps = Omit<TooltipIconButtonProps, 'tooltip' | 'size' | 'onClick'>;
+type PartialLoadingMenuButtonProps = {
+    disabled?: boolean;
+};
 
-export default function PartialLoadingMenuButton({ disabled, ...props }: Readonly<PartialLoadingMenuButtonProps>) {
+export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialLoadingMenuButtonProps>) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const BtnIcon = disabled ? DatasetDisabled : DatasetIcon;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>(undefined);
 
     const remoteBranchOlg = useSelector(
@@ -116,21 +118,21 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
 
     return (
         <>
-            <TooltipIconButton
-                id="lazy-loading-button"
-                aria-controls={open ? 'lazy-loading-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                tooltip={<FormattedMessage id="spreadsheet/tabs/lazy_loading/toolbar_button_tooltip" />}
-                size="small"
-                disabled={disabled}
-                onClick={handleClick}
-                {...props}
-            >
-                <Badge variant="dot" color="secondary" invisible={!isOptionalData}>
-                    <BtnIcon color={open ? 'action' : 'primary'} />
-                </Badge>
-            </TooltipIconButton>
+            <Badge variant="dot" color="secondary" invisible={!isOptionalData}>
+                <Tooltip title={<FormattedMessage id="spreadsheet/tabs/lazy_loading/toolbar_button_tooltip" />}>
+                    <span>
+                        <Button
+                            sx={spreadsheetStyles.toolbarButton}
+                            size={'small'}
+                            onClick={handleClick}
+                            disabled={disabled}
+                        >
+                            <DatasetIcon />
+                        </Button>
+                    </span>
+                </Tooltip>
+            </Badge>
+
             <Menu
                 id="lazy-loading-menu"
                 open={open}

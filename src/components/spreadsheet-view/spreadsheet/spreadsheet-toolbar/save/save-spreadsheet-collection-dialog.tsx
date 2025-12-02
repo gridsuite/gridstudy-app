@@ -17,6 +17,7 @@ import {
     type IElementCreationDialog,
     type IElementUpdateDialog,
     type MuiStyles,
+    snackWithFallback,
     useSnackMessage,
     type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
@@ -208,10 +209,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                 });
                 setShowElementCreationDialog(false);
             } catch (error) {
-                snackError({
-                    headerId: 'spreadsheet/collection/save/error',
-                    messageTxt: error instanceof Error ? error.message : String(error),
-                });
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/collection/save/error' });
             }
         },
         [selectedConfigs, snackInfo, snackError, nodeAliases]
@@ -234,12 +232,11 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                 });
                 setShowElementCreationDialog(false);
             } catch (error) {
-                snackError({
+                snackWithFallback(snackError, error, {
                     headerId: 'spreadsheet/collection/update/error',
                     headerValues: {
                         item: elementFullPath,
                     },
-                    messageTxt: error instanceof Error ? error.message : String(error),
                 });
             }
         },

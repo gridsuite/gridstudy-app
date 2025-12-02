@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { Box, Button, Tooltip, useTheme } from '@mui/material';
+import { Box, Button, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import {
     GridReadyEvent,
@@ -17,23 +17,33 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import {
+    ComputingType,
+    CustomAGGrid,
+    DefaultCellRenderer,
+    OverflowableText,
+    unitToKiloUnit,
+} from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { CustomAGGrid, unitToKiloUnit, ComputingType } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { openSLD } from '../../../redux/slices/workspace-slice';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterType as AgGridFilterType, FilterConfig } from '../../../types/custom-aggrid-types';
+import { PanelType } from '../../workspace/types/workspace.types';
+import {
+    FilterConfig,
+    FilterType as AgGridFilterType,
+    numericFilterParams,
+    textFilterParams,
+} from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
 import { resultsStyles } from '../common/utils';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
@@ -47,7 +57,6 @@ interface ShortCircuitAnalysisResultProps {
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     onFilter: () => void;
     filters: FilterConfig[];
-    openVoltageLevelDiagram: (id: string) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -92,28 +101,26 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     onRowDataUpdated,
     onFilter,
     filters,
-    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
+    const dispatch = useDispatch();
 
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value } = props || {};
             const onClick = () => {
-                openVoltageLevelDiagram(value);
+                dispatch(openSLD({ id: value, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
             };
             if (value) {
                 return (
-                    <Tooltip title={value}>
-                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
-                            {value}
-                        </Button>
-                    </Tooltip>
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
                 );
             }
         },
-        [openVoltageLevelDiagram]
+        [dispatch]
     );
 
     const getEnumLabel = useCallback(
@@ -143,16 +150,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             type: AgGridFilterType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
             updateFilterCallback: onFilter,
-        };
-
-        const textFilterParams = {
-            dataType: FILTER_DATA_TYPES.TEXT,
-            comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-        };
-
-        const numericFilterParams = {
-            dataType: FILTER_DATA_TYPES.NUMBER,
-            comparators: Object.values(FILTER_NUMBER_COMPARATORS),
         };
 
         const inputFilterParams = (

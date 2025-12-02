@@ -9,7 +9,7 @@ import { AppState } from '../../../redux/reducer';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from '../types/node-alias.type';
 import { updateNodeAliases as updateNodeAliasesInStore } from 'redux/actions';
 
@@ -30,10 +30,7 @@ export const useNodeAliases = () => {
                 .then((_nodeAliases) => dispatch(updateNodeAliasesInStore(_nodeAliases)))
                 .catch((error) => {
                     dispatch(updateNodeAliasesInStore([]));
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'nodeAliasesRetrievingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'nodeAliasesRetrievingError' });
                 });
         } else {
             dispatch(updateNodeAliasesInStore([]));
@@ -44,10 +41,7 @@ export const useNodeAliases = () => {
         (newNodeAliases: NodeAlias[]) => {
             if (studyUuid) {
                 _updateNodeAlias(studyUuid, newNodeAliases).catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'nodeAliasesUpdateError',
-                    })
+                    snackWithFallback(snackError, error, { headerId: 'nodeAliasesUpdateError' })
                 );
             }
         },

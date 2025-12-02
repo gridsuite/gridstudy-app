@@ -24,6 +24,8 @@ const spreadsheetFr = {
         'Un ID de colonne ne doit contenir ni espace ni caractère spécial et ne doit pas commencer par un chiffre',
     'spreadsheet/custom_column/error/id_le_60': 'Un ID de colonne ne peut dépasser 60 caractères',
     'spreadsheet/custom_column/error/name_le_60': 'Un nom de colonne ne peut dépasser 60 caractères',
+    'spreadsheet/custom_column/error/precision_0': 'La précision de la colonne doit être au moins 0',
+    'spreadsheet/custom_column/error/precision_100': 'La précision de la colonne ne peut dépasser 100',
     'spreadsheet/custom_column/update_custom_column': 'Modifier',
     'spreadsheet/custom_column/delete_custom_column': 'Supprimer',
     'spreadsheet/custom_column/duplicate_custom_column': 'Dupliquer',
@@ -45,7 +47,12 @@ const spreadsheetFr = {
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/filter': 'En tant que filtre',
     'spreadsheet/save/options/collection': 'Collection',
-    'spreadsheet/save/options/csv': 'Export CSV',
+    'spreadsheet/save/options/csv/export': 'Export CSV',
+    'spreadsheet/save/options/csv/clipboard': 'Copie CSV',
+    'spreadsheet/save/options/csv/clipboard/success':
+        'Le contenu de la feuille a été copié dans le presse-papier système',
+    'spreadsheet/save/options/csv/clipboard/error':
+        "Le contenu de la feuille n'a pas pu être copié dans le presse-papier système",
     'spreadsheet/save/dialog_title': 'Enregistrer un modèle de tableur',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Enregistrer une collection de tableurs',
     'spreadsheet/save/error_message': 'Une erreur est survenue lors de la création du modèle de tableur',
@@ -153,6 +160,25 @@ const spreadsheetFr = {
     'spreadsheet/calculation/average_abbrev': 'Moy',
     'spreadsheet/calculation/min_abbrev': 'Min',
     'spreadsheet/calculation/max_abbrev': 'Max',
+
+    //Formula errors
+    'spreadsheet/formula/error': '#ERREUR',
+    'spreadsheet/formula/error/generic': 'La formule renvoie une erreur',
+    'spreadsheet/formula/import/disabled': 'La fonction import est désactivée',
+    'spreadsheet/formula/createUnit/disabled': 'La fonction createUnit est désactivée',
+    'spreadsheet/formula/evaluate/disabled': 'La fonction evaluate est désactivée',
+    'spreadsheet/formula/parse/disabled': 'La fonction parse est désactivée',
+    'spreadsheet/formula/simplify/disabled': 'La fonction simplify est désactivée',
+    'spreadsheet/formula/derivative/disabled': 'La fonction derivative est désactivée',
+    'spreadsheet/formula/compile/disabled': 'La fonction compile est désactivée',
+    'spreadsheet/formula/help/disabled': 'La fonction help est désactivée',
+    'spreadsheet/formula/length/error': 'La fonction length attend une donnée de type tableau ou objet',
+    'spreadsheet/formula/type/number': 'La formule doit exprimer une donnée numérique',
+    'spreadsheet/formula/type/boolean': 'La formule doit exprimer une donnée booléenne',
+    'spreadsheet/formula/type/enum': 'La formule doit exprimer une donnée textuelle ou numérique',
+    'spreadsheet/formula/type/unknown': 'Type de donnée inconnu',
+    'spreadsheet/formula/function-reference/disabled':
+        'Les références de fonctions sont désactivées, elles doivent être appelées avec des paramètres',
 
     // Column types
     TEXT: 'Texte',

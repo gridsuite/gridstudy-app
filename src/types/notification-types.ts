@@ -36,6 +36,7 @@ export enum NotificationType {
     SUBTREE_MOVED = 'subtreeMoved',
     SUBTREE_CREATED = 'subtreeCreated',
     NODES_COLUMN_POSITION_CHANGED = 'nodesColumnPositionsChanged',
+    NETWORK_EXPORT_FINISHED = 'networkExportFinished',
     // Modifications
     MODIFICATIONS_CREATION_IN_PROGRESS = 'creatingInProgress',
     MODIFICATIONS_UPDATING_IN_PROGRESS = 'updatingInProgress',
@@ -510,6 +511,13 @@ interface PccMinResultEventDataHeaders extends ComputationResultEventDataHeaders
 interface PccMinFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
     updateType: NotificationType.PCC_MIN_FAILED;
 }
+interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NETWORK_EXPORT_FINISHED;
+    userId: string;
+    exportUuid: UUID;
+    error: string | null;
+}
+
 // Payloads
 export interface DeletedEquipment {
     equipmentId: string;
@@ -848,6 +856,11 @@ export interface PccMinStatusEventData {
     headers: PccMinStatusEventDataHeaders;
     payload: undefined;
 }
+export interface ExportNetworkEventData {
+    headers: ExportNetworkEventDataHeaders;
+    payload: undefined;
+}
+
 export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyEventData, 'payload'> {
     headers: SpreadsheetParametersUpdatedDataHeaders;
     /**
@@ -909,6 +922,13 @@ export function isNodeBuildStatusUpdatedNotification(notif: unknown): notif is N
     );
 }
 
+export function isShortCircuitResultNotification(notif: unknown): notif is ShortCircuitAnalysisResultEventData {
+    return (
+        (notif as ShortCircuitAnalysisResultEventData).headers?.updateType ===
+        NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT
+    );
+}
+
 export function isOneBusShortCircuitResultNotification(
     notif: unknown
 ): notif is OneBusShortCircuitAnalysisResultEventData {
@@ -958,6 +978,10 @@ export function isNodeEditedNotification(notif: unknown): notif is NodeEditedEve
 }
 export function isNodSubTreeCreatedNotification(notif: unknown): notif is SubtreeCreatedEventData {
     return (notif as SubtreeCreatedEventData).headers?.updateType === NotificationType.SUBTREE_CREATED;
+}
+
+export function isExportNetworkNotification(notif: unknown): notif is ExportNetworkEventData {
+    return (notif as ExportNetworkEventData).headers?.updateType === NotificationType.NETWORK_EXPORT_FINISHED;
 }
 
 export function isContainingNodesInformationNotification(notif: unknown): notif is
@@ -1138,7 +1162,8 @@ export type StudyUpdateEventData =
     | StateEstimationStatusEventData
     | PccMinResultEventData
     | PccMinFailedEventData
-    | PccMinStatusEventData;
+    | PccMinStatusEventData
+    | ExportNetworkEventData;
 
 export type StudyUpdateNotification = {
     eventData: StudyUpdateEventData;

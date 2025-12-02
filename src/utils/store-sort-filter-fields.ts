@@ -59,3 +59,9 @@ export const STATEESTIMATION_RESULT_SORT_STORE = 'stateEstimationResult';
 export const STATEESTIMATION_QUALITY_CRITERION = 'stateEstimationQualityCriterion';
 export const STATEESTIMATION_QUALITY_PER_REGION = 'stateEstimationQualityPerRegion';
 export const STATEESTIMATION_RESULT = 'stateEstimationResult';
+
+//pccMin result store fields
+export const PCCMIN_ANALYSIS_RESULT_STORE_FIELD = 'pccminAnalysisResultFilter';
+export const PCCMIN_ANALYSIS_RESULT_SORT_STORE = 'pccminAnalysisResult';
+export const PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD = 'pccminAnalysisPagination';
+export const PCCMIN_RESULT = 'pccMinResults';

@@ -6,7 +6,7 @@
  */
 
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
+import { INVALID_COMPUTATION_OPACITY } from 'utils/colors';
 
 export const styles = {
     divDiagram: {
@@ -80,11 +80,12 @@ export const styles = {
             pointerEvents: 'none',
         },
     },
-    divDiagramInvalid: {
-        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-voltage polygon, & .sld-angle polygon': {
-            opacity: INVALID_LOADFLOW_OPACITY,
-        },
-        '& .sld-active-power text, & .sld-reactive-power text, & .sld-current-value text, & .sld-permanent-limit-percentage text, & .sld-voltage text, & .sld-angle text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info':
+    divDiagramLoadflowInvalid: {
+        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-voltage polygon, & .sld-angle polygon, & .sld-consumption-sum polygon, & .sld-production-sum polygon':
+            {
+                opacity: INVALID_COMPUTATION_OPACITY,
+            },
+        '& .sld-active-power text, & .sld-reactive-power text, & .sld-voltage text, & .sld-angle text, & .sld-consumption-sum text, & .sld-production-sum text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info, & .sld-consumption-sum.sld-bus-legend-info, & .sld-production-sum.sld-bus-legend-info':
             {
                 fill: '#787F81',
             },
@@ -101,6 +102,14 @@ export const styles = {
             {
                 animation: 'none !important',
             },
+    },
+    divDiagramShortCircuitInvalid: {
+        '& .sld-icc polygon': {
+            opacity: INVALID_COMPUTATION_OPACITY,
+        },
+        '& .sld-icc.sld-bus-legend-info': {
+            fill: '#787F81',
+        },
     },
     hideLabels: {
         '& .nad-text-nodes': {

@@ -29,7 +29,6 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     ComputingStatusParameters,
-    DiagramGridLayoutConfig,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
@@ -44,6 +43,8 @@ import {
     LOADFLOW_RESULT_STORE_FIELD,
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
+    PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
+    PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
@@ -53,7 +54,6 @@ import {
     SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
-import { StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
@@ -67,12 +67,12 @@ import {
     FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
+    PccminTab,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
     SortConfig,
 } from '../types/custom-aggrid-types';
-import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
@@ -117,8 +117,6 @@ export type AppActions =
     | AddNotificationAction
     | RemoveNotificationByNodeAction
     | SetModificationsInProgressAction
-    | OpenDiagramAction
-    | OpenNadListAction
     | SetComputingStatusAction
     | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
@@ -780,18 +778,6 @@ export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     };
 }
 
-export const SET_TOGGLE_OPTIONS = 'SET_TOGGLE_OPTIONS';
-export type SetToggleOptionsAction = Readonly<Action<typeof SET_TOGGLE_OPTIONS>> & {
-    toggleOptions: StudyDisplayMode[];
-};
-
-export function setToggleOptions(toggleOptions: StudyDisplayMode[]): SetToggleOptionsAction {
-    return {
-        type: SET_TOGGLE_OPTIONS,
-        toggleOptions: toggleOptions,
-    };
-}
-
 export const SET_MONO_ROOT_STUDY = 'SET_MONO_ROOT_STUDY';
 export type SetMonoRootStudyAction = Readonly<Action<typeof SET_MONO_ROOT_STUDY>> & {
     isMonoRootStudy: boolean;
@@ -849,34 +835,6 @@ export function setModificationsInProgress(isModificationsInProgress: boolean): 
     return {
         type: SET_MODIFICATIONS_IN_PROGRESS,
         isModificationsInProgress: isModificationsInProgress,
-    };
-}
-
-export const OPEN_DIAGRAM = 'OPEN_DIAGRAM';
-export type OpenDiagramAction = Readonly<Action<typeof OPEN_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction {
-    return {
-        type: OPEN_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
-export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
-    name: string;
-    ids: string[];
-};
-
-export function openNadList(name: string, ids: string[]): OpenNadListAction {
-    return {
-        type: OPEN_NAD_LIST,
-        name: name,
-        ids: ids,
     };
 }
 
@@ -957,10 +915,10 @@ export function setOptionalServices(optionalServices: IOptionalService[]): SetOp
 }
 
 export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type SetOneBusShortcircuitAnalysisDiagramAction = Readonly<
-    Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
-> &
-    OneBusShortCircuitAnalysisDiagram;
+export type SetOneBusShortcircuitAnalysisDiagramAction = Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM> &
+    OneBusShortCircuitAnalysisDiagram & {
+        [key: string]: any;
+    };
 export function setOneBusShortcircuitAnalysisDiagram(
     diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'],
     studyUuid: OneBusShortCircuitAnalysisDiagram['studyUuid'],
@@ -977,9 +935,11 @@ export function setOneBusShortcircuitAnalysisDiagram(
 }
 
 export const RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type ResetOneBusShortcircuitAnalysisDiagramAction = Readonly<
-    Action<typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
->;
+export type ResetOneBusShortcircuitAnalysisDiagramAction = Action<
+    typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM
+> & {
+    [key: string]: any;
+};
 export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircuitAnalysisDiagramAction {
     return {
         type: RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
@@ -1092,6 +1052,23 @@ export function setShortcircuitAnalysisResultFilter(
     };
 }
 
+export const PCCMIN_ANALYSIS_RESULT_FILTER = 'PCCMIN_ANALYSIS_RESULT_FILTER';
+export type PccminAnalysisResultFilterAction = Readonly<Action<typeof PCCMIN_ANALYSIS_RESULT_FILTER>> & {
+    filterTab: keyof AppState[typeof PCCMIN_ANALYSIS_RESULT_STORE_FIELD];
+    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
+};
+
+export function setPccminAnalysisResultFilter(
+    filterTab: keyof AppState[typeof PCCMIN_ANALYSIS_RESULT_STORE_FIELD],
+    pccminAnalysisResultFilter: FilterConfig[]
+): PccminAnalysisResultFilterAction {
+    return {
+        type: PCCMIN_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: pccminAnalysisResultFilter,
+    };
+}
+
 export const DYNAMIC_SIMULATION_RESULT_FILTER = 'DYNAMIC_SIMULATION_RESULT_FILTER';
 export type DynamicSimulationResultFilterAction = Readonly<Action<typeof DYNAMIC_SIMULATION_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
@@ -1188,6 +1165,32 @@ export type ResetShortcircuitAnalysisPaginationAction = Readonly<Action<typeof R
 export function resetShortcircuitAnalysisPagination(): ResetShortcircuitAnalysisPaginationAction {
     return {
         type: RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
+    };
+}
+
+export const RESET_PCCMIN_ANALYSIS_PAGINATION = 'RESET_PCCMIN_ANALYSIS_PAGINATION';
+export type ResetPccminAnalysisPaginationAction = Readonly<Action<typeof RESET_PCCMIN_ANALYSIS_PAGINATION>>;
+
+export function resetPccminAnalysisPagination(): ResetPccminAnalysisPaginationAction {
+    return {
+        type: RESET_PCCMIN_ANALYSIS_PAGINATION,
+    };
+}
+
+export const PCCMIN_ANALYSIS_RESULT_PAGINATION = 'PCCMIN_ANALYSIS_RESULT_PAGINATION';
+export type PccminAnalysisResultPaginationAction = Readonly<Action<typeof PCCMIN_ANALYSIS_RESULT_PAGINATION>> & {
+    paginationTab: PccminTab;
+    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: PaginationConfig;
+};
+
+export function setPccminAnalysisResultPagination(
+    paginationTab: PccminTab,
+    pccminAnalysisPagination: PaginationConfig
+): PccminAnalysisResultPaginationAction {
+    return {
+        type: PCCMIN_ANALYSIS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: pccminAnalysisPagination,
     };
 }
 
@@ -1511,27 +1514,6 @@ export type ResetAllSpreadsheetGlobalFiltersAction = Readonly<Action<typeof RESE
 export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
-    };
-}
-
-export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
-export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
-
-export function resetDiagramEvent(): ResetDiagramEventAction {
-    return {
-        type: RESET_DIAGRAM_EVENT,
-    };
-}
-
-export const SET_DIAGRAM_GRID_LAYOUT = 'SET_DIAGRAM_GRID_LAYOUT';
-export type SetDiagramGridLayoutAction = Readonly<Action<typeof SET_DIAGRAM_GRID_LAYOUT>> & {
-    diagramGridLayout: DiagramGridLayoutConfig;
-};
-
-export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig): SetDiagramGridLayoutAction {
-    return {
-        type: SET_DIAGRAM_GRID_LAYOUT,
-        diagramGridLayout: diagramGridLayout,
     };
 }
 

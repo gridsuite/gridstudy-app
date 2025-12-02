@@ -13,6 +13,7 @@ import {
     type IElementUpdateDialog,
     type NewFilterType,
     saveFilter,
+    snackWithFallback,
     useSnackMessage,
     type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
@@ -26,7 +27,7 @@ import { useIntl } from 'react-intl';
 
 export interface SaveNamingFilterDialogProps {
     open: UseStateBooleanReturn;
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     tableDefinition: SpreadsheetTabDefinition;
 }
 
@@ -75,9 +76,8 @@ export default function SaveNamingFilterDialog({
                 .then(() => {
                     snackInfo({ messageTxt: intl.formatMessage({ id: 'FilterCreationSuccess' }) });
                 })
-                .catch((err) => {
-                    console.error('Failed to create filter', err);
-                    snackError({ messageTxt: intl.formatMessage({ id: 'FilterCreationError' }) });
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'FilterCreationError' });
                 });
         },
         [getFilterFromGrid, snackInfo, snackError, intl]
@@ -93,9 +93,8 @@ export default function SaveNamingFilterDialog({
                 .then(() => {
                     snackInfo({ messageTxt: intl.formatMessage({ id: 'FilterUpdateSuccess' }) });
                 })
-                .catch((err) => {
-                    console.error('Failed to update filter', err);
-                    snackError({ messageTxt: intl.formatMessage({ id: 'FilterUpdateError' }) });
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'FilterUpdateError' });
                 });
         },
         [getFilterFromGrid, snackInfo, snackError, intl]

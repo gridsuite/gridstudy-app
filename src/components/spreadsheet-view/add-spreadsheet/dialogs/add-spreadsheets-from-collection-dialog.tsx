@@ -13,6 +13,7 @@ import {
     ElementType,
     PopupConfirmationDialog,
     RadioInput,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -84,8 +85,7 @@ export default function AddSpreadsheetsFromCollectionDialog({ open }: Readonly<D
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_collection',
                     });
                 });

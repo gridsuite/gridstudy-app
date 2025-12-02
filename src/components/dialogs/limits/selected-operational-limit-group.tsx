@@ -10,7 +10,7 @@ import { Box } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { APPLICABILITY } from '../../network/constants';
 import { useIntl } from 'react-intl';
-import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
@@ -29,7 +29,7 @@ export const SelectedOperationalLimitGroup = ({
     previousValue,
     isABranchModif,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
-    const optionsValues: OperationalLimitsGroupFormInfos[] = useWatch({
+    const optionsValues = useWatch({
         name: optionsFormName,
     });
     const intl = useIntl();
@@ -38,12 +38,12 @@ export const SelectedOperationalLimitGroup = ({
         const finalOptions: string[] = optionsValues
             ? optionsValues
                   .filter(
-                      (optionObj: OperationalLimitsGroupFormInfos) =>
+                      (optionObj: OperationalLimitsGroupFormSchema) =>
                           optionObj.applicability &&
                           (optionObj.applicability === filteredApplicability ||
                               optionObj.applicability === APPLICABILITY.EQUIPMENT.id)
                   )
-                  .map((filteredoptionObj: OperationalLimitsGroupFormInfos) => filteredoptionObj.name)
+                  .map((filteredoptionObj: OperationalLimitsGroupFormSchema) => filteredoptionObj.name)
                   .filter((id: string) => id != null)
             : [];
         if (isABranchModif) {

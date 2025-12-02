@@ -98,11 +98,7 @@ import {
     type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
     type NodeSelectionForCopyAction,
-    OPEN_DIAGRAM,
-    OPEN_NAD_LIST,
     OPEN_STUDY,
-    type OpenDiagramAction,
-    type OpenNadListAction,
     type OpenStudyAction,
     type ParameterizedComputingType,
     REMOVE_COLUMN_DEFINITION,
@@ -124,7 +120,6 @@ import {
     REORDER_TABLE_DEFINITIONS,
     type ReorderTableDefinitionsAction,
     RESET_ALL_SPREADSHEET_GS_FILTERS,
-    RESET_DIAGRAM_EVENT,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_COMPUTATION,
@@ -134,8 +129,8 @@ import {
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
     RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
+    RESET_PCCMIN_ANALYSIS_PAGINATION,
     type ResetAllSpreadsheetGlobalFiltersAction,
-    type ResetDiagramEventAction,
     type ResetEquipmentsAction,
     type ResetEquipmentsByTypesAction,
     type ResetEquipmentsPostComputationAction,
@@ -145,6 +140,7 @@ import {
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
     ResetShortcircuitAnalysisPaginationAction,
+    ResetPccminAnalysisPaginationAction,
     SAVE_SPREADSHEET_GS_FILTER,
     type SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
@@ -170,22 +166,18 @@ import {
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
     SET_COMPUTING_STATUS_INFOS,
-    SET_DIAGRAM_GRID_LAYOUT,
     SET_DIRTY_COMPUTATION_PARAMETERS,
     SET_LAST_COMPLETED_COMPUTATION,
-    SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
     SET_MONO_ROOT_STUDY,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-    SET_OPEN_MAP,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
     SET_RELOAD_MAP_NEEDED,
     SET_ROOT_NETWORK_INDEXATION_STATUS,
     SET_ROOT_NETWORKS,
     SET_SPREADSHEET_FETCHING,
-    SET_TOGGLE_OPTIONS,
     SetActiveSpreadsheetTabAction,
     SetAddedSpreadsheetTabAction,
     type SetAppTabIndexAction,
@@ -193,26 +185,26 @@ import {
     type SetComputationStartingAction,
     type SetComputingStatusAction,
     type SetComputingStatusParametersAction,
-    type SetDiagramGridLayoutAction,
     type SetDirtyComputationParametersAction,
     type SetLastCompletedComputationAction,
-    type SetModificationsDrawerOpenAction,
     type SetModificationsInProgressAction,
     type SetMonoRootStudyAction,
     type SetOneBusShortcircuitAnalysisDiagramAction,
     type ResetOneBusShortcircuitAnalysisDiagramAction,
-    type SetOpenMapAction,
     type SetOptionalServicesAction,
     type SetParamsLoadedAction,
     type SetReloadMapNeededAction,
     type SetRootNetworkIndexationStatusAction,
     type SetRootNetworksAction,
     SetSpreadsheetFetchingAction,
-    type SetToggleOptionsAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
     type ShortcircuitAnalysisResultFilterAction,
     ShortcircuitAnalysisResultPaginationAction,
+    PCCMIN_ANALYSIS_RESULT_FILTER,
+    PCCMIN_ANALYSIS_RESULT_PAGINATION,
+    type PccminAnalysisResultFilterAction,
+    PccminAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
@@ -243,10 +235,8 @@ import {
     getLocalStorageLanguage,
     getLocalStorageSyncEnabled,
     getLocalStorageTheme,
-    getLocalStorageToggleOptions,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
-    saveLocalStorageToggleOptions,
 } from './session-storage/local-storage';
 import {
     PARAM_COMPUTED_LANGUAGE,
@@ -278,6 +268,10 @@ import {
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     ONE_BUS,
+    PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
+    PCCMIN_ANALYSIS_RESULT_SORT_STORE,
+    PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
+    PCCMIN_RESULT,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
@@ -307,7 +301,7 @@ import {
 import type { UUID } from 'node:crypto';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { Entries, ValueOf } from 'type-fest';
-import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
+import { CopyType } from '../components/network-modification.type';
 import {
     CurrentTreeNode,
     NetworkModificationNodeData,
@@ -328,6 +322,8 @@ import {
     FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
+    PCCMIN_ANALYSIS_TABS,
+    PccminTab,
     SECURITY_ANALYSIS_TABS,
     SecurityAnalysisTab,
     SENSITIVITY_ANALYSIS_TABS,
@@ -337,13 +333,10 @@ import {
     SortConfig,
     SortWay,
 } from '../types/custom-aggrid-types';
-import { DiagramParams, DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
-import { Layouts } from 'react-grid-layout';
-import { type DiagramConfigPosition } from '../services/explore';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
@@ -466,56 +459,11 @@ export type TableSort = {
     [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
     [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
     [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
+    [PCCMIN_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
 };
 export type TableSortKeysType = keyof TableSort;
 
 export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
-
-export enum DiagramEventType {
-    CREATE = 'create',
-    REMOVE = 'remove',
-}
-
-type DiagramEventBase = {
-    diagramType: DiagramType;
-    eventType: DiagramEventType;
-};
-
-type RemoveDiagramEvent = DiagramEventBase & {
-    eventType: DiagramEventType.REMOVE;
-    diagramUuid: UUID;
-};
-
-type CreateDiagramEvent = DiagramEventBase & {
-    eventType: DiagramEventType.CREATE;
-};
-
-type CreateVoltageLevelSLDDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.VOLTAGE_LEVEL;
-    voltageLevelId: string;
-};
-
-type CreateSubstationSLDDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.SUBSTATION;
-    substationId: string;
-};
-
-type CreateNADDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.NETWORK_AREA_DIAGRAM;
-    nadConfigUuid: UUID | undefined;
-    filterUuid: UUID | undefined;
-    name: string;
-    voltageLevelIds: string[];
-    voltageLevelToExpandIds: string[];
-    voltageLevelToOmitIds: string[];
-    positions: DiagramConfigPosition[];
-};
-
-export type DiagramEvent =
-    | RemoveDiagramEvent
-    | CreateVoltageLevelSLDDiagramEvent
-    | CreateSubstationSLDDiagramEvent
-    | CreateNADDiagramEvent;
 
 export type NadNodeMovement = {
     diagramId: UUID;
@@ -558,13 +506,7 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
-export interface DiagramGridLayoutConfig {
-    gridLayouts: Layouts;
-    params: DiagramParams[];
-}
-
 export type LogsPaginationState = Record<string, LogsPaginationConfig>;
-
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -597,7 +539,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
-    latestDiagramEvent: DiagramEvent | undefined;
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
     isExplorerDrawerOpen: boolean;
@@ -636,6 +577,9 @@ export interface AppState extends CommonStoreState, AppConfigState {
         [ONE_BUS]: FilterConfig[];
         [ALL_BUSES]: FilterConfig[];
     };
+    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: {
+        [PCCMIN_RESULT]: FilterConfig[];
+    };
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: FilterConfig[];
     };
@@ -646,16 +590,15 @@ export interface AppState extends CommonStoreState, AppConfigState {
     [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SecurityAnalysisTab, PaginationConfig>;
     [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SensitivityAnalysisTab, PaginationConfig>;
     [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
+    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: Record<PccminTab, PaginationConfig>;
+
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
     [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationState;
 
     calculationSelections: Record<UUID, CalculationType[]>;
-    diagramGridLayout: DiagramGridLayoutConfig;
-    toggleOptions: StudyDisplayMode[];
     highlightedModificationUuid: UUID | null;
-    mapOpen: boolean;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -775,7 +718,6 @@ const initialState: AppState = {
     notificationIdList: [],
     isModificationsInProgress: false,
     isMonoRootStudy: true,
-    latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
     reloadMapNeeded: true,
@@ -802,11 +744,6 @@ const initialState: AppState = {
             networkComponents: false,
         },
     },
-    diagramGridLayout: {
-        gridLayouts: {},
-        params: [],
-    },
-    toggleOptions: [StudyDisplayMode.TREE],
     highlightedModificationUuid: null,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
@@ -865,6 +802,10 @@ const initialState: AppState = {
         [ONE_BUS]: [],
         [ALL_BUSES]: [],
     },
+
+    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: {
+        [PCCMIN_RESULT]: [],
+    },
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: [],
     },
@@ -883,6 +824,9 @@ const initialState: AppState = {
     [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: {
         [ONE_BUS]: { ...DEFAULT_PAGINATION },
         [ALL_BUSES]: { ...DEFAULT_PAGINATION },
+    },
+    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: {
+        [PCCMIN_RESULT]: { ...DEFAULT_PAGINATION },
     },
     [STATEESTIMATION_RESULT_STORE_FIELD]: {
         [STATEESTIMATION_QUALITY_CRITERION]: [],
@@ -946,6 +890,9 @@ const initialState: AppState = {
             [ONE_BUS]: [{ colId: 'current', sort: SortWay.DESC }],
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
+        [PCCMIN_ANALYSIS_RESULT_SORT_STORE]: {
+            [PCCMIN_RESULT]: [{ colId: 'busId', sort: SortWay.ASC }],
+        },
         [STATEESTIMATION_RESULT_SORT_STORE]: {
             [STATEESTIMATION_QUALITY_CRITERION]: [
                 {
@@ -990,8 +937,6 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
-        // Load toggleOptions for this study
-        state.toggleOptions = getLocalStorageToggleOptions(state.studyUuid);
         state.syncEnabled = getLocalStorageSyncEnabled(state.studyUuid);
     });
 
@@ -1023,7 +968,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.mapEquipments = newMapEquipments;
     });
 
-    builder.addCase(RESET_MAP_EQUIPMENTS, (state, action: ResetMapEquipmentsAction) => {
+    builder.addCase(RESET_MAP_EQUIPMENTS, (state, _action: ResetMapEquipmentsAction) => {
         state.mapEquipments = undefined;
         state.isMapEquipmentsInitialized = false;
     });
@@ -1409,20 +1354,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
 
-    builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, _action: SetModificationsDrawerOpenAction) => {
-        // remove EVENT_SCENARIO from toggleOptions if present and add MODIFICATIONS if not present
-        const optionsSet = new Set(state.toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO));
-        optionsSet.add(StudyDisplayMode.MODIFICATIONS);
-        state.toggleOptions = Array.from(optionsSet);
-    });
-
-    builder.addCase(SET_TOGGLE_OPTIONS, (state, action: SetToggleOptionsAction) => {
-        state.toggleOptions = action.toggleOptions;
-        if (state.studyUuid) {
-            saveLocalStorageToggleOptions(state.studyUuid, state.toggleOptions);
-        }
-    });
-
     builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {
         state.centerOnSubstation = action.centerOnSubstation;
     });
@@ -1443,50 +1374,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_MONO_ROOT_STUDY, (state, action: SetMonoRootStudyAction) => {
         state.isMonoRootStudy = action.isMonoRootStudy;
-    });
-
-    builder.addCase(OPEN_DIAGRAM, (state, action: OpenDiagramAction) => {
-        if (action.svgType === DiagramType.SUBSTATION) {
-            state.latestDiagramEvent = {
-                diagramType: action.svgType,
-                eventType: DiagramEventType.CREATE,
-                substationId: action.id as UUID,
-            };
-        } else if (action.svgType === DiagramType.VOLTAGE_LEVEL) {
-            state.latestDiagramEvent = {
-                diagramType: action.svgType,
-                eventType: DiagramEventType.CREATE,
-                voltageLevelId: action.id as UUID,
-            };
-        } else if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            state.latestDiagramEvent = {
-                diagramType: action.svgType,
-                eventType: DiagramEventType.CREATE,
-                name: '',
-                nadConfigUuid: undefined,
-                filterUuid: undefined,
-                voltageLevelIds: [action.id as UUID],
-                voltageLevelToExpandIds: [],
-                voltageLevelToOmitIds: [],
-                positions: [],
-            };
-        }
-    });
-
-    builder.addCase(OPEN_NAD_LIST, (state, action: OpenNadListAction) => {
-        const uniqueIds = [...new Set(action.ids)];
-
-        state.latestDiagramEvent = {
-            diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
-            eventType: DiagramEventType.CREATE,
-            name: action.name,
-            nadConfigUuid: undefined,
-            filterUuid: undefined,
-            voltageLevelIds: uniqueIds as UUID[],
-            voltageLevelToExpandIds: [],
-            voltageLevelToOmitIds: [],
-            positions: [],
-        };
     });
 
     builder.addCase(ADD_SPREADSHEET_LOADED_NODES_IDS, (state, action: AddSpreadsheetLoadedNodesIdsAction) => {
@@ -1747,7 +1634,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(
         RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-        (state, action: ResetOneBusShortcircuitAnalysisDiagramAction) => {
+        (state, _action: ResetOneBusShortcircuitAnalysisDiagramAction) => {
             state.oneBusShortCircuitAnalysisDiagram = null;
         }
     );
@@ -1802,6 +1689,9 @@ export const reducer = createReducer(initialState, (builder) => {
             action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
     });
 
+    builder.addCase(PCCMIN_ANALYSIS_RESULT_FILTER, (state, action: PccminAnalysisResultFilterAction) => {
+        state[PCCMIN_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] = action[PCCMIN_ANALYSIS_RESULT_STORE_FIELD];
+    });
     builder.addCase(DYNAMIC_SIMULATION_RESULT_FILTER, (state, action: DynamicSimulationResultFilterAction) => {
         state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
     });
@@ -1869,6 +1759,21 @@ export const reducer = createReducer(initialState, (builder) => {
             });
         }
     );
+    builder.addCase(PCCMIN_ANALYSIS_RESULT_PAGINATION, (state, action: PccminAnalysisResultPaginationAction) => {
+        state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
+            action[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD];
+    });
+
+    builder.addCase(RESET_PCCMIN_ANALYSIS_PAGINATION, (state, _action: ResetPccminAnalysisPaginationAction) => {
+        // Reset all PccMin tabs to page 0, keep rowsPerPage
+        for (const tab of PCCMIN_ANALYSIS_TABS) {
+            const currentPagination = state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][tab];
+            state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][tab] = {
+                page: 0,
+                rowsPerPage: currentPagination.rowsPerPage,
+            };
+        }
+    });
 
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
@@ -1971,18 +1876,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGlobalFiltersAction) => {
         state.globalFilterSpreadsheetState = {};
-    });
-
-    builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
-        state.latestDiagramEvent = undefined;
-    });
-
-    builder.addCase(SET_DIAGRAM_GRID_LAYOUT, (state, action: SetDiagramGridLayoutAction) => {
-        state.diagramGridLayout = action.diagramGridLayout;
-    });
-
-    builder.addCase(SET_OPEN_MAP, (state, action: SetOpenMapAction) => {
-        state.mapOpen = action.mapOpen;
     });
 
     builder.addCase(SELECT_SYNC_ENABLED, (state, action: SelectSyncEnabledAction) => {

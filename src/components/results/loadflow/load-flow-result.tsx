@@ -9,11 +9,11 @@ import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
-import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { RowClassParams } from 'ag-grid-community';
 
 import { LoadflowResultProps } from './load-flow-result.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
@@ -22,7 +22,6 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result, isLoadingResult, columnDefs }) => {
@@ -54,12 +53,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result,
         []
     );
 
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
     const messages = useIntlResultStatusMessages(intl);
 
     const getRowStyle = useCallback(
@@ -72,10 +65,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result,
         },
         [theme.selectedRow.background]
     );
-
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
 
     const renderLoadFlowResult = () => {
         const message = getNoRowsMessage(
@@ -97,8 +86,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result,
                         id: 'LoadFlowResultsStatus',
                     })}
                     rows={rowsToShow}
-                    onRowDataUpdated={onRowDataUpdated}
-                    onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}

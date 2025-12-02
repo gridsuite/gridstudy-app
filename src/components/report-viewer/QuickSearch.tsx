@@ -17,7 +17,7 @@ interface QuickSearchProps {
     resultCount: number;
     resetSearch: () => void;
     placeholder?: string;
-    inputRef: RefObject<HTMLDivElement>;
+    inputRef: RefObject<HTMLDivElement | null>;
     sx?: SxStyle;
 }
 

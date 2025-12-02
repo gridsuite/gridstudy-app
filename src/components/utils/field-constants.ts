@@ -58,6 +58,7 @@ export const LIMIT_SETS_MODIFICATION_TYPE = {
     MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
     ADD: 'ADD',
     REPLACE: 'REPLACE',
+    DELETE: 'DELETE',
 } as const;
 export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
 export const SIDE = 'side';
@@ -80,7 +81,9 @@ export const RATED_U2 = 'ratedU2';
 export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
 export const LIMITS_PROPERTIES = 'limitsProperties';
+export const OLG_IS_DUPLICATE = 'operationalLimitsGroupsIsDuplicate';
 export const ENABLE_OLG_MODIFICATION = 'enableOLGModification';
+export const OLGS_MODIFICATION_TYPE = 'operationalLimitsGroupsModificationType';
 export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
 export const SELECTED_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
 export const PERMANENT_LIMIT = 'permanentLimit';
@@ -213,6 +216,13 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     DELETE: 'DELETE',
     REPLACE: 'REPLACE',
 } as const;
+// Determines how all the operational limits groups will be modified as a group
+export const OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE = {
+    // Modification types for Tabular modifications :
+    MODIFY: 'MODIFY', // standard mode : the olg modifications are applied. The unspecified olg are not changed at all
+    // Modification type for simple form modifications :
+    REPLACE: 'REPLACE', // All the olg are removed, then the olg modification/add etc are applied
+} as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
 export const SEGMENT_TYPE_ID = 'segmentTypeId';
@@ -229,7 +239,7 @@ export const AERIAL_TEMPERATURES = 'aerialTemperatures';
 export const UNDERGROUND_AREAS = 'undergroundAreas';
 export const UNDERGROUND_SHAPE_FACTORS = 'undergroundShapeFactors';
 export const FINAL_CURRENT_LIMITS = 'finalCurrentLimits';
-export const APPLICABIlITY = 'applicability';
+export const APPLICABILITY_FIELD = 'applicability';
 export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
 
 // Voltage level

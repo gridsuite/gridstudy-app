@@ -12,6 +12,7 @@ import {
     IElementUpdateDialog,
     MODIFICATION_TYPES,
     NetworkModificationMetadata,
+    snackWithFallback,
     usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -21,7 +22,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -57,13 +58,7 @@ import NetworkModificationsMenu from 'components/graph/menus/network-modificatio
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    addNotification,
-    removeNotificationByNode,
-    resetLogsFilter,
-    resetLogsPagination,
-    setModificationsInProgress,
-} from '../../../../redux/actions';
+import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
@@ -119,8 +114,6 @@ import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modificat
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 
@@ -157,16 +150,17 @@ const NetworkModificationNodeEditor = () => {
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
+    const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationMetadata[]>([]);
 
     const [copiedModifications, setCopiedModifications] = useState<UUID[]>([]);
     const [copyInfos, setCopyInfos] = useState<NetworkModificationCopyInfo | null>(null);
-    const copyInfosRef = useRef<NetworkModificationCopyInfo | null>();
+    const copyInfosRef = useRef<NetworkModificationCopyInfo | null>(null);
     copyInfosRef.current = copyInfos;
 
     const [isDragging, setIsDragging] = useState(false);
@@ -184,7 +178,6 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isInitiatingCopyTab = useRef(false);
 
@@ -193,51 +186,59 @@ const NetworkModificationNodeEditor = () => {
         broadcast.onmessage = (event) => {
             console.info('message received from broadcast channel: ', event.data);
             isInitiatingCopyTab.current = false;
-            if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data)) {
-                cleanClipboard();
+            if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data.modificationsToCopy)) {
+                cleanCurrentTabClipboard(event.data.message);
             } else {
-                setCopiedModifications(event.data.modificationsUuids);
+                setCopiedModifications(event.data.modificationsToCopy.modificationsUuids);
                 setCopyInfos({
-                    copyType: event.data.copyInfos.copyType,
-                    originStudyUuid: event.data.copyInfos.originStudyUuid,
-                    originNodeUuid: event.data.copyInfos.originNodeUuid,
+                    copyType: event.data.modificationsToCopy.copyInfos.copyType,
+                    originStudyUuid: event.data.modificationsToCopy.copyInfos.originStudyUuid,
+                    originNodeUuid: event.data.modificationsToCopy.copyInfos.originNodeUuid,
                 });
-                snackInfo({ messageId: 'CopiedModificationUpdateMessageFromAnotherStudy' });
+                snackInfo({ messageId: event.data.message });
             }
         };
         return broadcast;
     });
 
-    useEffect(() => {
-        //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
-        window.addEventListener('beforeunload', (event) => {
-            if (true === isInitiatingCopyTab.current) {
-                broadcastChannel.postMessage(emptyCopiedModificationsSelection);
-                snackInfo({
-                    messageId: 'CopiedModificationInvalidationMessageAfterTabClosure',
-                });
-            }
-        });
-    }, [broadcastChannel, snackInfo]);
-
-    const cleanClipboard = useCallback(
-        (showSnackInfo: boolean = true) => {
+    const cleanCurrentTabClipboard = useCallback(
+        (snackInfoMessage?: string) => {
             setCopyInfos(null);
             setCopiedModifications((oldCopiedModifications) => {
-                if (oldCopiedModifications.length && showSnackInfo) {
+                if (oldCopiedModifications.length && snackInfoMessage) {
                     snackInfo({
-                        messageId: 'CopiedModificationInvalidationMessage',
+                        messageId: snackInfoMessage,
                     });
                 }
                 return [];
             });
+        },
+        [snackInfo]
+    );
+    const cleanOtherTabsClipboard = useCallback(
+        (snackInfoMessage?: string) => {
             if (true === isInitiatingCopyTab.current) {
-                broadcastChannel.postMessage(emptyCopiedModificationsSelection);
+                broadcastChannel.postMessage({
+                    modificationsToCopy: emptyCopiedModificationsSelection,
+                    message: snackInfoMessage,
+                });
                 isInitiatingCopyTab.current = false;
             }
         },
-        [snackInfo, broadcastChannel]
+        [broadcastChannel]
     );
+
+    const cleanClipboard = useCallback(() => {
+        cleanCurrentTabClipboard('copiedModificationsInvalidationMsg');
+        cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromOtherStudy');
+    }, [cleanCurrentTabClipboard, cleanOtherTabsClipboard]);
+
+    useEffect(() => {
+        //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
+        window.addEventListener('beforeunload', () => {
+            cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
+        });
+    }, [cleanOtherTabsClipboard]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -349,7 +350,6 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
                             label: 'CreateVoltageLevelTopology',
-                            hide: !enableDeveloperMode,
                             action: () => withDefaultParams(CreateVoltageLevelTopologyDialog),
                         },
                         {
@@ -365,7 +365,6 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS.type,
                             label: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
-                            hide: !enableDeveloperMode,
                             action: () => withDefaultParams(MoveVoltageLevelFeederBaysDialog),
                         },
                         {
@@ -779,9 +778,7 @@ const NetworkModificationNodeEditor = () => {
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -817,9 +814,7 @@ const NetworkModificationNodeEditor = () => {
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -839,9 +834,7 @@ const NetworkModificationNodeEditor = () => {
                 setModificationsToExclude(res);
             })
             .catch((error: Error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -870,11 +863,6 @@ const NetworkModificationNodeEditor = () => {
             setModificationsToRestore([]);
             dofetchNetworkModifications();
             dofetchExcludedNetworkModifications();
-            // reset the network modification and computing logs filter when the user changes the current node
-            if (hasNodeChanged) {
-                dispatch(resetLogsFilter());
-                dispatch(resetLogsPagination());
-            }
         }
     }, [
         createdRootNetworksLength,
@@ -992,11 +980,8 @@ const NetworkModificationNodeEditor = () => {
                     cleanClipboard();
                 }
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errDeleteModificationMsg',
-                });
+            .catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'errDeleteModificationMsg' });
             });
     }, [currentNode?.id, selectedNetworkModifications, snackError, studyUuid, cleanClipboard, copiedModifications]);
 
@@ -1019,11 +1004,8 @@ const NetworkModificationNodeEditor = () => {
                     },
                 });
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errCreateModificationsMsg',
-                });
+            .catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'errCreateModificationsMsg' });
             })
             .finally(() => {
                 setSaveInProgress(false);
@@ -1049,9 +1031,8 @@ const NetworkModificationNodeEditor = () => {
                     },
                 });
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
+            .catch((error) => {
+                snackWithFallback(snackError, error, {
                     headerId: 'errUpdateModificationsMsg',
                     headerValues: {
                         item: elementFullPath,
@@ -1078,7 +1059,9 @@ const NetworkModificationNodeEditor = () => {
             originStudyUuid: studyUuid ?? undefined,
             originNodeUuid: currentNode?.id,
         });
-    }, [currentNode?.id, selectedModificationsIds, studyUuid]);
+        isInitiatingCopyTab.current = true;
+        cleanOtherTabsClipboard('copiedModificationsInvalidationMsg');
+    }, [cleanOtherTabsClipboard, currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
         setCopiedModifications(selectedModificationsIds());
@@ -1088,12 +1071,15 @@ const NetworkModificationNodeEditor = () => {
             originNodeUuid: currentNode?.id,
         });
         broadcastChannel.postMessage({
-            modificationsUuids: selectedModificationsIds(),
-            copyInfos: {
-                copyType: NetworkModificationCopyType.COPY,
-                originStudyUuid: studyUuid,
-                originNodeUuid: currentNode?.id,
+            modificationsToCopy: {
+                modificationsUuids: selectedModificationsIds(),
+                copyInfos: {
+                    copyType: NetworkModificationCopyType.COPY,
+                    originStudyUuid: studyUuid,
+                    originNodeUuid: currentNode?.id,
+                },
             },
+            message: 'copiedModificationsUpdateMsg',
         });
         isInitiatingCopyTab.current = true;
     }, [broadcastChannel, currentNode?.id, selectedModificationsIds, studyUuid]);
@@ -1105,23 +1091,21 @@ const NetworkModificationNodeEditor = () => {
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
             copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos)
                 .then(() => {
-                    cleanClipboard(false);
+                    cleanCurrentTabClipboard();
                 })
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
+                .catch((error) => {
+                    snackWithFallback(snackError, error, {
                         headerId: 'errCutModificationMsg',
                     });
                 });
         } else {
-            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((error) => {
+                snackWithFallback(snackError, error, {
                     headerId: 'errDuplicateModificationMsg',
                 });
             });
         }
-    }, [copyInfos, studyUuid, currentNode?.id, copiedModifications, cleanClipboard, snackError]);
+    }, [copyInfos, studyUuid, currentNode?.id, copiedModifications, cleanCurrentTabClipboard, snackError]);
 
     const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
@@ -1154,9 +1138,7 @@ const NetworkModificationNodeEditor = () => {
                     });
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                    });
+                    snackWithFallback(snackError, error);
                     setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
@@ -1191,9 +1173,19 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const renderNetworkModificationsTable = () => {
+        if (isRootNode) {
+            return (
+                <Box sx={styles.rootNodeWarning}>
+                    <Alert severity="warning">
+                        <FormattedMessage id="modificationsForbiddenOnRootNode" />
+                    </Alert>
+                </Box>
+            );
+        }
+
         return (
             <NetworkModificationsTable
-                handleCellClick={handleCellClick}
+                handleCellClick={debounce(handleCellClick, 300)}
                 modifications={modifications}
                 setModifications={setModifications}
                 onRowDragStart={onRowDragStart}
@@ -1281,10 +1273,7 @@ const NetworkModificationNodeEditor = () => {
 
         changeNetworkModificationOrder(studyUuid, currentNode?.id, movedItem.uuid, before)
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'errReorderModificationMsg',
-                });
+                snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
                 setModifications(previousModifications);
             })
             .finally(() => setIsDragging(false));
@@ -1308,7 +1297,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             ref={buttonAddRef}
                             onClick={openNetworkModificationConfiguration}
-                            disabled={isAnyNodeBuilding || mapDataLoading}
+                            disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
                         >
                             <AddIcon />
                         </IconButton>
@@ -1319,7 +1308,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openImportModificationsDialog}
                             size={'small'}
-                            disabled={isAnyNodeBuilding || mapDataLoading}
+                            disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
                         >
                             <FileUpload />
                         </IconButton>
@@ -1330,7 +1319,9 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={!(selectedNetworkModifications?.length > 0) || saveInProgress === true}
+                            disabled={
+                                selectedNetworkModifications?.length === 0 || saveInProgress === true || isRootNode
+                            }
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1345,7 +1336,8 @@ const NetworkModificationNodeEditor = () => {
                                 selectedNetworkModifications.length === 0 ||
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
-                                !currentNode
+                                !currentNode ||
+                                isRootNode
                             }
                         >
                             <ContentCutIcon />
@@ -1357,7 +1349,12 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doCopyModifications}
                             size={'small'}
-                            disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
+                            disabled={
+                                selectedNetworkModifications.length === 0 ||
+                                isAnyNodeBuilding ||
+                                mapDataLoading ||
+                                isRootNode
+                            }
                         >
                             <ContentCopyIcon />
                         </IconButton>
@@ -1375,7 +1372,11 @@ const NetworkModificationNodeEditor = () => {
                     }
                 >
                     <span>
-                        <IconButton onClick={doPasteModifications} size={'small'} disabled={isPasteButtonDisabled}>
+                        <IconButton
+                            onClick={doPasteModifications}
+                            size={'small'}
+                            disabled={isPasteButtonDisabled || isRootNode}
+                        >
                             <ContentPasteIcon />
                         </IconButton>
                     </span>
@@ -1390,7 +1391,8 @@ const NetworkModificationNodeEditor = () => {
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
                                 deleteInProgress ||
-                                !currentNode
+                                !currentNode ||
+                                isRootNode
                             }
                         >
                             <DeleteIcon />
@@ -1419,7 +1421,7 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={openRestoreModificationDialog}
                                 size={'small'}
-                                disabled={isRestoreButtonDisabled}
+                                disabled={isRestoreButtonDisabled || isRootNode}
                             >
                                 <RestoreFromTrash />
                             </IconButton>

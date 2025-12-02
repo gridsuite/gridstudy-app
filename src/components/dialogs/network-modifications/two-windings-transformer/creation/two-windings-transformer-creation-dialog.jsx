@@ -10,6 +10,7 @@ import {
     convertOutputValue,
     CustomFormProvider,
     FieldType,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -137,7 +138,7 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
         ...getTwoWindingsTransformerValidationSchema(),
-        ...getLimitsValidationSchema(false),
+        ...getLimitsValidationSchema(),
         ...getRatioTapChangerValidationSchema(),
         ...getPhaseTapChangerValidationSchema(),
     })
@@ -574,10 +575,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
                 properties: toModificationProperties(twt),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TwoWindingsTransformerCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TwoWindingsTransformerCreationError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError]

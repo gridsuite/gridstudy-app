@@ -25,10 +25,10 @@ import { CurrentTreeNode } from '../../graph/tree-node.type';
 import GridSection from '../commons/grid-section';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
-import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { InputWithPopupConfirmation, SwitchInput } from '@gridsuite/commons-ui';
 import { mapServerLimitsGroupsToFormInfos } from './limits-pane-utils';
-import { BranchInfos } from '../../../services/study/network-map.type';
+import { BranchInfos, CurrentLimitsData } from '../../../services/study/network-map.type';
+import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
 
 export interface LimitsPaneProps {
     id?: string;
@@ -44,11 +44,11 @@ export function LimitsPane({
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
-    const { reset, getValues } = useFormContext();
+    const { getValues, reset } = useFormContext();
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups: OperationalLimitsGroupFormInfos[] = useWatch({
+    const limitsGroups = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const olgEditable: boolean = useWatch({
@@ -62,7 +62,7 @@ export function LimitsPane({
     const getCurrentLimits = (equipmentToModify: any, operationalLimitsGroupId: string): CurrentLimits | null => {
         if (equipmentToModify?.currentLimits) {
             return equipmentToModify.currentLimits.find(
-                (currentLimit: CurrentLimits) =>
+                (currentLimit: CurrentLimitsData) =>
                     currentLimit.id + currentLimit.applicability === operationalLimitsGroupId
             );
         }
@@ -75,62 +75,27 @@ export function LimitsPane({
     ): CurrentLimits | null => {
         if (equipmentToModify?.currentLimits) {
             return equipmentToModify.currentLimits.find(
-                (currentLimit: CurrentLimits) => currentLimit.id === operationalLimitsGroupName
+                (currentLimit: CurrentLimitsData) => currentLimit.id === operationalLimitsGroupName
             );
         }
         return null;
     };
-    /**
-     * returns an error message id if :
-     * - there are more than 2 limit sets with the same name
-     * - there are exactly 2 limit set with this name but they have the same applicability side
-     */
-    const checkLimitSetUnicity = useCallback(
-        (editedLimitGroupName: string, newSelectedApplicability: string): string => {
-            if (indexSelectedLimitSet == null) {
-                return '';
-            }
-
-            // checks if limit sets with that name already exist
-            const sameNameInLs: OperationalLimitsGroupFormInfos[] = limitsGroups
-                .filter((_ls, index: number) => index !== indexSelectedLimitSet)
-                .filter(
-                    (limitsGroup: OperationalLimitsGroupFormInfos) =>
-                        limitsGroup.name.trim() === editedLimitGroupName.trim()
-                );
-
-            // only 2 limit sets with the same name are allowed and only if there have SIDE1 and SIDE2 applicability
-            if (sameNameInLs.length > 0) {
-                if (sameNameInLs.length > 1) {
-                    return 'LimitSetNamingError';
-                }
-
-                if (
-                    sameNameInLs[0].applicability === newSelectedApplicability ||
-                    sameNameInLs[0].applicability === APPLICABILITY.EQUIPMENT.id ||
-                    newSelectedApplicability === APPLICABILITY.EQUIPMENT.id
-                ) {
-                    // only one limit set with this name exist => their applicability has to be different
-                    return 'LimitSetApplicabilityError';
-                }
-            }
-            return '';
-        },
-        [indexSelectedLimitSet, limitsGroups]
-    );
 
     const handlePopupConfirmation = () => {
-        const resetOLGs: OperationalLimitsGroupFormInfos[] = mapServerLimitsGroupsToFormInfos(
+        const resetOLGs: OperationalLimitsGroupFormSchema[] = mapServerLimitsGroupsToFormInfos(
             equipmentToModify?.currentLimits ?? []
         );
         const currentValues = getValues();
-        reset({
-            ...currentValues,
-            [LIMITS]: {
-                [OPERATIONAL_LIMITS_GROUPS]: resetOLGs,
-                [ENABLE_OLG_MODIFICATION]: false,
+        reset(
+            {
+                ...currentValues,
+                [LIMITS]: {
+                    [OPERATIONAL_LIMITS_GROUPS]: resetOLGs,
+                    [ENABLE_OLG_MODIFICATION]: false,
+                },
             },
-        });
+            { keepDefaultValues: true }
+        );
     };
 
     return (
@@ -189,7 +154,7 @@ export function LimitsPane({
                     <Box
                         sx={{
                             display: 'flex',
-                            justifyContent: 'space-between',
+                            alignItems: 'center',
                         }}
                     >
                         <GridSection title="LimitSets" />
@@ -197,17 +162,12 @@ export function LimitsPane({
                             <AddIcon />
                         </IconButton>
                     </Box>
-                </Grid>
-                <Grid container item xs={6.25} />
-                <Grid item xs={4}>
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
                         parentFormName={id}
                         limitsGroups={limitsGroups}
                         indexSelectedLimitSet={indexSelectedLimitSet}
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
-                        checkLimitSetUnicity={checkLimitSetUnicity}
-                        isAModification={!!equipmentToModify}
                         editable={olgEditable}
                         currentLimitsToModify={equipmentToModify?.currentLimits ?? []}
                     />
@@ -215,12 +175,11 @@ export function LimitsPane({
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
                     {indexSelectedLimitSet !== null &&
                         limitsGroups.map(
-                            (operationalLimitsGroup: OperationalLimitsGroupFormInfos, index: number) =>
+                            (operationalLimitsGroup: OperationalLimitsGroupFormSchema, index: number) =>
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
                                         key={operationalLimitsGroup.id}
-                                        opLimitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
-                                        limitsGroupApplicabilityName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
+                                        name={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
                                         clearableFields={clearableFields}
                                         permanentCurrentLimitPreviousValue={
                                             getCurrentLimits(equipmentToModify, operationalLimitsGroup.id)
@@ -235,10 +194,7 @@ export function LimitsPane({
                                                 ?.temporaryLimits ?? []
                                         }
                                         currentNode={currentNode}
-                                        selectedLimitSetName={operationalLimitsGroup.name}
-                                        checkLimitSetUnicity={checkLimitSetUnicity}
                                         disabled={!olgEditable}
-                                        isModification={isAModification}
                                     />
                                 )
                         )}

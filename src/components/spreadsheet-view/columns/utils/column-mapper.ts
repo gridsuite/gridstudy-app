@@ -6,7 +6,7 @@
  */
 import { ColumnMenu } from '../column-menu';
 import { COLUMN_TYPES } from '../../../custom-aggrid/custom-aggrid-header.type';
-import { limitedEvaluate } from './math';
+import { limitedEvaluate, MathJsValidationError } from './math';
 import { ColDef, ValueGetterParams } from 'ag-grid-community';
 import {
     booleanColumnDefinition,
@@ -14,14 +14,28 @@ import {
     numberColumnDefinition,
     textColumnDefinition,
 } from '../common-column-definitions';
-import { validateFormulaResult } from './formula-validator';
+import { isValidationError, validateFormulaResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
-import { CustomColDef } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import {
+    type CustomAggridValue,
+    type CustomColDef,
+} from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
+import { ErrorCellRenderer } from '@gridsuite/commons-ui';
+import { isAccessorNode, isSymbolNode, parse } from 'mathjs';
+
+function isSingleSymbol(formula: string) {
+    try {
+        const node = parse(formula);
+        return isSymbolNode(node) || isAccessorNode(node);
+    } catch {
+        return false;
+    }
+}
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
-    (params: ValueGetterParams): boolean | string | number | undefined => {
+    (params: ValueGetterParams): CustomAggridValue | undefined => {
         try {
             // Skip formula processing for pinned rows and use raw value
             if (isCalculationRow(params.node?.data?.rowType)) {
@@ -34,13 +48,18 @@ const createValueGetter =
             });
             const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
             const result = limitedEvaluate(escapedFormula, scope);
-            const validation = validateFormulaResult(result, colDef.type);
-
-            if (!validation.isValid) {
-                return undefined;
-            }
-            return result;
+            return result == null ? undefined : validateFormulaResult(result, colDef.type);
         } catch (e) {
+            if (e instanceof Error) {
+                console.warn(`Error while evaluating formula : ${e.message}`);
+                if (e instanceof MathJsValidationError) {
+                    return { error: e.error };
+                }
+                // If we encounter a single undefined symbol it won't display an error, it's setup this way to prevent interpreting missing data as errors
+                if (!isSingleSymbol(colDef.formula)) {
+                    return { error: 'spreadsheet/formula/error/generic' };
+                }
+            }
             return undefined;
         }
     };
@@ -82,6 +101,8 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
                 },
             },
             valueGetter: createValueGetter(colDef),
+            cellRendererSelector: (params) =>
+                isValidationError(params.value) ? { component: ErrorCellRenderer } : undefined, //Returning undefined make it so the originally defined renderer is used
             hide: !colDef.visible,
             editable: false,
             enableCellChangeFlash: true,

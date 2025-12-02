@@ -32,11 +32,11 @@ import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: EquipmentInfos) => void;
-    onOpenNetworkAreaDiagram?: (elementId?: string) => void;
     isDialogSearchOpen: boolean;
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
     disableEventSearch?: boolean;
     disablCenterSubstation?: boolean;
+    disableKeyboardShortcut?: boolean;
 }
 
 export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearchDialogProps> = (props) => {
@@ -44,9 +44,9 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
         isDialogSearchOpen,
         setIsDialogSearchOpen,
         showVoltageLevelDiagram,
-        onOpenNetworkAreaDiagram,
         disableEventSearch,
         disablCenterSubstation = false,
+        disableKeyboardShortcut = false,
     } = props;
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -122,17 +122,12 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
 
     const suffixRenderer = useCallback(
         (props: TagRendererProps) => (
-            <CustomSuffixRenderer
-                disablCenterSubstation={disablCenterSubstation}
-                onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
-                {...props}
-                onClose={closeDialog}
-            />
+            <CustomSuffixRenderer disablCenterSubstation={disablCenterSubstation} {...props} onClose={closeDialog} />
         ),
-        [closeDialog, disablCenterSubstation, onOpenNetworkAreaDiagram]
+        [closeDialog, disablCenterSubstation]
     );
 
-    useSearchEvent(enableSearchDialog);
+    useSearchEvent(disableKeyboardShortcut ? () => {} : enableSearchDialog);
 
     return (
         <ElementSearchDialog

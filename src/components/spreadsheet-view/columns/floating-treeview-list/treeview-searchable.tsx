@@ -10,7 +10,7 @@ import { QuickSearch } from '../../../report-viewer/QuickSearch';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { ChevronRight, ExpandMore } from '@mui/icons-material';
 import Button from '@mui/material/Button';
-import { Dispatch, MouseEvent, RefObject, SetStateAction, useCallback, useMemo, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { FORMULA } from '../column-creation-form';
 import { useFormulaQuickSearch } from './use-formula-quicksearch';
 import { buildTreeData, sortData } from './utils/json-schema-parser';
@@ -25,11 +25,11 @@ interface TreeviewSearchableProps {
     properties: JSONSchema4 | null;
     formMethods: UseFormReturn<any>;
     setAnchorEl: Dispatch<SetStateAction<Element | null>>;
-    inputRef: RefObject<HTMLInputElement>;
+    inputRef: RefObject<HTMLInputElement | null>;
     equipmentType: SpreadsheetEquipmentType;
+    formulaCursorPosition: number;
+    formulaTextRef: RefObject<HTMLTextAreaElement | null>;
 }
-
-const MOUSE_EVENT_DETAIL_DOUBLE_CLICK = 2;
 
 export const TreeviewSearchable = ({
     properties,
@@ -37,6 +37,8 @@ export const TreeviewSearchable = ({
     setAnchorEl,
     inputRef,
     equipmentType,
+    formulaCursorPosition,
+    formulaTextRef,
 }: TreeviewSearchableProps) => {
     const intl = useIntl();
     const [pendingSelection, setPendingSelection] = useState<string | null>(null);
@@ -53,23 +55,31 @@ export const TreeviewSearchable = ({
 
     const handleConfirm = useCallback(() => {
         if (pendingSelection) {
-            const newValue = getValues(FORMULA) ? `${getValues(FORMULA)}${pendingSelection}` : pendingSelection;
-            setValue(FORMULA, newValue, { shouldValidate: true });
+            const currentFormulaValue = getValues(FORMULA) || '';
+            const before = currentFormulaValue.slice(0, formulaCursorPosition);
+            const after = currentFormulaValue.slice(formulaCursorPosition);
+            const newFormulaValue = before + pendingSelection + after;
+            const newFormulaCursorPosition = formulaCursorPosition + pendingSelection.length;
+
+            setValue(FORMULA, newFormulaValue, { shouldValidate: true });
+
+            setPendingSelection(null);
+            setAnchorEl(null);
+
+            // Focus and set cursor on formula text field
+            requestAnimationFrame(() => {
+                if (formulaTextRef.current) {
+                    formulaTextRef.current.focus();
+                    formulaTextRef.current.setSelectionRange(newFormulaCursorPosition, newFormulaCursorPosition);
+                }
+            });
+        } else {
+            setPendingSelection(null);
+            setAnchorEl(null);
         }
-        setPendingSelection(null);
-        setAnchorEl(null);
-    }, [getValues, pendingSelection, setAnchorEl, setPendingSelection, setValue]);
+    }, [getValues, pendingSelection, setAnchorEl, setValue, formulaTextRef, formulaCursorPosition]);
 
     const { handleKeyDown, handleTreeviewKeyDown } = usePopoverToggle(properties, setAnchorEl, handleConfirm);
-
-    const handleDoubleClick = useCallback(
-        (e: MouseEvent) => {
-            if (e.detail === MOUSE_EVENT_DETAIL_DOUBLE_CLICK) {
-                handleConfirm();
-            }
-        },
-        [handleConfirm]
-    );
 
     return (
         <>
@@ -91,7 +101,6 @@ export const TreeviewSearchable = ({
                     onExpandedItemsChange={(_, ids) => setExpandedItems(ids)}
                     onKeyDown={handleTreeviewKeyDown}
                     onItemFocus={(e, itemId) => setPendingSelection(itemId)}
-                    onItemClick={handleDoubleClick}
                     slots={{
                         expandIcon: ChevronRight,
                         collapseIcon: ExpandMore,

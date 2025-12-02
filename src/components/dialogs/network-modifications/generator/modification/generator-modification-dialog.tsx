@@ -7,7 +7,13 @@
 
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -60,7 +66,7 @@ import {
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     REMOVE,
-    setCurrentReactiveCapabilityCurveChoice,
+    toReactiveCapabilityCurveChoiceForGeneratorModification,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
@@ -175,7 +181,7 @@ export default function GeneratorModificationDialog({
         resolver: yupResolver<DeepNullable<GeneratorModificationDialogSchemaForm>>(formSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (editData: GeneratorModificationInfos) => {
@@ -282,18 +288,7 @@ export default function GeneratorModificationDialog({
                     .then((value: GeneratorFormInfos) => {
                         if (value) {
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
-                            if (previousReactiveCapabilityCurveTable) {
-                                setValue(
-                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    previousReactiveCapabilityCurveTable
-                                );
-                            } else {
-                                setCurrentReactiveCapabilityCurveChoice(
-                                    previousReactiveCapabilityCurveTable,
-                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    setValue
-                                );
-                            }
+
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,
@@ -301,6 +296,16 @@ export default function GeneratorModificationDialog({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
+                                    ...(!isUpdate && previousReactiveCapabilityCurveTable
+                                        ? {
+                                              [REACTIVE_LIMITS]: {
+                                                  ...formValues[REACTIVE_LIMITS],
+                                                  [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
+                                                  [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                                                      previousReactiveCapabilityCurveTable,
+                                              },
+                                          }
+                                        : {}),
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
                                 { keepDirty: true }
@@ -319,7 +324,7 @@ export default function GeneratorModificationDialog({
                 setGeneratorToModify(null);
             }
         },
-        [studyUuid, currentNode, currentRootNetworkUuid, reset, getValues, setValue, setValuesAndEmptyOthers, editData]
+        [studyUuid, currentNode, currentRootNetworkUuid, reset, getValues, setValuesAndEmptyOthers, isUpdate, editData]
     );
 
     useEffect(() => {
@@ -331,7 +336,12 @@ export default function GeneratorModificationDialog({
     const onSubmit = useCallback(
         (generator: GeneratorModificationDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits?.[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn =
+                toReactiveCapabilityCurveChoiceForGeneratorModification(
+                    reactiveLimits,
+                    editData,
+                    generatorToModify?.reactiveCapabilityCurvePoints
+                ) === 'CURVE';
 
             const generatorModificationInfos = {
                 type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
@@ -373,7 +383,7 @@ export default function GeneratorModificationDialog({
                     isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MINIMUM_REACTIVE_POWER]
                 ),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? (reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
+                    ? (reactiveLimits?.[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
                 properties: toModificationProperties(generator) ?? null,
             } satisfies GeneratorModificationInfos;
@@ -385,13 +395,10 @@ export default function GeneratorModificationDialog({
                 modificationUuid: editData?.uuid ?? null,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'GeneratorModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'GeneratorModificationError' });
             });
         },
-        [selectedId, studyUuid, currentNodeUuid, editData, snackError]
+        [editData, generatorToModify, selectedId, studyUuid, currentNodeUuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({

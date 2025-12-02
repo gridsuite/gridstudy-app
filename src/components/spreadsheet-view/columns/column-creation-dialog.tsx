@@ -16,6 +16,7 @@ import {
     IntegerInput,
     type MuiStyles,
     MultipleAutocompleteInput,
+    snackWithFallback,
     SubmitButton,
     TextInput,
     useSnackMessage,
@@ -46,6 +47,8 @@ import {
 import { AppState } from 'redux/reducer';
 import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
 import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floating-popover-treeview-wrapper';
+import { isFormulaContentSizeOk } from './utils/formula-validator';
+import { MAX_FORMULA_CHARACTERS } from '../constants';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -144,7 +147,9 @@ export default function ColumnCreationDialog({
                 label="spreadsheet/custom_column/column_content"
                 minRows={3}
                 rows={3}
+                maxCharactersNumber={MAX_FORMULA_CHARACTERS}
                 sx={{ flexGrow: 1 }}
+                acceptValue={isFormulaContentSizeOk}
             />
         </FloatingPopoverTreeviewWrapper>
     );
@@ -249,8 +254,7 @@ export default function ColumnCreationDialog({
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/custom_column/error_saving_or_updating_column',
                     });
                 });

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MutableRefObject } from 'react';
+import { RefObject } from 'react';
 import { TreeNode } from './json-schema-parser';
 import { TreeItem } from '@mui/x-tree-view';
 import { TreeLabel } from '../tree-label';
@@ -13,7 +13,7 @@ import { TreeLabel } from '../tree-label';
 export function renderTreeData(
     nodes: TreeNode[],
     query: string,
-    itemRefs: MutableRefObject<Record<string, HTMLLIElement | null>>,
+    itemRefs: RefObject<Record<string, HTMLLIElement | null>>,
     matches: TreeNode[],
     currentResultIndex: number
 ) {
@@ -23,6 +23,7 @@ export function renderTreeData(
             <TreeItem
                 key={`${index}${node.id}`}
                 itemId={node.id}
+                // @ts-ignore
                 ref={(el) => (itemRefs.current[node.id] = el)}
                 label={
                     <TreeLabel

@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     FieldType,
     MODIFICATION_TYPES,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -141,27 +142,12 @@ const formSchema = yup
         [SUBSTATION_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
-        [NOMINAL_V]: yup
-            .number()
-            .nullable()
-            .min(0, 'mustBeGreaterOrEqualToZero')
-            .when([LOW_VOLTAGE_LIMIT], {
-                is: (lowVoltageLimit) => lowVoltageLimit != null,
-                then: (schema) => schema.min(yup.ref(LOW_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMinValueError'),
-            })
-            .when([HIGH_VOLTAGE_LIMIT], {
-                is: (highVoltageLimit) => highVoltageLimit != null,
-                then: (schema) => schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
-            })
-            .required(),
+        [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
         [LOW_VOLTAGE_LIMIT]: yup
             .number()
             .nullable()
             .min(0, 'mustBeGreaterOrEqualToZero')
-            .when([HIGH_VOLTAGE_LIMIT], {
-                is: (highVoltageLimit) => highVoltageLimit != null,
-                then: (schema) => schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
-            }),
+            .max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
         [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
@@ -215,7 +201,24 @@ const VoltageLevelCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, getValues, watch, trigger } = formMethods;
+    const { reset, setValue, getValues, watch, trigger, subscribe } = formMethods;
+
+    // Watch LOW_VOLTAGE_LIMIT changed
+    useEffect(() => {
+        const callback = subscribe({
+            name: [`${HIGH_VOLTAGE_LIMIT}`],
+            formState: {
+                values: true,
+            },
+            callback: ({ isSubmitted }) => {
+                if (isSubmitted) {
+                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
+                }
+            },
+        });
+        return () => callback();
+    }, [trigger, subscribe]);
+
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
@@ -234,7 +237,6 @@ const VoltageLevelCreationDialog = ({
                 voltageLevel.switchKinds?.map((switchKind) => ({
                     [SWITCH_KIND]: switchKind,
                 })) || [];
-
             const switchesBetweenSections =
                 voltageLevel.switchKinds?.map((switchKind) => intl.formatMessage({ id: switchKind })).join(' / ') || '';
 
@@ -283,7 +285,7 @@ const VoltageLevelCreationDialog = ({
             } else {
                 setValue(ADD_SUBSTATION_CREATION, false);
             }
-            if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
+            if (!voltageLevel.isSymmetrical && fromCopy) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
                 });
@@ -358,10 +360,7 @@ const VoltageLevelCreationDialog = ({
                 topologyKind: voltageLevel[TOPOLOGY_KIND],
                 properties: toModificationProperties(voltageLevel),
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'VoltageLevelCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'VoltageLevelCreationError' });
             });
         },
         [getValues, onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]

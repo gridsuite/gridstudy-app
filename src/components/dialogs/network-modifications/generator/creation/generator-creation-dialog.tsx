@@ -10,7 +10,13 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -36,7 +42,6 @@ import {
     PLANNED_OUTAGE_RATE,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
@@ -89,6 +94,7 @@ import {
     getShortCircuitFormData,
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
+import { toReactiveCapabilityCurveChoiceForGeneratorCreation } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -275,7 +281,8 @@ export default function GeneratorCreationDialog({
     const onSubmit = useCallback(
         (generator: GeneratorCreationDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn =
+                toReactiveCapabilityCurveChoiceForGeneratorCreation(reactiveLimits, editData) === 'CURVE';
             const isDistantRegulation = generator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
 
             const generatorCreationInfos = {
@@ -324,10 +331,7 @@ export default function GeneratorCreationDialog({
                 modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'GeneratorCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'GeneratorCreationError' });
             });
         },
         [currentNodeUuid, editData, studyUuid, snackError]

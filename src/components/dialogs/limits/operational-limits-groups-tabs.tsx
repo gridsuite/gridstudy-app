@@ -5,83 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import { Grid, Tab, Tabs } from '@mui/material';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
-    APPLICABIlITY,
-    CURRENT_LIMITS,
-    ID,
     LIMITS_PROPERTIES,
     OPERATIONAL_LIMITS_GROUPS,
-    PERMANENT_LIMIT,
-    SELECTED,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
-    TEMPORARY_LIMIT_DURATION,
-    TEMPORARY_LIMIT_NAME,
-    TEMPORARY_LIMIT_VALUE,
-    TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { CurrentLimitsData, OperationalLimitsGroup } from '../../../services/network-modification-types';
-import MenuIcon from '@mui/icons-material/Menu';
-import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
-import { isBlankOrEmpty } from '../../utils/validation-functions';
-import { FormattedMessage } from 'react-intl';
-import { tabStyles } from 'components/utils/tab-utils';
-import { APPLICABILITY } from '../../network/constants';
-import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
-import { grey } from '@mui/material/colors';
-import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
-import { LimitsPropertiesStack } from './limits-properties-stack';
-
-const limitsStyles = {
-    limitsBackground: {
-        p: 1,
-        minHeight: 60,
-    },
-    copyLimitsToRightBackground: {
-        height: 200,
-        display: 'flex',
-    },
-    copyLimitsToLeftBackground: {
-        height: '50%',
-    },
-    copyLimitsButtons: {
-        alignSelf: 'flex-end',
-        minWidth: '0px',
-        height: 'auto',
-        padding: '1',
-    },
-} as const satisfies MuiStyles;
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
+import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
+import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
+import { CurrentLimitsData } from 'services/study/network-map.type';
+import { generateEmptyOperationalLimitsGroup, generateUniqueId } from './operational-limits-groups-utils';
+import { limitsStyles } from './operational-limits-groups-styles';
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
-    limitsGroups: OperationalLimitsGroupFormInfos[];
+    limitsGroups: OperationalLimitsGroupFormSchema[];
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
-    checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
-    isAModification: boolean;
     currentLimitsToModify: CurrentLimitsData[];
     editable: boolean;
-}
-
-function generateUniqueId(baseName: string, names: string[]): string {
-    let finalId = baseName;
-    let found = false;
-    let increment = 1;
-    let suffix = '';
-    do {
-        found = names.includes(baseName + suffix, 0);
-        if (found) {
-            increment++;
-            suffix = '(' + increment + ')';
-            finalId = baseName + suffix;
-        }
-    } while (found);
-
-    return finalId;
 }
 
 export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGroupsTabsProps>(
@@ -91,20 +38,29 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             limitsGroups,
             setIndexSelectedLimitSet,
             indexSelectedLimitSet,
-            checkLimitSetUnicity,
-            isAModification,
             editable,
             currentLimitsToModify,
         },
         ref
     ) => {
         const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
-        const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
-        const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
-        const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
-        const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
-        const [editionError, setEditionError] = useState<string>('');
-        const { setValue, getValues } = useFormContext();
+        const [contextMenuCoordinates, setContextMenuCoordinates] = useState<ContextMenuCoordinates>({
+            x: null,
+            y: null,
+            tabIndex: null,
+        });
+        const { getValues } = useFormContext();
+        const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
+        const {
+            fields: operationalLimitsGroups,
+            append: appendToLimitsGroups,
+            prepend: prependToLimitsGroups,
+            remove: removeLimitsGroups,
+        } = useFieldArray<{
+            [key: string]: OperationalLimitsGroupFormSchema[];
+        }>({
+            name: operationalLimitsGroupsFormName,
+        });
         const selectedLimitsGroups1: string = useWatch({
             name: `${parentFormName}.${SELECTED_LIMITS_GROUP_1}`,
         });
@@ -112,53 +68,30 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             name: `${parentFormName}.${SELECTED_LIMITS_GROUP_2}`,
         });
 
-        // control of the focus on the edited tab
-        const [editLimitGroupRef, setEditLimitGroupRef] = useState<HTMLInputElement>();
-        const onRefSet = useCallback((ref: HTMLInputElement) => {
-            setEditLimitGroupRef(ref);
-        }, []);
-        useEffect(() => {
-            if (editingTabIndex !== -1 && editLimitGroupRef) {
-                editLimitGroupRef.focus();
-            }
-        }, [editingTabIndex, editLimitGroupRef]);
-
-        const handleTabChange = useCallback(
-            (event: React.SyntheticEvent, newValue: number): void => {
-                // if editing do not change index
-                if (editingTabIndex !== -1) {
+        const handleOpenMenu = useCallback(
+            (event: React.MouseEvent<HTMLElement>, index: number): void => {
+                if (!editable) {
                     return;
                 }
-                setIndexSelectedLimitSet(newValue);
-            },
-            [editingTabIndex, setIndexSelectedLimitSet]
-        );
-
-        const handleOpenMenu = useCallback(
-            (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
+                event.preventDefault();
                 event.stopPropagation();
-                setMenuAnchorEl(event.currentTarget);
                 setIndexSelectedLimitSet(index);
-                setActivatedByMenuTabIndex(index);
+                setContextMenuCoordinates({
+                    x: event.clientX,
+                    y: event.clientY,
+                    tabIndex: index,
+                });
             },
-            [setMenuAnchorEl, setIndexSelectedLimitSet, setActivatedByMenuTabIndex]
+            [editable, setIndexSelectedLimitSet]
         );
 
         const handleCloseMenu = useCallback(() => {
-            setMenuAnchorEl(null);
-            setActivatedByMenuTabIndex(null);
-        }, [setMenuAnchorEl, setActivatedByMenuTabIndex]);
-
-        const startEditingLimitsGroup = useCallback(
-            (index: number, name: string | null) => {
-                name ??= limitsGroups[index].name;
-                setEditionError('');
-                setEditingTabIndex(index);
-                setEditedLimitGroupName(name);
-                handleCloseMenu();
-            },
-            [setEditingTabIndex, handleCloseMenu, limitsGroups]
-        );
+            setContextMenuCoordinates({
+                x: null,
+                y: null,
+                tabIndex: null,
+            });
+        }, [setContextMenuCoordinates]);
 
         useEffect(() => {
             // as long as there are limit sets, one should be selected
@@ -168,200 +101,60 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         }, [indexSelectedLimitSet, setIndexSelectedLimitSet, limitsGroups]);
 
         const prependEmptyOperationalLimitsGroup = useCallback(
-            (formName: string, name: string) => {
-                setEditingTabIndex(0);
-                let operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
-                if (operationalLimiSetGroups?.length === 0) {
-                    setValue(formName, []);
-                }
-
-                // new limit sets are created with 5 empty limits by default
-                const emptyTemporaryLimit = {
-                    [TEMPORARY_LIMIT_NAME]: '',
-                    [TEMPORARY_LIMIT_DURATION]: null,
-                    [TEMPORARY_LIMIT_VALUE]: null,
-                    modificationType: null,
-                    [SELECTED]: false,
-                };
-                const newLimitsGroup: OperationalLimitsGroup = {
-                    [ID]: name + APPLICABILITY.EQUIPMENT.id,
-                    [NAME]: name,
-                    [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
-                    [LIMITS_PROPERTIES]: [],
-                    [CURRENT_LIMITS]: {
-                        [ID]: name,
-                        [TEMPORARY_LIMITS]: [emptyTemporaryLimit],
-                        [PERMANENT_LIMIT]: null,
-                    },
-                };
-                setValue(formName, [newLimitsGroup, ...getValues(formName)]);
+            (name: string) => {
+                prependToLimitsGroups(generateEmptyOperationalLimitsGroup(name));
             },
-            [getValues, setValue]
-        );
-
-        const finishEditingLimitsGroup = useCallback(() => {
-            if (editingTabIndex !== -1) {
-                if (isBlankOrEmpty(editedLimitGroupName)) {
-                    setEditionError('LimitSetCreationEmptyError');
-                    return;
-                }
-
-                const oldName: string = limitsGroups[editingTabIndex].name;
-                const applicability = limitsGroups[editingTabIndex].applicability;
-                const errorMessage: string = checkLimitSetUnicity(
-                    editedLimitGroupName,
-                    limitsGroups[editingTabIndex].applicability ?? ''
-                );
-                if (errorMessage.length > 0) {
-                    setEditionError(errorMessage);
-                    return;
-                }
-
-                if (editingTabIndex !== undefined) {
-                    setValue(
-                        `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${editingTabIndex}].${NAME}`,
-                        editedLimitGroupName
-                    );
-                    const finalId: string = editedLimitGroupName + limitsGroups[editingTabIndex].applicability;
-                    setValue(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${editingTabIndex}].${ID}`, finalId);
-                    if (
-                        getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`) === oldName &&
-                        (applicability === APPLICABILITY.SIDE1.id || applicability === APPLICABILITY.EQUIPMENT.id)
-                    ) {
-                        setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, editedLimitGroupName);
-                    }
-                    if (
-                        getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`) === oldName &&
-                        (applicability === APPLICABILITY.SIDE2.id || applicability === APPLICABILITY.EQUIPMENT.id)
-                    ) {
-                        setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, editedLimitGroupName);
-                    }
-                }
-                setIndexSelectedLimitSet(editingTabIndex);
-                setEditingTabIndex(-1);
-                setEditionError('');
-            }
-        }, [
-            parentFormName,
-            setValue,
-            getValues,
-            editingTabIndex,
-            editedLimitGroupName,
-            limitsGroups,
-            setEditingTabIndex,
-            setIndexSelectedLimitSet,
-            checkLimitSetUnicity,
-        ]);
-
-        const handleKeyDown = useCallback(
-            (event: React.KeyboardEvent) => {
-                if (event.key === 'Enter') {
-                    finishEditingLimitsGroup();
-                }
-            },
-            [finishEditingLimitsGroup]
+            [prependToLimitsGroups]
         );
 
         const addNewLimitSet = useCallback(() => {
             const formName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
-            const operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
+            const operationalLimitSetGroups: OperationalLimitsGroup[] = getValues(formName);
             let name = 'DEFAULT';
-            if (operationalLimiSetGroups?.length > 0) {
-                const ids: string[] = operationalLimiSetGroups.map((l) => l.name);
+
+            // Try to generate unique name
+            if (operationalLimitSetGroups?.length > 0) {
+                const ids: string[] = operationalLimitSetGroups.map((l) => l.name);
                 name = generateUniqueId('DEFAULT', ids);
             }
-            prependEmptyOperationalLimitsGroup(formName, name);
-            startEditingLimitsGroup(0, name);
+            prependEmptyOperationalLimitsGroup(name);
             setIndexSelectedLimitSet(0);
-        }, [
-            parentFormName,
-            getValues,
-            prependEmptyOperationalLimitsGroup,
-            startEditingLimitsGroup,
-            setIndexSelectedLimitSet,
-        ]);
+        }, [parentFormName, getValues, prependEmptyOperationalLimitsGroup, setIndexSelectedLimitSet]);
 
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 
+        const handleTabChange = useCallback(
+            (_event: React.SyntheticEvent, newValue: number): void => {
+                setIndexSelectedLimitSet(newValue);
+            },
+            [setIndexSelectedLimitSet]
+        );
+
         return (
-            <>
+            <Grid>
                 <Tabs
                     orientation="vertical"
-                    variant="fullWidth"
+                    variant="scrollable"
                     value={indexSelectedLimitSet !== null && indexSelectedLimitSet}
                     onChange={handleTabChange}
-                    sx={tabStyles.listDisplay}
-                    visibleScrollbar
+                    sx={limitsStyles.tabs}
                 >
-                    {limitsGroups.map((opLg: OperationalLimitsGroupFormInfos, index: number) => (
+                    {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
                         <Tab
                             onMouseEnter={() => setHoveredRowIndex(index)}
-                            onMouseLeave={() => setHoveredRowIndex(-1)}
+                            onContextMenu={(e) => handleOpenMenu(e, index)}
                             key={opLg.id + index}
+                            disableRipple
+                            sx={limitsStyles.tabBackground}
                             label={
-                                editingTabIndex === index ? (
-                                    <TextField
-                                        value={editedLimitGroupName}
-                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                            setEditedLimitGroupName(event.target.value);
-                                        }}
-                                        onKeyDown={handleKeyDown}
-                                        inputRef={onRefSet}
-                                        onBlur={() => finishEditingLimitsGroup()}
-                                        error={!!editionError}
-                                        helperText={!!editionError && <FormattedMessage id={editionError} />}
-                                        size="small"
-                                        fullWidth
-                                    />
-                                ) : (
-                                    <Box
-                                        sx={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            boxSizing: 'inherit',
-                                            justifyContent: 'space-between',
-                                        }}
-                                    >
-                                        <Stack direction="row" spacing={1}>
-                                            <Stack spacing={0}>
-                                                {opLg.name}
-                                                {opLg?.applicability ? (
-                                                    <Typography noWrap align="left" color={grey[500]}>
-                                                        <FormattedMessage
-                                                            id={
-                                                                Object.values(APPLICABILITY).find(
-                                                                    (item) => item.id === opLg.applicability
-                                                                )?.label
-                                                            }
-                                                        />
-                                                    </Typography>
-                                                ) : (
-                                                    ''
-                                                )}
-                                            </Stack>
-                                            {!isAModification && (
-                                                <LimitsPropertiesStack
-                                                    name={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
-                                                />
-                                            )}
-                                        </Stack>
-
-                                        {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
-                                            <IconButton
-                                                size="small"
-                                                onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                                                    handleOpenMenu(e, index)
-                                                }
-                                                // during the naming of a limit set no other limit set manipulation is allowed :
-                                                disabled={!editable || editingTabIndex !== -1}
-                                            >
-                                                <MenuIcon fontSize="small" />
-                                            </IconButton>
-                                        )}
-                                    </Box>
-                                )
+                                <OperationalLimitsGroupTabLabel
+                                    operationalLimitsGroup={opLg}
+                                    showIconButton={editable && index === hoveredRowIndex}
+                                    limitsPropertiesName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
+                                    handleOpenMenu={handleOpenMenu}
+                                    index={index}
+                                />
                             }
-                            sx={limitsStyles.limitsBackground}
                         />
                     ))}
                 </Tabs>
@@ -369,16 +162,16 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     parentFormName={parentFormName}
                     indexSelectedLimitSet={indexSelectedLimitSet}
                     setIndexSelectedLimitSet={setIndexSelectedLimitSet}
-                    menuAnchorEl={menuAnchorEl}
                     handleCloseMenu={handleCloseMenu}
-                    activatedByMenuTabIndex={activatedByMenuTabIndex}
-                    startEditingLimitsGroup={startEditingLimitsGroup}
+                    contextMenuCoordinates={contextMenuCoordinates}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
-                    isModification={isAModification}
                     currentLimitsToModify={currentLimitsToModify}
+                    operationalLimitsGroups={operationalLimitsGroups}
+                    appendToLimitsGroups={appendToLimitsGroups}
+                    removeLimitsGroups={removeLimitsGroups}
                 />
-            </>
+            </Grid>
         );
     }
 );

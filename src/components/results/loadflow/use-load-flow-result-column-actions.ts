@@ -13,22 +13,24 @@ import { BranchSide } from '../../utils/constants';
 import type { UUID } from 'node:crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
+import { openSLD } from '../../../redux/slices/workspace-slice';
+import { PanelType } from '../../workspace/types/workspace.types';
+import { useDispatch } from 'react-redux';
 
 type UseLoadFlowResultColumnActionsProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    openVoltageLevelDiagram: (id: string) => void;
 };
 
 export const useLoadFlowResultColumnActions = ({
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    openVoltageLevelDiagram,
 }: UseLoadFlowResultColumnActionsProps) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
+    const dispatch = useDispatch();
 
     const getBranchSide = useCallback(
         (side: string | undefined) => {
@@ -64,21 +66,21 @@ export const useLoadFlowResultColumnActions = ({
                             }
                         })
                         .finally(() => {
-                            if (!vlId) {
-                                snackError({
-                                    messageId: 'NetworkEquipmentNotFound',
-                                    messageValues: {
-                                        equipmentId: row.subjectId || '',
-                                    },
-                                });
-                            } else if (openVoltageLevelDiagram) {
-                                openVoltageLevelDiagram(vlId);
+                            if (vlId) {
+                                dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                                return;
                             }
+                            snackError({
+                                messageId: 'NetworkEquipmentNotFound',
+                                messageValues: {
+                                    equipmentId: row.subjectId || '',
+                                },
+                            });
                         });
                 }
             }
         },
-        [studyUuid, nodeUuid, currentRootNetworkUuid, getBranchSide, openVoltageLevelDiagram, snackError]
+        [studyUuid, nodeUuid, currentRootNetworkUuid, getBranchSide, dispatch, snackError]
     );
 
     return { onLinkClick };

@@ -13,12 +13,12 @@ import type { UUID } from 'node:crypto';
 
 export const MIN_WIDTH = 150;
 export const MIN_HEIGHT = 150;
-export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
-export const MAX_HEIGHT_VOLTAGE_LEVEL = 700;
-export const MAX_WIDTH_SUBSTATION = 1200;
-export const MAX_HEIGHT_SUBSTATION = 700;
-export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = 1200;
-export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
+export const MAX_WIDTH_VOLTAGE_LEVEL = Infinity;
+export const MAX_HEIGHT_VOLTAGE_LEVEL = Infinity;
+export const MAX_WIDTH_SUBSTATION = Infinity;
+export const MAX_HEIGHT_SUBSTATION = Infinity;
+export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = Infinity;
+export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = Infinity;
 
 // Array of zoom levels used to determine level-of-detail rendering by applying in the network-viewer the
 // corresponding css class 'nad-zoom-{level}' to the NAD's SVG.
@@ -52,8 +52,10 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
                 equipmentType: EquipmentType.HVDC_LINE,
                 equipmentSubtype: ExtendedEquipmentType.HVDC_LINE_VSC,
             };
-        case FEEDER_TYPES.HVDC_LINE:
-            return { equipmentType: EquipmentType.HVDC_LINE };
+        case FEEDER_TYPES.HVDC_LINE_VSC:
+            return { equipmentType: EquipmentType.HVDC_LINE, equipmentSubtype: ExtendedEquipmentType.HVDC_LINE_VSC };
+        case FEEDER_TYPES.HVDC_LINE_LCC:
+            return { equipmentType: EquipmentType.HVDC_LINE, equipmentSubtype: ExtendedEquipmentType.HVDC_LINE_LCC };
         case FEEDER_TYPES.CAPACITOR:
         case FEEDER_TYPES.INDUCTOR:
             return { equipmentType: EquipmentType.SHUNT_COMPENSATOR };

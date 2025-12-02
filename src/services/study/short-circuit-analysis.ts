@@ -12,8 +12,8 @@ import {
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { GsLang, backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
+import { Selector } from 'components/results/common/utils';
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
@@ -21,12 +21,6 @@ interface ShortCircuitAnalysisResult {
     currentRootNetworkUuid?: UUID;
     type: ShortCircuitAnalysisType;
     globalFilters?: GlobalFilters;
-}
-interface Selector {
-    page: number;
-    size: number;
-    filter: FilterConfig[] | null;
-    sort: SortConfig[];
 }
 interface ShortCircuitAnalysisPagedResults extends ShortCircuitAnalysisResult {
     selector: Partial<Selector>;
@@ -180,14 +174,20 @@ export function fetchShortCircuitAnalysisPagedResults({
     return backendFetchJson(url);
 }
 
+// Matches CsvExportParams in short-circuit-server
+export type ShortCircuitCsvExportParams = {
+    csvHeader: string[] | undefined;
+    enumValueTranslations: Record<string, string>;
+    language: GsLang;
+    oneBusCase: boolean;
+};
+
 export function downloadShortCircuitResultZippedCsv(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     analysisType: number,
-    headersCsv: string[] | undefined,
-    enumValueTranslations: Record<string, string>,
-    language: GsLang
+    csvParams: ShortCircuitCsvExportParams
 ) {
     console.info(
         `Fetching short-circuit analysis export csv on ${studyUuid} , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
@@ -210,6 +210,6 @@ export function downloadShortCircuitResultZippedCsv(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ headersCsv, enumValueTranslations, language }),
+        body: JSON.stringify(csvParams),
     });
 }
