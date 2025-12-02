@@ -99,9 +99,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         showInSpreadsheet,
         onSaveNad,
     } = props;
-    const svgRef = useRef();
+    const svgRef = useRef(null);
     const { snackError, snackInfo } = useSnackMessage();
-    const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>();
+    const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>(null);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [showLabels, setShowLabels] = useState(true);
@@ -265,6 +265,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     equipmentSubtype
                 );
             };
+            setShouldDisplayTooltip(false);
 
             if (equipmentType === EquipmentType.HVDC_LINE) {
                 // need a query to know the HVDC converters type (LCC vs VSC)
@@ -300,7 +301,15 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 }
             }
         },
-        [isEditNadMode, openEquipmentMenu, currentNode?.id, currentRootNetworkUuid, studyUuid, snackError]
+        [
+            isEditNadMode,
+            openEquipmentMenu,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            studyUuid,
+            snackError,
+            setShouldDisplayTooltip,
+        ]
     );
 
     const handleAddVoltageLevel = useCallback(

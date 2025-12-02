@@ -23,7 +23,7 @@ const defaultColDef: ColDef = {
 };
 
 interface LimitsCustomAgGridProps {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     currentTab: number;
     aerialRowData: LineTypeInfo[];
     undergroundRowData: LineTypeInfo[];

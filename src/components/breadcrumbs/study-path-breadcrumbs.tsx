@@ -21,7 +21,13 @@ const styles = {
     tooltipItem: {
         display: 'flex',
         alignItems: 'center',
-        flexWrap: 'nowrap',
+        flexWrap: 'wrap',
+    },
+    breadcrumbItem: {
+        maxWidth: 500,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     },
 } as const satisfies MuiStyles;
 
@@ -81,8 +87,12 @@ export default function StudyPathBreadcrumbs({
             >
                 <MoreHoriz sx={{ display: 'flex', alignItems: 'center' }} />
             </Tooltip>
-            <Box>{studyName}</Box>
-            <Box>{nodeLabel}</Box>
+            <Tooltip title={studyName || ''}>
+                <Box sx={styles.breadcrumbItem}>{studyName}</Box>
+            </Tooltip>
+            <Tooltip title={nodeLabel || ''}>
+                <Box sx={styles.breadcrumbItem}>{nodeLabel}</Box>
+            </Tooltip>
             {rootNetworks && rootNetworks.length > 1 && (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <RootNetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />

@@ -163,6 +163,7 @@ const spreadsheetFr = {
 
     //Formula errors
     'spreadsheet/formula/error': '#ERREUR',
+    'spreadsheet/formula/error/generic': 'La formule renvoie une erreur',
     'spreadsheet/formula/import/disabled': 'La fonction import est désactivée',
     'spreadsheet/formula/createUnit/disabled': 'La fonction createUnit est désactivée',
     'spreadsheet/formula/evaluate/disabled': 'La fonction evaluate est désactivée',
@@ -176,6 +177,8 @@ const spreadsheetFr = {
     'spreadsheet/formula/type/boolean': 'La formule doit exprimer une donnée booléenne',
     'spreadsheet/formula/type/enum': 'La formule doit exprimer une donnée textuelle ou numérique',
     'spreadsheet/formula/type/unknown': 'Type de donnée inconnu',
+    'spreadsheet/formula/function-reference/disabled':
+        'Les références de fonctions sont désactivées, elles doivent être appelées avec des paramètres',
 
     // Column types
     TEXT: 'Texte',

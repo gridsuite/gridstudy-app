@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Box, Tabs, Tab, Theme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
+import { OverflowableText } from '@gridsuite/commons-ui';
 import { selectOpenPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
 import { closePanel, focusPanel, toggleMinimize } from '../../../redux/slices/workspace-slice';
 import { PanelType } from '../types/workspace.types';
@@ -35,6 +36,27 @@ const styles = {
             backgroundColor: 'action.hover',
         },
         '& .MuiSvgIcon-root': { fontSize: 14 },
+    },
+    tabLabel: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+    },
+    tabContent: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 0.5,
+        width: 100,
+        overflow: 'hidden',
+    },
+    tabText: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+    tooltip: {
+        maxWidth: '720px',
     },
 } as const satisfies MuiStyles;
 
@@ -95,9 +117,15 @@ export const WorkspaceDock = memo(() => {
                         onMouseEnter={() => setHoveredTab(panel.id)}
                         onMouseLeave={() => setHoveredTab(null)}
                         label={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                {getPanelConfig(panel.type).icon}
-                                <span>{panel.title}</span>
+                            <Box sx={styles.tabLabel}>
+                                <Box sx={styles.tabContent}>
+                                    {getPanelConfig(panel.type).icon}
+                                    <OverflowableText
+                                        text={panel.title}
+                                        sx={styles.tabText}
+                                        tooltipSx={styles.tooltip}
+                                    />
+                                </Box>
                                 <Box
                                     component="span"
                                     sx={{
