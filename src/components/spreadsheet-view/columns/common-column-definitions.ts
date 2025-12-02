@@ -78,8 +78,8 @@ export const enumColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
                     displayName: 'customInRange', // translation key
                     predicate: (filterValues: string[], cellValue: string | number) => {
                         if (!filterValues[0]) return false;
-
-                        // We receive here the filter enum values as a string (filterValue)
+                        // filterValues[0] contains the selected enum values as a comma-separated string.
+                        // Convert it to an array and check for exact matches.
                         const allowedValues = filterValues[0].split(',');
                         return allowedValues.includes(String(cellValue));
                     },
