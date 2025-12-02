@@ -1813,37 +1813,12 @@ export const reducer = createReducer(initialState, (builder) => {
             });
     });
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
-        const { filterType, tabId, filters } = action;
-
-        if (!state.computationFilters[filterType]) {
-            state.computationFilters[filterType] = {
-                id: '',
-                columnsFilters: {},
-                globalFilters: [],
-            };
-        }
-
-        if (!state.computationFilters[filterType]!.columnsFilters[tabId]) {
-            state.computationFilters[filterType]!.columnsFilters[tabId] = {
-                id: tabId,
-                columns: [],
-            };
-        }
-
-        state.computationFilters[filterType]!.columnsFilters[tabId].columns = filters;
+        const { filterType, filterSubType, filters } = action;
+        state.computationFilters[filterType]!.columnsFilters[filterSubType].columns = filters;
     });
 
     builder.addCase(UPDATE_GLOBAL_FILTERS, (state, action: UpdateGlobalFiltersAction) => {
         const { filterType, globalFilters } = action;
-
-        if (!state.computationFilters[filterType]) {
-            state.computationFilters[filterType] = {
-                id: '',
-                columnsFilters: {},
-                globalFilters: {} as GlobalFilter[],
-            };
-        }
-
         state.computationFilters[filterType]!.globalFilters = globalFilters;
     });
 });

@@ -1100,7 +1100,7 @@ export interface InitComputationResultFiltersAction {
 export type UpdateColumnFiltersAction = {
     type: typeof UPDATE_COLUMN_FILTERS;
     filterType: FilterType;
-    tabId: string;
+    filterSubType: string;
     filters: FilterConfig[];
 };
 
@@ -1115,12 +1115,12 @@ export function initComputationResultFilters(filters: ComputationFiltersState): 
 
 export const updateColumnFiltersAction = (
     filterType: FilterType,
-    tabId: string,
+    filterSubType: string,
     filters: FilterConfig[]
 ): UpdateColumnFiltersAction => ({
     type: UPDATE_COLUMN_FILTERS,
     filterType,
-    tabId,
+    filterSubType,
     filters,
 });
 

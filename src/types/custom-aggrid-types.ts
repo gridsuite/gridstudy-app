@@ -48,12 +48,6 @@ export enum FilterType {
     VoltageInit = 'VoltageInit',
 }
 
-export enum FilterSubType {
-    LOADFLOW_CURRENT_LIMIT_VIOLATION = 'loadflowCurrentLimitViolation',
-    LOADFLOW_VOLTAGE_LIMIT_VIOLATION = 'loadflowVoltageLimitViolation',
-    SECURITY_ANALYSIS_RESULT_N = 'securityAnalysisResultN',
-}
-
 export type FilterData = {
     dataType?: string;
     type?: string;

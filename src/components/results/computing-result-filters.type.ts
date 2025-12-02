@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterConfig, FilterSubType, FilterType } from '../../types/custom-aggrid-types';
+import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
 import { GlobalFilter } from './common/global-filter/global-filter-types';
 import { ComputationFiltersState } from '../../redux/reducer';
 
-const backendToFrontendFilterTypeMap: Record<string, FilterType> = {
+const mappingComputationTypeToFilterType: Record<string, FilterType> = {
     LOAD_FLOW: FilterType.Loadflow,
     SECURITY_ANALYSIS: FilterType.SecurityAnalysis,
     SENSITIVITY_ANALYSIS: FilterType.SensitivityAnalysis,
@@ -19,10 +19,22 @@ const backendToFrontendFilterTypeMap: Record<string, FilterType> = {
     VOLTAGE_INITIALIZATION: FilterType.VoltageInit,
 };
 
-const backendToFrontendFilterSubTypeMap: Record<string, FilterSubType> = {
-    LOADFLOW_CURRENT_LIMIT_VIOLATION: FilterSubType.LOADFLOW_CURRENT_LIMIT_VIOLATION,
-    LOADFLOW_VOLTAGE_LIMIT_VIOLATION: FilterSubType.LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
-    SECURITY_ANALYSIS_RESULT_N: FilterSubType.SECURITY_ANALYSIS_RESULT_N,
+const mappingComputationSubTypeToFilterSubType: Record<string, string> = {
+    LOADFLOW_CURRENT_LIMIT_VIOLATION: 'loadflowCurrentLimitViolation',
+    LOADFLOW_VOLTAGE_LIMIT_VIOLATION: 'loadflowVoltageLimitViolation',
+    SECURITY_ANALYSIS_RESULT_N: 'securityAnalysisResultN',
+    SECURITY_ANALYSIS_RESULT_N_K: 'securityAnalysisResultNK',
+    SENSITIVITY_IN_DELTA_MW_N: 'sensitivityInDeltaMWN',
+    SENSITIVITY_IN_DELTA_MW_N_K: 'sensitivityInDeltaMWNK',
+    SENSITIVITY_IN_DELTA_A_N: 'sensitivityInDeltaAN',
+    SENSITIVITY_IN_DELTA_A_N_K: 'sensitivityInDeltaANK',
+    SENSITIVITY_AT_NODE_N: 'sensitivityAtNodeN',
+    SENSITIVITY_AT_NODE_N_K: 'sensitivityAtNodeNK',
+    ONE_BUS: 'oneBus',
+    TIMELINE: 'timeline',
+    STATEESTIMATION_QUALITY_CRITERION: 'stateEstimationQualityCriterion',
+    STATEESTIMATION_QUALITY_PER_REGION: 'stateEstimationQualityPerRegion',
+    PCCMIN_RESULT: 'pccMinResults',
 };
 
 export type ComputationResultFiltersInfos = {
@@ -41,33 +53,34 @@ const mapColumn = (c: any): FilterConfig => ({
     dataType: c.filterDataType,
     tolerance: c.filterTolerance ?? undefined,
 });
-export function processComputationResultFilters(dto: ComputationResultFiltersInfos): ComputationFiltersState {
+export function setComputationResultFiltersState(filtersInfos: ComputationResultFiltersInfos): ComputationFiltersState {
     const state: ComputationFiltersState = {
-        id: dto.id,
+        id: filtersInfos.id,
     };
 
-    dto.computationResultFilters?.forEach((entry) => {
-        const mappedType = backendToFrontendFilterTypeMap[entry.computationType];
+    filtersInfos.computationResultFilters?.forEach((computationResultFilter) => {
+        const mappedType = mappingComputationTypeToFilterType[computationResultFilter.computationType];
         if (!mappedType) return;
         const columnsFilters = Object.fromEntries(
-            (entry.columnsFilters ?? []).map((cf) => {
-                // Key = subType (frontend mapping) OR cf.id as fallback
-                const key = backendToFrontendFilterSubTypeMap[cf.computationSubType] ?? cf.id;
+            (computationResultFilter.columnsFilters ?? []).map((computationResultColumnsFilters) => {
+                const key =
+                    mappingComputationSubTypeToFilterSubType[computationResultColumnsFilters.computationSubType] ??
+                    computationResultColumnsFilters.id;
 
                 return [
                     key,
                     {
-                        id: cf.id,
-                        columns: (cf.columns ?? []).map(mapColumn),
+                        id: computationResultColumnsFilters.id,
+                        columns: (computationResultColumnsFilters.columns ?? []).map(mapColumn),
                     },
                 ];
             })
         );
 
         state[mappedType] = {
-            id: entry.id,
+            id: computationResultFilter.id,
             columnsFilters,
-            globalFilters: entry.globalFilters ?? {},
+            globalFilters: computationResultFilter.globalFilters ?? {},
         };
     });
     return state;

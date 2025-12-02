@@ -76,12 +76,11 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
     const exportCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
-        const mappedFilters =
-            filters?.map((elem) => {
-                const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
-                const newColumn = keyMap[elem.column as keyof typeof keyMap];
-                return { ...elem, column: newColumn };
-            }) ?? [];
+        const mappedFilters = filters?.map((elem) => {
+            const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
+            const newColumn = keyMap[elem.column as keyof typeof keyMap];
+            return { ...elem, column: newColumn };
+        });
         const sortSelector = sortConfig?.length
             ? {
                   sortKeysWithWeightAndDirection: Object.fromEntries(

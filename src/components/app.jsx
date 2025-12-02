@@ -73,7 +73,7 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
-import { processComputationResultFilters } from './results/computing-result-filters.type.ts';
+import { setComputationResultFiltersState } from './results/computing-result-filters.type.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -319,10 +319,13 @@ const App = () => {
                 resetTableDefinitions(collection);
             });
 
-            const fetchComputationResultFiltersPromise = getComputationResultFilters(studyUuid).then((collection) => {
-                const processed = processComputationResultFilters(collection);
-                dispatch(initComputationResultFilters(processed));
-            });
+            const fetchComputationResultFiltersPromise = getComputationResultFilters(studyUuid).then(
+                (computationResultFiltersInfos) => {
+                    const computationResultFiltersState =
+                        setComputationResultFiltersState(computationResultFiltersInfos);
+                    dispatch(initComputationResultFilters(computationResultFiltersState));
+                }
+            );
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {

@@ -26,7 +26,6 @@ export function useComputationColumnsFilters(filterType: FilterType, filterTab: 
             const colDto = {
                 name: colId,
                 id: colId,
-                type: 'TEXT',
                 filterDataType: filter?.dataType,
                 filterType: filter?.type,
                 filterValue: filter?.value,
