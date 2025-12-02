@@ -10,9 +10,10 @@ import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mu
 import { RunningStatus } from '../utils/running-status';
 import { generateRows, styles } from './generic-equipment-popover-utils';
 import { CellRender } from './cell-render';
+import { BranchEquipmentInfos } from '@gridsuite/commons-ui';
 
 interface LimitsTableProps {
-    equipmentInfos: any;
+    equipmentInfos: BranchEquipmentInfos;
     loadFlowStatus?: RunningStatus;
 }
 

@@ -34,9 +34,9 @@ import { Point } from '@svgdotjs/svg.js';
 import {
     ComputingType,
     ElementType,
-    EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
+    GenericEquipmentInfos,
     IElementCreationDialog,
     IElementUpdateDialog,
     mergeSx,
@@ -497,7 +497,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 equipmentType={hoveredEquipmentType as EquipmentType}
                 loadFlowStatus={loadFlowStatus}
             >
-                {(equipmentInfos: EquipmentInfos) => (
+                {(equipmentInfos: GenericEquipmentInfos) => (
                     <PopoverContent
                         equipmentInfos={equipmentInfos}
                         loadFlowStatus={loadFlowStatus}

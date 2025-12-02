@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { EquipmentInfos, EquipmentType, useDebounce } from '@gridsuite/commons-ui';
+import { BranchEquipmentInfos, EquipmentType, GenericEquipmentInfos, useDebounce } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'node:crypto';
 
@@ -27,7 +27,7 @@ interface GenericEquipmentPopoverProps {
     equipmentId?: string;
     equipmentType?: EquipmentType;
     loadFlowStatus?: RunningStatus;
-    children?: (equipmentInfos: EquipmentInfos) => ReactNode;
+    children?: (equipmentInfos: GenericEquipmentInfos) => ReactNode;
 }
 
 const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
@@ -43,7 +43,7 @@ const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
 
     const [localAnchorEl, setLocalAnchorEl] = useState<HTMLElement | null>(null);
     const [localAnchorPosition, setLocalAnchorPosition] = useState<MenuAnchorPosition | null>(null);
-    const [equipmentInfos, setEquipmentInfo] = useState<EquipmentInfos | null>(null);
+    const [equipmentInfos, setEquipmentInfo] = useState<BranchEquipmentInfos | null>(null);
 
     const getNetworkElementInfos = useCallback(
         (

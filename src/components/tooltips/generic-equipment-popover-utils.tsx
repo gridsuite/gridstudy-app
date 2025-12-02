@@ -5,16 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { TableCell, TableRow } from '@mui/material';
-import { mergeSx, convertInputValue, FieldType, MuiStyles } from '@gridsuite/commons-ui';
+import { mergeSx, convertInputValue, FieldType, MuiStyles, BranchEquipmentInfos } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { RunningStatus } from '../utils/running-status';
 import { CurrentLimits } from 'services/network-modification-types';
 import { CellRender } from './cell-render';
 
-export const formatValue = (value: number | string | null, fixed?: number | string | null) => {
-    if (value != null && !Number.isNaN(value)) {
+export const formatValue = (value?: number | string | null, fixed?: number | string | null) => {
+    if (value && value != null && !Number.isNaN(value)) {
         if (typeof value === 'number') {
             if (typeof fixed === 'number') {
                 return value.toFixed(fixed);
@@ -98,7 +97,7 @@ export const renderVoltageLevelCharacteristics = (equipmentInfo: any, equipmentT
  * Generate the rows for current limits (permanent and temporary)
  */
 export const generateRows = (
-    equipmentInfos: any,
+    equipmentInfos: BranchEquipmentInfos,
     currentLimits: CurrentLimits,
     side: '1' | '2',
     loadFlowStatus?: RunningStatus

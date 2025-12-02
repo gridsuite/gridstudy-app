@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, GenericEquipmentInfos } from '@gridsuite/commons-ui';
 import { EquipmentPopoverMap } from './equipment-popover-map';
 import RunningStatus from 'components/utils/running-status';
 
 interface GenericPopoverContentProps {
     equipmentType?: EquipmentType | string;
-    equipmentInfos: any;
+    equipmentInfos: GenericEquipmentInfos;
     loadFlowStatus?: RunningStatus;
 }
 

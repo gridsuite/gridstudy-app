@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos } from '@gridsuite/commons-ui';
+import { BranchEquipmentInfos } from '@gridsuite/commons-ui';
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
 import { renderCommonCharacteristics, styles } from './generic-equipment-popover-utils';
 import { CellRender } from './cell-render';
 import { JSX } from 'react';
 
 interface CharacteristicsTableProps {
-    equipmentInfos: EquipmentInfos;
-    renderVoltageLevelCharacteristics?: (equipmentInfos: EquipmentInfos) => JSX.Element;
+    equipmentInfos: BranchEquipmentInfos;
+    renderVoltageLevelCharacteristics?: (equipmentInfos: BranchEquipmentInfos) => JSX.Element;
 }
 
 export const CharacteristicsTable: React.FC<CharacteristicsTableProps> = ({

@@ -31,8 +31,8 @@ import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hoo
 import { useTheme } from '@mui/material/styles';
 import {
     ComputingType,
-    EquipmentInfos,
     EquipmentType,
+    GenericEquipmentInfos,
     mergeSx,
     snackWithFallback,
     useSnackMessage,
@@ -334,7 +334,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 loadFlowStatus={loadFlowStatus}
                 anchorPosition={undefined}
             >
-                {(equipmentInfos: EquipmentInfos) => (
+                {(equipmentInfos: GenericEquipmentInfos) => (
                     <PopoverContent
                         equipmentInfos={equipmentInfos}
                         loadFlowStatus={loadFlowStatus}

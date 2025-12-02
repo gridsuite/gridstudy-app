@@ -36,6 +36,7 @@ import {
     type EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
+    GenericEquipmentInfos,
     HvdcType,
     type MuiStyles,
     NotificationsUrlKeys,
@@ -957,7 +958,7 @@ export const NetworkMapPanel = ({
                     loadFlowStatus={loadFlowStatus}
                     anchorPosition={undefined}
                 >
-                    {(equipmentInfos: EquipmentInfos) => (
+                    {(equipmentInfos: GenericEquipmentInfos) => (
                         <PopoverContent
                             equipmentInfos={equipmentInfos}
                             loadFlowStatus={loadFlowStatus}

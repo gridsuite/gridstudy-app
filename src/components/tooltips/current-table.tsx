@@ -7,13 +7,13 @@
 
 import React from 'react';
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { BranchEquipmentInfos, mergeSx } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../utils/running-status';
 import { formatValue, styles } from './generic-equipment-popover-utils';
 import { CellRender } from './cell-render';
 
 interface CurrentTableProps {
-    equipmentInfos: any;
+    equipmentInfos: BranchEquipmentInfos;
     loadFlowStatus?: RunningStatus;
 }
 
@@ -49,14 +49,14 @@ export const CurrentTable: React.FC<CurrentTableProps> = ({ equipmentInfos, load
                                     opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
                                 })}
                             >
-                                {formatValue(Math.round(equipmentInfos?.i1))}
+                                {equipmentInfos?.i1 && formatValue(Math.round(equipmentInfos?.i1))}
                             </TableCell>
                             <TableCell
                                 sx={mergeSx(styles.cell, {
                                     opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
                                 })}
                             >
-                                {formatValue(Math.round(equipmentInfos?.i2))}
+                                {equipmentInfos?.i2 && formatValue(Math.round(equipmentInfos?.i2))}
                             </TableCell>
                         </TableRow>
                     </TableBody>
