@@ -21,7 +21,7 @@ export function useComputationColumnsFilters(filterType: FilterType, filterTab: 
     const persistFilters = useCallback(
         (colId: string, api: GridApi, filters: FilterConfig[]) => {
             const filter = filters.find((f) => f.column === colId);
-            if (!studyUuid || !computationResultFilterUuid || !filter) return;
+            if (!studyUuid || !computationResultFilterUuid || !columnUuid) return;
 
             const colDto = {
                 name: colId,
