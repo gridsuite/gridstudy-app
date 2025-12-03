@@ -22,5 +22,10 @@ export interface BranchEquipmentInfos extends EquipmentInfos {
     selectedOperationalLimitsGroup1?: string;
     selectedOperationalLimitsGroup2?: string;
 }
+export interface LoadEquipmentInfos {
+    type: string;
+    p0: number;
+    q0: number;
+}
 
-export type GenericEquipmentInfos = BranchEquipmentInfos;
+export type GenericEquipmentInfos = BranchEquipmentInfos | LoadEquipmentInfos;

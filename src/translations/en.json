@@ -478,6 +478,8 @@
     "loadType": "Type",
     "ConstantP": "Constant p (MW)",
     "ConstantQ": "Constant q (MVar)",
+    "ConsP": "Qcons (MW)",
+    "ConsQ": "Pcons (MW)",
     "DanglingLines": "Dangling Lines",
     "PairingKey": "UCTE Xnode",
     "HvdcLines": "HVDC Lines",
