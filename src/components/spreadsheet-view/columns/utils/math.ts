@@ -10,7 +10,14 @@ import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const instance = create(all);
 
-export const limitedEvaluate = instance.evaluate;
+const originalEvaluate = instance.evaluate;
+export const limitedEvaluate = (expr: string | string[], scope?: object) => {
+    const result = originalEvaluate(expr, scope);
+    if (typeof result === 'function') {
+        throw new MathJsValidationError('spreadsheet/formula/function-reference/disabled');
+    }
+    return result;
+};
 
 // Custom error class for MathJS validation errors
 export class MathJsValidationError extends Error {
