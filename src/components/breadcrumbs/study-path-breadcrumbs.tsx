@@ -8,19 +8,26 @@
 import { MoreHoriz } from '@mui/icons-material';
 import { Box, Breadcrumbs as MuiBreadcrumbs, Tooltip } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { CurrentTreeNode } from '../graph/tree-node.type';
+import { CurrentTreeNode, NodeType } from '../graph/tree-node.type';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
 import type { UUID } from 'node:crypto';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import RootNetworkSelect from './root-network-select';
+import { useIntl } from 'react-intl';
 
 const styles = {
     tooltipItem: {
         display: 'flex',
         alignItems: 'center',
-        flexWrap: 'nowrap',
+        flexWrap: 'wrap',
+    },
+    breadcrumbItem: {
+        maxWidth: 500,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     },
 } as const satisfies MuiStyles;
 
@@ -33,10 +40,13 @@ export default function StudyPathBreadcrumbs({
     studyName,
     parentDirectoriesNames,
 }: Readonly<StudyPathBreadcrumbsProps>) {
+    const intl = useIntl();
     const currentNode: CurrentTreeNode | null = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks: RootNetworkMetadata[] = useSelector((state: AppState) => state.rootNetworks);
     const currentRootNetworkTag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
+    const isRootNode = currentNode?.type === NodeType.ROOT;
+    const nodeLabel = isRootNode ? intl.formatMessage({ id: 'root' }) : currentNode?.data.label;
 
     return (
         <MuiBreadcrumbs
@@ -65,7 +75,7 @@ export default function StudyPathBreadcrumbs({
                             {studyName}
                             <KeyboardArrowRightIcon fontSize="small" />
                         </Box>
-                        <Box sx={styles.tooltipItem}>{currentNode?.data.label}</Box>
+                        <Box sx={styles.tooltipItem}>{nodeLabel}</Box>
                         {rootNetworks?.length > 1 && (
                             <Box sx={styles.tooltipItem}>
                                 <KeyboardArrowRightIcon fontSize="small" />
@@ -77,8 +87,12 @@ export default function StudyPathBreadcrumbs({
             >
                 <MoreHoriz sx={{ display: 'flex', alignItems: 'center' }} />
             </Tooltip>
-            <Box>{studyName}</Box>
-            <Box>{currentNode?.data?.label}</Box>
+            <Tooltip title={studyName || ''}>
+                <Box sx={styles.breadcrumbItem}>{studyName}</Box>
+            </Tooltip>
+            <Tooltip title={nodeLabel || ''}>
+                <Box sx={styles.breadcrumbItem}>{nodeLabel}</Box>
+            </Tooltip>
             {rootNetworks && rootNetworks.length > 1 && (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <RootNetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />

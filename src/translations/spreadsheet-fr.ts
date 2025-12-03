@@ -24,6 +24,8 @@ const spreadsheetFr = {
         'Un ID de colonne ne doit contenir ni espace ni caractère spécial et ne doit pas commencer par un chiffre',
     'spreadsheet/custom_column/error/id_le_60': 'Un ID de colonne ne peut dépasser 60 caractères',
     'spreadsheet/custom_column/error/name_le_60': 'Un nom de colonne ne peut dépasser 60 caractères',
+    'spreadsheet/custom_column/error/precision_0': 'La précision de la colonne doit être au moins 0',
+    'spreadsheet/custom_column/error/precision_100': 'La précision de la colonne ne peut dépasser 100',
     'spreadsheet/custom_column/update_custom_column': 'Modifier',
     'spreadsheet/custom_column/delete_custom_column': 'Supprimer',
     'spreadsheet/custom_column/duplicate_custom_column': 'Dupliquer',
@@ -161,6 +163,7 @@ const spreadsheetFr = {
 
     //Formula errors
     'spreadsheet/formula/error': '#ERREUR',
+    'spreadsheet/formula/error/generic': 'La formule renvoie une erreur',
     'spreadsheet/formula/import/disabled': 'La fonction import est désactivée',
     'spreadsheet/formula/createUnit/disabled': 'La fonction createUnit est désactivée',
     'spreadsheet/formula/evaluate/disabled': 'La fonction evaluate est désactivée',
@@ -174,6 +177,8 @@ const spreadsheetFr = {
     'spreadsheet/formula/type/boolean': 'La formule doit exprimer une donnée booléenne',
     'spreadsheet/formula/type/enum': 'La formule doit exprimer une donnée textuelle ou numérique',
     'spreadsheet/formula/type/unknown': 'Type de donnée inconnu',
+    'spreadsheet/formula/function-reference/disabled':
+        'Les références de fonctions sont désactivées, elles doivent être appelées avec des paramètres',
 
     // Column types
     TEXT: 'Texte',

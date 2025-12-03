@@ -44,8 +44,9 @@ import { useGetStateEstimationParameters } from './dialogs/parameters/state-esti
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
+import { closePanel } from 'redux/slices/workspace-slice';
+import type { UUID } from 'node:crypto';
 import {
     ComputingType,
     fetchSecurityAnalysisProviders,
@@ -61,6 +62,11 @@ import {
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
+import {
+    getShortCircuitParameters,
+    getShortCircuitSpecificParametersDescription,
+    setShortCircuitParameters,
+} from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 
 enum TAB_VALUES {
@@ -89,6 +95,7 @@ const ParametersTabs: FunctionComponent = () => {
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
+    const [pendingClosePanelId, setPendingClosePanelId] = useState<UUID | null>(null);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -177,10 +184,36 @@ const ParametersTabs: FunctionComponent = () => {
         sensitivityAnalysisBackend
     );
 
-    const shortCircuitParameters = useGetShortCircuitParameters();
+    const shortCircuitParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.SHORT_CIRCUIT,
+        OptionalServicesStatus.Up,
+        null,
+        null,
+        null,
+        null,
+        getShortCircuitParameters,
+        setShortCircuitParameters,
+        getShortCircuitSpecificParametersDescription
+    );
+    useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
+
     const pccMinParameters = useGetPccMinParameters();
     const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
+
+    // Listen for panel close requests from panel header
+    useEffect(() => {
+        const handleCloseRequest = (event: Event) => {
+            const customEvent = event as CustomEvent<UUID>;
+            setPendingClosePanelId(customEvent.detail);
+            setIsLeavingPopupOpen(true);
+        };
+
+        globalThis.addEventListener('parametersPanel:requestClose', handleCloseRequest);
+        return () => globalThis.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
+    }, []);
 
     useEffect(() => {
         if (attemptedLeaveParametersTabIndex !== null) {
@@ -207,14 +240,19 @@ const ParametersTabs: FunctionComponent = () => {
             setNextTabValue(undefined);
         } else if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(confirmLeaveParametersTab());
+        } else if (pendingClosePanelId !== null) {
+            // User confirmed close - actually close the panel
+            dispatch(closePanel(pendingClosePanelId));
+            setPendingClosePanelId(null);
         }
         dispatch(setDirtyComputationParameters(false));
         setIsLeavingPopupOpen(false);
-    }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch]);
 
     const handleLeavingPopupClose = useCallback(() => {
         setIsLeavingPopupOpen(false);
         setNextTabValue(undefined);
+        setPendingClosePanelId(null);
 
         if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(cancelLeaveParametersTab());
@@ -275,7 +313,7 @@ const ParametersTabs: FunctionComponent = () => {
                     <ShortCircuitParametersInLine
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
-                        shortCircuitParameters={shortCircuitParameters}
+                        parametersBackend={shortCircuitParametersBackend}
                         enableDeveloperMode={enableDeveloperMode}
                     />
                 );
@@ -327,7 +365,7 @@ const ParametersTabs: FunctionComponent = () => {
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,
-        shortCircuitParameters,
+        shortCircuitParametersBackend,
         pccMinParameters,
         user,
         voltageInitParameters,

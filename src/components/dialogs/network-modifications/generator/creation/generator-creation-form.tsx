@@ -166,9 +166,7 @@ export default function GeneratorCreationForm({
 
             {/* Short Circuit part */}
             <GridSection title="ShortCircuit" />
-            <Grid container spacing={2}>
-                <ShortCircuitForm />
-            </Grid>
+            <ShortCircuitForm />
 
             {/* Cost of start part */}
             <GridSection title="GenerationDispatch" />

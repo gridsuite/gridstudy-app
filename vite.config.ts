@@ -40,6 +40,7 @@ export default defineConfig((_config) => ({
                 dev: {
                     logLevel: ['error', 'warning'],
                 },
+                watchPath: './src',
             },
 
             overlay: false, // Disable overlay in browser

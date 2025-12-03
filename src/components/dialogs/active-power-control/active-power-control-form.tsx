@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { percentageTextField } from '../dialog-utils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import { useMemo } from 'react';
 import { FloatInput, SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import GridItem from '../commons/grid-item';
 import { ActivePowerControlInfos } from './active-power-control.type';
+import { InfoOutlined } from '@mui/icons-material';
 
 export interface ActivePowerControlFormProps {
     isEquipmentModification?: boolean;
@@ -60,10 +60,18 @@ export function ActivePowerControlForm({
         <FloatInput
             name={DROOP}
             label={'Droop'}
-            adornment={percentageTextField}
             previousValue={Number.isNaN(previousValues?.droop) ? undefined : (previousValues?.droop ?? undefined)}
             clearable={true}
         />
+    );
+
+    const descriptionTooltip = useMemo(
+        () => (
+            <Tooltip title={intl.formatMessage({ id: 'activePowerControlTooltip' })}>
+                <InfoOutlined color="info" fontSize="medium" />
+            </Tooltip>
+        ),
+        [intl]
     );
 
     return (
@@ -79,6 +87,7 @@ export function ActivePowerControlForm({
                 <GridItem size={4}>{frequencyRegulationField}</GridItem>
             )}
             <GridItem size={4}>{droopField}</GridItem>
+            <GridItem size={4}>{descriptionTooltip}</GridItem>
         </>
     );
 }

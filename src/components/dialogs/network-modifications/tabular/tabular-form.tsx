@@ -10,29 +10,30 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
     AutocompleteInput,
+    BooleanNullableCellRenderer,
     CustomAGGrid,
+    DefaultCellRenderer,
+    DirectoryItemSelector,
+    ElementType,
     ErrorInput,
     fetchStudyMetadata,
     FieldErrorAlert,
     LANG_FRENCH,
+    type MuiStyles,
+    type TreeViewFinderNodeProps,
     useSnackMessage,
     useStateBoolean,
-    DirectoryItemSelector,
-    ElementType,
-    type TreeViewFinderNodeProps,
-    type MuiStyles,
 } from '@gridsuite/commons-ui';
 import {
+    CSV_FILENAME,
     EQUIPMENT_ID,
     MODIFICATIONS_TABLE,
-    CSV_FILENAME,
     TABULAR_PROPERTIES,
     TYPE,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';

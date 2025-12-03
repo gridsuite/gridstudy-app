@@ -6,9 +6,9 @@
  */
 import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '@gridsuite/commons-ui';
 import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
-import type { ColDef, IFilterOptionDef, GridApi } from 'ag-grid-community';
+import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
@@ -76,9 +76,13 @@ export const enumColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
                 {
                     displayKey: 'customInRange',
                     displayName: 'customInRange', // translation key
-                    predicate: (filterValues: string[], cellValue: string) =>
-                        // We receive here the filter enum values as a string (filterValue)
-                        filterValues[0]?.includes(cellValue) ?? false,
+                    predicate: (filterValues: string[], cellValue: string | number) => {
+                        if (!filterValues[0]) return false;
+                        // filterValues[0] contains the selected enum values as a comma-separated string.
+                        // Convert it to an array and check for exact matches.
+                        const allowedValues = filterValues[0].split(',');
+                        return allowedValues.includes(String(cellValue));
+                    },
                 },
             ] as IFilterOptionDef[],
         },

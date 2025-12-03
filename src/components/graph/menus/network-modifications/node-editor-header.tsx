@@ -13,6 +13,8 @@ import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import NetworkModificationNodeDialog from './network-modification-node-dialog';
+import { NodeType } from 'components/graph/tree-node.type';
+import { useIntl } from 'react-intl';
 
 const styles = {
     header: (theme) => ({
@@ -84,19 +86,29 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const NodeEditorHeader = () => {
+    const intl = useIntl();
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const label = currentTreeNode?.data?.label ?? '';
     const description = currentTreeNode?.data?.description ?? '';
+    const isRootNode = currentTreeNode?.type === NodeType.ROOT;
+    const displayedLabel = isRootNode ? intl.formatMessage({ id: 'root' }) : label;
 
     return (
         <>
             <Box sx={styles.header}>
                 <Box sx={styles.titleContainer}>
-                    <Tooltip title={label}>
-                        <Button size="small" onClick={() => setOpenEditDialog(true)} sx={styles.buttonTitle}>
-                            <Typography sx={styles.nodeNameText}>{label}</Typography>
-                        </Button>
+                    <Tooltip title={displayedLabel}>
+                        <span>
+                            <Button
+                                size="small"
+                                onClick={() => setOpenEditDialog(true)}
+                                disabled={isRootNode}
+                                sx={styles.buttonTitle}
+                            >
+                                <Typography sx={styles.nodeNameText}>{displayedLabel}</Typography>
+                            </Button>
+                        </span>
                     </Tooltip>
                 </Box>
 

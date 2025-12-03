@@ -97,7 +97,7 @@ function DynamicSimulationResultSeriesList({
     };
     return (
         <List sx={styles.root} subheader={renderHeaders()}>
-            {items.map((item, index) => (
+            {items.map((item) => (
                 <DynamicSimulationResultSeriesItem
                     key={item.id}
                     item={item}
