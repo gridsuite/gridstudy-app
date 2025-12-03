@@ -325,7 +325,7 @@ export interface VoltageLeveInfo {
     properties: Property[] | null;
 }
 
-export interface VoltageLeveCreationlInfo extends VoltageLeveInfo {
+export interface VoltageLeveCreationInfo extends VoltageLeveInfo {
     substationCreation?: SubstationCreationInfo | null;
     ipMin: number | null;
     ipMax: number | null;
@@ -657,8 +657,8 @@ export interface AttachLineInfo {
     percent: number;
     attachmentPointId: string;
     attachmentPointName: string | null;
-    attachmentPointDetailInformation: any;
-    mayNewVoltageLevelInfos: any;
+    attachmentPointDetailInformation: VoltageLeveCreationInfo;
+    mayNewVoltageLevelInfos: VoltageLeveCreationInfo;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
     attachmentLine: AttachmentLine;

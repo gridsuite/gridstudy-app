@@ -134,35 +134,35 @@ const LineAttachToVoltageLevelDialog = ({
                         lineAttach?.existingVoltageLevelId ?? lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
                 }),
             };
-            const attachmentPoint = lineAttach?.attachmentPointDetailInformation;
-            if (attachmentPoint) {
+            const attachmentPointDetailInformation = lineAttach?.attachmentPointDetailInformation;
+            if (attachmentPointDetailInformation) {
                 formData = {
                     ...formData,
-                    [ATTACHMENT_POINT]: attachmentPoint,
+                    [ATTACHMENT_POINT]: attachmentPointDetailInformation,
                 };
             }
-            const newVoltageLevel = lineAttach?.mayNewVoltageLevelInfos;
-            if (newVoltageLevel) {
+            const newVoltageLevelInfos = lineAttach?.mayNewVoltageLevelInfos;
+            if (newVoltageLevelInfos) {
                 formData = {
                     ...formData,
                     [CONNECTIVITY]: {
                         ...formData[CONNECTIVITY],
-                        [VOLTAGE_LEVEL]: getNewVoltageLevelData(newVoltageLevel),
+                        [VOLTAGE_LEVEL]: getNewVoltageLevelData(newVoltageLevelInfos),
                     },
                 };
             }
             reset(formData);
             setAttachmentLine(lineAttach?.attachmentLine);
-            if (attachmentPoint) {
+            if (attachmentPointDetailInformation) {
                 setAttachmentPoint(lineAttach?.attachmentPointDetailInformation);
             }
-            if (newVoltageLevel) {
-                newVoltageLevel.busbarSections = buildNewBusbarSections(
-                    newVoltageLevel?.equipmentId,
-                    newVoltageLevel?.sectionCount,
-                    newVoltageLevel?.busbarCount
+            if (newVoltageLevelInfos) {
+                newVoltageLevelInfos.busbarSections = buildNewBusbarSections(
+                    newVoltageLevelInfos?.equipmentId,
+                    newVoltageLevelInfos?.sectionCount,
+                    newVoltageLevelInfos?.busbarCount
                 );
-                setNewVoltageLevel(newVoltageLevel);
+                setNewVoltageLevel(newVoltageLevelInfos);
             }
         },
         [reset]
@@ -330,7 +330,7 @@ const LineAttachToVoltageLevelDialog = ({
             properties,
         }) => {
             return new Promise(() => {
-                const attachmentPoint = {
+                const attachmentPointData = {
                     type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
@@ -345,12 +345,16 @@ const LineAttachToVoltageLevelDialog = ({
                     topologyKind: topologyKind,
                     properties: properties,
                 };
-                setAttachmentPoint(attachmentPoint);
-                setValue(`${ATTACHMENT_POINT_ID}`, attachmentPoint.equipmentId, {
+                setAttachmentPoint(attachmentPointData);
+                setValue(`${ATTACHMENT_POINT_ID}`, attachmentPointData.equipmentId, {
                     shouldValidate: true,
                     shouldDirty: true,
                 });
-                setValue(`${ATTACHMENT_POINT_NAME}`, attachmentPoint.equipmentName, {
+                setValue(`${ATTACHMENT_POINT_NAME}`, attachmentPointData.equipmentName, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                });
+                setValue(`${ATTACHMENT_POINT}`, attachmentPointData, {
                     shouldValidate: true,
                     shouldDirty: true,
                 });

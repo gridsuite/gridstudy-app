@@ -8,6 +8,7 @@
 import Grid from '@mui/material/Grid';
 import {
     ATTACHMENT_LINE_ID,
+    ATTACHMENT_POINT,
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
     CONNECTIVITY,
@@ -48,7 +49,7 @@ const LineAttachToVoltageLevelForm = ({
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
     const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
-    const [editData, setEditData] = useState(null);
+    const [editData, setEditData] = useState(attachmentPoint);
     const { getValues } = useFormContext();
 
     const voltageLevelIdWatch = useWatch({
@@ -63,16 +64,17 @@ const LineAttachToVoltageLevelForm = ({
         setLineDialogOpen(true);
     };
 
-    const onAttachmentPointDialogClose = () => {
+    const onAttachmentPointDialogClose = useCallback(() => {
         setAttachmentPointDialogOpen(false);
-    };
+        setEditData(getValues(ATTACHMENT_POINT));
+    }, [getValues]);
 
     const openAttachmentPointDialog = useCallback(() => {
         const attachmentPointId = getValues(ATTACHMENT_POINT_ID);
         const attachmentPointName = getValues(ATTACHMENT_POINT_NAME);
-        setEditData({ ...attachmentPoint, equipmentId: attachmentPointId, equipmentName: attachmentPointName });
+        setEditData({ ...editData, equipmentId: attachmentPointId, equipmentName: attachmentPointName });
         setAttachmentPointDialogOpen(true);
-    }, [attachmentPoint, getValues]);
+    }, [editData, getValues]);
 
     const onVoltageLevelDialogClose = () => {
         setVoltageLevelDialogOpen(false);
@@ -140,7 +142,15 @@ const LineAttachToVoltageLevelForm = ({
                     {
                         <Button
                             onClick={openAttachmentPointDialog}
-                            startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
+                            startIcon={
+                                editData != null &&
+                                Object.keys(editData).filter((key) => key !== 'equipmentId' && key !== 'equipmentName')
+                                    .length > 0 ? (
+                                    <EditIcon />
+                                ) : (
+                                    <AddIcon />
+                                )
+                            }
                         >
                             <Typography align="left">
                                 <FormattedMessage id="SpecifyAttachmentPoint" />

@@ -242,7 +242,8 @@ const VoltageLevelCreationDialog = ({
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
-            const isSubstationCreation = !fromCopy && voltageLevel.substationCreation?.equipmentId != null;
+            const isSubstationCreation =
+                (!fromCopy && voltageLevel.substationCreation?.equipmentId != null) || isAttachementPointModification;
             const shortCircuitLimits = {
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -311,7 +312,7 @@ const VoltageLevelCreationDialog = ({
                 });
             }
         },
-        [setValue, intl, reset, snackWarning]
+        [isAttachementPointModification, reset, intl, setValue, snackWarning]
     );
 
     // Supervisor watches to trigger validation for interdependent constraints
