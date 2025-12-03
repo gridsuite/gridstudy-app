@@ -144,8 +144,9 @@ const LineAttachToVoltageLevelForm = ({
                             onClick={openAttachmentPointDialog}
                             startIcon={
                                 editData != null &&
-                                Object.keys(editData).filter((key) => key !== 'equipmentId' && key !== 'equipmentName')
-                                    .length > 0 ? (
+                                Object.keys(editData).some(
+                                    (key) => key !== 'equipmentId' && key !== 'equipmentName'
+                                ) ? (
                                     <EditIcon />
                                 ) : (
                                     <AddIcon />
