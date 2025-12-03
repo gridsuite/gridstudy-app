@@ -11,9 +11,9 @@ import { RunningStatus } from '../utils/running-status';
 import { CharacteristicsTable } from './carateristics-table';
 import { CurrentTable } from './current-table';
 import { LimitsTable } from './limit-table';
-import { TwoCharacteristicsByVoltageLevel } from './twt-carateristics-by-VoltageLevel';
 import { TwoCharacteristicsMode } from './twt-carateristics-mode';
 import { BranchEquipmentInfos } from './equipment-popover-type';
+import { CharacteristicsByVoltageLevel } from './carateristics-by-VoltageLevel';
 
 interface BranchPopoverContentProps {
     equipmentInfos: BranchEquipmentInfos;
@@ -30,7 +30,7 @@ export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
         <Grid container direction="column" rowSpacing={2} alignItems="center">
             <CharacteristicsTable equipmentInfos={equipmentInfos} />
             <CurrentTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
-            <TwoCharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} />
+            <CharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} />
             {equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER && (
                 <TwoCharacteristicsMode equipmentInfos={equipmentInfos} />
             )}

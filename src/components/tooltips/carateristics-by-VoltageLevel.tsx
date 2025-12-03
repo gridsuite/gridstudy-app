@@ -10,13 +10,11 @@ import { CellRender } from './cell-render';
 import { formatValue, styles } from './generic-equipment-popover-utils';
 import { BranchEquipmentInfos } from './equipment-popover-type';
 
-interface TwoCharacteristicsByVoltageLevelProps {
+interface CharacteristicsByVoltageLevelProps {
     equipmentInfos: BranchEquipmentInfos;
 }
 
-export const TwoCharacteristicsByVoltageLevel: React.FC<TwoCharacteristicsByVoltageLevelProps> = ({
-    equipmentInfos,
-}) => {
+export const CharacteristicsByVoltageLevel: React.FC<CharacteristicsByVoltageLevelProps> = ({ equipmentInfos }) => {
     return (
         <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>
@@ -51,7 +49,7 @@ export const TwoCharacteristicsByVoltageLevel: React.FC<TwoCharacteristicsByVolt
                         </TableRow>
 
                         <TableRow>
-                            <CellRender isLabel label="Q (Mvar)" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                            <CellRender isLabel label="twtQ" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                             <CellRender value={formatValue(equipmentInfos.q1, 3)} colStyle={styles.cell} />
                             <CellRender value={formatValue(equipmentInfos.q1, 3)} colStyle={styles.cell} />
                         </TableRow>

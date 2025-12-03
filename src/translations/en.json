@@ -1680,5 +1680,6 @@
     "history": "History",
     "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default droop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)",
     "twtQ": "Q (MVar)",
-    "twtAlpha": "Shift angle"
+    "twtAlpha": "Shift angle",
+    "DEFAULT": "DEFAULT"
 }

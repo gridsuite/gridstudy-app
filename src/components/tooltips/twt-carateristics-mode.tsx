@@ -63,7 +63,7 @@ export const TwoCharacteristicsMode: React.FC<TwoCharacteristicsModeProps> = ({ 
 
                     <TableBody>
                         {rows.map((r) => (
-                            <TableRow>
+                            <TableRow key={r.tap}>
                                 <CellRender value={formatValue(r.tap, 3)} colStyle={styles.cell} />
                                 <CellRender value={formatValue(r.rho, 3)} colStyle={styles.cell} />
                                 <CellRender value={formatValue(r.alpha, 3)} colStyle={styles.cell} />
