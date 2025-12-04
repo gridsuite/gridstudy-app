@@ -90,7 +90,6 @@ interface FlatParametersInputProps {
 
 function FlatParametersInput({ name, parameters }: Readonly<FlatParametersInputProps>) {
     const [unfolded, setUnfolded] = useState(false);
-    const [metasAsArray, setMetasAsArray] = useState<Parameter[]>([]);
 
     const {
         field: { onChange, value },
@@ -110,12 +109,10 @@ function FlatParametersInput({ name, parameters }: Readonly<FlatParametersInputP
         setUnfolded((prev) => !prev);
     };
 
-    useMemo(() => {
-        if (parameters) {
-            setMetasAsArray(parameters.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name)));
-        } else {
-            setMetasAsArray([]);
-        }
+    const metasAsArray: Parameter[] = useMemo(() => {
+        return parameters
+            ? parameters.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name))
+            : [];
     }, [parameters]);
 
     return (
