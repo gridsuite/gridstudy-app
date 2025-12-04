@@ -15,7 +15,7 @@ import {
     type MuiStyles,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Grid, Tab, Tabs } from '@mui/material';
+import { Box, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import {
@@ -166,6 +166,9 @@ export interface EditData {
     vscConverterStations: VscConverterStationData[];
     shuntCompensators: ShuntCompensatorData[];
     buses: BusData[];
+    rootNetworkName?: string;
+    nodeName?: string;
+    date?: string;
 }
 
 interface VoltageInitModificationProps {
@@ -368,6 +371,26 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 gap: '15px',
             }}
         >
+            <Box>
+                {editData && editData.rootNetworkName && (
+                    <Typography variant="subtitle1">
+                        <FormattedMessage
+                            id="VoltageinitRootNetworkName"
+                            values={{ rootNetworkName: editData.rootNetworkName }}
+                        />
+                    </Typography>
+                )}
+                {editData && editData.nodeName && (
+                    <Typography variant="subtitle1">
+                        <FormattedMessage id="VoltageinitNodeName" values={{ nodeName: editData.nodeName }} />
+                    </Typography>
+                )}
+                {editData && editData.date && (
+                    <Typography variant="subtitle1">
+                        <FormattedMessage id="VoltageinitDate" values={{ date: editData.date }} />
+                    </Typography>
+                )}
+            </Box>
             <Grid container>
                 <Tabs value={tabIndex} variant="scrollable" onChange={(event, newValue) => handleTabChange(newValue)}>
                     <Tab label={<FormattedMessage id="Generators" />} />
