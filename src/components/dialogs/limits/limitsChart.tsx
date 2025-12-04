@@ -10,8 +10,8 @@ import { useCallback, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { Limit, TemporaryLimit } from '../../../services/network-modification-types';
-import { BarSeriesType } from '@mui/x-charts/models/seriesType/bar';
-import { AxisValueFormatterContext } from '@mui/x-charts/models/axis';
+import { BarSeriesType, AxisValueFormatterContext } from '@mui/x-charts/models';
+import { legendClasses } from '@mui/x-charts/ChartsLegend';
 
 export interface LimitsGraphProps {
     limitsGroupFormName: string;
@@ -205,7 +205,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
     const config = {
         id: 'topAxis',
         valueFormatter: (value: number, _context: AxisValueFormatterContext) =>
-            ticks.find((item: Ticks) => item.position === value)?.label,
+            ticks.find((item: Ticks) => item.position === value)?.label ?? '',
     };
 
     return (
@@ -214,13 +214,17 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
             height={110}
             slotProps={{
                 legend: {
-                    direction: 'row',
-                    position: { vertical: 'bottom', horizontal: 'middle' },
-                    padding: 0,
-                    itemMarkWidth: 10,
-                    itemMarkHeight: 10,
-                    labelStyle: {
+                    direction: 'horizontal',
+                    position: {
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    },
+                    sx: {
                         fontSize: 12,
+                        [`& .${legendClasses.mark}`]: {
+                            width: 10,
+                            height: 10,
+                        },
                     },
                 },
             }}
@@ -230,20 +234,26 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
                     : [{ label: intl.formatMessage({ id: 'unlimited' }), data: [100], color: colorPermanentLimit }]
             }
             layout="horizontal"
-            leftAxis={null}
-            bottomAxis={{
-                tickInterval: [...ticks.map((item) => item.position)],
-                disableLine: true,
-                tickLabelStyle: { fontSize: 10 },
-                position: 'bottom',
-            }}
-            topAxis={{
-                tickInterval: [...ticks.map((item) => item.position)],
-                tickLabelStyle: { fontSize: 10 },
-                disableLine: true,
-                position: 'top',
-                ...config,
-            }}
+            yAxis={[
+                {
+                    position: 'none',
+                },
+            ]}
+            xAxis={[
+                {
+                    tickInterval: [...ticks.map((item) => item.position)],
+                    disableLine: true,
+                    tickLabelStyle: { fontSize: 10 },
+                    position: 'bottom',
+                },
+                {
+                    tickInterval: [...ticks.map((item) => item.position)],
+                    tickLabelStyle: { fontSize: 10 },
+                    disableLine: true,
+                    position: 'top',
+                    ...config,
+                },
+            ]}
             sx={{ pointerEvents: 'none' }}
         />
     );
