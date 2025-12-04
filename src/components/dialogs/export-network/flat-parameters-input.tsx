@@ -26,7 +26,6 @@ export function FlatParametersInput({ name, parameters }: Readonly<FlatParameter
         field: { onChange, value },
     } = useController({ name });
 
-    console.log('xxx re-render FlatParametersInput', { parameters });
     const handleChange = useCallback(
         (paramName: string, newValue: unknown, isInEdition: boolean) => {
             if (!isInEdition) {
