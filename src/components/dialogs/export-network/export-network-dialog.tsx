@@ -4,33 +4,29 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Collapse, IconButton, Stack, Typography } from '@mui/material';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { FormattedMessage } from 'react-intl';
+import { Box } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CustomMuiDialog,
     fetchDirectoryElementPath,
-    FlatParameters,
     Parameter,
     SelectInput,
     snackWithFallback,
     TextInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
+import { ExportFormatProperties, getAvailableExportFormats } from '../../../services/study';
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
-import { useParameterState } from './parameters/use-parameters-state';
-import { AppState } from '../../redux/reducer';
+import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import { useParameterState } from '../parameters/use-parameters-state';
+import { AppState } from '../../../redux/reducer';
 
 import { EXPORT_FORMAT, EXPORT_PARAMETERS, FILE_NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
-import { useController, useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { IGNORED_PARAMS } from './root-network/ignored-params';
+import { FlatParametersInput } from './flat-parameters-input';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -83,65 +79,6 @@ function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parame
         return parameter;
     });
 }
-interface FlatParametersInputProps {
-    name: string;
-    parameters?: ExportFormatProperties;
-}
-
-function FlatParametersInput({ name, parameters }: Readonly<FlatParametersInputProps>) {
-    const [unfolded, setUnfolded] = useState(false);
-
-    const {
-        field: { onChange, value },
-    } = useController({ name });
-
-    const handleChange = useCallback(
-        (paramName: string, newValue: unknown, isInEdition: boolean) => {
-            if (!isInEdition) {
-                const updatedParams = { ...value, [paramName]: newValue };
-                onChange(updatedParams);
-            }
-        },
-        [onChange, value]
-    );
-
-    const handleFoldChange = () => {
-        setUnfolded((prev) => !prev);
-    };
-
-    const metasAsArray: Parameter[] = useMemo(() => {
-        return parameters
-            ? parameters.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name))
-            : [];
-    }, [parameters]);
-
-    return (
-        <>
-            <Collapse in={unfolded}>
-                <FlatParameters
-                    paramsAsArray={metasAsArray}
-                    initValues={value}
-                    onChange={handleChange}
-                    variant="standard"
-                    selectionWithDialog={(param) => param?.possibleValues?.length > 10}
-                />
-            </Collapse>
-
-            <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
-                <Typography
-                    component="span"
-                    color={parameters ? 'text.main' : 'text.disabled'}
-                    sx={{ fontWeight: 'bold' }}
-                >
-                    <FormattedMessage id="parameters" />
-                </Typography>
-                <IconButton onClick={handleFoldChange} disabled={!parameters}>
-                    {unfolded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-            </Stack>
-        </>
-    );
-}
 
 export function ExportNetworkDialog({
     open,
@@ -162,7 +99,7 @@ export function ExportNetworkDialog({
         resolver: yupResolver(schema),
     });
 
-    const { reset } = methods;
+    const { reset, subscribe, setValue } = methods;
 
     // fetch study name to build default file name
     useEffect(() => {
@@ -206,7 +143,19 @@ export function ExportNetworkDialog({
         [nodeUuid, onClick]
     );
 
-    const exportValue = useWatch({ name: EXPORT_FORMAT, control: methods.control });
+    useEffect(() => {
+        const callback = subscribe({
+            name: [`${EXPORT_FORMAT}`],
+            formState: {
+                values: true,
+            },
+            callback: () => {
+                //When export format changes empty already changed parameters
+                setValue(EXPORT_PARAMETERS, {});
+            },
+        });
+        return () => callback();
+    }, [setValue, subscribe]);
 
     return (
         <CustomMuiDialog
@@ -230,7 +179,11 @@ export function ExportNetworkDialog({
                     options={Object.keys(formatsWithParameters)}
                     size="small"
                 />
-                <FlatParametersInput name={EXPORT_PARAMETERS} parameters={formatsWithParameters?.[exportValue]} />
+                <FlatParametersInput
+                    name={EXPORT_PARAMETERS}
+                    fileFormatName={EXPORT_FORMAT}
+                    parameters={formatsWithParameters}
+                />
             </Box>
         </CustomMuiDialog>
     );

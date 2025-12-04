@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import NetworkModificationTree from './network-modification-tree';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { ExportNetworkDialog } from './dialogs/export-network-dialog';
+import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog.js';
 import { BUILD_STATUS } from './network/constants';
 import {
     copySubtree,
