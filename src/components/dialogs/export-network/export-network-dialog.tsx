@@ -178,6 +178,7 @@ export function ExportNetworkDialog({
                     label="exportFormat"
                     options={Object.keys(formatsWithParameters)}
                     size="small"
+                    disableClearable
                 />
                 <FlatParametersInput
                     name={EXPORT_PARAMETERS}
