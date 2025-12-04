@@ -947,7 +947,7 @@
     "RegulatedSide1": "Side 1",
     "RegulatedSide2": "Side 2",
 
-    "OnLoad": "On-load",
+    "OnLoad": "On-load tap changing",
     "VoltageRegulation": "Voltage regulation",
     "Regulating": "Regulating",
     "TargetVoltage": "Voltage setpoint",

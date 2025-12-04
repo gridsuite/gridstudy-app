@@ -944,7 +944,7 @@
     "RegulatedSide1": "côté 1",
     "RegulatedSide2": "côté 2",
 
-    "OnLoad": "En charge",
+    "OnLoad": "Passage de prises en charge",
     "VoltageRegulation": "Réglage de tension",
     "ResetRegulationRule": "Réinitialiser la loi de réglage",
     "Regulating": "En réglage",
