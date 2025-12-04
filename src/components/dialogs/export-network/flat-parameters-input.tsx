@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ExportFormatProperties } from '../../../services/study';
 import { useCallback, useMemo, useState } from 'react';
-import { useController, useFormContext } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import { FlatParameters, Parameter } from '@gridsuite/commons-ui';
 import { IGNORED_PARAMS } from '../root-network/ignored-params';
 import { Collapse, IconButton, Stack, Typography } from '@mui/material';
@@ -17,20 +16,17 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export interface FlatParametersInputProps {
     name: string;
-    fileFormatName: string;
-    parameters?: Record<string, ExportFormatProperties>;
+    parameters?: Parameter[];
 }
 
-export function FlatParametersInput({ name, parameters, fileFormatName }: Readonly<FlatParametersInputProps>) {
+export function FlatParametersInput({ name, parameters }: Readonly<FlatParametersInputProps>) {
     const [unfolded, setUnfolded] = useState(false);
 
     const {
         field: { onChange, value },
     } = useController({ name });
 
-    const { getValues } = useFormContext();
-    const exportFormat: string = getValues(fileFormatName);
-
+    console.log('xxx re-render FlatParametersInput', { parameters });
     const handleChange = useCallback(
         (paramName: string, newValue: unknown, isInEdition: boolean) => {
             if (!isInEdition) {
@@ -45,18 +41,17 @@ export function FlatParametersInput({ name, parameters, fileFormatName }: Readon
         setUnfolded((prev) => !prev);
     };
 
-    const metasAsArray: Parameter[] = useMemo(() => {
-        const exportParameters = parameters?.[exportFormat];
-        return exportParameters
-            ? exportParameters.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name))
-            : [];
-    }, [exportFormat, parameters]);
+    const filteredParameters: Parameter[] = useMemo(() => {
+        return parameters ? parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name)) : [];
+    }, [parameters]);
+
+    const hasParameters = filteredParameters.length > 0;
 
     return (
         <>
             <Collapse in={unfolded}>
                 <FlatParameters
-                    paramsAsArray={metasAsArray}
+                    paramsAsArray={filteredParameters}
                     initValues={value}
                     onChange={handleChange}
                     variant="standard"
@@ -67,12 +62,12 @@ export function FlatParametersInput({ name, parameters, fileFormatName }: Readon
             <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
                 <Typography
                     component="span"
-                    color={exportFormat ? 'text.main' : 'text.disabled'}
+                    color={hasParameters ? 'text.main' : 'text.disabled'}
                     sx={{ fontWeight: 'bold' }}
                 >
                     <FormattedMessage id="parameters" />
                 </Typography>
-                <IconButton onClick={handleFoldChange} disabled={!exportFormat}>
+                <IconButton onClick={handleFoldChange} disabled={!hasParameters}>
                     {unfolded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </IconButton>
             </Stack>

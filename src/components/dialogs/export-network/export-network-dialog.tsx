@@ -29,41 +29,21 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FlatParametersInput } from './flat-parameters-input';
 
 const STRING_LIST = 'STRING_LIST';
-
-/**
- * Dialog to export the network case
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
- * @param {EventListener} onClick Event to submit the export
- * @param {String} studyUuid the uuid of the study to export
- * @param {String} nodeUuid the uuid of the selected node
- */
-
-export interface ExportNetworkFormData {
-    [FILE_NAME]: string;
-    [EXPORT_FORMAT]: string;
-    [EXPORT_PARAMETERS]: Record<string, any>;
-}
+const emptyObj = {};
 
 const schema = yup.object().shape({
     [FILE_NAME]: yup.string().required(),
     [EXPORT_FORMAT]: yup.string().required('exportStudyErrorMsg'),
-    [EXPORT_PARAMETERS]: yup.object().shape({}),
+    [EXPORT_PARAMETERS]: yup.object(),
 });
 
-const emptyData = () => ({
+const emptyData = {
     [FILE_NAME]: '',
     [EXPORT_FORMAT]: '',
-    [EXPORT_PARAMETERS]: {},
-});
+    [EXPORT_PARAMETERS]: emptyObj,
+};
 
-interface ExportNetworkDialogProps {
-    open: boolean;
-    onClose: () => void;
-    onClick: (nodeUuid: UUID, params: Record<string, any>, selectedFormat: string, fileName: string) => void;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-}
+export type ExportNetworkFormData = yup.InferType<typeof schema>;
 
 // we check if the param is for extension, if it is, we select all possible values by default.
 // the only way for the moment to check if the param is for extension, is by checking his type is name.
@@ -80,6 +60,22 @@ function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parame
     });
 }
 
+/**
+ * Dialog to export the network case
+ * @param {Boolean} open Is the dialog open ?
+ * @param {EventListener} onClose Event to close the dialog
+ * @param {EventListener} onClick Event to submit the export
+ * @param {String} studyUuid the uuid of the study to export
+ * @param {String} nodeUuid the uuid of the selected node
+ */
+interface ExportNetworkDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onClick: (nodeUuid: UUID, params: Record<string, any>, selectedFormat: string, fileName: string) => void;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+}
+
 export function ExportNetworkDialog({
     open,
     onClose,
@@ -88,6 +84,7 @@ export function ExportNetworkDialog({
     nodeUuid,
 }: Readonly<ExportNetworkDialogProps>) {
     const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
+    const [parameters, setParameters] = useState<Parameter[]>();
     const { snackError } = useSnackMessage();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -95,13 +92,13 @@ export function ExportNetworkDialog({
     const nodeName = useMemo(() => treeNodes?.find((node) => node.id === nodeUuid)?.data.label, [treeNodes, nodeUuid]);
 
     const methods = useForm<ExportNetworkFormData>({
-        defaultValues: emptyData(),
+        defaultValues: emptyData,
         resolver: yupResolver(schema),
     });
 
-    const { reset, subscribe, setValue } = methods;
+    const { reset, subscribe, setValue, getValues } = methods;
 
-    // fetch study name to build default file name
+    // fetch study name to build the default file name
     useEffect(() => {
         if (studyUuid) {
             fetchDirectoryElementPath(studyUuid)
@@ -136,26 +133,26 @@ export function ExportNetworkDialog({
 
     const onSubmit = useCallback(
         (data: ExportNetworkFormData) => {
-            if (data[FILE_NAME] && data[EXPORT_FORMAT]) {
-                onClick(nodeUuid, data[EXPORT_PARAMETERS], data[EXPORT_FORMAT], data[FILE_NAME]);
-            }
+            onClick(nodeUuid, data[EXPORT_PARAMETERS], data[EXPORT_FORMAT], data[FILE_NAME]);
         },
         [nodeUuid, onClick]
     );
 
     useEffect(() => {
-        const callback = subscribe({
+        const unsubscribe = subscribe({
             name: [`${EXPORT_FORMAT}`],
             formState: {
-                values: true,
+                values: true, // Subscribe to field value changes
             },
             callback: () => {
-                //When export format changes empty already changed parameters
-                setValue(EXPORT_PARAMETERS, {});
+                //When an export format changes, reset export parameters
+                setValue(EXPORT_PARAMETERS, emptyObj);
+                // get corresponding parameters of the selected format
+                setParameters(formatsWithParameters[getValues(EXPORT_FORMAT)]?.parameters);
             },
         });
-        return () => callback();
-    }, [setValue, subscribe]);
+        return () => unsubscribe();
+    }, [setValue, subscribe, getValues, formatsWithParameters]);
 
     return (
         <CustomMuiDialog
@@ -180,11 +177,7 @@ export function ExportNetworkDialog({
                     size="small"
                     disableClearable
                 />
-                <FlatParametersInput
-                    name={EXPORT_PARAMETERS}
-                    fileFormatName={EXPORT_FORMAT}
-                    parameters={formatsWithParameters}
-                />
+                <FlatParametersInput name={EXPORT_PARAMETERS} parameters={parameters} />
             </Box>
         </CustomMuiDialog>
     );
