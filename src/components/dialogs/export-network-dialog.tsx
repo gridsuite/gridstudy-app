@@ -29,7 +29,7 @@ import { AppState } from '../../redux/reducer';
 import { IGNORED_PARAMS } from './root-network/ignored-params';
 import { EXPORT_FORMAT, EXPORT_PARAMETERS, FILE_NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
-import { useForm, useFormContext, useWatch } from 'react-hook-form';
+import { useController, useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 const STRING_LIST = 'STRING_LIST';
@@ -89,19 +89,20 @@ interface FlatParametersFormProps {
 
 function FlatParametersInput({ formatsWithParameters }: Readonly<FlatParametersFormProps>) {
     const [unfolded, setUnfolded] = useState(false);
-    const { setValue } = useFormContext<ExportNetworkFormData>();
-    const [currentParams, setCurrentParams] = useState<Record<string, any>>({});
     const [metasAsArray, setMetasAsArray] = useState<Parameter[]>([]);
 
-    const onChange = useCallback(
-        (paramName: string, value: unknown, isInEdition: boolean) => {
+    const {
+        field: { onChange, value },
+    } = useController({ name: EXPORT_PARAMETERS });
+
+    const handleChange = useCallback(
+        (paramName: string, newValue: unknown, isInEdition: boolean) => {
             if (!isInEdition) {
-                const updatedParams = { ...currentParams, [paramName]: value };
-                setCurrentParams(updatedParams);
-                setValue(EXPORT_PARAMETERS, updatedParams);
+                const updatedParams = { ...value, [paramName]: newValue };
+                onChange(updatedParams);
             }
         },
-        [currentParams, setValue]
+        [onChange, value]
     );
 
     const handleFoldChange = () => {
@@ -120,15 +121,15 @@ function FlatParametersInput({ formatsWithParameters }: Readonly<FlatParametersF
         } else {
             setMetasAsArray([]);
         }
-    }, [exportValue, formatsWithParameters]);
+    }, [formatsWithParameters, exportValue]);
 
     return (
         <>
             <Collapse in={unfolded}>
                 <FlatParameters
                     paramsAsArray={metasAsArray}
-                    initValues={currentParams}
-                    onChange={onChange}
+                    initValues={value}
+                    onChange={handleChange}
                     variant="standard"
                     selectionWithDialog={(param) => param?.possibleValues?.length > 10}
                 />
