@@ -177,7 +177,11 @@ export function ExportNetworkDialog({
             fetchDirectoryElementPath(studyUuid)
                 .then((response) => {
                     const studyName = response[response.length - 1]?.elementName;
-                    reset({ [FILE_NAME]: `${studyName}_${nodeName}`, [EXPORT_FORMAT]: '', [EXPORT_PARAMETERS]: [] });
+                   reset((formValues) => ({
+                        ...formValues,
+                        [FILE_NAME]: `${studyName}_${nodeName}`,
+                    }));
+ 
                 })
                 .catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
