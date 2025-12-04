@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ICellRendererParams } from 'ag-grid-community';
-import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import { AddNote as AddNoteIcon } from '@mui/icons-material';
+import { EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import React, { SetStateAction, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
@@ -35,7 +34,7 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                 onClick={modifyDescription}
                 disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
             >
-                <AddNoteIcon />
+                <EditNoteIcon empty={description === undefined && description !== ''} />
             </IconButton>
         </Tooltip>
     );
