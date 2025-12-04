@@ -39,6 +39,7 @@ import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { ExcludedNetworkModifications } from './network-modification-menu.type';
 import { AgGridReact } from 'ag-grid-react';
+import DescriptionRenderer from './DescriptionRenderer';
 
 const styles = {
     container: (theme) => ({
@@ -142,6 +143,13 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 minWidth: 200,
                 flex: 1,
                 cellStyle: { cursor: 'pointer' },
+            },
+            {
+                cellRenderer: DescriptionRenderer,
+                cellRendererParams: {
+                    setModifications: setModifications,
+                },
+                width: 50,
             },
             {
                 cellRenderer: SwitchCellRenderer,
