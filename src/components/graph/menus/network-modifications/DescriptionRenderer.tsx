@@ -34,7 +34,7 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                 onClick={modifyDescription}
                 disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
             >
-                <EditNoteIcon empty={description === undefined && description !== ''} />
+                <EditNoteIcon empty={description === undefined || description === ''} />
             </IconButton>
         </Tooltip>
     );
