@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Alert, Collapse, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Collapse, IconButton, Stack, Typography } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CustomMuiDialog,
@@ -46,19 +46,19 @@ const STRING_LIST = 'STRING_LIST';
 export interface ExportNetworkFormData {
     [FILE_NAME]: string;
     [EXPORT_FORMAT]: string;
-    [EXPORT_PARAMETERS]?: Record<string, any>[];
+    [EXPORT_PARAMETERS]: Record<string, any>;
 }
 
 const schema = yup.object().shape({
     [FILE_NAME]: yup.string().required(),
-    [EXPORT_FORMAT]: yup.string().required(),
-    [EXPORT_PARAMETERS]: yup.array().of(yup.object().shape({})),
+    [EXPORT_FORMAT]: yup.string().required('exportStudyErrorMsg'),
+    [EXPORT_PARAMETERS]: yup.object().shape({}),
 });
 
 const emptyData = () => ({
     [FILE_NAME]: '',
     [EXPORT_FORMAT]: '',
-    [EXPORT_PARAMETERS]: [],
+    [EXPORT_PARAMETERS]: {},
 });
 
 interface ExportNetworkDialogProps {
@@ -84,27 +84,24 @@ function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parame
     });
 }
 interface FlatParametersFormProps {
-    exportStudyErr?: string;
     formatsWithParameters: Record<string, ExportFormatProperties>;
 }
 
-function FlatParametersForm({ exportStudyErr, formatsWithParameters }: Readonly<FlatParametersFormProps>) {
+function FlatParametersInput({ formatsWithParameters }: Readonly<FlatParametersFormProps>) {
     const [unfolded, setUnfolded] = useState(false);
-    const { getValues, setValue } = useFormContext();
+    const { setValue } = useFormContext<ExportNetworkFormData>();
+    const [currentParams, setCurrentParams] = useState<Record<string, any>>({});
     const [metasAsArray, setMetasAsArray] = useState<Parameter[]>([]);
-    const [currentParams, setCurrentParams] = useState<Record<string, any>>([]);
-
-    useEffect(() => {
-        setValue(EXPORT_PARAMETERS, currentParams);
-    }, [currentParams, setValue]);
 
     const onChange = useCallback(
         (paramName: string, value: unknown, isInEdition: boolean) => {
             if (!isInEdition) {
-                setCurrentParams({ ...getValues(EXPORT_PARAMETERS), [paramName]: value });
+                const updatedParams = { ...currentParams, [paramName]: value };
+                setCurrentParams(updatedParams);
+                setValue(EXPORT_PARAMETERS, updatedParams);
             }
         },
-        [getValues]
+        [currentParams, setValue]
     );
 
     const handleFoldChange = () => {
@@ -115,14 +112,15 @@ function FlatParametersForm({ exportStudyErr, formatsWithParameters }: Readonly<
 
     useEffect(() => {
         const formatWithParameter = formatsWithParameters?.[exportValue];
+
         if (formatWithParameter?.parameters) {
             setMetasAsArray(
-                formatWithParameter?.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name))
+                formatWithParameter.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name))
             );
         } else {
             setMetasAsArray([]);
         }
-    }, [formatsWithParameters, exportValue]);
+    }, [exportValue, formatsWithParameters]);
 
     return (
         <>
@@ -135,7 +133,6 @@ function FlatParametersForm({ exportStudyErr, formatsWithParameters }: Readonly<
                     selectionWithDialog={(param) => param?.possibleValues?.length > 10}
                 />
             </Collapse>
-            {exportStudyErr !== '' && <Alert severity="error">{exportStudyErr}</Alert>}
 
             <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
                 <Typography
@@ -160,9 +157,7 @@ export function ExportNetworkDialog({
     studyUuid,
     nodeUuid,
 }: Readonly<ExportNetworkDialogProps>) {
-    const intl = useIntl();
     const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
-    const [exportStudyErr, setExportStudyErr] = useState('');
     const { snackError } = useSnackMessage();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -209,12 +204,10 @@ export function ExportNetworkDialog({
     const onSubmit = useCallback(
         (data: ExportNetworkFormData) => {
             if (data[FILE_NAME] && data[EXPORT_FORMAT]) {
-                onClick(nodeUuid, data[EXPORT_PARAMETERS] ?? [], data[EXPORT_FORMAT], data[FILE_NAME]);
-            } else {
-                setExportStudyErr(intl.formatMessage({ id: 'exportStudyErrorMsg' }));
+                onClick(nodeUuid, data[EXPORT_PARAMETERS], data[EXPORT_FORMAT], data[FILE_NAME]);
             }
         },
-        [intl, nodeUuid, onClick]
+        [nodeUuid, onClick]
     );
 
     return (
@@ -225,15 +218,22 @@ export function ExportNetworkDialog({
             formMethods={methods}
             onSave={onSubmit}
             titleId="exportNetwork"
+            sx={{
+                '.MuiDialog-paper': {
+                    minWidth: '30vw',
+                },
+            }}
         >
-            <TextInput name={FILE_NAME} label="download.fileName" />
-            <SelectInput
-                name={EXPORT_FORMAT}
-                label="exportFormat"
-                options={Object.keys(formatsWithParameters)}
-                size="small"
-            />
-            <FlatParametersForm exportStudyErr={exportStudyErr} formatsWithParameters={formatsWithParameters} />
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <TextInput name={FILE_NAME} label="download.fileName" />
+                <SelectInput
+                    name={EXPORT_FORMAT}
+                    label="exportFormat"
+                    options={Object.keys(formatsWithParameters)}
+                    size="small"
+                />
+                <FlatParametersInput formatsWithParameters={formatsWithParameters} />
+            </Box>
         </CustomMuiDialog>
     );
 }
