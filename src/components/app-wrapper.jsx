@@ -75,6 +75,8 @@ import {
     MAP_BASEMAP_CARTO_NOLABEL,
     businessErrorsFr,
     businessErrorsEn,
+    errorsEn,
+    errorsFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -412,6 +414,7 @@ const messages = {
         ...useUniqueNameValidationEn,
         ...filterEn,
         ...businessErrorsEn,
+        ...errorsEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -451,6 +454,7 @@ const messages = {
         ...useUniqueNameValidationFr,
         ...filterFr,
         ...businessErrorsFr,
+        ...errorsFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

@@ -14,7 +14,7 @@ import { CellRender } from './cell-render';
 import { BranchEquipmentInfos } from './equipment-popover-type';
 
 export const formatValue = (value?: number | string | null, fixed?: number | string | null) => {
-    if (value && value != null && !Number.isNaN(value)) {
+    if (value !== undefined && value != null && !Number.isNaN(value)) {
         if (typeof value === 'number') {
             if (typeof fixed === 'number') {
                 return value.toFixed(fixed);
