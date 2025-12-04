@@ -43,6 +43,7 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         gap: 1,
+        marginLeft: 2,
     },
     toggleButton: {
         display: 'flex',

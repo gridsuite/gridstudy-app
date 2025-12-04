@@ -6,7 +6,7 @@
  */
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { catchErrorHandler, CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {

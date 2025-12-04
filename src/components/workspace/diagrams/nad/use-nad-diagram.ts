@@ -8,19 +8,19 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useSnackMessage, backendFetchJson } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
-import { fetchSvg, getNetworkAreaDiagramUrl, PREFIX_STUDY_QUERIES } from '../../../../services/study';
+import { fetchSvg, getNetworkAreaDiagramUrl } from '../../../../services/study';
 import { mergePositions } from '../../../grid-layout/cards/diagrams/diagram-utils';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
 import type { NADPanelMetadata } from '../../types/workspace.types';
 import { updatePanelMetadata as updatePanelMetadataAction } from '../../../../redux/slices/workspace-slice';
-import type { DiagramConfigPosition } from '../../../../services/explore';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
 import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
+import { useSavedNadConfig } from './use-saved-nad-config';
 
 interface UseNadDiagramProps {
     diagramMetadata: NADPanelMetadata;
@@ -55,43 +55,10 @@ export const useNadDiagram = ({
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
 
-    // Save NAD config to backend - only store UUID in Redux
-    const saveNadConfig = useCallback(
-        (
-            voltageLevelIds: string[],
-            positions: DiagramConfigPosition[],
-            scalingFactor?: number
-        ): Promise<UUID | null> => {
-            const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/nad-configs`;
-
-            return backendFetchJson(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id: diagramMetadata.savedWorkspaceConfigUuid || null,
-                    scalingFactor,
-                    voltageLevelIds,
-                    positions,
-                }),
-            })
-                .then((response: UUID) => {
-                    // Only store UUIDs in Redux not voluminous data
-                    dispatch(
-                        updatePanelMetadataAction({
-                            panelId,
-                            metadata: {
-                                savedWorkspaceConfigUuid: response,
-                            },
-                        })
-                    );
-                    return response;
-                })
-                .catch((error) => {
-                    console.error('Failed to save NAD config:', error);
-                    return null;
-                });
-        },
-        [studyUuid, panelId, dispatch, diagramMetadata.savedWorkspaceConfigUuid]
+    const { saveNadConfig, cleanupSavedNadConfig } = useSavedNadConfig(
+        studyUuid,
+        panelId,
+        diagramMetadata.savedWorkspaceConfigUuid
     );
 
     // Helper to process SVG data - extracted to reduce nesting
@@ -303,5 +270,6 @@ export const useNadDiagram = ({
         globalError,
         updateDiagram,
         handleSaveNad,
+        cleanupSavedNadConfig,
     };
 };
