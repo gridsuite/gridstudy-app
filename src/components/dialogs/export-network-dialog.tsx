@@ -26,11 +26,11 @@ import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { useParameterState } from './parameters/use-parameters-state';
 import { AppState } from '../../redux/reducer';
 
-import { IGNORED_PARAMS } from './root-network/ignored-params';
 import { EXPORT_FORMAT, EXPORT_PARAMETERS, FILE_NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { useController, useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { IGNORED_PARAMS } from './root-network/ignored-params';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -85,17 +85,16 @@ function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parame
 }
 interface FlatParametersInputProps {
     name: string;
-    parameters: ExportFormatProperties;
-    disabled: boolean
+    parameters?: ExportFormatProperties;
 }
 
-function FlatParametersInput({ formatsWithParameters }: Readonly<FlatParametersFormProps>) {
+function FlatParametersInput({ name, parameters }: Readonly<FlatParametersInputProps>) {
     const [unfolded, setUnfolded] = useState(false);
     const [metasAsArray, setMetasAsArray] = useState<Parameter[]>([]);
 
     const {
         field: { onChange, value },
-    } = useController({ name: EXPORT_PARAMETERS });
+    } = useController({ name });
 
     const handleChange = useCallback(
         (paramName: string, newValue: unknown, isInEdition: boolean) => {
@@ -111,19 +110,13 @@ function FlatParametersInput({ formatsWithParameters }: Readonly<FlatParametersF
         setUnfolded((prev) => !prev);
     };
 
-    const exportValue = useWatch({ name: EXPORT_FORMAT });
-
-    useEffect(() => {
-        const formatWithParameter = formatsWithParameters?.[exportValue];
-
-        if (formatWithParameter?.parameters) {
-            setMetasAsArray(
-                formatWithParameter.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name))
-            );
+    useMemo(() => {
+        if (parameters) {
+            setMetasAsArray(parameters.parameters.filter((param: Parameter) => !IGNORED_PARAMS.includes(param.name)));
         } else {
             setMetasAsArray([]);
         }
-    }, [formatsWithParameters, exportValue]);
+    }, [parameters]);
 
     return (
         <>
@@ -140,12 +133,12 @@ function FlatParametersInput({ formatsWithParameters }: Readonly<FlatParametersF
             <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
                 <Typography
                     component="span"
-                    color={exportValue ? 'text.main' : 'text.disabled'}
+                    color={parameters ? 'text.main' : 'text.disabled'}
                     sx={{ fontWeight: 'bold' }}
                 >
                     <FormattedMessage id="parameters" />
                 </Typography>
-                <IconButton onClick={handleFoldChange} disabled={!exportValue}>
+                <IconButton onClick={handleFoldChange} disabled={!parameters}>
                     {unfolded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </IconButton>
             </Stack>
@@ -216,6 +209,8 @@ export function ExportNetworkDialog({
         [nodeUuid, onClick]
     );
 
+    const exportValue = useWatch({ name: EXPORT_FORMAT, control: methods.control });
+
     return (
         <CustomMuiDialog
             onClose={onClose}
@@ -238,7 +233,7 @@ export function ExportNetworkDialog({
                     options={Object.keys(formatsWithParameters)}
                     size="small"
                 />
-                <FlatParametersInput formatsWithParameters={formatsWithParameters} />
+                <FlatParametersInput name={EXPORT_PARAMETERS} parameters={formatsWithParameters?.[exportValue]} />
             </Box>
         </CustomMuiDialog>
     );
