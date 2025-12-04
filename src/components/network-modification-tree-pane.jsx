@@ -53,8 +53,6 @@ const noNodeSelectionForCopy = {
     allChildrenIds: null,
 };
 
-export const HTTP_MAX_NODE_BUILDS_EXCEEDED_BUSINESS_CODE = 'study.maxNodeBuildsExceeded';
-
 export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
