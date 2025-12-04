@@ -83,8 +83,10 @@ function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parame
         return parameter;
     });
 }
-interface FlatParametersFormProps {
-    formatsWithParameters: Record<string, ExportFormatProperties>;
+interface FlatParametersInputProps {
+    name: string;
+    parameters: ExportFormatProperties;
+    disabled: boolean
 }
 
 function FlatParametersInput({ formatsWithParameters }: Readonly<FlatParametersFormProps>) {
