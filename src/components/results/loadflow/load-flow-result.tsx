@@ -105,7 +105,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
                     <FormattedMessage id="LoadFlowResultsSynchronousComponents" />
                 </h4>
-                <div style={{ minHeight: '350px', height: '100%' }}>
+                <div style={{ minHeight: '300px', height: '100%' }}>
                     <RenderTableAndExportCsv
                         gridRef={gridRef}
                         columns={componentColumnDefs}
@@ -124,7 +124,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
                     <FormattedMessage id="LoadFlowResultsCountryAdequacies" />
                 </h4>
-                <div style={{ minHeight: '350px', height: '100%' }}>
+                <div style={{ minHeight: '300px', height: '100%' }}>
                     <RenderTableAndExportCsv
                         gridRef={gridRef}
                         columns={countryAdequaciesColumnDefs}
@@ -143,7 +143,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
                     <FormattedMessage id="LoadFlowResultsExchanges" />
                 </h4>
-                <div style={{ minHeight: '350px', height: '100%', paddingBottom: '32px' }}>
+                <div style={{ minHeight: '300px', height: '100%', paddingBottom: '32px' }}>
                     <RenderTableAndExportCsv
                         gridRef={gridRef}
                         columns={exchangesColumnDefs}

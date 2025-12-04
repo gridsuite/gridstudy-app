@@ -435,10 +435,6 @@ export const componentColumnsDefinition = (
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: LOADFLOW_RESULT_SORT_STORE,
-        tab: mappingTabs(tabIndex),
-    };
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
@@ -449,7 +445,6 @@ export const componentColumnsDefinition = (
             colId: 'connectedComponentNum',
             field: 'connectedComponentNum',
             context: {
-                sortParams,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
@@ -459,7 +454,6 @@ export const componentColumnsDefinition = (
             colId: 'synchronousComponentNum',
             field: 'synchronousComponentNum',
             context: {
-                sortParams,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
@@ -469,7 +463,6 @@ export const componentColumnsDefinition = (
             colId: 'status',
             field: 'status',
             context: {
-                sortParams,
                 filterComponent: CustomAggridAutocompleteFilter,
                 filterComponentParams: {
                     filterParams: {
@@ -487,7 +480,6 @@ export const componentColumnsDefinition = (
             colId: 'consumptions',
             field: 'consumptions',
             context: {
-                sortParams,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
@@ -498,7 +490,6 @@ export const componentColumnsDefinition = (
             colId: 'generations',
             field: 'generations',
             context: {
-                sortParams,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
@@ -509,7 +500,6 @@ export const componentColumnsDefinition = (
             colId: 'exchanges',
             field: 'exchanges',
             context: {
-                sortParams,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
@@ -520,7 +510,6 @@ export const componentColumnsDefinition = (
             colId: 'losses',
             field: 'losses',
             context: {
-                sortParams,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
@@ -554,7 +543,6 @@ export const componentColumnsDefinition = (
             colId: 'iterationCount',
             field: 'iterationCount',
             context: {
-                sortParams,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
@@ -567,66 +555,34 @@ export const countryAdequaciesColumnsDefinition = (
     tabIndex: number,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: LOADFLOW_RESULT_SORT_STORE,
-        tab: mappingTabs(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.Loadflow,
-        tab: mappingTabs(tabIndex),
-    };
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Country' }),
             colId: 'country',
             field: 'country',
-            context: {
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...textFilterParams, ...filterParams } },
-            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'countryAdequacyLoad' }),
             colId: 'load',
             field: 'load',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
             cellRenderer: numberRenderer,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'countryAdequacyGeneration' }),
             colId: 'generation',
             field: 'generation',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
             cellRenderer: numberRenderer,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'losses' }),
             colId: 'losses',
             field: 'losses',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
             cellRenderer: numberRenderer,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'netPosition' }),
             colId: 'netPosition',
             field: 'netPosition',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
             cellRenderer: numberRenderer,
         }),
     ];
@@ -637,42 +593,21 @@ export const exchangesColumnsDefinition = (
     tabIndex: number,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: LOADFLOW_RESULT_SORT_STORE,
-        tab: mappingTabs(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.Loadflow,
-        tab: mappingTabs(tabIndex),
-    };
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'borders' }),
             colId: 'countryA',
             field: 'countryA',
-            context: {
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...textFilterParams, ...filterParams } },
-            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: '',
             colId: 'countryB',
             field: 'countryB',
-            context: {
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...textFilterParams, ...filterParams } },
-            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'netPositionMinusExchanges' }),
             colId: 'netPositionMinusExchanges',
             field: 'netPositionMinusExchanges',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
             cellRenderer: numberRenderer,
         }),
     ];
