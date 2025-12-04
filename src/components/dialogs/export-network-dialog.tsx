@@ -225,7 +225,7 @@ export function ExportNetworkDialog({
                 },
             }}
         >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1 }}>
                 <TextInput name={FILE_NAME} label="download.fileName" />
                 <SelectInput
                     name={EXPORT_FORMAT}
