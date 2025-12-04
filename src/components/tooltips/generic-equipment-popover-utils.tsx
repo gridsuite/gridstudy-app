@@ -126,9 +126,7 @@ export const generateCurrentLimitsRows = (
                         )}
                     </TableCell>
                     <TableCell sx={styles.cell}>
-                        {side === '1'
-                            ? equipmentInfos?.voltageLevelId1 && equipmentInfos?.voltageLevelId1
-                            : equipmentInfos?.voltageLevelId2 && equipmentInfos?.voltageLevelId2}
+                        {side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2}
                     </TableCell>
                 </TableRow>
             )}
@@ -152,9 +150,7 @@ export const generateCurrentLimitsRows = (
                                 )}
                             </TableCell>
                             <TableCell sx={styles.cell}>
-                                {side === '1'
-                                    ? equipmentInfos?.voltageLevelId1 && equipmentInfos?.voltageLevelId1
-                                    : equipmentInfos?.voltageLevelId2 && equipmentInfos?.voltageLevelId2}
+                                {side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2}
                             </TableCell>
                         </TableRow>
                     )
