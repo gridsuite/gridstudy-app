@@ -9,13 +9,13 @@ import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mu
 import { CellRender } from './cell-render';
 import { formatValue, styles } from './generic-equipment-popover-utils';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
-import { BranchEquipmentInfos } from './equipment-popover-type';
+import { TwoTwtEquipmentInfos } from './equipment-popover-type';
 
-interface TwoCharacteristicsModeProps {
-    equipmentInfos: BranchEquipmentInfos;
+interface TwoTwtCharacteristicsModeProps {
+    equipmentInfos: TwoTwtEquipmentInfos;
 }
 
-export const TwoCharacteristicsMode: React.FC<TwoCharacteristicsModeProps> = ({ equipmentInfos }) => {
+export const TwoTwtCharacteristicsMode: React.FC<TwoTwtCharacteristicsModeProps> = ({ equipmentInfos }) => {
     const ratio = equipmentInfos.ratioTapChanger;
     const phase = equipmentInfos.phaseTapChanger;
 

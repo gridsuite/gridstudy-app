@@ -31,10 +31,10 @@ export const CurrentTable: React.FC<CurrentTableProps> = ({ equipmentInfos, load
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             ></CellRender>
                             <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {formatValue(equipmentInfos?.voltageLevelId1)}
+                                {equipmentInfos?.voltageLevelId1 && formatValue(equipmentInfos?.voltageLevelId1)}
                             </TableCell>
                             <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {formatValue(equipmentInfos?.voltageLevelId2)}
+                                {equipmentInfos?.voltageLevelId2 && formatValue(equipmentInfos?.voltageLevelId2)}
                             </TableCell>
                         </TableRow>
                     </TableHead>

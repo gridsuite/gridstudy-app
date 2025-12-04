@@ -9,10 +9,10 @@ import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid 
 import { renderCommonCharacteristics, styles } from './generic-equipment-popover-utils';
 import { CellRender } from './cell-render';
 import { JSX } from 'react';
-import { BranchEquipmentInfos } from './equipment-popover-type';
+import { BranchEquipmentInfos, TwoTwtEquipmentInfos } from './equipment-popover-type';
 
 interface CharacteristicsTableProps {
-    equipmentInfos: BranchEquipmentInfos;
+    equipmentInfos: BranchEquipmentInfos | TwoTwtEquipmentInfos;
     renderVoltageLevelCharacteristics?: (equipmentInfos: BranchEquipmentInfos) => JSX.Element;
 }
 

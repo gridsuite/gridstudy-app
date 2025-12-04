@@ -14,7 +14,7 @@ import { fetchNetworkElementInfos } from '../../services/study/network';
 import { EquipmentType, useDebounce } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'node:crypto';
-import { BranchEquipmentInfos, GenericEquipmentInfos } from './equipment-popover-type';
+import { GenericEquipmentInfos } from './equipment-popover-type';
 
 interface MenuAnchorPosition {
     top: number;
@@ -44,7 +44,7 @@ const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
 
     const [localAnchorEl, setLocalAnchorEl] = useState<HTMLElement | null>(null);
     const [localAnchorPosition, setLocalAnchorPosition] = useState<MenuAnchorPosition | null>(null);
-    const [equipmentInfos, setEquipmentInfo] = useState<BranchEquipmentInfos | null>(null);
+    const [equipmentInfos, setEquipmentInfo] = useState<GenericEquipmentInfos | null>(null);
 
     const getNetworkElementInfos = useCallback(
         (

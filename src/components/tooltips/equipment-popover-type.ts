@@ -15,12 +15,17 @@ export interface BranchEquipmentInfos extends EquipmentInfos {
     q1: number;
     p2: number;
     q2: number;
-    ratioTapChanger: any;
-    phaseTapChanger: any;
+    r: number;
+    x: number;
     currentLimits1: CurrentLimits;
     currentLimits2: CurrentLimits;
     selectedOperationalLimitsGroup1?: string;
     selectedOperationalLimitsGroup2?: string;
 }
 
-export type GenericEquipmentInfos = BranchEquipmentInfos;
+export interface TwoTwtEquipmentInfos extends BranchEquipmentInfos {
+    ratioTapChanger: any;
+    phaseTapChanger: any;
+}
+
+export type GenericEquipmentInfos = BranchEquipmentInfos | TwoTwtEquipmentInfos;

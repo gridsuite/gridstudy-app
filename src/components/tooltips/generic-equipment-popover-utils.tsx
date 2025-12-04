@@ -9,12 +9,12 @@ import { TableCell, TableRow } from '@mui/material';
 import { mergeSx, convertInputValue, FieldType, MuiStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { RunningStatus } from '../utils/running-status';
-import { CurrentLimits } from 'services/network-modification-types';
+import { CurrentLimits, TemporaryLimit } from 'services/network-modification-types';
 import { CellRender } from './cell-render';
 import { BranchEquipmentInfos } from './equipment-popover-type';
 
-export const formatValue = (value?: number | string | null, fixed?: number | string | null) => {
-    if (value && value != null && !Number.isNaN(value)) {
+export const formatValue = (value: number | string | null, fixed?: number | string | null) => {
+    if (value != null && !Number.isNaN(value)) {
         if (typeof value === 'number') {
             if (typeof fixed === 'number') {
                 return value.toFixed(fixed);
@@ -32,12 +32,12 @@ export const formatValue = (value?: number | string | null, fixed?: number | str
 /**
  * Render common characteristics
  */
-export const renderCommonCharacteristics = (equipmentInfo: any) => (
+export const renderCommonCharacteristics = (equipmentInfo: BranchEquipmentInfos) => (
     <>
         <TableRow>
             <TableCell sx={styles.cell} />
 
-            <CellRender label="SeriesResistanceOhm" isLabel={true} colStyle={styles.cell} />
+            <CellRender label="seriesResistance" isLabel={true} colStyle={styles.cell} />
 
             <CellRender value={formatValue(equipmentInfo.r, 2)} isLabel={false} colStyle={styles.cell} />
         </TableRow>
@@ -45,12 +45,13 @@ export const renderCommonCharacteristics = (equipmentInfo: any) => (
         <TableRow>
             <TableCell sx={styles.cell} />
 
-            <CellRender label="SeriesReactanceOhm" isLabel={true} colStyle={styles.cell} />
+            <CellRender label="seriesReactance" isLabel={true} colStyle={styles.cell} />
 
-            <CellRender value={formatValue(equipmentInfo.x, 2)} colStyle={styles.cell} />
+            <CellRender value={formatValue(equipmentInfo.x, 2)} isLabel={false} colStyle={styles.cell} />
         </TableRow>
     </>
 );
+
 export const styles = {
     table: (theme) => ({
         '& .MuiTableCell-root': {
@@ -125,12 +126,14 @@ export const generateCurrentLimitsRows = (
                         )}
                     </TableCell>
                     <TableCell sx={styles.cell}>
-                        {formatValue(side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2)}
+                        {side === '1'
+                            ? equipmentInfos?.voltageLevelId1 && equipmentInfos?.voltageLevelId1
+                            : equipmentInfos?.voltageLevelId2 && equipmentInfos?.voltageLevelId2}
                     </TableCell>
                 </TableRow>
             )}
             {currentLimits?.temporaryLimits?.map(
-                (temporaryLimit: any) =>
+                (temporaryLimit: TemporaryLimit) =>
                     temporaryLimit.value && (
                         <TableRow key={temporaryLimit.name + side}>
                             <TableCell sx={styles.cell}>{formatValue(temporaryLimit.name)}</TableCell>
@@ -149,9 +152,9 @@ export const generateCurrentLimitsRows = (
                                 )}
                             </TableCell>
                             <TableCell sx={styles.cell}>
-                                {formatValue(
-                                    side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2
-                                )}
+                                {side === '1'
+                                    ? equipmentInfos?.voltageLevelId1 && equipmentInfos?.voltageLevelId1
+                                    : equipmentInfos?.voltageLevelId2 && equipmentInfos?.voltageLevelId2}
                             </TableCell>
                         </TableRow>
                     )
