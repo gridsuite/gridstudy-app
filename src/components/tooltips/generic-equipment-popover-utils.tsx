@@ -25,7 +25,7 @@ export const formatValue = (value?: number | string | null, fixed?: number | str
             return value;
         }
     } else {
-        return '_';
+        return '—';
     }
 };
 

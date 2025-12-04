@@ -1673,5 +1673,11 @@
     "activePowerControlTooltip": "Clé de distribution de la puissance au nœud bilan : maxP/Statisme, statisme par défaut = 4 (valable pour le mode compensation proportionnel à la puissance maximale des groupes)",
     "twtQ": "Q (MVar)",
     "twtAlpha": "Déphasage",
-    "twtReport":"Rapport de transformation"
+    "twtReport":"Rapport de transformation",
+    "tooltip.u": "U (kV)",
+    "tooltip.angle": "θ (°)",
+    "tooltip.generation": "Production (MW)",
+    "tooltip.load": "Consommation (MW)",
+    "tooltip.balance": "Bilan (MW)",
+    "tooltip.icc": "Icc (kA)"
 }
