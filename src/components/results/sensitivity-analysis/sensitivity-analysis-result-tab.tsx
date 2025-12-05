@@ -29,6 +29,8 @@ import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
 import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
+import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -46,8 +48,8 @@ function SensitivityAnalysisResultTab({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.SensitivityAnalysis);
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
@@ -93,6 +95,7 @@ function SensitivityAnalysisResultTab({
                                 onChange={handleGlobalFilterChange}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
+                                preloadedGlobalFilters={globalFiltersFromState}
                                 genericFiltersStrictMode={true}
                                 disableGenericFilters={sensiTab === SENSITIVITY_AT_NODE}
                             />

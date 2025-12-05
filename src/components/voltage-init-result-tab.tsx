@@ -17,6 +17,8 @@ import { useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import useGlobalFilters, { isGlobalFilterParameter } from './results/common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options';
+import { useComputationGlobalFilters } from '../hooks/use-computation-global-filters';
+import { FilterType as AgGridFilterType } from '../types/custom-aggrid-types';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;
@@ -33,7 +35,8 @@ export function VoltageInitResultTab({
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.VoltageInit);
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
@@ -67,6 +70,7 @@ export function VoltageInitResultTab({
             status={voltageInitStatus}
             handleGlobalFilterChange={handleGlobalFilterChange}
             globalFilterOptions={globalFilterOptions}
+            globalFilterSpreadsheetState={globalFiltersFromState}
         />
     );
 }

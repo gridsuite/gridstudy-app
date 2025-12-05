@@ -22,6 +22,8 @@ import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filt
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
+import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
 export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     studyUuid,
@@ -35,6 +37,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
+    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.PccMin);
     const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
@@ -74,6 +77,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                             onChange={handleGlobalFilterChange}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
+                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode
                         />
                     </Box>
