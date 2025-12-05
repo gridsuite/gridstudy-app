@@ -27,7 +27,7 @@ export interface LineEquipmentInfos extends CommonBranchEquipmentInfos {}
 
 export interface TwtEquipmentInfos extends CommonBranchEquipmentInfos {
     ratioTapChanger: any;
-    phaseTapChanger:any;
+    phaseTapChanger: any;
 }
 
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;

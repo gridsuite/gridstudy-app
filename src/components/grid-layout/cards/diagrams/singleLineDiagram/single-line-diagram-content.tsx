@@ -47,9 +47,8 @@ import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import useComputationDebug from '../../../../../hooks/use-computation-debug';
 
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
-import { BranchPopoverContent } from 'components/tooltips/branch-popover-content';
-import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
+import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
@@ -318,7 +317,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     );
 
     const displayTooltip = () => {
-        const PopoverContent = EquipmentPopoverMap[hoveredEquipmentType] || BranchPopoverContent;
         return (
             <GenericEquipmentPopover
                 studyUuid={studyUuid}
@@ -329,7 +327,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 anchorPosition={undefined}
             >
                 {(equipmentInfos: GenericEquipmentInfos) => (
-                    <PopoverContent
+                    <GenericPopoverContent
                         equipmentInfos={equipmentInfos}
                         loadFlowStatus={loadFlowStatus}
                         equipmentType={hoveredEquipmentType}

@@ -71,8 +71,8 @@ import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { getBaseVoltageNetworkMapColor } from 'utils/colors';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
-import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
+import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -946,7 +946,6 @@ export const NetworkMapPanel = ({
 
     const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
         (elementId, ref) => {
-            const PopoverContent = EquipmentPopoverMap[EQUIPMENT_TYPES.LINE];
             return (
                 <GenericEquipmentPopover
                     studyUuid={studyUuid}
@@ -957,7 +956,7 @@ export const NetworkMapPanel = ({
                     anchorPosition={undefined}
                 >
                     {(equipmentInfos: GenericEquipmentInfos) => (
-                        <PopoverContent
+                        <GenericPopoverContent
                             equipmentInfos={equipmentInfos}
                             loadFlowStatus={loadFlowStatus}
                             equipmentType={EQUIPMENT_TYPES.LINE}
