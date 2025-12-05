@@ -9,38 +9,38 @@ import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mu
 import { CellRender } from './cell-render';
 import { formatValue, styles } from './generic-equipment-popover-utils';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
-import { TwoTwtEquipmentInfos } from './equipment-popover-type';
+import { TwtEquipmentInfos } from './equipment-popover-type';
 
-interface TwoTwtCharacteristicsModeProps {
-    equipmentInfos: TwoTwtEquipmentInfos;
+interface TwtCharacteristicsModeProps {
+    equipmentInfos: TwtEquipmentInfos;
 }
 
-export const TwoTwtCharacteristicsMode: React.FC<TwoTwtCharacteristicsModeProps> = ({ equipmentInfos }) => {
-    const ratio = equipmentInfos.ratioTapChanger;
-    const phase = equipmentInfos.phaseTapChanger;
+export const TwtCharacteristicsMode: React.FC<TwtCharacteristicsModeProps> = ({ equipmentInfos }) => {
+    const ratioTapChanger = equipmentInfos.ratioTapChanger;
+    const phaseTapChanger = equipmentInfos.phaseTapChanger;
 
     const rows = [];
 
-    if (ratio) {
+    if (ratioTapChanger) {
         rows.push({
-            tap: ratio.tapPosition,
-            rho: ratio.steps[ratio.tapPosition].rho,
+            tap: ratioTapChanger.tapPosition,
+            rho: ratioTapChanger.steps[ratioTapChanger.tapPosition].rho,
             alpha: '-',
-            mode: ratio.isRegulating
+            mode: ratioTapChanger.isRegulating
                 ? RATIO_REGULATION_MODES.VOLTAGE_REGULATION.label
                 : RATIO_REGULATION_MODES.FIXED_RATIO.label,
         });
     }
 
-    if (phase) {
+    if (phaseTapChanger) {
         const phaseRegulationMode =
-            PHASE_REGULATION_MODES[phase.regulationMode as keyof typeof PHASE_REGULATION_MODES].label;
+            PHASE_REGULATION_MODES[phaseTapChanger.regulationMode as keyof typeof PHASE_REGULATION_MODES].label;
 
         rows.push({
-            tap: phase.tapPosition ?? '-',
+            tap: phaseTapChanger.tapPosition ?? '-',
             rho: '-',
-            alpha: phase.steps[phase.tapPosition].alpha,
-            mode: phase.isRegulating ? phaseRegulationMode : PHASE_REGULATION_MODES.OFF.label,
+            alpha: phaseTapChanger.steps[phaseTapChanger.tapPosition].alpha,
+            mode: phaseTapChanger.isRegulating ? phaseRegulationMode : PHASE_REGULATION_MODES.OFF.label,
         });
     }
 

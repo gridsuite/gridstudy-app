@@ -8,7 +8,7 @@
 import { EquipmentInfos } from '@gridsuite/commons-ui';
 import { CurrentLimits } from 'services/network-modification-types';
 
-export interface BranchEquipmentInfos extends EquipmentInfos {
+export interface CommonBranchEquipmentInfos extends EquipmentInfos {
     i1: number;
     i2: number;
     p1: number;
@@ -23,9 +23,13 @@ export interface BranchEquipmentInfos extends EquipmentInfos {
     selectedOperationalLimitsGroup2?: string;
 }
 
-export interface TwoTwtEquipmentInfos extends BranchEquipmentInfos {
+export interface LineEquipmentInfos extends CommonBranchEquipmentInfos {}
+
+export interface TwtEquipmentInfos extends CommonBranchEquipmentInfos {
     ratioTapChanger: any;
-    phaseTapChanger: any;
+    phaseTapChanger:any;
 }
 
-export type GenericEquipmentInfos = BranchEquipmentInfos | TwoTwtEquipmentInfos;
+export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
+
+export type GenericEquipmentInfos = BranchEquipmentInfos;

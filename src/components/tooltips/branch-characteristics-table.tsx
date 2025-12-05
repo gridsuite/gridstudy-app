@@ -9,14 +9,14 @@ import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid 
 import { renderCommonCharacteristics, styles } from './generic-equipment-popover-utils';
 import { CellRender } from './cell-render';
 import { JSX } from 'react';
-import { BranchEquipmentInfos, TwoTwtEquipmentInfos } from './equipment-popover-type';
+import { BranchEquipmentInfos } from './equipment-popover-type';
 
-interface CharacteristicsTableProps {
-    equipmentInfos: BranchEquipmentInfos | TwoTwtEquipmentInfos;
+interface BranchCharacteristicsProps {
+    equipmentInfos: BranchEquipmentInfos;
     renderVoltageLevelCharacteristics?: (equipmentInfos: BranchEquipmentInfos) => JSX.Element;
 }
 
-export const CharacteristicsTable: React.FC<CharacteristicsTableProps> = ({
+export const BranchCharacteristicsTable: React.FC<BranchCharacteristicsProps> = ({
     equipmentInfos,
     renderVoltageLevelCharacteristics,
 }) => {

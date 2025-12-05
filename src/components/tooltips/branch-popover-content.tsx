@@ -8,17 +8,17 @@
 import { EquipmentType } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { RunningStatus } from '../utils/running-status';
-import { CharacteristicsTable } from './carateristics-table';
+import { BranchCharacteristicsTable } from './branch-characteristics-table';
 import { CurrentTable } from './current-table';
 import { LimitsTable } from './limit-table';
-import { TwoTwtCharacteristicsMode } from './twt-carateristics-mode';
-import { BranchEquipmentInfos, TwoTwtEquipmentInfos } from './equipment-popover-type';
-import { CharacteristicsByVoltageLevel } from './carateristics-by-VoltageLevel';
+import { TwtCharacteristicsMode } from './twt-characteristics-mode';
+import { BranchEquipmentInfos, TwtEquipmentInfos } from './equipment-popover-type';
+import { CharacteristicsByVoltageLevel } from './characteristics-by-VoltageLevel';
 
 interface BranchPopoverContentProps {
-    equipmentInfos: BranchEquipmentInfos | TwoTwtEquipmentInfos;
+    equipmentInfos: BranchEquipmentInfos;
     loadFlowStatus?: RunningStatus;
-    equipmentType?: EquipmentType;
+    equipmentType: EquipmentType;
 }
 
 export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
@@ -28,11 +28,11 @@ export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
 }) => {
     return (
         <Grid container direction="column" rowSpacing={2} alignItems="center">
-            <CharacteristicsTable equipmentInfos={equipmentInfos} />
+            <BranchCharacteristicsTable equipmentInfos={equipmentInfos} />
             <CurrentTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
             <CharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} />
             {equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER && (
-                <TwoTwtCharacteristicsMode equipmentInfos={equipmentInfos as TwoTwtEquipmentInfos} />
+                <TwtCharacteristicsMode equipmentInfos={equipmentInfos as TwtEquipmentInfos} />
             )}
             <LimitsTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
         </Grid>
