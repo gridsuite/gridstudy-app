@@ -71,12 +71,10 @@ const ByFilterDeletionForm = () => {
     }, [handleEquipmentTypeChange, getOptionLabel, typesOptions]);
 
     return (
-        <>
-            <Grid container spacing={2}>
-                <GridItem>{equipmentTypeField}</GridItem>
-                <GridItem>{filtersField}</GridItem>
-            </Grid>
-        </>
+        <Grid container spacing={2} padding={0.5} alignItems={'center'}>
+            <GridItem>{equipmentTypeField}</GridItem>
+            <GridItem>{filtersField}</GridItem>
+        </Grid>
     );
 };
 
