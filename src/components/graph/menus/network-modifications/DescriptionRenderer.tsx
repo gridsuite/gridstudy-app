@@ -20,7 +20,7 @@ export interface DescriptionRendererProps extends ICellRendererParams<NetworkMod
 }
 
 const DescriptionRenderer = (props: DescriptionRendererProps) => {
-    const { data, api, setModifications } = props;
+    const { data, api } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -30,28 +30,11 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
 
     const modificationUuid = data?.uuid;
     const description: string | undefined = data?.description;
+    const empty = description === undefined || description === null || description === '';
 
     const updateModification = useCallback(
         async (uuid: UUID, descriptionRecord: Record<string, string>) => {
-            // TODO ? typer element autrement ? cf commons-ui DescriptionModificationDialog.tsx l64
-            /*if (!uuid || !description) {
-                return;
-            }*/
             setIsLoading(true);
-
-            setModifications((oldModifications) => {
-                const modificationToUpdateIndex = oldModifications.findIndex((m) => m.uuid === uuid);
-                if (modificationToUpdateIndex === -1) {
-                    return oldModifications;
-                }
-                const newModifications = [...oldModifications];
-
-                newModifications[modificationToUpdateIndex] = {
-                    ...newModifications[modificationToUpdateIndex],
-                };
-
-                return newModifications;
-            });
 
             return setModificationDescription(studyUuid, currentNode?.id, uuid, descriptionRecord.description).finally(
                 () => {
@@ -59,7 +42,7 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                 }
             );
         },
-        [setModifications, studyUuid, currentNode?.id]
+        [studyUuid, currentNode?.id]
     );
 
     const handleDescDialogClose = useCallback(() => {
@@ -73,7 +56,6 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
         }
         setOpenDescModificationDialog(true);
     };
-    console.log('description : ', description);
 
     return (
         <>
@@ -92,7 +74,7 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
                 >
-                    <EditNoteIcon empty={description === undefined || description === ''} />
+                    <EditNoteIcon empty={empty} />
                 </IconButton>
             </Tooltip>
         </>
