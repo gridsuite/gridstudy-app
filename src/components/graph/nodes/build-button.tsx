@@ -12,7 +12,6 @@ import { Button, CircularProgress } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
 import type { UUID } from 'node:crypto';
 import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE } from 'components/network-modification-tree-pane';
 
 type BuildButtonProps = {
     buildStatus?: BUILD_STATUS;
@@ -53,18 +52,7 @@ export const BuildButton = ({
 
             if (!buildStatus || buildStatus === BUILD_STATUS.NOT_BUILT) {
                 buildNode(studyUuid, nodeUuid, currentRootNetworkUuid)
-                    .catch((error) => {
-                        if (error.status === 403 && error.message.includes(HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE)) {
-                            // retrieve last word of the message (ex: "MAX_NODE_BUILDS_EXCEEDED max allowed built nodes : 2" -> 2)
-                            let limit = error.message.split(/[: ]+/).pop();
-                            snackError({
-                                messageId: 'maxBuiltNodeExceededError',
-                                messageValues: { limit: limit },
-                            });
-                        } else {
-                            snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' });
-                        }
-                    })
+                    .catch((error) => snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' }))
                     .finally(() => {
                         setIsLoading(false);
                     });

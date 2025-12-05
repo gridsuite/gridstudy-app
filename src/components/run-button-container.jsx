@@ -571,7 +571,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             ...(stateEstimationAvailability === OptionalServicesStatus.Up && enableDeveloperMode
                 ? [ComputingType.STATE_ESTIMATION]
                 : []),
-            ...(pccMinAvailability === OptionalServicesStatus.Up && enableDeveloperMode ? [ComputingType.PCC_MIN] : []),
+            ...(pccMinAvailability === OptionalServicesStatus.Up ? [ComputingType.PCC_MIN] : []),
         ];
     }, [
         securityAnalysisAvailability,

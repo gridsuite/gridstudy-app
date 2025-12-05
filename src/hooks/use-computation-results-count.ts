@@ -80,8 +80,7 @@ export const useComputationResultsCount = () => {
         enableDeveloperMode &&
         (stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
-    const pccMinResultPresent =
-        enableDeveloperMode && (pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+    const pccMinResultPresent = pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     return [
         loadflowResultPresent,
