@@ -101,7 +101,7 @@ export const DEFAULT_PANEL_CONFIGS: Record<PanelType, PanelConfig> = {
     [PanelType.NODE_EDITOR]: {
         title: 'modifications',
         defaultSize: { width: 400, height: 500 },
-        minSize: { width: 350, height: 300 },
+        minSize: { width: 340, height: 300 },
         defaultPosition: { x: 50, y: 0 },
         icon: <Tune fontSize="inherit" />,
     },

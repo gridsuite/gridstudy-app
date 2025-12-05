@@ -149,7 +149,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 cellRendererParams: {
                     setModifications: setModifications,
                 },
-                width: 50,
+                width: 30,
             },
             {
                 cellRenderer: SwitchCellRenderer,
