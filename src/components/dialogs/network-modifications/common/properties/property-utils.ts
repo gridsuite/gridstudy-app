@@ -75,6 +75,13 @@ export const getPropertiesFromModification = (properties: Property[] | undefined
             : [],
     };
 };
+export function getPropertyValue(properties: Property[] | undefined, key: string): string | undefined {
+    if (!properties) return undefined;
+    if (Array.isArray(properties)) {
+        return properties.find((p) => p[NAME] === key)?.[VALUE] ?? undefined;
+    }
+    return properties[key] ?? undefined;
+}
 
 export const copyEquipmentPropertiesForCreation = (equipmentInfos: Equipment): Properties => {
     return {

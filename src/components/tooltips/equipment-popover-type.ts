@@ -6,6 +6,7 @@
  */
 
 import { EquipmentInfos } from '@gridsuite/commons-ui';
+import { Property } from 'components/dialogs/network-modifications/common/properties/property-utils';
 import { CurrentLimits } from 'services/network-modification-types';
 
 export interface BranchEquipmentInfos extends EquipmentInfos {
@@ -23,7 +24,7 @@ export interface BranchEquipmentInfos extends EquipmentInfos {
     selectedOperationalLimitsGroup2?: string;
 }
 export interface LoadEquipmentInfos {
-    type: string;
+    properties?: Property[];
     p0: number;
     q0: number;
 }

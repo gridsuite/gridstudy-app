@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Table, TableContainer, TableRow } from '@mui/material';
+import { Grid, Table, TableBody, TableContainer, TableRow } from '@mui/material';
 import { LoadEquipmentInfos } from './equipment-popover-type';
 import { CellRender } from './cell-render';
 import { formatValue, styles } from './generic-equipment-popover-utils';
-import { getLoadTypeLabel } from 'components/network/constants';
+import { getPropertyValue } from 'components/dialogs/network-modifications/common/properties/property-utils';
 
 interface LoadPopoverContentProps {
     equipmentInfos: LoadEquipmentInfos;
@@ -21,20 +21,25 @@ export const LoadPopoverContent: React.FC<LoadPopoverContentProps> = ({ equipmen
             <Grid item sx={styles.grid}>
                 <TableContainer sx={styles.table}>
                     <Table size="small" sx={styles.layout}>
-                        <TableRow>
-                            <CellRender isLabel label="ConsP" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender value={formatValue(equipmentInfos.p0, 3)} colStyle={styles.cell} />
-                        </TableRow>
+                        <TableBody>
+                            <TableRow>
+                                <CellRender isLabel label="ConsP" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                                <CellRender value={formatValue(equipmentInfos.p0, 3)} colStyle={styles.cell} />
+                            </TableRow>
 
-                        <TableRow>
-                            <CellRender isLabel label="ConsQ" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender value={formatValue(equipmentInfos.q0, 3)} colStyle={styles.cell} />
-                        </TableRow>
+                            <TableRow>
+                                <CellRender isLabel label="ConsQ" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                                <CellRender value={formatValue(equipmentInfos.q0, 3)} colStyle={styles.cell} />
+                            </TableRow>
 
-                        <TableRow>
-                            <CellRender isLabel label="loadType" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender isLabel label={getLoadTypeLabel(equipmentInfos.type)} colStyle={styles.cell} />
-                        </TableRow>
+                            <TableRow>
+                                <CellRender isLabel label="Type" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                                <CellRender
+                                    value={formatValue(getPropertyValue(equipmentInfos?.properties, 'typeAffineFixe'))}
+                                    colStyle={styles.cell}
+                                />
+                            </TableRow>
+                        </TableBody>
                     </Table>
                 </TableContainer>
             </Grid>
