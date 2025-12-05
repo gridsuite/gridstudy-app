@@ -57,7 +57,7 @@ const VoltageLevelCreationForm = ({
 
     useEffect(() => {
         // in new substation mode, set the default country
-        if (isWithSubstationCreation && getValues(COUNTRY) == null) {
+        if (isWithSubstationCreation && !getValues(COUNTRY)) {
             fetchDefaultCountry().then((country) => {
                 if (country) {
                     setValue(COUNTRY, country);
