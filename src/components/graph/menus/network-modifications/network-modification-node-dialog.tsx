@@ -9,7 +9,6 @@ import {
     CustomFormProvider,
     DescriptionField,
     isObjectEmpty,
-    MAX_CHAR_DESCRIPTION,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -25,6 +24,8 @@ import { isNodeExists } from 'services/study';
 import { NAME, DESCRIPTION } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { updateTreeNode } from 'services/study/tree-subtree';
+
+export const MAX_CHAR_NODE_DESCRIPTION = 10000;
 
 export interface FormData {
     [NAME]: string;
@@ -42,7 +43,7 @@ const getSchema = () =>
         .object()
         .shape({
             [NAME]: yup.string().trim().required(),
-            [DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
+            [DESCRIPTION]: yup.string().max(MAX_CHAR_NODE_DESCRIPTION),
         })
         .required();
 
@@ -103,7 +104,7 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
         <CustomFormProvider validationSchema={getSchema()} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                maxWidth={'sm'}
+                maxWidth={'md'}
                 open={open}
                 onClose={onClose}
                 onClear={clear}
@@ -127,7 +128,7 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
                         />
                     </Grid>
                     <Grid item>
-                        <DescriptionField />
+                        <DescriptionField rows={6} maxCharactersNumber={MAX_CHAR_NODE_DESCRIPTION} />
                     </Grid>
                 </Grid>
             </ModificationDialog>
