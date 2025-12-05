@@ -168,7 +168,7 @@ export interface EditData {
     buses: BusData[];
     rootNetworkName?: string;
     nodeName?: string;
-    date?: string;
+    computationDate?: string;
 }
 
 interface VoltageInitModificationProps {
@@ -385,15 +385,16 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                         <FormattedMessage id="VoltageinitNodeName" values={{ nodeName: editData.nodeName }} />
                     </Typography>
                 )}
-                {editData && editData.date && (
+                {editData && editData.computationDate && (
                     <Typography variant="subtitle1">
                         <FormattedMessage
                             id="VoltageinitDate"
                             values={{
-                                date: new Intl.DateTimeFormat(intl.locale, {
-                                    timeStyle: 'medium',
+                                computationDate: new Intl.DateTimeFormat(intl.locale, {
+                                    dateStyle: 'long',
+                                    timeStyle: 'long',
                                     hour12: false,
-                                }).format(new Date(editData.date)),
+                                }).format(new Date(editData.computationDate)),
                             }}
                         />
                     </Typography>

@@ -201,7 +201,7 @@
     "voltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
     "VoltageinitRootNetworkName": "Réseau racine : {rootNetworkName}",
     "VoltageinitNodeName": "Noeud : {nodeName}",
-    "VoltageinitDate": "Date : {date}",
+    "VoltageinitDate": "Date du calcul : {computationDate}",
 
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",

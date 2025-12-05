@@ -202,7 +202,7 @@
     "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
     "VoltageinitRootNetworkName": "Root network : {rootNetworkName}",
     "VoltageinitNodeName": "Node : {nodeName}",
-    "VoltageinitDate": "Date : {date}",
+    "VoltageinitDate": "Computation date : {computationDate}",
 
     "SelectAll": "All",
     "UnselectAll": "None",
