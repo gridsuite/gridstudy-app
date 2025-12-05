@@ -372,7 +372,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             }}
         >
             <Box>
-                {editData && editData.rootNetworkName && (
+                {editData?.rootNetworkName && (
                     <Typography variant="subtitle1">
                         <FormattedMessage
                             id="VoltageinitRootNetworkName"
@@ -380,12 +380,12 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                         />
                     </Typography>
                 )}
-                {editData && editData.nodeName && (
+                {editData?.nodeName && (
                     <Typography variant="subtitle1">
                         <FormattedMessage id="VoltageinitNodeName" values={{ nodeName: editData.nodeName }} />
                     </Typography>
                 )}
-                {editData && editData.computationDate && (
+                {editData?.computationDate && (
                     <Typography variant="subtitle1">
                         <FormattedMessage
                             id="VoltageinitDate"
