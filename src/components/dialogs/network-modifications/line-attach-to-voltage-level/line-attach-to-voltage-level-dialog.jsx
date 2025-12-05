@@ -9,6 +9,7 @@ import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMess
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
+    ATTACHMENT_POINT,
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
     BUS_OR_BUSBAR_SECTION,
@@ -66,7 +67,7 @@ const formSchema = yup
     .shape({
         [ATTACHMENT_LINE_ID]: yup.string().required(),
         [ATTACHMENT_POINT_ID]: yup.string().required(),
-        [ATTACHMENT_POINT_NAME]: yup.string(),
+        [ATTACHMENT_POINT_NAME]: yup.string().nullable(),
         [LINE1_ID]: yup.string().required(),
         [LINE1_NAME]: yup.string(),
         [LINE2_ID]: yup.string().required(),
@@ -100,6 +101,7 @@ const LineAttachToVoltageLevelDialog = ({
     const [attachmentLine, setAttachmentLine] = useState(null);
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
+    const [attachmentPoint, setAttachmentPoint] = useState(null);
 
     const { snackError } = useSnackMessage();
 
@@ -132,25 +134,35 @@ const LineAttachToVoltageLevelDialog = ({
                         lineAttach?.existingVoltageLevelId ?? lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
                 }),
             };
-            const newVoltageLevel = lineAttach?.mayNewVoltageLevelInfos;
-            if (newVoltageLevel) {
+            const attachmentPointDetailInformation = lineAttach?.attachmentPointDetailInformation;
+            if (attachmentPointDetailInformation) {
+                formData = {
+                    ...formData,
+                    [ATTACHMENT_POINT]: attachmentPointDetailInformation,
+                };
+            }
+            const newVoltageLevelInfos = lineAttach?.mayNewVoltageLevelInfos;
+            if (newVoltageLevelInfos) {
                 formData = {
                     ...formData,
                     [CONNECTIVITY]: {
                         ...formData[CONNECTIVITY],
-                        [VOLTAGE_LEVEL]: getNewVoltageLevelData(newVoltageLevel),
+                        [VOLTAGE_LEVEL]: getNewVoltageLevelData(newVoltageLevelInfos),
                     },
                 };
             }
             reset(formData);
             setAttachmentLine(lineAttach?.attachmentLine);
-            if (newVoltageLevel) {
-                newVoltageLevel.busbarSections = buildNewBusbarSections(
-                    newVoltageLevel?.equipmentId,
-                    newVoltageLevel?.sectionCount,
-                    newVoltageLevel?.busbarCount
+            if (attachmentPointDetailInformation) {
+                setAttachmentPoint(lineAttach?.attachmentPointDetailInformation);
+            }
+            if (newVoltageLevelInfos) {
+                newVoltageLevelInfos.busbarSections = buildNewBusbarSections(
+                    newVoltageLevelInfos?.equipmentId,
+                    newVoltageLevelInfos?.sectionCount,
+                    newVoltageLevelInfos?.busbarCount
                 );
-                setNewVoltageLevel(newVoltageLevel);
+                setNewVoltageLevel(newVoltageLevelInfos);
             }
         },
         [reset]
@@ -174,6 +186,7 @@ const LineAttachToVoltageLevelDialog = ({
                 percent: parseFloat(lineAttach[SLIDER_PERCENTAGE]),
                 attachmentPointId: lineAttach[ATTACHMENT_POINT_ID],
                 attachmentPointName: sanitizeString(lineAttach[ATTACHMENT_POINT_NAME]),
+                attachmentPointDetailInformation: attachmentPoint,
                 mayNewVoltageLevelInfos: isNewVoltageLevel ? newVoltageLevel : null,
                 existingVoltageLevelId: currentVoltageLevelId,
                 bbsOrBusId: lineAttach[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
@@ -186,7 +199,7 @@ const LineAttachToVoltageLevelDialog = ({
                 snackWithFallback(snackError, error, { headerId: 'LineAttachmentError' });
             });
         },
-        [attachmentLine, currentNodeUuid, editData, newVoltageLevel, snackError, studyUuid]
+        [attachmentLine, attachmentPoint, currentNodeUuid, editData?.uuid, newVoltageLevel, snackError, studyUuid]
     );
 
     useEffect(() => {
@@ -244,6 +257,7 @@ const LineAttachToVoltageLevelDialog = ({
             switchKinds,
             couplingDevices,
             topologyKind,
+            properties,
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
@@ -262,6 +276,7 @@ const LineAttachToVoltageLevelDialog = ({
                     switchKinds: switchKinds,
                     couplingDevices: couplingDevices,
                     topologyKind: topologyKind,
+                    properties: properties,
                 };
                 preparedVoltageLevel.busbarSections = buildNewBusbarSections(
                     preparedVoltageLevel.equipmentId,
@@ -299,6 +314,55 @@ const LineAttachToVoltageLevelDialog = ({
         [setValue, newVoltageLevel, voltageLevelOptions]
     );
 
+    const onAttachmentPointModificationDo = useCallback(
+        ({
+            voltageLevelId,
+            voltageLevelName,
+            nominalV,
+            substationCreation,
+            lowVoltageLimit,
+            highVoltageLimit,
+            busbarCount,
+            sectionCount,
+            ipMin,
+            ipMax,
+            topologyKind,
+            properties,
+        }) => {
+            return new Promise(() => {
+                const attachmentPointData = {
+                    type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
+                    equipmentId: voltageLevelId,
+                    equipmentName: voltageLevelName,
+                    nominalV: nominalV,
+                    substationCreation: substationCreation,
+                    lowVoltageLimit: lowVoltageLimit,
+                    highVoltageLimit: highVoltageLimit,
+                    busbarCount: busbarCount,
+                    sectionCount: sectionCount,
+                    ipMin: ipMin,
+                    ipMax: ipMax,
+                    topologyKind: topologyKind,
+                    properties: properties,
+                };
+                setAttachmentPoint(attachmentPointData);
+                setValue(`${ATTACHMENT_POINT_ID}`, attachmentPointData.equipmentId, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                });
+                setValue(`${ATTACHMENT_POINT_NAME}`, attachmentPointData.equipmentName, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                });
+                setValue(`${ATTACHMENT_POINT}`, attachmentPointData, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                });
+            });
+        },
+        [setValue]
+    );
+
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
@@ -325,6 +389,8 @@ const LineAttachToVoltageLevelDialog = ({
                     lineToEdit={attachmentLine}
                     onVoltageLevelCreationDo={onVoltageLevelCreationDo}
                     voltageLevelToEdit={newVoltageLevel}
+                    onAttachmentPointModificationDo={onAttachmentPointModificationDo}
+                    attachmentPoint={attachmentPoint}
                     allVoltageLevelOptions={voltageLevelOptions}
                 />
             </ModificationDialog>

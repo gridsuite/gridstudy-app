@@ -47,7 +47,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
@@ -191,14 +191,34 @@ const VoltageLevelCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     onCreateVoltageLevel = createVoltageLevel,
+    isAttachementPointModification = false,
+    overrideTitle = null,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError, snackWarning } = useSnackMessage();
 
+    const defaultValues = useMemo(() => {
+        if (isAttachementPointModification) {
+            return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true };
+        } else {
+            return emptyFormData;
+        }
+    }, [isAttachementPointModification]);
+
+    const overrideFormSchema = useMemo(() => {
+        if (isAttachementPointModification) {
+            return formSchema.shape({
+                [NOMINAL_V]: yup.number().nullable(),
+            });
+        } else {
+            return formSchema;
+        }
+    }, [isAttachementPointModification]);
+
     const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        defaultValues: defaultValues,
+        resolver: yupResolver(overrideFormSchema),
     });
 
     const { reset, setValue, getValues, watch, trigger, subscribe } = formMethods;
@@ -222,7 +242,8 @@ const VoltageLevelCreationDialog = ({
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
-            const isSubstationCreation = !fromCopy && voltageLevel.substationCreation?.equipmentId != null;
+            const isSubstationCreation =
+                (!fromCopy && voltageLevel.substationCreation?.equipmentId != null) || isAttachementPointModification;
             const shortCircuitLimits = {
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -291,7 +312,7 @@ const VoltageLevelCreationDialog = ({
                 });
             }
         },
-        [setValue, intl, reset, snackWarning]
+        [isAttachementPointModification, reset, intl, setValue, snackWarning]
     );
 
     // Supervisor watches to trigger validation for interdependent constraints
@@ -383,7 +404,7 @@ const VoltageLevelCreationDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 maxWidth={'md'}
-                titleId="CreateVoltageLevel"
+                titleId={overrideTitle || 'CreateVoltageLevel'}
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
@@ -393,6 +414,7 @@ const VoltageLevelCreationDialog = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
+                    isAttachementPointModification={isAttachementPointModification}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
