@@ -51,6 +51,7 @@ export const IS_SEPARATOR = 'isSeparator';
 export const FILE_NAME = 'fileName';
 export const EXPORT_FORMAT = 'exportFormat';
 export const EXPORT_PARAMETERS = 'exportParameters';
+export const EXPORT_DESTINATION = 'exportDestination';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';

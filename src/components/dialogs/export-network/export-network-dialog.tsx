@@ -4,15 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box } from '@mui/material';
+
+import { Box, Button, FormHelperText, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CustomMuiDialog,
+    DescriptionField,
+    DirectoryItemSelector,
+    ElementType,
     fetchDirectoryElementPath,
     Parameter,
     SelectInput,
     snackWithFallback,
     TextInput,
+    TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../../services/study';
@@ -22,43 +27,26 @@ import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import { useParameterState } from '../parameters/use-parameters-state';
 import { AppState } from '../../../redux/reducer';
 
-import { EXPORT_FORMAT, EXPORT_PARAMETERS, FILE_NAME } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import {
+    EXPORT_DESTINATION,
+    EXPORT_FORMAT,
+    EXPORT_PARAMETERS,
+    FILE_NAME,
+    FOLDER_NAME,
+} from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FlatParametersInput } from './flat-parameters-input';
-
-const STRING_LIST = 'STRING_LIST';
-const emptyObj = {};
-
-const schema = yup.object().shape({
-    [FILE_NAME]: yup.string().required(),
-    [EXPORT_FORMAT]: yup.string().required('exportStudyErrorMsg'),
-    [EXPORT_PARAMETERS]: yup.object(),
-});
-
-const emptyData = {
-    [FILE_NAME]: '',
-    [EXPORT_FORMAT]: '',
-    [EXPORT_PARAMETERS]: emptyObj,
-};
-
-export type ExportNetworkFormData = yup.InferType<typeof schema>;
-
-// we check if the param is for extension, if it is, we select all possible values by default.
-// the only way for the moment to check if the param is for extension, is by checking his type is name.
-// TODO to be removed when extensions param default value corrected in backend to include all possible values
-function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parameter[] {
-    return parameters.map((parameter) => {
-        if (
-            parameter.type === STRING_LIST &&
-            (parameter.name?.endsWith('included.extensions') || parameter.name?.endsWith('included-extensions'))
-        ) {
-            parameter.defaultValue = parameter.possibleValues;
-        }
-        return parameter;
-    });
-}
+import {
+    emptyData,
+    emptyObj,
+    ExportDestinationType,
+    ExportNetworkFormData,
+    getDefaultValuesForExtensionsParameter,
+    schema,
+    separator,
+} from './export-network-utils';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 /**
  * Dialog to export the network case
@@ -87,6 +75,8 @@ export function ExportNetworkDialog({
     const [parameters, setParameters] = useState<Parameter[]>();
     const { snackError } = useSnackMessage();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [selectedFolder, setSelectedFolder] = useState<string>('');
 
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
     const nodeName = useMemo(() => treeNodes?.find((node) => node.id === nodeUuid)?.data.label, [treeNodes, nodeUuid]);
@@ -96,7 +86,15 @@ export function ExportNetworkDialog({
         resolver: yupResolver(schema),
     });
 
-    const { reset, subscribe, setValue, getValues } = methods;
+    const {
+        reset,
+        subscribe,
+        setValue,
+        getValues,
+        watch,
+        formState: { errors },
+    } = methods;
+    const intl = useIntl();
 
     // fetch study name to build the default file name
     useEffect(() => {
@@ -154,6 +152,26 @@ export function ExportNetworkDialog({
         return () => unsubscribe();
     }, [setValue, subscribe, getValues, formatsWithParameters]);
 
+    const onNodeChanged = useCallback(
+        (nodes: TreeViewFinderNodeProps[]) => {
+            if (nodes.length > 0) {
+                let updatedFolder: string = nodes[0].name;
+                let parentNode: TreeViewFinderNodeProps = nodes[0];
+                while (parentNode.parents && parentNode.parents?.length > 0) {
+                    parentNode = parentNode?.parents[0];
+                    updatedFolder = parentNode.name + separator + updatedFolder;
+                }
+                updatedFolder = separator + updatedFolder;
+                setSelectedFolder(updatedFolder);
+                setValue(FOLDER_NAME, updatedFolder);
+            }
+            setIsOpen(false);
+        },
+        [setValue]
+    );
+
+    const destinationValue = watch(EXPORT_DESTINATION);
+
     return (
         <CustomMuiDialog
             onClose={onClose}
@@ -170,6 +188,49 @@ export function ExportNetworkDialog({
         >
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1 }}>
                 <TextInput name={FILE_NAME} label="download.fileName" />
+                <SelectInput
+                    name={EXPORT_DESTINATION}
+                    options={Object.values(ExportDestinationType).map((item) => {
+                        return { id: item, label: item };
+                    })}
+                    size="small"
+                    label="destination"
+                />
+
+                {destinationValue === ExportDestinationType.GRID_EXPLORE && (
+                    <Box>
+                        <DescriptionField />
+                        <Stack direction={'row'} alignItems="center" justifyContent="space-between">
+                            <Typography variant="body2" color="textSecondary" noWrap>
+                                {selectedFolder || <FormattedMessage id="NoFolder" />}
+                                {!selectedFolder && errors?.folderName?.message && (
+                                    <FormHelperText error>{intl.formatMessage({ id: 'YupRequired' })}</FormHelperText>
+                                )}
+                            </Typography>
+
+                            <Button
+                                onClick={() => setIsOpen(true)}
+                                variant="contained"
+                                color="primary"
+                                component="label"
+                            >
+                                <FormattedMessage id={selectedFolder ? 'edit' : 'Select'} />
+                            </Button>
+                        </Stack>
+
+                        <DirectoryItemSelector
+                            open={isOpen}
+                            types={[ElementType.DIRECTORY]}
+                            onClose={onNodeChanged}
+                            multiSelect={false}
+                            onlyLeaves={false}
+                            title={intl.formatMessage({
+                                id: 'showSelectDirectoryDialog',
+                            })}
+                        />
+                    </Box>
+                )}
+
                 <SelectInput
                     name={EXPORT_FORMAT}
                     label="exportFormat"

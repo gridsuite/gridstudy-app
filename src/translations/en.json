@@ -201,6 +201,7 @@
     "voltageInitError": "An error occurred while executing the voltage profile initialization",
     "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
 
+    "Select": "Select",
     "SelectAll": "All",
     "UnselectAll": "None",
 
@@ -1408,6 +1409,7 @@
     "pccMinError": "An error occurred when executing the pcc min",
     "PccMinResultsError": "An error occurred when exporting pcc min N-1 results",
     "NoFilter": "No filter",
+    "NoFolder": "No folder",
     "searchPlaceholder": "Search",
     "searchPlaceholderLog": "Search in Logs",
     "searchPlaceholderLogsTreeStructure": "Search in tree structure",
@@ -1673,5 +1675,9 @@
     "windows": "windows",
     "reset": "Reset",
     "history": "History",
-    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default droop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)"
- }
+    "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default droop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)",
+
+    "gridExplore": "GridExplore",
+    "myComputer": "My computer",
+    "destination": "Destination"
+}
