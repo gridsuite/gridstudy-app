@@ -200,6 +200,9 @@
     "FilterEvaluationError": "An error occurred while evaluating the filter",
     "voltageInitError": "An error occurred while executing the voltage profile initialization",
     "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
+    "VoltageinitRootNetworkName": "Root network : {rootNetworkName}",
+    "VoltageinitNodeName": "Node : {nodeName}",
+    "VoltageinitDate": "Computation date : {computationDate}",
 
     "SelectAll": "All",
     "UnselectAll": "None",
