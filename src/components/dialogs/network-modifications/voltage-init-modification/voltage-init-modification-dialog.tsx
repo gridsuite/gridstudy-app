@@ -387,7 +387,15 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 )}
                 {editData && editData.date && (
                     <Typography variant="subtitle1">
-                        <FormattedMessage id="VoltageinitDate" values={{ date: editData.date }} />
+                        <FormattedMessage
+                            id="VoltageinitDate"
+                            values={{
+                                date: new Intl.DateTimeFormat(intl.locale, {
+                                    timeStyle: 'medium',
+                                    hour12: false,
+                                }).format(new Date(editData.date)),
+                            }}
+                        />
                     </Typography>
                 )}
             </Box>
