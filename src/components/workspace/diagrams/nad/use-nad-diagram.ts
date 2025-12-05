@@ -19,6 +19,7 @@ import { updatePanelMetadata as updatePanelMetadataAction } from '../../../../re
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
+import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
 import { useSavedNadConfig } from './use-saved-nad-config';
 
 interface UseNadDiagramProps {
@@ -175,6 +176,7 @@ export const useNadDiagram = ({
                               }),
                         nadPositionsGenerationMode:
                             networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+                        baseVoltagesConfigInfos: getBaseVoltagesConfig(),
                     }),
                 };
 
