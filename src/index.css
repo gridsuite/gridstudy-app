@@ -245,6 +245,12 @@ code {
 .sld-reactive-power .sld-label {
     dominant-baseline: middle;
 }
+.sld-current-value .sld-label {
+    dominant-baseline: middle;
+}
+.sld-permanent-limit-percentage {
+    dominant-baseline: middle;
+}
 
 @keyframes sld-overload-blink-animation {
     50% {
