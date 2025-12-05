@@ -6,9 +6,9 @@
  */
 
 import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
-import { CellRender } from './cell-render';
-import { formatValue, styles } from './generic-equipment-popover-utils';
-import { BranchEquipmentInfos } from './equipment-popover-type';
+import { CellRender } from '../cell-render';
+import { formatValue, styles } from '../generic-equipment-popover-utils';
+import { BranchEquipmentInfos } from '../equipment-popover-type';
 
 interface CharacteristicsByVoltageLevelProps {
     equipmentInfos: BranchEquipmentInfos;

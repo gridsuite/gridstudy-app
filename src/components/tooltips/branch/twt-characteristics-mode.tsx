@@ -6,10 +6,10 @@
  */
 
 import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
-import { CellRender } from './cell-render';
-import { formatValue, styles } from './generic-equipment-popover-utils';
+import { CellRender } from '../cell-render';
+import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
-import { TwtEquipmentInfos } from './equipment-popover-type';
+import { TwtEquipmentInfos } from '../equipment-popover-type';
 
 interface TwtCharacteristicsModeProps {
     equipmentInfos: TwtEquipmentInfos;

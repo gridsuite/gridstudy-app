@@ -7,13 +7,13 @@
 
 import { EquipmentType } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
-import { RunningStatus } from '../utils/running-status';
+import { RunningStatus } from '../../utils/running-status';
 import { BranchCharacteristicsTable } from './branch-characteristics-table';
 import { CurrentTable } from './current-table';
-import { LimitsTable } from './limit-table';
 import { TwtCharacteristicsMode } from './twt-characteristics-mode';
-import { BranchEquipmentInfos, TwtEquipmentInfos } from './equipment-popover-type';
+import { BranchEquipmentInfos, TwtEquipmentInfos } from '../equipment-popover-type';
 import { CharacteristicsByVoltageLevel } from './characteristics-by-VoltageLevel';
+import { LimitsTable } from './limit-table';
 
 interface BranchPopoverContentProps {
     equipmentInfos: BranchEquipmentInfos;

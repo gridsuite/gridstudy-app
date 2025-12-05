@@ -6,10 +6,10 @@
  */
 
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
-import { renderCommonCharacteristics, styles } from './generic-equipment-popover-utils';
-import { CellRender } from './cell-render';
+import { renderCommonCharacteristics, styles } from '../generic-equipment-popover-utils';
+import { CellRender } from '../cell-render';
 import { JSX } from 'react';
-import { BranchEquipmentInfos } from './equipment-popover-type';
+import { BranchEquipmentInfos } from '../equipment-popover-type';
 
 interface BranchCharacteristicsProps {
     equipmentInfos: BranchEquipmentInfos;
