@@ -40,14 +40,22 @@ export interface SpreadsheetPanelMetadata {
 
 export type PanelMetadata = SLDPanelMetadata | NADPanelMetadata | SpreadsheetPanelMetadata | Record<string, never>;
 
+// Position and size stored as relative values (0-1) to container
 export interface PanelPosition {
-    x: number;
-    y: number;
+    x: number; // 0-1
+    y: number; // 0-1
 }
 
 export interface PanelSize {
-    width: number;
-    height: number;
+    width: number; // 0-1
+    height: number; // 0-1
+}
+
+export interface RelativeLayout {
+    x: number; // 0-1
+    y: number; // 0-1
+    width: number; // 0-1
+    height: number; // 0-1
 }
 
 export interface PanelState {
