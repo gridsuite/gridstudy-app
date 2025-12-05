@@ -35,6 +35,7 @@ import {
     useIntlRef,
     useNotificationsListener,
     useSnackMessage,
+    convertToCustomError,
 } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
@@ -168,9 +169,8 @@ export function StudyContainer() {
             }
 
             if (updateTypeHeader === NotificationType.LOADFLOW_FAILED) {
-                snackError({
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'LoadFlowError',
-                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === NotificationType.NODE_BUILD_FAILED) {
@@ -180,42 +180,36 @@ export function StudyContainer() {
                 });
             }
             if (updateTypeHeader === NotificationType.SECURITY_ANALYSIS_FAILED) {
-                snackError({
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'securityAnalysisError',
-                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === NotificationType.SENSITIVITY_ANALYSIS_FAILED) {
-                snackError({
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'sensitivityAnalysisError',
-                    messageTxt: errorMessage,
                 });
             }
             if (
                 updateTypeHeader === NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED ||
                 updateTypeHeader === NotificationType.ONE_BUS_SC_ANALYSIS_FAILED
             ) {
-                snackError({
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'ShortCircuitAnalysisError',
-                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === NotificationType.DYNAMIC_SIMULATION_FAILED) {
-                snackError({
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'DynamicSimulationRunError',
-                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED) {
-                snackError({
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'DynamicSecurityAnalysisRunError',
-                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === NotificationType.VOLTAGE_INIT_FAILED) {
-                snackError({
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'voltageInitError',
-                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === NotificationType.VOLTAGE_INIT_CANCEL_FAILED) {
@@ -224,15 +218,13 @@ export function StudyContainer() {
                 });
             }
             if (updateTypeHeader === NotificationType.STATE_ESTIMATION_FAILED) {
-                snackError({
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'stateEstimationError',
-                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === NotificationType.PCC_MIN_FAILED) {
-                snackError({
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'pccMinError',
-                    messageTxt: errorMessage,
                 });
             }
         },
