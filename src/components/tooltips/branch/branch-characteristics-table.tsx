@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos } from '@gridsuite/commons-ui';
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
-import { renderCommonCharacteristics, styles } from './generic-equipment-popover-utils';
-import { CellRender } from './cell-render';
+import { renderCommonCharacteristics, styles } from '../generic-equipment-popover-utils';
+import { CellRender } from '../cell-render';
 import { JSX } from 'react';
+import { BranchEquipmentInfos } from '../equipment-popover-type';
 
-interface CharacteristicsTableProps {
-    equipmentInfos: EquipmentInfos;
-    renderVoltageLevelCharacteristics?: (equipmentInfos: EquipmentInfos) => JSX.Element;
+interface BranchCharacteristicsProps {
+    equipmentInfos: BranchEquipmentInfos;
+    renderVoltageLevelCharacteristics?: (equipmentInfos: BranchEquipmentInfos) => JSX.Element;
 }
 
-export const CharacteristicsTable: React.FC<CharacteristicsTableProps> = ({
+export const BranchCharacteristicsTable: React.FC<BranchCharacteristicsProps> = ({
     equipmentInfos,
     renderVoltageLevelCharacteristics,
 }) => {

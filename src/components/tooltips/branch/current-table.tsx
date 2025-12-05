@@ -8,12 +8,13 @@
 import React from 'react';
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
-import { RunningStatus } from '../utils/running-status';
-import { formatValue, styles } from './generic-equipment-popover-utils';
-import { CellRender } from './cell-render';
+import { RunningStatus } from '../../utils/running-status';
+import { formatValue, styles } from '../generic-equipment-popover-utils';
+import { CellRender } from '../cell-render';
+import { BranchEquipmentInfos } from '../equipment-popover-type';
 
 interface CurrentTableProps {
-    equipmentInfos: any;
+    equipmentInfos: BranchEquipmentInfos;
     loadFlowStatus?: RunningStatus;
 }
 
@@ -30,10 +31,10 @@ export const CurrentTable: React.FC<CurrentTableProps> = ({ equipmentInfos, load
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             ></CellRender>
                             <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {formatValue(equipmentInfos?.voltageLevelId1)}
+                                {equipmentInfos?.voltageLevelId1 && formatValue(equipmentInfos?.voltageLevelId1)}
                             </TableCell>
                             <TableCell sx={{ ...styles.cell, fontWeight: 'bold' }}>
-                                {formatValue(equipmentInfos?.voltageLevelId2)}
+                                {equipmentInfos?.voltageLevelId2 && formatValue(equipmentInfos?.voltageLevelId2)}
                             </TableCell>
                         </TableRow>
                     </TableHead>

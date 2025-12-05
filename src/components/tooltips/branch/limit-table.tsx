@@ -7,12 +7,13 @@
 
 import React from 'react';
 import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
-import { RunningStatus } from '../utils/running-status';
-import { generateRows, styles } from './generic-equipment-popover-utils';
-import { CellRender } from './cell-render';
+import { BranchEquipmentInfos } from '../equipment-popover-type';
+import RunningStatus from 'components/utils/running-status';
+import { generateCurrentLimitsRows, styles } from '../generic-equipment-popover-utils';
+import { CellRender } from '../cell-render';
 
 interface LimitsTableProps {
-    equipmentInfos: any;
+    equipmentInfos: BranchEquipmentInfos;
     loadFlowStatus?: RunningStatus;
 }
 
@@ -48,8 +49,8 @@ export const LimitsTable: React.FC<LimitsTableProps> = ({ equipmentInfos, loadFl
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {generateRows(equipmentInfos, equipmentInfos?.currentLimits1, '1', loadFlowStatus)}
-                        {generateRows(equipmentInfos, equipmentInfos?.currentLimits2, '2', loadFlowStatus)}
+                        {generateCurrentLimitsRows(equipmentInfos, equipmentInfos?.currentLimits1, '1', loadFlowStatus)}
+                        {generateCurrentLimitsRows(equipmentInfos, equipmentInfos?.currentLimits2, '2', loadFlowStatus)}
                     </TableBody>
                 </Table>
             </TableContainer>

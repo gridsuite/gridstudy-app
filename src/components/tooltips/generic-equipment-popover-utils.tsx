@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { TableCell, TableRow } from '@mui/material';
 import { mergeSx, convertInputValue, FieldType, MuiStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { RunningStatus } from '../utils/running-status';
-import { CurrentLimits } from 'services/network-modification-types';
+import { CurrentLimits, TemporaryLimit } from 'services/network-modification-types';
 import { CellRender } from './cell-render';
+import { BranchEquipmentInfos } from './equipment-popover-type';
 
 export const formatValue = (value: number | string | null, fixed?: number | string | null) => {
     if (value != null && !Number.isNaN(value)) {
@@ -32,7 +32,7 @@ export const formatValue = (value: number | string | null, fixed?: number | stri
 /**
  * Render common characteristics
  */
-export const renderCommonCharacteristics = (equipmentInfo: any) => (
+export const renderCommonCharacteristics = (equipmentInfo: BranchEquipmentInfos) => (
     <>
         <TableRow>
             <TableCell sx={styles.cell} />
@@ -51,6 +51,7 @@ export const renderCommonCharacteristics = (equipmentInfo: any) => (
         </TableRow>
     </>
 );
+
 export const styles = {
     table: (theme) => ({
         '& .MuiTableCell-root': {
@@ -97,8 +98,8 @@ export const renderVoltageLevelCharacteristics = (equipmentInfo: any, equipmentT
 /**
  * Generate the rows for current limits (permanent and temporary)
  */
-export const generateRows = (
-    equipmentInfos: any,
+export const generateCurrentLimitsRows = (
+    equipmentInfos: BranchEquipmentInfos,
     currentLimits: CurrentLimits,
     side: '1' | '2',
     loadFlowStatus?: RunningStatus
@@ -125,12 +126,12 @@ export const generateRows = (
                         )}
                     </TableCell>
                     <TableCell sx={styles.cell}>
-                        {formatValue(side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2)}
+                        {side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2}
                     </TableCell>
                 </TableRow>
             )}
             {currentLimits?.temporaryLimits?.map(
-                (temporaryLimit: any) =>
+                (temporaryLimit: TemporaryLimit) =>
                     temporaryLimit.value && (
                         <TableRow key={temporaryLimit.name + side}>
                             <TableCell sx={styles.cell}>{formatValue(temporaryLimit.name)}</TableCell>
@@ -149,9 +150,7 @@ export const generateRows = (
                                 )}
                             </TableCell>
                             <TableCell sx={styles.cell}>
-                                {formatValue(
-                                    side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2
-                                )}
+                                {side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2}
                             </TableCell>
                         </TableRow>
                     )

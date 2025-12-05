@@ -8,10 +8,11 @@
 import { EquipmentType } from '@gridsuite/commons-ui';
 import { EquipmentPopoverMap } from './equipment-popover-map';
 import RunningStatus from 'components/utils/running-status';
+import { GenericEquipmentInfos } from './equipment-popover-type';
 
 interface GenericPopoverContentProps {
     equipmentType?: EquipmentType | string;
-    equipmentInfos: any;
+    equipmentInfos: GenericEquipmentInfos;
     loadFlowStatus?: RunningStatus;
 }
 

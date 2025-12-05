@@ -12,11 +12,11 @@ import { useIntl } from 'react-intl';
 interface CellRenderProps {
     label?: string;
     value?: string | number;
-    isLabel: boolean;
+    isLabel?: boolean;
     colStyle: React.CSSProperties;
 }
 
-export const CellRender: React.FC<CellRenderProps> = ({ label, value, isLabel, colStyle }) => {
+export const CellRender: React.FC<CellRenderProps> = ({ label, value, isLabel = false, colStyle }) => {
     const intl = useIntl();
 
     const cellLabel = label ? intl.formatMessage({ id: label }) : '';

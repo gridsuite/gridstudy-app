@@ -7,16 +7,18 @@
 
 import { EquipmentType } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
-import { RunningStatus } from '../utils/running-status';
-import { renderVoltageLevelCharacteristics } from './generic-equipment-popover-utils';
-import { CharacteristicsTable } from './carateristics-table';
+import { RunningStatus } from '../../utils/running-status';
+import { BranchCharacteristicsTable } from './branch-characteristics-table';
 import { CurrentTable } from './current-table';
+import { TwtCharacteristicsMode } from './twt-characteristics-mode';
+import { BranchEquipmentInfos, TwtEquipmentInfos } from '../equipment-popover-type';
+import { CharacteristicsByVoltageLevel } from './characteristics-by-VoltageLevel';
 import { LimitsTable } from './limit-table';
 
 interface BranchPopoverContentProps {
-    equipmentInfos: any;
+    equipmentInfos: BranchEquipmentInfos;
     loadFlowStatus?: RunningStatus;
-    equipmentType?: EquipmentType;
+    equipmentType: EquipmentType;
 }
 
 export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
@@ -26,14 +28,12 @@ export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
 }) => {
     return (
         <Grid container direction="column" rowSpacing={2} alignItems="center">
-            <CharacteristicsTable
-                equipmentInfos={equipmentInfos}
-                renderVoltageLevelCharacteristics={(equipmentInfos) =>
-                    renderVoltageLevelCharacteristics(equipmentInfos, equipmentType)
-                }
-            />
+            <BranchCharacteristicsTable equipmentInfos={equipmentInfos} />
             <CurrentTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
-
+            <CharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} />
+            {equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER && (
+                <TwtCharacteristicsMode equipmentInfos={equipmentInfos as TwtEquipmentInfos} />
+            )}
             <LimitsTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
         </Grid>
     );
