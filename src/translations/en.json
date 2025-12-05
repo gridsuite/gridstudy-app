@@ -1334,8 +1334,6 @@
     "RatioTargetV": "Ratio voltage set point",
     "GeneratorTargetV": "Target V",
     "waitingRootNetworkIndexation": "Waiting for root network indexation...",
-    "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
-    "invalidateShortCircuitStatusError": "An error occurred while invalidating the short circuit status",
     "undefined": "undefined",
     "GenerationStages": "Stages",
     "GeneratorsCappings": "Cappings",

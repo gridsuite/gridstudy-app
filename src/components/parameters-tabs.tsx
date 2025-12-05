@@ -414,13 +414,11 @@ const ParametersTabs: FunctionComponent = () => {
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
                             />
-                            {enableDeveloperMode ? (
-                                <Tab
-                                    disabled={pccMinAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="PccMin" />}
-                                    value={TAB_VALUES.pccMinTabValue}
-                                />
-                            ) : null}
+                            <Tab
+                                disabled={pccMinAvailability !== OptionalServicesStatus.Up}
+                                label={<FormattedMessage id="PccMin" />}
+                                value={TAB_VALUES.pccMinTabValue}
+                            />
                             {enableDeveloperMode ? (
                                 <Tab
                                     disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}
