@@ -535,7 +535,6 @@
     "ModifyNodeNotBuiltWarningMsg": "The values are those of the previous built node in the current branch",
     "loadingOptions": "Loading...",
     "buildNode": "Build",
-    "maxBuiltNodeExceededError": "You have reached your user quota for builds per study, therefore you cannot build further nodes within this study. Please unbuild nodes in order to go below the limit of {limit} builds",
     "insertNodeInNewBranch": "New branch",
     "SecuritySequence": "Security sequence",
     "removeNode": "Remove",
