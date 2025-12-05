@@ -277,9 +277,9 @@ export interface OperationalLimitsGroup {
 }
 
 export interface Limit {
-    name: string;
-    acceptableDuration: number | null;
-    value: number | null;
+    name: AttributeModification<string> | null;
+    acceptableDuration: AttributeModification<number> | null;
+    value: AttributeModification<number> | null;
 }
 
 export interface TemporaryLimit extends Limit {
