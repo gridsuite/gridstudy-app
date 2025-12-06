@@ -13,20 +13,23 @@ import { useFormContext } from 'react-hook-form';
 
 // TODO should use "name" props instead of `${COUPLING_OMNIBUS}.(...)`
 export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {
-    const { getValues, watch, trigger } = useFormContext();
+    const { getValues, trigger, subscribe } = useFormContext();
     // Watch BUS_BAR_SECTION_ID1 changed
     useEffect(() => {
-        const subscription = watch((value, { name }) => {
-            // force trigger validation on BUS_BAR_SECTION_ID2 if it has a value
-            if (
-                name === `${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID1}` &&
-                getValues(`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID2}`)
-            ) {
-                trigger(`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID2}`);
-            }
+        const unsubscribe = subscribe({
+            name: [`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID1}`],
+            formState: {
+                values: true,
+            },
+            callback: () => {
+                // force trigger validation on BUS_BAR_SECTION_ID2 if it has a value
+                if (getValues(`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID2}`)) {
+                    trigger(`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID2}`);
+                }
+            },
         });
-        return () => subscription.unsubscribe();
-    }, [watch, trigger, getValues, index]);
+        return () => unsubscribe();
+    }, [subscribe, trigger, getValues, index]);
 
     const busBarSectionId1Field = (
         <AutocompleteInput
