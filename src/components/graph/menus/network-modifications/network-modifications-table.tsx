@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { SetStateAction, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     CustomAGGrid,
     type MuiStyles,
@@ -15,6 +15,7 @@ import {
 } from '@gridsuite/commons-ui';
 import type {
     CellClickedEvent,
+    CellMouseOverEvent,
     ColDef,
     GetRowIdParams,
     IRowDragItem,
@@ -90,6 +91,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
+    const [hoveredRowIndex, setHoveredRowIndex] = useState<number>();
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -145,9 +147,11 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 cellStyle: { cursor: 'pointer' },
             },
             {
+                colId: 'modificationDescription',
                 cellRenderer: DescriptionRenderer,
                 cellRendererParams: {
                     setModifications: setModifications,
+                    hoveredRowIndex: hoveredRowIndex,
                 },
                 width: 30,
             },
@@ -207,6 +211,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         currentRootNetworkUuid,
         modificationsToExclude,
         setModificationsToExclude,
+        hoveredRowIndex,
     ]);
 
     const getRowId = (params: GetRowIdParams<NetworkModificationMetadata>) => params.data.uuid;
@@ -253,6 +258,10 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                     checkboxes: true,
                     headerCheckbox: true,
                 }}
+                onCellMouseOver={(event: CellMouseOverEvent<NetworkModificationMetadata>) =>
+                    setHoveredRowIndex(event.rowIndex ?? -1)
+                }
+                onCellMouseOut={() => setHoveredRowIndex(-1)}
                 defaultColDef={defaultColumnDefinition}
                 onCellClicked={handleCellClick}
                 onRowSelected={onRowSelected}

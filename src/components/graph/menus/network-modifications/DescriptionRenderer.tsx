@@ -17,10 +17,11 @@ import { setModificationDescription } from '../../../../services/study/network-m
 
 export interface DescriptionRendererProps extends ICellRendererParams<NetworkModificationMetadata> {
     setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
+    hoveredRowIndex: number;
 }
 
 const DescriptionRenderer = (props: DescriptionRendererProps) => {
-    const { data, api } = props;
+    const { data, api, node } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -74,7 +75,7 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
                 >
-                    <EditNoteIcon empty={empty} />
+                    <EditNoteIcon empty={empty} hidden={node.rowIndex !== props.hoveredRowIndex} />
                 </IconButton>
             </Tooltip>
         </>
