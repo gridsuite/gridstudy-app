@@ -47,17 +47,18 @@ const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
 
 const styles = {
     title: {
-        flexGrow: 1,
         display: 'flex',
         alignItems: 'center',
         gap: 0.5,
+        flexShrink: 1,
+        minWidth: 0,
     },
     titleContent: {
         display: 'flex',
         alignItems: 'center',
         gap: 0.5,
-        width: 500,
         overflow: 'hidden',
+        minWidth: 0,
     },
     titleText: {
         overflow: 'hidden',
@@ -68,6 +69,8 @@ const styles = {
     headerActions: {
         display: 'flex',
         flexDirection: 'row',
+        marginLeft: 'auto',
+        flexShrink: 0,
     },
     iconButton: {
         visibility: 'hidden',
@@ -98,6 +101,8 @@ export const PanelHeader = memo(
             // If it's a parameters panel with unsaved changes, trigger confirmation dialog
             if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
                 globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
+            } else if (panelType === PanelType.NAD) {
+                globalThis.dispatchEvent(new CustomEvent('nadPanel:requestClose', { detail: panelId }));
             } else {
                 dispatch(closePanel(panelId));
             }

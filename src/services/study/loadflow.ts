@@ -194,12 +194,3 @@ export function fetchLimitViolations(
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);
 }
-
-export function invalidateLoadFlowStatus(studyUuid: UUID) {
-    console.info('invalidate loadflow status');
-    const invalidateLoadFlowStatusUrl = getStudyUrl(studyUuid) + '/loadflow/invalidate-status';
-    console.debug(invalidateLoadFlowStatusUrl);
-    return backendFetch(invalidateLoadFlowStatusUrl, {
-        method: 'PUT',
-    });
-}
