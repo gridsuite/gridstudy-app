@@ -469,7 +469,7 @@
     "exchanges": "Echanges (MW)",
     "losses": "Pertes (MW)",
     "netPosition": "Position nette (MW)",
-    "netPositionMinusExchanges": "Position nette - Echanges (MW)",
+    "exchange": "Position nette - Echanges (MW)",
     "borders": "Frontières",
     "isOk": "Ok",
     "metrics": "Métriques",

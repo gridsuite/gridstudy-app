@@ -35,14 +35,14 @@ export interface CountryAdequacy {
 export interface ExchangeValue {
     exchangeUuid: UUID;
     country: string;
-    netPositionMinusExchanges: number;
+    exchange: number;
 }
 
 export interface ExchangePair {
     exchangeUuid?: UUID;
     countryA: string;
     countryB: string;
-    netPositionMinusExchanges: number;
+    exchange: number;
 }
 
 export interface SlackBusResult {

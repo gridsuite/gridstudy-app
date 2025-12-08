@@ -605,9 +605,9 @@ export const exchangesColumnsDefinition = (
             field: 'countryB',
         }),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'netPositionMinusExchanges' }),
-            colId: 'netPositionMinusExchanges',
-            field: 'netPositionMinusExchanges',
+            headerName: intl.formatMessage({ id: 'exchange' }),
+            colId: 'exchange',
+            field: 'exchange',
             cellRenderer: numberRenderer,
         }),
     ];
@@ -670,22 +670,19 @@ function generateExchangePairs(
             const sortedCountryExchanges = [...exchanges[country]].sort((a, b) =>
                 translate(a.country).localeCompare(translate(b.country))
             );
-            const exchangeTotal = sortedCountryExchanges.reduce(
-                (sum, exchange) => sum + exchange.netPositionMinusExchanges,
-                0
-            );
+            const exchangeTotal = sortedCountryExchanges.reduce((sum, exchange) => sum + exchange.exchange, 0);
             result.push({
                 exchangeUuid: undefined,
                 countryA: translate(country),
                 countryB: '',
-                netPositionMinusExchanges: exchangeTotal,
+                exchange: exchangeTotal,
             });
             sortedCountryExchanges.forEach((exchange) => {
                 result.push({
                     exchangeUuid: exchange.exchangeUuid,
                     countryA: '',
                     countryB: translate(exchange.country),
-                    netPositionMinusExchanges: exchange.netPositionMinusExchanges,
+                    exchange: exchange.exchange,
                 });
             });
         });
@@ -704,7 +701,7 @@ export const formatExchangesResult = (
             exchangeUuid: exchangePair.exchangeUuid,
             countryA: exchangePair.countryA,
             countryB: exchangePair.countryB,
-            netPositionMinusExchanges: exchangePair.netPositionMinusExchanges,
+            exchange: exchangePair.exchange,
         };
     });
 };
