@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Tooltip, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { darken, lighten } from '@mui/material/styles';
@@ -67,6 +67,7 @@ const styles = {
         WebkitLineClamp: 1,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        whiteSpace: 'pre-wrap',
     },
     accordionDetails: {
         overflowWrap: 'break-word',
@@ -83,6 +84,7 @@ export const NodeEditorHeader = () => {
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const label = currentTreeNode?.data?.label ?? '';
     const description = currentTreeNode?.data?.description ?? '';
+    const descriptionByLine = useMemo(() => description.split(/\r?\n/), [description]);
     const isRootNode = currentTreeNode?.type === NodeType.ROOT;
     const displayedLabel = isRootNode ? intl.formatMessage({ id: 'root' }) : label;
 
@@ -115,7 +117,15 @@ export const NodeEditorHeader = () => {
                 <Box sx={{ marginRight: 1, marginBottom: 1 }}>
                     <Accordion disableGutters elevation={0} sx={styles.accordion}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={styles.accordionSummary}>
-                            <Typography sx={styles.topographySummary}>{description.split(/\r?\n/)[0]}</Typography>
+                            <Typography sx={styles.topographySummary}>
+                                {/*
+                                    whiteSpace: 'pre-wrap' +  textOverflow: 'ellipsis' + WebkitLineClamp: 1
+                                    those css rules do not combine as we expect, last word is cut by ellipsis even if the line is not very long
+                                    this is why we deal with this with JS instead
+                                */}
+                                {descriptionByLine[0]}
+                                {descriptionByLine.length > 1 ? '…' : undefined}
+                            </Typography>
                         </AccordionSummary>
                         <AccordionDetails sx={styles.accordionDetails}>
                             <Typography sx={{ wordBreak: 'break-word' }}>{description}</Typography>
