@@ -543,7 +543,6 @@
 
     "loadingOptions": "Chargement...",
     "buildNode": "Réaliser",
-    "maxBuiltNodeExceededError": "Vous avez atteint votre quota utilisateur en termes de réalisations par étude, vous ne pouvez donc plus réaliser de nœuds dans cette étude pour le moment. Merci de déréaliser des nœuds afin de redescendre sous le seuil de {limit} réalisations.",
     "insertNodeInNewBranch": "Nouvelle branche",
     "SecuritySequence": "Enchaînement de sécurité",
     "removeNode": "Supprimer",

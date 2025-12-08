@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import NetworkModificationTree from './network-modification-tree';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { ExportNetworkDialog } from './dialogs/export-network-dialog';
+import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog';
 import { BUILD_STATUS } from './network/constants';
 import {
     copySubtree,
@@ -52,8 +52,6 @@ const noNodeSelectionForCopy = {
     nodeType: null,
     allChildrenIds: null,
 };
-
-export const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 
 export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
@@ -452,19 +450,9 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const handleBuildNode = useCallback(
         (element) => {
-            buildNode(studyUuid, element.id, currentRootNetworkUuid).catch((error) => {
-                // TODO: change for snackWithFallback when we integrate values inside backend errors
-                if (error.status === 403 && error.message.includes(HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE)) {
-                    // retrieve last word of the message (ex: "MAX_NODE_BUILDS_EXCEEDED max allowed built nodes : 2" -> 2)
-                    let limit = error.message.split(/[: ]+/).pop();
-                    snackError({
-                        messageId: 'maxBuiltNodeExceededError',
-                        messageValues: { limit: limit },
-                    });
-                } else {
-                    snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' });
-                }
-            });
+            buildNode(studyUuid, element.id, currentRootNetworkUuid).catch((error) =>
+                snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' })
+            );
         },
         [studyUuid, currentRootNetworkUuid, snackError]
     );
