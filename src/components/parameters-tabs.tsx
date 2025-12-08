@@ -44,7 +44,6 @@ import { useGetStateEstimationParameters } from './dialogs/parameters/state-esti
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
 import { closePanel } from 'redux/slices/workspace-slice';
 import type { UUID } from 'node:crypto';
@@ -63,6 +62,11 @@ import {
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
+import {
+    getShortCircuitParameters,
+    getShortCircuitSpecificParametersDescription,
+    setShortCircuitParameters,
+} from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 
 enum TAB_VALUES {
@@ -180,7 +184,21 @@ const ParametersTabs: FunctionComponent = () => {
         sensitivityAnalysisBackend
     );
 
-    const shortCircuitParameters = useGetShortCircuitParameters();
+    const shortCircuitParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.SHORT_CIRCUIT,
+        OptionalServicesStatus.Up,
+        null,
+        null,
+        null,
+        null,
+        getShortCircuitParameters,
+        setShortCircuitParameters,
+        getShortCircuitSpecificParametersDescription
+    );
+    useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
+
     const pccMinParameters = useGetPccMinParameters();
     const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
@@ -295,7 +313,7 @@ const ParametersTabs: FunctionComponent = () => {
                     <ShortCircuitParametersInLine
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
-                        shortCircuitParameters={shortCircuitParameters}
+                        parametersBackend={shortCircuitParametersBackend}
                         enableDeveloperMode={enableDeveloperMode}
                     />
                 );
@@ -347,7 +365,7 @@ const ParametersTabs: FunctionComponent = () => {
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,
-        shortCircuitParameters,
+        shortCircuitParametersBackend,
         pccMinParameters,
         user,
         voltageInitParameters,
@@ -396,13 +414,11 @@ const ParametersTabs: FunctionComponent = () => {
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
                             />
-                            {enableDeveloperMode ? (
-                                <Tab
-                                    disabled={pccMinAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="PccMin" />}
-                                    value={TAB_VALUES.pccMinTabValue}
-                                />
-                            ) : null}
+                            <Tab
+                                disabled={pccMinAvailability !== OptionalServicesStatus.Up}
+                                label={<FormattedMessage id="PccMin" />}
+                                value={TAB_VALUES.pccMinTabValue}
+                            />
                             {enableDeveloperMode ? (
                                 <Tab
                                     disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}

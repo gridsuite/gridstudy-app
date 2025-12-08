@@ -1,8 +1,9 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023-2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * SPDX-License-Identifier: MPL-2.0
  */
 
 import type { UUID } from 'node:crypto';
@@ -12,7 +13,6 @@ import {
     backendFetchText,
     EquipmentType,
     ExtendedEquipmentType,
-    type GsLang,
     type Identifiable,
 } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
@@ -29,12 +29,6 @@ interface VoltageLevelSingleLineDiagram {
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     voltageLevelId: string;
-    useName: boolean;
-    centerLabel: boolean;
-    diagonalLabel: boolean;
-    componentLibrary: string;
-    sldDisplayMode: string;
-    language: GsLang;
 }
 
 interface SubstationSingleLineDiagram {
@@ -42,44 +36,23 @@ interface SubstationSingleLineDiagram {
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     substationId: string;
-    useName: boolean;
-    centerLabel: boolean;
-    diagonalLabel: boolean;
-    substationLayout: string;
-    componentLibrary: string;
-    language: GsLang;
 }
 
 export const PREFIX_SCHEMAS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-map';
 
 /* voltage-levels */
-export function getVoltageLevelSingleLineDiagram({
+export function getVoltageLevelSingleLineDiagramUrl({
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
     voltageLevelId,
-    useName,
-    centerLabel,
-    diagonalLabel,
-    componentLibrary,
-    sldDisplayMode,
-    language,
 }: VoltageLevelSingleLineDiagram) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
     const queryParams = new URLSearchParams({
-        useName: String(useName),
-        centerLabel: String(centerLabel),
-        diagonalLabel: String(diagonalLabel),
-        topologicalColoring: 'true',
-        sldDisplayMode: sldDisplayMode,
-        language: language,
         inUpstreamBuiltParentNode: 'true',
     });
-    if (componentLibrary !== null) {
-        queryParams.append('componentLibrary', String(componentLibrary));
-    }
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/voltage-levels/' +
@@ -211,38 +184,20 @@ export function fetchVoltageLevelFeederBaysInfos(
 }
 
 /* substations */
-export function getSubstationSingleLineDiagram({
+export function getSubstationSingleLineDiagramUrl({
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
     substationId,
-    useName,
-    centerLabel,
-    diagonalLabel,
-    substationLayout,
-    componentLibrary,
-    language,
 }: SubstationSingleLineDiagram) {
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
     );
-    const queryParams = new URLSearchParams({
-        useName: String(useName),
-        centerLabel: String(centerLabel),
-        diagonalLabel: String(diagonalLabel),
-        topologicalColoring: 'true',
-        substationLayout: substationLayout,
-        language: language,
-    });
-    if (componentLibrary !== null) {
-        queryParams.append('componentLibrary', String(componentLibrary));
-    }
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/substations/' +
         encodeURIComponent(substationId) +
-        '/svg-and-metadata?' +
-        queryParams.toString()
+        '/svg-and-metadata'
     );
 }
 
