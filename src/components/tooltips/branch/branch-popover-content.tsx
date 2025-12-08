@@ -12,7 +12,7 @@ import { BranchCharacteristicsTable } from './branch-characteristics-table';
 import { BranchCurrentTable } from './branch-current-table';
 import { TwtTapChangerCharacteristics } from './twt-tap-changer-characteristics';
 import { BranchEquipmentInfos, TwtEquipmentInfos } from '../equipment-popover-type';
-import { BranchCharacteristicsByVoltageLevel } from './branch-characteristics-by-voltageLevel';
+import { BranchCharacteristicsByVoltageLevel } from './branch-characteristics-by-voltage-level';
 import { BranchLimitsTable } from './branch-limit-table';
 
 interface BranchPopoverContentProps {
