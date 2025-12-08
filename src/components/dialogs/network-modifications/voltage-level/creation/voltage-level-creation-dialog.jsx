@@ -203,22 +203,6 @@ const VoltageLevelCreationDialog = ({
 
     const { reset, setValue, getValues, trigger, subscribe } = formMethods;
 
-    // Watch LOW_VOLTAGE_LIMIT changed
-    useEffect(() => {
-        const unsubscribe = subscribe({
-            name: [`${HIGH_VOLTAGE_LIMIT}`],
-            formState: {
-                values: true,
-            },
-            callback: ({ isSubmitted }) => {
-                if (isSubmitted) {
-                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
-                }
-            },
-        });
-        return () => unsubscribe();
-    }, [trigger, subscribe]);
-
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
@@ -295,9 +279,22 @@ const VoltageLevelCreationDialog = ({
     );
 
     // Supervisor watches to trigger validation for interdependent constraints
-    // Watch EQUIPMENT_ID changed
     useEffect(() => {
-        const unsubscribe = subscribe({
+        // Watch HIGH_VOLTAGE_LIMIT changed
+        const unsubscribeHighVoltageLimit = subscribe({
+            name: [`${HIGH_VOLTAGE_LIMIT}`],
+            formState: {
+                values: true,
+            },
+            callback: ({ isSubmitted }) => {
+                if (isSubmitted) {
+                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
+                }
+            },
+        });
+
+        // Watch EQUIPMENT_ID changed
+        const unsubscribeEquipmentId = subscribe({
             name: [EQUIPMENT_ID],
             formState: {
                 values: true,
@@ -311,12 +308,9 @@ const VoltageLevelCreationDialog = ({
                 }
             },
         });
-        return () => unsubscribe();
-    }, [subscribe, trigger, getValues]);
 
-    // Watch SUBSTATION_ID or SUBSTATION_CREATION_ID changed
-    useEffect(() => {
-        const unsubscribe = subscribe({
+        // Watch SUBSTATION_ID or SUBSTATION_CREATION_ID changed
+        const unsubscribeSubstationIds = subscribe({
             name: [SUBSTATION_ID, SUBSTATION_CREATION_ID],
             formState: {
                 values: true,
@@ -327,7 +321,12 @@ const VoltageLevelCreationDialog = ({
                 }
             },
         });
-        return () => unsubscribe();
+
+        return () => {
+            unsubscribeHighVoltageLimit();
+            unsubscribeEquipmentId();
+            unsubscribeSubstationIds();
+        };
     }, [subscribe, trigger, getValues]);
 
     const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
