@@ -754,8 +754,6 @@
     "BothSides": "Both Sides",
     "SeriesResistanceText": "Series resistance",
     "SeriesReactanceText": "Series reactance",
-    "SeriesResistanceOhm": "Series resistance (Ω)",
-    "SeriesReactanceOhm": "Series reactance (Ω)",
     "ShuntConductanceText": "Shunt conductance",
     "ShuntConductanceText1": "Shunt conductance side 1",
     "ShuntConductanceText2": "Shunt conductance side 2",
@@ -1676,7 +1674,7 @@
     "reset": "Reset",
     "history": "History",
     "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default droop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)",
-    "twtQ": "Q (MVar)",
-    "twtAlpha": "Shift angle",
-    "DEFAULT": "DEFAULT"
+    "ReactivePowerTooltip": "Q (MVar)",
+    "ActivePower": "P (MW)",
+    "twtAlpha": "Shift angle"
 }

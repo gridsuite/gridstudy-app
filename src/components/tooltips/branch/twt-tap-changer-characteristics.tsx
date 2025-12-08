@@ -11,11 +11,11 @@ import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
 import { TwtEquipmentInfos } from '../equipment-popover-type';
 
-interface TwtCharacteristicsModeProps {
+interface TwtTapChangerCharacteristicsProps {
     equipmentInfos: TwtEquipmentInfos;
 }
 
-export const TwtCharacteristicsMode: React.FC<TwtCharacteristicsModeProps> = ({ equipmentInfos }) => {
+export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristicsProps> = ({ equipmentInfos }) => {
     const ratioTapChanger = equipmentInfos.ratioTapChanger;
     const phaseTapChanger = equipmentInfos.phaseTapChanger;
 

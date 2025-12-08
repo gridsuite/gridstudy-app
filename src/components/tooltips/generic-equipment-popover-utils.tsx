@@ -5,16 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TableCell, TableRow } from '@mui/material';
-import { mergeSx, convertInputValue, FieldType, MuiStyles } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { RunningStatus } from '../utils/running-status';
-import { CurrentLimits, TemporaryLimit } from 'services/network-modification-types';
-import { CellRender } from './cell-render';
-import { BranchEquipmentInfos } from './equipment-popover-type';
+import { MuiStyles } from '@gridsuite/commons-ui';
 
-export const formatValue = (value: number | string | null, fixed?: number | string | null) => {
-    if (value != null && !Number.isNaN(value)) {
+export const formatValue = (value?: number | string | null, fixed?: number | string | null) => {
+    if (value !== undefined && value != null && !Number.isNaN(value)) {
         if (typeof value === 'number') {
             if (typeof fixed === 'number') {
                 return value.toFixed(fixed);
@@ -28,29 +22,6 @@ export const formatValue = (value: number | string | null, fixed?: number | stri
         return '_';
     }
 };
-
-/**
- * Render common characteristics
- */
-export const renderCommonCharacteristics = (equipmentInfo: BranchEquipmentInfos) => (
-    <>
-        <TableRow>
-            <TableCell sx={styles.cell} />
-
-            <CellRender label="seriesResistance" isLabel={true} colStyle={styles.cell} />
-
-            <CellRender value={formatValue(equipmentInfo.r, 2)} isLabel={false} colStyle={styles.cell} />
-        </TableRow>
-
-        <TableRow>
-            <TableCell sx={styles.cell} />
-
-            <CellRender label="seriesReactance" isLabel={true} colStyle={styles.cell} />
-
-            <CellRender value={formatValue(equipmentInfo.x, 2)} isLabel={false} colStyle={styles.cell} />
-        </TableRow>
-    </>
-);
 
 export const styles = {
     table: (theme) => ({
@@ -70,91 +41,3 @@ export const styles = {
     layout: { width: '100%', tableLayout: 'auto' },
     grid: { width: '100%' },
 } as const satisfies MuiStyles;
-
-/**
- * Render voltage-level dependent characteristics (shunt susceptance, etc.)
- */
-export const renderVoltageLevelCharacteristics = (equipmentInfo: any, equipmentType: any) => {
-    const renderShuntRow = (voltageLevelId: any, value: any, type: any) => (
-        <TableRow key={`${voltageLevelId}-${type}`}>
-            <CellRender value={voltageLevelId} isLabel={false} colStyle={styles.cell} />
-
-            <CellRender label="shuntSusceptance" isLabel={true} colStyle={styles.cell} />
-
-            <CellRender value={convertInputValue(type, value)?.toFixed(2)} isLabel={false} colStyle={styles.cell} />
-        </TableRow>
-    );
-
-    return equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ? (
-        renderShuntRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b, FieldType.B)
-    ) : (
-        <>
-            {renderShuntRow(equipmentInfo.voltageLevelId1, equipmentInfo.b1, FieldType.B1)}
-            {renderShuntRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b2, FieldType.B2)}
-        </>
-    );
-};
-
-/**
- * Generate the rows for current limits (permanent and temporary)
- */
-export const generateCurrentLimitsRows = (
-    equipmentInfos: BranchEquipmentInfos,
-    currentLimits: CurrentLimits,
-    side: '1' | '2',
-    loadFlowStatus?: RunningStatus
-) => {
-    if (!equipmentInfos || !currentLimits) return null;
-
-    return (
-        <>
-            {currentLimits?.permanentLimit && (
-                <TableRow key={currentLimits.permanentLimit + side}>
-                    <CellRender isLabel={true} label="PermanentCurrentLimitText" colStyle={styles.cell}></CellRender>
-                    <TableCell sx={styles.cell}>{formatValue(Math.round(currentLimits.permanentLimit))}</TableCell>
-                    <TableCell
-                        sx={mergeSx(styles.cell, {
-                            opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                        })}
-                    >
-                        {formatValue(
-                            Math.round(
-                                side === '1'
-                                    ? (Math.abs(equipmentInfos.i1) * 100) / currentLimits.permanentLimit
-                                    : (Math.abs(equipmentInfos.i2) * 100) / currentLimits.permanentLimit
-                            )
-                        )}
-                    </TableCell>
-                    <TableCell sx={styles.cell}>
-                        {side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2}
-                    </TableCell>
-                </TableRow>
-            )}
-            {currentLimits?.temporaryLimits?.map(
-                (temporaryLimit: TemporaryLimit) =>
-                    temporaryLimit.value && (
-                        <TableRow key={temporaryLimit.name + side}>
-                            <TableCell sx={styles.cell}>{formatValue(temporaryLimit.name)}</TableCell>
-                            <TableCell sx={styles.cell}>{formatValue(Math.round(temporaryLimit.value))}</TableCell>
-                            <TableCell
-                                sx={mergeSx(styles.cell, {
-                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                                })}
-                            >
-                                {formatValue(
-                                    Math.round(
-                                        side === '1'
-                                            ? (Math.abs(equipmentInfos?.i1) * 100) / temporaryLimit.value
-                                            : (Math.abs(equipmentInfos?.i2) * 100) / temporaryLimit.value
-                                    )
-                                )}
-                            </TableCell>
-                            <TableCell sx={styles.cell}>
-                                {side === '1' ? equipmentInfos?.voltageLevelId1 : equipmentInfos?.voltageLevelId2}
-                            </TableCell>
-                        </TableRow>
-                    )
-            )}
-        </>
-    );
-};

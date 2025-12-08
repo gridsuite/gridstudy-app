@@ -13,12 +13,12 @@ import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { CellRender } from '../cell-render';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
 
-interface CurrentTableProps {
+interface BranchCurrentTableProps {
     equipmentInfos: BranchEquipmentInfos;
     loadFlowStatus?: RunningStatus;
 }
 
-export const CurrentTable: React.FC<CurrentTableProps> = ({ equipmentInfos, loadFlowStatus }) => {
+export const BranchCurrentTable: React.FC<BranchCurrentTableProps> = ({ equipmentInfos, loadFlowStatus }) => {
     return (
         <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>

@@ -10,11 +10,13 @@ import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
 
-interface CharacteristicsByVoltageLevelProps {
+interface BranchCharacteristicsByVoltageLevelProps {
     equipmentInfos: BranchEquipmentInfos;
 }
 
-export const CharacteristicsByVoltageLevel: React.FC<CharacteristicsByVoltageLevelProps> = ({ equipmentInfos }) => {
+export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristicsByVoltageLevelProps> = ({
+    equipmentInfos,
+}) => {
     return (
         <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>
@@ -49,7 +51,11 @@ export const CharacteristicsByVoltageLevel: React.FC<CharacteristicsByVoltageLev
                         </TableRow>
 
                         <TableRow>
-                            <CellRender isLabel label="twtQ" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                            <CellRender
+                                isLabel
+                                label="reactivePowerTooltip"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
                             <CellRender value={formatValue(equipmentInfos.q1, 3)} colStyle={styles.cell} />
                             <CellRender value={formatValue(equipmentInfos.q1, 3)} colStyle={styles.cell} />
                         </TableRow>
@@ -61,13 +67,11 @@ export const CharacteristicsByVoltageLevel: React.FC<CharacteristicsByVoltageLev
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             />
                             <CellRender
-                                isLabel={true}
-                                label={equipmentInfos?.currentLimits1?.id ?? 'None'}
+                                value={formatValue(equipmentInfos?.currentLimits1?.id)}
                                 colStyle={styles.cell}
                             />
                             <CellRender
-                                isLabel={true}
-                                label={equipmentInfos?.currentLimits2?.id ?? 'None'}
+                                value={formatValue(equipmentInfos?.currentLimits2?.id)}
                                 colStyle={styles.cell}
                             />
                         </TableRow>

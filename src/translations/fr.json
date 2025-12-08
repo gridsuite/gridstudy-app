@@ -750,8 +750,6 @@
     "Side": "Côté",
     "SeriesResistanceText": "Résistance série",
     "SeriesReactanceText": "Réactance série",
-    "SeriesResistanceOhm": "Résistance série (Ω)",
-    "SeriesReactanceOhm": "Réactance série (Ω)",
     "ShuntConductanceText": "Conductance parallèle",
     "ShuntConductanceText1": "Conductance parallèle côté 1",
     "ShuntConductanceText2": "Conductance parallèle côté 2",
@@ -1670,7 +1668,7 @@
     "reset": "Réinitialiser",
     "history": "Historique",
     "activePowerControlTooltip": "Clé de distribution de la puissance au nœud bilan : maxP/Statisme, statisme par défaut = 4 (valable pour le mode compensation proportionnel à la puissance maximale des groupes)",
-    "twtQ": "Q (MVar)",
-    "twtAlpha": "Déphasage",
-    "DEFAULT": "DEFAULT"
- }
+    "ReactivePowerTooltip": "Q (MVar)",
+    "ActivePower": "P (MW)",
+    "twtAlpha": "Déphasage"
+}

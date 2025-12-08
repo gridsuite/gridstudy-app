@@ -9,15 +9,16 @@ import React from 'react';
 import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
 import RunningStatus from 'components/utils/running-status';
-import { generateCurrentLimitsRows, styles } from '../generic-equipment-popover-utils';
+import { styles } from '../generic-equipment-popover-utils';
 import { CellRender } from '../cell-render';
+import { generateCurrentLimitsRows } from './branch-utils';
 
-interface LimitsTableProps {
+interface BranchLimitsTableProps {
     equipmentInfos: BranchEquipmentInfos;
     loadFlowStatus?: RunningStatus;
 }
 
-export const LimitsTable: React.FC<LimitsTableProps> = ({ equipmentInfos, loadFlowStatus }) => {
+export const BranchLimitsTable: React.FC<BranchLimitsTableProps> = ({ equipmentInfos, loadFlowStatus }) => {
     return (
         <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>

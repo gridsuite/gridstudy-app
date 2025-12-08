@@ -9,11 +9,11 @@ import { EquipmentType } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { RunningStatus } from '../../utils/running-status';
 import { BranchCharacteristicsTable } from './branch-characteristics-table';
-import { CurrentTable } from './current-table';
-import { TwtCharacteristicsMode } from './twt-characteristics-mode';
+import { BranchCurrentTable } from './branch-current-table';
+import { TwtTapChangerCharacteristics } from './twt-tap-changer-characteristics';
 import { BranchEquipmentInfos, TwtEquipmentInfos } from '../equipment-popover-type';
-import { CharacteristicsByVoltageLevel } from './characteristics-by-VoltageLevel';
-import { LimitsTable } from './limit-table';
+import { BranchCharacteristicsByVoltageLevel } from './branch-characteristics-by-voltageLevel';
+import { BranchLimitsTable } from './branch-limit-table';
 
 interface BranchPopoverContentProps {
     equipmentInfos: BranchEquipmentInfos;
@@ -29,12 +29,12 @@ export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
     return (
         <Grid container direction="column" rowSpacing={2} alignItems="center">
             <BranchCharacteristicsTable equipmentInfos={equipmentInfos} />
-            <CurrentTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
-            <CharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} />
+            <BranchCurrentTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
+            <BranchCharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} />
             {equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER && (
-                <TwtCharacteristicsMode equipmentInfos={equipmentInfos as TwtEquipmentInfos} />
+                <TwtTapChangerCharacteristics equipmentInfos={equipmentInfos as TwtEquipmentInfos} />
             )}
-            <LimitsTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
+            <BranchLimitsTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
         </Grid>
     );
 };
