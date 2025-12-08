@@ -151,28 +151,26 @@ export const useNadDiagram = ({
 
             setDiagram((currentDiagram) => {
                 const hasVoltageLevels = currentDiagram.voltageLevelIds?.length > 0;
-                const hasExpandOrOmitIds =
-                    (currentDiagram.voltageLevelToExpandIds?.length ?? 0) > 0 ||
-                    (currentDiagram.voltageLevelToOmitIds?.length ?? 0) > 0;
+                const hasExpandIds = (currentDiagram.voltageLevelToExpandIds?.length ?? 0) > 0;
 
                 // Use saved config only if we have no voltage levels AND no expand/omit operations
-                const useSavedConfig =
-                    diagramMetadata.savedWorkspaceConfigUuid && !hasVoltageLevels && !hasExpandOrOmitIds;
+                // Replace by the state isEditNadMode
+                const isEditMode = diagramMetadata.savedWorkspaceConfigUuid && !hasVoltageLevels && !hasExpandIds;
 
                 const fetchOptions: RequestInit = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        nadConfigUuid: useSavedConfig
+                        nadConfigUuid: isEditMode
                             ? diagramMetadata.savedWorkspaceConfigUuid
                             : currentDiagram.nadConfigUuid,
                         filterUuid: currentDiagram.currentFilterUuid ?? currentDiagram.filterUuid,
-                        ...(useSavedConfig
+                        voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
+                        ...(isEditMode
                             ? {}
                             : {
                                   voltageLevelIds: currentDiagram.voltageLevelIds,
                                   voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
-                                  voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
                                   positions: currentDiagram.positions,
                               }),
                         nadPositionsGenerationMode:

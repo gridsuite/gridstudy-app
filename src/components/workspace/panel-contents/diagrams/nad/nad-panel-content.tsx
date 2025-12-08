@@ -56,7 +56,7 @@ export const NadPanelContent = ({
         [updateDiagram]
     );
 
-    // Update voltage levels from a filter in local state only
+    // Update voltage levels from a filter in global state (redux)
     const handleUpdateVoltageLevelsFromFilter = useCallback(
         (filterUuid?: UUID) => {
             dispatch(

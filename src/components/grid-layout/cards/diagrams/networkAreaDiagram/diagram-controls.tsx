@@ -282,15 +282,6 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             <UploadIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}>
-                        <IconButton
-                            sx={styles.actionIcon}
-                            onClick={handleClickAddVoltageLevelSIcon}
-                            disabled={isDiagramLoading || isNadCreationFromFilter}
-                        >
-                            <AddLocationAltOutlinedIcon sx={styles.icon} />
-                        </IconButton>
-                    </Tooltip>
                     <Tooltip title={<FormattedMessage id={'searchVoltageLevelInNad'} />}>
                         <span>
                             <IconButton
@@ -305,6 +296,15 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     {isEditNadMode && (
                         <>
                             <Divider orientation="vertical" flexItem sx={styles.divider} />
+                            <Tooltip title={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}>
+                                <IconButton
+                                    sx={styles.actionIcon}
+                                    onClick={handleClickAddVoltageLevelSIcon}
+                                    disabled={isDiagramLoading || isNadCreationFromFilter}
+                                >
+                                    <AddLocationAltOutlinedIcon sx={styles.icon} />
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
                                 <span>
                                     <IconButton
