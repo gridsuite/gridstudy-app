@@ -276,8 +276,9 @@ code {
 
 /* topologicalBaseVoltages.css */
 
-.sld-disconnected {
-    --vl-color: #808080;
+.sld-disconnected > polyline {
+    stroke: #808080;
+    stroke-dasharray: 3, 3;
 }
 
 /* highlightLineStates.css */
