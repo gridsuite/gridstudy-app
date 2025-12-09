@@ -8,8 +8,9 @@
 import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
-import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
 import { TwtEquipmentInfos } from '../equipment-popover-type';
+import { getComputedRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+import { getComputedPhaseTapChangerRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 
 interface TwtTapChangerCharacteristicsProps {
     equipmentInfos: TwtEquipmentInfos;
@@ -26,21 +27,16 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
             tap: ratioTapChanger.tapPosition,
             rho: ratioTapChanger.steps[ratioTapChanger.tapPosition].rho,
             alpha: '-',
-            mode: ratioTapChanger.isRegulating
-                ? RATIO_REGULATION_MODES.VOLTAGE_REGULATION.label
-                : RATIO_REGULATION_MODES.FIXED_RATIO.label,
+            mode: getComputedRegulationMode(equipmentInfos)?.label,
         });
     }
 
     if (phaseTapChanger) {
-        const phaseRegulationMode =
-            PHASE_REGULATION_MODES[phaseTapChanger.regulationMode as keyof typeof PHASE_REGULATION_MODES].label;
-
         rows.push({
             tap: phaseTapChanger.tapPosition ?? '-',
             rho: '-',
             alpha: phaseTapChanger.steps[phaseTapChanger.tapPosition].alpha,
-            mode: phaseTapChanger.isRegulating ? phaseRegulationMode : PHASE_REGULATION_MODES.OFF.label,
+            mode: getComputedPhaseTapChangerRegulationMode(phaseTapChanger)?.label,
         });
     }
 
