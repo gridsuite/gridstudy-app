@@ -9,7 +9,6 @@ import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMess
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
-    ATTACHMENT_POINT,
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
     BUS_OR_BUSBAR_SECTION,
@@ -134,13 +133,6 @@ const LineAttachToVoltageLevelDialog = ({
                         lineAttach?.existingVoltageLevelId ?? lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
                 }),
             };
-            const attachmentPointDetailInformation = lineAttach?.attachmentPointDetailInformation;
-            if (attachmentPointDetailInformation) {
-                formData = {
-                    ...formData,
-                    [ATTACHMENT_POINT]: attachmentPointDetailInformation,
-                };
-            }
             const newVoltageLevelInfos = lineAttach?.mayNewVoltageLevelInfos;
             if (newVoltageLevelInfos) {
                 formData = {
@@ -153,9 +145,7 @@ const LineAttachToVoltageLevelDialog = ({
             }
             reset(formData);
             setAttachmentLine(lineAttach?.attachmentLine);
-            if (attachmentPointDetailInformation) {
-                setAttachmentPoint(lineAttach?.attachmentPointDetailInformation);
-            }
+            setAttachmentPoint(lineAttach?.attachmentPointDetailInformation);
             if (newVoltageLevelInfos) {
                 newVoltageLevelInfos.busbarSections = buildNewBusbarSections(
                     newVoltageLevelInfos?.equipmentId,
@@ -184,8 +174,8 @@ const LineAttachToVoltageLevelDialog = ({
                 modificationUuid: editData?.uuid,
                 lineToAttachToId: lineAttach[LINE_TO_ATTACH_OR_SPLIT_ID],
                 percent: parseFloat(lineAttach[SLIDER_PERCENTAGE]),
-                attachmentPointId: lineAttach[ATTACHMENT_POINT_ID],
-                attachmentPointName: sanitizeString(lineAttach[ATTACHMENT_POINT_NAME]),
+                attachmentPointId: attachmentPoint.equipmentId,
+                attachmentPointName: sanitizeString(attachmentPoint.equipmentName),
                 attachmentPointDetailInformation: attachmentPoint,
                 mayNewVoltageLevelInfos: isNewVoltageLevel ? newVoltageLevel : null,
                 existingVoltageLevelId: currentVoltageLevelId,
@@ -354,10 +344,6 @@ const LineAttachToVoltageLevelDialog = ({
                     shouldValidate: true,
                     shouldDirty: true,
                 });
-                setValue(`${ATTACHMENT_POINT}`, attachmentPointData, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                });
             });
         },
         [setValue]
@@ -391,6 +377,7 @@ const LineAttachToVoltageLevelDialog = ({
                     voltageLevelToEdit={newVoltageLevel}
                     onAttachmentPointModificationDo={onAttachmentPointModificationDo}
                     attachmentPoint={attachmentPoint}
+                    setAttachmentPoint={setAttachmentPoint}
                     allVoltageLevelOptions={voltageLevelOptions}
                 />
             </ModificationDialog>

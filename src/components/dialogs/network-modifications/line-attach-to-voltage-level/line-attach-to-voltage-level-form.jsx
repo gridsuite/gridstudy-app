@@ -8,7 +8,6 @@
 import Grid from '@mui/material/Grid';
 import {
     ATTACHMENT_LINE_ID,
-    ATTACHMENT_POINT,
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
     CONNECTIVITY,
@@ -44,12 +43,12 @@ const LineAttachToVoltageLevelForm = ({
     voltageLevelToEdit,
     onAttachmentPointModificationDo,
     attachmentPoint,
+    setAttachmentPoint,
     allVoltageLevelOptions,
 }) => {
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
     const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
-    const [editData, setEditData] = useState(attachmentPoint);
     const { getValues } = useFormContext();
 
     const voltageLevelIdWatch = useWatch({
@@ -64,17 +63,18 @@ const LineAttachToVoltageLevelForm = ({
         setLineDialogOpen(true);
     };
 
-    const onAttachmentPointDialogClose = useCallback(() => {
+    const onAttachmentPointDialogClose = () => {
         setAttachmentPointDialogOpen(false);
-        setEditData(getValues(ATTACHMENT_POINT));
-    }, [getValues]);
+    };
 
     const openAttachmentPointDialog = useCallback(() => {
         const attachmentPointId = getValues(ATTACHMENT_POINT_ID);
         const attachmentPointName = getValues(ATTACHMENT_POINT_NAME);
-        setEditData({ ...editData, equipmentId: attachmentPointId, equipmentName: attachmentPointName });
+        setAttachmentPoint((prevAttachmentPoint) => {
+            return { ...prevAttachmentPoint, equipmentId: attachmentPointId, equipmentName: attachmentPointName };
+        });
         setAttachmentPointDialogOpen(true);
-    }, [editData, getValues]);
+    }, [getValues, setAttachmentPoint]);
 
     const onVoltageLevelDialogClose = () => {
         setVoltageLevelDialogOpen(false);
@@ -143,8 +143,8 @@ const LineAttachToVoltageLevelForm = ({
                         <Button
                             onClick={openAttachmentPointDialog}
                             startIcon={
-                                editData != null &&
-                                Object.keys(editData).some(
+                                attachmentPoint != null &&
+                                Object.keys(attachmentPoint).some(
                                     (key) => key !== 'equipmentId' && key !== 'equipmentName'
                                 ) ? (
                                     <EditIcon />
@@ -208,7 +208,7 @@ const LineAttachToVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onAttachmentPointModificationDo}
-                    editData={editData}
+                    editData={attachmentPoint}
                     isAttachementPointModification={true}
                     overrideTitle={'SpecifyAttachmentPoint'}
                 />
