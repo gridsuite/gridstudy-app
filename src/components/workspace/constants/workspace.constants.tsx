@@ -65,7 +65,7 @@ export const DEFAULT_PANEL_CONFIGS: Record<PanelType, PanelConfig> = {
     },
     [PanelType.MAP]: {
         title: 'Map',
-        defaultSize: { width: 0.3, height: 0.6 },
+        defaultSize: { width: 0.6, height: 0.6 },
         minSize: { width: 500, height: 500 },
         defaultPosition: { x: 0.1, y: 0.1 },
         icon: <Public fontSize="inherit" />,
@@ -80,14 +80,14 @@ export const DEFAULT_PANEL_CONFIGS: Record<PanelType, PanelConfig> = {
     [PanelType.PARAMETERS]: {
         title: 'parameters',
         defaultSize: { width: 0.5, height: 0.6 },
-        minSize: { width: 500, height: 400 },
+        minSize: { width: 600, height: 400 },
         defaultPosition: { x: 0.25, y: 0 },
         icon: <Settings fontSize="inherit" />,
     },
     [PanelType.LOGS]: {
         title: 'Logs',
         defaultSize: { width: 0.5, height: 0.6 },
-        minSize: { width: 600, height: 300 },
+        minSize: { width: 600, height: 400 },
         defaultPosition: { x: 0.2, y: 0 },
         icon: <TextSnippet fontSize="inherit" />,
     },

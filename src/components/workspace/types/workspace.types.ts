@@ -46,9 +46,12 @@ export interface PanelPosition {
     y: number; // 0-1
 }
 
+// relative size (0-1) exept for minSize which is in pixels
+// to avoid panels too small to be usable on small screens
+// e.g relative size 0.2 on a 800px width screen would be 160px only
 export interface PanelSize {
-    width: number; // 0-1
-    height: number; // 0-1
+    width: number;
+    height: number;
 }
 
 export interface RelativeLayout {

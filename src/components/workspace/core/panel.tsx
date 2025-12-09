@@ -27,11 +27,11 @@ import { positionToRelative, sizeToRelative, calculatePanelDimensions } from './
 
 const RESIZE_HANDLE_SIZE = 12;
 
-const getBorder = (theme: Theme, isFocused: boolean) => {
+const getBorder = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
     if (theme.palette.mode === 'light') {
         return `1px solid ${theme.palette.grey[500]}`;
     }
-    if (isFocused) {
+    if (isFocused && !isMaximized) {
         return `1px solid ${theme.palette.grey[100]}`;
     }
     return `1px solid ${theme.palette.grey[800]}`;
@@ -182,7 +182,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
                     className="panel-content"
                     sx={(theme) => ({
                         ...styles.content(theme),
-                        border: getBorder(theme, isFocused),
+                        border: getBorder(theme, isFocused, panel.isMaximized),
                     })}
                 >
                     {studyUuid && currentRootNetworkUuid && currentNode
