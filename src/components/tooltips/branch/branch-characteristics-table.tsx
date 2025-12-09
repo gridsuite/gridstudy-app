@@ -5,45 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Grid } from '@mui/material';
+import { Table, TableContainer, Grid } from '@mui/material';
 import { styles } from '../generic-equipment-popover-utils';
-import { CellRender } from '../cell-render';
-import { JSX } from 'react';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
 import { renderCommonCharacteristics } from './branch-utils';
 
 interface BranchCharacteristicsProps {
     equipmentInfos: BranchEquipmentInfos;
-    renderVoltageLevelCharacteristics?: (equipmentInfos: BranchEquipmentInfos) => JSX.Element;
 }
-
-export const BranchCharacteristicsTable: React.FC<BranchCharacteristicsProps> = ({
-    equipmentInfos,
-    renderVoltageLevelCharacteristics,
-}) => {
+export const BranchCharacteristicsTable: React.FC<BranchCharacteristicsProps> = ({ equipmentInfos }) => {
     return (
         <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>
                 <Table size="small" sx={styles.layout}>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={styles.cell} />
-                            <CellRender
-                                isLabel={true}
-                                label="characteristic"
-                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                            ></CellRender>
-                            <CellRender
-                                isLabel={true}
-                                label="values"
-                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                            ></CellRender>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {renderCommonCharacteristics(equipmentInfos)}
-                        {renderVoltageLevelCharacteristics?.(equipmentInfos)}
-                    </TableBody>
+                    {renderCommonCharacteristics(equipmentInfos)}
                 </Table>
             </TableContainer>
         </Grid>

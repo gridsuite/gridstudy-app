@@ -40,6 +40,14 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
         });
     }
 
+    if (!phaseTapChanger && !ratioTapChanger) {
+        rows.push({
+            tap: '_',
+            rho: '_',
+            alpha: '_',
+            mode: '_',
+        });
+    }
     return (
         <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>
@@ -48,7 +56,7 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
                         <TableRow>
                             <CellRender isLabel label="Tap" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                             <CellRender isLabel label="Ratio" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender isLabel label="twtAlpha" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                            <CellRender isLabel label="Alpha" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                             <CellRender
                                 isLabel
                                 label="RegulationMode"
@@ -60,9 +68,9 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
                     <TableBody>
                         {rows.map((r) => (
                             <TableRow key={r.tap}>
-                                <CellRender value={formatValue(r.tap, 3)} colStyle={styles.cell} />
+                                <CellRender value={formatValue(Math.round(r.tap))} colStyle={styles.cell} />
                                 <CellRender value={formatValue(r.rho, 3)} colStyle={styles.cell} />
-                                <CellRender value={formatValue(r.alpha, 3)} colStyle={styles.cell} />
+                                <CellRender value={formatValue(r.alpha, 1)} colStyle={styles.cell} />
                                 <CellRender isLabel label={r.mode} colStyle={styles.cell} />
                             </TableRow>
                         ))}

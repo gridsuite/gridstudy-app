@@ -6,8 +6,7 @@
  */
 
 import { TableCell, TableRow } from '@mui/material';
-import { mergeSx, convertInputValue, FieldType } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { mergeSx } from '@gridsuite/commons-ui';
 import { BranchEquipmentInfos, CommonBranchEquipmentInfos } from '../equipment-popover-type';
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
@@ -22,7 +21,7 @@ export const renderCommonCharacteristics = (equipmentInfo: CommonBranchEquipment
         <TableRow>
             <TableCell sx={styles.cell} />
 
-            <CellRender label="r" isLabel={true} colStyle={styles.cell} />
+            <CellRender label="r" isLabel={true} colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
 
             <CellRender value={formatValue(equipmentInfo.r, 2)} isLabel={false} colStyle={styles.cell} />
         </TableRow>
@@ -30,36 +29,12 @@ export const renderCommonCharacteristics = (equipmentInfo: CommonBranchEquipment
         <TableRow>
             <TableCell sx={styles.cell} />
 
-            <CellRender label="x" isLabel={true} colStyle={styles.cell} />
+            <CellRender label="x" isLabel={true} colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
 
             <CellRender value={formatValue(equipmentInfo.x, 2)} isLabel={false} colStyle={styles.cell} />
         </TableRow>
     </>
 );
-
-/**
- * Render voltage-level dependent characteristics (shunt susceptance, etc.)
- */
-export const renderVoltageLevelCharacteristics = (equipmentInfo: any, equipmentType: any) => {
-    const renderShuntRow = (voltageLevelId: any, value: any, type: any) => (
-        <TableRow key={`${voltageLevelId}-${type}`}>
-            <CellRender value={voltageLevelId} isLabel={false} colStyle={styles.cell} />
-
-            <CellRender label="shuntSusceptance" isLabel={true} colStyle={styles.cell} />
-
-            <CellRender value={convertInputValue(type, value)?.toFixed(2)} isLabel={false} colStyle={styles.cell} />
-        </TableRow>
-    );
-
-    return equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ? (
-        renderShuntRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b, FieldType.B)
-    ) : (
-        <>
-            {renderShuntRow(equipmentInfo.voltageLevelId1, equipmentInfo.b1, FieldType.B1)}
-            {renderShuntRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b2, FieldType.B2)}
-        </>
-    );
-};
 
 /**
  * Generate the rows for current limits (permanent and temporary)

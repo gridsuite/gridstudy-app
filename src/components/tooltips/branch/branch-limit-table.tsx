@@ -52,6 +52,14 @@ export const BranchLimitsTable: React.FC<BranchLimitsTableProps> = ({ equipmentI
                     <TableBody>
                         {generateCurrentLimitsRows(equipmentInfos, equipmentInfos?.currentLimits1, '1', loadFlowStatus)}
                         {generateCurrentLimitsRows(equipmentInfos, equipmentInfos?.currentLimits2, '2', loadFlowStatus)}
+                        {!equipmentInfos?.currentLimits1 && !equipmentInfos.currentLimits2 ? (
+                            <TableRow>
+                                <CellRender value="_" colStyle={styles.cell} />
+                                <CellRender value="_" colStyle={styles.cell} />
+                                <CellRender value="_" colStyle={styles.cell} />
+                                <CellRender value="_" colStyle={styles.cell} />
+                            </TableRow>
+                        ) : null}
                     </TableBody>
                 </Table>
             </TableContainer>

@@ -9,7 +9,6 @@ import { EquipmentType } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { RunningStatus } from '../../utils/running-status';
 import { BranchCharacteristicsTable } from './branch-characteristics-table';
-import { BranchCurrentTable } from './branch-current-table';
 import { TwtTapChangerCharacteristics } from './twt-tap-changer-characteristics';
 import { BranchEquipmentInfos, TwtEquipmentInfos } from '../equipment-popover-type';
 import { BranchCharacteristicsByVoltageLevel } from './branch-characteristics-by-voltage-level';
@@ -29,8 +28,7 @@ export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
     return (
         <Grid container direction="column" rowSpacing={2} alignItems="center">
             <BranchCharacteristicsTable equipmentInfos={equipmentInfos} />
-            <BranchCurrentTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
-            <BranchCharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} />
+            <BranchCharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
             {equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER && (
                 <TwtTapChangerCharacteristics equipmentInfos={equipmentInfos as TwtEquipmentInfos} />
             )}

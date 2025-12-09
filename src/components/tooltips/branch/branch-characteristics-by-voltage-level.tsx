@@ -5,17 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
+import { Table, TableHead, TableRow, TableBody, TableContainer, Grid, TableCell } from '@mui/material';
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
+import { mergeSx } from '@gridsuite/commons-ui';
+import RunningStatus from 'components/utils/running-status';
 
 interface BranchCharacteristicsByVoltageLevelProps {
     equipmentInfos: BranchEquipmentInfos;
+    loadFlowStatus?: RunningStatus;
 }
 
 export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristicsByVoltageLevelProps> = ({
     equipmentInfos,
+    loadFlowStatus,
 }) => {
     return (
         <Grid item sx={styles.grid}>
@@ -25,13 +29,11 @@ export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristics
                         <TableRow>
                             <CellRender colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                             <CellRender
-                                isLabel
-                                label="VoltageLevelIdSide1"
+                                value={formatValue(equipmentInfos?.voltageLevelId1)}
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             />
                             <CellRender
-                                isLabel
-                                label="VoltageLevelIdSide2"
+                                value={formatValue(equipmentInfos?.voltageLevelId2)}
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             />
                         </TableRow>
@@ -39,15 +41,31 @@ export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristics
 
                     <TableBody>
                         <TableRow>
-                            <CellRender isLabel label="I_(A)" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender value={formatValue(equipmentInfos.i1, 3)} colStyle={styles.cell} />
-                            <CellRender value={formatValue(equipmentInfos.i2, 3)} colStyle={styles.cell} />
+                            <CellRender
+                                isLabel={true}
+                                label="I_(A)"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            ></CellRender>
+                            <TableCell
+                                sx={mergeSx(styles.cell, {
+                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
+                                })}
+                            >
+                                {formatValue(Math.round(equipmentInfos?.i1))}
+                            </TableCell>
+                            <TableCell
+                                sx={mergeSx(styles.cell, {
+                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
+                                })}
+                            >
+                                {formatValue(Math.round(equipmentInfos?.i2))}
+                            </TableCell>
                         </TableRow>
 
                         <TableRow>
                             <CellRender isLabel label="activePower" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender value={formatValue(equipmentInfos.p1, 3)} colStyle={styles.cell} />
-                            <CellRender value={formatValue(equipmentInfos.p2, 3)} colStyle={styles.cell} />
+                            <CellRender value={formatValue(Math.round(equipmentInfos?.p1))} colStyle={styles.cell} />
+                            <CellRender value={formatValue(Math.round(equipmentInfos?.p2))} colStyle={styles.cell} />
                         </TableRow>
 
                         <TableRow>
@@ -56,8 +74,8 @@ export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristics
                                 label="reactivePowerTooltip"
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             />
-                            <CellRender value={formatValue(equipmentInfos.q1, 3)} colStyle={styles.cell} />
-                            <CellRender value={formatValue(equipmentInfos.q1, 3)} colStyle={styles.cell} />
+                            <CellRender value={formatValue(Math.round(equipmentInfos?.q1))} colStyle={styles.cell} />
+                            <CellRender value={formatValue(Math.round(equipmentInfos?.q2))} colStyle={styles.cell} />
                         </TableRow>
 
                         <TableRow>
