@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Table, TableHead, TableRow, TableBody, TableContainer, Grid, TableCell } from '@mui/material';
+import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
-import { mergeSx } from '@gridsuite/commons-ui';
 import RunningStatus from 'components/utils/running-status';
 
 interface BranchCharacteristicsByVoltageLevelProps {
@@ -46,26 +45,38 @@ export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristics
                                 label="I_(A)"
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             ></CellRender>
-                            <TableCell
-                                sx={mergeSx(styles.cell, {
+                            <CellRender
+                                value={formatValue(Math.round(equipmentInfos?.i1))}
+                                colStyle={{
+                                    ...styles.cell,
                                     opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                                })}
-                            >
-                                {formatValue(Math.round(equipmentInfos?.i1))}
-                            </TableCell>
-                            <TableCell
-                                sx={mergeSx(styles.cell, {
+                                }}
+                            />
+                            <CellRender
+                                value={formatValue(Math.round(equipmentInfos?.i2))}
+                                colStyle={{
+                                    ...styles.cell,
                                     opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                                })}
-                            >
-                                {formatValue(Math.round(equipmentInfos?.i2))}
-                            </TableCell>
+                                }}
+                            />
                         </TableRow>
 
                         <TableRow>
                             <CellRender isLabel label="activePower" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender value={formatValue(Math.round(equipmentInfos?.p1))} colStyle={styles.cell} />
-                            <CellRender value={formatValue(Math.round(equipmentInfos?.p2))} colStyle={styles.cell} />
+                            <CellRender
+                                value={formatValue(Math.round(equipmentInfos?.p1))}
+                                colStyle={{
+                                    ...styles.cell,
+                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
+                                }}
+                            />
+                            <CellRender
+                                value={formatValue(Math.round(equipmentInfos?.p2))}
+                                colStyle={{
+                                    ...styles.cell,
+                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
+                                }}
+                            />
                         </TableRow>
 
                         <TableRow>
@@ -74,8 +85,20 @@ export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristics
                                 label="reactivePowerTooltip"
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             />
-                            <CellRender value={formatValue(Math.round(equipmentInfos?.q1))} colStyle={styles.cell} />
-                            <CellRender value={formatValue(Math.round(equipmentInfos?.q2))} colStyle={styles.cell} />
+                            <CellRender
+                                value={formatValue(Math.round(equipmentInfos?.q1))}
+                                colStyle={{
+                                    ...styles.cell,
+                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
+                                }}
+                            />
+                            <CellRender
+                                value={formatValue(Math.round(equipmentInfos?.q2))}
+                                colStyle={{
+                                    ...styles.cell,
+                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
+                                }}
+                            />
                         </TableRow>
 
                         <TableRow>
