@@ -274,23 +274,13 @@ code {
     animation: sld-undervoltage-blink-animation 0.75s infinite steps(1, start);
 }
 
-/* topologicalBaseVoltages.css */
-
-.sld-disconnected > polyline {
+.sld-feeder-disconnected.sld-wire {
+    stroke-dasharray: 3, 3;
     stroke: #808080;
-    stroke-dasharray: 3, 3;
 }
-
-/* highlightLineStates.css */
-
-.sld-feeder-disconnected {
-    stroke: black;
-}
+.sld-feeder-disconnected-connected,
 .sld-feeder-connected-disconnected {
-    stroke-dasharray: 3, 3;
-}
-.sld-feeder-disconnected-connected {
-    stroke: black;
+    stroke: var(--vl-color, #c80000);
     stroke-dasharray: 3, 3;
 }
 

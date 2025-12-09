@@ -83,14 +83,11 @@ foreignObject.nad-text-nodes {
     stroke-linejoin: round;
     paint-order: stroke;
 }
-.nad-disconnected {
-    --vl-color: #808080;
-}
-g.nad-disconnected > polyline.nad-disconnected {
+
+g.nad-disconnected > .nad-disconnected.nad-edge-path {
     /* When both edges of a line are disconnected in a NAD, both of them and their parent have the .nad-disconnected class */
     --vl-color: #808080;
 }
-
 
 @keyframes line-blink {
     50% {
