@@ -112,35 +112,35 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
     const intl = useIntl();
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
-        const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
-            | SLDPanelMetadata
-            | undefined;
+    const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
+        | SLDPanelMetadata
+        | undefined;
 
-        const [associateMenuAnchor, setAssociateMenuAnchor] = useState<HTMLElement | null>(null);
+    const [associateMenuAnchor, setAssociateMenuAnchor] = useState<HTMLElement | null>(null);
 
-        const handleAssociateClick = (event: React.MouseEvent<HTMLElement>) => {
-            setAssociateMenuAnchor(event.currentTarget);
-        };
+    const handleAssociateClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAssociateMenuAnchor(event.currentTarget);
+    };
 
-        const handleAssociateMenuClose = () => {
-            setAssociateMenuAnchor(null);
-        };
+    const handleAssociateMenuClose = () => {
+        setAssociateMenuAnchor(null);
+    };
 
-        const handleSelectNad = (nadPanelId: UUID) => {
-            dispatch(associateSldToNad({ sldPanelId: panelId, nadPanelId }));
-        };
+    const handleSelectNad = (nadPanelId: UUID) => {
+        dispatch(associateSldToNad({ sldPanelId: panelId, nadPanelId }));
+    };
 
-        const handleCreateNad = () => {
-            if (metadata?.diagramId) {
-                dispatch(
-                    createNadAndAssociateSld({
-                        sldPanelId: panelId,
-                        voltageLevelId: metadata.diagramId,
-                        voltageLevelName: title,
-                    })
-                );
-            }
-        };
+    const handleCreateNad = () => {
+        if (metadata?.diagramId) {
+            dispatch(
+                createNadAndAssociateSld({
+                    sldPanelId: panelId,
+                    voltageLevelId: metadata.diagramId,
+                    voltageLevelName: title,
+                })
+            );
+        }
+    };
 
     const handleClose = () => {
         // If it's a parameters panel with unsaved changes, trigger confirmation dialog
@@ -171,17 +171,17 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                 >
                     {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                 </IconButton>
-                    {panelType === PanelType.SLD_VOLTAGE_LEVEL && (
-                        <IconButton
-                            className="panel-header-close-button"
-                            size="small"
-                            sx={styles.iconButton}
-                            onClick={handleAssociateClick}
-                            onMouseDown={(e) => e.stopPropagation()}
-                        >
-                            <LinkIcon fontSize="small" />
-                        </IconButton>
-                    )}
+                {panelType === PanelType.SLD_VOLTAGE_LEVEL && (
+                    <IconButton
+                        className="panel-header-close-button"
+                        size="small"
+                        sx={styles.iconButton}
+                        onClick={handleAssociateClick}
+                        onMouseDown={(e) => e.stopPropagation()}
+                    >
+                        <LinkIcon fontSize="small" />
+                    </IconButton>
+                )}
                 {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
                     panelType === PanelType.SLD_SUBSTATION ||
                     panelType === PanelType.NAD) && (
@@ -215,14 +215,14 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     <Close fontSize="small" />
                 </IconButton>
             </Box>
-                <AssociateNadMenu
-                    anchorEl={associateMenuAnchor}
-                    open={Boolean(associateMenuAnchor)}
-                    onClose={handleAssociateMenuClose}
-                    onSelectNad={handleSelectNad}
-                    onCreateNad={panelType === PanelType.SLD_VOLTAGE_LEVEL ? handleCreateNad : undefined}
-                    voltageLevelId={panelType === PanelType.SLD_VOLTAGE_LEVEL ? metadata?.diagramId : undefined}
-                />
+            <AssociateNadMenu
+                anchorEl={associateMenuAnchor}
+                open={Boolean(associateMenuAnchor)}
+                onClose={handleAssociateMenuClose}
+                onSelectNad={handleSelectNad}
+                onCreateNad={panelType === PanelType.SLD_VOLTAGE_LEVEL ? handleCreateNad : undefined}
+                voltageLevelId={panelType === PanelType.SLD_VOLTAGE_LEVEL ? metadata?.diagramId : undefined}
+            />
         </Box>
     );
 });

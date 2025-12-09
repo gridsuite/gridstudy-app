@@ -271,10 +271,12 @@ const workspacesSlice = createSlice({
             updatePanel(state, panelId, (panel) => {
                 const metadata = panel.metadata as NADPanelMetadata;
                 const currentHistory = metadata.navigationHistory || [];
+                if (currentHistory.includes(voltageLevelId)) {
+                    return;
+                }
 
-                // Remove voltage level from history if it exists, then add it to the end
-                const filteredHistory = currentHistory.filter((id) => id !== voltageLevelId);
-                const updatedHistory = [...filteredHistory, voltageLevelId];
+                // Add new voltage level to the end
+                const updatedHistory = [...currentHistory, voltageLevelId];
                 // Keep only the last N items based on configured max
                 const limitedHistory = updatedHistory.slice(-NAD_SLD_CONSTANTS.MAX_NAVIGATION_HISTORY);
 
