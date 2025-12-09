@@ -21,7 +21,7 @@ export const validateFormulaResult = (value: CustomAggridValue, type: COLUMN_TYP
         case COLUMN_TYPES.NUMBER:
             try {
                 return Number(value);
-            } catch (_) {
+            } catch {
                 return { error: 'spreadsheet/formula/type/number' };
             }
         case COLUMN_TYPES.BOOLEAN:
