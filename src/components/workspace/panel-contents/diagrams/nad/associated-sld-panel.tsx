@@ -107,9 +107,9 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     const dispatch = useDispatch();
     const theme = useTheme();
 
-    const studyUuid = useSelector((state: AppState) => state.studyUuid) as UUID;
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeId = useSelector((state: AppState) => state.currentTreeNode?.id);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid) as UUID;
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const sldPanel = useSelector((state: RootState) => selectPanel(state, sldPanelId));
 
     const handleDissociate = () => {
@@ -122,7 +122,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
         dispatch(closePanel(sldPanelId));
     };
 
-    if (!sldPanel || !currentNodeId) return null;
+    if (!sldPanel || !currentNodeId || !studyUuid || !currentRootNetworkUuid) return null;
 
     return (
         <Paper
@@ -168,7 +168,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                 </Box>
             </Box>
 
-            <Box sx={styles.contentContainer}>
+            <Box sx={styles.contentContainer(theme)}>
                 <VoltageLevelPanelContent
                     panelId={sldPanelId}
                     studyUuid={studyUuid}

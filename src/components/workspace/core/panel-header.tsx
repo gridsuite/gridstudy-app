@@ -105,15 +105,13 @@ interface PanelHeaderProps {
     isPinned: boolean;
     isMaximized: boolean;
     isFocused: boolean;
-    onFocus: () => void;
 }
 
-export const PanelHeader = memo(
-    ({ panelId, title, panelType, isPinned, isMaximized, isFocused, onFocus }: PanelHeaderProps) => {
-        const dispatch = useDispatch();
-        const intl = useIntl();
-        const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
-        const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
+export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximized, isFocused }: PanelHeaderProps) => {
+    const dispatch = useDispatch();
+    const intl = useIntl();
+    const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
+    const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
         const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
             | SLDPanelMetadata
             | undefined;
@@ -144,35 +142,35 @@ export const PanelHeader = memo(
             }
         };
 
-        const handleClose = () => {
-            // If it's a parameters panel with unsaved changes, trigger confirmation dialog
-            if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
-                globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
-            } else if (panelType === PanelType.NAD) {
-                globalThis.dispatchEvent(new CustomEvent('nadPanel:requestClose', { detail: panelId }));
-            } else {
-                dispatch(closePanel(panelId));
-            }
-        };
+    const handleClose = () => {
+        // If it's a parameters panel with unsaved changes, trigger confirmation dialog
+        if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
+            globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
+        } else if (panelType === PanelType.NAD) {
+            globalThis.dispatchEvent(new CustomEvent('nadPanel:requestClose', { detail: panelId }));
+        } else {
+            dispatch(closePanel(panelId));
+        }
+    };
 
-        return (
-            <Box onMouseDown={onFocus} className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused)}>
-                <Box sx={styles.title}>
-                    <Box sx={styles.titleContent}>
-                        {getPanelConfig(panelType).icon}
-                        <OverflowableText text={displayTitle} sx={styles.titleText} tooltipSx={styles.tooltip} />
-                    </Box>
+    return (
+        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused)}>
+            <Box sx={styles.title}>
+                <Box sx={styles.titleContent}>
+                    {getPanelConfig(panelType).icon}
+                    <OverflowableText text={displayTitle} sx={styles.titleText} tooltipSx={styles.tooltip} />
                 </Box>
-                <Box sx={styles.headerActions}>
-                    <IconButton
-                        className="panel-header-close-button"
-                        size="small"
-                        sx={styles.iconButton}
-                        onClick={() => dispatch(togglePin(panelId))}
-                        onMouseDown={(e) => e.stopPropagation()}
-                    >
-                        {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
-                    </IconButton>
+            </Box>
+            <Box sx={styles.headerActions}>
+                <IconButton
+                    className="panel-header-close-button"
+                    size="small"
+                    sx={styles.iconButton}
+                    onClick={() => dispatch(togglePin(panelId))}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
+                </IconButton>
                     {panelType === PanelType.SLD_VOLTAGE_LEVEL && (
                         <IconButton
                             className="panel-header-close-button"
@@ -184,39 +182,39 @@ export const PanelHeader = memo(
                             <LinkIcon fontSize="small" />
                         </IconButton>
                     )}
-                    {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
-                        panelType === PanelType.SLD_SUBSTATION ||
-                        panelType === PanelType.NAD) && (
-                        <IconButton
-                            className="panel-header-close-button"
-                            size="small"
-                            sx={styles.iconButton}
-                            onClick={() => dispatch(toggleMinimize(panelId))}
-                            onMouseDown={(e) => e.stopPropagation()}
-                        >
-                            <Minimize fontSize="small" />
-                        </IconButton>
-                    )}
+                {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
+                    panelType === PanelType.SLD_SUBSTATION ||
+                    panelType === PanelType.NAD) && (
                     <IconButton
                         className="panel-header-close-button"
                         size="small"
                         sx={styles.iconButton}
-                        onClick={() => dispatch(toggleMaximize(panelId))}
+                        onClick={() => dispatch(toggleMinimize(panelId))}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
-                        {isMaximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
+                        <Minimize fontSize="small" />
                     </IconButton>
-                    <IconButton
-                        className="panel-header-close-button"
-                        size="small"
-                        sx={styles.iconButton}
-                        onClick={handleClose}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        disabled={isPinned}
-                    >
-                        <Close fontSize="small" />
-                    </IconButton>
-                </Box>
+                )}
+                <IconButton
+                    className="panel-header-close-button"
+                    size="small"
+                    sx={styles.iconButton}
+                    onClick={() => dispatch(toggleMaximize(panelId))}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    {isMaximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
+                </IconButton>
+                <IconButton
+                    className="panel-header-close-button"
+                    size="small"
+                    sx={styles.iconButton}
+                    onClick={handleClose}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    disabled={isPinned}
+                >
+                    <Close fontSize="small" />
+                </IconButton>
+            </Box>
                 <AssociateNadMenu
                     anchorEl={associateMenuAnchor}
                     open={Boolean(associateMenuAnchor)}
@@ -225,7 +223,6 @@ export const PanelHeader = memo(
                     onCreateNad={panelType === PanelType.SLD_VOLTAGE_LEVEL ? handleCreateNad : undefined}
                     voltageLevelId={panelType === PanelType.SLD_VOLTAGE_LEVEL ? metadata?.diagramId : undefined}
                 />
-            </Box>
-        );
-    }
-);
+        </Box>
+    );
+});

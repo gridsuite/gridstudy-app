@@ -71,6 +71,6 @@ export const selectAssociatedVoltageLevelIds = createSelector(
                 const panel = panels[panelId];
                 return (panel?.metadata as SLDPanelMetadata | undefined)?.diagramId;
             })
-            .filter((id): id is string => Boolean(id));
+            .filter((id): id is string => !!id);
     }
 );

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box } from '@mui/material';
 import { DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import SingleLineDiagramContent from '../../../../grid-layout/cards/diagrams/singleLineDiagram/single-line-diagram-content';
-import { navigateSLD } from '../../../../../redux/slices/workspace-slice';
+import { navigateSLD, openSldAndAssociateToNad } from '../../../../../redux/slices/workspace-slice';
 import { SLDMetadata } from '@powsybl/network-viewer';
 import type { UUID } from 'node:crypto';
 import { useSldDiagram } from '../../../diagrams/sld/use-sld-diagram';
@@ -20,7 +20,6 @@ import { selectPanelMetadata } from '../../../../../redux/slices/workspace-selec
 import type { RootState } from '../../../../../redux/store';
 import { SLDPanelMetadata } from 'components/workspace/types/workspace.types';
 import { SldNavigationSidebar } from '../../../diagrams/sld/sld-navigation-sidebar';
-import { openSldAndAssociateToNad } from '../../../../../redux/slices/workspace-slice';
 
 interface VoltageLevelPanelContentProps {
     panelId: UUID;
