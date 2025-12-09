@@ -19,6 +19,9 @@ export function isValidationError(value: unknown): value is ValidationError {
 export const validateFormulaResult = (value: CustomAggridValue, type: COLUMN_TYPES): CustomAggridValue => {
     switch (type) {
         case COLUMN_TYPES.NUMBER:
+            if (typeof value === 'boolean') {
+                return { error: 'spreadsheet/formula/type/number' };
+            }
             try {
                 return Number(value);
             } catch {
