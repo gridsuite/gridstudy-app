@@ -11,6 +11,7 @@ import { ActivePowerAdornment, ReactivePowerAdornment } from '../../dialog-utils
 import GridItem from '../../commons/grid-item';
 import { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { Grid } from '@mui/material';
 
 export interface ReactiveCapabilityCurveRowFormProps {
     id: string;
@@ -47,8 +48,7 @@ export function ReactiveCapabilityCurveRowForm({
     const pField = (
         <FloatInput
             name={`${id}.${index}.${P}`}
-            label={'P'}
-            labelValues={{ labelSuffix: labelSuffix }}
+            label={'P (MW)'}
             adornment={ActivePowerAdornment}
             onChange={triggerTableValidation}
         />
@@ -57,8 +57,7 @@ export function ReactiveCapabilityCurveRowForm({
     const qminPField = (
         <FloatInput
             name={`${id}.${index}.${MIN_Q}`}
-            label={'QminP'}
-            labelValues={{ labelSuffix: labelSuffix }}
+            label={'QminP (MVar)'}
             adornment={ReactivePowerAdornment}
             onChange={triggerTableAndSiblingsValidation}
         />
@@ -67,8 +66,7 @@ export function ReactiveCapabilityCurveRowForm({
     const qmaxPField = (
         <FloatInput
             name={`${id}.${index}.${MAX_Q}`}
-            label={'QmaxP'}
-            labelValues={{ labelSuffix: labelSuffix }}
+            label={'QmaxP (MVar)'}
             adornment={ReactivePowerAdornment}
             onChange={triggerTableAndSiblingsValidation}
         />

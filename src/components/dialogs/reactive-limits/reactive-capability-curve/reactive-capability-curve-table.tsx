@@ -7,17 +7,17 @@
 
 import { useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Grid, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/ControlPoint';
+import { Grid } from '@mui/material';
 import { useFieldArray } from 'react-hook-form';
 import { MAX_Q, MIN_Q, P } from 'components/utils/field-constants';
 import { ErrorInput, MidFormError } from '@gridsuite/commons-ui';
 import { INSERT, REMOVE } from './reactive-capability-utils';
 import { ReactiveCapabilityCurvePoints } from '../reactive-limits.type';
 import { ReactiveCapabilityCurveRowForm } from './reactive-capability-curve-row-form';
+import { IconButton } from '@design-system-rte/react';
 
 const MIN_LENGTH = 2;
+
 interface ReactiveCapabilityCurveTableFormProps {
     id: string;
     tableHeadersIds: string[];
@@ -90,27 +90,28 @@ export function ReactiveCapabilityCurveTableForm({
                     labelSuffix = index - 1;
                 }
                 return (
-                    <Grid key={value.id} container spacing={3} item>
+                    <Grid key={value.id} direction="row" alignItems="flex-end" container spacing={3} item>
                         <ReactiveCapabilityCurveRowForm id={id} index={index} labelSuffix={labelSuffix} />
                         <Grid item xs={1}>
                             <IconButton
                                 key={value.id}
+                                name="delete"
+                                size="m"
                                 onClick={() => handleRemoveRow(index)}
-                                disabled={disabled || index === 0 || index === displayedValues.length - 1}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
+                                appearance="filled"
+                                variant="transparent"
+                            />
                         </Grid>
                         {index === displayedValues.length - 1 && (
                             <Grid item xs={1}>
                                 <IconButton
                                     key={value.id}
+                                    name="add-circle"
+                                    size="m"
                                     onClick={() => handleInsertRow()}
-                                    disabled={disabled}
-                                    style={{ top: '-1em' }}
-                                >
-                                    <AddIcon />
-                                </IconButton>
+                                    appearance="outlined"
+                                    variant="transparent"
+                                />
                             </Grid>
                         )}
                     </Grid>

@@ -7,7 +7,7 @@
 
 import { useCallback } from 'react';
 import { FieldErrors, FieldValues, useFormContext } from 'react-hook-form';
-import { SubmitButton } from '@gridsuite/commons-ui';
+import { ValidateButton } from '@gridsuite/commons-ui';
 import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
 
 /**
@@ -80,9 +80,8 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
     };
 
     const submitButton = (
-        <SubmitButton
+        <ValidateButton
             onClick={handleSubmit(handleValidate, handleValidationError)}
-            variant="outlined"
             disabled={disabledSave}
         />
     );

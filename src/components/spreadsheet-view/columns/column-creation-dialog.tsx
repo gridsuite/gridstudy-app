@@ -17,7 +17,7 @@ import {
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
-    SubmitButton,
+    ValidateButton,
     TextInput,
     useSnackMessage,
     type UseStateBooleanReturn,
@@ -367,7 +367,7 @@ export default function ColumnCreationDialog({
                         <Grid item xs>
                             <Box sx={styles.actionButtons}>
                                 <CancelButton onClick={open.setFalse} />
-                                <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined" />
+                                <ValidateButton onClick={handleSubmit(onSubmit)} />
                             </Box>
                         </Grid>
                     </Grid>

@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
-import { CancelButton, type SxStyle } from '@gridsuite/commons-ui';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { CancelButton, ValidateButton, type SxStyle } from '@gridsuite/commons-ui';
 import { ReactElement, useCallback } from 'react';
 
 interface SelectOptionsDialogProps {
@@ -51,9 +50,7 @@ const SelectOptionsDialog = ({
             <DialogContent style={{ padding: '8px 32px 8px 15px' }}>{child}</DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button onClick={onClick} variant="outlined" disabled={disabled}>
-                    <FormattedMessage id={validateKey ?? 'validate'} />
-                </Button>
+                <ValidateButton label={validateKey} onClick={onClick} disabled={disabled} />
             </DialogActions>
         </Dialog>
     );

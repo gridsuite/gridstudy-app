@@ -10,7 +10,7 @@ import {
     mergeSx,
     PopupConfirmationDialog,
     snackWithFallback,
-    SubmitButton,
+    ValidateButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
@@ -209,7 +209,7 @@ export const StateEstimationParameters = ({
                         <Button onClick={handleResetClick}>
                             <FormattedMessage id="resetToDefault" />
                         </Button>
-                        <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onValidationError)} />
+                        <ValidateButton onClick={handleSubmit(onSubmit, onValidationError)} />
                     </DialogActions>
                 </Grid>
             </Grid>

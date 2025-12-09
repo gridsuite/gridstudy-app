@@ -14,6 +14,8 @@ import { createRoot } from 'react-dom/client';
 import '@xyflow/react/dist/base.css';
 import './index.css';
 
+import "@design-system-rte/react/dist/style.css";
+
 import AppWrapper from './components/app-wrapper';
 
 const container = document.getElementById('root');

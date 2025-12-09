@@ -24,7 +24,7 @@ import {
     isObjectEmpty,
     mergeSx,
     ProviderParam,
-    SubmitButton,
+    ValidateButton,
     useParametersBackend,
     ComputingType,
     PopupConfirmationDialog,
@@ -261,9 +261,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                 })}
             >
                 <LabelledButton callback={handleResetClick} label="resetToDefault" />
-                <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onError)}>
-                    <FormattedMessage id={'validate'} />
-                </SubmitButton>
+                <ValidateButton onClick={handleSubmit(onSubmit, onError)} />
             </Grid>
 
             {/* Reset Confirmation Dialog */}

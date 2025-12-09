@@ -10,6 +10,7 @@ import { CommonServerOptions, defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import path from 'node:path';
 
 const serverSettings: CommonServerOptions = {
     port: 3004,
@@ -29,30 +30,6 @@ const serverSettings: CommonServerOptions = {
 export default defineConfig((_config) => ({
     plugins: [
         react(),
-        checker({
-            // TypeScript checking
-            typescript: true,
-
-            // ESLint checking
-            eslint: {
-                useFlatConfig: true,
-                lintCommand: 'eslint . --max-warnings 0',
-                dev: {
-                    logLevel: ['error', 'warning'],
-                },
-                watchPath: './src',
-            },
-
-            overlay: false, // Disable overlay in browser
-
-            // Show errors in terminal
-            terminal: true,
-
-            // Disable during build because vite-plugin-checker runs checks in a parallel worker,
-            // which doesn't block the build if linting or type checking fails. To ensure build
-            // failure on errors, we use the 'prebuild' script instead (runs before 'npm run build').
-            enableBuild: false,
-        }),
         svgr(), // works on every import with the pattern "**/*.svg?react"
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
     ],
@@ -61,5 +38,10 @@ export default defineConfig((_config) => ({
     preview: serverSettings, // for npm run serve (use local build)
     build: {
         outDir: 'build',
+    },
+    resolve: {
+        alias: {
+            '@gridsuite/commons-ui': path.resolve(__dirname, '../commons-ui/src'),
+        },
     },
 }));

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo } from 'react';
+import {useEffect, useMemo} from 'react';
 import App from './app';
 import {
     createTheme,
@@ -110,6 +110,7 @@ import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator'
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
+import "@design-system-rte/react/dist/style.css";
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -469,6 +470,10 @@ const AppWrapperWithRedux = () => {
     const rootCssVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
 
     const urlMapper = useNotificationsUrlGenerator();
+
+    useEffect(() => {
+        document.body.setAttribute('data-mode', theme.toLowerCase());
+    }, [theme]);
 
     return (
         <IntlProvider locale={computedLanguage} messages={messages[computedLanguage]}>

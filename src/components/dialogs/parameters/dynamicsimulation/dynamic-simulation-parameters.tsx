@@ -31,7 +31,7 @@ import {
     mergeSx,
     PopupConfirmationDialog,
     ProviderParam,
-    SubmitButton,
+    ValidateButton,
     useParametersBackend,
     ComputingType,
 } from '@gridsuite/commons-ui';
@@ -316,9 +316,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                         <Button onClick={handleResetClick}>
                             <FormattedMessage id="resetToDefault" />
                         </Button>
-                        <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onError)}>
-                            <FormattedMessage id={'validate'} />
-                        </SubmitButton>
+                        <ValidateButton onClick={handleSubmit(onSubmit, onError)} />
                     </DialogActions>
                 </Grid>
             </Grid>
