@@ -286,7 +286,6 @@ export const GENERATOR = 'generator';
 export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
 export const ATTACHMENT_POINT_NAME = 'attachmentPointName';
-export const ATTACHMENT_POINT = 'attachmentPoint';
 export const ATTACHMENT_LINE_ID = 'attachmentLineId';
 export const LINE1_NAME = 'Line1Name';
 export const LINE2_NAME = 'Line2Name';
