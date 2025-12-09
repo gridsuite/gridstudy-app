@@ -12,11 +12,16 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
+import { selectPanelMetadata } from '../../../../redux/slices/workspace-selectors';
+import type { UUID } from 'node:crypto';
+import type { RootState } from '../../../../redux/store';
+import type { NADPanelMetadata } from '../../types/workspace.types';
 
-interface SldNavigationSidebarProps {
-    navigationHistory: string[];
-    currentVoltageLevelId?: string;
+interface NadNavigationSidebarProps {
+    nadPanelId: UUID;
     onNavigate: (voltageLevelId: string) => void;
+    onCollapseChange?: (collapsed: boolean) => void;
+    associatedVoltageLevelIds?: string[];
 }
 
 const COLLAPSED_WIDTH = 40;
@@ -32,20 +37,12 @@ const getBackgroundColor = (theme: Theme, shouldBeCollapsed: boolean) => {
 const styles = {
     sidebar: (theme: Theme, shouldBeCollapsed: boolean) => ({
         width: shouldBeCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
-        borderLeft: shouldBeCollapsed ? 'none' : `1px solid ${theme.palette.divider}`,
+        borderLeft: `1px solid ${theme.palette.divider}`,
         backgroundColor: getBackgroundColor(theme, shouldBeCollapsed),
         display: 'flex',
         flexDirection: 'column' as const,
         flexShrink: 0,
         overflowX: 'hidden' as const,
-        ...(shouldBeCollapsed && {
-            position: 'absolute' as const,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            zIndex: 100,
-            pointerEvents: 'none' as const,
-        }),
     }),
     header: (theme: Theme, hasHistory: boolean) => ({
         display: 'flex',
@@ -67,40 +64,58 @@ const styles = {
     },
 };
 
-export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
-    ({ navigationHistory, currentVoltageLevelId, onNavigate }) => {
-        const theme = useTheme();
-        const intl = useIntl();
-        const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-        const [isCollapsed, setIsCollapsed] = useState(true);
-        const hasHistory = navigationHistory.length > 0;
-        const shouldBeCollapsed = isCollapsed || !hasHistory;
-        const isDisabled = !isNodeBuilt(currentNode);
+export const NadNavigationSidebar = memo(function NadNavigationSidebar({
+    nadPanelId,
+    onNavigate,
+    onCollapseChange,
+    associatedVoltageLevelIds = [],
+}: NadNavigationSidebarProps) {
+    const theme = useTheme();
+    const intl = useIntl();
+    const [isExpanded, setIsExpanded] = useState(false);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const isBuilt = isNodeBuilt(currentNode);
 
-        return (
-            <Box sx={styles.sidebar(theme, shouldBeCollapsed)}>
-                {/* Header */}
-                <Box
-                    onClick={hasHistory ? () => setIsCollapsed(!isCollapsed) : undefined}
-                    sx={styles.header(theme, hasHistory)}
-                >
-                    <HistoryIcon sx={styles.icon(theme, hasHistory)} />
-                    {!shouldBeCollapsed && (
-                        <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
-                            {intl.formatMessage({ id: 'history' })}
-                        </Typography>
-                    )}
-                </Box>
+    const metadata = useSelector((state: RootState) => selectPanelMetadata(state, nadPanelId)) as
+        | NADPanelMetadata
+        | undefined;
+    const navigationHistory = metadata?.navigationHistory || [];
 
-                {/* List */}
+    const hasHistory = navigationHistory.length > 0;
+    const shouldBeCollapsed = !isExpanded || !hasHistory;
+    const isDisabled = !isBuilt;
+
+    const handleToggleExpand = () => {
+        if (hasHistory) {
+            const newExpanded = !isExpanded;
+            setIsExpanded(newExpanded);
+            onCollapseChange?.(!newExpanded || !hasHistory);
+        }
+    };
+
+    return (
+        <Box sx={styles.sidebar(theme, shouldBeCollapsed)}>
+            {/* Header */}
+            <Box onClick={handleToggleExpand} sx={styles.header(theme, hasHistory)}>
+                <HistoryIcon sx={styles.icon(theme, hasHistory)} />
                 {!shouldBeCollapsed && (
-                    <List dense sx={styles.list}>
-                        {navigationHistory.map((voltageLevelId, index) => (
+                    <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
+                        {intl.formatMessage({ id: 'history' })}
+                    </Typography>
+                )}
+            </Box>
+
+            {/* List */}
+            {!shouldBeCollapsed && (
+                <List dense sx={styles.list}>
+                    {[...navigationHistory].reverse().map((voltageLevelId: string, index: number) => {
+                        const isAssociated = associatedVoltageLevelIds.includes(voltageLevelId);
+                        return (
                             <ListItemButton
                                 key={`${voltageLevelId}-${index}`}
-                                selected={voltageLevelId === currentVoltageLevelId}
                                 onClick={() => !isDisabled && onNavigate(voltageLevelId)}
                                 disabled={isDisabled}
+                                selected={isAssociated}
                             >
                                 <ListItemIcon sx={{ minWidth: 32 }}>
                                     <ArrowBackIcon fontSize="small" />
@@ -113,10 +128,10 @@ export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
                                     }}
                                 />
                             </ListItemButton>
-                        ))}
-                    </List>
-                )}
-            </Box>
-        );
-    }
-);
+                        );
+                    })}
+                </List>
+            )}
+        </Box>
+    );
+});

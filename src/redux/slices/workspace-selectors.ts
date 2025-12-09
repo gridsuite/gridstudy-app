@@ -7,7 +7,12 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
-import type { PanelType, Workspace } from '../../components/workspace/types/workspace.types';
+import type {
+    PanelType,
+    Workspace,
+    NADPanelMetadata,
+    SLDPanelMetadata,
+} from '../../components/workspace/types/workspace.types';
 import type { UUID } from 'node:crypto';
 
 const getActiveWorkspace = (state: RootState): Workspace | undefined =>
@@ -20,10 +25,7 @@ export const selectPanel = createSelector(
     (panels, panelId) => panels[panelId]
 );
 
-export const selectPanelMetadata = createSelector(
-    [selectPanelsRecord, (_state: RootState, panelId: UUID) => panelId],
-    (panels, panelId) => panels[panelId]?.metadata
-);
+export const selectPanelMetadata = createSelector([selectPanel], (panel) => panel?.metadata);
 
 export const selectIsPanelTypeOpen = createSelector(
     [selectPanelsRecord, (_state: RootState, panelType: PanelType) => panelType],
@@ -36,7 +38,9 @@ export const selectOpenPanelIds = createSelector(
 );
 
 export const selectOpenPanels = createSelector([selectPanelsRecord], (panels) =>
-    Object.values(panels).filter((p) => !p.isClosed)
+    Object.values(panels)
+        .filter((p) => !p.isClosed)
+        .sort((a, b) => a.orderIndex - b.orderIndex)
 );
 
 export const selectFocusedPanelId = createSelector(
@@ -47,3 +51,26 @@ export const selectFocusedPanelId = createSelector(
 export const selectWorkspaces = (state: RootState) => state.workspace.workspaces;
 
 export const selectActiveWorkspaceId = (state: RootState) => state.workspace.activeWorkspaceId;
+
+// Get the array of associated SLD panel IDs from NAD metadata
+export const selectAssociatedPanelIds = createSelector([selectPanelMetadata], (metadata): UUID[] => {
+    const nadMetadata = metadata as NADPanelMetadata | undefined;
+    return nadMetadata?.associatedVoltageLevelPanels || [];
+});
+
+// Map associated panel IDs to their voltage level IDs
+export const selectAssociatedVoltageLevelIds = createSelector(
+    [selectAssociatedPanelIds, selectPanelsRecord],
+    (associatedPanelIds, panels): string[] => {
+        if (associatedPanelIds.length === 0) {
+            return associatedPanelIds;
+        }
+
+        return associatedPanelIds
+            .map((panelId) => {
+                const panel = panels[panelId];
+                return (panel?.metadata as SLDPanelMetadata | undefined)?.diagramId;
+            })
+            .filter((id): id is string => Boolean(id));
+    }
+);

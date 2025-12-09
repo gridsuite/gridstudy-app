@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../../../utils/running-status';
 import {
@@ -84,7 +84,7 @@ const defaultBusMenuState: BusMenuState = {
     display: false,
 };
 
-function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
+const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const {
         studyUuid,
         panelId,
@@ -471,6 +471,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             {renderDynamicSimulationEventDialog()}
         </>
     );
-}
+});
 
 export default SingleLineDiagramContent;

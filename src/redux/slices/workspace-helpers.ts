@@ -15,6 +15,7 @@ import {
     PanelType,
     PanelMetadata,
     SLDPanelMetadata,
+    NADPanelMetadata,
 } from '../../components/workspace/types/workspace.types';
 
 // ==================== Utilities ====================
@@ -37,6 +38,7 @@ export const createDefaultWorkspaces = (): Workspace[] => {
             panels: {},
             focusedPanelId: null,
             nextZIndex: 1,
+            nextOrderIndex: 1,
         };
 
         if (i === 0) {
@@ -50,6 +52,7 @@ export const createDefaultWorkspaces = (): Workspace[] => {
                 position: { x: 0, y: 0 },
                 size: treeConfig.defaultSize,
                 zIndex: workspace.nextZIndex++,
+                orderIndex: workspace.nextOrderIndex++,
                 isMinimized: false,
                 isMaximized: true,
                 isPinned: false,
@@ -102,6 +105,7 @@ export const createPanel = (
         position: options.position || config.defaultPosition,
         size: options.size || config.defaultSize,
         zIndex: workspace.nextZIndex++,
+        orderIndex: workspace.nextOrderIndex++,
         isMinimized: false,
         isMaximized: false,
         isPinned: false,
@@ -143,6 +147,32 @@ export const deletePanel = (workspace: Workspace, panelId: UUID): void => {
 export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
     const panel = workspace.panels[panelId];
     if (!panel) return;
+
+    // If closing a NAD panel, close all associated SLDs first
+    if (panel.type === PanelType.NAD) {
+        const nadMetadata = panel.metadata as NADPanelMetadata | undefined;
+        const associatedPanelIds = nadMetadata?.associatedVoltageLevelPanels || [];
+        associatedPanelIds.forEach((sldPanelId) => {
+            deletePanel(workspace, sldPanelId);
+        });
+    }
+
+    // If closing an SLD that's associated with a NAD, remove it from NAD's associated list
+    if (panel.type === PanelType.SLD_VOLTAGE_LEVEL || panel.type === PanelType.SLD_SUBSTATION) {
+        const sldMetadata = panel.metadata as SLDPanelMetadata | undefined;
+        const nadPanelId = sldMetadata?.associatedToNadPanel;
+
+        if (nadPanelId && workspace.panels[nadPanelId]) {
+            const nadPanel = workspace.panels[nadPanelId];
+            const nadMetadata = nadPanel.metadata as NADPanelMetadata;
+            nadPanel.metadata = {
+                ...nadMetadata,
+                associatedVoltageLevelPanels: (nadMetadata.associatedVoltageLevelPanels || []).filter(
+                    (id) => id !== panelId
+                ),
+            };
+        }
+    }
 
     if (isDiagramPanel(panel.type)) {
         deletePanel(workspace, panelId);

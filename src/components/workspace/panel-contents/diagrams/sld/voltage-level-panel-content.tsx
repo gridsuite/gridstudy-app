@@ -20,12 +20,14 @@ import { selectPanelMetadata } from '../../../../../redux/slices/workspace-selec
 import type { RootState } from '../../../../../redux/store';
 import { SLDPanelMetadata } from 'components/workspace/types/workspace.types';
 import { SldNavigationSidebar } from '../../../diagrams/sld/sld-navigation-sidebar';
+import { openSldAndAssociateToNad } from '../../../../../redux/slices/workspace-slice';
 
 interface VoltageLevelPanelContentProps {
     panelId: UUID;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
+    onRequestAssociation?: (voltageLevelId: string) => void;
 }
 
 export const VoltageLevelPanelContent = ({
@@ -33,6 +35,7 @@ export const VoltageLevelPanelContent = ({
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
+    onRequestAssociation,
 }: VoltageLevelPanelContentProps) => {
     const dispatch = useDispatch();
     const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
@@ -48,6 +51,25 @@ export const VoltageLevelPanelContent = ({
     });
 
     const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
+
+    // Handle Ctrl+click on voltage level arrows
+    // If this SLD is associated with a NAD, associate the new SLD with the same NAD
+    // Otherwise, open a standalone SLD panel
+    const handleNewVoltageLevelClick = useCallback(
+        (voltageLevelId: string) => {
+            const nadPanelId = metadata?.associatedToNadPanel;
+            if (nadPanelId) {
+                if (onRequestAssociation) {
+                    onRequestAssociation(voltageLevelId);
+                } else {
+                    dispatch(openSldAndAssociateToNad({ voltageLevelId, nadPanelId }));
+                }
+            } else {
+                handleOpenVoltageLevelDiagram(voltageLevelId);
+            }
+        },
+        [metadata?.associatedToNadPanel, onRequestAssociation, dispatch, handleOpenVoltageLevelDiagram]
+    );
 
     const handleNavigateDiagram = useCallback(
         (voltageLevelId: string) => {
@@ -83,7 +105,7 @@ export const VoltageLevelPanelContent = ({
                         svgMetadata={diagram.svg?.metadata as SLDMetadata}
                         loadingState={loading}
                         visible
-                        onNewVoltageLevelDiagram={handleOpenVoltageLevelDiagram}
+                        onNewVoltageLevelDiagram={handleNewVoltageLevelClick}
                         onNextVoltageLevelDiagram={handleNavigateDiagram}
                     />
                 </DiagramWrapper>
