@@ -50,21 +50,20 @@ const VoltageLevelCreationForm = ({
     const intl = useIntl();
     const { setValue, getValues } = useFormContext();
     const [substations, setSubstations] = useState([]);
-    const [isWithSubstationCreation, setIsWithSubstationCreation] = useState(isAttachementPointModification);
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
 
     useEffect(() => {
         // in new substation mode, set the default country
-        if (isWithSubstationCreation && !getValues(COUNTRY)) {
+        if (getValues(ADD_SUBSTATION_CREATION) && !getValues(COUNTRY)) {
             fetchDefaultCountry().then((country) => {
                 if (country) {
                     setValue(COUNTRY, country);
                 }
             });
         }
-    }, [setValue, isWithSubstationCreation, getValues]);
+    }, [setValue, getValues]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
@@ -102,7 +101,6 @@ const VoltageLevelCreationForm = ({
     const handleAddButton = useCallback(() => {
         setValue(SUBSTATION_CREATION_ID, getValues(SUBSTATION_ID));
         setValue(ADD_SUBSTATION_CREATION, true);
-        setIsWithSubstationCreation(true);
     }, [setValue, getValues]);
     const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
 
@@ -166,7 +164,6 @@ const VoltageLevelCreationForm = ({
         setValue(SUBSTATION_CREATION_ID, null);
         setValue(SUBSTATION_NAME, null);
         setValue(COUNTRY, null);
-        setIsWithSubstationCreation(false);
     }, [setValue]);
 
     return (

@@ -9,6 +9,7 @@ import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMess
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
+    ATTACHMENT_POINT,
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
     BUS_OR_BUSBAR_SECTION,
@@ -341,6 +342,11 @@ const LineAttachToVoltageLevelDialog = ({
                     shouldDirty: true,
                 });
                 setValue(`${ATTACHMENT_POINT_NAME}`, attachmentPointData.equipmentName, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                });
+                // ATTACHMENT_POINT field is only used to validate schema and not used elsewhere
+                setValue(`${ATTACHMENT_POINT}`, attachmentPointData, {
                     shouldValidate: true,
                     shouldDirty: true,
                 });

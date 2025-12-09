@@ -210,7 +210,7 @@ const LineAttachToVoltageLevelForm = ({
                     onCreateVoltageLevel={onAttachmentPointModificationDo}
                     editData={attachmentPoint}
                     isAttachementPointModification={true}
-                    overrideTitle={'SpecifyAttachmentPoint'}
+                    titleId={'SpecifyAttachmentPoint'}
                 />
             )}
             {voltageLevelDialogOpen && (
