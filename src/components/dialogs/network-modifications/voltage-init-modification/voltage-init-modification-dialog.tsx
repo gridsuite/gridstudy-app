@@ -37,7 +37,6 @@ import { suppressEventsToPreventEditMode } from '../../commons/utils';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { UUID } from 'node:crypto';
 
 const styles = {
     container: {
@@ -167,8 +166,8 @@ export interface EditData {
     vscConverterStations: VscConverterStationData[];
     shuntCompensators: ShuntCompensatorData[];
     buses: BusData[];
-    rootNetworkId?: UUID;
-    nodeId?: UUID;
+    rootNetworkName?: string;
+    nodeName?: string;
     computationDate?: string;
 }
 
@@ -193,25 +192,12 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
     const [tabIndex, setTabIndex] = useState(EquipmentTypeTabs.GENERATOR_TAB);
 
     const language = useSelector((state: AppState) => state.computedLanguage);
-    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
-    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
 
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
     }, []);
 
     const gridRef = useRef<AgGridReact>(null);
-
-    const rootNetworkName = useMemo(() => {
-        const foundRootNetwork = rootNetworks.find((network) => network.rootNetworkUuid === editData.rootNetworkId);
-        return foundRootNetwork ? foundRootNetwork.name : undefined;
-    }, [rootNetworks, editData.rootNetworkId]);
-
-    const nodeName = useMemo(() => {
-        const foundNode =
-            treeModel != null ? treeModel.treeNodes.find((node) => node.id === editData.nodeId) : undefined;
-        return foundNode ? foundNode.data.label : undefined;
-    }, [treeModel, editData.nodeId]);
 
     const generatorsColumnDefs = useMemo<ColDef[]>(
         () => [
@@ -386,17 +372,17 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             }}
         >
             <Box>
-                {rootNetworkName && (
+                {editData?.rootNetworkName && (
                     <Typography variant="subtitle1">
                         <FormattedMessage
                             id="VoltageinitRootNetworkName"
-                            values={{ rootNetworkName: rootNetworkName }}
+                            values={{ rootNetworkName: editData.rootNetworkName }}
                         />
                     </Typography>
                 )}
-                {nodeName && (
+                {editData?.nodeName && (
                     <Typography variant="subtitle1">
-                        <FormattedMessage id="VoltageinitNodeName" values={{ nodeName: nodeName }} />
+                        <FormattedMessage id="VoltageinitNodeName" values={{ nodeName: editData.nodeName }} />
                     </Typography>
                 )}
                 {editData?.computationDate && (
