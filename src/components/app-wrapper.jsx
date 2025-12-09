@@ -1,8 +1,9 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021-2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * SPDX-License-Identifier: MPL-2.0
  */
 
 import { useMemo, useEffect } from 'react';
@@ -114,7 +115,7 @@ import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
 import { getBaseVoltagesCssVars } from 'utils/colors';
-import { saveLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
+import {getLocalStorageBaseVoltages, saveLocalStorageBaseVoltages} from 'redux/session-storage/local-storage';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -485,7 +486,7 @@ const AppWrapperWithRedux = () => {
             ...themeVars,
             ...getBaseVoltagesCssVars(theme),
         };
-    }, [theme]);
+    }, [theme, getLocalStorageBaseVoltages()]);
 
     const urlMapper = useNotificationsUrlGenerator();
 

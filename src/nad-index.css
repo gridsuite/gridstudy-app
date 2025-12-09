@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * SPDX-License-Identifier: MPL-2.0
+ */
 .nad-branch-edges .nad-edge-path,
 .nad-3wt-edges .nad-edge-path,
 .nad-branch-edges .nad-winding,
@@ -258,14 +265,14 @@ g.nad-disconnected > g.nad-disconnected {
 
 /* Hides the voltage levels 0 to 50 when zoomed out. */
 :is(.nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
-    .nad-vl0to30, .nad-vl30to50
+    .nad-voltage-level-1, .nad-voltage-level-2
     ) {
     display: none;
 }
 
 /* Hides the voltage levels 50 to 120 when zoomed out. */
 .nad-zoom-15000 :is(
-    .nad-vl50to70, .nad-vl70to120
+    .nad-voltage-level-3, .nad-voltage-level-4
     ) {
     display: none;
 }
