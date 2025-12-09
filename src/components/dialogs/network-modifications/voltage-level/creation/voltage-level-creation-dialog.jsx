@@ -221,23 +221,7 @@ const VoltageLevelCreationDialog = ({
         resolver: yupResolver(overrideFormSchema),
     });
 
-    const { reset, setValue, getValues, watch, trigger, subscribe } = formMethods;
-
-    // Watch LOW_VOLTAGE_LIMIT changed
-    useEffect(() => {
-        const callback = subscribe({
-            name: [`${HIGH_VOLTAGE_LIMIT}`],
-            formState: {
-                values: true,
-            },
-            callback: ({ isSubmitted }) => {
-                if (isSubmitted) {
-                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
-                }
-            },
-        });
-        return () => callback();
-    }, [trigger, subscribe]);
+    const { reset, setValue, getValues, trigger, subscribe } = formMethods;
 
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
@@ -317,21 +301,54 @@ const VoltageLevelCreationDialog = ({
 
     // Supervisor watches to trigger validation for interdependent constraints
     useEffect(() => {
-        const subscription = watch((value, { name }) => {
-            // Watch EQUIPMENT_ID, SUBSTATION_CREATION_ID and SUBSTATION_CREATION_ID changed
-            // force trigger validation if the target has a value
-            if (name === EQUIPMENT_ID && getValues(SUBSTATION_ID)) {
-                trigger(SUBSTATION_ID);
-            }
-            if (name === EQUIPMENT_ID && getValues(SUBSTATION_CREATION_ID)) {
-                trigger(SUBSTATION_CREATION_ID);
-            }
-            if ((name === SUBSTATION_ID || name === SUBSTATION_CREATION_ID) && getValues(EQUIPMENT_ID)) {
-                trigger(EQUIPMENT_ID);
-            }
+        // Watch HIGH_VOLTAGE_LIMIT changed
+        const unsubscribeHighVoltageLimit = subscribe({
+            name: [`${HIGH_VOLTAGE_LIMIT}`],
+            formState: {
+                values: true,
+            },
+            callback: ({ isSubmitted }) => {
+                if (isSubmitted) {
+                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
+                }
+            },
         });
-        return () => subscription.unsubscribe();
-    }, [watch, trigger, getValues]);
+
+        // Watch EQUIPMENT_ID changed
+        const unsubscribeEquipmentId = subscribe({
+            name: [EQUIPMENT_ID],
+            formState: {
+                values: true,
+            },
+            callback: () => {
+                if (getValues(SUBSTATION_ID)) {
+                    trigger(SUBSTATION_ID);
+                }
+                if (getValues(SUBSTATION_CREATION_ID)) {
+                    trigger(SUBSTATION_CREATION_ID);
+                }
+            },
+        });
+
+        // Watch SUBSTATION_ID or SUBSTATION_CREATION_ID changed
+        const unsubscribeSubstationIds = subscribe({
+            name: [SUBSTATION_ID, SUBSTATION_CREATION_ID],
+            formState: {
+                values: true,
+            },
+            callback: () => {
+                if (getValues(EQUIPMENT_ID)) {
+                    trigger(EQUIPMENT_ID);
+                }
+            },
+        });
+
+        return () => {
+            unsubscribeHighVoltageLimit();
+            unsubscribeEquipmentId();
+            unsubscribeSubstationIds();
+        };
+    }, [subscribe, trigger, getValues]);
 
     const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
 

@@ -68,18 +68,24 @@ export default function CreateCouplingDeviceDialog({
         resolver: yupResolver<DeepNullable<CreateCouplingDeviceDialogSchemaForm>>(formSchema),
     });
 
-    const { reset, watch, trigger, getValues } = formMethods;
+    const { reset, trigger, getValues, subscribe } = formMethods;
 
     // Watch BUS_BAR_SECTION_ID1 changed
     useEffect(() => {
-        const subscription = watch((value, { name }) => {
-            // force trigger validation on BUS_BAR_SECTION_ID2 if it has a value
-            if (name === BUS_BAR_SECTION_ID1 && getValues(BUS_BAR_SECTION_ID2)) {
-                trigger(BUS_BAR_SECTION_ID2);
-            }
+        const unsubscribe = subscribe({
+            name: [BUS_BAR_SECTION_ID1],
+            formState: {
+                values: true,
+            },
+            callback: () => {
+                // force trigger validation on BUS_BAR_SECTION_ID2 if it has a value
+                if (getValues(BUS_BAR_SECTION_ID2)) {
+                    trigger(BUS_BAR_SECTION_ID2);
+                }
+            },
         });
-        return () => subscription.unsubscribe();
-    }, [watch, trigger, getValues]);
+        return () => unsubscribe();
+    }, [subscribe, trigger, getValues]);
 
     useEffect(() => {
         if (editData) {
