@@ -152,6 +152,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
             size={{ width: dimensions.width, height: dimensions.height }}
             onDrag={handleDrag as any}
             onDragStop={handleDragStop}
+            onResizeStart={handleFocus}
             onResizeStop={handleResizeStop}
             dragHandleClassName="panel-header"
             disableDragging={panel.isMaximized || panel.isPinned}
@@ -165,7 +166,10 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
                 zIndex: panel.zIndex,
             }}
         >
-            <Box sx={(theme) => ({ ...styles.panel, boxShadow: getBoxShadow(theme, isFocused) })}>
+            <Box
+                onPointerDown={handleFocus}
+                sx={(theme) => ({ ...styles.panel, boxShadow: getBoxShadow(theme, isFocused) })}
+            >
                 <PanelHeader
                     panelId={panelId}
                     title={panel.title}
@@ -173,7 +177,6 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
                     isPinned={panel.isPinned}
                     isMaximized={panel.isMaximized}
                     isFocused={isFocused}
-                    onFocus={handleFocus}
                 />
                 <Box
                     className="panel-content"
