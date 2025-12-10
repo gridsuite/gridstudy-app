@@ -30,6 +30,19 @@ export interface TwtEquipmentInfos extends CommonBranchEquipmentInfos {
     phaseTapChanger: any;
 }
 
+export interface GeneratorEquipmentInfos {
+    p: number;
+    q: number;
+    targetP: number;
+    targetQ: number;
+    targetV: number;
+    minP: number;
+    maxP: number;
+    minQ: number;
+    voltageRegulatorOn: boolean;
+    plannedActivePowerSetPoint: number | null;
+}
+
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
 
-export type GenericEquipmentInfos = BranchEquipmentInfos;
+export type GenericEquipmentInfos = BranchEquipmentInfos | GeneratorEquipmentInfos;

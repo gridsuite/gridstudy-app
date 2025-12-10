@@ -1669,6 +1669,12 @@
     "history": "Historique",
     "activePowerControlTooltip": "Clé de distribution de la puissance au nœud bilan : maxP/Statisme, statisme par défaut = 4 (valable pour le mode compensation proportionnel à la puissance maximale des groupes)",
     "ActivePower": "P (MW)",
-    "reactivePowerTooltip": "Q (MVar)"
-
+    "reactivePowerTooltip": "Q (MVar)",
+    "activePowerSetPointTooltip":"Pcons (MW)",
+    "plannedActivePowerSetPointTooltip": "Pimp (MW)",
+    "reactivePowerSetpointTooltip":"Qcons (MW)",
+    "MinimumActivePowerTooltip": "Pmin (MW)",
+    "MaximumActivePowerTooltip": "Pmax (MW)",
+    "MinimumReactivePowerTooltip": "Pmin (MW)",
+    "MaximumReactivePowerTooltip": "Pmax (MW)"
 }
