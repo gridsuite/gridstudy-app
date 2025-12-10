@@ -7,7 +7,7 @@
 
 import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
 import { CellRender } from '../cell-render';
-import { formatValue, styles } from '../generic-equipment-popover-utils';
+import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
 import RunningStatus from 'components/utils/running-status';
 
@@ -47,35 +47,23 @@ export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristics
                             ></CellRender>
                             <CellRender
                                 value={formatValue(Math.round(equipmentInfos?.i1))}
-                                colStyle={{
-                                    ...styles.cell,
-                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                                }}
+                                colStyle={cellWithStatus(loadFlowStatus)}
                             />
                             <CellRender
                                 value={formatValue(Math.round(equipmentInfos?.i2))}
-                                colStyle={{
-                                    ...styles.cell,
-                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                                }}
+                                colStyle={cellWithStatus(loadFlowStatus)}
                             />
                         </TableRow>
 
                         <TableRow>
-                            <CellRender isLabel label="activePower" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                            <CellRender isLabel label="ActivePower" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                             <CellRender
                                 value={formatValue(Math.round(equipmentInfos?.p1))}
-                                colStyle={{
-                                    ...styles.cell,
-                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                                }}
+                                colStyle={cellWithStatus(loadFlowStatus)}
                             />
                             <CellRender
                                 value={formatValue(Math.round(equipmentInfos?.p2))}
-                                colStyle={{
-                                    ...styles.cell,
-                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                                }}
+                                colStyle={cellWithStatus(loadFlowStatus)}
                             />
                         </TableRow>
 
@@ -87,17 +75,11 @@ export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristics
                             />
                             <CellRender
                                 value={formatValue(Math.round(equipmentInfos?.q1))}
-                                colStyle={{
-                                    ...styles.cell,
-                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                                }}
+                                colStyle={cellWithStatus(loadFlowStatus)}
                             />
                             <CellRender
                                 value={formatValue(Math.round(equipmentInfos?.q2))}
-                                colStyle={{
-                                    ...styles.cell,
-                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
-                                }}
+                                colStyle={cellWithStatus(loadFlowStatus)}
                             />
                         </TableRow>
 

@@ -6,6 +6,7 @@
  */
 
 import { MuiStyles } from '@gridsuite/commons-ui';
+import RunningStatus from 'components/utils/running-status';
 
 export const formatValue = (value?: number | string | null, fixed?: number | string | null) => {
     if (value !== undefined && value != null && !Number.isNaN(value)) {
@@ -41,3 +42,8 @@ export const styles = {
     layout: { width: '100%', tableLayout: 'auto' },
     grid: { width: '100%' },
 } as const satisfies MuiStyles;
+
+export const cellWithStatus = (status: RunningStatus | undefined) => ({
+    ...styles.cell,
+    opacity: status === RunningStatus.SUCCEED ? 1 : 0.2,
+});
