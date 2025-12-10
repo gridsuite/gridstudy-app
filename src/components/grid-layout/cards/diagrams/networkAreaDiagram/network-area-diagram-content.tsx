@@ -34,7 +34,6 @@ import { Point } from '@svgdotjs/svg.js';
 import {
     ComputingType,
     ElementType,
-    EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
     IElementCreationDialog,
@@ -52,10 +51,9 @@ import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
-
-import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
-import BranchPopoverContent from 'components/tooltips/branch-popover-content';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
+import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
+import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 
 type NetworkAreaDiagramContentProps = {
     readonly voltageLevelIds: string[];
@@ -495,8 +493,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
      */
 
     const displayTooltip = () => {
-        const PopoverContent = EquipmentPopoverMap[hoveredEquipmentType] || BranchPopoverContent;
-
         return (
             <GenericEquipmentPopover
                 studyUuid={studyUuid}
@@ -506,8 +502,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 equipmentType={hoveredEquipmentType as EquipmentType}
                 loadFlowStatus={loadFlowStatus}
             >
-                {(equipmentInfos: EquipmentInfos) => (
-                    <PopoverContent
+                {(equipmentInfos: GenericEquipmentInfos) => (
+                    <GenericPopoverContent
                         equipmentInfos={equipmentInfos}
                         loadFlowStatus={loadFlowStatus}
                         equipmentType={hoveredEquipmentType}
