@@ -244,7 +244,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'PccMin',
                 computingType: [ComputingType.PCC_MIN],
-                displayed: enableDeveloperMode && pccMinAvailability === OptionalServicesStatus.Up,
+                displayed: pccMinAvailability === OptionalServicesStatus.Up,
                 renderResult: renderPccMinResult,
             },
         ].filter(({ displayed }: IService) => displayed);

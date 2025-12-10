@@ -532,7 +532,6 @@
 
     "loadingOptions": "Chargement...",
     "buildNode": "Réaliser",
-    "maxBuiltNodeExceededError": "Vous avez atteint votre quota utilisateur en termes de réalisations par étude, vous ne pouvez donc plus réaliser de nœuds dans cette étude pour le moment. Merci de déréaliser des nœuds afin de redescendre sous le seuil de {limit} réalisations.",
     "insertNodeInNewBranch": "Nouvelle branche",
     "SecuritySequence": "Enchaînement de sécurité",
     "removeNode": "Supprimer",
@@ -1335,8 +1334,6 @@
     "RatioTargetV": "Tension de consigne du régleur",
     "GeneratorTargetV": "Consigne tension",
     "waitingRootNetworkIndexation": "En attente de l'indexation de réseau racine...",
-    "invalidateShortCircuitStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de court-circuit",
-    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
     "undefined": "non défini",
     "GenerationStages": "Paliers",
     "GeneratorsCappings": "Ecrêtements",
