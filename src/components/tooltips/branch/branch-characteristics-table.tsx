@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Table, TableContainer, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { styles } from '../generic-equipment-popover-utils';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
-import { renderCommonCharacteristics } from './branch-utils';
+import { renderCommonCharacteristicsTable } from './branch-utils';
 
 interface BranchCharacteristicsProps {
     equipmentInfos: BranchEquipmentInfos;
@@ -16,11 +16,7 @@ interface BranchCharacteristicsProps {
 export const BranchCharacteristicsTable: React.FC<BranchCharacteristicsProps> = ({ equipmentInfos }) => {
     return (
         <Grid item sx={styles.grid}>
-            <TableContainer sx={styles.table}>
-                <Table size="small" sx={styles.layout}>
-                    {renderCommonCharacteristics(equipmentInfos)}
-                </Table>
-            </TableContainer>
+            {renderCommonCharacteristicsTable(equipmentInfos)}
         </Grid>
     );
 };

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TableCell, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
 import { BranchEquipmentInfos, CommonBranchEquipmentInfos } from '../equipment-popover-type';
 import { CellRender } from '../cell-render';
@@ -14,25 +14,39 @@ import { CurrentLimits, TemporaryLimit } from 'services/network-modification-typ
 import RunningStatus from 'components/utils/running-status';
 
 /**
- * Render common characteristics
+ * Render common characteristics Table
  */
-export const renderCommonCharacteristics = (equipmentInfo: CommonBranchEquipmentInfos) => (
+export const renderCommonCharacteristicsTable = (equipmentInfo: CommonBranchEquipmentInfos) => (
     <>
-        <TableRow>
-            <TableCell sx={styles.cell} />
+        <TableContainer sx={styles.table}>
+            <Table size="small" sx={styles.layout}>
+                <TableBody>
+                    <TableRow>
+                        <CellRender
+                            isLabel={true}
+                            label="r"
+                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                        ></CellRender>
+                        <CellRender
+                            value={formatValue(equipmentInfo.r, 2)}
+                            colStyle={{
+                                ...styles.cell,
+                            }}
+                        />
+                    </TableRow>
 
-            <CellRender label="r" isLabel={true} colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-
-            <CellRender value={formatValue(equipmentInfo.r, 2)} isLabel={false} colStyle={styles.cell} />
-        </TableRow>
-
-        <TableRow>
-            <TableCell sx={styles.cell} />
-
-            <CellRender label="x" isLabel={true} colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-
-            <CellRender value={formatValue(equipmentInfo.x, 2)} isLabel={false} colStyle={styles.cell} />
-        </TableRow>
+                    <TableRow>
+                        <CellRender isLabel label="x" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                        <CellRender
+                            value={formatValue(equipmentInfo.x, 2)}
+                            colStyle={{
+                                ...styles.cell,
+                            }}
+                        />
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
     </>
 );
 
