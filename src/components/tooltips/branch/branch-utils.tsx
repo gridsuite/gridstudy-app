@@ -17,37 +17,31 @@ import RunningStatus from 'components/utils/running-status';
  * Render common characteristics Table
  */
 export const renderCommonCharacteristicsTable = (equipmentInfo: CommonBranchEquipmentInfos) => (
-    <>
-        <TableContainer sx={styles.table}>
-            <Table size="small" sx={styles.layout}>
-                <TableBody>
-                    <TableRow>
-                        <CellRender
-                            isLabel={true}
-                            label="r"
-                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                        ></CellRender>
-                        <CellRender
-                            value={formatValue(equipmentInfo.r, 2)}
-                            colStyle={{
-                                ...styles.cell,
-                            }}
-                        />
-                    </TableRow>
+    <TableContainer sx={styles.table}>
+        <Table size="small" sx={styles.layout}>
+            <TableBody>
+                <TableRow>
+                    <CellRender isLabel={true} label="r" colStyle={{ ...styles.cell, fontWeight: 'bold' }}></CellRender>
+                    <CellRender
+                        value={formatValue(equipmentInfo.r, 2)}
+                        colStyle={{
+                            ...styles.cell,
+                        }}
+                    />
+                </TableRow>
 
-                    <TableRow>
-                        <CellRender isLabel label="x" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                        <CellRender
-                            value={formatValue(equipmentInfo.x, 2)}
-                            colStyle={{
-                                ...styles.cell,
-                            }}
-                        />
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </TableContainer>
-    </>
+                <TableRow>
+                    <CellRender isLabel label="x" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
+                    <CellRender
+                        value={formatValue(equipmentInfo.x, 2)}
+                        colStyle={{
+                            ...styles.cell,
+                        }}
+                    />
+                </TableRow>
+            </TableBody>
+        </Table>
+    </TableContainer>
 );
 
 /**
