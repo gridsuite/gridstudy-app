@@ -7,8 +7,10 @@
 
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import BranchPopoverContent from './branch/branch-popover-content';
+import LoadPopoverContent from './load/load-popover-content';
 
 export const EquipmentPopoverMap: Record<string, React.FC<any>> = {
     [EQUIPMENT_TYPES.LINE]: BranchPopoverContent,
     [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: BranchPopoverContent,
+    [EQUIPMENT_TYPES.LOAD]: LoadPopoverContent,
 };

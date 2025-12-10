@@ -6,6 +6,7 @@
  */
 
 import { EquipmentInfos } from '@gridsuite/commons-ui';
+import { Property } from 'components/dialogs/network-modifications/common/properties/property-utils';
 import { CurrentLimits } from 'services/network-modification-types';
 
 export interface CommonBranchEquipmentInfos extends EquipmentInfos {
@@ -30,6 +31,12 @@ export interface TwtEquipmentInfos extends CommonBranchEquipmentInfos {
     phaseTapChanger: any;
 }
 
+export interface LoadEquipmentInfos {
+    properties?: Property[];
+    p0: number;
+    q0: number;
+}
+
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
 
-export type GenericEquipmentInfos = BranchEquipmentInfos;
+export type GenericEquipmentInfos = BranchEquipmentInfos | LoadEquipmentInfos;
