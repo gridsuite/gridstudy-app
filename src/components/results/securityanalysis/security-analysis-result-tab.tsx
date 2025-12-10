@@ -5,7 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    ChangeEvent,
+    FunctionComponent,
+    SyntheticEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { AppState } from '../../../redux/reducer';
@@ -48,6 +57,7 @@ import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -124,7 +134,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const { page, rowsPerPage } = pagination;
 
     const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
-    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.SecurityAnalysis);
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
+        AgGridFilterType.SecurityAnalysis
+    );
     const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
@@ -136,6 +148,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const memoizedSetPageCallback = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
+
+    const handleGlobalFilterChangeAndUpdate = useCallback(
+        (newFilters: GlobalFilter[]) => {
+            handleGlobalFilterChange(newFilters);
+            updateGlobalFilters(newFilters);
+        },
+        [handleGlobalFilterChange, updateGlobalFilters]
+    );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
@@ -217,7 +237,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     );
 
     const handleChangeRowsPerPage = useCallback(
-        (event: React.ChangeEvent<{ value: string }>) => {
+        (event: ChangeEvent<{ value: string }>) => {
             const newRowsPerPage = parseInt(event.target.value, 10);
             dispatchPagination({ page: 0, rowsPerPage: newRowsPerPage });
         },
@@ -272,7 +292,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode)) && (
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
+                            onChange={handleGlobalFilterChangeAndUpdate}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}

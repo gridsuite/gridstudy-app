@@ -13,12 +13,13 @@ import { useNodeData } from './use-node-data';
 import type { UUID } from 'node:crypto';
 import { AppState } from '../redux/reducer';
 import { VoltageInitResult } from './voltage-init-result';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import useGlobalFilters, { isGlobalFilterParameter } from './results/common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../types/custom-aggrid-types';
+import { GlobalFilter } from './results/common/global-filter/global-filter-types';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;
@@ -35,11 +36,19 @@ export function VoltageInitResultTab({
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.VoltageInit);
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.VoltageInit);
     const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
+    );
+
+    const handleGlobalFilterChangeAndUpdate = useCallback(
+        (newFilters: GlobalFilter[]) => {
+            handleGlobalFilterChange(newFilters);
+            updateGlobalFilters(newFilters);
+        },
+        [handleGlobalFilterChange, updateGlobalFilters]
     );
 
     const fetchVoltageInitResultWithGlobalFilters = useMemo(
@@ -68,7 +77,7 @@ export function VoltageInitResultTab({
         <VoltageInitResult
             result={voltageInitResultToShow}
             status={voltageInitStatus}
-            handleGlobalFilterChange={handleGlobalFilterChange}
+            handleGlobalFilterChange={handleGlobalFilterChangeAndUpdate}
             globalFilterOptions={globalFilterOptions}
             globalFilterSpreadsheetState={globalFiltersFromState}
         />

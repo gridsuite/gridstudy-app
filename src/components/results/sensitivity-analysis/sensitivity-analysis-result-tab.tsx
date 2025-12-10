@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SyntheticEvent, useMemo, useState } from 'react';
+import { SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
@@ -31,6 +31,7 @@ import { SensitivityExportButton } from './sensitivity-analysis-export-button.js
 import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -48,14 +49,22 @@ function SensitivityAnalysisResultTab({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.SensitivityAnalysis);
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
+        AgGridFilterType.SensitivityAnalysis
+    );
     const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
         setNOrNkIndex(newNOrNKIndex);
     };
-
+    const handleGlobalFilterChangeAndUpdate = useCallback(
+        (newFilters: GlobalFilter[]) => {
+            handleGlobalFilterChange(newFilters);
+            updateGlobalFilters(newFilters);
+        },
+        [handleGlobalFilterChange, updateGlobalFilters]
+    );
     const openLoader = useOpenLoaderShortWait({
         isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
@@ -92,7 +101,7 @@ function SensitivityAnalysisResultTab({
                         </Tabs>
                         <Box sx={{ display: 'flex', flexGrow: 0 }}>
                             <GlobalFilterSelector
-                                onChange={handleGlobalFilterChange}
+                                onChange={handleGlobalFilterChangeAndUpdate}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
                                 preloadedGlobalFilters={globalFiltersFromState}

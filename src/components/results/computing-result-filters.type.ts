@@ -10,18 +10,17 @@ import { ComputationFiltersState } from '../../redux/reducer';
 
 const mappingComputationTypeToFilterType: Record<string, FilterType> = {
     LOAD_FLOW: FilterType.Loadflow,
+    PCC_MIN: FilterType.PccMin,
     SECURITY_ANALYSIS: FilterType.SecurityAnalysis,
     SENSITIVITY_ANALYSIS: FilterType.SensitivityAnalysis,
     SHORT_CIRCUIT: FilterType.ShortcircuitAnalysis,
-    DYNAMIC_SIMULATION: FilterType.DynamicSimulation,
-    STATE_ESTIMATION: FilterType.StateEstimation,
-    PCC_MIN: FilterType.PccMin,
     VOLTAGE_INITIALIZATION: FilterType.VoltageInit,
 };
 
 const mappingComputationSubTypeToFilterSubType: Record<string, string> = {
     LOADFLOW_CURRENT_LIMIT_VIOLATION: 'loadflowCurrentLimitViolation',
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION: 'loadflowVoltageLimitViolation',
+    PCCMIN_RESULT: 'pccMinResults',
     SECURITY_ANALYSIS_RESULT_N: 'securityAnalysisResultN',
     SECURITY_ANALYSIS_RESULT_N_K: 'securityAnalysisResultNK',
     SENSITIVITY_IN_DELTA_MW_N: 'sensitivityInDeltaMWN',
@@ -31,20 +30,19 @@ const mappingComputationSubTypeToFilterSubType: Record<string, string> = {
     SENSITIVITY_AT_NODE_N: 'sensitivityAtNodeN',
     SENSITIVITY_AT_NODE_N_K: 'sensitivityAtNodeNK',
     ONE_BUS: 'oneBus',
-    TIMELINE: 'timeline',
-    STATEESTIMATION_QUALITY_CRITERION: 'stateEstimationQualityCriterion',
-    STATEESTIMATION_QUALITY_PER_REGION: 'stateEstimationQualityPerRegion',
-    PCCMIN_RESULT: 'pccMinResults',
+    ALL_BUS: 'allBus',
 };
 
 export type ComputationResultFiltersInfos = {
     id: string;
-    computationResultFilters: {
-        id: string;
-        computationType: FilterType;
-        columnsFilters: { id: string; computationSubType: string; columns: FilterConfig[] }[];
-        globalFilters: GlobalFilter[];
-    }[];
+    computationResultFilters: Record<
+        string,
+        {
+            id: string;
+            columnsFilters: Record<string, { id: string; columns: FilterConfig[] }>;
+            globalFilters: GlobalFilter[];
+        }[]
+    >;
 };
 const mapColumn = (c: any): FilterConfig => ({
     column: c.name,
@@ -58,30 +56,35 @@ export function setComputationResultFiltersState(filtersInfos: ComputationResult
         id: filtersInfos.id,
     };
 
-    filtersInfos.computationResultFilters?.forEach((computationResultFilter) => {
-        const mappedType = mappingComputationTypeToFilterType[computationResultFilter.computationType];
-        if (!mappedType) return;
-        const columnsFilters = Object.fromEntries(
-            (computationResultFilter.columnsFilters ?? []).map((computationResultColumnsFilters) => {
-                const key =
-                    mappingComputationSubTypeToFilterSubType[computationResultColumnsFilters.computationSubType] ??
-                    computationResultColumnsFilters.id;
+    Object.entries(filtersInfos.computationResultFilters ?? {}).forEach(
+        ([computationTypeKey, computationResultFiltersArray]) => {
+            const mappedType = mappingComputationTypeToFilterType[computationTypeKey];
+            if (!mappedType) return;
 
-                return [
-                    key,
-                    {
-                        id: computationResultColumnsFilters.id,
-                        columns: (computationResultColumnsFilters.columns ?? []).map(mapColumn),
-                    },
-                ];
-            })
-        );
+            computationResultFiltersArray.forEach((computationResultFilter) => {
+                const columnsFilters = Object.fromEntries(
+                    Object.entries(computationResultFilter.columnsFilters ?? {}).map(
+                        ([subTypeKey, columnFilterData]) => {
+                            const key = mappingComputationSubTypeToFilterSubType[subTypeKey] ?? columnFilterData.id;
 
-        state[mappedType] = {
-            id: computationResultFilter.id,
-            columnsFilters,
-            globalFilters: computationResultFilter.globalFilters ?? {},
-        };
-    });
+                            return [
+                                key,
+                                {
+                                    id: columnFilterData.id,
+                                    columns: (columnFilterData.columns ?? []).map(mapColumn),
+                                },
+                            ];
+                        }
+                    )
+                );
+
+                state[mappedType] = {
+                    id: computationResultFilter.id,
+                    columnsFilters,
+                    globalFilters: computationResultFilter.globalFilters ?? [],
+                };
+            });
+        }
+    );
     return state;
 }
