@@ -344,8 +344,8 @@ const LineAttachToVoltageLevelDialog = ({
                     shouldValidate: true,
                     shouldDirty: true,
                 });
-                // this is only used to validate schema and not used elsewhere
-                setValue(`${ID}`, attachmentPointData, {
+                // this is only used to validate schema if something was changed except ID or NAME and not used elsewhere
+                setValue('test', attachmentPointData, {
                     shouldValidate: true,
                     shouldDirty: true,
                 });

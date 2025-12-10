@@ -67,14 +67,9 @@ const LineAttachToVoltageLevelForm = ({
         setAttachmentPointDialogOpen(false);
     };
 
-    const openAttachmentPointDialog = useCallback(() => {
-        const attachmentPointId = getValues(ATTACHMENT_POINT_ID);
-        const attachmentPointName = getValues(ATTACHMENT_POINT_NAME);
-        setAttachmentPoint((prevAttachmentPoint) => {
-            return { ...prevAttachmentPoint, equipmentId: attachmentPointId, equipmentName: attachmentPointName };
-        });
+    const openAttachmentPointDialog = () => {
         setAttachmentPointDialogOpen(true);
-    }, [getValues, setAttachmentPoint]);
+    };
 
     const onVoltageLevelDialogClose = () => {
         setVoltageLevelDialogOpen(false);
@@ -93,9 +88,27 @@ const LineAttachToVoltageLevelForm = ({
         />
     );
 
-    const attachmentPointIdField = <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} />;
+    const onAttachmentPointIdChange = useCallback(() => {
+        const attachmentPointId = getValues(ATTACHMENT_POINT_ID);
+        setAttachmentPoint((prevAttachmentPoint) => {
+            return { ...prevAttachmentPoint, equipmentId: attachmentPointId };
+        });
+    }, [getValues, setAttachmentPoint]);
 
-    const attachmentPointNameField = <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} />;
+    const attachmentPointIdField = (
+        <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} onChange={onAttachmentPointIdChange} />
+    );
+
+    const onAttachmentPointNameChange = useCallback(() => {
+        const attachmentPointName = getValues(ATTACHMENT_POINT_NAME);
+        setAttachmentPoint((prevAttachmentPoint) => {
+            return { ...prevAttachmentPoint, equipmentName: attachmentPointName };
+        });
+    }, [getValues, setAttachmentPoint]);
+
+    const attachmentPointNameField = (
+        <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} onChange={onAttachmentPointNameChange} />
+    );
 
     const lineToIdField = (
         <TextInput name={ATTACHMENT_LINE_ID} label={'AttachedLineId'} formProps={{ disabled: true }} />
