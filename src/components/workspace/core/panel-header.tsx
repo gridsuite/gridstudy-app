@@ -36,7 +36,7 @@ import { AssociateNadMenu } from './associate-nad-menu';
 import { selectPanelMetadata } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
 
-const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
+const getHeaderStyles = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
     let backgroundColor: string;
     let border: string;
     if (theme.palette.mode === 'light') {
@@ -44,7 +44,8 @@ const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
         border = `1px solid ${theme.palette.grey[500]}`;
     } else {
         backgroundColor = '#292e33';
-        border = isFocused ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
+        border =
+            isFocused && !isMaximized ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
     }
 
     return {
@@ -154,7 +155,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
     };
 
     return (
-        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused)}>
+        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, isMaximized)}>
             <Box sx={styles.title}>
                 <Box sx={styles.titleContent}>
                     {getPanelConfig(panelType).icon}
