@@ -15,6 +15,7 @@ import {
     PanelType,
     PanelMetadata,
     SLDPanelMetadata,
+    RelativeLayout,
 } from '../../components/workspace/types/workspace.types';
 
 // ==================== Utilities ====================
@@ -27,6 +28,38 @@ export const isDiagramPanel = (panelType: PanelType): boolean => {
 };
 
 // ==================== Workspace ====================
+const createPanelFromLayout = (
+    workspace: Workspace,
+    panelType: PanelType,
+    layout: RelativeLayout,
+    options: { title?: string; metadata?: PanelMetadata } = {}
+): UUID => {
+    const config = getPanelConfig(panelType);
+    const newId = uuidv4() as UUID;
+
+    workspace.panels[newId] = {
+        id: newId,
+        type: panelType,
+        title: options.title || config.title,
+        metadata: options.metadata,
+        position: {
+            x: layout.x,
+            y: layout.y,
+        },
+        size: {
+            width: layout.width,
+            height: layout.height,
+        },
+        zIndex: workspace.nextZIndex++,
+        isMinimized: false,
+        isMaximized: false,
+        isPinned: false,
+        isClosed: false,
+    };
+
+    return newId;
+};
+
 export const createDefaultWorkspaces = (): Workspace[] => {
     const workspaces: Workspace[] = [];
     for (let i = 0; i < 3; i++) {
@@ -40,21 +73,20 @@ export const createDefaultWorkspaces = (): Workspace[] => {
         };
 
         if (i === 0) {
-            const treeConfig = getPanelConfig(PanelType.TREE);
-            const treeId = uuidv4() as UUID;
-            workspace.panels[treeId] = {
-                id: treeId,
-                type: PanelType.TREE,
-                title: treeConfig.title,
-                metadata: undefined,
-                position: { x: 0, y: 0 },
-                size: treeConfig.defaultSize,
-                zIndex: workspace.nextZIndex++,
-                isMinimized: false,
-                isMaximized: true,
-                isPinned: false,
-                isClosed: false,
-            };
+            // Default workspace: Tree (75% width) + Modifications (25% width), side by side
+            const treeId = createPanelFromLayout(workspace, PanelType.TREE, {
+                x: 0,
+                y: 0,
+                width: 0.75,
+                height: 1,
+            });
+
+            createPanelFromLayout(workspace, PanelType.NODE_EDITOR, {
+                x: 0.75,
+                y: 0,
+                width: 0.25,
+                height: 1,
+            });
 
             workspace.focusedPanelId = treeId;
         }
