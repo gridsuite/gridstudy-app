@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import App from './app';
 import {
     createTheme,
@@ -77,6 +77,9 @@ import {
     MAP_BASEMAP_CARTO_NOLABEL,
     businessErrorsFr,
     businessErrorsEn,
+    fetchBaseVoltages,
+    errorsEn,
+    errorsFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -105,11 +108,15 @@ import events_locale_fr from '../translations/dynamic/events-locale-fr';
 import events_locale_en from '../translations/dynamic/events-locale-en';
 import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
+import base_voltages_fr from '../translations/external/base-voltages-fr';
+import base_voltages_en from '../translations/external/base-voltages-en';
 import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
+import { getBaseVoltagesCssVars } from 'utils/colors';
+import { saveLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -411,10 +418,12 @@ const messages = {
         ...errors_locale_en,
         ...events_locale_en,
         ...spreadsheet_locale_en,
+        ...base_voltages_en,
         ...parametersEn,
         ...useUniqueNameValidationEn,
         ...filterEn,
         ...businessErrorsEn,
+        ...errorsEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -451,10 +460,12 @@ const messages = {
         ...errors_locale_fr,
         ...events_locale_fr,
         ...spreadsheet_locale_fr,
+        ...base_voltages_fr,
         ...parametersFr,
         ...useUniqueNameValidationFr,
         ...filterFr,
         ...businessErrorsFr,
+        ...errorsFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
@@ -466,7 +477,19 @@ const AppWrapperWithRedux = () => {
     const theme = useSelector((state) => state[PARAM_THEME]);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
-    const rootCssVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
+    useEffect(() => {
+        fetchBaseVoltages().then((appMetadataBaseVoltages) => {
+            saveLocalStorageBaseVoltages(appMetadataBaseVoltages);
+        });
+    }, []);
+
+    const rootCssVars = useMemo(() => {
+        const themeVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
+        return {
+            ...themeVars,
+            ...getBaseVoltagesCssVars(theme),
+        };
+    }, [theme]);
 
     const urlMapper = useNotificationsUrlGenerator();
 

@@ -18,7 +18,7 @@ import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 
-const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
+const getHeaderStyles = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
     let backgroundColor: string;
     let border: string;
     if (theme.palette.mode === 'light') {
@@ -26,7 +26,8 @@ const getHeaderStyles = (theme: Theme, isFocused: boolean) => {
         border = `1px solid ${theme.palette.grey[500]}`;
     } else {
         backgroundColor = '#292e33';
-        border = isFocused ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
+        border =
+            isFocused && !isMaximized ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
     }
 
     return {
@@ -87,79 +88,76 @@ interface PanelHeaderProps {
     isPinned: boolean;
     isMaximized: boolean;
     isFocused: boolean;
-    onFocus: () => void;
 }
 
-export const PanelHeader = memo(
-    ({ panelId, title, panelType, isPinned, isMaximized, isFocused, onFocus }: PanelHeaderProps) => {
-        const dispatch = useDispatch();
-        const intl = useIntl();
-        const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
-        const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
+export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximized, isFocused }: PanelHeaderProps) => {
+    const dispatch = useDispatch();
+    const intl = useIntl();
+    const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
+    const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
-        const handleClose = () => {
-            // If it's a parameters panel with unsaved changes, trigger confirmation dialog
-            if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
-                globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
-            } else if (panelType === PanelType.NAD) {
-                globalThis.dispatchEvent(new CustomEvent('nadPanel:requestClose', { detail: panelId }));
-            } else {
-                dispatch(closePanel(panelId));
-            }
-        };
+    const handleClose = () => {
+        // If it's a parameters panel with unsaved changes, trigger confirmation dialog
+        if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
+            globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
+        } else if (panelType === PanelType.NAD) {
+            globalThis.dispatchEvent(new CustomEvent('nadPanel:requestClose', { detail: panelId }));
+        } else {
+            dispatch(closePanel(panelId));
+        }
+    };
 
-        return (
-            <Box onMouseDown={onFocus} className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused)}>
-                <Box sx={styles.title}>
-                    <Box sx={styles.titleContent}>
-                        {getPanelConfig(panelType).icon}
-                        <OverflowableText text={displayTitle} sx={styles.titleText} tooltipSx={styles.tooltip} />
-                    </Box>
-                </Box>
-                <Box sx={styles.headerActions}>
-                    <IconButton
-                        className="panel-header-close-button"
-                        size="small"
-                        sx={styles.iconButton}
-                        onClick={() => dispatch(togglePin(panelId))}
-                        onMouseDown={(e) => e.stopPropagation()}
-                    >
-                        {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
-                    </IconButton>
-                    {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
-                        panelType === PanelType.SLD_SUBSTATION ||
-                        panelType === PanelType.NAD) && (
-                        <IconButton
-                            className="panel-header-close-button"
-                            size="small"
-                            sx={styles.iconButton}
-                            onClick={() => dispatch(toggleMinimize(panelId))}
-                            onMouseDown={(e) => e.stopPropagation()}
-                        >
-                            <Minimize fontSize="small" />
-                        </IconButton>
-                    )}
-                    <IconButton
-                        className="panel-header-close-button"
-                        size="small"
-                        sx={styles.iconButton}
-                        onClick={() => dispatch(toggleMaximize(panelId))}
-                        onMouseDown={(e) => e.stopPropagation()}
-                    >
-                        {isMaximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
-                    </IconButton>
-                    <IconButton
-                        className="panel-header-close-button"
-                        size="small"
-                        sx={styles.iconButton}
-                        onClick={handleClose}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        disabled={isPinned}
-                    >
-                        <Close fontSize="small" />
-                    </IconButton>
+    return (
+        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, isMaximized)}>
+            <Box sx={styles.title}>
+                <Box sx={styles.titleContent}>
+                    {getPanelConfig(panelType).icon}
+                    <OverflowableText text={displayTitle} sx={styles.titleText} tooltipSx={styles.tooltip} />
                 </Box>
             </Box>
-        );
-    }
-);
+            <Box sx={styles.headerActions}>
+                <IconButton
+                    className="panel-header-close-button"
+                    size="small"
+                    sx={styles.iconButton}
+                    onClick={() => dispatch(togglePin(panelId))}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
+                </IconButton>
+                {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
+                    panelType === PanelType.SLD_SUBSTATION ||
+                    panelType === PanelType.NAD) && (
+                    <IconButton
+                        className="panel-header-close-button"
+                        size="small"
+                        sx={styles.iconButton}
+                        onClick={() => dispatch(toggleMinimize(panelId))}
+                        onMouseDown={(e) => e.stopPropagation()}
+                    >
+                        <Minimize fontSize="small" />
+                    </IconButton>
+                )}
+                <IconButton
+                    className="panel-header-close-button"
+                    size="small"
+                    sx={styles.iconButton}
+                    onClick={() => dispatch(toggleMaximize(panelId))}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    {isMaximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
+                </IconButton>
+                <IconButton
+                    className="panel-header-close-button"
+                    size="small"
+                    sx={styles.iconButton}
+                    onClick={handleClose}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    disabled={isPinned}
+                >
+                    <Close fontSize="small" />
+                </IconButton>
+            </Box>
+        </Box>
+    );
+});
