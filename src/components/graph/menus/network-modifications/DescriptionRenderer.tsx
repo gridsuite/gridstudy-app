@@ -31,7 +31,7 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
 
     const modificationUuid = data?.uuid;
     const description: string | undefined = data?.description;
-    const empty = description === undefined || description === null || description === '';
+    const empty: boolean = !description;
 
     const updateModification = useCallback(
         async (uuid: UUID, descriptionRecord: Record<string, string>) => {
