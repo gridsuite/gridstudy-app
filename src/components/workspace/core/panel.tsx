@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, memo, type RefObject } from 'react';
+import { useCallback, memo } from 'react';
 import { Box, Theme } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,14 +23,15 @@ import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
+import { positionToRelative, sizeToRelative, calculatePanelDimensions } from './utils/coordinate-utils';
 
 const RESIZE_HANDLE_SIZE = 12;
 
-const getBorder = (theme: Theme, isFocused: boolean) => {
+const getBorder = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
     if (theme.palette.mode === 'light') {
         return `1px solid ${theme.palette.grey[500]}`;
     }
-    if (isFocused) {
+    if (isFocused && !isMaximized) {
         return `1px solid ${theme.palette.grey[100]}`;
     }
     return `1px solid ${theme.palette.grey[800]}`;
@@ -77,12 +78,12 @@ const styles = {
 
 interface PanelProps {
     panelId: UUID;
-    containerRef: RefObject<HTMLDivElement | null>;
+    containerRect: DOMRect;
     snapPreview: SnapRect | null;
     onSnapPreview: (panelId: UUID, preview: SnapRect | null) => void;
     isFocused: boolean;
 }
-export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
+export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
     const dispatch = useDispatch();
     const panel = useSelector((state: RootState) => selectPanel(state, panelId));
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -91,11 +92,9 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
 
     const handleDrag = useCallback(
         (e: MouseEvent) => {
-            if (!containerRef.current) return;
-            const rect = containerRef.current.getBoundingClientRect();
-            onSnapPreview(panelId, getSnapZone(e.clientX, e.clientY, rect));
+            onSnapPreview(panelId, getSnapZone(e.clientX, e.clientY, containerRect));
         },
-        [containerRef, onSnapPreview, panelId]
+        [containerRect, onSnapPreview, panelId]
     );
 
     const handleDragStop: RndDragCallback = useCallback(
@@ -103,27 +102,29 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
             if (snapPreview) {
                 dispatch(snapPanel({ panelId, rect: snapPreview }));
             } else {
-                dispatch(updatePanelPosition({ panelId, position: { x: data.x, y: data.y } }));
+                // Convert pixel position back to relative values
+                const relativePosition = positionToRelative({ x: data.x, y: data.y }, containerRect);
+                dispatch(updatePanelPosition({ panelId, position: relativePosition }));
             }
             onSnapPreview(panelId, null);
         },
-        [dispatch, panelId, snapPreview, onSnapPreview]
+        [dispatch, panelId, snapPreview, onSnapPreview, containerRect]
     );
 
     const handleResizeStop: RndResizeCallback = useCallback(
         (_e, _direction, ref, _delta, position) => {
-            dispatch(
-                updatePanelPositionAndSize({
-                    panelId,
-                    position,
-                    size: {
-                        width: Number.parseInt(ref.style.width, 10),
-                        height: Number.parseInt(ref.style.height, 10),
-                    },
-                })
+            // Convert pixel values back to relative values
+            const relativePosition = positionToRelative(position, containerRect);
+            const relativeSize = sizeToRelative(
+                {
+                    width: Number.parseInt(ref.style.width, 10),
+                    height: Number.parseInt(ref.style.height, 10),
+                },
+                containerRect
             );
+            dispatch(updatePanelPositionAndSize({ panelId, position: relativePosition, size: relativeSize }));
         },
-        [dispatch, panelId]
+        [dispatch, panelId, containerRect]
     );
 
     const handleFocus = useCallback(() => {
@@ -140,22 +141,15 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
     const minWidth = config.minSize?.width || 300;
     const minHeight = config.minSize?.height || 200;
 
+    // Calculate panel dimensions and position
+    const dimensions = panel.isMaximized
+        ? { x: 0, y: 0, width: containerRect.width, height: containerRect.height }
+        : calculatePanelDimensions(panel.position, panel.size, containerRect, { width: minWidth, height: minHeight });
+
     return (
         <Rnd
-            default={{
-                x: panel.position.x,
-                y: panel.position.y,
-                width: panel.size.width,
-                height: panel.size.height,
-            }}
-            position={{
-                x: panel.position.x,
-                y: panel.position.y,
-            }}
-            size={{
-                width: panel.isMaximized ? '100%' : panel.size.width,
-                height: panel.isMaximized ? '100%' : panel.size.height,
-            }}
+            position={{ x: dimensions.x, y: dimensions.y }}
+            size={{ width: dimensions.width, height: dimensions.height }}
             onDrag={handleDrag as any}
             onDragStop={handleDragStop}
             onResizeStart={handleFocus}
@@ -188,7 +182,7 @@ export const Panel = memo(({ panelId, containerRef, snapPreview, onSnapPreview, 
                     className="panel-content"
                     sx={(theme) => ({
                         ...styles.content(theme),
-                        border: getBorder(theme, isFocused),
+                        border: getBorder(theme, isFocused, panel.isMaximized),
                     })}
                 >
                     {studyUuid && currentRootNetworkUuid && currentNode
