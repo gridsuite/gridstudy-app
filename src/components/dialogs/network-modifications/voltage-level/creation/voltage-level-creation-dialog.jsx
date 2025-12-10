@@ -192,7 +192,7 @@ const VoltageLevelCreationDialog = ({
     editDataFetchStatus,
     onCreateVoltageLevel = createVoltageLevel,
     isAttachementPointModification = false,
-    titleId = null,
+    titleId = 'CreateVoltageLevel',
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -421,7 +421,7 @@ const VoltageLevelCreationDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 maxWidth={'md'}
-                titleId={titleId || 'CreateVoltageLevel'}
+                titleId={titleId}
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
