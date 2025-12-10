@@ -29,7 +29,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
 
@@ -49,8 +49,6 @@ const LineAttachToVoltageLevelForm = ({
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
     const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
-    const { getValues } = useFormContext();
-
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
     });
@@ -88,23 +86,27 @@ const LineAttachToVoltageLevelForm = ({
         />
     );
 
-    const onAttachmentPointIdChange = useCallback(() => {
-        const attachmentPointId = getValues(ATTACHMENT_POINT_ID);
-        setAttachmentPoint((prevAttachmentPoint) => {
-            return { ...prevAttachmentPoint, equipmentId: attachmentPointId };
-        });
-    }, [getValues, setAttachmentPoint]);
+    const onAttachmentPointIdChange = useCallback(
+        (value) => {
+            setAttachmentPoint((prevAttachmentPoint) => {
+                return { ...prevAttachmentPoint, equipmentId: value };
+            });
+        },
+        [setAttachmentPoint]
+    );
 
     const attachmentPointIdField = (
         <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} onChange={onAttachmentPointIdChange} />
     );
 
-    const onAttachmentPointNameChange = useCallback(() => {
-        const attachmentPointName = getValues(ATTACHMENT_POINT_NAME);
-        setAttachmentPoint((prevAttachmentPoint) => {
-            return { ...prevAttachmentPoint, equipmentName: attachmentPointName };
-        });
-    }, [getValues, setAttachmentPoint]);
+    const onAttachmentPointNameChange = useCallback(
+        (value) => {
+            setAttachmentPoint((prevAttachmentPoint) => {
+                return { ...prevAttachmentPoint, equipmentName: value };
+            });
+        },
+        [setAttachmentPoint]
+    );
 
     const attachmentPointNameField = (
         <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} onChange={onAttachmentPointNameChange} />
