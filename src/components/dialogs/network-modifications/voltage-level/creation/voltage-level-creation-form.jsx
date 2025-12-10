@@ -13,6 +13,7 @@ import {
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
+    IS_ATTACHMENT_POINT_CREATION,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
     NOMINAL_V,
@@ -40,12 +41,7 @@ import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selectio
 import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
 
-const VoltageLevelCreationForm = ({
-    currentNode,
-    studyUuid,
-    currentRootNetworkUuid,
-    isAttachementPointModification,
-}) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const { setValue, getValues } = useFormContext();
@@ -53,17 +49,18 @@ const VoltageLevelCreationForm = ({
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
+    const watchIsAttachmentPointCreation = useWatch({ name: IS_ATTACHMENT_POINT_CREATION });
 
     useEffect(() => {
         // in new substation mode, set the default country
-        if (getValues(ADD_SUBSTATION_CREATION) && !getValues(COUNTRY)) {
+        if (watchAddSubstationCreation && !getValues(COUNTRY)) {
             fetchDefaultCountry().then((country) => {
                 if (country) {
                     setValue(COUNTRY, country);
                 }
             });
         }
-    }, [setValue, getValues]);
+    }, [setValue, getValues, watchAddSubstationCreation]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
@@ -187,17 +184,19 @@ const VoltageLevelCreationForm = ({
                         <Grid item xs={3}>
                             {substationCreationCountryField}
                         </Grid>
-                        <Grid item xs={1}>
-                            <Tooltip
-                                title={intl.formatMessage({
-                                    id: 'DeleteRows',
-                                })}
-                            >
-                                <IconButton onClick={handleDeleteButton}>
-                                    <DeleteIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </Grid>
+                        {!watchIsAttachmentPointCreation && (
+                            <Grid item xs={1}>
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'DeleteRows',
+                                    })}
+                                >
+                                    <IconButton onClick={handleDeleteButton}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        )}
                     </Grid>
                     <PropertiesForm id={SUBSTATION_CREATION} networkElementType={'substation'} />
                     <Grid item xs={12} paddingTop={2}>
@@ -213,7 +212,7 @@ const VoltageLevelCreationForm = ({
             )}
             <GridSection title={intl.formatMessage({ id: 'VoltageText' })} />
             <Grid container spacing={2}>
-                {!isAttachementPointModification && <GridItem size={4}>{nominalVoltageField}</GridItem>}
+                {!watchIsAttachmentPointCreation && <GridItem size={4}>{nominalVoltageField}</GridItem>}
                 <GridItem size={4}>{lowVoltageLimitField}</GridItem>
                 <GridItem size={4}>{highVoltageLimitField}</GridItem>
             </Grid>
@@ -223,7 +222,7 @@ const VoltageLevelCreationForm = ({
                 <GridItem size={4}>{highShortCircuitCurrentLimitField}</GridItem>
                 <Box sx={{ width: '100%' }} />
             </Grid>
-            {!isAttachementPointModification && (
+            {!watchIsAttachmentPointCreation && (
                 <>
                     <GridSection title={'BusBarSections'} />
                     <Grid container spacing={2}>

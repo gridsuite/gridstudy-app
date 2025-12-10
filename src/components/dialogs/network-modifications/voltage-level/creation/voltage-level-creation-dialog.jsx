@@ -31,6 +31,7 @@ import {
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
     ID,
+    IS_ATTACHMENT_POINT_CREATION,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
     NAME,
@@ -95,6 +96,7 @@ const emptyFormData = {
     [SUBSTATION_CREATION_ID]: null,
     [SUBSTATION_NAME]: null,
     [COUNTRY]: null,
+    [IS_ATTACHMENT_POINT_CREATION]: false,
     [SUBSTATION_CREATION]: emptyProperties,
     ...emptyProperties,
 };
@@ -142,7 +144,13 @@ const formSchema = yup
         [SUBSTATION_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
-        [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+        [NOMINAL_V]: yup
+            .number()
+            .nullable()
+            .when([IS_ATTACHMENT_POINT_CREATION], {
+                is: (isAttachmentPointCreation) => isAttachmentPointCreation === false,
+                then: (schema) => schema.min(0, 'mustBeGreaterOrEqualToZero').required(),
+            }),
         [LOW_VOLTAGE_LIMIT]: yup
             .number()
             .nullable()
@@ -200,25 +208,15 @@ const VoltageLevelCreationDialog = ({
 
     const defaultValues = useMemo(() => {
         if (isAttachementPointModification) {
-            return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true };
+            return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true, [IS_ATTACHMENT_POINT_CREATION]: true };
         } else {
             return emptyFormData;
         }
     }, [isAttachementPointModification]);
 
-    const overrideFormSchema = useMemo(() => {
-        if (isAttachementPointModification) {
-            return formSchema.shape({
-                [NOMINAL_V]: yup.number().nullable(),
-            });
-        } else {
-            return formSchema;
-        }
-    }, [isAttachementPointModification]);
-
     const formMethods = useForm({
         defaultValues: defaultValues,
-        resolver: yupResolver(overrideFormSchema),
+        resolver: yupResolver(formSchema),
     });
 
     const { reset, setValue, getValues, trigger, subscribe } = formMethods;
@@ -269,6 +267,7 @@ const VoltageLevelCreationDialog = ({
                     [SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
                     [COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
                     [SWITCH_KINDS]: switchKinds,
+                    [IS_ATTACHMENT_POINT_CREATION]: isAttachementPointModification,
                     ...properties,
                 },
                 { keepDefaultValues: true }
@@ -431,7 +430,6 @@ const VoltageLevelCreationDialog = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    isAttachementPointModification={isAttachementPointModification}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

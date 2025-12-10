@@ -157,6 +157,8 @@ const LineAttachToVoltageLevelForm = ({
                     {
                         <Button
                             onClick={openAttachmentPointDialog}
+                            // as equipmentId and equipmentName are synchronized to check if the icon is add or edit
+                            // other attributes than id and name must be present
                             startIcon={
                                 attachmentPoint != null &&
                                 Object.keys(attachmentPoint).some(
