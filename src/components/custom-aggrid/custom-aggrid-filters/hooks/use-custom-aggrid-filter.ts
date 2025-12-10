@@ -10,7 +10,7 @@ import { GridApi } from 'ag-grid-community';
 import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
-import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-filter.type';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -47,13 +47,20 @@ export const useCustomAggridFilter = (
             const newFilter = {
                 column: colId,
                 dataType: data.dataType,
-                tolerance: data.dataType === FILTER_DATA_TYPES.NUMBER ? computeTolerance(data.value) : undefined,
+                tolerance:
+                    data.dataType === FILTER_DATA_TYPES.NUMBER &&
+                    data.type !== FILTER_TEXT_COMPARATORS.IS_EMPTY &&
+                    data.type !== FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY
+                        ? computeTolerance(data.value)
+                        : undefined,
                 type: data.type,
                 value: data.value,
             };
 
             let updatedFilters: FilterConfig[];
-            if (!data.value) {
+            const filterWithoutValue =
+                data.type === FILTER_TEXT_COMPARATORS.IS_EMPTY || data.type === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY;
+            if (!data.value && !filterWithoutValue) {
                 updatedFilters = removeElementFromArrayWithFieldValue(filters, colId);
             } else {
                 updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
@@ -88,16 +95,41 @@ export const useCustomAggridFilter = (
     const handleChangeComparator = useCallback(
         (newType: string) => {
             setSelectedFilterComparator(newType);
-            if (selectedFilterData) {
+            const filterWithoutValue =
+                newType === FILTER_TEXT_COMPARATORS.IS_EMPTY || newType === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY;
+            if (filterWithoutValue) {
+                updateFilter(colId, {
+                    value: true,
+                    type: newType,
+                    dataType,
+                    tolerance: tolerance,
+                });
+            } else if (selectedFilterData && selectedFilterData !== true) {
                 updateFilter(colId, {
                     value: selectedFilterData,
                     type: newType,
                     dataType,
                     tolerance: tolerance,
                 });
+            } else {
+                // We switch from IS_EMPTY or IS_NOT_EMPTY comparator to a comparator with a value
+                setSelectedFilterData(undefined);
+                const updatedFilters = removeElementFromArrayWithFieldValue(filters, colId);
+                updateFilterCallback && updateFilterCallback(api, updatedFilters);
+                dispatchFilters(updatedFilters);
             }
         },
-        [colId, dataType, selectedFilterData, tolerance, updateFilter]
+        [
+            colId,
+            dataType,
+            selectedFilterData,
+            tolerance,
+            updateFilter,
+            filters,
+            updateFilterCallback,
+            api,
+            dispatchFilters,
+        ]
     );
 
     useEffect(() => {
