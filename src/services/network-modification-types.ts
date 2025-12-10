@@ -293,6 +293,7 @@ export interface LimitsProperty {
 }
 
 export interface CurrentLimits {
+    id?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
 }
