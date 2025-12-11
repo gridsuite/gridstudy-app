@@ -40,7 +40,7 @@ export interface GeneratorEquipmentInfos {
     maxP: number;
     minQ: number;
     voltageRegulatorOn: boolean;
-    plannedActivePowerSetPoint: number | null;
+    plannedActivePowerSetPoint?: number;
 }
 
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;

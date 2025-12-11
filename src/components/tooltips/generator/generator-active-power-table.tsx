@@ -53,7 +53,10 @@ export const GeneratorActivePowerTable: React.FC<GeneratorActivePowerTableProps>
                             colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                         />
                         <CellRender
-                            value={formatValue(equipmentInfos.plannedActivePowerSetPoint)}
+                            value={formatValue(
+                                equipmentInfos.plannedActivePowerSetPoint &&
+                                    Math.round(equipmentInfos.plannedActivePowerSetPoint)
+                            )}
                             colStyle={styles.cell}
                         />
                     </TableRow>

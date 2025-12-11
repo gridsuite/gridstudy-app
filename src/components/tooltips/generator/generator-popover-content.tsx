@@ -23,7 +23,7 @@ export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = (
                     <Table size="small" sx={styles.layout}>
                         <TableRow>
                             <CellRender isLabel label="ActivePower" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender value={formatValue(equipmentInfos.p, 3)} colStyle={styles.cell} />
+                            <CellRender value={formatValue(Math.round(equipmentInfos.p))} colStyle={styles.cell} />
                         </TableRow>
 
                         <TableRow>
@@ -32,7 +32,7 @@ export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = (
                                 label="reactivePowerTooltip"
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             />
-                            <CellRender value={formatValue(equipmentInfos.q, 3)} colStyle={styles.cell} />
+                            <CellRender value={formatValue(Math.round(equipmentInfos.q))} colStyle={styles.cell} />
                         </TableRow>
                     </Table>
                 </TableContainer>
@@ -49,7 +49,10 @@ export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = (
                                 label="reactivePowerSetpointTooltip"
                                 colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                             />
-                            <CellRender value={formatValue(equipmentInfos.targetQ, 3)} colStyle={styles.cell} />
+                            <CellRender
+                                value={formatValue(Math.round(equipmentInfos.targetQ))}
+                                colStyle={styles.cell}
+                            />
                         </TableRow>
                     </Table>
                 </TableContainer>
