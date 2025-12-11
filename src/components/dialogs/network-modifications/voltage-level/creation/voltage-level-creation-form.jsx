@@ -13,6 +13,7 @@ import {
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
+    IS_ATTACHMENT_POINT_CREATION,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
     NOMINAL_V,
@@ -45,21 +46,21 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
     const intl = useIntl();
     const { setValue, getValues } = useFormContext();
     const [substations, setSubstations] = useState([]);
-    const [isWithSubstationCreation, setIsWithSubstationCreation] = useState(false);
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
+    const watchIsAttachmentPointCreation = useWatch({ name: IS_ATTACHMENT_POINT_CREATION });
 
     useEffect(() => {
         // in new substation mode, set the default country
-        if (isWithSubstationCreation) {
+        if (watchAddSubstationCreation && !getValues(COUNTRY)) {
             fetchDefaultCountry().then((country) => {
                 if (country) {
                     setValue(COUNTRY, country);
                 }
             });
         }
-    }, [setValue, isWithSubstationCreation]);
+    }, [setValue, getValues, watchAddSubstationCreation]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
@@ -97,7 +98,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
     const handleAddButton = useCallback(() => {
         setValue(SUBSTATION_CREATION_ID, getValues(SUBSTATION_ID));
         setValue(ADD_SUBSTATION_CREATION, true);
-        setIsWithSubstationCreation(true);
     }, [setValue, getValues]);
     const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
 
@@ -161,7 +161,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
         setValue(SUBSTATION_CREATION_ID, null);
         setValue(SUBSTATION_NAME, null);
         setValue(COUNTRY, null);
-        setIsWithSubstationCreation(false);
     }, [setValue]);
 
     return (
@@ -185,17 +184,19 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
                         <Grid item xs={3}>
                             {substationCreationCountryField}
                         </Grid>
-                        <Grid item xs={1}>
-                            <Tooltip
-                                title={intl.formatMessage({
-                                    id: 'DeleteRows',
-                                })}
-                            >
-                                <IconButton onClick={handleDeleteButton}>
-                                    <DeleteIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </Grid>
+                        {!watchIsAttachmentPointCreation && (
+                            <Grid item xs={1}>
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'DeleteRows',
+                                    })}
+                                >
+                                    <IconButton onClick={handleDeleteButton}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        )}
                     </Grid>
                     <PropertiesForm id={SUBSTATION_CREATION} networkElementType={'substation'} />
                     <Grid item xs={12} paddingTop={2}>
@@ -211,7 +212,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
             )}
             <GridSection title={intl.formatMessage({ id: 'VoltageText' })} />
             <Grid container spacing={2}>
-                <GridItem size={4}>{nominalVoltageField}</GridItem>
+                {!watchIsAttachmentPointCreation && <GridItem size={4}>{nominalVoltageField}</GridItem>}
                 <GridItem size={4}>{lowVoltageLimitField}</GridItem>
                 <GridItem size={4}>{highVoltageLimitField}</GridItem>
             </Grid>
@@ -221,18 +222,22 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
                 <GridItem size={4}>{highShortCircuitCurrentLimitField}</GridItem>
                 <Box sx={{ width: '100%' }} />
             </Grid>
-            <GridSection title={'BusBarSections'} />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{busBarCountField}</GridItem>
-                <GridItem size={4}>{sectionCountField}</GridItem>
-                <SwitchesBetweenSections />
-            </Grid>
-            {displayOmnibus && (
+            {!watchIsAttachmentPointCreation && (
                 <>
-                    <GridSection title={'Coupling_Omnibus'} />
-                    <Grid container>
-                        <GridItem size={12}>{couplingOmnibusForm}</GridItem>
+                    <GridSection title={'BusBarSections'} />
+                    <Grid container spacing={2}>
+                        <GridItem size={4}>{busBarCountField}</GridItem>
+                        <GridItem size={4}>{sectionCountField}</GridItem>
+                        <SwitchesBetweenSections />
                     </Grid>
+                    {displayOmnibus && (
+                        <>
+                            <GridSection title={'Coupling_Omnibus'} />
+                            <Grid container>
+                                <GridItem size={12}>{couplingOmnibusForm}</GridItem>
+                            </Grid>
+                        </>
+                    )}
                 </>
             )}
             <PropertiesForm networkElementType={'voltageLevel'} />
