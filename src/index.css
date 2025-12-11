@@ -245,6 +245,12 @@ code {
 .sld-reactive-power .sld-label {
     dominant-baseline: middle;
 }
+.sld-current-value .sld-label {
+    dominant-baseline: middle;
+}
+.sld-permanent-limit-percentage {
+    dominant-baseline: middle;
+}
 
 @keyframes sld-overload-blink-animation {
     50% {
@@ -274,22 +280,13 @@ code {
     animation: sld-undervoltage-blink-animation 0.75s infinite steps(1, start);
 }
 
-/* topologicalBaseVoltages.css */
-
-.sld-disconnected {
-    --vl-color: #808080;
-}
-
-/* highlightLineStates.css */
-
-.sld-feeder-disconnected {
-    stroke: black;
-}
-.sld-feeder-connected-disconnected {
+.sld-feeder-disconnected.sld-wire {
     stroke-dasharray: 3, 3;
+    stroke: #808080;
 }
-.sld-feeder-disconnected-connected {
-    stroke: black;
+.sld-feeder-disconnected-connected,
+.sld-feeder-connected-disconnected {
+    stroke: var(--vl-color, #c80000);
     stroke-dasharray: 3, 3;
 }
 

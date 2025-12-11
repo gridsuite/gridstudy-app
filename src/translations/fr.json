@@ -199,6 +199,9 @@
     "startVoltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
     "FilterEvaluationError": "Une erreur est survenue lors de l'évaluation du filtre",
     "voltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
+    "VoltageinitRootNetworkName": "Réseau racine : {rootNetworkName}",
+    "VoltageinitNodeName": "Noeud : {nodeName}",
+    "VoltageinitDate": "Date du calcul : {computationDate}",
 
     "Select": "Choisir",
     "SelectAll": "Tous",
@@ -891,6 +894,7 @@
     "AttachmentPoint": "Point de piquage",
     "AttachmentPointId": "ID point de piquage",
     "AttachmentPointName": "Nom point de piquage",
+    "SpecifyAttachmentPoint": "Spécifier le point de piquage (optionnel)",
     "AttachedLine": "Liaison de piquage",
     "LineAttached": "Liaison de piquage",
     "AttachedLineId": "ID liaison de piquage",
@@ -1673,5 +1677,8 @@
 
     "gridExplore": "GridExplore",
     "myComputer": "Mon ordinateur",
-    "destination": "Destination"
+    "destination": "Destination",
+
+    "ActivePower": "P (MW)",
+    "reactivePowerTooltip": "Q (MVar)"
 }

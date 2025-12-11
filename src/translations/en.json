@@ -200,6 +200,9 @@
     "FilterEvaluationError": "An error occurred while evaluating the filter",
     "voltageInitError": "An error occurred while executing the voltage profile initialization",
     "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
+    "VoltageinitRootNetworkName": "Root network : {rootNetworkName}",
+    "VoltageinitNodeName": "Node : {nodeName}",
+    "VoltageinitDate": "Computation date : {computationDate}",
 
     "Select": "Select",
     "SelectAll": "All",
@@ -898,6 +901,7 @@
     "AttachmentPoint": "Attachment point",
     "AttachmentPointId": "Attachment point ID",
     "AttachmentPointName": "Attachment point name",
+    "SpecifyAttachmentPoint": "Add attachment point information (option)",
     "AttachedLine": "Attached line",
     "LineAttached": "Attached line",
     "AttachedLineId": "Attached line ID",
@@ -1679,5 +1683,8 @@
 
     "gridExplore": "GridExplore",
     "myComputer": "My computer",
-    "destination": "Destination"
+    "destination": "Destination",
+
+    "ActivePower": "P (MW)",
+    "reactivePowerTooltip": "Q (MVar)"
 }
