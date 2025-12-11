@@ -893,6 +893,7 @@
     "AttachmentPoint": "Point de piquage",
     "AttachmentPointId": "ID point de piquage",
     "AttachmentPointName": "Nom point de piquage",
+    "SpecifyAttachmentPoint": "Spécifier le point de piquage (optionnel)",
     "AttachedLine": "Liaison de piquage",
     "LineAttached": "Liaison de piquage",
     "AttachedLineId": "ID liaison de piquage",

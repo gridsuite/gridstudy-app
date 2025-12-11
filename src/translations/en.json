@@ -900,6 +900,7 @@
     "AttachmentPoint": "Attachment point",
     "AttachmentPointId": "Attachment point ID",
     "AttachmentPointName": "Attachment point name",
+    "SpecifyAttachmentPoint": "Add attachment point information (option)",
     "AttachedLine": "Attached line",
     "LineAttached": "Attached line",
     "AttachedLineId": "Attached line ID",
