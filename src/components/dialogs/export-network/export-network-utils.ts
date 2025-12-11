@@ -32,7 +32,7 @@ export const schema = yup.object().shape({
     [DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION).optional(),
     [FOLDER_NAME]: yup.string().when([EXPORT_DESTINATION], {
         is: ExportDestinationType.GRID_EXPLORE,
-        then: () => yup.string().required(),
+        then: (schema) => schema.required(),
     }),
     [EXPORT_FORMAT]: yup.string().required('exportStudyErrorMsg'),
     [EXPORT_PARAMETERS]: yup.object(),
