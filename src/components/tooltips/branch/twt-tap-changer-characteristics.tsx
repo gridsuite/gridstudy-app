@@ -25,7 +25,7 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
     if (ratioTapChanger) {
         rows.push({
             tap: ratioTapChanger.tapPosition,
-            rho: ratioTapChanger.steps[ratioTapChanger.tapPosition].rho,
+            rho: ratioTapChanger.steps[ratioTapChanger.tapPosition - ratioTapChanger.lowTapPosition].rho,
             alpha: '-',
             mode: getComputedRegulationMode(equipmentInfos)?.label,
         });
@@ -35,7 +35,7 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
         rows.push({
             tap: phaseTapChanger.tapPosition ?? '-',
             rho: '-',
-            alpha: phaseTapChanger.steps[phaseTapChanger.tapPosition].alpha,
+            alpha: phaseTapChanger.steps[phaseTapChanger.tapPosition - phaseTapChanger.lowTapPosition].alpha,
             mode: getComputedPhaseTapChangerRegulationMode(phaseTapChanger)?.label,
         });
     }
