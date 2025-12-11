@@ -115,7 +115,7 @@ export const useCustomAggridFilter = (
                 // We switch from IS_EMPTY or IS_NOT_EMPTY comparator to a comparator with a value
                 setSelectedFilterData(undefined);
                 const updatedFilters = removeElementFromArrayWithFieldValue(filters, colId);
-                updateFilterCallback && updateFilterCallback(api, updatedFilters);
+                updateFilterCallback?.(api, updatedFilters);
                 dispatchFilters(updatedFilters);
             }
         },
