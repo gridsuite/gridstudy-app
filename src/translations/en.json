@@ -1679,5 +1679,11 @@
     "history": "History",
     "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default droop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)",
     "ActivePower": "P (MW)",
-    "reactivePowerTooltip": "Q (MVar)"
+    "reactivePowerTooltip": "Q (MVar)",
+    "tooltip.u": "U (kV)",
+    "tooltip.angle": "θ (°)",
+    "tooltip.generation": "Generation (MW)",
+    "tooltip.load": "Load (MW)",
+    "tooltip.balance": "Balance (MW)",
+    "tooltip.icc": "Isc (kA)"
 }
