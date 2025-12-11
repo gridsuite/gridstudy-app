@@ -19,10 +19,14 @@ export function isValidationError(value: unknown): value is ValidationError {
 export const validateFormulaResult = (value: CustomAggridValue, type: COLUMN_TYPES): CustomAggridValue => {
     switch (type) {
         case COLUMN_TYPES.NUMBER:
-            return (typeof value === 'number' && !Number.isNaN(value)) ||
-                (typeof value !== 'boolean' && !Number.isNaN(Number(value)))
-                ? value
-                : { error: 'spreadsheet/formula/type/number' };
+            if (typeof value === 'boolean') {
+                return { error: 'spreadsheet/formula/type/number' };
+            }
+            try {
+                return Number(value);
+            } catch {
+                return { error: 'spreadsheet/formula/type/number' };
+            }
         case COLUMN_TYPES.BOOLEAN:
             return typeof value === 'boolean'
                 ? value
