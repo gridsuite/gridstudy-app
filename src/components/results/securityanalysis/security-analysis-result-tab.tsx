@@ -5,7 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    ChangeEvent,
+    FunctionComponent,
+    SyntheticEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { AppState } from '../../../redux/reducer';
@@ -37,7 +46,6 @@ import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-d
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useIntl } from 'react-intl/lib';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
@@ -47,6 +55,9 @@ import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filt
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -116,13 +127,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         (state: AppState) => state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][getStoreFields(tabIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SecurityAnalysis,
         getStoreFields(tabIndex) as SecurityAnalysisTab
     );
     const { page, rowsPerPage } = pagination;
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+
+    const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
+        AgGridFilterType.SecurityAnalysis
+    );
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const globalFilterOptions = useMemo(
@@ -133,6 +148,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const memoizedSetPageCallback = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
+
+    const handleGlobalFilterChangeAndUpdate = useCallback(
+        (newFilters: GlobalFilter[]) => {
+            handleGlobalFilterChange(newFilters);
+            updateGlobalFilters(newFilters);
+        },
+        [handleGlobalFilterChange, updateGlobalFilters]
+    );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
@@ -214,7 +237,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     );
 
     const handleChangeRowsPerPage = useCallback(
-        (event: React.ChangeEvent<{ value: string }>) => {
+        (event: ChangeEvent<{ value: string }>) => {
             const newRowsPerPage = parseInt(event.target.value, 10);
             dispatchPagination({ page: 0, rowsPerPage: newRowsPerPage });
         },
@@ -269,10 +292,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode)) && (
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
+                            onChange={handleGlobalFilterChangeAndUpdate}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}
+                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode={true}
                         />
                     </Box>

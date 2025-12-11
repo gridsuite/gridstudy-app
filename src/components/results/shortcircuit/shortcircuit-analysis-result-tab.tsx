@@ -6,7 +6,7 @@
  */
 
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
     computingTypeToShortcircuitTabRedirection,
@@ -31,6 +31,9 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
+import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -78,7 +81,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex);
 
     const handleTabChange = useCallback(
-        (event: React.SyntheticEvent, newIndex: number) => {
+        (event: SyntheticEvent, newIndex: number) => {
             setTabIndex(newIndex);
             //when we manually browse results we ought to block further redirections until the next completed computation
             setRedirectionLock(true);
@@ -89,14 +92,25 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
+        AgGridFilterType.ShortcircuitAnalysis
+    );
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSubTabChange = useCallback(
-        (event: React.SyntheticEvent, newIndex: number) => {
+        (event: SyntheticEvent, newIndex: number) => {
             setResultOrLogIndex(newIndex);
         },
         [setResultOrLogIndex]
+    );
+
+    const handleGlobalFilterChangeAndUpdate = useCallback(
+        (newFilters: GlobalFilter[]) => {
+            handleGlobalFilterChange(newFilters);
+            updateGlobalFilters(newFilters);
+        },
+        [handleGlobalFilterChange, updateGlobalFilters]
     );
 
     const shortCircuitTabResultStatusSucceedOrFailed = useMemo(() => {
@@ -166,9 +180,10 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                 </Tabs>
                 {resultOrLogIndex === RESULTS_TAB_INDEX && tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
                     <GlobalFilterSelector
-                        onChange={handleGlobalFilterChange}
+                        onChange={handleGlobalFilterChangeAndUpdate}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
+                        preloadedGlobalFilters={globalFiltersFromState}
                         genericFiltersStrictMode={true}
                     />
                 )}
