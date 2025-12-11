@@ -23,12 +23,12 @@ export const LoadPopoverContent: React.FC<LoadPopoverContentProps> = ({ equipmen
                         <TableBody>
                             <TableRow>
                                 <CellRender isLabel label="ConsP" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                                <CellRender value={formatValue(equipmentInfos.p0, 3)} colStyle={styles.cell} />
+                                <CellRender value={formatValue(Math.round(equipmentInfos.p0))} colStyle={styles.cell} />
                             </TableRow>
 
                             <TableRow>
                                 <CellRender isLabel label="ConsQ" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                                <CellRender value={formatValue(equipmentInfos.q0, 3)} colStyle={styles.cell} />
+                                <CellRender value={formatValue(Math.round(equipmentInfos.q0))} colStyle={styles.cell} />
                             </TableRow>
 
                             <TableRow>
