@@ -88,6 +88,24 @@ const workspacesStateSchema = object({
     activeWorkspaceId: string().required(),
 }).required();
 
+// Validates if panel values are in the expected relative format (0-1)
+const hasValidRelativeValues = (data: any): boolean => {
+    try {
+        for (const workspace of data.workspaces || []) {
+            for (const panel of Object.values(workspace.panels || {})) {
+                const p = panel as any;
+                // Check if any position/size value is > 1 (likely old pixel format)
+                if (p?.position?.x > 1 || p?.position?.y > 1 || p?.size?.width > 1 || p?.size?.height > 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 export const loadWorkspacesFromStorage = (studyUuid: string | null): Partial<WorkspacesState> | null => {
     try {
         const key = getStorageKey(studyUuid);
@@ -97,6 +115,14 @@ export const loadWorkspacesFromStorage = (studyUuid: string | null): Partial<Wor
         }
 
         const parsedData = JSON.parse(data);
+
+        // If data has old pixel-based values, clear it and return null to use defaults
+        if (!hasValidRelativeValues(parsedData)) {
+            console.warn('Detected old pixel-based workspace layout. Resetting to defaults.');
+            localStorage.removeItem(key);
+            return null;
+        }
+
         const validatedData = workspacesStateSchema.validateSync(parsedData) as WorkspacesState;
         return validatedData;
     } catch (error) {
