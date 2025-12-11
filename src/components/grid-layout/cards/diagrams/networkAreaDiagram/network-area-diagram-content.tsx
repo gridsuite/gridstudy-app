@@ -74,7 +74,6 @@ type NetworkAreaDiagramContentProps = {
         voltageLevelToExpandIds: string[];
         voltageLevelToOmitIds: string[];
     }) => void;
-    readonly onHideVoltageLevels: (voltageLevelIds: string[]) => void;
     readonly onUpdateVoltageLevelsFromFilter: (filterUuid: UUID) => void;
     readonly onUpdatePositions: (positions: DiagramConfigPosition[]) => void;
     readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
@@ -90,7 +89,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         positions,
         onVoltageLevelClick,
         onUpdateVoltageLevels,
-        onHideVoltageLevels,
         onUpdateVoltageLevelsFromFilter,
         onUpdatePositions,
         onReplaceNad,
@@ -358,9 +356,13 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const handleHideVoltageLevelId = useCallback(
         (voltageLevelIdToOmit: string) => {
-            onHideVoltageLevels([...voltageLevelToOmitIds, voltageLevelIdToOmit]);
+            onUpdateVoltageLevels({
+                voltageLevelIds: voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
+                voltageLevelToExpandIds,
+                voltageLevelToOmitIds: [...voltageLevelToOmitIds, voltageLevelIdToOmit],
+            });
         },
-        [voltageLevelToOmitIds, onHideVoltageLevels]
+        [voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, onUpdateVoltageLevels]
     );
 
     const handleMoveNode = useCallback(

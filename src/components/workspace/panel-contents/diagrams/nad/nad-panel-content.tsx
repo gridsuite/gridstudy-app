@@ -71,21 +71,6 @@ export const NadPanelContent = ({
         [dispatch, panelId]
     );
 
-    // Remove voltage levels
-    const handleRemoveVoltageLevels = useCallback(
-        (voltageLevelIds: string[]) => {
-            dispatch(
-                updatePanelMetadata({
-                    panelId,
-                    metadata: {
-                        voltageLevelToOmitIds: voltageLevelIds,
-                    },
-                })
-            );
-        },
-        [dispatch, panelId]
-    );
-
     // Update positions in local state only - no Redux dispatch, no fetch
     const handleUpdatePositions = useCallback(
         (positions: DiagramConfigPosition[]) => {
@@ -140,7 +125,6 @@ export const NadPanelContent = ({
                 visible
                 onVoltageLevelClick={handleOpenVoltageLevelDiagram}
                 onUpdateVoltageLevels={handleUpdateVoltageLevels}
-                onHideVoltageLevels={handleRemoveVoltageLevels}
                 onUpdateVoltageLevelsFromFilter={handleUpdateVoltageLevelsFromFilter}
                 onUpdatePositions={handleUpdatePositions}
                 onReplaceNad={handleReplaceNad}

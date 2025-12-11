@@ -7,7 +7,7 @@
 
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
@@ -62,6 +62,32 @@ export const useNadDiagram = ({
         diagramMetadata.savedWorkspaceConfigUuid
     );
 
+    const updateMetadata = useCallback(
+        (updatedDiagram: NetworkAreaDiagram) => {
+            // Clear initialVoltageLevelIds after first fetch to prevent re-initialization
+            if (diagramMetadata.initialVoltageLevelIds && diagramMetadata.initialVoltageLevelIds.length > 0) {
+                dispatch(
+                    updatePanelMetadataAction({
+                        panelId,
+                        metadata: {
+                            initialVoltageLevelIds: undefined,
+                        },
+                    })
+                );
+            }
+
+            dispatch(
+                updatePanelMetadataAction({
+                    panelId,
+                    metadata: {
+                        voltageLevelToOmitIds: updatedDiagram.voltageLevelToOmitIds,
+                    },
+                })
+            );
+        },
+        [diagramMetadata.initialVoltageLevelIds, dispatch, panelId]
+    );
+
     // Helper to process SVG data - extracted to reduce nesting
     const processSvgData = useCallback(
         (svgData: any) => {
@@ -90,28 +116,12 @@ export const useNadDiagram = ({
                     saveNadConfig(updatedDiagram.voltageLevelIds, updatedDiagram.positions, scalingFactor);
                 }
 
-                // Clear initialVoltageLevelIds after first fetch to prevent re-initialization
-                if (diagramMetadata.initialVoltageLevelIds && diagramMetadata.initialVoltageLevelIds.length > 0) {
-                    dispatch(
-                        updatePanelMetadataAction({
-                            panelId,
-                            metadata: {
-                                initialVoltageLevelIds: undefined,
-                            },
-                        })
-                    );
-                }
+                updateMetadata(updatedDiagram);
 
                 return updatedDiagram;
             });
         },
-        [
-            diagramMetadata.initialVoltageLevelIds,
-            diagramMetadata.savedWorkspaceConfigUuid,
-            saveNadConfig,
-            dispatch,
-            panelId,
-        ]
+        [diagramMetadata.savedWorkspaceConfigUuid, saveNadConfig, updateMetadata]
     );
 
     const handleFetchError = useCallback(
@@ -247,7 +257,6 @@ export const useNadDiagram = ({
         diagramMetadata.nadConfigUuid,
         diagramMetadata.filterUuid,
         diagramMetadata.currentFilterUuid,
-        diagramMetadata.voltageLevelToOmitIds,
     ]);
 
     // Listen for notifications and refetch
