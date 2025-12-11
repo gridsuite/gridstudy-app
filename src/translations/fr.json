@@ -441,9 +441,9 @@
     "LoadFlowResultsCurrentViolations": "Contraintes de transit",
     "LoadFlowResultsVoltageViolations": "Contraintes de tension",
     "LoadFlowResultsSummary": "Bilan",
-    "LoadFlowResultsSynchronousComponents": "Composantes synchrones :",
-    "LoadFlowResultsCountryAdequacies": "Equilibre par pays :",
-    "LoadFlowResultsExchanges": "Echanges :",
+    "LoadFlowResultsSynchronousComponents": "Composantes synchrones",
+    "LoadFlowResultsCountryAdequacies": "Equilibres par pays",
+    "LoadFlowResultsExchanges": "Echanges",
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.categories": "Catégories",

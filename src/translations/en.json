@@ -441,9 +441,9 @@
     "LoadFlowResultsCurrentViolations": "Current violations",
     "LoadFlowResultsVoltageViolations": "Voltage violations",
     "LoadFlowResultsSummary": "Summary",
-    "LoadFlowResultsSynchronousComponents": "Synchronous components :",
-    "LoadFlowResultsCountryAdequacies": "Country adequacy : ",
-    "LoadFlowResultsExchanges": "Exchanges :",
+    "LoadFlowResultsSynchronousComponents": "Synchronous components",
+    "LoadFlowResultsCountryAdequacies": "Country adequacies",
+    "LoadFlowResultsExchanges": "Exchanges",
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.categories": "Categories",

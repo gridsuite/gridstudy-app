@@ -49,7 +49,10 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
 
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const gridRef = useRef<AgGridReact>(null);
+    const synchronousComponentsGridRef = useRef<AgGridReact>(null);
+    const countryAdequaciesGridRef = useRef<AgGridReact>(null);
+    const exchangesGridRef = useRef<AgGridReact>(null);
+
     const { translate } = useLocalizedCountries();
 
     const openLoaderStatusTab = useOpenLoaderShortWait({
@@ -107,7 +110,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 </h4>
                 <div style={{ minHeight: '300px', height: '100%' }}>
                     <RenderTableAndExportCsv
-                        gridRef={gridRef}
+                        gridRef={synchronousComponentsGridRef}
                         columns={componentColumnDefs}
                         defaultColDef={defaultColDef}
                         tableName={intl.formatMessage({
@@ -126,7 +129,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 </h4>
                 <div style={{ minHeight: '300px', height: '100%' }}>
                     <RenderTableAndExportCsv
-                        gridRef={gridRef}
+                        gridRef={countryAdequaciesGridRef}
                         columns={countryAdequaciesColumnDefs}
                         defaultColDef={defaultColDef}
                         tableName={intl.formatMessage({
@@ -145,7 +148,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 </h4>
                 <div style={{ minHeight: '300px', height: '100%', paddingBottom: '32px' }}>
                     <RenderTableAndExportCsv
-                        gridRef={gridRef}
+                        gridRef={exchangesGridRef}
                         columns={exchangesColumnDefs}
                         defaultColDef={defaultColDef}
                         tableName={intl.formatMessage({
