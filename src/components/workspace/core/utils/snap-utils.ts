@@ -9,12 +9,21 @@ const EDGE_THRESHOLD = 10;
 
 export type SnapRect = { x: number; y: number; width: number; height: number };
 
+const SNAP_ZONES = {
+    LEFT_TOP: { x: 0, y: 0, width: 0.5, height: 0.5 },
+    LEFT_BOTTOM: { x: 0, y: 0.5, width: 0.5, height: 0.5 },
+    RIGHT_TOP: { x: 0.5, y: 0, width: 0.5, height: 0.5 },
+    RIGHT_BOTTOM: { x: 0.5, y: 0.5, width: 0.5, height: 0.5 },
+    LEFT: { x: 0, y: 0, width: 0.5, height: 1 },
+    RIGHT: { x: 0.5, y: 0, width: 0.5, height: 1 },
+    TOP: { x: 0, y: 0, width: 1, height: 0.5 },
+    BOTTOM: { x: 0, y: 0.5, width: 1, height: 0.5 },
+} as const;
+
 export const getSnapZone = (mouseX: number, mouseY: number, containerRect: DOMRect): SnapRect | null => {
     const relX = mouseX - containerRect.left;
     const relY = mouseY - containerRect.top;
     const { width, height } = containerRect;
-    const halfW = width / 2;
-    const halfH = height / 2;
 
     const nearLeft = relX < EDGE_THRESHOLD;
     const nearRight = relX > width - EDGE_THRESHOLD;
@@ -22,14 +31,14 @@ export const getSnapZone = (mouseX: number, mouseY: number, containerRect: DOMRe
     const nearBottom = relY > height - EDGE_THRESHOLD;
 
     // prioritize corners
-    if (nearLeft && nearTop) return { x: 0, y: 0, width: halfW, height: halfH };
-    if (nearLeft && nearBottom) return { x: 0, y: halfH, width: halfW, height: halfH };
-    if (nearRight && nearTop) return { x: halfW, y: 0, width: halfW, height: halfH };
-    if (nearRight && nearBottom) return { x: halfW, y: halfH, width: halfW, height: halfH };
-    if (nearLeft) return { x: 0, y: 0, width: halfW, height };
-    if (nearRight) return { x: halfW, y: 0, width: halfW, height };
-    if (nearTop) return { x: 0, y: 0, width, height: halfH };
-    if (nearBottom) return { x: 0, y: halfH, width, height: halfH };
+    if (nearLeft && nearTop) return SNAP_ZONES.LEFT_TOP;
+    if (nearLeft && nearBottom) return SNAP_ZONES.LEFT_BOTTOM;
+    if (nearRight && nearTop) return SNAP_ZONES.RIGHT_TOP;
+    if (nearRight && nearBottom) return SNAP_ZONES.RIGHT_BOTTOM;
+    if (nearLeft) return SNAP_ZONES.LEFT;
+    if (nearRight) return SNAP_ZONES.RIGHT;
+    if (nearTop) return SNAP_ZONES.TOP;
+    if (nearBottom) return SNAP_ZONES.BOTTOM;
 
     return null;
 };
