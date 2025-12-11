@@ -33,7 +33,7 @@ export type NetworkAreaDiagramParams = DiagramBaseParams & {
     nadConfigUuid: UUID | undefined;
     initializationNadConfigUuid?: UUID; // used for initialization, not saved
     filterUuid: UUID | undefined;
-    currentFilterUuid?: UUID; // used for initialization, not saved
+    currentFilterUuid?: UUID;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];

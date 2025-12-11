@@ -241,9 +241,10 @@ export const useNadDiagram = ({
             nadConfigUuid: diagramMetadata.nadConfigUuid,
             filterUuid: diagramMetadata.filterUuid,
             currentFilterUuid: diagramMetadata.currentFilterUuid,
-            voltageLevelIds: diagramMetadata.initialVoltageLevelIds || prev.voltageLevelIds || [],
-            positions: prev.positions || [],
-            voltageLevelToOmitIds: diagramMetadata.voltageLevelToOmitIds || prev.voltageLevelToOmitIds || [],
+            voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
+            voltageLevelToOmitIds: diagramMetadata.voltageLevelToOmitIds || [],
+            positions: [],
+            voltageLevelToExpandIds: [],
         }));
 
         fetchDiagram();
