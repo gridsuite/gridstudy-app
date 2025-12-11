@@ -432,8 +432,7 @@ export const componentColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
-    numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
+    statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {
     const filterParams = {
         type: AgGridFilterType.Loadflow,
@@ -480,40 +479,44 @@ export const componentColumnsDefinition = (
             colId: 'consumptions',
             field: 'consumptions',
             context: {
+                numeric: true,
+                fractionDigits: 2,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
-            cellRenderer: numberRenderer,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'generations' }),
             colId: 'generations',
             field: 'generations',
             context: {
+                numeric: true,
+                fractionDigits: 2,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
-            cellRenderer: numberRenderer,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'exchanges' }),
             colId: 'exchanges',
             field: 'exchanges',
             context: {
+                numeric: true,
+                fractionDigits: 2,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
-            cellRenderer: numberRenderer,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'losses' }),
             colId: 'losses',
             field: 'losses',
             context: {
+                numeric: true,
+                fractionDigits: 2,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
-            cellRenderer: numberRenderer,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
@@ -527,7 +530,6 @@ export const componentColumnsDefinition = (
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
-            cellRenderer: numberRenderer,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'slackBusId' }),
@@ -550,11 +552,7 @@ export const componentColumnsDefinition = (
     ];
 };
 
-export const countryAdequaciesColumnsDefinition = (
-    intl: IntlShape,
-    tabIndex: number,
-    numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
-): ColDef[] => {
+export const countryAdequaciesColumnsDefinition = (intl: IntlShape): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Country' }),
@@ -565,34 +563,42 @@ export const countryAdequaciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'countryAdequacyLoad' }),
             colId: 'load',
             field: 'load',
-            cellRenderer: numberRenderer,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'countryAdequacyGeneration' }),
             colId: 'generation',
             field: 'generation',
-            cellRenderer: numberRenderer,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'losses' }),
             colId: 'losses',
             field: 'losses',
-            cellRenderer: numberRenderer,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'netPosition' }),
             colId: 'netPosition',
             field: 'netPosition',
-            cellRenderer: numberRenderer,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
         }),
     ];
 };
 
-export const exchangesColumnsDefinition = (
-    intl: IntlShape,
-    tabIndex: number,
-    numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
-): ColDef[] => {
+export const exchangesColumnsDefinition = (intl: IntlShape): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'borders' }),
@@ -608,7 +614,10 @@ export const exchangesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'exchange' }),
             colId: 'exchange',
             field: 'exchange',
-            cellRenderer: numberRenderer,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
         }),
     ];
 };

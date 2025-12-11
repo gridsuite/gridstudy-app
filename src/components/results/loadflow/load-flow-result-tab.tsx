@@ -31,7 +31,7 @@ import {
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
-import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
+import { StatusCellRender } from '../common/result-cell-renderers';
 import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
@@ -216,23 +216,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer]);
 
     const componentColumns = useMemo(() => {
-        return componentColumnsDefinition(
-            intl,
-            filterEnums,
-            getEnumLabel,
-            tabIndex,
-            StatusCellRender,
-            NumberCellRenderer
-        );
+        return componentColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex, StatusCellRender);
     }, [tabIndex, intl, filterEnums, getEnumLabel]);
 
     const countryAdequaciesColumns = useMemo(() => {
-        return countryAdequaciesColumnsDefinition(intl, tabIndex, NumberCellRenderer);
-    }, [tabIndex, intl]);
+        return countryAdequaciesColumnsDefinition(intl);
+    }, [intl]);
 
     const exchangesColumns = useMemo(() => {
-        return exchangesColumnsDefinition(intl, tabIndex, NumberCellRenderer);
-    }, [tabIndex, intl]);
+        return exchangesColumnsDefinition(intl);
+    }, [intl]);
 
     const resetResultStates = useCallback(() => {
         setResult(null);
