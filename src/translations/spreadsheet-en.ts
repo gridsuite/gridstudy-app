@@ -19,7 +19,7 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/column_type': 'Column type',
     'spreadsheet/custom_column/column_precision': 'Column precision',
     'spreadsheet/custom_column/column_content': 'Enter the formula',
-    'spreadsheet/custom_column/column_content_description': `Column content is described with variable names (in order to reference grid data), column IDs (in order to reference the content of another column) and operators provided by <Link>MathJS</Link> library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet.`,
+    'spreadsheet/custom_column/column_content_description': `Column content is described with variable names (in order to reference grid data), column IDs (in order to reference the content of another column) and operators provided by <Link>MathJS</Link> library (in order to transform grid data). Example: maxP - targetP in order to display active power reserve within the generator spreadsheet.`,
     'spreadsheet/custom_column/error/id_not_conform':
         'Column ID must not contain spaces, special characters or start with a number',
     'spreadsheet/custom_column/error/id_le_60': 'Column ID must be at most 60 characters',

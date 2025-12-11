@@ -7,7 +7,7 @@
 
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
@@ -47,10 +47,11 @@ export const useNadDiagram = ({
         svg: null,
         nadConfigUuid: diagramMetadata.nadConfigUuid,
         filterUuid: diagramMetadata.filterUuid,
+        currentFilterUuid: diagramMetadata.currentFilterUuid,
         voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
         positions: [],
         voltageLevelToExpandIds: [],
-        voltageLevelToOmitIds: [],
+        voltageLevelToOmitIds: diagramMetadata.voltageLevelToOmitIds || [],
     }));
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
@@ -59,6 +60,32 @@ export const useNadDiagram = ({
         studyUuid,
         panelId,
         diagramMetadata.savedWorkspaceConfigUuid
+    );
+
+    const updateMetadata = useCallback(
+        (updatedDiagram: NetworkAreaDiagram) => {
+            // Clear initialVoltageLevelIds after first fetch to prevent re-initialization
+            if (diagramMetadata.initialVoltageLevelIds && diagramMetadata.initialVoltageLevelIds.length > 0) {
+                dispatch(
+                    updatePanelMetadataAction({
+                        panelId,
+                        metadata: {
+                            initialVoltageLevelIds: undefined,
+                        },
+                    })
+                );
+            }
+
+            dispatch(
+                updatePanelMetadataAction({
+                    panelId,
+                    metadata: {
+                        voltageLevelToOmitIds: updatedDiagram.voltageLevelToOmitIds,
+                    },
+                })
+            );
+        },
+        [diagramMetadata.initialVoltageLevelIds, dispatch, panelId]
     );
 
     // Helper to process SVG data - extracted to reduce nesting
@@ -89,28 +116,12 @@ export const useNadDiagram = ({
                     saveNadConfig(updatedDiagram.voltageLevelIds, updatedDiagram.positions, scalingFactor);
                 }
 
-                // Clear initialVoltageLevelIds after first fetch to prevent re-initialization
-                if (diagramMetadata.initialVoltageLevelIds && diagramMetadata.initialVoltageLevelIds.length > 0) {
-                    dispatch(
-                        updatePanelMetadataAction({
-                            panelId,
-                            metadata: {
-                                initialVoltageLevelIds: undefined,
-                            },
-                        })
-                    );
-                }
+                updateMetadata(updatedDiagram);
 
                 return updatedDiagram;
             });
         },
-        [
-            diagramMetadata.initialVoltageLevelIds,
-            diagramMetadata.savedWorkspaceConfigUuid,
-            saveNadConfig,
-            dispatch,
-            panelId,
-        ]
+        [diagramMetadata.savedWorkspaceConfigUuid, saveNadConfig, updateMetadata]
     );
 
     const handleFetchError = useCallback(
@@ -150,28 +161,26 @@ export const useNadDiagram = ({
 
             setDiagram((currentDiagram) => {
                 const hasVoltageLevels = currentDiagram.voltageLevelIds?.length > 0;
-                const hasExpandOrOmitIds =
-                    (currentDiagram.voltageLevelToExpandIds?.length ?? 0) > 0 ||
-                    (currentDiagram.voltageLevelToOmitIds?.length ?? 0) > 0;
+                const hasExpandIds = (currentDiagram.voltageLevelToExpandIds?.length ?? 0) > 0;
 
                 // Use saved config only if we have no voltage levels AND no expand/omit operations
-                const useSavedConfig =
-                    diagramMetadata.savedWorkspaceConfigUuid && !hasVoltageLevels && !hasExpandOrOmitIds;
+                // Replace by the state isEditNadMode
+                const isEditMode = diagramMetadata.savedWorkspaceConfigUuid && !hasVoltageLevels && !hasExpandIds;
 
                 const fetchOptions: RequestInit = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        nadConfigUuid: useSavedConfig
+                        nadConfigUuid: isEditMode
                             ? diagramMetadata.savedWorkspaceConfigUuid
                             : currentDiagram.nadConfigUuid,
-                        filterUuid: currentDiagram.filterUuid,
-                        ...(useSavedConfig
+                        filterUuid: currentDiagram.currentFilterUuid ?? currentDiagram.filterUuid,
+                        voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
+                        ...(isEditMode
                             ? {}
                             : {
                                   voltageLevelIds: currentDiagram.voltageLevelIds,
                                   voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
-                                  voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
                                   positions: currentDiagram.positions,
                               }),
                         nadPositionsGenerationMode:
@@ -231,10 +240,11 @@ export const useNadDiagram = ({
             type: DiagramType.NETWORK_AREA_DIAGRAM,
             nadConfigUuid: diagramMetadata.nadConfigUuid,
             filterUuid: diagramMetadata.filterUuid,
+            currentFilterUuid: diagramMetadata.currentFilterUuid,
             voltageLevelIds: diagramMetadata.initialVoltageLevelIds || [],
+            voltageLevelToOmitIds: diagramMetadata.voltageLevelToOmitIds || [],
             positions: [],
             voltageLevelToExpandIds: [],
-            voltageLevelToOmitIds: [],
         }));
 
         fetchDiagram();
@@ -247,6 +257,7 @@ export const useNadDiagram = ({
         currentRootNetworkUuid,
         diagramMetadata.nadConfigUuid,
         diagramMetadata.filterUuid,
+        diagramMetadata.currentFilterUuid,
     ]);
 
     // Listen for notifications and refetch
