@@ -10,6 +10,14 @@ import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const instance = create(all);
 
+// Custom error class for MathJS validation errors
+export class MathJsValidationError extends Error {
+    constructor(public error: string) {
+        super(error);
+        this.name = 'MathJsValidationError';
+    }
+}
+
 const originalEvaluate = instance.evaluate;
 export const limitedEvaluate = (expr: string | string[], scope?: object) => {
     const result = originalEvaluate(expr, scope);
@@ -18,14 +26,6 @@ export const limitedEvaluate = (expr: string | string[], scope?: object) => {
     }
     return result;
 };
-
-// Custom error class for MathJS validation errors
-export class MathJsValidationError extends Error {
-    constructor(public error: string) {
-        super(error);
-        this.name = 'MathJsValidationError';
-    }
-}
 
 instance.import(
     {
