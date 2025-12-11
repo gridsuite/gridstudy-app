@@ -35,7 +35,7 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
         rows.push({
             tap: phaseTapChanger.tapPosition ?? '-',
             rho: '-',
-            alpha: phaseTapChanger.steps[phaseTapChanger.tapPosition].alpha,
+            alpha: phaseTapChanger.steps[phaseTapChanger.tapPosition - 1].alpha,
             mode: getComputedPhaseTapChangerRegulationMode(phaseTapChanger)?.label,
         });
     }
