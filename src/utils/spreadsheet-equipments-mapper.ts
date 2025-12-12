@@ -24,7 +24,7 @@ import { SpreadsheetEquipmentType } from '../components/spreadsheet-view/types/s
  * This function is used to format the data of the table to be able to display it in the table
  * and resolve the issue of the calculated fields
  */
-const mapRatioTapChanger = (twt: any) => {
+export const mapRatioTapChanger = (twt: any) => {
     if (!twt?.ratioTapChanger) {
         return twt;
     }
@@ -48,7 +48,7 @@ const mapRatioTapChanger = (twt: any) => {
     };
 };
 
-const mapPhaseTapChanger = (twt: any) => {
+export const mapPhaseTapChanger = (twt: any) => {
     if (!twt?.phaseTapChanger) {
         return twt;
     }
@@ -72,9 +72,9 @@ const mapPhaseTapChanger = (twt: any) => {
     };
 };
 
-const mapTwtDataForTable = (twt: any) => mapPhaseTapChanger(mapRatioTapChanger(twt));
+export const mapTwtDataForTable = (twt: any) => mapPhaseTapChanger(mapRatioTapChanger(twt));
 
-const mapGeneratorDataForTable = (generator: any) => {
+export const mapGeneratorDataForTable = (generator: any) => {
     const formattedGenerator = { ...generator };
     const hasDistantRegulation =
         formattedGenerator.regulatingTerminalVlId || formattedGenerator.regulatingTerminalConnectableId;
@@ -84,7 +84,7 @@ const mapGeneratorDataForTable = (generator: any) => {
     return formattedGenerator;
 };
 
-const mapShuntCompensatorDataForTable = (shuntCompensator: any) => {
+export const mapShuntCompensatorDataForTable = (shuntCompensator: any) => {
     const formattedCompensator = { ...shuntCompensator };
 
     if (formattedCompensator.type === undefined) {
