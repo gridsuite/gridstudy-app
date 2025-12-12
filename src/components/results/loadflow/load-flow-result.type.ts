@@ -17,6 +17,32 @@ export interface ComponentResult {
     iterationCount: number;
     slackBusResults: SlackBusResult[];
     distributedActivePower: number;
+    consumptions: number;
+    generations: number;
+    exchanges: number;
+    losses: number;
+}
+
+export interface CountryAdequacy {
+    countryAdequacyUuid: UUID;
+    country: string;
+    load: number;
+    generation: number;
+    losses: number;
+    netPosition: number;
+}
+
+export interface ExchangeValue {
+    exchangeUuid: UUID;
+    country: string;
+    exchange: number;
+}
+
+export interface ExchangePair {
+    exchangeUuid?: UUID;
+    countryA: string;
+    countryB: string;
+    exchange: number;
 }
 
 export interface SlackBusResult {
@@ -28,6 +54,8 @@ export interface LoadFlowResult {
     resultUuid: UUID;
     writeTimeStamp: Date;
     componentResults: ComponentResult[];
+    countryAdequacies: CountryAdequacy[];
+    exchanges: Record<string, ExchangeValue[]>;
 }
 
 export enum LimitTypes {
@@ -44,16 +72,19 @@ export interface LoadFlowTabProps {
 
 export interface LoadflowResultTap {
     isLoadingResult: boolean;
-    columnDefs: ColDef<any>[];
     tableName: string;
 }
 
 export interface LoadflowResultProps extends LoadflowResultTap {
     result: LoadFlowResult;
+    componentColumnDefs: ColDef<any>[];
+    countryAdequaciesColumnDefs: ColDef<any>[];
+    exchangesColumnDefs: ColDef<any>[];
 }
 
 export interface LimitViolationResultProps extends LoadflowResultTap {
     result: OverloadedEquipment[];
+    columnDefs: ColDef<any>[];
 }
 
 export interface OverloadedEquipment {
