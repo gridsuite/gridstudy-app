@@ -10,16 +10,16 @@ import { useSelector } from 'react-redux';
 import { LANG_FRENCH, useSnackMessage, snackWithFallback, Identifiable } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import { EQUIPMENT_ID } from 'components/utils/field-constants';
-import { TabularModificationType, PredefinedEquipmentProperties } from '../tabular-common';
+import { isFieldTypeOk, TabularField, PredefinedEquipmentProperties } from '../tabular-common';
 import { getNetworkElementsInfosByGlobalFilter } from 'services/study/filter';
 import { fetchNetworkElementsInfos } from 'services/study/network';
 import type { UUID } from 'node:crypto';
 import { getPrefilledColumnGroups } from './prefillable-columns-config';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { mapPrefilledEquipments, PrefilledModelGenerationParams } from './utils';
+import { TABULAR_MODIFICATION_FIELDS } from '../tabular-modification-utils';
 
 export interface UsePrefilledModelGeneratorProps {
-    dialogMode: TabularModificationType;
     equipmentType: EQUIPMENT_TYPES;
     csvColumns: string[];
     commentLines: string[][];
@@ -27,7 +27,7 @@ export interface UsePrefilledModelGeneratorProps {
 }
 
 export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProps) => {
-    const { dialogMode, equipmentType, csvColumns, commentLines } = props;
+    const { equipmentType, csvColumns, commentLines } = props;
 
     const { snackError } = useSnackMessage();
 
@@ -104,6 +104,36 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
     }, []);
 
     /**
+     * Validates and formats a value for CSV output based on field definition
+     * Returns empty string for invalid values (undefined, null, NaN, 'undefined')
+     */
+    const formatValueForCsv = useCallback((value: any, fieldDef: TabularField | undefined): string => {
+        if (value === undefined || value === null || value === 'undefined') {
+            return '';
+        }
+
+        if (typeof value === 'number' && Number.isNaN(value)) {
+            return '';
+        }
+
+        if (fieldDef && !isFieldTypeOk(value, fieldDef)) {
+            return '';
+        }
+
+        return String(value);
+    }, []);
+
+    /**
+     * Gets the field definition for a given column name
+     */
+    const getFieldDefinition = useCallback(
+        (columnName: string): TabularField | undefined => {
+            return TABULAR_MODIFICATION_FIELDS[equipmentType].find((field) => field.id === columnName);
+        },
+        [equipmentType]
+    );
+
+    /**
      * Generates CSV content from equipments data
      */
     const generateCsvContent = useCallback(
@@ -138,7 +168,8 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
                         if (columnIndex !== -1) {
                             const networkField = group.networkFields[columnIndex];
                             const value = getNestedValue(equipment, networkField);
-                            return value !== undefined && value !== null && value !== 'undefined' ? String(value) : '';
+                            const fieldDef = getFieldDefinition(column);
+                            return formatValueForCsv(value, fieldDef);
                         }
                     }
 
@@ -149,16 +180,15 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
 
             return csvRows.join('\n');
         },
-        [csvColumns, commentLines, delimiter, equipmentType, getNestedValue]
+        [csvColumns, commentLines, delimiter, equipmentType, getNestedValue, getFieldDefinition, formatValueForCsv]
     );
 
     /**
      * Generates the filename for the CSV
      */
     const generateFilename = useCallback((): string => {
-        const suffix = dialogMode === TabularModificationType.CREATION ? 'creation' : 'modification';
-        return `${equipmentType}_${suffix}_prefilled.csv`;
-    }, [equipmentType, dialogMode]);
+        return `${equipmentType}_modification_prefilled.csv`;
+    }, [equipmentType]);
 
     /**
      * Downloads the CSV file
