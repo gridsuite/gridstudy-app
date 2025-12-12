@@ -1605,6 +1605,10 @@
     "searchVoltageLevelInNad": "Search voltage level",
     "noResultsFound": "No results found",
     "hide": "Hide",
+    "hideAll": "Hide all",
+    "showAll": "Show all",
+    "grid": "Grid layout",
+    "cascade": "Cascade layout",
     "hideLabels": "Hide labels in edit mode",
     "showLabels": "Show labels",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
@@ -1706,5 +1710,9 @@
     "history": "History",
     "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default droop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)",
     "ActivePower": "P (MW)",
-    "reactivePowerTooltip": "Q (MVar)"
+    "reactivePowerTooltip": "Q (MVar)",
+    "removeAll": "Close All",
+    "removeAllAssociatedSldsConfirmation": "Are you sure you want to close all associated voltage levels?",
+    "createNewNAD": "Create New NAD",
+    "existingNAD": "Existing NAD"
 }

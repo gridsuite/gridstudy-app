@@ -15,6 +15,7 @@ import {
     PanelType,
     PanelMetadata,
     SLDPanelMetadata,
+    NADPanelMetadata,
     RelativeLayout,
 } from '../../components/workspace/types/workspace.types';
 
@@ -51,6 +52,7 @@ const createPanelFromLayout = (
             height: layout.height,
         },
         zIndex: workspace.nextZIndex++,
+        orderIndex: workspace.nextOrderIndex++,
         isMinimized: false,
         isMaximized: false,
         isPinned: false,
@@ -70,6 +72,7 @@ export const createDefaultWorkspaces = (): Workspace[] => {
             panels: {},
             focusedPanelId: null,
             nextZIndex: 1,
+            nextOrderIndex: 1,
         };
 
         if (i === 0) {
@@ -134,6 +137,7 @@ export const createPanel = (
         position: options.position || config.defaultPosition,
         size: options.size || config.defaultSize,
         zIndex: workspace.nextZIndex++,
+        orderIndex: workspace.nextOrderIndex++,
         isMinimized: false,
         isMaximized: false,
         isPinned: false,
@@ -176,9 +180,25 @@ export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
     const panel = workspace.panels[panelId];
     if (!panel) return;
 
-    if (isDiagramPanel(panel.type)) {
+    // If closing a NAD panel, delete all associated SLDs
+    if (panel.type === PanelType.NAD) {
+        const nadMetadata = panel.metadata as NADPanelMetadata | undefined;
+        const associatedPanelIds = nadMetadata?.associatedVoltageLevelPanels || [];
+        associatedPanelIds.forEach((sldPanelId) => {
+            deletePanel(workspace, sldPanelId);
+        });
+    }
+
+    // Check if this is an attached SLD (associated with a NAD panel)
+    const isAttachedSld =
+        (panel.type === PanelType.SLD_VOLTAGE_LEVEL || panel.type === PanelType.SLD_SUBSTATION) &&
+        (panel.metadata as SLDPanelMetadata | undefined)?.associatedToNadPanel;
+
+    // Regular diagram panels (not attached) should be deleted
+    if (!isAttachedSld && isDiagramPanel(panel.type)) {
         deletePanel(workspace, panelId);
     } else {
+        // Attached SLDs and non-diagram panels should be hidden
         panel.isClosed = true;
         if (workspace.focusedPanelId === panelId) {
             workspace.focusedPanelId = null;
@@ -194,7 +214,12 @@ export const findDiagramPanel = (workspace: Workspace, panelType: PanelType, id:
         }
 
         if (panelType === PanelType.SLD_VOLTAGE_LEVEL || panelType === PanelType.SLD_SUBSTATION) {
-            return (panel.metadata as SLDPanelMetadata).diagramId === id;
+            const metadata = panel.metadata as SLDPanelMetadata;
+            // Exclude attached SLDs
+            if (metadata.associatedToNadPanel) {
+                return false;
+            }
+            return metadata.diagramId === id;
         }
 
         return false;

@@ -7,7 +7,12 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
-import type { PanelType, Workspace } from '../../components/workspace/types/workspace.types';
+import type {
+    PanelType,
+    Workspace,
+    NADPanelMetadata,
+    SLDPanelMetadata,
+} from '../../components/workspace/types/workspace.types';
 import type { UUID } from 'node:crypto';
 
 const getActiveWorkspace = (state: RootState): Workspace | undefined =>
@@ -20,10 +25,7 @@ export const selectPanel = createSelector(
     (panels, panelId) => panels[panelId]
 );
 
-export const selectPanelMetadata = createSelector(
-    [selectPanelsRecord, (_state: RootState, panelId: UUID) => panelId],
-    (panels, panelId) => panels[panelId]?.metadata
-);
+export const selectPanelMetadata = createSelector([selectPanel], (panel) => panel?.metadata);
 
 export const selectIsPanelTypeOpen = createSelector(
     [selectPanelsRecord, (_state: RootState, panelType: PanelType) => panelType],
@@ -32,11 +34,23 @@ export const selectIsPanelTypeOpen = createSelector(
 
 export const selectOpenPanelIds = createSelector(
     [selectPanelsRecord],
-    (panels) => Object.keys(panels).filter((id) => !panels[id as UUID].isClosed) as UUID[]
+    (panels) =>
+        Object.keys(panels).filter((id) => {
+            const panel = panels[id as UUID];
+            // Exclude attached SLDs (they render inside NAD panels, not in workspace)
+            const isAttachedSld = (panel.metadata as SLDPanelMetadata | undefined)?.associatedToNadPanel;
+            return !panel.isClosed && !isAttachedSld;
+        }) as UUID[]
 );
 
 export const selectOpenPanels = createSelector([selectPanelsRecord], (panels) =>
-    Object.values(panels).filter((p) => !p.isClosed)
+    Object.values(panels)
+        .filter((p) => {
+            // Exclude attached SLDs (they render inside NAD panels, not in workspace)
+            const isAttachedSld = (p.metadata as SLDPanelMetadata | undefined)?.associatedToNadPanel;
+            return !p.isClosed && !isAttachedSld;
+        })
+        .sort((a, b) => a.orderIndex - b.orderIndex)
 );
 
 export const selectFocusedPanelId = createSelector(
@@ -47,3 +61,63 @@ export const selectFocusedPanelId = createSelector(
 export const selectWorkspaces = (state: RootState) => state.workspace.workspaces;
 
 export const selectActiveWorkspaceId = (state: RootState) => state.workspace.activeWorkspaceId;
+
+// Get the array of associated SLD panel IDs from NAD metadata
+export const selectAssociatedPanelIds = createSelector([selectPanelMetadata], (metadata): UUID[] => {
+    const nadMetadata = metadata as NADPanelMetadata | undefined;
+    return nadMetadata?.associatedVoltageLevelPanels || [];
+});
+
+// Get minimal panel data (zIndex, isClosed) for associated panels only
+export const selectAssociatedPanelsData = createSelector(
+    [selectAssociatedPanelIds, selectPanelsRecord],
+    (associatedPanelIds, allPanels): Record<UUID, { zIndex: number; isClosed: boolean }> => {
+        const result: Record<UUID, { zIndex: number; isClosed: boolean }> = {};
+        associatedPanelIds.forEach((id) => {
+            const panel = allPanels[id];
+            if (panel) {
+                result[id] = {
+                    zIndex: panel.zIndex,
+                    isClosed: panel.isClosed,
+                };
+            }
+        });
+        return result;
+    }
+);
+
+// Map associated panel IDs to their voltage level IDs
+export const selectAssociatedVoltageLevelIds = createSelector(
+    [selectAssociatedPanelIds, selectPanelsRecord],
+    (associatedPanelIds, panels): string[] => {
+        if (associatedPanelIds.length === 0) {
+            return [];
+        }
+        return associatedPanelIds
+            .map((panelId) => {
+                const panel = panels[panelId];
+                return (panel?.metadata as SLDPanelMetadata | undefined)?.diagramId;
+            })
+            .filter((id): id is string => !!id);
+    }
+);
+
+// Get visible (non-closed) associated SLD panels for a NAD panel
+export const selectVisibleAssociatedSldPanels = createSelector(
+    [selectAssociatedPanelIds, selectPanelsRecord],
+    (associatedPanelIds, panels) => associatedPanelIds.filter((id) => panels[id] && !panels[id].isClosed)
+);
+
+// Get associated panel details (id, title, isVisible) for rendering chips
+export const selectAssociatedPanelDetails = createSelector(
+    [selectAssociatedPanelIds, selectPanelsRecord],
+    (associatedPanelIds, panels) =>
+        associatedPanelIds.map((id) => {
+            const panel = panels[id];
+            return {
+                id,
+                title: panel?.title,
+                isVisible: panel && !panel.isClosed,
+            };
+        })
+);
