@@ -9,7 +9,6 @@ export const APP_NAME = 'study';
 
 // Commons config names
 export const PARAM_THEME = 'theme';
-export const PARAM_LANGUAGE = 'language';
 
 // App config names
 export const PARAM_USE_NAME = 'useName';

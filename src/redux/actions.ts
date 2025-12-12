@@ -8,7 +8,6 @@
 import {
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LANGUAGE,
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
@@ -21,6 +20,7 @@ import {
     type GsTheme,
     type Identifiable,
     type NetworkVisualizationParameters,
+    PARAM_LANGUAGE,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { UnknownArray } from 'type-fest';

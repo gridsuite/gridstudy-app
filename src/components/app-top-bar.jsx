@@ -6,11 +6,11 @@
  */
 
 import { useEffect, useState } from 'react';
-import { fetchAppsMetadata, LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
+import { fetchAppsMetadata, LIGHT_THEME, logout, TopBar, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { Box } from '@mui/material';
-import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';

@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 're
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
-import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE } from 'utils/config-params';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from 'redux/reducer';
@@ -53,6 +53,7 @@ import {
     getSecurityAnalysisDefaultLimitReductions,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
+    PARAM_LANGUAGE,
     PccMinParametersInLine,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
