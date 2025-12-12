@@ -29,7 +29,6 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isBuilt = isNodeBuilt(currentNode);
 
-    // Access Redux state internally
     const associatedVoltageLevelIds = useSelector(
         (state: RootState) => selectAssociatedVoltageLevelIds(state, nadPanelId),
         shallowEqual
@@ -40,7 +39,6 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         shallowEqual
     );
 
-    // Get navigation handler internally
     const { handleNavigationSidebarClick } = useNadSldAssociation({ nadPanelId });
 
     const reversedHistory = useMemo(

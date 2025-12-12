@@ -42,7 +42,7 @@ export const useSldLayout = ({
 }: UseSldLayoutParams): UseSldLayoutReturn => {
     const dispatch = useDispatch();
 
-    // Reorganize visible SLDs in grid or cascade layout using Redux
+    // Reorganize visible SLDs in grid or cascade layout
     const handleReorganize = useCallback(
         (mode: LayoutMode) => {
             const count = visibleSldPanels.length;
@@ -94,13 +94,11 @@ export const useSldLayout = ({
         [dispatch, visibleSldPanels]
     );
 
-    // Toggle between hide all and show all SLDs using Redux
+    // Toggle between hide all and show all SLDs
     const handleHideAll = useCallback(() => {
         if (visibleSldPanels.length > 0) {
-            // Hide all if any are visible
             dispatch(closeAllAssociatedSlds(nadPanelId));
         } else {
-            // Show all if none are visible - open each panel
             associatedPanelIds.forEach((sldPanelId) => {
                 dispatch(openPanel(sldPanelId));
             });

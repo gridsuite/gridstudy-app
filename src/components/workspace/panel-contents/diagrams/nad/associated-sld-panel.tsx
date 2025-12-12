@@ -138,7 +138,6 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
         height: number;
     } | null>(null);
 
-    // Read position and size from Redux panel state
     const relativePosition = sldPanel?.position || DEFAULT_POSITION;
     const relativeSize = sldPanel?.size || DEFAULT_SIZE;
 
@@ -211,13 +210,15 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     }, [dispatch, sldPanelId]);
 
     const handleClose = useCallback(() => {
-        // Close button deletes the SLD completely
         dispatch(deleteAssociatedSld(sldPanelId));
     }, [dispatch, sldPanelId]);
 
     const handleResizeStart = useCallback(() => {
         setIsDragging(true);
-    }, []);
+        if (!isFocused) {
+            onBringToFront?.(sldPanelId);
+        }
+    }, [isFocused, onBringToFront, sldPanelId]);
 
     const handleResize: RndResizeCallback = useCallback((_e, _direction, ref, _delta, position) => {
         // Track dimensions during resize for immediate visual feedback

@@ -18,18 +18,12 @@ interface NadAssociatedPanelsContainerProps {
     readonly onRequestAssociation: (voltageLevelId: string) => void;
 }
 
-/**
- * Container that manages all associated SLD panels and chips for a NAD panel.
- * This component accesses Redux state and prevents NAD diagram from rerendering
- * when SLD panel states change.
- */
 export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsContainer({
     nadPanelId,
     onRequestAssociation,
 }: NadAssociatedPanelsContainerProps) {
     const [isDraggingAny, setIsDraggingAny] = useState(false);
 
-    // Access SLD-specific Redux state here, not in parent
     const { associatedPanelIds, visibleSldPanels, focusedSldId, handleBringToFront, handleToggleSldVisibility } =
         useSldPanels({ nadPanelId });
 

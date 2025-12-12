@@ -49,16 +49,16 @@ export const useNadSldAssociation = ({ nadPanelId }: UseNadSldAssociationParams)
                 return metadata?.diagramId === voltageLevelId;
             });
 
-            if (!existingSldPanelId) {
-                // Not associated yet, open and associate it (reducer handles opening and z-index)
-                dispatch(openSldAndAssociateToNad({ voltageLevelId, nadPanelId }));
-            } else {
+            if (existingSldPanelId) {
                 // Already associated, ensure it's visible and bring to front
                 const panel = panels[existingSldPanelId];
                 if (panel?.isClosed) {
                     dispatch(openPanel(existingSldPanelId));
                 }
                 dispatch(updatePanelZIndex(existingSldPanelId));
+            } else {
+                // Not associated yet, open and associate it (reducer handles opening and z-index)
+                dispatch(openSldAndAssociateToNad({ voltageLevelId, nadPanelId }));
             }
         },
         [dispatch, nadPanelId, store]

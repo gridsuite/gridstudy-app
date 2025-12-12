@@ -142,8 +142,6 @@ export const NadPanelContent = memo(function NadPanelContent({
                         />
                     </Box>
                 </DiagramWrapper>
-
-                {/* Associated SLD panels and chips - manages its own Redux state */}
                 <NadAssociatedPanelsContainer nadPanelId={panelId} onRequestAssociation={handleVoltageLevelClick} />
             </Box>
             <NadNavigationSidebar nadPanelId={panelId} />

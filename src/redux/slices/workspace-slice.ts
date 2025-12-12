@@ -457,6 +457,11 @@ const workspacesSlice = createSlice({
                 return;
             }
 
+            // Calculate bottom position using relative coordinates (similar to cascade layout)
+            // Position at bottom of NAD panel, accounting for chip bar
+            const bottomY = 1 - NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT - 0.02; // 2% padding from bottom
+            const startX = NAD_SLD_CONSTANTS.CASCADE_START_X;
+
             // Create a new SLD panel
             const metadata: SLDPanelMetadata = {
                 diagramId: voltageLevelId,
@@ -466,6 +471,11 @@ const workspacesSlice = createSlice({
             const sldPanelId = createPanel(workspace, PanelType.SLD_VOLTAGE_LEVEL, {
                 title: voltageLevelId,
                 metadata,
+                position: { x: startX, y: bottomY },
+                size: {
+                    width: NAD_SLD_CONSTANTS.PANEL_DEFAULT_WIDTH,
+                    height: NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT,
+                },
             });
 
             // Update SLD panel to reference NAD (keep it open and on top for immediate visibility)

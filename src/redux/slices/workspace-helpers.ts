@@ -194,17 +194,11 @@ export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
         (panel.type === PanelType.SLD_VOLTAGE_LEVEL || panel.type === PanelType.SLD_SUBSTATION) &&
         (panel.metadata as SLDPanelMetadata | undefined)?.associatedToNadPanel;
 
-    if (isAttachedSld) {
-        // Attached SLDs should only be hidden, not deleted or dissociated
-        panel.isClosed = true;
-        if (workspace.focusedPanelId === panelId) {
-            workspace.focusedPanelId = null;
-        }
-    } else if (isDiagramPanel(panel.type)) {
-        // Regular diagram panels (not attached) should be deleted
+    // Regular diagram panels (not attached) should be deleted
+    if (!isAttachedSld && isDiagramPanel(panel.type)) {
         deletePanel(workspace, panelId);
     } else {
-        // Non-diagram panels should be hidden
+        // Attached SLDs and non-diagram panels should be hidden
         panel.isClosed = true;
         if (workspace.focusedPanelId === panelId) {
             workspace.focusedPanelId = null;
