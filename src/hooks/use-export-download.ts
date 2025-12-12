@@ -8,17 +8,17 @@ import { UUID } from 'node:crypto';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { downloadZipFile } from '../services/utils';
-import { fetchExportNetworkFile } from '../services/network-conversion';
+import { fetchExportNetworkFile } from '../services/study/network';
 import { useIntl } from 'react-intl';
 
-export function useExportDownload() {
+export function useExportDownload(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     const { snackError, snackSuccess } = useSnackMessage();
     const intl = useIntl();
 
     const downloadExportNetworkFile = useCallback(
         (exportUuid: UUID) => {
             let filename = 'export.zip';
-            fetchExportNetworkFile(exportUuid)
+            fetchExportNetworkFile(studyUuid, currentNodeUuid, currentRootNetworkUuid, exportUuid)
                 .then(async (response) => {
                     const contentDisposition = response.headers.get('Content-Disposition');
                     if (contentDisposition?.includes('filename=')) {
@@ -40,7 +40,7 @@ export function useExportDownload() {
                     snackWithFallback(snackError, error, { headerId: 'export.message.failed' });
                 });
         },
-        [intl, snackError, snackSuccess]
+        [currentNodeUuid, currentRootNetworkUuid, intl, snackError, snackSuccess, studyUuid]
     );
     return { downloadExportNetworkFile };
 }

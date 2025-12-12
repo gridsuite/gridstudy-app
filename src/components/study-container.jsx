@@ -152,7 +152,7 @@ export function StudyContainer() {
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
-    useExportNotification();
+    useExportNotification(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
