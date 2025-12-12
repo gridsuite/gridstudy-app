@@ -114,7 +114,7 @@ import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
 import { getBaseVoltagesCssVars } from 'utils/colors';
-import { saveLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
+import {getLocalStorageBaseVoltages, saveLocalStorageBaseVoltages} from 'redux/session-storage/local-storage';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -485,7 +485,7 @@ const AppWrapperWithRedux = () => {
             ...themeVars,
             ...getBaseVoltagesCssVars(theme),
         };
-    }, [theme]);
+    }, [theme, getLocalStorageBaseVoltages()]);
 
     const urlMapper = useNotificationsUrlGenerator();
 
