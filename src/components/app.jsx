@@ -20,6 +20,7 @@ import {
     initializeAuthenticationProd,
     LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
+    PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
     useNotificationsListener,
@@ -29,12 +30,7 @@ import {
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
-import {
-    APP_NAME,
-    PARAM_DEVELOPER_MODE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_USE_NAME,
-} from '../utils/config-params';
+import { APP_NAME, PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
