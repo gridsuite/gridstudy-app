@@ -84,6 +84,12 @@ export const CONNECTION_DIRECTIONS = [
 // and the undefined/default one (not displayed)
 export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 
+// For load tabular creations/modifications, we allow the UNDEFINED value
+export const CONNECTION_DIRECTIONS_FOR_LOAD_TABULAR_CREATION_MODIFICATION = [
+    ...CONNECTION_DIRECTIONS,
+    { id: UNDEFINED_CONNECTION_DIRECTION, label: 'Undefined' },
+] as const;
+
 export function getEnergySourceLabel(energySourceId?: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
