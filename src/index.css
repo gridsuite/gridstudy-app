@@ -160,7 +160,7 @@ code {
 }
 .sld-node-infos {
     stroke: none;
-    fill: var(--vl-color, black);
+    background-color: var(--vl-color, black);
 }
 .sld-label {
     stroke: none;
