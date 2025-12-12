@@ -315,9 +315,9 @@ export const addModificationTypeToTemporaryLimits = (
 ): TemporaryLimit[] => {
     return formTemporaryLimits.map((limit: TemporaryLimitFormSchema) => {
         return {
-            name: limit?.name ?? '',
-            acceptableDuration: limit?.acceptableDuration ?? null,
-            value: limit?.value ?? null,
+            name: toModificationOperation(limit?.name),
+            acceptableDuration: toModificationOperation(limit?.acceptableDuration),
+            value: toModificationOperation(limit?.value),
             modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
@@ -370,8 +370,8 @@ export const addModificationTypeToOpLimitsGroups = (
 
 export const temporaryLimitToTemporaryLimitFormSchema = (temporaryLimit: TemporaryLimit): TemporaryLimitFormSchema => {
     return {
-        [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
-        [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
-        [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value,
+        [TEMPORARY_LIMIT_NAME]: temporaryLimit.name?.value,
+        [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration?.value,
+        [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value?.value,
     };
 };

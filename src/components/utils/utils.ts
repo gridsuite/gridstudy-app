@@ -134,9 +134,9 @@ export function toModificationUnsetOperation<T>(
 export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): TemporaryLimit[] =>
     temporaryLimits?.map((limit: TemporaryLimitsData) => {
         return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [TEMPORARY_LIMIT_NAME]: toModificationOperation(limit?.[TEMPORARY_LIMIT_NAME]),
+            [TEMPORARY_LIMIT_VALUE]: toModificationOperation(limit?.[TEMPORARY_LIMIT_VALUE]),
+            [TEMPORARY_LIMIT_DURATION]: toModificationOperation(limit?.[TEMPORARY_LIMIT_DURATION]),
             [MODIFICATION_TYPE]: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
@@ -144,9 +144,9 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): T
 export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME]?.value,
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE]?.value,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION]?.value,
         };
     });
 
@@ -155,9 +155,9 @@ export const formatMapInfosToTemporaryLimitsFormSchema = (
 ): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimitsData) => {
         return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME],
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE],
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION],
         };
     });
 

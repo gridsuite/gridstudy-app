@@ -34,9 +34,9 @@ import { AttributeModification } from '../../../../services/network-modification
 import { APPLICABILITY } from '../../../network/constants';
 
 type TemporaryLimit = {
-    name: string;
-    value: number;
-    acceptableDuration: number;
+    name: AttributeModification<string>;
+    value: AttributeModification<number>;
+    acceptableDuration: AttributeModification<number>;
 };
 
 type CurrentLimits = {
@@ -96,9 +96,9 @@ const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, amountM
     for (let i = 1; i <= amountMaxTemporaryLimits; i++) {
         if (modification[TEMPORARY_LIMIT_NAME + i]) {
             temporaryLimits.push({
-                name: modification[TEMPORARY_LIMIT_NAME + i],
-                value: modification[TEMPORARY_LIMIT_VALUE + i],
-                acceptableDuration: modification[TEMPORARY_LIMIT_DURATION + i],
+                name: toModificationOperation(modification[TEMPORARY_LIMIT_NAME + i]),
+                value: toModificationOperation(modification[TEMPORARY_LIMIT_VALUE + i]),
+                acceptableDuration: toModificationOperation(modification[TEMPORARY_LIMIT_DURATION + i]),
                 //If we aren't modifying an existing limit set, temporary limits modification is necessarily of ADDED type
                 modificationType:
                     modification[MODIFICATION_TYPE] === LIMIT_SETS_MODIFICATION_TYPE.MODIFY
@@ -143,9 +143,9 @@ const formatTemporaryLimitsBackToFront = (temporaryLimits: TemporaryLimit[]) => 
         const index = i + 1; // Fields are 1-indexed
         const tempLimit = temporaryLimits[i];
 
-        modification[TEMPORARY_LIMIT_NAME + index] = tempLimit.name;
-        modification[TEMPORARY_LIMIT_VALUE + index] = tempLimit.value;
-        modification[TEMPORARY_LIMIT_DURATION + index] = tempLimit.acceptableDuration;
+        modification[TEMPORARY_LIMIT_NAME + index] = tempLimit.name?.value;
+        modification[TEMPORARY_LIMIT_VALUE + index] = tempLimit.value?.value;
+        modification[TEMPORARY_LIMIT_DURATION + index] = tempLimit.acceptableDuration?.value;
     }
     return modification;
 };
