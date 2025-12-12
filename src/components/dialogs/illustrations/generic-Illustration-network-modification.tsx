@@ -9,9 +9,8 @@ import { useIntl } from 'react-intl';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Paper from '@mui/material/Paper';
-import { LIGHT_THEME } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, PARAM_THEME } from '@gridsuite/commons-ui';
 import { AccordionIllustration } from './AccordionIllustration';
-import { PARAM_THEME } from 'utils/config-params';
 import { AppState } from 'redux/reducer';
 
 interface ReplacedText {

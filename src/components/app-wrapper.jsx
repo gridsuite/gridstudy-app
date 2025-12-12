@@ -78,6 +78,7 @@ import {
     fetchBaseVoltages,
     errorsEn,
     errorsFr,
+    PARAM_THEME,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -108,7 +109,7 @@ import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import base_voltages_fr from '../translations/external/base-voltages-fr';
 import base_voltages_en from '../translations/external/base-voltages-en';
-import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
+import { basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';

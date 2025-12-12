@@ -8,7 +8,6 @@
 import { FormattedMessage } from 'react-intl/lib';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import {
     COMPUTATION_RESULTS_LOGS,
@@ -17,6 +16,7 @@ import {
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
+import { PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 
 export type SensitivityAnalysisTabsProps = {
     sensiTab: SensiTab;

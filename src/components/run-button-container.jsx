@@ -17,8 +17,14 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
 
-import { PARAM_DEVELOPER_MODE, PARAM_PROVIDER_DYNAFLOW, PARAM_PROVIDER_DYNAWO } from '../utils/config-params';
-import { ComputingType, formatComputingTypeLabel, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { PARAM_PROVIDER_DYNAFLOW, PARAM_PROVIDER_DYNAWO } from '../utils/config-params';
+import {
+    ComputingType,
+    formatComputingTypeLabel,
+    PARAM_DEVELOPER_MODE,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import { DynamicSimulationParametersSelector } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 import { ContingencyListSelector } from './dialogs/contingency-list-selector';

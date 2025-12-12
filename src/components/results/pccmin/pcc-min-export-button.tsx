@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ExportCsvButton, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
@@ -18,6 +18,7 @@ import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-so
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN } from './pcc-min-result.type';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 interface PccMinExportButtonProps {
     studyUuid: UUID;
@@ -31,7 +32,7 @@ interface PccMinExportButtonProps {
 export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (props) => {
     const { studyUuid, nodeUuid, currentRootNetworkUuid, csvHeaders, globalFilters, disabled = false } = props;
     const { snackError } = useSnackMessage();
-    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);

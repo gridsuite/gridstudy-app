@@ -15,7 +15,7 @@ import { RESULT_TYPE } from './security-analysis-result-utils';
 import { PERMANENT_LIMIT_NAME } from '../common/utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { PARAM_LANGUAGE } from '../../../utils/config-params';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 interface SecurityAnalysisExportButtonProps {
     studyUuid: UUID;
@@ -32,7 +32,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
-    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     const intl = useIntl();

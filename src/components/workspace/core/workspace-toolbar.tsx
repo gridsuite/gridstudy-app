@@ -27,11 +27,11 @@ import {
     type EquipmentInfos,
     type MuiStyles,
     type TreeViewFinderNodeProps,
+    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from '../../top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useParameterState } from '../../dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import { PanelType } from '../types/workspace.types';

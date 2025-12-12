@@ -6,7 +6,7 @@
  */
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText, GsLang } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, backendFetchText, GsLangUser } from '@gridsuite/commons-ui';
 import { GlobalFilters } from 'components/results/common/global-filter/global-filter-types';
 import { PccMinPagedResults } from 'components/results/pccmin/pcc-min-result.type';
 import { UUID } from 'node:crypto';
@@ -95,7 +95,7 @@ export function exportPccMinResultsAsCsv(
     filter: FilterConfig[] | null,
     globalFilters: GlobalFilters | undefined,
     csvHeaders: string[] | undefined,
-    language: GsLang
+    language: GsLangUser
 ) {
     console.info(
         `Exporting pcc min result on '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`

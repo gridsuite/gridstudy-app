@@ -29,12 +29,18 @@ import {
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
 import { useTheme } from '@mui/material/styles';
-import { ComputingType, EquipmentType, mergeSx, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    mergeSx,
+    snackWithFallback,
+    useSnackMessage,
+    PARAM_DEVELOPER_MODE,
+} from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import { updateSwitchState } from '../../../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { startShortCircuitAnalysis } from '../../../../../services/study/short-circuit-analysis';
 import { useOneBusShortcircuitAnalysisLoader } from './hooks/use-one-bus-shortcircuit-analysis-loader';
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../../../redux/actions';

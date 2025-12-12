@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { useLocalizedCountries as useLocalizedCountriesCUI } from '@gridsuite/commons-ui';
+import { PARAM_LANGUAGE, useLocalizedCountries as useLocalizedCountriesCUI } from '@gridsuite/commons-ui';
 
 export const useLocalizedCountries = () => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
