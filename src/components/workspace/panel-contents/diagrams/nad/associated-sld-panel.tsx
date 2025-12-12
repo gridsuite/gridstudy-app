@@ -8,7 +8,7 @@
 import { memo, useCallback, useState, useRef, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
-import { Box, IconButton, Paper, Typography, useTheme } from '@mui/material';
+import { Box, IconButton, Paper, Typography, useTheme, alpha } from '@mui/material';
 import { Close, LinkOff } from '@mui/icons-material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
@@ -67,35 +67,38 @@ const DEFAULT_POSITION = { x: 0.01, y: 0.5 };
 const DEFAULT_SIZE = { width: 0.35, height: 0.5 };
 
 const styles = {
-    header: {
+    header: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        px: 1,
-        py: 0.5,
-        minHeight: 32,
-        backgroundColor: 'action.hover',
+        px: 0.75,
+        py: 0.25,
+        minHeight: 24,
+        backgroundColor:
+            theme.palette.mode === 'light'
+                ? alpha(theme.palette.primary.main, 0.06)
+                : alpha(theme.palette.primary.main, 0.24),
         borderBottom: '1px solid',
         borderColor: 'divider',
         flexShrink: 0,
         cursor: 'move',
-    },
+    }),
     titleText: {
         fontWeight: 500,
-        fontSize: '0.875rem',
-        lineHeight: 1.5,
+        fontSize: '0.75rem',
+        lineHeight: 1.4,
     },
     actionsContainer: {
         display: 'flex',
-        gap: 0.5,
+        gap: 0.25,
     },
     iconButton: {
-        padding: 0.5,
+        padding: 0.25,
     },
 } as const satisfies MuiStyles;
 
 const getContentContainerStyle = (theme: any, isDragging: boolean) => ({
-    height: 'calc(100% - 32px)',
+    height: 'calc(100% - 24px)',
     overflow: 'hidden',
     backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
     pointerEvents: isDragging ? 'none' : 'auto',
@@ -185,7 +188,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                 newSize = { width: relWidth, height: relativeSize.height };
             } else {
                 // First load: auto-size both width and height
-                const maxHeightPercent = 0.7;
+                const maxHeightPercent = 0.6;
                 const contentHeight = svgHeight + NAD_SLD_CONSTANTS.PANEL_HEADER_HEIGHT;
 
                 newSize = {

@@ -9,18 +9,16 @@ export const NAD_SLD_CONSTANTS = {
     MAX_NAVIGATION_HISTORY: 10,
 
     // React-RND defaults for floating SLD panels
-    DEFAULT_RND_POSITION: { x: 20, y: 0 },
     DEFAULT_RND_SIZE: { width: 600, height: 400 },
     MIN_RND_WIDTH: 100,
     MIN_RND_HEIGHT: 100,
-    MAX_RND_HEIGHT: 600,
     CHIP_BAR_HEIGHT: 48,
     TOP_CONTROLS_HEIGHT: 40, // Height of NAD diagram controls at the top
-    PANEL_HEADER_HEIGHT: 32, // Height of floating SLD panel header
+    PANEL_HEADER_HEIGHT: 24, // Height of floating SLD panel header
 
     // Layout positioning (relative values)
     PANEL_DEFAULT_WIDTH: 0.35,
-    PANEL_DEFAULT_HEIGHT: 0.5,
+    PANEL_DEFAULT_HEIGHT: 0.6,
     CASCADE_START_X: 0.01,
     CASCADE_START_Y: 0.5,
     CASCADE_OFFSET_X: 0.05,
