@@ -87,11 +87,15 @@ export const WorkspaceSwitcher = memo(() => {
 
     const handleWorkspaceChange = (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
         if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE) {
+            globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
+
             dispatch(switchWorkspace(workspaceId as UUID));
         }
     };
 
     const handleSwitchWorkspace = (workspaceId: UUID) => {
+        globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
+
         dispatch(switchWorkspace(workspaceId));
         setMenuAnchor(null);
     };

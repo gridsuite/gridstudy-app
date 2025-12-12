@@ -129,6 +129,7 @@ export const NadPanelContent = ({
                 onUpdatePositions={handleUpdatePositions}
                 onReplaceNad={handleReplaceNad}
                 onSaveNad={handleSaveNad}
+                nadPanelId={panelId}
             />
         </DiagramWrapper>
     );
