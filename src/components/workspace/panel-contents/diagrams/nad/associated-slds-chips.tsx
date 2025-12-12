@@ -33,7 +33,7 @@ interface AssociatedSldsChipsProps {
 }
 
 const styles = {
-    container: {
+    container: (theme) => ({
         position: 'absolute',
         bottom: 0,
         left: 0,
@@ -45,9 +45,10 @@ const styles = {
         py: 0.5,
         borderTop: 1,
         borderColor: 'divider',
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         zIndex: 1000,
         minHeight: '40px',
-    },
+    }),
     actionButton: {
         fontSize: '0.7rem',
         minWidth: 'auto',

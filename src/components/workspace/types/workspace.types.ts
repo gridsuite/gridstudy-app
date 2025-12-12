@@ -30,6 +30,8 @@ export interface SLDPanelMetadata {
 export interface NADPanelMetadata {
     nadConfigUuid?: UUID;
     filterUuid?: UUID;
+    currentFilterUuid?: UUID;
+    voltageLevelToOmitIds?: string[];
     savedWorkspaceConfigUuid?: UUID;
     initialVoltageLevelIds?: string[];
     associatedVoltageLevelPanels?: UUID[]; // Array of associated SLD panel IDs

@@ -34,7 +34,6 @@ import { Point } from '@svgdotjs/svg.js';
 import {
     ComputingType,
     ElementType,
-    EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
     IElementCreationDialog,
@@ -52,10 +51,9 @@ import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
-
-import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
-import BranchPopoverContent from 'components/tooltips/branch-popover-content';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
+import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
+import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 
 type NetworkAreaDiagramContentProps = {
     readonly voltageLevelIds: string[];
@@ -68,6 +66,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svgScalingFactor?: number;
     readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
+    readonly isNadCreationFromFilter: boolean;
     readonly visible: boolean;
     readonly onVoltageLevelClick: (voltageLevelId: string) => void;
     readonly onUpdateVoltageLevels: (params: {
@@ -75,6 +74,7 @@ type NetworkAreaDiagramContentProps = {
         voltageLevelToExpandIds: string[];
         voltageLevelToOmitIds: string[];
     }) => void;
+    readonly onUpdateVoltageLevelsFromFilter: (filterUuid: UUID) => void;
     readonly onUpdatePositions: (positions: DiagramConfigPosition[]) => void;
     readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
     readonly onSaveNad?: () => void;
@@ -89,6 +89,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         positions,
         onVoltageLevelClick,
         onUpdateVoltageLevels,
+        onUpdateVoltageLevelsFromFilter,
         onUpdatePositions,
         onReplaceNad,
         svg,
@@ -96,6 +97,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         svgScalingFactor,
         svgVoltageLevels,
         loadingState,
+        isNadCreationFromFilter,
         showInSpreadsheet,
         onSaveNad,
     } = props;
@@ -326,6 +328,13 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         [voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, onUpdateVoltageLevels]
     );
 
+    const handleAddVoltageLevelsFromFilter = useCallback(
+        (filterUuid: UUID) => {
+            onUpdateVoltageLevelsFromFilter(filterUuid);
+        },
+        [onUpdateVoltageLevelsFromFilter]
+    );
+
     const handleExpandVoltageLevelId = useCallback(
         (voltageLevelIdToExpand: string) => {
             onUpdateVoltageLevels({
@@ -486,8 +495,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
      */
 
     const displayTooltip = () => {
-        const PopoverContent = EquipmentPopoverMap[hoveredEquipmentType] || BranchPopoverContent;
-
         return (
             <GenericEquipmentPopover
                 studyUuid={studyUuid}
@@ -497,8 +504,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 equipmentType={hoveredEquipmentType as EquipmentType}
                 loadFlowStatus={loadFlowStatus}
             >
-                {(equipmentInfos: EquipmentInfos) => (
-                    <PopoverContent
+                {(equipmentInfos: GenericEquipmentInfos) => (
+                    <GenericPopoverContent
                         equipmentInfos={equipmentInfos}
                         loadFlowStatus={loadFlowStatus}
                         equipmentType={hoveredEquipmentType}
@@ -539,9 +546,11 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onToggleEditNadMode={handleSetIsEditNadMode}
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                 onAddVoltageLevel={handleAddVoltageLevel}
+                onAddVoltageLevelsFromFilter={handleAddVoltageLevelsFromFilter}
                 onToggleShowLabels={handleToggleShowLabels}
                 isShowLabels={showLabels}
                 isDiagramLoading={loadingState}
+                isNadCreationFromFilter={isNadCreationFromFilter}
                 svgVoltageLevels={svgVoltageLevels}
                 onFocusVoltageLevel={handleFocusVoltageLevel}
             />
