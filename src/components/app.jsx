@@ -21,6 +21,7 @@ import {
     LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
     PARAM_LANGUAGE,
+    PARAM_THEME,
     useNotificationsListener,
     useSnackMessage,
     getComputedLanguage,
@@ -32,7 +33,6 @@ import {
     APP_NAME,
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import AppTopBar from './app-top-bar';

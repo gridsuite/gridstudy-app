@@ -20,6 +20,7 @@ import {
     type LogoutErrorAction,
     type NetworkVisualizationParameters,
     PARAM_LANGUAGE,
+    PARAM_THEME,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
     type ShowAuthenticationRouterLoginAction,
@@ -244,7 +245,6 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_LIMIT_REDUCTION,
-    PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
 } from '../utils/config-params';

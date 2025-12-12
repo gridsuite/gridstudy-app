@@ -7,9 +7,6 @@
 
 export const APP_NAME = 'study';
 
-// Commons config names
-export const PARAM_THEME = 'theme';
-
 // App config names
 export const PARAM_USE_NAME = 'useName';
 export const PARAM_LIMIT_REDUCTION = 'limitReduction';
