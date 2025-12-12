@@ -62,6 +62,7 @@ const styles = {
         gap: 1,
         flexGrow: 1,
         minWidth: 0,
+        overflow: 'hidden',
     },
     chip: {
         cursor: 'pointer',
@@ -108,7 +109,7 @@ const styles = {
         },
     },
     menuItem: {
-        padding: 0.5,
+        padding: 1,
         '&:hover': {
             backgroundColor: 'transparent',
         },
@@ -141,6 +142,10 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
         shallowEqual
     );
 
+    const visibleCount = visibleSldPanels.length;
+    const hasReorganizeButton = visibleCount > 1 && onReorganize;
+    const hasMultiplePanels = panelDetails.length > 1;
+
     // Dynamically calculate how many chips can fit based on container width
     useEffect(() => {
         const updateChipLimit = () => {
@@ -148,9 +153,15 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
                 return;
             }
             const chipWidth = 90;
-            const counterChipWidth = 64;
+            const counterChipWidth = 40;
+            const hideShowButtonWidth = onHideAll ? 30 : 0;
+            const removeAllButtonWidth = hasMultiplePanels ? 30 : 0;
+            const buttonGroupWidth = hasReorganizeButton ? 30 : 0;
+
             const containerWidth = containerRef.current.clientWidth;
-            const maxChips = Math.max(1, Math.floor((containerWidth - counterChipWidth) / chipWidth));
+            const reservedWidth = hideShowButtonWidth + removeAllButtonWidth + buttonGroupWidth + counterChipWidth;
+            const availableWidth = containerWidth - reservedWidth;
+            const maxChips = Math.max(1, Math.floor(availableWidth / chipWidth));
             setChipLimit(maxChips);
         };
 
@@ -160,12 +171,10 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
             resizeObserver.observe(containerRef.current);
         }
         return () => resizeObserver.disconnect();
-    }, [panelDetails.length]);
+    }, [panelDetails.length, hasReorganizeButton, hasMultiplePanels, onHideAll]);
 
     const displayedPanels = panelDetails.slice(0, chipLimit);
     const hiddenPanels = panelDetails.slice(chipLimit);
-    const visibleCount = visibleSldPanels.length;
-    const hasReorganizeButton = visibleCount > 1 && onReorganize;
 
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -198,7 +207,7 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
         );
 
         return inMenu ? (
-            <MenuItem key={id} sx={styles.menuItem}>
+            <MenuItem key={id} sx={styles.menuItem} onClick={() => onToggleVisibility(id)}>
                 {chip}
             </MenuItem>
         ) : (

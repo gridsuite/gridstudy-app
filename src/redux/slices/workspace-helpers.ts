@@ -214,7 +214,12 @@ export const findDiagramPanel = (workspace: Workspace, panelType: PanelType, id:
         }
 
         if (panelType === PanelType.SLD_VOLTAGE_LEVEL || panelType === PanelType.SLD_SUBSTATION) {
-            return (panel.metadata as SLDPanelMetadata).diagramId === id;
+            const metadata = panel.metadata as SLDPanelMetadata;
+            // Exclude attached SLDs
+            if (metadata.associatedToNadPanel) {
+                return false;
+            }
+            return metadata.diagramId === id;
         }
 
         return false;

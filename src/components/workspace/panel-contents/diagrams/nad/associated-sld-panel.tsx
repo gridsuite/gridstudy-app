@@ -9,7 +9,7 @@ import { memo, useCallback, useState, useRef, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import { Box, IconButton, Paper, Typography, useTheme, alpha } from '@mui/material';
-import { Close, LinkOff } from '@mui/icons-material';
+import { Close, LinkOff, MinimizeOutlined } from '@mui/icons-material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
@@ -19,6 +19,7 @@ import {
     dissociateSldFromNad,
     deleteAssociatedSld,
     updatePanelPositionAndSize,
+    closePanel,
 } from '../../../../../redux/slices/workspace-slice';
 import { VoltageLevelPanelContent } from '../sld/voltage-level-panel-content';
 import { NAD_SLD_CONSTANTS } from './constants';
@@ -38,21 +39,10 @@ const calculatePanelDimensions = (
     position: { x: number; y: number },
     size: { width: number; height: number },
     containerRect: DOMRect,
-    minSize: { width: number; height: number },
-    aspectRatio?: number | null,
-    enforceAspectRatio: boolean = true
+    minSize: { width: number; height: number }
 ) => {
     let width = size.width * containerRect.width;
     let height = size.height * containerRect.height;
-
-    // Only enforce aspect ratio if requested and available
-    if (enforceAspectRatio && aspectRatio) {
-        const contentHeight = height - NAD_SLD_CONSTANTS.PANEL_HEADER_HEIGHT;
-        const expectedWidth = contentHeight * aspectRatio;
-
-        // Use the aspect ratio to calculate width from height
-        width = expectedWidth;
-    }
 
     // Apply minimum constraints
     width = Math.max(minSize.width, width);
@@ -134,12 +124,6 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     const lastSvgDimensionsRef = useRef<{ width: number; height: number } | null>(null);
     const hasManuallyResizedRef = useRef(false);
     const [isDragging, setIsDragging] = useState(false);
-    const [resizingDimensions, setResizingDimensions] = useState<{
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-    } | null>(null);
 
     const relativePosition = sldPanel?.position || DEFAULT_POSITION;
     const relativeSize = sldPanel?.size || DEFAULT_SIZE;
@@ -181,19 +165,25 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
             if (hasManuallyResizedRef.current) {
                 // User has manually resized: adapt width based on current height to maintain aspect ratio
                 const currentHeightPx = relativeSize.height * containerRect.height;
-                const availableContentHeight = currentHeightPx - NAD_SLD_CONSTANTS.PANEL_HEADER_HEIGHT;
-                const targetWidth = availableContentHeight * svgAspectRatio;
+                const targetWidth = currentHeightPx * svgAspectRatio;
                 const relWidth = Math.min(targetWidth / containerRect.width, maxWidthPercent);
 
                 newSize = { width: relWidth, height: relativeSize.height };
             } else {
-                // First load: auto-size both width and height
+                // First load: auto-size both width and height based on aspect ratio
                 const maxHeightPercent = 0.6;
-                const contentHeight = svgHeight + NAD_SLD_CONSTANTS.PANEL_HEADER_HEIGHT;
+
+                // Calculate target height
+                const targetHeight = Math.min(svgHeight / containerRect.height, maxHeightPercent);
+
+                // Calculate width based on aspect ratio and actual display height
+                const targetHeightPx = targetHeight * containerRect.height;
+                const targetWidthPx = targetHeightPx * svgAspectRatio;
+                const targetWidth = Math.min(targetWidthPx / containerRect.width, maxWidthPercent);
 
                 newSize = {
-                    width: Math.min(svgWidth / containerRect.width, maxWidthPercent),
-                    height: Math.min(contentHeight / containerRect.height, maxHeightPercent),
+                    width: targetWidth,
+                    height: targetHeight,
                 };
             }
 
@@ -212,6 +202,10 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
         dispatch(dissociateSldFromNad(sldPanelId));
     }, [dispatch, sldPanelId]);
 
+    const handleMinimize = useCallback(() => {
+        dispatch(closePanel(sldPanelId));
+    }, [dispatch, sldPanelId]);
+
     const handleClose = useCallback(() => {
         dispatch(deleteAssociatedSld(sldPanelId));
     }, [dispatch, sldPanelId]);
@@ -222,16 +216,6 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
             onBringToFront?.(sldPanelId);
         }
     }, [isFocused, onBringToFront, sldPanelId]);
-
-    const handleResize: RndResizeCallback = useCallback((_e, _direction, ref, _delta, position) => {
-        // Track dimensions during resize for immediate visual feedback
-        setResizingDimensions({
-            x: position.x,
-            y: position.y,
-            width: Number.parseInt(ref.style.width, 10),
-            height: Number.parseInt(ref.style.height, 10),
-        });
-    }, []);
 
     const handleResizeStop: RndResizeCallback = useCallback(
         (_e, _direction, ref, _delta, position) => {
@@ -248,7 +232,6 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                     size: sizeToRelative({ width, height }, containerRect),
                 })
             );
-            setResizingDimensions(null);
             setIsDragging(false);
         },
         [dispatch, sldPanelId, containerRect]
@@ -284,9 +267,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     }, [onBringToFront, sldPanelId, isFocused]);
 
     // Calculate pixel dimensions from relative values
-    // During resize, use temporary dimensions; otherwise calculate from container
     const dimensions = useMemo(() => {
-        if (resizingDimensions) return resizingDimensions;
         if (!containerRect) {
             return {
                 x: 0,
@@ -296,24 +277,11 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
             };
         }
 
-        // Calculate current panel aspect ratio from relative sizes
-        const currentWidth = relativeSize.width * containerRect.width;
-        const currentHeight = relativeSize.height * containerRect.height;
-        const contentHeight = currentHeight - NAD_SLD_CONSTANTS.PANEL_HEADER_HEIGHT;
-        const panelAspectRatio = contentHeight > 0 ? currentWidth / contentHeight : null;
-
-        return calculatePanelDimensions(
-            relativePosition,
-            relativeSize,
-            containerRect,
-            {
-                width: NAD_SLD_CONSTANTS.MIN_RND_WIDTH,
-                height: NAD_SLD_CONSTANTS.MIN_RND_HEIGHT,
-            },
-            panelAspectRatio,
-            !isDragging
-        );
-    }, [resizingDimensions, containerRect, relativeSize, relativePosition, isDragging]);
+        return calculatePanelDimensions(relativePosition, relativeSize, containerRect, {
+            width: NAD_SLD_CONSTANTS.MIN_RND_WIDTH,
+            height: NAD_SLD_CONSTANTS.MIN_RND_HEIGHT,
+        });
+    }, [containerRect, relativeSize, relativePosition]);
 
     if (!sldPanel || !currentNodeId || !studyUuid || !currentRootNetworkUuid) return null;
 
@@ -335,7 +303,6 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                 onDragStart={handleDragStart}
                 onDragStop={handleDragStop}
                 onResizeStart={handleResizeStart}
-                onResize={handleResize}
                 onResizeStop={handleResizeStop}
                 minWidth={NAD_SLD_CONSTANTS.MIN_RND_WIDTH}
                 minHeight={NAD_SLD_CONSTANTS.MIN_RND_HEIGHT}
@@ -347,7 +314,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                 }}
             >
                 <Paper
-                    elevation={isFocused ? 6 : 2}
+                    elevation={isFocused ? 4 : 1}
                     onPointerDown={handlePointerDown}
                     sx={{
                         height: '100%',
@@ -363,6 +330,15 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                             {sldPanel.title}
                         </Typography>
                         <Box sx={styles.actionsContainer}>
+                            <IconButton
+                                size="small"
+                                sx={styles.iconButton}
+                                onClick={handleMinimize}
+                                onMouseDownCapture={(e) => e.stopPropagation()}
+                                onPointerDownCapture={(e) => e.stopPropagation()}
+                            >
+                                <MinimizeOutlined fontSize="small" />
+                            </IconButton>
                             <IconButton
                                 size="small"
                                 sx={styles.iconButton}

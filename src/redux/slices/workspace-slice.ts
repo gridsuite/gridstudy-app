@@ -366,8 +366,8 @@ const workspacesSlice = createSlice({
                 }
             });
 
-            // Keep focus on NAD panel
-            workspace.focusedPanelId = nadPanelId;
+            // Keep focus on NAD panel (bring to front and un-minimize if needed)
+            bringToFront(workspace, nadPanelId);
         },
 
         dissociateSldFromNad: (state, action: PayloadAction<UUID>) => {
@@ -458,8 +458,8 @@ const workspacesSlice = createSlice({
             }
 
             // Calculate bottom position using relative coordinates (similar to cascade layout)
-            // Position at bottom of NAD panel, accounting for chip bar
-            const bottomY = 1 - NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT - 0.02; // 2% padding from bottom
+            // Position at bottom of NAD panel
+            const bottomY = 1 - NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT;
             const startX = NAD_SLD_CONSTANTS.CASCADE_START_X;
 
             // Create a new SLD panel
@@ -499,8 +499,8 @@ const workspacesSlice = createSlice({
                 };
             });
 
-            // Restore focus to NAD (createPanel stole it when creating the SLD)
-            workspace.focusedPanelId = nadPanelId;
+            // Restore focus to NAD
+            bringToFront(workspace, nadPanelId);
         },
 
         closeAllAssociatedSlds: (state, action: PayloadAction<UUID>) => {
