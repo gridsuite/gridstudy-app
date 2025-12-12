@@ -299,8 +299,8 @@ const LineCreationDialog = ({
             onCreateLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                lineId: header[EQUIPMENT_ID],
-                lineName: sanitizeString(header[EQUIPMENT_NAME]),
+                equipmentId: header[EQUIPMENT_ID],
+                equipmentName: sanitizeString(header[EQUIPMENT_NAME]),
                 r: characteristics[R],
                 x: characteristics[X],
                 g1: convertOutputValue(FieldType.G1, characteristics[G1]),
