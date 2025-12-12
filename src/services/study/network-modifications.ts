@@ -116,6 +116,23 @@ export function setModificationActivated(
     });
 }
 
+export function setModificationDescription(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuid: UUID,
+    description: string
+): Promise<Response> {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('uuid', String(modificationUuid));
+    const modificationUpdateActiveUrl =
+        getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    console.debug(modificationUpdateActiveUrl);
+    return backendFetch(modificationUpdateActiveUrl, {
+        method: 'PUT',
+    });
+}
+
 export function updateModificationStatusByRootNetwork(
     studyUuid: UUID,
     nodeUuid: UUID,
