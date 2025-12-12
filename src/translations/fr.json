@@ -1049,6 +1049,20 @@
 
     "DefinePropertiesButton": "Définir propriétés",
     "DefinePropertiesTitle": "Propriétés complémentaires",
+    "GenerateEmptyModel": "Générer un modèle vide",
+    "GeneratePrefilledModel": "Générer un modèle pré-rempli",
+    "RestrictEquipmentList": "Restreindre la liste des ouvrages",
+    "CurrentGridState": "État actuel du réseau",
+    "ColumnSelectionRequired": "Au moins une colonne doit être sélectionnée",
+
+    "PrefilledColumn.Conductance": "Conductance",
+    "PrefilledColumn.Susceptance": "Susceptance",
+    "PrefilledColumn.Connected": "Connecté",
+    "PrefilledColumn.ConnectionInfo": "Informations départ",
+    "PrefilledColumn.WindingVoltages": "Tensions d'enroulement",
+    "PrefilledColumn.ActivePowerLimits": "Limites puissance active",
+    "PrefilledColumn.ReactivePowerLimits": "Limites puissance réactive",
+    "PrefilledColumn.ReactiveCapabilityCurve": "Diagramme de groupe",
 
     "G": "Conductance magnétisante",
     "B": "Susceptance magnétisante",
