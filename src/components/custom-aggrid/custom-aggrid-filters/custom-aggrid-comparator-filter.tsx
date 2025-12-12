@@ -13,7 +13,6 @@ import { CustomAggridFilterParams } from './custom-aggrid-filter.type';
 
 export const CustomAggridComparatorFilter = ({ api, colId, filterParams }: CustomAggridFilterParams) => {
     const {
-        selectedFilterData,
         selectedFilterComparator,
         decimalAfterDot,
         isNumberInput,
@@ -34,11 +33,12 @@ export const CustomAggridComparatorFilter = ({ api, colId, filterParams }: Custo
                 options={comparators}
             />
             <CustomAggridTextFilter
-                value={selectedFilterData}
+                colId={colId}
                 onChange={handleFilterTextChange}
                 onClear={handleClearFilter}
                 isNumberInput={isNumberInput}
                 decimalAfterDot={decimalAfterDot}
+                filterParams={filterParams}
             />
         </Grid>
     );
