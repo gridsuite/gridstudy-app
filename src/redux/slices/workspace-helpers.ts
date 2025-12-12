@@ -180,7 +180,7 @@ export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
     const panel = workspace.panels[panelId];
     if (!panel) return;
 
-    // If closing a NAD panel, close all associated SLDs first
+    // If closing a NAD panel, delete all associated SLDs
     if (panel.type === PanelType.NAD) {
         const nadMetadata = panel.metadata as NADPanelMetadata | undefined;
         const associatedPanelIds = nadMetadata?.associatedVoltageLevelPanels || [];
@@ -189,26 +189,22 @@ export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
         });
     }
 
-    // If closing an SLD that's associated with a NAD, remove it from NAD's associated list
-    if (panel.type === PanelType.SLD_VOLTAGE_LEVEL || panel.type === PanelType.SLD_SUBSTATION) {
-        const sldMetadata = panel.metadata as SLDPanelMetadata | undefined;
-        const nadPanelId = sldMetadata?.associatedToNadPanel;
+    // Check if this is an attached SLD (associated with a NAD panel)
+    const isAttachedSld =
+        (panel.type === PanelType.SLD_VOLTAGE_LEVEL || panel.type === PanelType.SLD_SUBSTATION) &&
+        (panel.metadata as SLDPanelMetadata | undefined)?.associatedToNadPanel;
 
-        if (nadPanelId && workspace.panels[nadPanelId]) {
-            const nadPanel = workspace.panels[nadPanelId];
-            const nadMetadata = nadPanel.metadata as NADPanelMetadata;
-            nadPanel.metadata = {
-                ...nadMetadata,
-                associatedVoltageLevelPanels: (nadMetadata.associatedVoltageLevelPanels || []).filter(
-                    (id) => id !== panelId
-                ),
-            };
+    if (isAttachedSld) {
+        // Attached SLDs should only be hidden, not deleted or dissociated
+        panel.isClosed = true;
+        if (workspace.focusedPanelId === panelId) {
+            workspace.focusedPanelId = null;
         }
-    }
-
-    if (isDiagramPanel(panel.type)) {
+    } else if (isDiagramPanel(panel.type)) {
+        // Regular diagram panels (not attached) should be deleted
         deletePanel(workspace, panelId);
     } else {
+        // Non-diagram panels should be hidden
         panel.isClosed = true;
         if (workspace.focusedPanelId === panelId) {
             workspace.focusedPanelId = null;

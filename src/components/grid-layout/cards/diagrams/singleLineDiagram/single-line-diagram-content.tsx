@@ -68,6 +68,7 @@ interface SingleLineDiagramContentProps {
     readonly diagramParams: VoltageLevelDiagramParams | SubstationDiagramParams;
     readonly onNextVoltageLevelDiagram?: (voltageLevelId: string) => void;
     readonly onNewVoltageLevelDiagram?: (voltageLevelId: string) => void;
+    readonly onSvgLoad?: (width: number, height: number) => void;
 }
 
 type BusMenuState = {
@@ -96,6 +97,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         loadingState,
         svg,
         svgMetadata,
+        onSvgLoad,
     } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -406,6 +408,11 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
             }
 
             diagramViewerRef.current = diagramViewer;
+
+            // Notify parent of SVG dimensions for auto-sizing
+            if (onSvgLoad) {
+                onSvgLoad(diagramViewer.getWidth(), diagramViewer.getHeight());
+            }
         }
     }, [
         svg,
@@ -421,6 +428,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         loadingState,
         locallySwitchedBreaker,
         handleBreakerClick,
+        onSvgLoad,
         handleTogglePopover,
         computationStarting,
         handleNextVoltageLevelClick,

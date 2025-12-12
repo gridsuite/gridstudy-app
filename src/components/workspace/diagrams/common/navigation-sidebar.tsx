@@ -31,7 +31,7 @@ const getBackgroundColor = (theme: Theme, shouldBeCollapsed: boolean) => {
     return theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33';
 };
 
-const getBorderLeft = (theme: Theme, shouldBeCollapsed: boolean, isAbsolutePositioned: boolean) => {
+const getBorderRight = (theme: Theme, shouldBeCollapsed: boolean, isAbsolutePositioned: boolean) => {
     if (isAbsolutePositioned && shouldBeCollapsed) {
         return 'none';
     }
@@ -41,7 +41,8 @@ const getBorderLeft = (theme: Theme, shouldBeCollapsed: boolean, isAbsolutePosit
 const styles = {
     sidebar: (theme: Theme, shouldBeCollapsed: boolean, isAbsolutePositioned: boolean) => ({
         width: shouldBeCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
-        borderLeft: getBorderLeft(theme, shouldBeCollapsed, isAbsolutePositioned),
+        borderRight: getBorderRight(theme, shouldBeCollapsed, isAbsolutePositioned),
+        borderLeft: isAbsolutePositioned ? 'none' : `1px solid ${theme.palette.divider}`,
         backgroundColor: getBackgroundColor(theme, shouldBeCollapsed),
         display: 'flex',
         flexDirection: 'column' as const,
@@ -50,7 +51,7 @@ const styles = {
         ...(shouldBeCollapsed &&
             isAbsolutePositioned && {
                 position: 'absolute' as const,
-                right: 0,
+                left: 0,
                 top: 0,
                 bottom: 0,
                 zIndex: 100,

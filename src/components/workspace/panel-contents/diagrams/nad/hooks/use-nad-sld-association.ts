@@ -5,73 +5,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useStore } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../../redux/store';
 import type { NADPanelMetadata, SLDPanelMetadata } from '../../../../types/workspace.types';
-import { addToNadNavigationHistory, openSldAndAssociateToNad } from '../../../../../../redux/slices/workspace-slice';
+import {
+    addToNadNavigationHistory,
+    openSldAndAssociateToNad,
+    openPanel,
+    updatePanelZIndex,
+} from '../../../../../../redux/slices/workspace-slice';
 import { selectPanelMetadata, selectPanelsRecord } from '../../../../../../redux/slices/workspace-selectors';
 
 export interface UseNadSldAssociationParams {
-    readonly panelId: UUID;
-    readonly diagramMetadata: NADPanelMetadata | undefined;
+    readonly nadPanelId: UUID;
 }
 
 export interface UseNadSldAssociationReturn {
-    readonly focusedSldPanelId: UUID | null;
-    readonly fullscreenSldPanelId: UUID | null;
-    readonly setFocusedSldPanelId: React.Dispatch<React.SetStateAction<UUID | null>>;
-    readonly setFullscreenSldPanelId: React.Dispatch<React.SetStateAction<UUID | null>>;
     readonly handleVoltageLevelClick: (voltageLevelId: string) => void;
     readonly handleNavigationSidebarClick: (voltageLevelId: string) => void;
 }
 
-export const useNadSldAssociation = ({
-    panelId,
-    diagramMetadata,
-}: UseNadSldAssociationParams): UseNadSldAssociationReturn => {
+export const useNadSldAssociation = ({ nadPanelId }: UseNadSldAssociationParams): UseNadSldAssociationReturn => {
     const dispatch = useDispatch();
     const store = useStore<RootState>();
-
-    const [focusedSldPanelId, setFocusedSldPanelId] = useState<UUID | null>(null);
-    const [fullscreenSldPanelId, setFullscreenSldPanelId] = useState<UUID | null>(null);
-
-    // Helper to focus an SLD panel while maintaining fullscreen mode
-    const focusSldPanel = useCallback((sldPanelId: UUID) => {
-        setFocusedSldPanelId(sldPanelId);
-        // Maintain fullscreen mode when switching between SLDs
-        setFullscreenSldPanelId((prev) => (prev ? sldPanelId : prev));
-    }, []);
-
-    // Track previous associated panels to detect when new panels are added
-    const prevAssociatedPanelsRef = useRef<UUID[]>([]);
-
-    // Detect when a new SLD is associated
-    useEffect(() => {
-        const associatedPanelIds = diagramMetadata?.associatedVoltageLevelPanels || [];
-        const prevAssociatedPanels = prevAssociatedPanelsRef.current;
-
-        const newPanelId = associatedPanelIds.find((id: UUID) => !prevAssociatedPanels.includes(id));
-
-        if (newPanelId) {
-            focusSldPanel(newPanelId);
-        }
-
-        prevAssociatedPanelsRef.current = associatedPanelIds;
-    }, [diagramMetadata?.associatedVoltageLevelPanels, focusSldPanel]);
 
     // Shared logic for opening or focusing an SLD panel associated with this NAD
     const openOrFocusSld = useCallback(
         (voltageLevelId: string, shouldUpdateHistory: boolean) => {
             // Update navigation history if requested (only for direct voltage level clicks, not sidebar navigation)
             if (shouldUpdateHistory) {
-                dispatch(addToNadNavigationHistory({ panelId, voltageLevelId }));
+                dispatch(addToNadNavigationHistory({ panelId: nadPanelId, voltageLevelId }));
             }
 
             // Check if voltage level is already associated - read fresh from store to avoid subscription to all panels
             // to prevent unnecessary re-renders
-            const currentMetadata = selectPanelMetadata(store.getState(), panelId) as NADPanelMetadata | undefined;
+            const currentMetadata = selectPanelMetadata(store.getState(), nadPanelId) as NADPanelMetadata | undefined;
             const associatedPanelIds = currentMetadata?.associatedVoltageLevelPanels || [];
             const panels = selectPanelsRecord(store.getState());
             const existingSldPanelId = associatedPanelIds.find((id) => {
@@ -79,17 +49,22 @@ export const useNadSldAssociation = ({
                 return metadata?.diagramId === voltageLevelId;
             });
 
-            if (existingSldPanelId) {
-                focusSldPanel(existingSldPanelId);
+            if (!existingSldPanelId) {
+                // Not associated yet, open and associate it (reducer handles opening and z-index)
+                dispatch(openSldAndAssociateToNad({ voltageLevelId, nadPanelId }));
             } else {
-                // Not associated yet, open and associate it
-                dispatch(openSldAndAssociateToNad({ voltageLevelId, nadPanelId: panelId }));
+                // Already associated, ensure it's visible and bring to front
+                const panel = panels[existingSldPanelId];
+                if (panel?.isClosed) {
+                    dispatch(openPanel(existingSldPanelId));
+                }
+                dispatch(updatePanelZIndex(existingSldPanelId));
             }
         },
-        [dispatch, panelId, store, focusSldPanel]
+        [dispatch, nadPanelId, store]
     );
 
-    // Handle voltage level click - open/focus SLD for voltage level
+    // Handle voltage level click - open/associate SLD for voltage level
     const handleVoltageLevelClick = useCallback(
         (voltageLevelId: string) => {
             openOrFocusSld(voltageLevelId, true);
@@ -97,7 +72,7 @@ export const useNadSldAssociation = ({
         [openOrFocusSld]
     );
 
-    // Handle navigation sidebar click - open/focus voltage level diagram associated with NAD
+    // Handle navigation sidebar click - open/associate voltage level diagram with NAD
     const handleNavigationSidebarClick = useCallback(
         (voltageLevelId: string) => {
             openOrFocusSld(voltageLevelId, false);
@@ -106,10 +81,6 @@ export const useNadSldAssociation = ({
     );
 
     return {
-        focusedSldPanelId,
-        fullscreenSldPanelId,
-        setFocusedSldPanelId,
-        setFullscreenSldPanelId,
         handleVoltageLevelClick,
         handleNavigationSidebarClick,
     };

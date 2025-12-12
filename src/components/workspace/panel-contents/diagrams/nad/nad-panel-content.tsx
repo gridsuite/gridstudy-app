@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box } from '@mui/material';
 import type { DiagramAdditionalMetadata } from '../../../../grid-layout/cards/diagrams/diagram.type';
@@ -18,12 +18,11 @@ import { useNadDiagram } from '../../../diagrams/nad/use-nad-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import type { DiagramConfigPosition } from '../../../../../services/explore';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
-import { selectPanelMetadata, selectAssociatedVoltageLevelIds } from '../../../../../redux/slices/workspace-selectors';
+import { selectPanelMetadata } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
 import { NadNavigationSidebar } from '../../../diagrams/nad/nad-navigation-sidebar';
-import { AssociatedSldsDrawer } from './associated-slds-drawer';
+import { NadAssociatedPanelsContainer } from './nad-associated-panels-container';
 import { useNadSldAssociation } from './hooks/use-nad-sld-association';
-import { useDrawerState } from './hooks/use-drawer-state';
 
 interface NadPanelContentProps {
     panelId: UUID;
@@ -43,33 +42,8 @@ export const NadPanelContent = memo(function NadPanelContent({
         | NADPanelMetadata
         | undefined;
 
-    const associatedVoltageLevelIds = useSelector((state: RootState) =>
-        selectAssociatedVoltageLevelIds(state, panelId)
-    );
-
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
-
-    // SLD association, focus, and fullscreen management
-    const {
-        focusedSldPanelId,
-        fullscreenSldPanelId,
-        setFocusedSldPanelId,
-        setFullscreenSldPanelId,
-        handleVoltageLevelClick,
-        handleNavigationSidebarClick,
-    } = useNadSldAssociation({ panelId, diagramMetadata });
-
-    // Drawer state management
-    const {
-        isCollapsed: isDrawerCollapsed,
-        heightPercent: drawerHeightPercent,
-        toggleCollapse: toggleDrawerCollapse,
-        setHeight: setDrawerHeight,
-    } = useDrawerState({
-        focusedPanelId: focusedSldPanelId,
-        fullscreenPanelId: fullscreenSldPanelId,
-        onClearFocus: () => setFocusedSldPanelId(null),
-    });
+    // SLD association management - only what NAD needs
+    const { handleVoltageLevelClick } = useNadSldAssociation({ nadPanelId: panelId });
 
     const { diagram, loading, globalError, updateDiagram, handleSaveNad, cleanupSavedNadConfig } = useNadDiagram({
         panelId,
@@ -127,48 +101,35 @@ export const NadPanelContent = memo(function NadPanelContent({
         <Box sx={{ display: 'flex', height: '100%' }}>
             <Box sx={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
                 <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
-                    <NetworkAreaDiagramContent
-                        voltageLevelIds={diagram.voltageLevelIds || []}
-                        voltageLevelToExpandIds={diagram.voltageLevelToExpandIds || []}
-                        voltageLevelToOmitIds={diagram.voltageLevelToOmitIds || []}
-                        positions={diagram.positions || []}
-                        showInSpreadsheet={handleShowInSpreadsheet}
-                        svg={diagram.svg?.svg ?? undefined}
-                        svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
-                        svgScalingFactor={
-                            (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined)?.scalingFactor
-                        }
-                        svgVoltageLevels={diagram.voltageLevelIds}
-                        loadingState={loading}
-                        visible
-                        onVoltageLevelClick={handleVoltageLevelClick}
-                        onUpdateVoltageLevels={handleUpdateVoltageLevels}
-                        onUpdatePositions={handleUpdatePositions}
-                        onReplaceNad={handleReplaceNad}
-                        onSaveNad={handleSaveNad}
-                    />
+                    <Box sx={{ height: '100%', width: '100%' }}>
+                        <NetworkAreaDiagramContent
+                            voltageLevelIds={diagram.voltageLevelIds || []}
+                            voltageLevelToExpandIds={diagram.voltageLevelToExpandIds || []}
+                            voltageLevelToOmitIds={diagram.voltageLevelToOmitIds || []}
+                            positions={diagram.positions || []}
+                            showInSpreadsheet={handleShowInSpreadsheet}
+                            svg={diagram.svg?.svg ?? undefined}
+                            svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
+                            svgScalingFactor={
+                                (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined)
+                                    ?.scalingFactor
+                            }
+                            svgVoltageLevels={diagram.voltageLevelIds}
+                            loadingState={loading}
+                            visible
+                            onVoltageLevelClick={handleVoltageLevelClick}
+                            onUpdateVoltageLevels={handleUpdateVoltageLevels}
+                            onUpdatePositions={handleUpdatePositions}
+                            onReplaceNad={handleReplaceNad}
+                            onSaveNad={handleSaveNad}
+                        />
+                    </Box>
                 </DiagramWrapper>
 
-                <AssociatedSldsDrawer
-                    nadPanelId={panelId}
-                    isCollapsed={isDrawerCollapsed}
-                    heightPercent={drawerHeightPercent}
-                    focusedSldPanelId={focusedSldPanelId}
-                    fullscreenSldPanelId={fullscreenSldPanelId}
-                    isSidebarCollapsed={isSidebarCollapsed}
-                    onToggleCollapse={toggleDrawerCollapse}
-                    onSetHeight={setDrawerHeight}
-                    onSetFocusedSldPanelId={setFocusedSldPanelId}
-                    onSetFullscreenSldPanelId={setFullscreenSldPanelId}
-                    onRequestAssociation={handleVoltageLevelClick}
-                />
+                {/* Associated SLD panels and chips - manages its own Redux state */}
+                <NadAssociatedPanelsContainer nadPanelId={panelId} onRequestAssociation={handleVoltageLevelClick} />
             </Box>
-            <NadNavigationSidebar
-                nadPanelId={panelId}
-                onNavigate={handleNavigationSidebarClick}
-                onCollapseChange={setIsSidebarCollapsed}
-                associatedVoltageLevelIds={associatedVoltageLevelIds}
-            />
+            <NadNavigationSidebar nadPanelId={panelId} />
         </Box>
     );
 });

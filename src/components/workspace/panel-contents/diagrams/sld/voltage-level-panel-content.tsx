@@ -27,6 +27,7 @@ interface VoltageLevelPanelContentProps {
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
     onRequestAssociation?: (voltageLevelId: string) => void;
+    onSvgLoad?: (width: number, height: number) => void;
 }
 
 export const VoltageLevelPanelContent = ({
@@ -35,6 +36,7 @@ export const VoltageLevelPanelContent = ({
     currentNodeId,
     currentRootNetworkUuid,
     onRequestAssociation,
+    onSvgLoad,
 }: VoltageLevelPanelContentProps) => {
     const dispatch = useDispatch();
     const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
@@ -90,6 +92,11 @@ export const VoltageLevelPanelContent = ({
 
     return (
         <Box sx={{ display: 'flex', height: '100%', width: '100%', position: 'relative' }}>
+            <SldNavigationSidebar
+                navigationHistory={metadata.navigationHistory || []}
+                currentVoltageLevelId={metadata.diagramId}
+                onNavigate={handleNavigateFromHistory}
+            />
             <Box sx={{ flex: 1, overflow: 'hidden' }}>
                 <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
                     <SingleLineDiagramContent
@@ -106,14 +113,10 @@ export const VoltageLevelPanelContent = ({
                         visible
                         onNewVoltageLevelDiagram={handleNewVoltageLevelClick}
                         onNextVoltageLevelDiagram={handleNavigateDiagram}
+                        onSvgLoad={onSvgLoad}
                     />
                 </DiagramWrapper>
             </Box>
-            <SldNavigationSidebar
-                navigationHistory={metadata.navigationHistory || []}
-                currentVoltageLevelId={metadata.diagramId}
-                onNavigate={handleNavigateFromHistory}
-            />
         </Box>
     );
 };

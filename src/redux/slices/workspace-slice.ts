@@ -99,6 +99,26 @@ const workspacesSlice = createSlice({
             closeOrHidePanel(workspace, action.payload);
         },
 
+        openPanel: (state, action: PayloadAction<UUID>) => {
+            const workspace = getActiveWorkspace(state);
+            const panel = workspace.panels[action.payload];
+            if (panel) {
+                panel.isClosed = false;
+                // For attached SLDs, don't steal workspace focus - just update z-index
+                const isAttachedSld = (panel.metadata as SLDPanelMetadata | undefined)?.associatedToNadPanel;
+                if (isAttachedSld) {
+                    // Keep focus on NAD, just update z-index
+                    panel.zIndex = workspace.nextZIndex++;
+                    if (panel.isMinimized) {
+                        panel.isMinimized = false;
+                    }
+                } else {
+                    // Regular panels get full focus
+                    bringToFront(workspace, action.payload);
+                }
+            }
+        },
+
         closePanelsByType: (state, action: PayloadAction<PanelType>) => {
             const workspace = getActiveWorkspace(state);
             Object.values(workspace.panels)
@@ -109,6 +129,13 @@ const workspacesSlice = createSlice({
         // ==================== Panel State Management ====================
         focusPanel: (state, action: PayloadAction<UUID>) => {
             bringToFront(getActiveWorkspace(state), action.payload);
+        },
+
+        updatePanelZIndex: (state, action: PayloadAction<UUID>) => {
+            const workspace = getActiveWorkspace(state);
+            updatePanel(state, action.payload, (panel) => {
+                panel.zIndex = workspace.nextZIndex++;
+            });
         },
 
         updatePanelPosition: (state, action: PayloadAction<{ panelId: UUID; position: { x: number; y: number } }>) => {
@@ -315,6 +342,7 @@ const workspacesSlice = createSlice({
         // ==================== Panel Association Operations ====================
         associateSldToNad: (state, action: PayloadAction<{ sldPanelId: UUID; nadPanelId: UUID }>) => {
             const { sldPanelId, nadPanelId } = action.payload;
+            const workspace = getActiveWorkspace(state);
 
             // Update SLD panel metadata to reference NAD and close it
             updatePanel(state, sldPanelId, (panel) => {
@@ -323,7 +351,6 @@ const workspacesSlice = createSlice({
                     ...metadata,
                     associatedToNadPanel: nadPanelId,
                 };
-                panel.isClosed = true;
             });
 
             // Update NAD panel metadata to include SLD in associated list (prevent duplicates)
@@ -338,6 +365,9 @@ const workspacesSlice = createSlice({
                     };
                 }
             });
+
+            // Keep focus on NAD panel
+            workspace.focusedPanelId = nadPanelId;
         },
 
         dissociateSldFromNad: (state, action: PayloadAction<UUID>) => {
@@ -369,7 +399,6 @@ const workspacesSlice = createSlice({
                         ...sldMetadata,
                         associatedToNadPanel: null,
                     };
-                    panel.isClosed = false;
                     // Update orderIndex to place at end of dock
                     panel.orderIndex = workspace.nextOrderIndex++;
                 });
@@ -398,14 +427,13 @@ const workspacesSlice = createSlice({
                 size: sldPanel ? { ...sldPanel.size } : undefined,
             });
 
-            // Update SLD panel to reference the new NAD and close it
+            // Update SLD panel to reference the new NAD
             updatePanel(state, sldPanelId, (panel) => {
                 const metadata = panel.metadata as SLDPanelMetadata;
                 panel.metadata = {
                     ...metadata,
                     associatedToNadPanel: nadPanelId,
                 };
-                panel.isClosed = true;
             });
         },
 
@@ -440,14 +468,15 @@ const workspacesSlice = createSlice({
                 metadata,
             });
 
-            // Update SLD panel to reference NAD and close it
+            // Update SLD panel to reference NAD (keep it open and on top for immediate visibility)
             updatePanel(state, sldPanelId, (panel) => {
                 const metadata = panel.metadata as SLDPanelMetadata;
                 panel.metadata = {
                     ...metadata,
                     associatedToNadPanel: nadPanelId,
                 };
-                panel.isClosed = true;
+                // Ensure panel is visible and has highest z-index among associated SLDs
+                panel.zIndex = workspace.nextZIndex++;
             });
 
             // Update NAD panel metadata to include SLD in associated list
@@ -459,6 +488,9 @@ const workspacesSlice = createSlice({
                     associatedVoltageLevelPanels: [...associatedPanels, sldPanelId],
                 };
             });
+
+            // Restore focus to NAD (createPanel stole it when creating the SLD)
+            workspace.focusedPanelId = nadPanelId;
         },
 
         closeAllAssociatedSlds: (state, action: PayloadAction<UUID>) => {
@@ -471,12 +503,31 @@ const workspacesSlice = createSlice({
             const nadMetadata = nadPanel.metadata as NADPanelMetadata;
             const associatedPanelIds = nadMetadata.associatedVoltageLevelPanels || [];
 
+            // Close (hide) all associated SLD panels, preserving their state
+            associatedPanelIds.forEach((sldPanelId) => {
+                const panel = workspace.panels[sldPanelId];
+                if (panel) {
+                    panel.isClosed = true;
+                }
+            });
+        },
+
+        removeAllAssociatedSlds: (state, action: PayloadAction<UUID>) => {
+            const nadPanelId = action.payload;
+            const workspace = getActiveWorkspace(state);
+            const nadPanel = workspace.panels[nadPanelId];
+
+            if (!nadPanel) return;
+
+            const nadMetadata = nadPanel.metadata as NADPanelMetadata;
+            const associatedPanelIds = [...(nadMetadata.associatedVoltageLevelPanels || [])];
+
             // Delete all associated SLD panels
             associatedPanelIds.forEach((sldPanelId) => {
                 deletePanel(workspace, sldPanelId);
             });
 
-            // Clear the associated panels array in NAD metadata
+            // Clear the NAD's associated panels list
             updatePanel(state, nadPanelId, (panel) => {
                 const metadata = panel.metadata as NADPanelMetadata;
                 panel.metadata = {
@@ -484,6 +535,33 @@ const workspacesSlice = createSlice({
                     associatedVoltageLevelPanels: [],
                 };
             });
+        },
+
+        deleteAssociatedSld: (state, action: PayloadAction<UUID>) => {
+            const sldPanelId = action.payload;
+            const workspace = getActiveWorkspace(state);
+            const sldPanel = workspace.panels[sldPanelId];
+
+            if (!sldPanel) return;
+
+            const metadata = sldPanel.metadata as SLDPanelMetadata;
+            const nadPanelId = metadata.associatedToNadPanel;
+
+            // Remove from NAD panel's associated list
+            if (nadPanelId && workspace.panels[nadPanelId]) {
+                updatePanel(state, nadPanelId, (panel) => {
+                    const nadMetadata = panel.metadata as NADPanelMetadata;
+                    panel.metadata = {
+                        ...nadMetadata,
+                        associatedVoltageLevelPanels: (nadMetadata.associatedVoltageLevelPanels || []).filter(
+                            (id) => id !== sldPanelId
+                        ),
+                    };
+                });
+            }
+
+            // Delete the SLD panel completely
+            deletePanel(workspace, sldPanelId);
         },
     },
 });
@@ -498,11 +576,15 @@ export const {
     // Panel Lifecycle
     togglePanel,
     openOrFocusPanel,
+    openPanel,
     closePanel,
     closePanelsByType,
     closeAllAssociatedSlds,
+    removeAllAssociatedSlds,
+    deleteAssociatedSld,
     // Panel State Management
     focusPanel,
+    updatePanelZIndex,
     updatePanelPosition,
     updatePanelSize,
     updatePanelPositionAndSize,

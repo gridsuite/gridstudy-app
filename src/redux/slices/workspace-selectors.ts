@@ -34,12 +34,22 @@ export const selectIsPanelTypeOpen = createSelector(
 
 export const selectOpenPanelIds = createSelector(
     [selectPanelsRecord],
-    (panels) => Object.keys(panels).filter((id) => !panels[id as UUID].isClosed) as UUID[]
+    (panels) =>
+        Object.keys(panels).filter((id) => {
+            const panel = panels[id as UUID];
+            // Exclude attached SLDs (they render inside NAD panels, not in workspace)
+            const isAttachedSld = (panel.metadata as SLDPanelMetadata | undefined)?.associatedToNadPanel;
+            return !panel.isClosed && !isAttachedSld;
+        }) as UUID[]
 );
 
 export const selectOpenPanels = createSelector([selectPanelsRecord], (panels) =>
     Object.values(panels)
-        .filter((p) => !p.isClosed)
+        .filter((p) => {
+            // Exclude attached SLDs (they render inside NAD panels, not in workspace)
+            const isAttachedSld = (p.metadata as SLDPanelMetadata | undefined)?.associatedToNadPanel;
+            return !p.isClosed && !isAttachedSld;
+        })
         .sort((a, b) => a.orderIndex - b.orderIndex)
 );
 
@@ -58,14 +68,31 @@ export const selectAssociatedPanelIds = createSelector([selectPanelMetadata], (m
     return nadMetadata?.associatedVoltageLevelPanels || [];
 });
 
+// Get minimal panel data (zIndex, isClosed) for associated panels only
+export const selectAssociatedPanelsData = createSelector(
+    [selectAssociatedPanelIds, selectPanelsRecord],
+    (associatedPanelIds, allPanels): Record<UUID, { zIndex: number; isClosed: boolean }> => {
+        const result: Record<UUID, { zIndex: number; isClosed: boolean }> = {};
+        associatedPanelIds.forEach((id) => {
+            const panel = allPanels[id];
+            if (panel) {
+                result[id] = {
+                    zIndex: panel.zIndex,
+                    isClosed: panel.isClosed,
+                };
+            }
+        });
+        return result;
+    }
+);
+
 // Map associated panel IDs to their voltage level IDs
 export const selectAssociatedVoltageLevelIds = createSelector(
     [selectAssociatedPanelIds, selectPanelsRecord],
     (associatedPanelIds, panels): string[] => {
         if (associatedPanelIds.length === 0) {
-            return associatedPanelIds;
+            return [];
         }
-
         return associatedPanelIds
             .map((panelId) => {
                 const panel = panels[panelId];
@@ -73,4 +100,24 @@ export const selectAssociatedVoltageLevelIds = createSelector(
             })
             .filter((id): id is string => !!id);
     }
+);
+
+// Get visible (non-closed) associated SLD panels for a NAD panel
+export const selectVisibleAssociatedSldPanels = createSelector(
+    [selectAssociatedPanelIds, selectPanelsRecord],
+    (associatedPanelIds, panels) => associatedPanelIds.filter((id) => panels[id] && !panels[id].isClosed)
+);
+
+// Get associated panel details (id, title, isVisible) for rendering chips
+export const selectAssociatedPanelDetails = createSelector(
+    [selectAssociatedPanelIds, selectPanelsRecord],
+    (associatedPanelIds, panels) =>
+        associatedPanelIds.map((id) => {
+            const panel = panels[id];
+            return {
+                id,
+                title: panel?.title,
+                isVisible: panel && !panel.isClosed,
+            };
+        })
 );

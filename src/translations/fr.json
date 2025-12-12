@@ -1572,6 +1572,10 @@
     "searchVoltageLevelInNad": "Rechercher un poste",
     "noResultsFound": "Aucun résultat trouvé",
     "hide": "Masquer",
+    "hideAll": "Tout masquer",
+    "showAll": "Tout afficher",
+    "grid": "Disposition en grille",
+    "cascade": "Disposition en cascade",
     "hideLabels": "Masquer les libellés en mode edition",
     "showLabels": "Afficher les libellés",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
@@ -1668,8 +1672,8 @@
     "reset": "Réinitialiser",
     "history": "Historique",
     "activePowerControlTooltip": "Clé de distribution de la puissance au nœud bilan : maxP/Statisme, statisme par défaut = 4 (valable pour le mode compensation proportionnel à la puissance maximale des groupes)",
-    "associatedSLDs": "SLDs associés",
-    "removeAll": "Tout supprimer",
+    "removeAll": "Tout fermer",
+    "removeAllAssociatedSldsConfirmation": "Êtes-vous sûr de vouloir fermer tous les postes associés ?",
     "createNewNAD": "Créer un nouveau NAD",
     "existingNAD": "NAD existant"
 }

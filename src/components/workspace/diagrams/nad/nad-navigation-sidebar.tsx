@@ -6,35 +6,42 @@
  */
 
 import { useState, memo, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { selectPanelMetadata } from '../../../../redux/slices/workspace-selectors';
+import { selectPanelMetadata, selectAssociatedVoltageLevelIds } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';
 import type { NADPanelMetadata } from '../../types/workspace.types';
 import { NavigationSidebar } from '../common/navigation-sidebar';
+import { useNadSldAssociation } from '../../panel-contents/diagrams/nad/hooks/use-nad-sld-association';
 
 interface NadNavigationSidebarProps {
-    nadPanelId: UUID;
-    onNavigate: (voltageLevelId: string) => void;
-    onCollapseChange?: (collapsed: boolean) => void;
-    associatedVoltageLevelIds?: string[];
+    readonly nadPanelId: UUID;
+    readonly onCollapseChange?: (collapsed: boolean) => void;
 }
 
 export const NadNavigationSidebar = memo(function NadNavigationSidebar({
     nadPanelId,
-    onNavigate,
     onCollapseChange,
-    associatedVoltageLevelIds = [],
 }: NadNavigationSidebarProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isBuilt = isNodeBuilt(currentNode);
 
-    const metadata = useSelector((state: RootState) => selectPanelMetadata(state, nadPanelId)) as
-        | NADPanelMetadata
-        | undefined;
+    // Access Redux state internally
+    const associatedVoltageLevelIds = useSelector(
+        (state: RootState) => selectAssociatedVoltageLevelIds(state, nadPanelId),
+        shallowEqual
+    );
+
+    const metadata = useSelector(
+        (state: RootState) => selectPanelMetadata(state, nadPanelId) as NADPanelMetadata | undefined,
+        shallowEqual
+    );
+
+    // Get navigation handler internally
+    const { handleNavigationSidebarClick } = useNadSldAssociation({ nadPanelId });
 
     const reversedHistory = useMemo(
         () => [...(metadata?.navigationHistory || [])].reverse(),
@@ -60,7 +67,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
             isDisabled={!isBuilt}
             isItemSelected={(id) => associatedVoltageLevelIds.includes(id)}
             onToggleCollapse={handleToggleExpand}
-            onNavigate={onNavigate}
+            onNavigate={handleNavigationSidebarClick}
         />
     );
 });
