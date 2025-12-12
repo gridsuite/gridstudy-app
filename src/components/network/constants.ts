@@ -76,17 +76,11 @@ export const APPLICABILITY = {
     SIDE2: { id: 'SIDE2', label: 'Side2' },
 };
 
+export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 // Relevant ConnectablePosition.Direction Powsybl enum values
 export const CONNECTION_DIRECTIONS = [
     { id: 'TOP', label: 'Top' },
     { id: 'BOTTOM', label: 'Bottom' },
-] as const;
-// and the undefined/default one (not displayed)
-export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
-
-// For load tabular creations/modifications, we allow the UNDEFINED value
-export const CONNECTION_DIRECTIONS_FOR_LOAD_TABULAR_CREATION_MODIFICATION = [
-    ...CONNECTION_DIRECTIONS,
     { id: UNDEFINED_CONNECTION_DIRECTION, label: 'Undefined' },
 ] as const;
 
