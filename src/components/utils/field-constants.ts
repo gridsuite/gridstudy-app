@@ -270,6 +270,8 @@ export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 export const IP_MIN = 'ipMin';
 export const IP_MAX = 'ipMax';
+export const IS_ATTACHMENT_POINT_CREATION = 'isAttachmentPointCreation';
+
 // dnd table
 export const SELECTED = 'selected';
 export const ACTIVATED = 'activated';

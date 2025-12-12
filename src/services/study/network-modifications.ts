@@ -52,7 +52,7 @@ import {
     TwoWindingsTransformerCreationInfo,
     TwoWindingsTransformerModificationInfo,
     Variations,
-    VoltageLeveCreationlInfo,
+    VoltageLevelCreationInfo,
     VoltageLeveModificationInfo,
     VSCCreationInfo,
     VSCModificationInfo,
@@ -1322,7 +1322,7 @@ export function createVoltageLevel({
     isUpdate,
     modificationUuid,
     properties,
-}: VoltageLeveCreationlInfo) {
+}: VoltageLevelCreationInfo) {
     let createVoltageLevelUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1487,6 +1487,7 @@ export function attachLine({
     percent,
     attachmentPointId,
     attachmentPointName,
+    attachmentPointDetailInformation,
     mayNewVoltageLevelInfos,
     existingVoltageLevelId,
     bbsOrBusId,
@@ -1502,6 +1503,7 @@ export function attachLine({
         percent,
         attachmentPointId,
         attachmentPointName,
+        attachmentPointDetailInformation,
         mayNewVoltageLevelInfos,
         existingVoltageLevelId,
         bbsOrBusId,
