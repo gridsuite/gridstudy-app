@@ -97,7 +97,7 @@ const ParametersTabs: FunctionComponent = () => {
     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
     const [pendingClosePanelId, setPendingClosePanelId] = useState<UUID | null>(null);
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
@@ -262,7 +262,7 @@ const ParametersTabs: FunctionComponent = () => {
     useEffect(() => {
         setTabValue((oldValue) => {
             if (
-                (!enableDeveloperMode &&
+                (!isDeveloperMode &&
                     (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
                         oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
                         oldValue === TAB_VALUES.pccMinTabValue ||
@@ -274,7 +274,7 @@ const ParametersTabs: FunctionComponent = () => {
             }
             return oldValue;
         });
-    }, [enableDeveloperMode]);
+    }, [isDeveloperMode]);
 
     const displayTab = useCallback(() => {
         switch (tabValue) {
@@ -285,7 +285,7 @@ const ParametersTabs: FunctionComponent = () => {
                         language={languageLocal}
                         parametersBackend={loadFlowParametersBackend}
                         setHaveDirtyFields={setDirtyFields}
-                        enableDeveloperMode={enableDeveloperMode}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case TAB_VALUES.securityAnalysisParamsTabValue:
@@ -294,7 +294,7 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
                         setHaveDirtyFields={setDirtyFields}
-                        enableDeveloperMode={enableDeveloperMode}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case TAB_VALUES.sensitivityAnalysisParamsTabValue:
@@ -305,7 +305,7 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
-                        enableDeveloperMode={enableDeveloperMode}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case TAB_VALUES.shortCircuitParamsTabValue:
@@ -314,7 +314,7 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         parametersBackend={shortCircuitParametersBackend}
-                        enableDeveloperMode={enableDeveloperMode}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case TAB_VALUES.pccMinTabValue:
@@ -360,7 +360,7 @@ const ParametersTabs: FunctionComponent = () => {
         languageLocal,
         loadFlowParametersBackend,
         setDirtyFields,
-        enableDeveloperMode,
+        isDeveloperMode,
         securityAnalysisParametersBackend,
         currentNodeUuid,
         currentRootNetworkUuid,
@@ -419,14 +419,14 @@ const ParametersTabs: FunctionComponent = () => {
                                 label={<FormattedMessage id="PccMin" />}
                                 value={TAB_VALUES.pccMinTabValue}
                             />
-                            {enableDeveloperMode ? (
+                            {isDeveloperMode ? (
                                 <Tab
                                     disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="DynamicSimulation" />}
                                     value={TAB_VALUES.dynamicSimulationParamsTabValue}
                                 />
                             ) : null}
-                            {enableDeveloperMode ? (
+                            {isDeveloperMode ? (
                                 <Tab
                                     disabled={dynamicSecurityAnalysisAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="DynamicSecurityAnalysis" />}
@@ -438,7 +438,7 @@ const ParametersTabs: FunctionComponent = () => {
                                 label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
-                            {enableDeveloperMode ? (
+                            {isDeveloperMode ? (
                                 <Tab
                                     disabled={stateEstimationAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="StateEstimation" />}

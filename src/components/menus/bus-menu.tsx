@@ -74,7 +74,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     onClose,
     setModificationInProgress,
 }) => {
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const { snackError } = useSnackMessage();
     const [equipmentInfos, setEquipmentInfos] = useState<EquipmentInfo>();
 
@@ -177,7 +177,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     />
                 </CustomMenuItem>
             )}
-            {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
+            {isDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}
                     equipmentType={convertToEquipmentType(EQUIPMENT_TYPES.BUS)}

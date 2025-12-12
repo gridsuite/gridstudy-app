@@ -69,7 +69,7 @@ export function fetchVersion() {
 export const fetchDefaultParametersValues = () => {
     console.info('fetching study default parameters values from apps-metadata file');
     const defaultValues: DefaultParameters = {
-        enableDeveloperMode: false,
+        isDeveloperMode: false,
     };
     return fetchStudyMetadata()
         .then((studyMetadata) => {

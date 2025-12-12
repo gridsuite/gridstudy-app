@@ -43,7 +43,7 @@ const withEquipmentMenu =
         handleOpenModificationDialog,
         onOpenDynamicSimulationEventDialog,
     }: MenuBranchProps) => {
-        const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+        const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
         // to check is node editable
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -85,7 +85,7 @@ const withEquipmentMenu =
                         handleDeleteEquipment={handleDeleteEquipment}
                         handleOpenModificationDialog={handleOpenModificationDialog}
                     />
-                    {enableDeveloperMode && getEventType(equipmentType) && (
+                    {isDeveloperMode && getEventType(equipmentType) && (
                         <DynamicSimulationEventMenuItem
                             equipmentId={equipment.id}
                             equipmentType={equipmentType}

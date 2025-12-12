@@ -41,7 +41,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
         name: `${DESTINATION_FOLDER}`,
     });
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE = [EquipmentType.DANGLING_LINE, EquipmentType.THREE_WINDINGS_TRANSFORMER];
 
@@ -51,7 +51,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
         )
     );
 
-    const filteredContingencyEquipments = enableDeveloperMode
+    const filteredContingencyEquipments = isDeveloperMode
         ? CONTINGENCY_LIST_EQUIPMENTS
         : CONTINGENCY_EQUIPMENTS_FOR_NON_DEV_MODE;
     const equipmentTypesOptions = useMemo(() => {

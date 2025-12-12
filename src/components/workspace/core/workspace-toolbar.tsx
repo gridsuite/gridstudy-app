@@ -71,7 +71,7 @@ export const WorkspaceToolbar = () => {
 
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isTreeOpen = useSelector((state: RootState) => selectIsPanelTypeOpen(state, PanelType.TREE));
     const isSpreadsheetOpen = useSelector((state: RootState) => selectIsPanelTypeOpen(state, PanelType.SPREADSHEET));
@@ -87,13 +87,13 @@ export const WorkspaceToolbar = () => {
 
     // Close EVENT_SCENARIO panel when developer mode is disabled
     useEffect(() => {
-        if (!enableDeveloperMode) {
+        if (!isDeveloperMode) {
             const eventScenarioPanels = allPanels.filter((panel) => panel.type === PanelType.EVENT_SCENARIO);
             eventScenarioPanels.forEach((panel) => {
                 dispatch(closePanel(panel.id));
             });
         }
-    }, [enableDeveloperMode, allPanels, dispatch]);
+    }, [isDeveloperMode, allPanels, dispatch]);
 
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements.length > 0 && selectedElements[0].type) {
@@ -142,7 +142,7 @@ export const WorkspaceToolbar = () => {
                         <Tune fontSize="small" />
                     </ToggleButton>
                 </Tooltip>
-                {enableDeveloperMode && (
+                {isDeveloperMode && (
                     <Tooltip title={<FormattedMessage id="DynamicSimulation" />}>
                         <ToggleButton
                             value="event-scenario"
