@@ -643,10 +643,10 @@ export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_
     [PARAM_DEVELOPER_MODE]: boolean;
 };
 
-export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableDeveloperModeAction {
+export function selectIsDeveloperMode(isDeveloperMode: boolean): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
-        [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
+        [PARAM_DEVELOPER_MODE]: isDeveloperMode,
     };
 }
 

@@ -105,7 +105,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState<string>('');
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const shortCircuitStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]);
@@ -406,7 +406,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         isAnyNodeBuilding,
         showEquipmentMenu,
         showBusMenu,
-        enableDeveloperMode,
+        isDeveloperMode,
         diagramParams.type,
         theme,
         modificationInProgress,
@@ -451,7 +451,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     loadFlowStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramLoadflowInvalid,
                     shortCircuitStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramShortCircuitInvalid,
                     // TODO - lock and strip are hidden on single line diagram temporarly
-                    !enableDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
+                    !isDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
                 )}
                 style={{ height: '100%' }}
             />

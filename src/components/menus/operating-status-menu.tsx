@@ -105,7 +105,7 @@ const withOperatingStatusMenu =
         const { getNameOrId } = useNameOrId();
         const [equipmentInfos, setEquipmentInfos] = useState<EquipmentInfos | null>(null);
 
-        const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+        const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
         const getTranslationKey = (key: string) => {
             if (equipmentType) {
@@ -262,7 +262,7 @@ const withOperatingStatusMenu =
                             }
                         />
                     </CustomMenuItem>
-                    {enableDeveloperMode && getEventType(equipmentType) && (
+                    {isDeveloperMode && getEventType(equipmentType) && (
                         <DynamicSimulationEventMenuItem
                             equipmentId={equipment.id}
                             equipmentType={equipmentType}

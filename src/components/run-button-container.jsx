@@ -108,7 +108,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
     const dispatch = useDispatch();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isModificationsInProgress = useSelector((state) => state.isModificationsInProgress);
 
@@ -561,14 +561,14 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 ? [ComputingType.SENSITIVITY_ANALYSIS]
                 : []),
             ...(shortCircuitAvailability === OptionalServicesStatus.Up ? [ComputingType.SHORT_CIRCUIT] : []),
-            ...(dynamicSimulationAvailability === OptionalServicesStatus.Up && enableDeveloperMode
+            ...(dynamicSimulationAvailability === OptionalServicesStatus.Up && isDeveloperMode
                 ? [ComputingType.DYNAMIC_SIMULATION]
                 : []),
-            ...(dynamicSecurityAnalysisAvailability === OptionalServicesStatus.Up && enableDeveloperMode
+            ...(dynamicSecurityAnalysisAvailability === OptionalServicesStatus.Up && isDeveloperMode
                 ? [ComputingType.DYNAMIC_SECURITY_ANALYSIS]
                 : []),
             ...(voltageInitAvailability === OptionalServicesStatus.Up ? [ComputingType.VOLTAGE_INITIALIZATION] : []),
-            ...(stateEstimationAvailability === OptionalServicesStatus.Up && enableDeveloperMode
+            ...(stateEstimationAvailability === OptionalServicesStatus.Up && isDeveloperMode
                 ? [ComputingType.STATE_ESTIMATION]
                 : []),
             ...(pccMinAvailability === OptionalServicesStatus.Up ? [ComputingType.PCC_MIN] : []),
@@ -578,7 +578,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         sensitivityAnalysisUnavailability,
         shortCircuitAvailability,
         dynamicSimulationAvailability,
-        enableDeveloperMode,
+        isDeveloperMode,
         dynamicSecurityAnalysisAvailability,
         voltageInitAvailability,
         stateEstimationAvailability,
