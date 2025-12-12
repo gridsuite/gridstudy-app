@@ -100,7 +100,7 @@ const LineAttachToVoltageLevelDialog = ({
     const [attachmentLine, setAttachmentLine] = useState(null);
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
-    const [attachmentPoint, setAttachmentPoint] = useState(null);
+    const [attachmentPoint, setAttachmentPoint] = useState({ type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type });
 
     const { snackError } = useSnackMessage();
 
