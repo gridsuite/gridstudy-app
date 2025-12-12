@@ -91,7 +91,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
-    const [hoveredRowIndex, setHoveredRowIndex] = useState<number>();
+    const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>();
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -150,7 +150,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 colId: 'modificationDescription',
                 cellRenderer: DescriptionRenderer,
                 cellRendererParams: {
-                    setModifications: setModifications,
                     hoveredRowIndex: hoveredRowIndex,
                 },
                 width: 30,
@@ -259,9 +258,9 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                     headerCheckbox: true,
                 }}
                 onCellMouseOver={(event: CellMouseOverEvent<NetworkModificationMetadata>) =>
-                    setHoveredRowIndex(event.rowIndex ?? -1)
+                    setHoveredRowIndex(event.rowIndex ?? null)
                 }
-                onCellMouseOut={() => setHoveredRowIndex(-1)}
+                onCellMouseOut={() => setHoveredRowIndex(null)}
                 defaultColDef={defaultColumnDefinition}
                 onCellClicked={handleCellClick}
                 onRowSelected={onRowSelected}

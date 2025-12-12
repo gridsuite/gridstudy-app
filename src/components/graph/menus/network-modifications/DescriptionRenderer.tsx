@@ -6,7 +6,7 @@
  */
 import { ICellRendererParams } from 'ag-grid-community';
 import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import React, { SetStateAction, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
@@ -16,12 +16,11 @@ import type { UUID } from 'node:crypto';
 import { setModificationDescription } from '../../../../services/study/network-modifications';
 
 export interface DescriptionRendererProps extends ICellRendererParams<NetworkModificationMetadata> {
-    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
     hoveredRowIndex: number;
 }
 
 const DescriptionRenderer = (props: DescriptionRendererProps) => {
-    const { data, api, node } = props;
+    const { hoveredRowIndex, data, api, node } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -30,8 +29,8 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
     const [openDescModificationDialog, setOpenDescModificationDialog] = useState(false);
 
     const modificationUuid = data?.uuid;
-    const description: string | undefined = data?.description;
-    const empty: boolean = !description;
+    const description = data?.description;
+    const empty = !description;
 
     const updateModification = useCallback(
         async (uuid: UUID, descriptionRecord: Record<string, string>) => {
@@ -49,14 +48,11 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
     const handleDescDialogClose = useCallback(() => {
         setOpenDescModificationDialog(false);
         api.stopEditing();
-    }, [api]);
+    }, [api, setOpenDescModificationDialog]);
 
-    const handleModifyDescription = () => {
-        if (isLoading) {
-            return;
-        }
+    const handleModifyDescription = useCallback(() => {
         setOpenDescModificationDialog(true);
-    };
+    }, [setOpenDescModificationDialog]);
 
     return (
         <>
@@ -75,7 +71,7 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
                 >
-                    <EditNoteIcon empty={empty} hidden={node.rowIndex !== props.hoveredRowIndex} />
+                    <EditNoteIcon empty={empty} hidden={node.rowIndex !== hoveredRowIndex} />
                 </IconButton>
             </Tooltip>
         </>
