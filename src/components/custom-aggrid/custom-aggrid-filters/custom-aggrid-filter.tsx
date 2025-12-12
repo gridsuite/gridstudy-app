@@ -10,7 +10,7 @@ import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomFilterIcon } from './custom-filter-icon';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { CustomAggridAutocompleteFilterParams } from './custom-aggrid-autocomplete-filter';
-import { CustomAggridFilterParams } from './custom-aggrid-filter.type';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
 
 const styles = {
     input: {
@@ -39,7 +39,7 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
 }: CustomAggridFilterWrapperParams<F>) => {
     const [filterAnchorElement, setFilterAnchorElement] = useState<HTMLElement | null>(null);
 
-    const { selectedFilterData } = useCustomAggridFilter(
+    const { selectedFilterData, selectedFilterComparator } = useCustomAggridFilter(
         filterComponentParams.api,
         filterComponentParams.colId,
         filterComponentParams.filterParams
@@ -54,19 +54,29 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
         setFilterAnchorElement(null);
     };
 
+    // a filter is active if it has data or if it's using IS_EMPTY or IS_NOT_EMPTY comparators
+    const isFilterActive =
+        (Array.isArray(selectedFilterData) ? selectedFilterData.length > 0 : !!selectedFilterData) ||
+        selectedFilterComparator === FILTER_TEXT_COMPARATORS.IS_EMPTY ||
+        selectedFilterComparator === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY;
+
     const shouldDisplayFilterIcon = useMemo(
         () =>
             (!!FilterComponent && isHoveringColumnHeader) ||
-            (Array.isArray(selectedFilterData) ? selectedFilterData.length > 0 : !!selectedFilterData) ||
+            isFilterActive ||
             !!filterAnchorElement ||
             forceDisplayFilterIcon,
-        [FilterComponent, filterAnchorElement, forceDisplayFilterIcon, isHoveringColumnHeader, selectedFilterData]
+        [FilterComponent, filterAnchorElement, forceDisplayFilterIcon, isHoveringColumnHeader, isFilterActive]
     );
 
     return (
         <>
             {shouldDisplayFilterIcon && (
-                <CustomFilterIcon selectedFilterData={selectedFilterData} handleShowFilter={handleShowFilter} />
+                <CustomFilterIcon
+                    selectedFilterData={selectedFilterData}
+                    selectedFilterComparator={selectedFilterComparator}
+                    handleShowFilter={handleShowFilter}
+                />
             )}
             <Popover
                 id={`${filterComponentParams.colId}-filter-popover`}

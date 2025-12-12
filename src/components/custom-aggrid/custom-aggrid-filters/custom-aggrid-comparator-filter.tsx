@@ -6,10 +6,11 @@
  */
 import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
-import { Grid } from '@mui/material';
+import { Grid, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { useCustomAggridComparatorFilter } from './hooks/use-custom-aggrid-comparator-filter';
 
-import { CustomAggridFilterParams } from './custom-aggrid-filter.type';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
 
 export const CustomAggridComparatorFilter = ({ api, colId, filterParams }: CustomAggridFilterParams) => {
     const {
@@ -26,20 +27,36 @@ export const CustomAggridComparatorFilter = ({ api, colId, filterParams }: Custo
         comparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
     } = filterParams;
 
+    const isComparatorWithoutValue =
+        selectedFilterComparator === FILTER_TEXT_COMPARATORS.IS_EMPTY ||
+        selectedFilterComparator === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY;
+
     return (
         <Grid container direction={'column'} gap={0.8} sx={{ padding: '8px' }}>
-            <CustomAggridComparatorSelector
-                value={selectedFilterComparator}
-                onChange={handleFilterComparatorChange}
-                options={comparators}
-            />
-            <CustomAggridTextFilter
-                value={selectedFilterData}
-                onChange={handleFilterTextChange}
-                onClear={handleClearFilter}
-                isNumberInput={isNumberInput}
-                decimalAfterDot={decimalAfterDot}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ flex: 1 }}>
+                    <CustomAggridComparatorSelector
+                        value={selectedFilterComparator}
+                        onChange={handleFilterComparatorChange}
+                        options={comparators}
+                    />
+                </div>
+                {/* we add a close icon to clear the comparator IS_EMPTY or IS_NOT_EMPTY */}
+                {isComparatorWithoutValue && selectedFilterData !== undefined && (
+                    <IconButton size="small" onClick={handleClearFilter}>
+                        <CloseIcon />
+                    </IconButton>
+                )}
+            </div>
+            {!isComparatorWithoutValue && (
+                <CustomAggridTextFilter
+                    value={selectedFilterData}
+                    onChange={handleFilterTextChange}
+                    onClear={handleClearFilter}
+                    isNumberInput={isNumberInput}
+                    decimalAfterDot={decimalAfterDot}
+                />
+            )}
         </Grid>
     );
 };

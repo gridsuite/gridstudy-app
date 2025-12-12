@@ -12,10 +12,10 @@ import { useCustomAggridFilter } from './use-custom-aggrid-filter';
 import { GridApi } from 'ag-grid-community';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterParams } from '../../../../types/custom-aggrid-types';
-import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-filter.type';
 
 export const useCustomAggridComparatorFilter = (api: GridApi, colId: string, filterParams: FilterParams) => {
-    const { dataType = FILTER_DATA_TYPES.TEXT } = filterParams;
+    const { dataType = FILTER_DATA_TYPES.TEXT, comparators = [] } = filterParams;
 
     const isNumberInput = dataType === FILTER_DATA_TYPES.NUMBER;
 
@@ -30,9 +30,18 @@ export const useCustomAggridComparatorFilter = (api: GridApi, colId: string, fil
     };
 
     const handleClearFilter = () => {
-        handleChangeFilterValue({
-            value: undefined,
-        });
+        if (
+            (selectedFilterComparator === FILTER_TEXT_COMPARATORS.IS_EMPTY ||
+                selectedFilterComparator === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY) &&
+            comparators.length > 0
+        ) {
+            // we switch to the first comparator when we clear the IS_EMPTY or IS_NOT_EMPTY comparator
+            handleChangeComparator(comparators[0]);
+        } else {
+            handleChangeFilterValue({
+                value: undefined,
+            });
+        }
     };
     const handleFilterTextChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.toUpperCase();
