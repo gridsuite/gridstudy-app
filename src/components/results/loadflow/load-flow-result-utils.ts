@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ComponentResult, LimitTypes, OverloadedEquipment, OverloadedEquipmentFromBack } from './load-flow-result.type';
+import {
+    ComponentResult,
+    CountryAdequacy,
+    ExchangePair,
+    ExchangeValue,
+    LimitTypes,
+    OverloadedEquipment,
+    OverloadedEquipmentFromBack,
+} from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
@@ -419,18 +427,13 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     ];
 };
 
-export const loadFlowResultColumnsDefinition = (
+export const componentColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
-    numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
+    statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: LOADFLOW_RESULT_SORT_STORE,
-        tab: mappingTabs(tabIndex),
-    };
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
@@ -441,7 +444,6 @@ export const loadFlowResultColumnsDefinition = (
             colId: 'connectedComponentNum',
             field: 'connectedComponentNum',
             context: {
-                sortParams,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
@@ -451,7 +453,6 @@ export const loadFlowResultColumnsDefinition = (
             colId: 'synchronousComponentNum',
             field: 'synchronousComponentNum',
             context: {
-                sortParams,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
@@ -461,7 +462,6 @@ export const loadFlowResultColumnsDefinition = (
             colId: 'status',
             field: 'status',
             context: {
-                sortParams,
                 filterComponent: CustomAggridAutocompleteFilter,
                 filterComponentParams: {
                     filterParams: {
@@ -475,22 +475,47 @@ export const loadFlowResultColumnsDefinition = (
             cellRenderer: statusCellRender,
         }),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'iterationCount' }),
-            colId: 'iterationCount',
-            field: 'iterationCount',
+            headerName: intl.formatMessage({ id: 'consumptions' }),
+            colId: 'consumptions',
+            field: 'consumptions',
             context: {
-                sortParams,
+                numeric: true,
+                fractionDigits: 2,
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
         }),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'slackBusId' }),
-            colId: 'id',
-            field: 'id',
+            headerName: intl.formatMessage({ id: 'generations' }),
+            colId: 'generations',
+            field: 'generations',
             context: {
+                numeric: true,
+                fractionDigits: 2,
                 filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...textFilterParams, ...filterParams } },
+                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'exchanges' }),
+            colId: 'exchanges',
+            field: 'exchanges',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'losses' }),
+            colId: 'losses',
+            field: 'losses',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -505,24 +530,187 @@ export const loadFlowResultColumnsDefinition = (
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
             },
-            cellRenderer: numberRenderer,
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'slackBusId' }),
+            colId: 'id',
+            field: 'id',
+            context: {
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: { filterParams: { ...textFilterParams, ...filterParams } },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'iterationCount' }),
+            colId: 'iterationCount',
+            field: 'iterationCount',
+            context: {
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+            },
+        }),
+    ];
+};
+
+export const countryAdequaciesColumnsDefinition = (intl: IntlShape): ColDef[] => {
+    return [
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'Country' }),
+            colId: 'country',
+            field: 'country',
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'countryAdequacyLoad' }),
+            colId: 'load',
+            field: 'load',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'countryAdequacyGeneration' }),
+            colId: 'generation',
+            field: 'generation',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'losses' }),
+            colId: 'losses',
+            field: 'losses',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'netPosition' }),
+            colId: 'netPosition',
+            field: 'netPosition',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
+        }),
+    ];
+};
+
+export const exchangesColumnsDefinition = (intl: IntlShape): ColDef[] => {
+    return [
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'borders' }),
+            colId: 'countryA',
+            field: 'countryA',
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: '',
+            colId: 'countryB',
+            field: 'countryB',
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'exchange' }),
+            colId: 'exchange',
+            field: 'exchange',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
         }),
     ];
 };
 
 export const formatComponentResult = (componentResults: ComponentResult[]) => {
-    return componentResults?.map((componentResult) => {
+    return componentResults
+        ?.toSorted(
+            (a, b) =>
+                a.connectedComponentNum - b.connectedComponentNum ||
+                a.synchronousComponentNum - b.synchronousComponentNum
+        )
+        .map((componentResult) => {
+            return {
+                componentResultUuid: componentResult.componentResultUuid,
+                connectedComponentNum: componentResult.connectedComponentNum,
+                synchronousComponentNum: componentResult.synchronousComponentNum,
+                status: componentResult.status,
+                iterationCount: componentResult.iterationCount,
+                id: componentResult.slackBusResults?.map((slackBus) => slackBus.id).join(' | '),
+                activePowerMismatch: componentResult.slackBusResults
+                    ?.map((slackBus) => slackBus.activePowerMismatch)
+                    .reduce((prev, current) => prev + current, 0),
+                distributedActivePower: componentResult.distributedActivePower,
+                consumptions: componentResult.consumptions,
+                generations: componentResult.generations,
+                exchanges: componentResult.exchanges,
+                losses: componentResult.losses,
+            };
+        });
+};
+
+export const formatCountryAdequaciesResult = (
+    countryAdequacies: CountryAdequacy[],
+    translate: (countryCode: string) => string
+) => {
+    return countryAdequacies
+        ?.map((countryAdequacyResult) => {
+            return {
+                countryAdequacyUuid: countryAdequacyResult.countryAdequacyUuid,
+                country: translate(countryAdequacyResult.country),
+                load: countryAdequacyResult.load,
+                generation: countryAdequacyResult.generation,
+                losses: countryAdequacyResult.losses,
+                netPosition: countryAdequacyResult.netPosition,
+            };
+        })
+        ?.sort((a, b) => a.country.localeCompare(b.country));
+};
+
+function generateExchangePairs(
+    exchanges: Record<string, ExchangeValue[]>,
+    translate: (countryCode: string) => string
+): ExchangePair[] {
+    const result: ExchangePair[] = [];
+
+    if (exchanges !== undefined && Object.keys(exchanges).length > 0) {
+        const sortedCountryKeys = Object.keys(exchanges).sort((a, b) => translate(a).localeCompare(translate(b)));
+        sortedCountryKeys.forEach((country) => {
+            const sortedCountryExchanges = [...exchanges[country]].sort((a, b) =>
+                translate(a.country).localeCompare(translate(b.country))
+            );
+            const exchangeTotal = sortedCountryExchanges.reduce((sum, exchange) => sum + exchange.exchange, 0);
+            result.push({
+                exchangeUuid: undefined,
+                countryA: translate(country),
+                countryB: '',
+                exchange: exchangeTotal,
+            });
+            sortedCountryExchanges.forEach((exchange) => {
+                result.push({
+                    exchangeUuid: exchange.exchangeUuid,
+                    countryA: '',
+                    countryB: translate(exchange.country),
+                    exchange: exchange.exchange,
+                });
+            });
+        });
+    }
+
+    return result;
+}
+
+export const formatExchangesResult = (
+    exchanges: Record<string, ExchangeValue[]>,
+    translate: (countryCode: string) => string
+) => {
+    const res: ExchangePair[] = generateExchangePairs(exchanges, translate);
+    return res?.map((exchangePair) => {
         return {
-            componentResultUuid: componentResult.componentResultUuid,
-            connectedComponentNum: componentResult.connectedComponentNum,
-            synchronousComponentNum: componentResult.synchronousComponentNum,
-            status: componentResult.status,
-            iterationCount: componentResult.iterationCount,
-            id: componentResult.slackBusResults?.map((slackBus) => slackBus.id).join(' | '),
-            activePowerMismatch: componentResult.slackBusResults
-                ?.map((slackBus) => slackBus.activePowerMismatch)
-                .reduce((prev, current) => prev + current, 0),
-            distributedActivePower: componentResult.distributedActivePower,
+            exchangeUuid: exchangePair.exchangeUuid,
+            countryA: exchangePair.countryA,
+            countryB: exchangePair.countryB,
+            exchange: exchangePair.exchange,
         };
     });
 };
