@@ -149,6 +149,7 @@ const LineCreationDialog = ({
     const { reset, setValue } = formMethods;
 
     const fromSearchCopyToFormValues = (line) => {
+        console.log(line, line.currentLimits);
         reset(
             {
                 ...getHeaderFormData({

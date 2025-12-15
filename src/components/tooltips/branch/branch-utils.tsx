@@ -78,16 +78,18 @@ export const generateCurrentLimitsRows = (
             )}
             {currentLimits?.temporaryLimits?.map(
                 (temporaryLimit: TemporaryLimit) =>
-                    temporaryLimit.value && (
+                    temporaryLimit.value?.value && (
                         <TableRow key={temporaryLimit.name + side}>
-                            <TableCell sx={styles.cell}>{formatValue(temporaryLimit.name)}</TableCell>
-                            <TableCell sx={styles.cell}>{formatValue(Math.round(temporaryLimit.value))}</TableCell>
+                            <TableCell sx={styles.cell}>{formatValue(temporaryLimit.name?.value)}</TableCell>
+                            <TableCell sx={styles.cell}>
+                                {formatValue(Math.round(temporaryLimit.value.value))}
+                            </TableCell>
                             <CellRender
                                 value={formatValue(
                                     Math.round(
                                         side === '1'
-                                            ? (Math.abs(equipmentInfos?.i1) * 100) / temporaryLimit.value
-                                            : (Math.abs(equipmentInfos?.i2) * 100) / temporaryLimit.value
+                                            ? (Math.abs(equipmentInfos?.i1) * 100) / temporaryLimit.value.value
+                                            : (Math.abs(equipmentInfos?.i2) * 100) / temporaryLimit.value.value
                                     )
                                 )}
                                 colStyle={cellWithStatus(loadFlowStatus)}

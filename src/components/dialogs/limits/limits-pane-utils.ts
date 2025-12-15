@@ -244,7 +244,8 @@ export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitFormSchema[
 
 const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitFormSchema[], limit: TemporaryLimit) =>
     temporaryLimits?.find(
-        (l: TemporaryLimitFormSchema) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration
+        (l: TemporaryLimitFormSchema) =>
+            l.name === limit.name.value && l.acceptableDuration === limit.acceptableDuration
     );
 
 export const updateTemporaryLimits = (
@@ -315,7 +316,7 @@ export const addModificationTypeToTemporaryLimits = (
 ): TemporaryLimit[] => {
     return formTemporaryLimits.map((limit: TemporaryLimitFormSchema) => {
         return {
-            name: toModificationOperation(limit?.name),
+            name: toModificationOperation(limit?.name)!,
             acceptableDuration: toModificationOperation(limit?.acceptableDuration),
             value: toModificationOperation(limit?.value),
             modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,

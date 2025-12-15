@@ -7,12 +7,7 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import {
-    AttributeModification,
-    OperationalLimitsGroup,
-    OperationType,
-    TemporaryLimit,
-} from 'services/network-modification-types';
+import { AttributeModification, OperationType, TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import {
@@ -131,12 +126,12 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): TemporaryLimit[] =>
+export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]) =>
     temporaryLimits?.map((limit: TemporaryLimitsData) => {
         return {
-            [TEMPORARY_LIMIT_NAME]: toModificationOperation(limit?.[TEMPORARY_LIMIT_NAME]),
-            [TEMPORARY_LIMIT_VALUE]: toModificationOperation(limit?.[TEMPORARY_LIMIT_VALUE]),
-            [TEMPORARY_LIMIT_DURATION]: toModificationOperation(limit?.[TEMPORARY_LIMIT_DURATION]),
+            [TEMPORARY_LIMIT_NAME]: limit[TEMPORARY_LIMIT_NAME],
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE],
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION],
             [MODIFICATION_TYPE]: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
@@ -162,7 +157,7 @@ export const formatMapInfosToTemporaryLimitsFormSchema = (
     });
 
 export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsData[]) => {
-    const formattedCompleteLimitsGroups: OperationalLimitsGroup[] = [];
+    const formattedCompleteLimitsGroups = [];
     if (completeLimitsGroups) {
         for (const elt of completeLimitsGroups) {
             if (isNotBlankOrEmpty(elt.id)) {
