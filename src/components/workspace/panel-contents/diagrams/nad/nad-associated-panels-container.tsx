@@ -15,12 +15,10 @@ import { useSldLayout } from './hooks/use-sld-layout';
 
 interface NadAssociatedPanelsContainerProps {
     readonly nadPanelId: UUID;
-    readonly onRequestAssociation: (voltageLevelId: string) => void;
 }
 
 export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsContainer({
     nadPanelId,
-    onRequestAssociation,
 }: NadAssociatedPanelsContainerProps) {
     const [isDraggingAny, setIsDraggingAny] = useState(false);
 
@@ -65,7 +63,6 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
                     key={sldPanelId}
                     sldPanelId={sldPanelId}
                     isFocused={focusedSldId === sldPanelId}
-                    onRequestAssociation={onRequestAssociation}
                     onBringToFront={handleBringToFront}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}

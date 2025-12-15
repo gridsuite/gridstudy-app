@@ -97,7 +97,6 @@ const getContentContainerStyle = (theme: any, isDragging: boolean) => ({
 interface AssociatedSldPanelProps {
     readonly sldPanelId: UUID;
     readonly isFocused: boolean;
-    readonly onRequestAssociation?: (voltageLevelId: string) => void;
     readonly onBringToFront?: (sldPanelId: UUID) => void;
     readonly onDragStart?: () => void;
     readonly onDragEnd?: () => void;
@@ -106,7 +105,6 @@ interface AssociatedSldPanelProps {
 export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     sldPanelId,
     isFocused,
-    onRequestAssociation,
     onBringToFront,
     onDragStart,
     onDragEnd,
@@ -158,34 +156,21 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
 
             lastSvgDimensionsRef.current = { width: svgWidth, height: svgHeight };
 
-            const maxWidthPercent = 0.6;
+            const maxSizePercent = NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT; // 0.6
             const svgAspectRatio = svgWidth / svgHeight;
 
-            let newSize;
-            if (hasManuallyResizedRef.current) {
-                // User has manually resized: adapt width based on current height to maintain aspect ratio
-                const currentHeightPx = relativeSize.height * containerRect.height;
-                const targetWidth = currentHeightPx * svgAspectRatio;
-                const relWidth = Math.min(targetWidth / containerRect.width, maxWidthPercent);
+            // Determine height: use current height if manually resized, otherwise use default
+            const targetHeight = hasManuallyResizedRef.current ? relativeSize.height : maxSizePercent;
 
-                newSize = { width: relWidth, height: relativeSize.height };
-            } else {
-                // First load: auto-size both width and height based on aspect ratio
-                const maxHeightPercent = 0.6;
+            // Calculate width from height while maintaining aspect ratio
+            const targetHeightPx = targetHeight * containerRect.height;
+            const targetWidthPx = targetHeightPx * svgAspectRatio;
+            const targetWidth = Math.min(targetWidthPx / containerRect.width, maxSizePercent);
 
-                // Calculate target height
-                const targetHeight = Math.min(svgHeight / containerRect.height, maxHeightPercent);
-
-                // Calculate width based on aspect ratio and actual display height
-                const targetHeightPx = targetHeight * containerRect.height;
-                const targetWidthPx = targetHeightPx * svgAspectRatio;
-                const targetWidth = Math.min(targetWidthPx / containerRect.width, maxWidthPercent);
-
-                newSize = {
-                    width: targetWidth,
-                    height: targetHeight,
-                };
-            }
+            const newSize = {
+                width: targetWidth,
+                height: targetHeight,
+            };
 
             dispatch(
                 updatePanelPositionAndSize({
@@ -366,7 +351,6 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                             studyUuid={studyUuid}
                             currentNodeId={currentNodeId}
                             currentRootNetworkUuid={currentRootNetworkUuid}
-                            onRequestAssociation={onRequestAssociation}
                             onSvgLoad={handleSvgLoad}
                         />
                     </Box>

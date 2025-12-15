@@ -24,7 +24,6 @@ export enum PanelType {
 export interface SLDPanelMetadata {
     diagramId: string;
     navigationHistory?: string[];
-    associatedToNadPanel?: UUID | null; // Reference to parent NAD panel when associated
 }
 
 export interface NADPanelMetadata {

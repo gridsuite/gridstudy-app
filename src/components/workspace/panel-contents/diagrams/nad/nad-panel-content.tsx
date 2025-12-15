@@ -42,7 +42,6 @@ export const NadPanelContent = memo(function NadPanelContent({
         | NADPanelMetadata
         | undefined;
 
-    // SLD association management - only what NAD needs
     const { handleVoltageLevelClick } = useNadSldAssociation({ nadPanelId: panelId });
 
     const { diagram, loading, globalError, updateDiagram, handleSaveNad, cleanupSavedNadConfig } = useNadDiagram({
@@ -116,33 +115,30 @@ export const NadPanelContent = memo(function NadPanelContent({
         <Box sx={{ display: 'flex', height: '100%' }}>
             <Box sx={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
                 <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
-                    <Box sx={{ height: '100%', width: '100%' }}>
-                        <NetworkAreaDiagramContent
-                            voltageLevelIds={diagram.voltageLevelIds || []}
-                            voltageLevelToExpandIds={diagram.voltageLevelToExpandIds || []}
-                            voltageLevelToOmitIds={diagram.voltageLevelToOmitIds || []}
-                            positions={diagram.positions || []}
-                            showInSpreadsheet={handleShowInSpreadsheet}
-                            svg={diagram.svg?.svg ?? undefined}
-                            svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
-                            svgScalingFactor={
-                                (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined)
-                                    ?.scalingFactor
-                            }
-                            svgVoltageLevels={diagram.voltageLevelIds}
-                            loadingState={loading}
-                            isNadCreationFromFilter={!!diagram.filterUuid}
-                            visible
-                            onVoltageLevelClick={handleVoltageLevelClick}
-                            onUpdateVoltageLevels={handleUpdateVoltageLevels}
-                            onUpdateVoltageLevelsFromFilter={handleUpdateVoltageLevelsFromFilter}
-                            onUpdatePositions={handleUpdatePositions}
-                            onReplaceNad={handleReplaceNad}
-                            onSaveNad={handleSaveNad}
-                        />
-                    </Box>
+                    <NetworkAreaDiagramContent
+                        voltageLevelIds={diagram.voltageLevelIds || []}
+                        voltageLevelToExpandIds={diagram.voltageLevelToExpandIds || []}
+                        voltageLevelToOmitIds={diagram.voltageLevelToOmitIds || []}
+                        positions={diagram.positions || []}
+                        showInSpreadsheet={handleShowInSpreadsheet}
+                        svg={diagram.svg?.svg ?? undefined}
+                        svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
+                        svgScalingFactor={
+                            (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined)?.scalingFactor
+                        }
+                        svgVoltageLevels={diagram.voltageLevelIds}
+                        loadingState={loading}
+                        isNadCreationFromFilter={!!diagram.filterUuid}
+                        visible
+                        onVoltageLevelClick={handleVoltageLevelClick}
+                        onUpdateVoltageLevels={handleUpdateVoltageLevels}
+                        onUpdateVoltageLevelsFromFilter={handleUpdateVoltageLevelsFromFilter}
+                        onUpdatePositions={handleUpdatePositions}
+                        onReplaceNad={handleReplaceNad}
+                        onSaveNad={handleSaveNad}
+                    />
                 </DiagramWrapper>
-                <NadAssociatedPanelsContainer nadPanelId={panelId} onRequestAssociation={handleVoltageLevelClick} />
+                <NadAssociatedPanelsContainer nadPanelId={panelId} />
             </Box>
             <NadNavigationSidebar nadPanelId={panelId} />
         </Box>

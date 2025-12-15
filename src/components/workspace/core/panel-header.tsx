@@ -5,36 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { Box, IconButton, Theme } from '@mui/material';
-import {
-    Close,
-    Minimize,
-    PushPin,
-    PushPinOutlined,
-    Fullscreen,
-    FullscreenExit,
-    Link as LinkIcon,
-} from '@mui/icons-material';
+import { Close, Minimize, PushPin, PushPinOutlined, Fullscreen, FullscreenExit } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import {
-    closePanel,
-    toggleMinimize,
-    toggleMaximize,
-    togglePin,
-    associateSldToNad,
-    createNadAndAssociateSld,
-} from '../../../redux/slices/workspace-slice';
+import { closePanel, toggleMinimize, toggleMaximize, togglePin } from '../../../redux/slices/workspace-slice';
 import type { UUID } from 'node:crypto';
-import { PanelType, SLDPanelMetadata } from '../types/workspace.types';
+import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
-import { AssociateNadMenu } from './associate-nad-menu';
-import { selectPanelMetadata } from '../../../redux/slices/workspace-selectors';
-import type { RootState } from '../../../redux/store';
+import { SldAssociationButton } from './use-sld-association-button';
 
 const getHeaderStyles = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
     let backgroundColor: string;
@@ -113,35 +96,6 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
     const intl = useIntl();
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
-    const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
-        | SLDPanelMetadata
-        | undefined;
-
-    const [associateMenuAnchor, setAssociateMenuAnchor] = useState<HTMLElement | null>(null);
-
-    const handleAssociateClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAssociateMenuAnchor(event.currentTarget);
-    };
-
-    const handleAssociateMenuClose = () => {
-        setAssociateMenuAnchor(null);
-    };
-
-    const handleSelectNad = (nadPanelId: UUID) => {
-        dispatch(associateSldToNad({ sldPanelId: panelId, nadPanelId }));
-    };
-
-    const handleCreateNad = () => {
-        if (metadata?.diagramId) {
-            dispatch(
-                createNadAndAssociateSld({
-                    sldPanelId: panelId,
-                    voltageLevelId: metadata.diagramId,
-                    voltageLevelName: title,
-                })
-            );
-        }
-    };
 
     const handleClose = () => {
         // If it's a parameters panel with unsaved changes, trigger confirmation dialog
@@ -173,15 +127,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                 </IconButton>
                 {panelType === PanelType.SLD_VOLTAGE_LEVEL && (
-                    <IconButton
-                        className="panel-header-close-button"
-                        size="small"
-                        sx={styles.iconButton}
-                        onClick={handleAssociateClick}
-                        onMouseDown={(e) => e.stopPropagation()}
-                    >
-                        <LinkIcon fontSize="small" />
-                    </IconButton>
+                    <SldAssociationButton panelId={panelId} title={title} iconButtonStyles={styles.iconButton} />
                 )}
                 {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
                     panelType === PanelType.SLD_SUBSTATION ||
@@ -216,14 +162,6 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     <Close fontSize="small" />
                 </IconButton>
             </Box>
-            <AssociateNadMenu
-                anchorEl={associateMenuAnchor}
-                open={Boolean(associateMenuAnchor)}
-                onClose={handleAssociateMenuClose}
-                onSelectNad={handleSelectNad}
-                onCreateNad={panelType === PanelType.SLD_VOLTAGE_LEVEL ? handleCreateNad : undefined}
-                voltageLevelId={panelType === PanelType.SLD_VOLTAGE_LEVEL ? metadata?.diagramId : undefined}
-            />
         </Box>
     );
 });

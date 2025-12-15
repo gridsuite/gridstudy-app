@@ -8,6 +8,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../../components/workspace/constants/workspace.constants';
+import { NAD_SLD_CONSTANTS } from '../../components/workspace/panel-contents/diagrams/nad/constants';
 import {
     Workspace,
     WorkspacesState,
@@ -27,6 +28,28 @@ export const isDiagramPanel = (panelType: PanelType): boolean => {
         panelType === PanelType.NAD
     );
 };
+
+// Find parent NAD panel for a given SLD panel
+export const findNadForSld = (workspace: Workspace, sldPanelId: UUID): UUID | null => {
+    const nadPanel = Object.values(workspace.panels).find(
+        (panel) =>
+            panel.type === PanelType.NAD &&
+            (panel.metadata as NADPanelMetadata | undefined)?.associatedVoltageLevelPanels?.includes(sldPanelId)
+    );
+    return nadPanel?.id ?? null;
+};
+
+// Calculate default position/size for SLD panels associated with NAD
+export const getDefaultAssociatedSldPositionAndSize = () => ({
+    position: {
+        x: NAD_SLD_CONSTANTS.CASCADE_START_X,
+        y: 1 - NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT,
+    },
+    size: {
+        width: NAD_SLD_CONSTANTS.PANEL_DEFAULT_WIDTH,
+        height: NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT,
+    },
+});
 
 // ==================== Workspace ====================
 const createPanelFromLayout = (
@@ -192,7 +215,7 @@ export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
     // Check if this is an attached SLD (associated with a NAD panel)
     const isAttachedSld =
         (panel.type === PanelType.SLD_VOLTAGE_LEVEL || panel.type === PanelType.SLD_SUBSTATION) &&
-        (panel.metadata as SLDPanelMetadata | undefined)?.associatedToNadPanel;
+        findNadForSld(workspace, panelId) !== null;
 
     // Regular diagram panels (not attached) should be deleted
     if (!isAttachedSld && isDiagramPanel(panel.type)) {
@@ -216,7 +239,7 @@ export const findDiagramPanel = (workspace: Workspace, panelType: PanelType, id:
         if (panelType === PanelType.SLD_VOLTAGE_LEVEL || panelType === PanelType.SLD_SUBSTATION) {
             const metadata = panel.metadata as SLDPanelMetadata;
             // Exclude attached SLDs
-            if (metadata.associatedToNadPanel) {
+            if (findNadForSld(workspace, panel.id) !== null) {
                 return false;
             }
             return metadata.diagramId === id;

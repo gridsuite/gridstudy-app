@@ -269,12 +269,12 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
 
             {hasReorganizeButton && (
                 <ButtonGroup variant="outlined" size="small" sx={styles.buttonGroup}>
-                    <Tooltip title={intl.formatMessage({ id: 'grid' })}>
+                    <Tooltip title={intl.formatMessage({ id: 'gridLayout' })}>
                         <IconButton onClick={() => onReorganize(LayoutMode.GRID)} sx={styles.iconButton}>
                             <GridViewIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={intl.formatMessage({ id: 'cascade' })}>
+                    <Tooltip title={intl.formatMessage({ id: 'cascadeLayout' })}>
                         <IconButton onClick={() => onReorganize(LayoutMode.CASCADE)} sx={styles.iconButton}>
                             <CascadeIcon fontSize="small" />
                         </IconButton>

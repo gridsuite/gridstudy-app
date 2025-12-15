@@ -35,20 +35,18 @@ export const AssociateNadMenu = ({
 
     return (
         <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
-            {nadPanels.length > 0 && [
-                ...nadPanels.map((panel) => (
-                    <MenuItem
-                        key={panel.id}
-                        onClick={() => {
-                            onSelectNad(panel.id);
-                            onClose();
-                        }}
-                    >
-                        <ListItemText primary={panel.title} secondary={intl.formatMessage({ id: 'existingNAD' })} />
-                    </MenuItem>
-                )),
-                <Divider key="divider" />,
-            ]}
+            {nadPanels.map((panel) => (
+                <MenuItem
+                    key={panel.id}
+                    onClick={() => {
+                        onSelectNad(panel.id);
+                        onClose();
+                    }}
+                >
+                    <ListItemText primary={panel.title} secondary={intl.formatMessage({ id: 'existingNAD' })} />
+                </MenuItem>
+            ))}
+            {nadPanels.length > 0 && <Divider />}
             {onCreateNad && voltageLevelId && (
                 <MenuItem
                     onClick={() => {

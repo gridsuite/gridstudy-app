@@ -65,7 +65,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const updateMetadata = useCallback(
         (updatedDiagram: NetworkAreaDiagram) => {
             // Clear initialVoltageLevelIds after first fetch to prevent re-initialization
-            if (diagramMetadata?.initialVoltageLevelIds && diagramMetadata.initialVoltageLevelIds.length > 0) {
+            if ((diagramMetadata?.initialVoltageLevelIds?.length ?? 0) > 0) {
                 dispatch(
                     updatePanelMetadataAction({
                         panelId,
