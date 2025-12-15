@@ -118,7 +118,10 @@ const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
             {equipmentInfos && (
                 <Card elevation={0}>
                     <CardHeader
-                        sx={{ textAlign: 'center' }}
+                        sx={{
+                            textAlign: 'center',
+                            pb: 0,
+                        }}
                         title={
                             <Typography variant="caption" fontWeight="bold" textAlign="center">
                                 {equipmentId}
@@ -126,7 +129,7 @@ const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
                         }
                     />
 
-                    <CardContent>{children?.(equipmentInfos)}</CardContent>
+                    <CardContent sx={{ pt: 0, mt: 2 }}>{children?.(equipmentInfos)}</CardContent>
                 </Card>
             )}
         </Popover>
