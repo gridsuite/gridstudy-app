@@ -33,6 +33,8 @@ import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 import { PanelType } from './workspace/types/workspace.types';
+import { useParameterState } from './dialogs/parameters/use-parameters-state.js';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params.js';
 
 const styles = {
     modificationTree: (theme) => ({
@@ -62,6 +64,7 @@ const styles = {
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
@@ -322,11 +325,13 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                     style={{ margin: '10px', marginBottom: '30px' }}
                     showZoom={false}
                     showInteractive={false}
-                    showFitView={false}
+                    showFitView={false} // We customize (for its tooltip) the fitView button below so we don't use the reactflow native one
                 >
-                    <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
-                        <CropFreeIcon />
-                    </TreeControlButton>
+                    {enableDeveloperMode && (
+                        <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
+                            <CropFreeIcon />
+                        </TreeControlButton>
+                    )}
                     <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
                         <CenterFocusIcon />
                     </TreeControlButton>
