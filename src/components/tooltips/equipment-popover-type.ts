@@ -35,8 +35,8 @@ export interface GeneratorEquipmentInfos {
     q?: number;
     targetP?: number;
     targetQ?: number;
-    minP?: number;
-    maxP?: number;
+    minP: number;
+    maxP: number;
     voltageRegulatorOn: boolean;
     plannedActivePowerSetPoint?: number;
 }

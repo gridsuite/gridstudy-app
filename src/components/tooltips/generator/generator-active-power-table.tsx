@@ -37,10 +37,7 @@ export const GeneratorActivePowerTable: React.FC<GeneratorActivePowerTableProps>
                             label="MinimumActivePowerTooltip"
                             colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                         />
-                        <CellRender
-                            value={formatValue(equipmentInfos.minP && Math.round(equipmentInfos.minP))}
-                            colStyle={styles.cell}
-                        />
+                        <CellRender value={formatValue(Math.round(equipmentInfos.minP))} colStyle={styles.cell} />
                     </TableRow>
 
                     <TableRow>
@@ -49,10 +46,7 @@ export const GeneratorActivePowerTable: React.FC<GeneratorActivePowerTableProps>
                             label="MaximumActivePowerTooltip"
                             colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                         />
-                        <CellRender
-                            value={formatValue(equipmentInfos.maxP && Math.round(equipmentInfos.maxP))}
-                            colStyle={styles.cell}
-                        />
+                        <CellRender value={formatValue(Math.round(equipmentInfos.maxP))} colStyle={styles.cell} />
                     </TableRow>
 
                     <TableRow>
