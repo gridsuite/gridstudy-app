@@ -5,9 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LIGHT_THEME } from '@gridsuite/commons-ui';
-import { getBaseVoltageInterval } from './base-voltages-utils';
-import { getLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
+import { BaseVoltage, LIGHT_THEME } from '@gridsuite/commons-ui';
 
 export const INVALID_COMPUTATION_OPACITY = 0.2;
 
@@ -18,15 +16,20 @@ function parseRGB(stringRGB: string): number[] | undefined {
         .map(Number);
 }
 
-export const getBaseVoltageNetworkMapColor = (voltageValue: number): number[] => {
-    const color = getBaseVoltageInterval(voltageValue)?.networkMapColor;
+export const getBaseVoltageNetworkMapColor = (baseVoltage: BaseVoltage | undefined): number[] => {
+    const color = baseVoltage?.networkMapColor;
+    console.info('COLOR = ' + color);
     return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
 };
 
-export const getBaseVoltagesCssVars = (theme: string): Record<string, Record<string, string>> => {
-    const baseVoltages = getLocalStorageBaseVoltages();
+export const getBaseVoltagesCssVars = (
+    theme: string,
+    baseVoltages: BaseVoltage[]
+): Record<string, Record<string, string>> => {
     const css: Record<string, Record<string, string>> = {};
-
+    if (!baseVoltages) {
+        return css;
+    }
     for (const interval of baseVoltages) {
         const themeColors =
             theme === LIGHT_THEME

@@ -68,6 +68,7 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
+import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -163,6 +164,8 @@ const App = () => {
     });
 
     useStudyNavigationSync();
+
+    useBaseVoltages();
 
     const networkVisuParamsUpdated = useCallback(
         (event) => {
