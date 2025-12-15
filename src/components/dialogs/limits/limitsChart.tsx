@@ -10,8 +10,7 @@ import { useCallback, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { Limit, TemporaryLimit } from '../../../services/network-modification-types';
-import { BarSeriesType, AxisValueFormatterContext } from '@mui/x-charts/models';
-import { legendClasses } from '@mui/x-charts/ChartsLegend';
+import { AxisValueFormatterContext, BarSeriesType } from '@mui/x-charts/models';
 
 export interface LimitsGraphProps {
     limitsGroupFormName: string;
@@ -202,29 +201,19 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
         );
     }, [currentLimits.temporaryLimits, intl, isIncoherent, permanentLimit]);
 
-    const config = {
-        id: 'topAxis',
-        valueFormatter: (value: number, _context: AxisValueFormatterContext) =>
-            ticks.find((item: Ticks) => item.position === value)?.label ?? '',
-    };
+    console.log('series', series);
+    console.log('ticks', ticks);
+
+    const tickPositions = ticks.map((t) => t.position);
 
     return (
         <BarChart
-            margin={{ left: 0, right: 0, top: 20 }}
-            height={110}
+            margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            height={90}
             slotProps={{
                 legend: {
-                    direction: 'horizontal',
                     position: {
                         vertical: 'bottom',
-                        horizontal: 'center',
-                    },
-                    sx: {
-                        fontSize: 12,
-                        [`& .${legendClasses.mark}`]: {
-                            width: 10,
-                            height: 10,
-                        },
                     },
                 },
             }}
@@ -235,23 +224,29 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
             }
             layout="horizontal"
             yAxis={[
+                // We can't disable the yAxis so we have to give empty data.
                 {
-                    position: 'none',
+                    data: [''],
+                    disableLine: true,
+                    disableTicks: true,
                 },
             ]}
             xAxis={[
                 {
-                    tickInterval: [...ticks.map((item) => item.position)],
-                    disableLine: true,
-                    tickLabelStyle: { fontSize: 10 },
+                    id: 'bottomAxis',
                     position: 'bottom',
+                    tickInterval: tickPositions,
+                    tickLabelStyle: { fontSize: 10 },
+                    disableLine: true,
                 },
                 {
-                    tickInterval: [...ticks.map((item) => item.position)],
-                    tickLabelStyle: { fontSize: 10 },
-                    disableLine: true,
+                    id: 'topAxis',
                     position: 'top',
-                    ...config,
+                    tickInterval: tickPositions,
+                    tickLabelStyle: { fontSize: 10 },
+                    valueFormatter: (value: number, _context: AxisValueFormatterContext) =>
+                        ticks.find((item: Ticks) => item.position === value)?.label ?? '',
+                    disableLine: true,
                 },
             ]}
             sx={{ pointerEvents: 'none' }}
