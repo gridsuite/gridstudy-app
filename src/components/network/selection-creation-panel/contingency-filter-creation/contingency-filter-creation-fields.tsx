@@ -11,6 +11,7 @@ import {
     FILTER_EQUIPMENTS,
     SelectInput,
     UniqueNameInput,
+    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
@@ -20,7 +21,6 @@ import { SelectionCreationPanelDirectorySelector } from './contingency-filter-cr
 import { SelectionCreationPanelFormSchema } from '../selection-creation-schema';
 import { useWatch } from 'react-hook-form';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 interface ContingencyFilterCreationListProps {
     pendingState: boolean;
