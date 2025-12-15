@@ -325,7 +325,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                     style={{ margin: '10px', marginBottom: '30px' }}
                     showZoom={false}
                     showInteractive={false}
-                    showFitView={false}
+                    showFitView={false} // We customize (for its tooltip) the fitView button below so we don't use the reactflow native one
                 >
                     {enableDeveloperMode && (
                         <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
