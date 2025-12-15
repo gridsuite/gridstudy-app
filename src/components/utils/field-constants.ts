@@ -48,6 +48,9 @@ export const CONNECTION_NAME2 = 'connectionName2';
 export const CONNECTION_POSITION2 = 'connectionPosition2';
 export const IS_REMOVED = 'isRemoved';
 export const IS_SEPARATOR = 'isSeparator';
+export const FILE_NAME = 'fileName';
+export const EXPORT_FORMAT = 'exportFormat';
+export const EXPORT_PARAMETERS = 'exportParameters';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -267,6 +270,8 @@ export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 export const IP_MIN = 'ipMin';
 export const IP_MAX = 'ipMax';
+export const IS_ATTACHMENT_POINT_CREATION = 'isAttachmentPointCreation';
+
 // dnd table
 export const SELECTED = 'selected';
 export const ACTIVATED = 'activated';

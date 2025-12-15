@@ -69,10 +69,10 @@ import GuidancePopup from './guidance-popup';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
-import { getNominalVoltageColor } from 'utils/colors';
+import { getBaseVoltageNetworkMapColor } from 'utils/colors';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
-import { EquipmentPopoverMap } from 'components/tooltips/equipment-popover-map';
-import BranchPopoverContent from 'components/tooltips/branch-popover-content';
+import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
+import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -946,8 +946,6 @@ export const NetworkMapPanel = ({
 
     const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
         (elementId, ref) => {
-            const PopoverContent = EquipmentPopoverMap[EQUIPMENT_TYPES.LINE] || BranchPopoverContent;
-
             return (
                 <GenericEquipmentPopover
                     studyUuid={studyUuid}
@@ -957,8 +955,8 @@ export const NetworkMapPanel = ({
                     loadFlowStatus={loadFlowStatus}
                     anchorPosition={undefined}
                 >
-                    {(equipmentInfos: EquipmentInfos) => (
-                        <PopoverContent
+                    {(equipmentInfos: GenericEquipmentInfos) => (
+                        <GenericPopoverContent
                             equipmentInfos={equipmentInfos}
                             loadFlowStatus={loadFlowStatus}
                             equipmentType={EQUIPMENT_TYPES.LINE}
@@ -1116,7 +1114,7 @@ export const NetworkMapPanel = ({
                     }}
                     shouldDisableToolTip={isInDrawingMode.value}
                     // @ts-ignore
-                    getNominalVoltageColor={getNominalVoltageColor}
+                    getNominalVoltageColor={getBaseVoltageNetworkMapColor}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                 {renderSearchEquipment()}
