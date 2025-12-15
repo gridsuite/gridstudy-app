@@ -31,14 +31,12 @@ export interface TwtEquipmentInfos extends CommonBranchEquipmentInfos {
 }
 
 export interface GeneratorEquipmentInfos {
-    p: number;
-    q: number;
-    targetP: number;
-    targetQ: number;
-    targetV: number;
-    minP: number;
-    maxP: number;
-    minQ: number;
+    p?: number;
+    q?: number;
+    targetP?: number;
+    targetQ?: number;
+    minP?: number;
+    maxP?: number;
     voltageRegulatorOn: boolean;
     plannedActivePowerSetPoint?: number;
 }
