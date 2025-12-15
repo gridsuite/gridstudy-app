@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import IconButton from '@mui/material/IconButton';
 import type { UUID } from 'node:crypto';
-import { setModificationDescription } from '../../../../services/study/network-modifications';
+import { setModificationMetadata } from '../../../../services/study/network-modifications';
 
 export interface DescriptionRendererProps extends ICellRendererParams<NetworkModificationMetadata> {
     hoveredRowIndex: number;
@@ -36,13 +36,14 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
         async (uuid: UUID, descriptionRecord: Record<string, string>) => {
             setIsLoading(true);
 
-            return setModificationDescription(studyUuid, currentNode?.id, uuid, descriptionRecord.description).finally(
-                () => {
-                    setIsLoading(false);
-                }
-            );
+            return setModificationMetadata(studyUuid, currentNode?.id, uuid, {
+                description: descriptionRecord.description,
+                type: data?.type,
+            }).finally(() => {
+                setIsLoading(false);
+            });
         },
-        [studyUuid, currentNode?.id]
+        [studyUuid, currentNode?.id, data?.type]
     );
 
     const handleDescDialogClose = useCallback(() => {
@@ -65,7 +66,7 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                     updateElement={updateModification}
                 />
             )}
-            <Tooltip title={description} arrow>
+            <Tooltip title={description} arrow placement="right">
                 <IconButton
                     color="primary"
                     onClick={handleModifyDescription}
