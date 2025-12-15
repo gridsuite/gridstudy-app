@@ -440,7 +440,10 @@
     "startLoadFlowError": "Une erreur est survenue lors du lancement du load flow",
     "LoadFlowResultsCurrentViolations": "Contraintes de transit",
     "LoadFlowResultsVoltageViolations": "Contraintes de tension",
-    "LoadFlowResultsStatus": "Statut",
+    "LoadFlowResultsSummary": "Bilan",
+    "LoadFlowResultsSynchronousComponents": "Composantes synchrones",
+    "LoadFlowResultsCountryAdequacies": "Equilibres par pays",
+    "LoadFlowResultsExchanges": "Echanges",
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.categories": "Catégories",
@@ -462,7 +465,15 @@
     "iterationCount": "Nombre d'itérations",
     "slackBusId": "ID nœuds bilans",
     "slackBusActivePowerMismatch": "Écart de puissance active au nœud bilan (MW)",
-
+    "consumptions": "Consommations (MW)",
+    "generations": "Productions (MW)",
+    "countryAdequacyGeneration": "Production (MW)",
+    "countryAdequacyLoad": "Consommation (MW)",
+    "exchanges": "Echanges (MW)",
+    "losses": "Pertes (MW)",
+    "netPosition": "Position nette (MW)",
+    "exchange": "Position nette - Echanges (MW)",
+    "borders": "Frontières",
     "isOk": "Ok",
     "metrics": "Métriques",
 
@@ -1038,6 +1049,20 @@
 
     "DefinePropertiesButton": "Définir propriétés",
     "DefinePropertiesTitle": "Propriétés complémentaires",
+    "GenerateEmptyModel": "Générer un modèle vide",
+    "GeneratePrefilledModel": "Générer un modèle pré-rempli",
+    "RestrictEquipmentList": "Restreindre la liste des ouvrages",
+    "CurrentGridState": "État actuel du réseau",
+    "ColumnSelectionRequired": "Au moins une colonne doit être sélectionnée",
+
+    "PrefilledColumn.Conductance": "Conductance",
+    "PrefilledColumn.Susceptance": "Susceptance",
+    "PrefilledColumn.Connected": "Connecté",
+    "PrefilledColumn.ConnectionInfo": "Informations départ",
+    "PrefilledColumn.WindingVoltages": "Tensions d'enroulement",
+    "PrefilledColumn.ActivePowerLimits": "Limites puissance active",
+    "PrefilledColumn.ReactivePowerLimits": "Limites puissance réactive",
+    "PrefilledColumn.ReactiveCapabilityCurve": "Diagramme de groupe",
 
     "G": "Conductance magnétisante",
     "B": "Susceptance magnétisante",
@@ -1572,6 +1597,7 @@
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "expand": "Étendre",
     "expandAllVoltageLevels": "Étendre tous les postes",
+    "addVoltageLevelsFromFilter": "Ajouter un filtre complémentaire",
     "addVoltageLevel": "Ajouter un poste",
     "searchVoltageLevelInNad": "Rechercher un poste",
     "noResultsFound": "Aucun résultat trouvé",
@@ -1673,6 +1699,14 @@
     "history": "Historique",
     "activePowerControlTooltip": "Clé de distribution de la puissance au nœud bilan : maxP/Statisme, statisme par défaut = 4 (valable pour le mode compensation proportionnel à la puissance maximale des groupes)",
     "ActivePower": "P (MW)",
-    "reactivePowerTooltip": "Q (MVar)"
-
+    "reactivePowerTooltip": "Q (MVar)",
+    "activePowerSetPointTooltip":"Pcons (MW)",
+    "plannedActivePowerSetPointTooltip": "Pimp (MW)",
+    "reactivePowerSetpointTooltip":"Qcons (MW)",
+    "MinimumActivePowerTooltip": "Pmin (MW)",
+    "MaximumActivePowerTooltip": "Pmax (MW)",
+    "MinimumReactivePowerTooltip": "Pmin (MW)",
+    "MaximumReactivePowerTooltip": "Pmax (MW)",
+    "ConsQ": "Qcons (Mvar)",
+    "ConsP": "Pcons (MW)"
 }

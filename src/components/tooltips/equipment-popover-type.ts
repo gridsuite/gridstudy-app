@@ -31,12 +31,22 @@ export interface TwtEquipmentInfos extends CommonBranchEquipmentInfos {
     phaseTapChanger: any;
 }
 
+export interface GeneratorEquipmentInfos {
+    p?: number;
+    q?: number;
+    targetP?: number;
+    targetQ?: number;
+    minP: number;
+    maxP: number;
+    voltageRegulatorOn: boolean;
+    plannedActivePowerSetPoint?: number;
+}
+
 export interface LoadEquipmentInfos {
     properties?: Property[];
     p0: number;
     q0: number;
 }
-
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
 
-export type GenericEquipmentInfos = BranchEquipmentInfos | LoadEquipmentInfos;
+export type GenericEquipmentInfos = BranchEquipmentInfos | GeneratorEquipmentInfos | LoadEquipmentInfos;
