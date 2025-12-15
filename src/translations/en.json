@@ -1707,6 +1707,8 @@
     "activePowerControlTooltip": "Slack bus active power repartition key: maxP/droop, default droop = 4 (used if balanceType is PROPORTIONAL_TO_GENERATION_P_MAX)",
     "ActivePower": "P (MW)",
     "reactivePowerTooltip": "Q (MVar)",
+    "unbuildAllNodesTooltip": "Unbuild all nodes",
     "unbuildAllNodesDialogTitle": "Confirmation",
-    "unbuildAllNodesDialogContent": "All built networks for all nodes of the tree and all root networks as well as all calculation results will be deleted"
+    "unbuildAllNodesDialogContent": "All built networks for all nodes of the tree and all root networks as well as all calculation results will be deleted",
+    "unbuildAllNodesError": "An error occurred while unbuilding all nodes"
 }

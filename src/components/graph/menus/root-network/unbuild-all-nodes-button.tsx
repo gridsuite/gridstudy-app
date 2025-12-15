@@ -1,16 +1,35 @@
-import { CancelButton } from '@gridsuite/commons-ui';
+import { CancelButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { StopCircleOutlined } from '@mui/icons-material';
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import TreeControlButton from 'components/graph/util/tree-control-button';
-import { R } from 'components/utils/field-constants';
+import {
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Theme,
+    Tooltip,
+} from '@mui/material';
 import { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { unbuildAllStudyNodes } from 'services/study';
 
+const styles = {
+    button: {
+        minWidth: '40px',
+    },
+    playColor: (theme: Theme) => ({
+        color: theme.palette.error.main,
+    }),
+};
+
 export const UnbuildAllNodesButton = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const intl = useIntl();
+    const { snackError } = useSnackMessage();
+
     const [isValidationDialogOpen, setIsValidationDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -27,17 +46,23 @@ export const UnbuildAllNodesButton = () => {
             return;
         }
         setIsLoading(true);
-        unbuildAllStudyNodes(studyUuid).then(() => {
-            setIsLoading(false);
-            handleCloseDialog();
-        });
+        unbuildAllStudyNodes(studyUuid)
+            .catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'unbuildAllNodesError' });
+            })
+            .finally(() => {
+                handleCloseDialog();
+                setIsLoading(false);
+            });
     };
 
     return (
         <>
-            <TreeControlButton titleId="DisplayTheWholeTree" onClick={handleOpenDialog}>
-                <StopCircleOutlined />
-            </TreeControlButton>
+            <Tooltip title={intl.formatMessage({ id: 'unbuildAllNodesTooltip' })}>
+                <Button size="small" sx={styles.button} onClick={handleOpenDialog}>
+                    <StopCircleOutlined sx={styles.playColor} />
+                </Button>
+            </Tooltip>
             <Dialog open={isValidationDialogOpen} onClose={handleCloseDialog}>
                 <DialogTitle style={{ display: 'flex' }} data-testid="DialogTitle">
                     <FormattedMessage id="unbuildAllNodesDialogTitle" />

@@ -1700,6 +1700,8 @@
     "activePowerControlTooltip": "Clé de distribution de la puissance au nœud bilan : maxP/Statisme, statisme par défaut = 4 (valable pour le mode compensation proportionnel à la puissance maximale des groupes)",
     "ActivePower": "P (MW)",
     "reactivePowerTooltip": "Q (MVar)",
+    "unbuildAllNodesTooltip": "Déréaliser tous les nœuds",
     "unbuildAllNodesDialogTitle": "Confirmation",
-    "unbuildAllNodesDialogContent": "Toutes les réalisations de tous les nœuds de l'arbre pour tous les réseaux racines ainsi que tous les résultats de calcul seront supprimés"
+    "unbuildAllNodesDialogContent": "Toutes les réalisations de tous les nœuds de l'arbre pour tous les réseaux racines ainsi que tous les résultats de calcul seront supprimés",
+    "unbuildAllNodesError": "Une erreur est survenue lors de la déréalisation de l'ensemble des nœuds"
 }

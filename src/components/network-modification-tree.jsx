@@ -33,7 +33,6 @@ import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 import { PanelType } from './workspace/types/workspace.types';
-import { UnbuildAllNodesButton } from './graph/menus/root-network/unbuild-all-nodes-button';
 
 const styles = {
     modificationTree: (theme) => ({
@@ -325,7 +324,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                     showInteractive={false}
                     showFitView={false}
                 >
-                    <UnbuildAllNodesButton />
                     <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
                         <CropFreeIcon />
                     </TreeControlButton>
