@@ -297,12 +297,12 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     };
 
-    const previousEnableDeveloperMode = usePrevious(isDeveloperMode);
+    const previousIsDeveloperMode = usePrevious(isDeveloperMode);
     useEffect(() => {
-        if (!isDeveloperMode && previousEnableDeveloperMode !== isDeveloperMode) {
+        if (!isDeveloperMode && previousIsDeveloperMode !== isDeveloperMode) {
             setTabIndex(0);
         }
-    }, [isDeveloperMode, previousEnableDeveloperMode, lastCompletedComputation]);
+    }, [isDeveloperMode, previousIsDeveloperMode, lastCompletedComputation]);
 
     const handleChangeTab = useCallback(
         (event: React.SyntheticEvent, newTabIndex: number) => {
