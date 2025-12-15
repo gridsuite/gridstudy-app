@@ -278,7 +278,6 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     });
 
     const { handleGeneratePrefilledModel } = usePrefilledModelGenerator({
-        dialogMode,
         equipmentType,
         csvColumns,
         commentLines,
@@ -484,15 +483,17 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         </Button>
                     </CsvDownloader>
                 </Grid>
-                <Grid item>
-                    <Button
-                        variant="contained"
-                        disabled={!equipmentType}
-                        onClick={() => prefilledModelDialogOpen.setTrue()}
-                    >
-                        <FormattedMessage id="GeneratePrefilledModel" />
-                    </Button>
-                </Grid>
+                {dialogMode === TabularModificationType.MODIFICATION && (
+                    <Grid item>
+                        <Button
+                            variant="contained"
+                            disabled={!equipmentType}
+                            onClick={() => prefilledModelDialogOpen.setTrue()}
+                        >
+                            <FormattedMessage id="GeneratePrefilledModel" />
+                        </Button>
+                    </Grid>
+                )}
                 <Grid item>
                     <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
                     {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
@@ -525,11 +526,13 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 title={intl.formatMessage({ id: 'Filters' })}
                 multiSelect={false}
             />
-            <GeneratePrefilledModelDialog
-                open={prefilledModelDialogOpen}
-                equipmentType={equipmentType}
-                onGenerate={onPrefilledModelGenerate}
-            />
+            {dialogMode === TabularModificationType.MODIFICATION && (
+                <GeneratePrefilledModelDialog
+                    open={prefilledModelDialogOpen}
+                    equipmentType={equipmentType}
+                    onGenerate={onPrefilledModelGenerate}
+                />
+            )}
         </Grid>
     );
 }
