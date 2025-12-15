@@ -78,7 +78,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
         [intl, permanentLimit]
     );
 
-    const { series, ticks } = useMemo(() => {
+    const { series, ticks, max } = useMemo(() => {
         const thresholds: Limit[] = [];
         let noValueThresholdFound = false;
         let maxValuePermanentLimit: number = 0;
@@ -131,7 +131,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
         let colorIndex = 0;
         let previousSum = 0;
 
-        return thresholds.reduce<{ series: BarSeriesType[]; ticks: Ticks[] }>(
+        return thresholds.reduce<{ series: BarSeriesType[]; ticks: Ticks[]; max: number }>(
             (acc, item, index) => {
                 const isPermanentLimit =
                     (item.name === intl.formatMessage({ id: 'permanentLimit' }) && permanentLimit) ||
@@ -195,20 +195,23 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
                 return {
                     series: updatedSeries,
                     ticks: updatedTicks,
+                    max:
+                        updatedSeries
+                            .flatMap((serie) => serie.data) // Only one number by array.
+                            .filter(Number.isFinite)
+                            // @ts-ignore : We filtered values above.
+                            .reduce((a, b) => a + b, 0) ?? 100,
                 };
             },
-            { series: [], ticks: [] }
+            { series: [], ticks: [], max: 0 }
         );
     }, [currentLimits.temporaryLimits, intl, isIncoherent, permanentLimit]);
-
-    console.log('series', series);
-    console.log('ticks', ticks);
 
     const tickPositions = ticks.map((t) => t.position);
 
     return (
         <BarChart
-            margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            margin={{ left: 20, right: 20, top: 0, bottom: 0 }}
             height={90}
             slotProps={{
                 legend: {
@@ -224,11 +227,13 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
             }
             layout="horizontal"
             yAxis={[
-                // We can't disable the yAxis so we have to give empty data.
+                // We can't disable the yAxis, so we have to give empty data and 0 width.
                 {
+                    id: 'leftAxis',
                     data: [''],
                     disableLine: true,
                     disableTicks: true,
+                    width: 0,
                 },
             ]}
             xAxis={[
@@ -238,6 +243,8 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
                     tickInterval: tickPositions,
                     tickLabelStyle: { fontSize: 10 },
                     disableLine: true,
+                    min: 0,
+                    max: max,
                 },
                 {
                     id: 'topAxis',
@@ -247,6 +254,8 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
                     valueFormatter: (value: number, _context: AxisValueFormatterContext) =>
                         ticks.find((item: Ticks) => item.position === value)?.label ?? '',
                     disableLine: true,
+                    min: 0,
+                    max: max,
                 },
             ]}
             sx={{ pointerEvents: 'none' }}
