@@ -1712,5 +1712,12 @@
     "tooltip.generation": "Generation (MW)",
     "tooltip.load": "Load (MW)",
     "tooltip.balance": "Balance (MW)",
-    "tooltip.icc": "Isc (kA)"
+    "tooltip.icc": "Isc (kA)",
+    "activePowerSetPointTooltip":"Pcons (MW)",
+    "plannedActivePowerSetPointTooltip": "Pimp (MW)",
+    "reactivePowerSetpointTooltip":"Qcons (MW)",
+    "MinimumActivePowerTooltip": "Pmin (MW)",
+    "MaximumActivePowerTooltip": "Pmax (MW)",
+    "MinimumReactivePowerTooltip": "Pmin (MW)",
+    "MaximumReactivePowerTooltip": "Pmax (MW)"
 }
