@@ -18,7 +18,6 @@ function parseRGB(stringRGB: string): number[] | undefined {
 
 export const getBaseVoltageNetworkMapColor = (baseVoltage: BaseVoltage | undefined): number[] => {
     const color = baseVoltage?.networkMapColor;
-    console.info('COLOR = ' + color);
     return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
 };
 

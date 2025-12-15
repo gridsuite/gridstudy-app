@@ -17,7 +17,6 @@ export const useBaseVoltages = () => {
     useEffect(() => {
         if (!baseVoltages) {
             fetchBaseVoltages().then((appMetadataBaseVoltages) => {
-                console.info('TOTO');
                 dispatch(setBaseVoltageList(appMetadataBaseVoltages));
             });
         }
