@@ -55,7 +55,7 @@ const AppTopBar = ({ user, userManager }) => {
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
     const [useNameLocal, handleChangeUseName] = useParameterState(PARAM_USE_NAME);
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
-    const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     useEffect(() => {
         if (user !== null) {
@@ -80,7 +80,7 @@ const AppTopBar = ({ user, userManager }) => {
             additionalModulesPromise={getServersInfos}
             theme={themeLocal}
             onDeveloperModeClick={handleChangeDeveloperMode}
-            developerMode={enableDeveloperModeLocal}
+            developerMode={isDeveloperMode}
             onEquipmentLabellingClick={handleChangeUseName}
             equipmentLabelling={useNameLocal}
             onLanguageClick={handleChangeLanguage}
