@@ -6,7 +6,7 @@
  */
 
 import type { NonEmptyTuple } from 'type-fest';
-import { backendFetchJson } from '@gridsuite/commons-ui';
+import { backendFetchJson, Identifiable } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { getRequestParamFromList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
@@ -67,6 +67,43 @@ export async function evaluateGlobalFilter(
             body: JSON.stringify(filters),
         }
     );
+}
+
+/**
+ * Get network elements infos by evaluating a GlobalFilter
+ * @param studyUuid the {@link UUID} of the study to work on
+ * @param currentNodeUuid the current node to get the variant
+ * @param currentRootNetworkUuid the root network to work on to get the variant
+ * @param equipmentType The type of equipment to filter and return
+ * @param filter the GlobalFilter description
+ * @param infoType The info type (LIST, TAB, MAP, FORM) - defaults to LIST
+ * @return The network elements infos matching the filter
+ */
+export async function getNetworkElementsInfosByGlobalFilter<T extends Identifiable>(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    equipmentType: string,
+    filter: GlobalFilters,
+    infoType: string = 'LIST'
+): Promise<T[]> {
+    console.info(
+        `Get network elements infos by global filter for study '${studyUuid}' with root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const urlSearchParams = new URLSearchParams({
+        equipmentType,
+        infoType,
+    });
+
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/network/elements-by-global-filter?${urlSearchParams}`;
+    console.debug(url);
+
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(filter),
+    });
 }
 
 /** @deprecated migrate to {@link #evaluateGlobalFilter} */
