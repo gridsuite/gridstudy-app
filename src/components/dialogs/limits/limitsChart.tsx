@@ -231,9 +231,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
                 {
                     id: 'leftAxis',
                     data: [''],
-                    disableLine: true,
-                    disableTicks: true,
-                    width: 0,
+                    position: 'none',
                 },
             ]}
             xAxis={[
