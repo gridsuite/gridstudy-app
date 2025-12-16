@@ -97,7 +97,9 @@ import {
     type NetworkModificationTreeNodesReorderAction,
     type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
+    COPIED_NETWORK_MODIFICATIONS,
     type NodeSelectionForCopyAction,
+    type CopiedNetworkModificationsAction,
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
@@ -301,7 +303,7 @@ import {
 import type { UUID } from 'node:crypto';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { Entries, ValueOf } from 'type-fest';
-import { CopyType } from '../components/network-modification.type';
+import { NodeCopyType } from '../components/network-modification.type';
 import {
     CurrentTreeNode,
     NetworkModificationNodeData,
@@ -333,7 +335,10 @@ import {
     SortConfig,
     SortWay,
 } from '../types/custom-aggrid-types';
-import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    NetworkModificationCopyInfos,
+    RootNetworkMetadata,
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
@@ -488,9 +493,14 @@ export type NadTextMovement = {
 export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
-    nodeType: NetworkModificationNodeType | undefined;
-    copyType: ValueOf<typeof CopyType> | null;
-    allChildren: NetworkModificationNodeInfos[] | null;
+    nodeType?: NetworkModificationNodeType | null;
+    copyType: ValueOf<typeof NodeCopyType> | null;
+    allChildren?: NetworkModificationNodeInfos[] | null;
+};
+
+export type CopiedNetworkModifications = {
+    networkModificationUuids: UUID[];
+    copyInfos: NetworkModificationCopyInfos | null;
 };
 
 export type Actions = AppActions | AuthenticationActions;
@@ -535,6 +545,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nodeAliases: NodeAlias[];
 
     nodeSelectionForCopy: NodeSelectionForCopy;
+    copiedNetworkModifications: CopiedNetworkModifications;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
@@ -695,6 +706,10 @@ const initialState: AppState = {
         nodeType: undefined,
         copyType: null,
         allChildren: null,
+    },
+    copiedNetworkModifications: {
+        networkModificationUuids: [],
+        copyInfos: null,
     },
     tables: initialTablesState,
     nodeAliases: [],
@@ -1335,8 +1350,8 @@ export const reducer = createReducer(initialState, (builder) => {
         const nodeSelectionForCopy = action.nodeSelectionForCopy;
         if (nodeSelectionForCopy.sourceStudyUuid === state.studyUuid && nodeSelectionForCopy.nodeId) {
             if (
-                nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
-                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT
+                nodeSelectionForCopy.copyType === NodeCopyType.SUBTREE_COPY ||
+                nodeSelectionForCopy.copyType === NodeCopyType.SUBTREE_CUT
             ) {
                 nodeSelectionForCopy.allChildren = getAllChildren(
                     state.networkModificationTreeModel,
@@ -1352,6 +1367,10 @@ export const reducer = createReducer(initialState, (builder) => {
             )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
+    });
+
+    builder.addCase(COPIED_NETWORK_MODIFICATIONS, (state, action: CopiedNetworkModificationsAction) => {
+        state.copiedNetworkModifications = action.copiedNetworkModifications;
     });
 
     builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {

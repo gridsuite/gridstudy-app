@@ -31,6 +31,7 @@ import type {
     ComputingStatusParameters,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
+    CopiedNetworkModifications,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
     TableSortKeysType,
@@ -112,6 +113,7 @@ export type AppActions =
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
+    | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
@@ -766,6 +768,20 @@ export function setNodeSelectionForCopy(
     return {
         type: NODE_SELECTION_FOR_COPY,
         nodeSelectionForCopy: nodeSelectionForCopy,
+    };
+}
+
+export const COPIED_NETWORK_MODIFICATIONS = 'COPIED_NETWORK_MODIFICATIONS';
+export type CopiedNetworkModificationsAction = Readonly<Action<typeof COPIED_NETWORK_MODIFICATIONS>> & {
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>;
+};
+
+export function setCopiedNetworkModifications(
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>
+): CopiedNetworkModificationsAction {
+    return {
+        type: COPIED_NETWORK_MODIFICATIONS,
+        copiedNetworkModifications: copiedNetworkModifications,
     };
 }
 

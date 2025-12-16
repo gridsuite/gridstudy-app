@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export enum CopyType {
+export enum NodeCopyType {
     NODE_COPY = 'NODE_COPY',
     NODE_CUT = 'NODE_CUT',
     SUBTREE_COPY = 'SUBTREE_COPY',
