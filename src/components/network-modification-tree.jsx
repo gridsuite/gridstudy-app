@@ -27,14 +27,13 @@ import {
 import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
-import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { PARAM_DEVELOPER_MODE, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 import { PanelType } from './workspace/types/workspace.types';
 import { useParameterState } from './dialogs/parameters/use-parameters-state.js';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params.js';
 
 const styles = {
     modificationTree: (theme) => ({

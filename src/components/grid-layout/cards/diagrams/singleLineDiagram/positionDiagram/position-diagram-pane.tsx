@@ -8,7 +8,7 @@
 import Dialog from '@mui/material/Dialog';
 import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../../../utils/config-params';
+import { PARAM_USE_NAME } from '../../../../../../utils/config-params';
 import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../../../../network/constants';
 import { getVoltageLevelSingleLineDiagramUrl } from '../../../../../../services/study/network';
@@ -16,6 +16,7 @@ import { AppState } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
 import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
+import { PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 
 interface PositionDiagramPaneProps {
     open: boolean;
