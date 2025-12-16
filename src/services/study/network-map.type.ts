@@ -54,4 +54,5 @@ export interface TemporaryLimitsData {
     name: string;
     value: number | null;
     acceptableDuration: number | null;
+    modificationType?: string;
 }
