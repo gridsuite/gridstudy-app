@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos } from '@gridsuite/commons-ui';
+import { EquipmentInfos, Identifiable } from '@gridsuite/commons-ui';
 import { CurrentLimits } from 'services/network-modification-types';
 
 export interface CommonBranchEquipmentInfos extends EquipmentInfos {
@@ -23,6 +23,22 @@ export interface CommonBranchEquipmentInfos extends EquipmentInfos {
     selectedOperationalLimitsGroup2?: string;
 }
 
+export type VoltageLevelTooltipBusInfos = {
+    id: string;
+    u: number;
+    angle: number;
+    generation: number;
+    load: number;
+    balance: number;
+    icc: number;
+};
+
+export type VoltageLevelTooltipInfos = Identifiable & {
+    umin: number;
+    umax: number;
+    busInfos: VoltageLevelTooltipBusInfos[];
+};
+
 export interface LineEquipmentInfos extends CommonBranchEquipmentInfos {}
 
 export interface TwtEquipmentInfos extends CommonBranchEquipmentInfos {
@@ -30,6 +46,26 @@ export interface TwtEquipmentInfos extends CommonBranchEquipmentInfos {
     phaseTapChanger: any;
 }
 
+export interface GeneratorEquipmentInfos {
+    p?: number;
+    q?: number;
+    targetP?: number;
+    targetQ?: number;
+    minP: number;
+    maxP: number;
+    voltageRegulatorOn: boolean;
+    plannedActivePowerSetPoint?: number;
+}
+
+export interface LoadEquipmentInfos {
+    properties?: Record<string, string>;
+    p0: number;
+    q0: number;
+}
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
 
-export type GenericEquipmentInfos = BranchEquipmentInfos;
+export type GenericEquipmentInfos =
+    | BranchEquipmentInfos
+    | GeneratorEquipmentInfos
+    | LoadEquipmentInfos
+    | VoltageLevelTooltipInfos;
