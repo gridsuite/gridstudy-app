@@ -6,7 +6,7 @@
  */
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { NodeCopyType } from 'components/network-modification.type';
+import { CopyType } from 'components/network-modification.type';
 import { UUID } from 'node:crypto';
 import { useCallback, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,7 +33,7 @@ export const useCopiedNodes = () => {
     const isInitiatingCopyTab = useRef(false);
 
     const dispatchNodeSelectionForCopy = useCallback(
-        (sourceStudyUuid: UUID, nodeId: UUID, copyType: NodeCopyType) => {
+        (sourceStudyUuid: UUID, nodeId: UUID, copyType: CopyType) => {
             dispatch(
                 setNodeSelectionForCopy({
                     sourceStudyUuid: sourceStudyUuid,
@@ -101,12 +101,12 @@ export const useCopiedNodes = () => {
         cleanOtherTabsClipboard('copiedNodeInvalidationMsgFromOtherStudy');
     }, [cleanCurrentTabClipboard, cleanOtherTabsClipboard]);
 
-    const copyToCurrentTabNode = (sourceStudyUuid: UUID, nodeId: UUID, copyType: NodeCopyType) => {
+    const copyToCurrentTabNode = (sourceStudyUuid: UUID, nodeId: UUID, copyType: CopyType) => {
         dispatchNodeSelectionForCopy(sourceStudyUuid, nodeId, copyType);
         isInitiatingCopyTab.current = true;
     };
 
-    const copyToAllTabsNetworkModifications = (sourceStudyUuid: UUID, nodeId: UUID, copyType: NodeCopyType) => {
+    const copyToAllTabsNetworkModifications = (sourceStudyUuid: UUID, nodeId: UUID, copyType: CopyType) => {
         copyToCurrentTabNode(sourceStudyUuid, nodeId, copyType);
         broadcastChannel.postMessage({
             nodeToCopy: { sourceStudyUuid: sourceStudyUuid, nodeId: nodeId, copyType: copyType },

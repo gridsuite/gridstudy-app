@@ -39,7 +39,7 @@ import {
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
-import { NodeCopyType } from './network-modification.type';
+import { CopyType } from './network-modification.type';
 import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
 import useExportSubscription from '../hooks/use-export-subscription';
 import { exportNetworkFile } from '../services/study/network.js';
@@ -106,8 +106,8 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const isSubtreeImpacted = useCallback(
         (nodes) =>
-            (nodeSelectionForCopyRef.current.copyType === NodeCopyType.SUBTREE_COPY ||
-                nodeSelectionForCopyRef.current.copyType === NodeCopyType.SUBTREE_CUT) &&
+            (nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_COPY ||
+                nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_CUT) &&
             nodes.some(
                 (nodeId) =>
                     nodeId === nodeSelectionForCopyRef.current.nodeId ||
@@ -315,12 +315,12 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const handleCopyNode = (nodeId) => {
         console.info('node with id ' + nodeId + ' from study ' + studyUuid + ' selected for copy');
-        copyToAllTabsNetworkModifications(studyUuid, nodeId, NodeCopyType.NODE_COPY);
+        copyToAllTabsNetworkModifications(studyUuid, nodeId, CopyType.NODE_COPY);
     };
 
     const handleCutNode = (nodeId) => {
         if (nodeId) {
-            copyToCurrentTabNode(studyUuid, nodeId, NodeCopyType.NODE_CUT);
+            copyToCurrentTabNode(studyUuid, nodeId, CopyType.NODE_CUT);
             cleanOtherTabsClipboard('copiedNodeInvalidationMsgFromOtherStudy');
         } else {
             cleanCurrentTabClipboard();
@@ -330,7 +330,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const handlePasteNode = useCallback(
         (referenceNodeId, insertMode) => {
-            if (NodeCopyType.NODE_CUT === nodeSelectionForCopyRef.current.copyType) {
+            if (CopyType.NODE_CUT === nodeSelectionForCopyRef.current.copyType) {
                 cutTreeNode(studyUuid, nodeSelectionForCopyRef.current.nodeId, referenceNodeId, insertMode).catch(
                     (error) => {
                         snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
@@ -338,7 +338,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 );
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
                 dispatchEmptyNodeSelectionForCopy();
-            } else if (NodeCopyType.NODE_COPY === nodeSelectionForCopyRef.current.copyType) {
+            } else if (CopyType.NODE_COPY === nodeSelectionForCopyRef.current.copyType) {
                 copyTreeNode(
                     nodeSelectionForCopyRef.current.sourceStudyUuid,
                     studyUuid,
@@ -437,12 +437,12 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const handleCopySubtree = (nodeId) => {
         console.info('node with id ' + nodeId + ' from study ' + studyUuid + ' selected for copy');
-        copyToAllTabsNetworkModifications(studyUuid, nodeId, NodeCopyType.SUBTREE_COPY);
+        copyToAllTabsNetworkModifications(studyUuid, nodeId, CopyType.SUBTREE_COPY);
     };
 
     const handleCutSubtree = (nodeId) => {
         if (nodeId) {
-            copyToCurrentTabNode(studyUuid, nodeId, NodeCopyType.SUBTREE_CUT);
+            copyToCurrentTabNode(studyUuid, nodeId, CopyType.SUBTREE_CUT);
             cleanOtherTabsClipboard('copiedNodeInvalidationMsgFromOtherStudy');
         } else {
             cleanCurrentTabClipboard();
@@ -452,13 +452,13 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const handlePasteSubtree = useCallback(
         (referenceNodeId) => {
-            if (NodeCopyType.SUBTREE_CUT === nodeSelectionForCopyRef.current.copyType) {
+            if (CopyType.SUBTREE_CUT === nodeSelectionForCopyRef.current.copyType) {
                 cutSubtree(studyUuid, nodeSelectionForCopyRef.current.nodeId, referenceNodeId).catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
                 });
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
                 cleanCurrentTabClipboard();
-            } else if (NodeCopyType.SUBTREE_COPY === nodeSelectionForCopyRef.current.copyType) {
+            } else if (CopyType.SUBTREE_COPY === nodeSelectionForCopyRef.current.copyType) {
                 copySubtree(
                     nodeSelectionForCopyRef.current.sourceStudyUuid,
                     studyUuid,

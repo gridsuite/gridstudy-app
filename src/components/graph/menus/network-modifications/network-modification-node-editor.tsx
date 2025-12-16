@@ -170,14 +170,8 @@ const NetworkModificationNodeEditor = () => {
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
 
-    const {
-        networkModificationsToCopy,
-        copyInfos,
-        copyNetworkModifications,
-        cleanCurrentTabClipboard,
-        cleanOtherTabsClipboard,
-        cleanClipboard,
-    } = useCopiedNetworkModifications();
+    const { networkModificationsToCopy, copyInfos, copyNetworkModifications, cutNetworkModifications, cleanClipboard } =
+        useCopiedNetworkModifications();
 
     const copyInfosRef = useRef<NetworkModificationCopyInfos | null>(null);
     copyInfosRef.current = copyInfos;
@@ -185,9 +179,9 @@ const NetworkModificationNodeEditor = () => {
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', () => {
-            cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
+            cleanClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
         });
-    }, [cleanOtherTabsClipboard]);
+    }, [cleanClipboard]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -1009,7 +1003,7 @@ const NetworkModificationNodeEditor = () => {
     }, [modifications, selectedNetworkModifications]);
 
     const doCutModifications = useCallback(() => {
-        copyNetworkModifications({
+        cutNetworkModifications({
             networkModificationUuids: selectedModificationsIds(),
             copyInfos: {
                 copyType: NetworkModificationCopyType.MOVE,
@@ -1017,7 +1011,7 @@ const NetworkModificationNodeEditor = () => {
                 originNodeUuid: currentNode?.id,
             },
         });
-    }, [copyNetworkModifications, currentNode?.id, selectedModificationsIds, studyUuid]);
+    }, [cutNetworkModifications, currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
         copyNetworkModifications({
@@ -1037,7 +1031,7 @@ const NetworkModificationNodeEditor = () => {
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
             copyOrMoveModifications(studyUuid, currentNode.id, networkModificationsToCopy, copyInfos)
                 .then(() => {
-                    cleanCurrentTabClipboard();
+                    cleanClipboard();
                 })
                 .catch((error) => {
                     snackWithFallback(snackError, error, {
@@ -1051,7 +1045,7 @@ const NetworkModificationNodeEditor = () => {
                 });
             });
         }
-    }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanCurrentTabClipboard, snackError]);
+    }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackError]);
 
     const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;

@@ -13,7 +13,7 @@ import { LIGHT_THEME, type MuiStyles } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
 import { AppState } from 'redux/reducer';
-import { NodeCopyType } from 'components/network-modification.type';
+import { CopyType } from 'components/network-modification.type';
 import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
@@ -100,10 +100,10 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
 
     const isSelectedForCut = () => {
         return (
-            (props.id === selectionForCopy?.nodeId && selectionForCopy?.copyType === NodeCopyType.NODE_CUT) ||
+            (props.id === selectionForCopy?.nodeId && selectionForCopy?.copyType === CopyType.NODE_CUT) ||
             ((props.id === selectionForCopy?.nodeId ||
                 selectionForCopy.allChildren?.map((child) => child.id)?.includes(props.id)) &&
-                selectionForCopy?.copyType === NodeCopyType.SUBTREE_CUT)
+                selectionForCopy?.copyType === CopyType.SUBTREE_CUT)
         );
     };
     const tooltipContent = useMemo(() => {

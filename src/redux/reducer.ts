@@ -303,7 +303,7 @@ import {
 import type { UUID } from 'node:crypto';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { Entries, ValueOf } from 'type-fest';
-import { NodeCopyType } from '../components/network-modification.type';
+import { CopyType } from '../components/network-modification.type';
 import {
     CurrentTreeNode,
     NetworkModificationNodeData,
@@ -494,7 +494,7 @@ export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
     nodeType?: NetworkModificationNodeType | null;
-    copyType: ValueOf<typeof NodeCopyType> | null;
+    copyType: ValueOf<typeof CopyType> | null;
     allChildren?: NetworkModificationNodeInfos[] | null;
 };
 
@@ -1350,8 +1350,8 @@ export const reducer = createReducer(initialState, (builder) => {
         const nodeSelectionForCopy = action.nodeSelectionForCopy;
         if (nodeSelectionForCopy.sourceStudyUuid === state.studyUuid && nodeSelectionForCopy.nodeId) {
             if (
-                nodeSelectionForCopy.copyType === NodeCopyType.SUBTREE_COPY ||
-                nodeSelectionForCopy.copyType === NodeCopyType.SUBTREE_CUT
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT
             ) {
                 nodeSelectionForCopy.allChildren = getAllChildren(
                     state.networkModificationTreeModel,

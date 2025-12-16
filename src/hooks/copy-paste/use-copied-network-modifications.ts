@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState, CopiedNetworkModifications } from 'redux/reducer';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setCopiedNetworkModifications } from 'redux/actions';
-import { NetworkModificationCopyType } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 const networkModificationsCopyChannel = new BroadcastChannel('NetworkModificationsCopyBroadcastChannel');
 
@@ -55,7 +54,7 @@ export const useCopiedNetworkModifications = () => {
     );
 
     const dispatchEmptyCopiedNetworkModifications = useCallback(
-        (snackInfoMessage = null) => {
+        (snackInfoMessage?: string) => {
             if (copyInfos?.originStudyUuid && snackInfoMessage) {
                 snackInfo({
                     messageId: snackInfoMessage,
@@ -68,12 +67,12 @@ export const useCopiedNetworkModifications = () => {
 
     const cleanCurrentTabClipboard = useCallback(
         (snackInfoMessage?: string) => {
-            dispatchEmptyCopiedNetworkModifications();
             if (snackInfoMessage) {
                 snackInfo({
                     messageId: snackInfoMessage,
                 });
             }
+            dispatchEmptyCopiedNetworkModifications();
         },
         [dispatchEmptyCopiedNetworkModifications, snackInfo]
     );
@@ -90,33 +89,34 @@ export const useCopiedNetworkModifications = () => {
         [broadcastChannel]
     );
 
-    const cleanClipboard = useCallback(() => {
-        cleanCurrentTabClipboard('copiedModificationsInvalidationMsg');
-        cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromOtherStudy');
-    }, [cleanCurrentTabClipboard, cleanOtherTabsClipboard]);
+    const cleanClipboard = useCallback(
+        (snackInfoMessage?: string) => {
+            cleanCurrentTabClipboard(snackInfoMessage ?? 'copiedModificationsInvalidationMsg');
+            cleanOtherTabsClipboard(snackInfoMessage ?? 'copiedModificationsInvalidationMsgFromOtherStudy');
+        },
+        [cleanCurrentTabClipboard, cleanOtherTabsClipboard]
+    );
 
     const copyNetworkModifications = (copiedNetworkModifications: CopiedNetworkModifications) => {
         isInitiatingCopyTab.current = true;
         dispatchCopiedNetworkModifications(copiedNetworkModifications);
-        switch (copiedNetworkModifications.copyInfos?.copyType) {
-            case NetworkModificationCopyType.COPY:
-                broadcastChannel.postMessage({
-                    copiedNetworkModifications: copiedNetworkModifications,
-                    message: 'copiedModificationsUpdateMsg',
-                });
-                break;
-            case NetworkModificationCopyType.MOVE:
-                cleanOtherTabsClipboard('copiedModificationsInvalidationMsg');
-                break;
-        }
+        broadcastChannel.postMessage({
+            copiedNetworkModifications: copiedNetworkModifications,
+            message: 'copiedModificationsUpdateMsg',
+        });
+    };
+
+    const cutNetworkModifications = (copiedNetworkModifications: CopiedNetworkModifications) => {
+        isInitiatingCopyTab.current = true;
+        dispatchCopiedNetworkModifications(copiedNetworkModifications);
+        cleanOtherTabsClipboard('copiedModificationsInvalidationMsg');
     };
 
     return {
         networkModificationsToCopy,
         copyInfos,
         copyNetworkModifications,
-        cleanCurrentTabClipboard,
-        cleanOtherTabsClipboard,
+        cutNetworkModifications,
         cleanClipboard,
     };
 };

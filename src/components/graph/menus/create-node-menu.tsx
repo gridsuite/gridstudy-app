@@ -17,7 +17,7 @@ import { BUILD_STATUS } from '../../network/constants';
 import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
-import { NodeCopyType } from 'components/network-modification.type';
+import { CopyType } from 'components/network-modification.type';
 import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { Divider } from '@mui/material';
@@ -218,9 +218,8 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     function isNodePastingAllowed() {
         return (
             !mapDataLoading &&
-            ((nodeSelectionForCopy.nodeId !== activeNode.id &&
-                nodeSelectionForCopy.copyType === NodeCopyType.NODE_CUT) ||
-                nodeSelectionForCopy.copyType === NodeCopyType.NODE_COPY)
+            ((nodeSelectionForCopy.nodeId !== activeNode.id && nodeSelectionForCopy.copyType === CopyType.NODE_CUT) ||
+                nodeSelectionForCopy.copyType === CopyType.NODE_COPY)
         );
     }
 
@@ -229,8 +228,8 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             !mapDataLoading &&
             ((nodeSelectionForCopy.nodeId !== activeNode.id &&
                 !nodeSelectionForCopy.allChildren?.map((child) => child.id)?.includes(activeNode.id) &&
-                nodeSelectionForCopy.copyType === NodeCopyType.SUBTREE_CUT) ||
-                nodeSelectionForCopy.copyType === NodeCopyType.SUBTREE_COPY)
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT) ||
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY)
         );
     }
 
@@ -292,15 +291,12 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     }
 
     function isNodeAlreadySelectedForCut() {
-        return (
-            nodeSelectionForCopy?.nodeId === activeNode.id && nodeSelectionForCopy?.copyType === NodeCopyType.NODE_CUT
-        );
+        return nodeSelectionForCopy?.nodeId === activeNode.id && nodeSelectionForCopy?.copyType === CopyType.NODE_CUT;
     }
 
     function isSubtreeAlreadySelectedForCut() {
         return (
-            nodeSelectionForCopy?.nodeId === activeNode.id &&
-            nodeSelectionForCopy?.copyType === NodeCopyType.SUBTREE_CUT
+            nodeSelectionForCopy?.nodeId === activeNode.id && nodeSelectionForCopy?.copyType === CopyType.SUBTREE_CUT
         );
     }
     function isNodeHasChildren(node: CurrentTreeNode, treeModel: NetworkModificationTreeModel | null): boolean {
