@@ -6,7 +6,7 @@
  */
 import { ICellRendererParams } from 'ag-grid-community';
 import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
