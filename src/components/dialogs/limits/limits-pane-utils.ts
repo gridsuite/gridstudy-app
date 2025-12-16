@@ -242,27 +242,6 @@ export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitFormSchema[
             name: sanitizeString(name) ?? '',
         })) || [];
 
-const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitFormSchema[], limit: TemporaryLimit) =>
-    temporaryLimits?.find(
-        (l: TemporaryLimitFormSchema) =>
-            l.name === limit.name?.value && l.acceptableDuration === limit.acceptableDuration?.value
-    );
-
-export const updateTemporaryLimits = (
-    temporaryLimitsForm: TemporaryLimitFormSchema[],
-    temporaryLimitsToModify: TemporaryLimit[] // from map server
-) => {
-    let updatedTemporaryLimits = temporaryLimitsForm ?? [];
-    //add temporary limits from map server that are not in the form values
-    temporaryLimitsToModify?.forEach((limit: TemporaryLimit) => {
-        if (findTemporaryLimitForm(updatedTemporaryLimits, limit) === undefined) {
-            updatedTemporaryLimits?.push(temporaryLimitToTemporaryLimitFormSchema(limit));
-        }
-    });
-
-    return updatedTemporaryLimits;
-};
-
 export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimitsData[]) => {
     return currentLimits?.map((currentLimit: CurrentLimitsData) => {
         return {
