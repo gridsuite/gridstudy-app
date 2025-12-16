@@ -165,7 +165,10 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
             // Calculate width from height while maintaining aspect ratio
             const targetHeightPx = targetHeight * containerRect.height;
             const targetWidthPx = targetHeightPx * svgAspectRatio;
-            const targetWidth = Math.min(targetWidthPx / containerRect.width, maxSizePercent);
+            const targetWidth = Math.min(
+                (targetWidthPx + NAD_SLD_CONSTANTS.EXPANDED_SIDEBAR_WIDTH) / containerRect.width,
+                maxSizePercent
+            );
 
             const newSize = {
                 width: targetWidth,

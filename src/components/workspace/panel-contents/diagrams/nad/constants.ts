@@ -12,6 +12,7 @@ export const NAD_SLD_CONSTANTS = {
     DEFAULT_RND_SIZE: { width: 600, height: 400 },
     MIN_RND_WIDTH: 138,
     MIN_RND_HEIGHT: 138,
+    EXPANDED_SIDEBAR_WIDTH: 160,
     CHIP_BAR_HEIGHT: 48,
     TOP_CONTROLS_HEIGHT: 40, // Height of NAD diagram controls at the top
 
