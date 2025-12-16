@@ -20,7 +20,7 @@ export const formatValue = (value?: number | string | null, fixed?: number | str
             return value;
         }
     } else {
-        return '_';
+        return '—';
     }
 };
 
@@ -28,10 +28,10 @@ export const styles = {
     table: (theme) => ({
         '& .MuiTableCell-root': {
             borderBottom: `1px solid ${theme.palette.divider}`,
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#36343B',
         },
         padding: '8px 16px',
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#36343B',
         boxShadow: theme.shadows[1],
         borderRadius: '4px',
     }),
@@ -45,5 +45,5 @@ export const styles = {
 
 export const cellWithStatus = (status: RunningStatus | undefined) => ({
     ...styles.cell,
-    opacity: status === RunningStatus.SUCCEED ? 1 : 0.2,
+    opacity: status === RunningStatus.SUCCEED ? 1 : 0.5,
 });

@@ -64,6 +64,7 @@ import {
     networkModificationsEn,
     networkModificationsFr,
     NotificationsProvider,
+    PARAM_THEME,
     parametersEn,
     parametersFr,
     reportViewerEn,
@@ -107,7 +108,7 @@ import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import base_voltages_fr from '../translations/external/base-voltages-fr';
 import base_voltages_en from '../translations/external/base-voltages-en';
-import { basemap_style_theme_key, PARAM_THEME } from '../utils/config-params';
+import { basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { getBaseVoltagesCssVars } from '../utils/colors.ts';
