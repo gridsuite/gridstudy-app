@@ -24,6 +24,7 @@ export enum PanelType {
 export interface SLDPanelMetadata {
     diagramId: string;
     navigationHistory?: string[];
+    parentNadPanelId?: UUID; // Reference to parent NAD panel if associated
 }
 
 export interface NADPanelMetadata {
@@ -33,7 +34,6 @@ export interface NADPanelMetadata {
     voltageLevelToOmitIds?: string[];
     savedWorkspaceConfigUuid?: UUID;
     initialVoltageLevelIds?: string[];
-    associatedVoltageLevelPanels?: UUID[]; // Array of associated SLD panel IDs
     navigationHistory?: string[]; // History of clicked voltage levels
 }
 

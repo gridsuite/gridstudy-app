@@ -346,17 +346,13 @@ const workspacesSlice = createSlice({
             const { sldPanelId, nadPanelId } = action.payload;
             const workspace = getActiveWorkspace(state);
 
-            // Update NAD panel metadata to include SLD in associated list (prevent duplicates)
-            updatePanel(state, nadPanelId, (panel) => {
-                const metadata = panel.metadata as NADPanelMetadata;
-                const associatedPanels = metadata.associatedVoltageLevelPanels || [];
-                // Only add if not already associated
-                if (!associatedPanels.includes(sldPanelId)) {
-                    panel.metadata = {
-                        ...metadata,
-                        associatedVoltageLevelPanels: [...associatedPanels, sldPanelId],
-                    };
-                }
+            // Set parent reference on SLD panel
+            updatePanel(state, sldPanelId, (panel) => {
+                const metadata = panel.metadata as SLDPanelMetadata;
+                panel.metadata = {
+                    ...metadata,
+                    parentNadPanelId: nadPanelId,
+                };
             });
 
             // Keep focus on NAD panel (bring to front and un-minimize if needed)
@@ -366,20 +362,15 @@ const workspacesSlice = createSlice({
         dissociateSldFromNad: (state, action: PayloadAction<UUID>) => {
             const sldPanelId = action.payload;
             const workspace = getActiveWorkspace(state);
-            const nadPanelId = findNadForSld(workspace, sldPanelId);
 
-            // Remove from NAD panel's associated list
-            if (nadPanelId && workspace.panels[nadPanelId]) {
-                updatePanel(state, nadPanelId, (panel) => {
-                    const nadMetadata = panel.metadata as NADPanelMetadata;
-                    panel.metadata = {
-                        ...nadMetadata,
-                        associatedVoltageLevelPanels: (nadMetadata.associatedVoltageLevelPanels || []).filter(
-                            (id) => id !== sldPanelId
-                        ),
-                    };
-                });
-            }
+            // Clear parent reference from SLD
+            updatePanel(state, sldPanelId, (panel) => {
+                const metadata = panel.metadata as SLDPanelMetadata;
+                panel.metadata = {
+                    ...metadata,
+                    parentNadPanelId: undefined,
+                };
+            });
 
             // Update orderIndex to place at end of dock
             updatePanel(state, sldPanelId, (panel) => {
@@ -399,14 +390,22 @@ const workspacesSlice = createSlice({
             const sldPanel = workspace.panels[sldPanelId];
 
             // Create NAD panel with the voltage level, using SLD's position and size
-            createPanel(workspace, PanelType.NAD, {
+            const nadPanelId = createPanel(workspace, PanelType.NAD, {
                 title: voltageLevelName,
                 metadata: {
                     initialVoltageLevelIds: [voltageLevelId],
-                    associatedVoltageLevelPanels: [sldPanelId],
                 },
                 position: sldPanel ? { ...sldPanel.position } : undefined,
                 size: sldPanel ? { ...sldPanel.size } : undefined,
+            });
+
+            // Set parent reference on SLD panel
+            updatePanel(state, sldPanelId, (panel) => {
+                const metadata = panel.metadata as SLDPanelMetadata;
+                panel.metadata = {
+                    ...metadata,
+                    parentNadPanelId: nadPanelId,
+                };
             });
 
             // Reposition SLD to bottom of NAD area (consistent with openSldAndAssociateToNad)
@@ -427,27 +426,18 @@ const workspacesSlice = createSlice({
             // Calculate position and size for associated SLD panel
             const { position, size } = getDefaultAssociatedSldPositionAndSize();
 
-            // Create a new SLD panel
+            // Create a new SLD panel with parent reference
             const metadata: SLDPanelMetadata = {
                 diagramId: voltageLevelId,
                 navigationHistory: [],
+                parentNadPanelId: nadPanelId,
             };
 
-            const sldPanelId = createPanel(workspace, PanelType.SLD_VOLTAGE_LEVEL, {
+            createPanel(workspace, PanelType.SLD_VOLTAGE_LEVEL, {
                 title: voltageLevelId,
                 metadata,
                 position,
                 size,
-            });
-
-            // Update NAD panel metadata to include SLD in associated list
-            updatePanel(state, nadPanelId, (panel) => {
-                const metadata = panel.metadata as NADPanelMetadata;
-                const associatedPanels = metadata.associatedVoltageLevelPanels || [];
-                panel.metadata = {
-                    ...metadata,
-                    associatedVoltageLevelPanels: [...associatedPanels, sldPanelId],
-                };
             });
 
             // Restore focus to NAD (createPanel sets focus to the new SLD)
@@ -457,12 +447,14 @@ const workspacesSlice = createSlice({
         closeAllAssociatedSlds: (state, action: PayloadAction<UUID>) => {
             const nadPanelId = action.payload;
             const workspace = getActiveWorkspace(state);
-            const nadPanel = workspace.panels[nadPanelId];
 
-            if (!nadPanel) return;
-
-            const nadMetadata = nadPanel.metadata as NADPanelMetadata;
-            const associatedPanelIds = nadMetadata.associatedVoltageLevelPanels || [];
+            // Find all SLDs that have this NAD as parent
+            const associatedPanelIds = Object.values(workspace.panels)
+                .filter((panel) => {
+                    const metadata = panel.metadata as SLDPanelMetadata | undefined;
+                    return metadata?.parentNadPanelId === nadPanelId;
+                })
+                .map((panel) => panel.id);
 
             // Close (hide) all associated SLD panels, preserving their state
             associatedPanelIds.forEach((sldPanelId) => {
@@ -476,47 +468,26 @@ const workspacesSlice = createSlice({
         removeAllAssociatedSlds: (state, action: PayloadAction<UUID>) => {
             const nadPanelId = action.payload;
             const workspace = getActiveWorkspace(state);
-            const nadPanel = workspace.panels[nadPanelId];
 
-            if (!nadPanel) return;
-
-            const nadMetadata = nadPanel.metadata as NADPanelMetadata;
-            const associatedPanelIds = [...(nadMetadata.associatedVoltageLevelPanels || [])];
+            // Find all SLDs that have this NAD as parent
+            const associatedPanelIds = Object.values(workspace.panels)
+                .filter((panel) => {
+                    const metadata = panel.metadata as SLDPanelMetadata | undefined;
+                    return metadata?.parentNadPanelId === nadPanelId;
+                })
+                .map((panel) => panel.id);
 
             // Delete all associated SLD panels
             associatedPanelIds.forEach((sldPanelId) => {
                 deletePanel(workspace, sldPanelId);
-            });
-
-            // Clear the NAD's associated panels list
-            updatePanel(state, nadPanelId, (panel) => {
-                const metadata = panel.metadata as NADPanelMetadata;
-                panel.metadata = {
-                    ...metadata,
-                    associatedVoltageLevelPanels: [],
-                };
             });
         },
 
         deleteAssociatedSld: (state, action: PayloadAction<UUID>) => {
             const sldPanelId = action.payload;
             const workspace = getActiveWorkspace(state);
-            const nadPanelId = findNadForSld(workspace, sldPanelId);
 
-            // Remove from NAD panel's associated list
-            if (nadPanelId && workspace.panels[nadPanelId]) {
-                updatePanel(state, nadPanelId, (panel) => {
-                    const nadMetadata = panel.metadata as NADPanelMetadata;
-                    panel.metadata = {
-                        ...nadMetadata,
-                        associatedVoltageLevelPanels: (nadMetadata.associatedVoltageLevelPanels || []).filter(
-                            (id) => id !== sldPanelId
-                        ),
-                    };
-                });
-            }
-
-            // Delete the SLD panel completely
+            // Delete the SLD panel completely (parent reference cleared automatically)
             deletePanel(workspace, sldPanelId);
         },
     },

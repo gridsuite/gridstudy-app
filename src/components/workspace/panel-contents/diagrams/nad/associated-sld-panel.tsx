@@ -99,7 +99,7 @@ interface AssociatedSldPanelProps {
     readonly isFocused: boolean;
     readonly onBringToFront?: (sldPanelId: UUID) => void;
     readonly onDragStart?: () => void;
-    readonly onDragEnd?: () => void;
+    readonly onDragStop?: () => void;
 }
 
 export const AssociatedSldPanel = memo(function AssociatedSldPanel({
@@ -107,7 +107,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     isFocused,
     onBringToFront,
     onDragStart,
-    onDragEnd,
+    onDragStop,
 }: AssociatedSldPanelProps) {
     const dispatch = useDispatch();
     const theme = useTheme();
@@ -243,9 +243,9 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                 })
             );
             setIsDragging(false);
-            onDragEnd?.();
+            onDragStop?.();
         },
-        [dispatch, sldPanelId, containerRect, relativeSize, onDragEnd]
+        [dispatch, sldPanelId, containerRect, relativeSize, onDragStop]
     );
 
     const handlePointerDown = useCallback(() => {

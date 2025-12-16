@@ -16,7 +16,6 @@ import {
     PanelType,
     PanelMetadata,
     SLDPanelMetadata,
-    NADPanelMetadata,
     RelativeLayout,
 } from '../../components/workspace/types/workspace.types';
 
@@ -31,12 +30,9 @@ export const isDiagramPanel = (panelType: PanelType): boolean => {
 
 // Find parent NAD panel for a given SLD panel
 export const findNadForSld = (workspace: Workspace, sldPanelId: UUID): UUID | null => {
-    const nadPanel = Object.values(workspace.panels).find(
-        (panel) =>
-            panel.type === PanelType.NAD &&
-            (panel.metadata as NADPanelMetadata | undefined)?.associatedVoltageLevelPanels?.includes(sldPanelId)
-    );
-    return nadPanel?.id ?? null;
+    const sldPanel = workspace.panels[sldPanelId];
+    if (!sldPanel) return null;
+    return (sldPanel.metadata as SLDPanelMetadata | undefined)?.parentNadPanelId ?? null;
 };
 
 // Calculate default position/size for SLD panels associated with NAD
@@ -205,9 +201,15 @@ export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
 
     // If closing a NAD panel, delete all associated SLDs
     if (panel.type === PanelType.NAD) {
-        const nadMetadata = panel.metadata as NADPanelMetadata | undefined;
-        const associatedPanelIds = nadMetadata?.associatedVoltageLevelPanels || [];
-        associatedPanelIds.forEach((sldPanelId) => {
+        // Find all SLDs that have this NAD as parent
+        const associatedSldIds = Object.values(workspace.panels)
+            .filter((p) => {
+                const metadata = p.metadata as SLDPanelMetadata | undefined;
+                return metadata?.parentNadPanelId === panelId;
+            })
+            .map((p) => p.id);
+
+        associatedSldIds.forEach((sldPanelId) => {
             deletePanel(workspace, sldPanelId);
         });
     }

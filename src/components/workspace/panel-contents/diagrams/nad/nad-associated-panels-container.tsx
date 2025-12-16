@@ -34,7 +34,7 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
         onDragStateChange?.(true);
     }, [onDragStateChange]);
 
-    const handleDragEnd = useCallback(() => {
+    const handleDragStop = useCallback(() => {
         onDragStateChange?.(false);
     }, [onDragStateChange]);
 
@@ -47,7 +47,7 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
                     isFocused={focusedSldId === sldPanelId}
                     onBringToFront={handleBringToFront}
                     onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
+                    onDragStop={handleDragStop}
                 />
             ))}
 
