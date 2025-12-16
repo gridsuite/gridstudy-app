@@ -15,6 +15,8 @@ const filter_locale_en = {
     'filter.lessThan': 'Less than',
     'filter.greaterThanOrEqual': 'Greater than or equal to',
     'filter.greaterThan': 'Greater than',
+    'filter.blank': 'Is empty',
+    'filter.notBlank': 'Is not empty',
     'filter.filterOoo': 'Filter...',
     'filter.rounded': 'Filtering precision rounded to',
     'filter.roundedToOne': 'Filtering precision rounded to the nearest unit.',

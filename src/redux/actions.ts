@@ -8,6 +8,7 @@
 import { PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import type { Action } from 'redux';
 import {
+    BaseVoltage,
     ComputingType,
     type GsLang,
     type GsLangUser,
@@ -700,6 +701,18 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[])
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
+    };
+}
+
+export const SET_BASE_VOLTAGE_LIST = 'SET_BASE_VOLTAGE_LIST';
+export type SetBaseVoltageListAction = Readonly<Action<typeof SET_BASE_VOLTAGE_LIST>> & {
+    baseVoltages: BaseVoltage[];
+};
+
+export function setBaseVoltageList(baseVoltageList: BaseVoltage[]): SetBaseVoltageListAction {
+    return {
+        type: SET_BASE_VOLTAGE_LIST,
+        baseVoltages: baseVoltageList,
     };
 }
 
