@@ -112,8 +112,8 @@ export function LimitsSidePane({
             return (
                 temporaryLimits?.filter(
                     (l: TemporaryLimit) =>
-                        l.name === getValues(arrayFormName)[rowIndex]?.name &&
-                        l.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
+                        l.name?.value === getValues(arrayFormName)[rowIndex]?.name &&
+                        l.acceptableDuration?.value === getValues(arrayFormName)[rowIndex]?.acceptableDuration
                 )?.length > 0
             );
         },
@@ -135,8 +135,8 @@ export function LimitsSidePane({
         (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
             return temporaryLimits?.find(
                 (e: TemporaryLimit) =>
-                    e.name === getValues(arrayFormName)[rowIndex]?.name &&
-                    e.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
+                    e.name?.value === getValues(arrayFormName)[rowIndex]?.name &&
+                    e.acceptableDuration?.value === getValues(arrayFormName)[rowIndex]?.acceptableDuration
             );
         },
         [getValues]
