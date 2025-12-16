@@ -14,6 +14,7 @@ import {
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
+    mergeSx,
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
@@ -163,7 +164,6 @@ export default function ColumnCreationDialog({
                         }
                         color="primary"
                         placement="left-end"
-                        sx={{ marginLeft: 1 }}
                         componentsProps={{
                             tooltip: {
                                 sx: {
@@ -376,7 +376,7 @@ export default function ColumnCreationDialog({
                 <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
                     <Grid container spacing={2} direction="column" alignItems="center">
-                        <Grid item sx={styles.field}>
+                        <Grid item sx={mergeSx(styles.field, { marginTop: '5px' })}>
                             {columnNameField}
                         </Grid>
                         <Grid item sx={styles.field}>
