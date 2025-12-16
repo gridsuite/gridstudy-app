@@ -54,16 +54,6 @@ export default function GeneratePrefilledModelDialog({
 
     const availableColumnGroups = useMemo(() => getPrefilledColumnGroups(equipmentType), [equipmentType]);
 
-    const allColumnGroupIds = useMemo(
-        () => availableColumnGroups.map((group) => group.labelId),
-        [availableColumnGroups]
-    );
-
-    const isAllSelected = useMemo(
-        () => allColumnGroupIds.length > 0 && selectedColumnGroups?.length === allColumnGroupIds.length,
-        [allColumnGroupIds, selectedColumnGroups]
-    );
-
     useEffect(() => {
         if (open.value) {
             reset(emptyFormData);
@@ -92,14 +82,6 @@ export default function GeneratePrefilledModelDialog({
         },
         [getValues, setValue]
     );
-
-    const handleSelectAllToggle = useCallback(() => {
-        if (isAllSelected) {
-            setValue(SELECTED_COLUMN_GROUPS, [], { shouldValidate: true });
-        } else {
-            setValue(SELECTED_COLUMN_GROUPS, allColumnGroupIds, { shouldValidate: true });
-        }
-    }, [isAllSelected, allColumnGroupIds, setValue]);
 
     const handleValidate = useCallback(
         (formData: PrefilledModelFormType) => {
@@ -157,11 +139,6 @@ export default function GeneratePrefilledModelDialog({
                         {useCurrentGridState && (
                             <Box sx={styles.columnsContainer}>
                                 <FormGroup>
-                                    <FormControlLabel
-                                        control={<Checkbox checked={isAllSelected} onChange={handleSelectAllToggle} />}
-                                        label={intl.formatMessage({ id: 'SelectAll' })}
-                                        sx={styles.selectAllLabel}
-                                    />
                                     {availableColumnGroups.map((group: PrefilledColumnGroup) => (
                                         <FormControlLabel
                                             key={group.labelId}
