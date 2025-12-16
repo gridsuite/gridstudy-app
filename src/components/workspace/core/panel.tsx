@@ -37,13 +37,6 @@ const getBorder = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
     return `1px solid ${theme.palette.grey[800]}`;
 };
 
-const getBoxShadow = (theme: Theme, isFocused: boolean) => {
-    if (!isFocused) {
-        return 0;
-    }
-    return theme.palette.mode === 'light' ? theme.shadows[14] : theme.shadows[18];
-};
-
 const styles = {
     panel: {
         display: 'flex',
@@ -168,7 +161,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
         >
             <Box
                 onPointerDown={handleFocus}
-                sx={(theme) => ({ ...styles.panel, boxShadow: getBoxShadow(theme, isFocused) })}
+                sx={(theme) => ({ ...styles.panel, boxShadow: isFocused ? theme.shadows[18] : 'none' })}
             >
                 <PanelHeader
                     panelId={panelId}
