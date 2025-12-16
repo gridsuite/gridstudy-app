@@ -230,8 +230,8 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
                 // We can't totally disable the yAxis, so we have to give empty data
                 {
                     id: 'leftAxis',
-                    data: [''],
                     position: 'none',
+                    data: [''],
                 },
             ]}
             xAxis={[
