@@ -67,6 +67,23 @@ function filterRedundantProperties(nodeId: string, equipmentType: SpreadsheetEqu
         exclusionList.push('type');
     }
 
+    // temporaryLimits are no longer returned from the backend for lines and transformers in the spreadsheet
+    if (
+        [
+            SpreadsheetEquipmentType.LINE,
+            SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER,
+            SpreadsheetEquipmentType.BRANCH,
+        ].includes(equipmentType)
+    ) {
+        const BRANCH_EXCLUSIONS = new Set([
+            'selectedOperationalLimitsGroup1.temporaryLimits',
+            'selectedOperationalLimitsGroup2.temporaryLimits',
+            'operationalLimitsGroup1.temporaryLimits',
+            'operationalLimitsGroup2.temporaryLimits',
+        ]);
+        exclusionList.push(...BRANCH_EXCLUSIONS);
+    }
+
     // Two-winding transformers don't need the 'country' property
     if ([SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER].includes(equipmentType)) {
         exclusionList.push('country');
