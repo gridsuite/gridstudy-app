@@ -251,8 +251,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getStateEstimationEditData(STATE_ESTIMATION, twtModification),
                 ...getAllLimitsFormData(
                     formatOpLimitGroupsToFormInfos(twtModification.operationalLimitsGroups),
-                    twtModification.selectedOperationalLimitsGroup1?.value ?? null,
-                    twtModification.selectedOperationalLimitsGroup2?.value ?? null,
+                    twtModification.selectedOperationalLimitsGroupId1?.value ?? null,
+                    twtModification.selectedOperationalLimitsGroupId2?.value ?? null,
                     twtModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getRatioTapChangerFormData({

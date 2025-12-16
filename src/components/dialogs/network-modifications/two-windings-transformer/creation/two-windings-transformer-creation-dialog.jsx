@@ -253,8 +253,8 @@ const TwoWindingsTransformerCreationDialog = ({
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    twt?.selectedOperationalLimitsGroup1 ?? null,
-                    twt?.selectedOperationalLimitsGroup2 ?? null
+                    twt?.selectedOperationalLimitsGroupId1 ?? null,
+                    twt?.selectedOperationalLimitsGroupId2 ?? null
                 ),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -337,8 +337,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     }),
                     ...getAllLimitsFormData(
                         formatCompleteCurrentLimit(twt.currentLimits),
-                        twt.selectedOperationalLimitsGroup1 ?? null,
-                        twt.selectedOperationalLimitsGroup2 ?? null
+                        twt.selectedOperationalLimitsGroupId1 ?? null,
+                        twt.selectedOperationalLimitsGroupId2 ?? null
                     ),
                     ...getRatioTapChangerFormData({
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,

@@ -564,8 +564,8 @@ export interface LineModificationInfos {
     g2: AttributeModification<number> | null;
     b2: AttributeModification<number> | null;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroup1: AttributeModification<string> | null;
-    selectedOperationalLimitsGroup2: AttributeModification<string> | null;
+    selectedOperationalLimitsGroupId1: AttributeModification<string> | null;
+    selectedOperationalLimitsGroupId2: AttributeModification<string> | null;
     [ENABLE_OLG_MODIFICATION]: boolean;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;

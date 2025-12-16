@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ID, SELECTED_LIMITS_GROUP_1, SELECTED_LIMITS_GROUP_2 } from '../../utils/field-constants';
+import { ID, SELECTED_OPERATIONAL_LIMITS_GROUP_ID1, SELECTED_OPERATIONAL_LIMITS_GROUP_ID2 } from '../../utils/field-constants';
 import { FieldValues, UseFieldArrayAppend, UseFieldArrayRemove, useFormContext } from 'react-hook-form';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -67,13 +67,13 @@ export function LimitsGroupsContextualMenu({
                 selectedLimitsGroups1 === tabName &&
                 (applicability === APPLICABILITY.SIDE1.id || applicability === APPLICABILITY.EQUIPMENT.id)
             ) {
-                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, null);
+                setValue(`${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID1}`, null);
             }
             if (
                 selectedLimitsGroups2 === tabName &&
                 (applicability === APPLICABILITY.SIDE2.id || applicability === APPLICABILITY.EQUIPMENT.id)
             ) {
-                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, null);
+                setValue(`${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID2}`, null);
             }
             removeLimitsGroups(indexSelectedLimitSet);
             setIndexSelectedLimitSet(null);
