@@ -7,13 +7,14 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Typography } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Tooltip, Typography } from '@mui/material';
 import {
     AutocompleteInput,
     CancelButton,
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
+    mergeSx,
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
@@ -49,6 +50,7 @@ import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../servi
 import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floating-popover-treeview-wrapper';
 import { isFormulaContentSizeOk } from './utils/formula-validator';
 import { MAX_FORMULA_CHARACTERS } from '../constants';
+import InfoIcon from '@mui/icons-material/Info';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -59,13 +61,12 @@ export type ColumnCreationDialogProps = {
 
 const styles = {
     dialogContent: {
-        width: '40%',
-        height: '72%',
+        width: '50%',
+        height: '80%',
         maxWidth: 'none',
         margin: 'auto',
     },
-    columnDescription: { width: '95%', marginTop: '20px', marginBottom: '20px' },
-    field: { width: '70%' },
+    field: { width: '85%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 } as const satisfies MuiStyles;
 
@@ -104,7 +105,7 @@ export default function ColumnCreationDialog({
 
     const generateColumnId = useCallback(() => {
         if (columnId === '') {
-            setValue(COLUMN_ID, watchColumnName.replace(COLUMN_NAME_REGEX, ''));
+            setValue(COLUMN_ID, watchColumnName.replaceAll(COLUMN_NAME_REGEX, ''));
         }
     }, [columnId, watchColumnName, setValue]);
 
@@ -120,6 +121,55 @@ export default function ColumnCreationDialog({
     );
 
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
+
+    const dialogTitle = (
+        <Grid container alignItems="center">
+            <Typography variant="h6">
+                <FormattedMessage
+                    id={isCreate ? 'spreadsheet/custom_column/add_columns' : 'spreadsheet/custom_column/edit_columns'}
+                />
+            </Typography>
+            <Tooltip
+                title={
+                    <FormattedMessage
+                        id="spreadsheet/custom_column/column_content_description"
+                        values={{
+                            br: () => <br />, // To have line break
+                            Link: (mathJS) => (
+                                <Link
+                                    href={MATHJS_LINK}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    underline="hover"
+                                    sx={{
+                                        color: '#90caf9', // A light blue that works well with both light/dark tooltip backgrounds
+                                        '&:hover': {
+                                            color: '#90caf9',
+                                        },
+                                    }}
+                                >
+                                    {mathJS}
+                                </Link>
+                            ),
+                        }}
+                    />
+                }
+                color="primary"
+                placement="right-start"
+                sx={{ marginLeft: 1 }}
+                componentsProps={{
+                    tooltip: {
+                        sx: {
+                            maxWidth: 500,
+                            whiteSpace: 'pre-line', // to preserves line breaks
+                        },
+                    },
+                }}
+            >
+                <InfoIcon />
+            </Tooltip>
+        </Grid>
+    );
 
     const columnType = (
         <AutocompleteInput
@@ -145,8 +195,8 @@ export default function ColumnCreationDialog({
             <ExpandingTextField
                 name={FORMULA}
                 label="spreadsheet/custom_column/column_content"
-                minRows={3}
-                rows={3}
+                minRows={7}
+                rows={7}
                 maxCharactersNumber={MAX_FORMULA_CHARACTERS}
                 sx={{ flexGrow: 1 }}
                 acceptValue={isFormulaContentSizeOk}
@@ -301,33 +351,10 @@ export default function ColumnCreationDialog({
                 aria-labelledby="custom-column-dialog-edit-title"
                 PaperProps={{ sx: styles.dialogContent }}
             >
-                <DialogTitle id="custom-column-dialog-edit-title">
-                    {intl.formatMessage({
-                        id: isCreate
-                            ? 'spreadsheet/custom_column/add_columns'
-                            : 'spreadsheet/custom_column/edit_columns',
-                    })}
-                </DialogTitle>
+                <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
                     <Grid container spacing={2} direction="column" alignItems="center">
-                        <Typography align={'justify'} sx={styles.columnDescription}>
-                            <FormattedMessage
-                                id="spreadsheet/custom_column/column_content_description"
-                                values={{
-                                    Link: (mathJS) => (
-                                        <Link
-                                            href={MATHJS_LINK}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            underline="hover"
-                                        >
-                                            {mathJS}
-                                        </Link>
-                                    ),
-                                }}
-                            />
-                        </Typography>
-                        <Grid item sx={styles.field}>
+                        <Grid item sx={mergeSx(styles.field, { marginTop: '15px' })}>
                             {columnNameField}
                         </Grid>
                         <Grid item sx={styles.field}>
