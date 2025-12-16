@@ -11,6 +11,7 @@ import { CellRender } from '../cell-render';
 import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
 import { CurrentLimits, TemporaryLimit } from 'services/network-modification-types';
 import RunningStatus from 'components/utils/running-status';
+import {CurrentLimitsData, TemporaryLimitsData} from "../../../services/study/network-map.type";
 
 /**
  * Render common characteristics Table
@@ -48,10 +49,11 @@ export const renderCommonCharacteristicsTable = (equipmentInfo: CommonBranchEqui
  */
 export const generateCurrentLimitsRows = (
     equipmentInfos: BranchEquipmentInfos,
-    currentLimits: CurrentLimits,
+    currentLimits: CurrentLimitsData,
     side: '1' | '2',
     loadFlowStatus?: RunningStatus
 ) => {
+    console.log('HMA', currentLimits);
     if (!equipmentInfos || !currentLimits) return null;
 
     return (
@@ -77,19 +79,19 @@ export const generateCurrentLimitsRows = (
                 </TableRow>
             )}
             {currentLimits?.temporaryLimits?.map(
-                (temporaryLimit: TemporaryLimit) =>
-                    temporaryLimit.value?.value && (
+                (temporaryLimit: TemporaryLimitsData) =>
+                    temporaryLimit.value && (
                         <TableRow key={temporaryLimit.name + side}>
-                            <TableCell sx={styles.cell}>{formatValue(temporaryLimit.name?.value)}</TableCell>
+                            <TableCell sx={styles.cell}>{formatValue(temporaryLimit.name)}</TableCell>
                             <TableCell sx={styles.cell}>
-                                {formatValue(Math.round(temporaryLimit.value.value))}
+                                {formatValue(Math.round(temporaryLimit.value))}
                             </TableCell>
                             <CellRender
                                 value={formatValue(
                                     Math.round(
                                         side === '1'
-                                            ? (Math.abs(equipmentInfos?.i1) * 100) / temporaryLimit.value.value
-                                            : (Math.abs(equipmentInfos?.i2) * 100) / temporaryLimit.value.value
+                                            ? (Math.abs(equipmentInfos?.i1) * 100) / temporaryLimit.value
+                                            : (Math.abs(equipmentInfos?.i2) * 100) / temporaryLimit.value
                                     )
                                 )}
                                 colStyle={cellWithStatus(loadFlowStatus)}
