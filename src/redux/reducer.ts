@@ -19,6 +19,9 @@ import {
     LOGOUT_ERROR,
     type LogoutErrorAction,
     type NetworkVisualizationParameters,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
     type ShowAuthenticationRouterLoginAction,
@@ -240,11 +243,8 @@ import {
 } from './session-storage/local-storage';
 import {
     PARAM_COMPUTED_LANGUAGE,
-    PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
-    PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
 } from '../utils/config-params';
