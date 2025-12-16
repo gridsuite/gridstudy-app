@@ -150,9 +150,9 @@ export const formatMapInfosToTemporaryLimitsFormSchema = (
 ): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimitsData) => {
         return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME],
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE],
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION],
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
         };
     });
 
