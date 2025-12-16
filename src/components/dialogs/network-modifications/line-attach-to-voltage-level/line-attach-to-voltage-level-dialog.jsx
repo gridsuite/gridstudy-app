@@ -209,8 +209,8 @@ const LineAttachToVoltageLevelDialog = ({
             return new Promise(() => {
                 const preparedLine = {
                     type: MODIFICATION_TYPES.LINE_CREATION.type,
-                    lineId: lineCreationInfo.lineId,
-                    lineName: lineCreationInfo.lineName,
+                    equipmentId: lineCreationInfo.lineId,
+                    equipmentName: lineCreationInfo.lineName,
                     r: lineCreationInfo.r,
                     x: lineCreationInfo.x,
                     g1: lineCreationInfo.g1,
