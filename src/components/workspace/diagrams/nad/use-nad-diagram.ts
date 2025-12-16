@@ -19,8 +19,8 @@ import { updatePanelMetadata as updatePanelMetadataAction } from '../../../../re
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
-import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
 import { useSavedNadConfig } from './use-saved-nad-config';
+import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 import { selectPanelMetadata } from '../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../redux/store';
 
@@ -41,6 +41,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const { snackError } = useSnackMessage();
+    const { baseVoltagesConfig } = useBaseVoltages();
 
     const [diagram, setDiagram] = useState<NetworkAreaDiagram>(() => ({
         type: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -185,7 +186,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                               }),
                         nadPositionsGenerationMode:
                             networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
-                        baseVoltagesConfigInfos: getBaseVoltagesConfig(),
+                        baseVoltagesConfigInfos: baseVoltagesConfig,
                     }),
                 };
 
@@ -202,6 +203,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
+        baseVoltagesConfig,
         networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
         diagramMetadata?.savedWorkspaceConfigUuid,
         processSvgData,
