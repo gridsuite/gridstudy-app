@@ -294,8 +294,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             </MenuItem>
                         </Select>
                     )}
-                    {(tabIndex === NMK_RESULTS_TAB_INDEX ||
-                        (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
+                    {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
