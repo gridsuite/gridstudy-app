@@ -43,7 +43,7 @@ import { NodeCopyType } from './network-modification.type';
 import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
 import useExportSubscription from '../hooks/use-export-subscription';
 import { exportNetworkFile } from '../services/study/network.js';
-import { useCopiedNodes, useNodeCopyBroadcastChannel } from 'hooks/copy-paste/use-copied-nodes';
+import { useCopiedNodes } from 'hooks/copy-paste/use-copied-nodes';
 
 export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
@@ -447,6 +447,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         } else {
             cleanCurrentTabClipboard();
             cleanOtherTabsClipboard();
+        }
     };
 
     const handlePasteSubtree = useCallback(
@@ -469,7 +470,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, dispatch, snackError]
+        [studyUuid, cleanCurrentTabClipboard, snackError]
     );
 
     return (
