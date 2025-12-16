@@ -16,18 +16,24 @@ export const VoltageLevelPopoverInfos = ({ equipmentInfos }: { equipmentInfos?: 
             <TableContainer>
                 <Table size="small" sx={styles.layout}>
                     <TableRow>
-                        <CellRender isLabel={true} label="Umin" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                         <CellRender
                             isLabel={true}
-                            label={formatValue(equipmentInfos?.umin, 2)}
+                            label="tooltip.umin"
+                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                        />
+                        <CellRender
+                            value={formatValue(equipmentInfos?.umin, 2)}
                             colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                         />
                     </TableRow>
                     <TableRow>
-                        <CellRender isLabel={true} label="Umax" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                         <CellRender
                             isLabel={true}
-                            label={formatValue(equipmentInfos?.umax, 2)}
+                            label="tooltip.umax"
+                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                        />
+                        <CellRender
+                            value={formatValue(equipmentInfos?.umax, 2)}
                             colStyle={{ ...styles.cell, fontWeight: 'bold' }}
                         />
                     </TableRow>

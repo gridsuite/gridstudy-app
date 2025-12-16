@@ -9,7 +9,6 @@ import { Grid, TableRow } from '@mui/material';
 import { VoltageLevelTooltipBusInfos } from '../equipment-popover-type';
 import { CellRender } from '../cell-render';
 import { formatValue, styles as genericStyles } from '../generic-equipment-popover-utils';
-import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
@@ -23,7 +22,6 @@ const styles = {
 };
 
 export const VoltageLevelPopoverBusInfos = ({ buses }: { buses?: VoltageLevelTooltipBusInfos[] }) => {
-    const intl = useIntl();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus.LOAD_FLOW);
     const shortcircuitStatus = useSelector((state: AppState) => state.computingStatus.SHORT_CIRCUIT);
     const isLoadflowInvalid = loadFlowStatus !== RunningStatus.SUCCEED;
@@ -44,7 +42,6 @@ export const VoltageLevelPopoverBusInfos = ({ buses }: { buses?: VoltageLevelToo
             {buses?.map((b) => (
                 <CellRender
                     key={`${label}-${b.id}`}
-                    isLabel={false}
                     value={formatValue(valueGetter(b), 2)}
                     colStyle={{ ...genericStyles.cell, ...rowSpecificStyle }}
                 />
@@ -57,42 +54,33 @@ export const VoltageLevelPopoverBusInfos = ({ buses }: { buses?: VoltageLevelToo
             <TableRow>
                 <CellRender isLabel={true} label="" colStyle={{ ...genericStyles.cell, fontWeight: 'bold' }} />
                 {buses?.map((b) => (
-                    <CellRender
-                        key={b.id}
-                        isLabel={true}
-                        label={`${b.id}`}
-                        colStyle={{ ...genericStyles.cell, fontWeight: 'bold' }}
-                    />
+                    <CellRender key={b.id} value={`${b.id}`} colStyle={{ ...genericStyles.cell, fontWeight: 'bold' }} />
                 ))}
             </TableRow>
 
+            {renderSpecificRow('tooltip.u', (bus) => bus.u, isLoadflowInvalid ? styles.invalidComputation : undefined)}
             {renderSpecificRow(
-                intl.formatMessage({ id: 'tooltip.u' }),
-                (bus) => bus.u,
-                isLoadflowInvalid ? styles.invalidComputation : undefined
-            )}
-            {renderSpecificRow(
-                intl.formatMessage({ id: 'tooltip.angle' }),
+                'tooltip.angle',
                 (bus) => bus.angle,
                 isLoadflowInvalid ? styles.invalidComputation : undefined
             )}
             {renderSpecificRow(
-                intl.formatMessage({ id: 'tooltip.generation' }),
+                'tooltip.generation',
                 (bus) => bus.generation,
                 isLoadflowInvalid ? styles.invalidComputation : undefined
             )}
             {renderSpecificRow(
-                intl.formatMessage({ id: 'tooltip.load' }),
+                'tooltip.load',
                 (bus) => bus.load,
                 isLoadflowInvalid ? styles.invalidComputation : undefined
             )}
             {renderSpecificRow(
-                intl.formatMessage({ id: 'tooltip.balance' }),
+                'tooltip.balance',
                 (bus) => bus.balance,
                 isLoadflowInvalid ? styles.invalidComputation : undefined
             )}
             {renderSpecificRow(
-                intl.formatMessage({ id: 'tooltip.icc' }),
+                'tooltip.icc',
                 (bus) => bus.icc / 1000,
                 isShortcircuitInvalid ? styles.invalidComputation : undefined
             )}

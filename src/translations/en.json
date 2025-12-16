@@ -1708,6 +1708,8 @@
     "ActivePower": "P (MW)",
     "reactivePowerTooltip": "Q (MVar)",
     "tooltip.u": "U (kV)",
+    "tooltip.umin": "Umin (kV)",
+    "tooltip.umax": "Umax (kV)",
     "tooltip.angle": "θ (°)",
     "tooltip.generation": "Generation (MW)",
     "tooltip.load": "Load (MW)",
