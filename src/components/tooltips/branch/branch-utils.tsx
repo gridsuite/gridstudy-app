@@ -56,7 +56,7 @@ export const generateCurrentLimitsRows = (
 
     return (
         <>
-            {currentLimits?.permanentLimit && (
+            {!!currentLimits?.permanentLimit && (
                 <TableRow key={currentLimits.permanentLimit + side}>
                     <CellRender isLabel={true} label="PermanentCurrentLimitText" colStyle={styles.cell}></CellRender>
                     <TableCell sx={styles.cell}>{formatValue(Math.round(currentLimits.permanentLimit))}</TableCell>
