@@ -7,14 +7,14 @@
 
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { AppState } from '../../../redux/reducer';
 import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, type MuiStyles, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -35,8 +35,6 @@ import {
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { useIntl } from 'react-intl/lib';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
