@@ -79,7 +79,7 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Remplacer',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Ajouter',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
-        "Vous êtes sur le point de remplacer le contenu actuel de l'onglet 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
+        "Vous êtes sur le point de remplacer le contenu actuel du panneau 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Ajouter feuille de calcul',
     'spreadsheet/create_new_spreadsheet/empty_spreadsheet_option': 'Ajouter une feuille',
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Choisir un modèle',

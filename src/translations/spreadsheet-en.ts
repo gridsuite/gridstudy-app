@@ -74,7 +74,7 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Replace',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Append',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
-        "You are about to replace the current content of the 'Spreadsheet' tab. This content will be lost if you do not save it to GridExplore first. Would you like to pursue without saving the current content?",
+        "You are about to replace the current content of the 'Spreadsheet' panel. This content will be lost if you do not save it to GridExplore first. Would you like to pursue without saving the current content?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Add spreadsheet',
     'spreadsheet/create_new_spreadsheet/empty_spreadsheet_option': 'Add a sheet',
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Select a model',
