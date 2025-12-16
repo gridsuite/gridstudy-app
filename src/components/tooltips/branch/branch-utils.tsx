@@ -11,7 +11,7 @@ import { CellRender } from '../cell-render';
 import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
 import { CurrentLimits, TemporaryLimit } from 'services/network-modification-types';
 import RunningStatus from 'components/utils/running-status';
-import {CurrentLimitsData, TemporaryLimitsData} from "../../../services/study/network-map.type";
+import { CurrentLimitsData, TemporaryLimitsData } from '../../../services/study/network-map.type';
 
 /**
  * Render common characteristics Table
@@ -83,9 +83,7 @@ export const generateCurrentLimitsRows = (
                     temporaryLimit.value && (
                         <TableRow key={temporaryLimit.name + side}>
                             <TableCell sx={styles.cell}>{formatValue(temporaryLimit.name)}</TableCell>
-                            <TableCell sx={styles.cell}>
-                                {formatValue(Math.round(temporaryLimit.value))}
-                            </TableCell>
+                            <TableCell sx={styles.cell}>{formatValue(Math.round(temporaryLimit.value))}</TableCell>
                             <CellRender
                                 value={formatValue(
                                     Math.round(
