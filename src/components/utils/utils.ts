@@ -136,7 +136,7 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): T
         };
     });
 
-export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormSchema[] =>
+export const formatBackToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME]?.value,
