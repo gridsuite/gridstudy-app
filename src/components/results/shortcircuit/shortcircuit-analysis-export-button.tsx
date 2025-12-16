@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ExportCsvButton, PARAM_LANGUAGE, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import {
     ShortCircuitCsvExportParams,
@@ -18,6 +18,7 @@ import type { UUID } from 'node:crypto';
 import { BranchSide } from 'components/utils/constants';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 interface ShortCircuitExportButtonProps {
     studyUuid: UUID;
@@ -36,7 +37,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
 
     const intl = useIntl();
-    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     useEffect(() => {
