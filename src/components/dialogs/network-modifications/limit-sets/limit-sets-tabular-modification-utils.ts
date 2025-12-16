@@ -91,7 +91,7 @@ const getAmountTemporaryLimits = (editData: LimitSetModificationMetadata) => {
     return maxLength;
 };
 
-const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, amountMaxTemporaryLimits: number) => {
+export const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, amountMaxTemporaryLimits: number) => {
     const temporaryLimits = [];
     for (let i = 1; i <= amountMaxTemporaryLimits; i++) {
         if (modification[TEMPORARY_LIMIT_NAME + i]) {

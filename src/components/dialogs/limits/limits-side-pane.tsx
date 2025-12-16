@@ -36,17 +36,17 @@ import { AmpereAdornment } from '../dialog-utils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { isNodeBuilt } from '../../graph/util/model-functions';
-import { TemporaryLimit } from '../../../services/network-modification-types';
 import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 import { APPLICABILITY } from '../../network/constants';
 import { LimitsPropertiesSideStack } from './limits-properties-side-stack';
+import { TemporaryLimitsData } from '../../../services/study/network-map.type';
 
 export interface LimitsSidePaneProps {
     name?: string;
     permanentCurrentLimitPreviousValue: number | null | undefined;
-    temporaryLimitsPreviousValues: TemporaryLimit[];
+    temporaryLimitsPreviousValues: TemporaryLimitsData[];
     applicabilityPreviousValue?: string;
     clearableFields: boolean | undefined;
     currentNode?: CurrentTreeNode;
@@ -105,15 +105,15 @@ export function LimitsSidePane({
     const createRows = () => [newRowData];
 
     const temporaryLimitHasPreviousValue = useCallback(
-        (rowIndex: number, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
+        (rowIndex: number, arrayFormName: string, temporaryLimits?: TemporaryLimitsData[]) => {
             if (!temporaryLimits) {
                 return false;
             }
             return (
                 temporaryLimits?.filter(
-                    (l: TemporaryLimit) =>
-                        l.name?.value === getValues(arrayFormName)[rowIndex]?.name &&
-                        l.acceptableDuration?.value === getValues(arrayFormName)[rowIndex]?.acceptableDuration
+                    (l: TemporaryLimitsData) =>
+                        l.name === getValues(arrayFormName)[rowIndex]?.name &&
+                        l.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
                 )?.length > 0
             );
         },
@@ -121,7 +121,7 @@ export function LimitsSidePane({
     );
 
     const shouldReturnPreviousValue = useCallback(
-        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits: TemporaryLimitsData[]) => {
             return (
                 (temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                     column.dataKey === TEMPORARY_LIMIT_VALUE) ||
@@ -132,18 +132,18 @@ export function LimitsSidePane({
     );
 
     const findTemporaryLimit = useCallback(
-        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimitsData[]) => {
             return temporaryLimits?.find(
-                (e: TemporaryLimit) =>
-                    e.name?.value === getValues(arrayFormName)[rowIndex]?.name &&
-                    e.acceptableDuration?.value === getValues(arrayFormName)[rowIndex]?.acceptableDuration
+                (e: TemporaryLimitsData) =>
+                    e.name === getValues(arrayFormName)[rowIndex]?.name &&
+                    e.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
             );
         },
         [getValues]
     );
 
     const getPreviousValue = useCallback(
-        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
+        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimitsData[]) => {
             if (!temporaryLimits) {
                 return undefined;
             }
@@ -158,9 +158,9 @@ export function LimitsSidePane({
                 return undefined;
             }
             if (column.dataKey === TEMPORARY_LIMIT_VALUE) {
-                return temporaryLimit?.value?.value ?? Number.MAX_VALUE;
+                return temporaryLimit?.value ?? Number.MAX_VALUE;
             } else if (column.dataKey === TEMPORARY_LIMIT_DURATION) {
-                return temporaryLimit?.acceptableDuration?.value ?? Number.MAX_VALUE;
+                return temporaryLimit?.acceptableDuration ?? Number.MAX_VALUE;
             }
         },
         [findTemporaryLimit, shouldReturnPreviousValue]
