@@ -347,11 +347,3 @@ export const addModificationTypeToOpLimitsGroups = (
         };
     });
 };
-
-export const temporaryLimitToTemporaryLimitFormSchema = (temporaryLimit: TemporaryLimit): TemporaryLimitFormSchema => {
-    return {
-        [TEMPORARY_LIMIT_NAME]: temporaryLimit.name?.value,
-        [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration?.value,
-        [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value?.value,
-    };
-};
