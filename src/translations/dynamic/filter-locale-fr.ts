@@ -15,6 +15,8 @@ const filter_locale_fr = {
     'filter.lessThan': 'Inférieur',
     'filter.greaterThanOrEqual': 'Supérieur ou égal',
     'filter.greaterThan': 'Supérieur',
+    'filter.blank': 'Est vide',
+    'filter.notBlank': "N'est pas vide",
     'filter.filterOoo': 'Filtrer...',
     'filter.rounded': 'Précision du filtrage à',
     'filter.roundedToOne': "Précision du filtrage à l'unité.",
