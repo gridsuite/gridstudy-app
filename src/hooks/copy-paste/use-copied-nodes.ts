@@ -45,17 +45,9 @@ export const useCopiedNodes = () => {
         [dispatch]
     );
 
-    const dispatchEmptyNodeSelectionForCopy = useCallback(
-        (snackInfoMessage?: string) => {
-            if (nodeSelectionForCopyRef.current?.nodeId && snackInfoMessage) {
-                snackInfo({
-                    messageId: snackInfoMessage,
-                });
-            }
-            dispatch(setNodeSelectionForCopy(emptyNodeSelectionForCopy));
-        },
-        [dispatch, snackInfo]
-    );
+    const dispatchEmptyNodeSelectionForCopy = useCallback(() => {
+        dispatch(setNodeSelectionForCopy(emptyNodeSelectionForCopy));
+    }, [dispatch]);
 
     const [broadcastChannel] = useState(() => {
         const broadcast = nodeCopyChannel;
@@ -63,14 +55,16 @@ export const useCopiedNodes = () => {
             console.info('message received from broadcast channel: ', event.data);
             isInitiatingCopyTab.current = false;
             if (JSON.stringify(emptyNodeSelectionForCopy) === JSON.stringify(event.data.nodeToCopy)) {
-                dispatchEmptyNodeSelectionForCopy(event.data.message);
+                cleanCurrentTabClipboard(event.data.message);
             } else {
                 dispatchNodeSelectionForCopy(
                     event.data.nodeToCopy.sourceStudyUuid,
                     event.data.nodeToCopy.nodeId,
                     event.data.nodeToCopy.copyType
                 );
-                snackInfo({ messageId: event.data.message });
+                if (event.data.message) {
+                    snackInfo({ messageId: event.data.message });
+                }
             }
         };
         return broadcast;
@@ -78,9 +72,14 @@ export const useCopiedNodes = () => {
 
     const cleanCurrentTabClipboard = useCallback(
         (snackInfoMessage?: string) => {
-            dispatchEmptyNodeSelectionForCopy(snackInfoMessage);
+            if (nodeSelectionForCopyRef.current?.nodeId && snackInfoMessage) {
+                snackInfo({
+                    messageId: snackInfoMessage,
+                });
+            }
+            dispatchEmptyNodeSelectionForCopy();
         },
-        [dispatchEmptyNodeSelectionForCopy]
+        [dispatchEmptyNodeSelectionForCopy, snackInfo]
     );
 
     const cleanOtherTabsClipboard = useCallback(
@@ -96,31 +95,35 @@ export const useCopiedNodes = () => {
         [broadcastChannel]
     );
 
-    const cleanClipboard = useCallback(() => {
-        cleanCurrentTabClipboard('copiedNodeInvalidationMsg');
-        cleanOtherTabsClipboard('copiedNodeInvalidationMsgFromOtherStudy');
-    }, [cleanCurrentTabClipboard, cleanOtherTabsClipboard]);
+    const cleanClipboard = useCallback(
+        (showSnackInfo = true, snackInfoMessage?: string) => {
+            cleanCurrentTabClipboard(showSnackInfo ? (snackInfoMessage ?? 'copiedNodeInvalidationMsg') : undefined);
+            cleanOtherTabsClipboard(
+                showSnackInfo ? (snackInfoMessage ?? 'copiedNodeInvalidationMsgFromOtherStudy') : undefined
+            );
+        },
+        [cleanCurrentTabClipboard, cleanOtherTabsClipboard]
+    );
 
-    const copyToCurrentTabNode = (sourceStudyUuid: UUID, nodeId: UUID, copyType: CopyType) => {
-        dispatchNodeSelectionForCopy(sourceStudyUuid, nodeId, copyType);
+    const copyNode = (sourceStudyUuid: UUID, nodeId: UUID, copyType: CopyType) => {
         isInitiatingCopyTab.current = true;
-    };
-
-    const copyToAllTabsNetworkModifications = (sourceStudyUuid: UUID, nodeId: UUID, copyType: CopyType) => {
-        copyToCurrentTabNode(sourceStudyUuid, nodeId, copyType);
+        dispatchNodeSelectionForCopy(sourceStudyUuid, nodeId, copyType);
         broadcastChannel.postMessage({
             nodeToCopy: { sourceStudyUuid: sourceStudyUuid, nodeId: nodeId, copyType: copyType },
             message: 'copiedNodeUpdateMsg',
         });
     };
 
+    const cutNode = (sourceStudyUuid: UUID, nodeId: UUID, copyType: CopyType) => {
+        isInitiatingCopyTab.current = true;
+        dispatchNodeSelectionForCopy(sourceStudyUuid, nodeId, copyType);
+        cleanOtherTabsClipboard('copiedNodeInvalidationMsgFromOtherStudy');
+    };
+
     return {
         selectionForCopy,
-        copyToCurrentTabNode,
-        copyToAllTabsNetworkModifications,
-        dispatchEmptyNodeSelectionForCopy,
-        cleanCurrentTabClipboard,
-        cleanOtherTabsClipboard,
+        copyNode,
+        cutNode,
         cleanClipboard,
     };
 };

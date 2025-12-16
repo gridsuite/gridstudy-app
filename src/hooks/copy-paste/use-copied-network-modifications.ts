@@ -53,17 +53,9 @@ export const useCopiedNetworkModifications = () => {
         [dispatch]
     );
 
-    const dispatchEmptyCopiedNetworkModifications = useCallback(
-        (snackInfoMessage?: string) => {
-            if (copyInfos?.originStudyUuid && snackInfoMessage) {
-                snackInfo({
-                    messageId: snackInfoMessage,
-                });
-            }
-            dispatch(setCopiedNetworkModifications(emptyCopiedNetworkModificationsSelection));
-        },
-        [copyInfos?.originStudyUuid, dispatch, snackInfo]
-    );
+    const dispatchEmptyCopiedNetworkModifications = useCallback(() => {
+        dispatch(setCopiedNetworkModifications(emptyCopiedNetworkModificationsSelection));
+    }, [dispatch]);
 
     const cleanCurrentTabClipboard = useCallback(
         (snackInfoMessage?: string) => {
@@ -90,9 +82,13 @@ export const useCopiedNetworkModifications = () => {
     );
 
     const cleanClipboard = useCallback(
-        (snackInfoMessage?: string) => {
-            cleanCurrentTabClipboard(snackInfoMessage ?? 'copiedModificationsInvalidationMsg');
-            cleanOtherTabsClipboard(snackInfoMessage ?? 'copiedModificationsInvalidationMsgFromOtherStudy');
+        (showSnackInfo = true, snackInfoMessage?: string) => {
+            cleanCurrentTabClipboard(
+                showSnackInfo ? (snackInfoMessage ?? 'copiedModificationsInvalidationMsg') : undefined
+            );
+            cleanOtherTabsClipboard(
+                showSnackInfo ? (snackInfoMessage ?? 'copiedModificationsInvalidationMsgFromOtherStudy') : undefined
+            );
         },
         [cleanCurrentTabClipboard, cleanOtherTabsClipboard]
     );
@@ -109,7 +105,7 @@ export const useCopiedNetworkModifications = () => {
     const cutNetworkModifications = (copiedNetworkModifications: CopiedNetworkModifications) => {
         isInitiatingCopyTab.current = true;
         dispatchCopiedNetworkModifications(copiedNetworkModifications);
-        cleanOtherTabsClipboard('copiedModificationsInvalidationMsg');
+        cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromOtherStudy');
     };
 
     return {

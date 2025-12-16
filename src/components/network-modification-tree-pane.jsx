@@ -50,15 +50,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
     const [nodesToRestore, setNodesToRestore] = useState([]);
 
-    const {
-        selectionForCopy,
-        copyToCurrentTabNode,
-        copyToAllTabsNetworkModifications,
-        dispatchEmptyNodeSelectionForCopy,
-        cleanCurrentTabClipboard,
-        cleanOtherTabsClipboard,
-        cleanClipboard,
-    } = useCopiedNodes();
+    const { selectionForCopy, copyNode, cutNode, cleanClipboard } = useCopiedNodes();
     const nodeSelectionForCopyRef = useRef();
     nodeSelectionForCopyRef.current = selectionForCopy;
 
@@ -70,10 +62,10 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', () => {
-            cleanOtherTabsClipboard('copiedNodeInvalidationMsgFromStudyClosure');
+            cleanClipboard('copiedNodeInvalidationMsgFromStudyClosure');
         });
         //broadcastChannel doesn't change
-    }, [cleanOtherTabsClipboard]);
+    }, [cleanClipboard]);
 
     const [activeNode, setActiveNode] = useState(null);
 
@@ -315,16 +307,14 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const handleCopyNode = (nodeId) => {
         console.info('node with id ' + nodeId + ' from study ' + studyUuid + ' selected for copy');
-        copyToAllTabsNetworkModifications(studyUuid, nodeId, CopyType.NODE_COPY);
+        copyNode(studyUuid, nodeId, CopyType.NODE_COPY);
     };
 
     const handleCutNode = (nodeId) => {
         if (nodeId) {
-            copyToCurrentTabNode(studyUuid, nodeId, CopyType.NODE_CUT);
-            cleanOtherTabsClipboard('copiedNodeInvalidationMsgFromOtherStudy');
+            cutNode(studyUuid, nodeId, CopyType.NODE_CUT);
         } else {
-            cleanCurrentTabClipboard();
-            cleanOtherTabsClipboard();
+            cleanClipboard();
         }
     };
 
@@ -337,7 +327,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     }
                 );
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
-                dispatchEmptyNodeSelectionForCopy();
+                cleanClipboard(false);
             } else if (CopyType.NODE_COPY === nodeSelectionForCopyRef.current.copyType) {
                 copyTreeNode(
                     nodeSelectionForCopyRef.current.sourceStudyUuid,
@@ -351,7 +341,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, dispatchEmptyNodeSelectionForCopy, snackError]
+        [studyUuid, cleanClipboard, snackError]
     );
 
     const handleRemoveNode = useCallback(
@@ -437,16 +427,14 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const handleCopySubtree = (nodeId) => {
         console.info('node with id ' + nodeId + ' from study ' + studyUuid + ' selected for copy');
-        copyToAllTabsNetworkModifications(studyUuid, nodeId, CopyType.SUBTREE_COPY);
+        copyNode(studyUuid, nodeId, CopyType.SUBTREE_COPY);
     };
 
     const handleCutSubtree = (nodeId) => {
         if (nodeId) {
-            copyToCurrentTabNode(studyUuid, nodeId, CopyType.SUBTREE_CUT);
-            cleanOtherTabsClipboard('copiedNodeInvalidationMsgFromOtherStudy');
+            cutNode(studyUuid, nodeId, CopyType.SUBTREE_CUT);
         } else {
-            cleanCurrentTabClipboard();
-            cleanOtherTabsClipboard();
+            cleanClipboard();
         }
     };
 
@@ -457,7 +445,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
                 });
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
-                cleanCurrentTabClipboard();
+                cleanClipboard(false);
             } else if (CopyType.SUBTREE_COPY === nodeSelectionForCopyRef.current.copyType) {
                 copySubtree(
                     nodeSelectionForCopyRef.current.sourceStudyUuid,
@@ -470,7 +458,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, cleanCurrentTabClipboard, snackError]
+        [studyUuid, cleanClipboard, snackError]
     );
 
     return (
