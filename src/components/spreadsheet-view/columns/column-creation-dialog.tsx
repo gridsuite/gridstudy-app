@@ -14,7 +14,6 @@ import {
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
-    mergeSx,
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
@@ -61,12 +60,12 @@ export type ColumnCreationDialogProps = {
 
 const styles = {
     dialogContent: {
-        width: '50%',
-        height: '80%',
-        maxWidth: 'none',
-        margin: 'auto',
+        width: '45vw',
+        maxWidth: '45vw',
+        display: 'flex',
+        flexDirection: 'column',
     },
-    field: { width: '85%' },
+    field: { width: '90%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 } as const satisfies MuiStyles;
 
@@ -163,7 +162,7 @@ export default function ColumnCreationDialog({
                             />
                         }
                         color="primary"
-                        placement="right-end"
+                        placement="left-end"
                         sx={{ marginLeft: 1 }}
                         componentsProps={{
                             tooltip: {
@@ -205,8 +204,8 @@ export default function ColumnCreationDialog({
             <ExpandingTextField
                 name={FORMULA}
                 label="spreadsheet/custom_column/column_content"
-                minRows={7}
-                rows={7}
+                minRows={8}
+                rows={8}
                 maxCharactersNumber={MAX_FORMULA_CHARACTERS}
                 sx={{ flexGrow: 1 }}
                 acceptValue={isFormulaContentSizeOk}
@@ -377,7 +376,7 @@ export default function ColumnCreationDialog({
                 <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
                     <Grid container spacing={2} direction="column" alignItems="center">
-                        <Grid item sx={mergeSx(styles.field, { marginTop: '15px' })}>
+                        <Grid item sx={styles.field}>
                             {columnNameField}
                         </Grid>
                         <Grid item sx={styles.field}>
