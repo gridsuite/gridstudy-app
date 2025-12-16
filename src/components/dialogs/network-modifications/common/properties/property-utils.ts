@@ -200,3 +200,5 @@ const checkUniquePropertyNames = (
     const validValues = properties.filter((v) => v.name);
     return validValues.length === new Set(validValues.map((v) => v.name)).size;
 };
+export const getPropertyValue = (properties: Record<string, string> | undefined, keyName: string): string | undefined =>
+    properties?.[keyName];

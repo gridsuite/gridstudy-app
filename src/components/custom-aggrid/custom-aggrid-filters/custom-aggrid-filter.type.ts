@@ -24,6 +24,8 @@ export enum FILTER_TEXT_COMPARATORS {
     EQUALS = 'equals',
     CONTAINS = 'contains',
     STARTS_WITH = 'startsWith',
+    IS_EMPTY = 'blank',
+    IS_NOT_EMPTY = 'notBlank',
 }
 
 export enum FILTER_NUMBER_COMPARATORS {
@@ -31,6 +33,15 @@ export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
     GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
+}
+
+export enum SPREADSHEET_FILTER_NUMBER_COMPARATORS {
+    EQUALS = 'equals',
+    NOT_EQUAL = 'notEqual',
+    LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
+    GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
+    IS_EMPTY = 'blank',
+    IS_NOT_EMPTY = 'notBlank',
 }
 
 // not visible in the base interface :
