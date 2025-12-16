@@ -26,6 +26,7 @@ import {
     deletePanel,
     closeOrHidePanel,
     findNadForSld,
+    findAssociatedSldIds,
     getDefaultAssociatedSldPositionAndSize,
 } from './workspace-helpers';
 import { NAD_SLD_CONSTANTS } from '../../components/workspace/panel-contents/diagrams/nad/constants';
@@ -448,13 +449,7 @@ const workspacesSlice = createSlice({
             const nadPanelId = action.payload;
             const workspace = getActiveWorkspace(state);
 
-            // Find all SLDs that have this NAD as parent
-            const associatedPanelIds = Object.values(workspace.panels)
-                .filter((panel) => {
-                    const metadata = panel.metadata as SLDPanelMetadata | undefined;
-                    return metadata?.parentNadPanelId === nadPanelId;
-                })
-                .map((panel) => panel.id);
+            const associatedPanelIds = findAssociatedSldIds(workspace, nadPanelId);
 
             // Close (hide) all associated SLD panels, preserving their state
             associatedPanelIds.forEach((sldPanelId) => {
@@ -469,13 +464,7 @@ const workspacesSlice = createSlice({
             const nadPanelId = action.payload;
             const workspace = getActiveWorkspace(state);
 
-            // Find all SLDs that have this NAD as parent
-            const associatedPanelIds = Object.values(workspace.panels)
-                .filter((panel) => {
-                    const metadata = panel.metadata as SLDPanelMetadata | undefined;
-                    return metadata?.parentNadPanelId === nadPanelId;
-                })
-                .map((panel) => panel.id);
+            const associatedPanelIds = findAssociatedSldIds(workspace, nadPanelId);
 
             // Delete all associated SLD panels
             associatedPanelIds.forEach((sldPanelId) => {

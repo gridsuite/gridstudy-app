@@ -35,6 +35,16 @@ export const findNadForSld = (workspace: Workspace, sldPanelId: UUID): UUID | nu
     return (sldPanel.metadata as SLDPanelMetadata | undefined)?.parentNadPanelId ?? null;
 };
 
+// Find all SLD panel IDs associated with a NAD panel
+export const findAssociatedSldIds = (workspace: Workspace, nadPanelId: UUID): UUID[] => {
+    return Object.values(workspace.panels)
+        .filter((panel) => {
+            const metadata = panel.metadata as SLDPanelMetadata | undefined;
+            return metadata?.parentNadPanelId === nadPanelId;
+        })
+        .map((panel) => panel.id);
+};
+
 // Calculate default position/size for SLD panels associated with NAD
 export const getDefaultAssociatedSldPositionAndSize = () => ({
     position: {
@@ -201,13 +211,7 @@ export const closeOrHidePanel = (workspace: Workspace, panelId: UUID): void => {
 
     // If closing a NAD panel, delete all associated SLDs
     if (panel.type === PanelType.NAD) {
-        // Find all SLDs that have this NAD as parent
-        const associatedSldIds = Object.values(workspace.panels)
-            .filter((p) => {
-                const metadata = p.metadata as SLDPanelMetadata | undefined;
-                return metadata?.parentNadPanelId === panelId;
-            })
-            .map((p) => p.id);
+        const associatedSldIds = findAssociatedSldIds(workspace, panelId);
 
         associatedSldIds.forEach((sldPanelId) => {
             deletePanel(workspace, sldPanelId);
