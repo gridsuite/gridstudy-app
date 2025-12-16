@@ -126,7 +126,6 @@ export const formatOperationalLimitGroupsFrontToBack = (
     modification: ModificationRow,
     amountMaxTemporaryLimits: number
 ) => {
-    console.log(formatTemporaryLimitsFrontToBack(modification, amountMaxTemporaryLimits));
     return {
         id: modification[LIMIT_GROUP_NAME],
         applicability: modification[SIDE],
