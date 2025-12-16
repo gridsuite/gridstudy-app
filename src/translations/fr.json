@@ -1714,5 +1714,7 @@
     "MinimumActivePowerTooltip": "Pmin (MW)",
     "MaximumActivePowerTooltip": "Pmax (MW)",
     "MinimumReactivePowerTooltip": "Pmin (MW)",
-    "MaximumReactivePowerTooltip": "Pmax (MW)"
+    "MaximumReactivePowerTooltip": "Pmax (MW)",
+    "ConsQ": "Qcons (Mvar)",
+    "ConsP": "Pcons (MW)"
 }
