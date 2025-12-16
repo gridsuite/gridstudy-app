@@ -53,7 +53,6 @@ export const generateCurrentLimitsRows = (
     side: '1' | '2',
     loadFlowStatus?: RunningStatus
 ) => {
-    console.log('HMA', currentLimits);
     if (!equipmentInfos || !currentLimits) return null;
 
     return (
