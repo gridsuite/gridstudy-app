@@ -10,6 +10,7 @@ import {
     CustomMuiDialog,
     fetchDirectoryElementPath,
     Parameter,
+    PARAM_DEVELOPER_MODE,
     SelectInput,
     snackWithFallback,
     TextInput,
@@ -18,7 +19,6 @@ import {
 import { ExportFormatProperties, getAvailableExportFormats } from '../../../services/study';
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import { useParameterState } from '../parameters/use-parameters-state';
 import { AppState } from '../../../redux/reducer';
 

@@ -17,6 +17,7 @@ import type { UUID } from 'node:crypto';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
+import { SldAssociationButton } from './sld-association-button';
 
 const getHeaderStyles = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
     let backgroundColor: string;
@@ -125,6 +126,9 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                 >
                     {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                 </IconButton>
+                {panelType === PanelType.SLD_VOLTAGE_LEVEL && (
+                    <SldAssociationButton panelId={panelId} title={title} iconButtonStyles={styles.iconButton} />
+                )}
                 {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
                     panelType === PanelType.SLD_SUBSTATION ||
                     panelType === PanelType.NAD) && (

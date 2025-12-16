@@ -5,79 +5,79 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import App from './app';
 import {
     createTheme,
     CssBaseline,
-    responsiveFontSizes,
-    ThemeProvider,
-    StyledEngineProvider,
     GlobalStyles,
+    responsiveFontSizes,
+    StyledEngineProvider,
+    ThemeProvider,
 } from '@mui/material';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
-    LIGHT_THEME,
-    LANG_FRENCH,
+    businessErrorsEn,
+    businessErrorsFr,
     CardErrorBoundary,
-    loginEn,
-    loginFr,
-    reportViewerEn,
-    reportViewerFr,
-    SnackbarProvider,
-    topBarEn,
-    topBarFr,
-    tableEn,
-    tableFr,
+    cardErrorBoundaryEn,
+    cardErrorBoundaryFr,
+    commonButtonEn,
+    commonButtonFr,
+    componentsEn,
+    componentsFr,
+    directoryItemsInputEn,
+    directoryItemsInputFr,
+    dndTableEn,
+    dndTableFr,
     elementSearchEn,
     elementSearchFr,
-    filterExpertEn,
-    filterExpertFr,
     equipmentSearchEn,
     equipmentSearchFr,
+    equipmentsEn,
+    equipmentsFr,
     equipmentShortEn,
     equipmentShortFr,
     equipmentTagEn,
     equipmentTagFr,
-    directoryItemsInputEn,
-    directoryItemsInputFr,
-    treeviewFinderEn,
-    treeviewFinderFr,
-    cardErrorBoundaryEn,
-    cardErrorBoundaryFr,
-    flatParametersEn,
-    flatParametersFr,
-    multipleSelectionDialogEn,
-    multipleSelectionDialogFr,
-    commonButtonEn,
-    commonButtonFr,
-    componentsFr,
-    componentsEn,
-    dndTableFr,
-    dndTableEn,
-    equipmentsEn,
-    equipmentsFr,
-    networkModificationsEn,
-    networkModificationsFr,
-    importParamsEn,
-    importParamsFr,
-    exportParamsEn,
-    exportParamsFr,
-    parametersEn,
-    parametersFr,
-    useUniqueNameValidationEn,
-    useUniqueNameValidationFr,
-    filterEn,
-    filterFr,
-    NotificationsProvider,
-    MAP_BASEMAP_MAPBOX,
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
-    businessErrorsFr,
-    businessErrorsEn,
-    fetchBaseVoltages,
     errorsEn,
     errorsFr,
+    exportParamsEn,
+    exportParamsFr,
+    filterEn,
+    filterExpertEn,
+    filterExpertFr,
+    filterFr,
+    flatParametersEn,
+    flatParametersFr,
+    importParamsEn,
+    importParamsFr,
+    LANG_FRENCH,
+    LIGHT_THEME,
+    loginEn,
+    loginFr,
+    MAP_BASEMAP_CARTO,
+    MAP_BASEMAP_CARTO_NOLABEL,
+    MAP_BASEMAP_MAPBOX,
+    multipleSelectionDialogEn,
+    multipleSelectionDialogFr,
+    networkModificationsEn,
+    networkModificationsFr,
+    NotificationsProvider,
+    PARAM_THEME,
+    parametersEn,
+    parametersFr,
+    reportViewerEn,
+    reportViewerFr,
+    SnackbarProvider,
+    tableEn,
+    tableFr,
+    topBarEn,
+    topBarFr,
+    treeviewFinderEn,
+    treeviewFinderFr,
+    useUniqueNameValidationEn,
+    useUniqueNameValidationFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -108,13 +108,12 @@ import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import base_voltages_fr from '../translations/external/base-voltages-fr';
 import base_voltages_en from '../translations/external/base-voltages-en';
-import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
+import { basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
-import { lightThemeCssVars } from '../styles/light-theme-css-vars';
-import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
-import { getBaseVoltagesCssVars } from 'utils/colors';
-import { saveLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
+import { getBaseVoltagesCssVars } from '../utils/colors.ts';
+import { lightThemeCssVars } from '../styles/light-theme-css-vars.ts';
+import { darkThemeCssVars } from '../styles/dark-theme-css-vars.ts';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -472,20 +471,15 @@ const AppWrapperWithRedux = () => {
     const computedLanguage = useSelector((state) => state.computedLanguage);
     const theme = useSelector((state) => state[PARAM_THEME]);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
-
-    useEffect(() => {
-        fetchBaseVoltages().then((appMetadataBaseVoltages) => {
-            saveLocalStorageBaseVoltages(appMetadataBaseVoltages);
-        });
-    }, []);
+    const baseVoltages = useSelector((state) => state.baseVoltages);
 
     const rootCssVars = useMemo(() => {
         const themeVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
         return {
             ...themeVars,
-            ...getBaseVoltagesCssVars(theme),
+            ...getBaseVoltagesCssVars(theme, baseVoltages),
         };
-    }, [theme]);
+    }, [theme, baseVoltages]);
 
     const urlMapper = useNotificationsUrlGenerator();
 

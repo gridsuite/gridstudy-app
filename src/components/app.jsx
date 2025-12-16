@@ -20,6 +20,9 @@ import {
     initializeAuthenticationProd,
     LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
     useNotificationsListener,
     useSnackMessage,
     getComputedLanguage,
@@ -27,14 +30,7 @@ import {
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
-import {
-    APP_NAME,
-    PARAM_DEVELOPER_MODE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LANGUAGE,
-    PARAM_THEME,
-    PARAM_USE_NAME,
-} from '../utils/config-params';
+import { APP_NAME, PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
@@ -68,6 +64,7 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
+import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -163,6 +160,8 @@ const App = () => {
     });
 
     useStudyNavigationSync();
+
+    useBaseVoltages();
 
     const networkVisuParamsUpdated = useCallback(
         (event) => {

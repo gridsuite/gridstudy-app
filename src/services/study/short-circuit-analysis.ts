@@ -10,7 +10,7 @@ import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
-import { GsLang, backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { GsLangUser, backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 import { Selector } from 'components/results/common/utils';
@@ -184,7 +184,7 @@ export function fetchShortCircuitAnalysisPagedResults({
 export type ShortCircuitCsvExportParams = {
     csvHeader: string[] | undefined;
     enumValueTranslations: Record<string, string>;
-    language: GsLang;
+    language: GsLangUser;
     oneBusCase: boolean;
 };
 
