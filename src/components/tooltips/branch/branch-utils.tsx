@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
-import { BranchEquipmentInfos, CommonBranchEquipmentInfos } from '../equipment-popover-type';
-import { CellRender } from '../cell-render';
-import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
-import { CurrentLimits, TemporaryLimit } from 'services/network-modification-types';
+import {Table, TableBody, TableCell, TableContainer, TableRow} from '@mui/material';
+import {BranchEquipmentInfos, CommonBranchEquipmentInfos} from '../equipment-popover-type';
+import {CellRender} from '../cell-render';
+import {cellWithStatus, formatValue, styles} from '../generic-equipment-popover-utils';
 import RunningStatus from 'components/utils/running-status';
-import { CurrentLimitsData, TemporaryLimitsData } from '../../../services/study/network-map.type';
+import {CurrentLimitsData, TemporaryLimitsData} from '../../../services/study/network-map.type';
 
 /**
  * Render common characteristics Table
