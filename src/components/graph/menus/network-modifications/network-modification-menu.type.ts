@@ -44,7 +44,6 @@ export interface NetworkModificationMetadata {
     date: Date;
     stashed: boolean;
     activated: boolean;
-    description: string;
     messageType: string;
     messageValues: string;
 }
