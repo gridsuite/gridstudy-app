@@ -5,22 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    PARAM_DEVELOPER_MODE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LANGUAGE,
-    PARAM_THEME,
-    PARAM_USE_NAME,
-    PARAMS_LOADED,
-} from '../utils/config-params';
+import { PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import type { Action } from 'redux';
 import {
+    BaseVoltage,
     ComputingType,
     type GsLang,
     type GsLangUser,
     type GsTheme,
     type Identifiable,
     type NetworkVisualizationParameters,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { UnknownArray } from 'type-fest';
@@ -706,6 +703,18 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[])
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
+    };
+}
+
+export const SET_BASE_VOLTAGE_LIST = 'SET_BASE_VOLTAGE_LIST';
+export type SetBaseVoltageListAction = Readonly<Action<typeof SET_BASE_VOLTAGE_LIST>> & {
+    baseVoltages: BaseVoltage[];
+};
+
+export function setBaseVoltageList(baseVoltageList: BaseVoltage[]): SetBaseVoltageListAction {
+    return {
+        type: SET_BASE_VOLTAGE_LIST,
+        baseVoltages: baseVoltageList,
     };
 }
 
