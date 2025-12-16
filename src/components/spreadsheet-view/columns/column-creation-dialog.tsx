@@ -123,51 +123,61 @@ export default function ColumnCreationDialog({
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
 
     const dialogTitle = (
-        <Grid container alignItems="center">
-            <Typography variant="h6">
-                <FormattedMessage
-                    id={isCreate ? 'spreadsheet/custom_column/add_columns' : 'spreadsheet/custom_column/edit_columns'}
-                />
-            </Typography>
-            <Tooltip
-                title={
+        <Grid container spacing={2} justifyContent={'space-between'} alignItems="center">
+            <Grid item xs={6}>
+                <Typography variant="h6">
                     <FormattedMessage
-                        id="spreadsheet/custom_column/column_content_description"
-                        values={{
-                            br: () => <br />, // To have line break
-                            Link: (mathJS) => (
-                                <Link
-                                    href={MATHJS_LINK}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    underline="hover"
-                                    sx={{
-                                        color: '#90caf9', // A light blue that works well with both light/dark tooltip backgrounds
-                                        '&:hover': {
-                                            color: '#90caf9',
-                                        },
-                                    }}
-                                >
-                                    {mathJS}
-                                </Link>
-                            ),
-                        }}
+                        id={
+                            isCreate
+                                ? 'spreadsheet/custom_column/add_columns'
+                                : 'spreadsheet/custom_column/edit_columns'
+                        }
                     />
-                }
-                color="primary"
-                placement="right-start"
-                sx={{ marginLeft: 1 }}
-                componentsProps={{
-                    tooltip: {
-                        sx: {
-                            maxWidth: 500,
-                            whiteSpace: 'pre-line', // to preserves line breaks
-                        },
-                    },
-                }}
-            >
-                <InfoIcon />
-            </Tooltip>
+                </Typography>
+            </Grid>
+            <Grid item xs={6} container spacing={2} justifyContent={'right'}>
+                <Grid item>
+                    <Tooltip
+                        title={
+                            <FormattedMessage
+                                id="spreadsheet/custom_column/column_content_description"
+                                values={{
+                                    br: () => <br />, // To have line break
+                                    Link: (mathJS) => (
+                                        <Link
+                                            href={MATHJS_LINK}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            underline="hover"
+                                            sx={{
+                                                color: '#90caf9', // A light blue that works well with both light/dark tooltip backgrounds
+                                                '&:hover': {
+                                                    color: '#90caf9',
+                                                },
+                                            }}
+                                        >
+                                            {mathJS}
+                                        </Link>
+                                    ),
+                                }}
+                            />
+                        }
+                        color="primary"
+                        placement="right-end"
+                        sx={{ marginLeft: 1 }}
+                        componentsProps={{
+                            tooltip: {
+                                sx: {
+                                    maxWidth: 500,
+                                    whiteSpace: 'pre-line', // to preserves line breaks
+                                },
+                            },
+                        }}
+                    >
+                        <InfoIcon />
+                    </Tooltip>
+                </Grid>
+            </Grid>
         </Grid>
     );
 
@@ -202,6 +212,19 @@ export default function ColumnCreationDialog({
                 acceptValue={isFormulaContentSizeOk}
             />
         </FloatingPopoverTreeviewWrapper>
+    );
+
+    const dependenciesField = (
+        <MultipleAutocompleteInput
+            label="spreadsheet/custom_column/column_dependencies"
+            name={COLUMN_DEPENDENCIES}
+            options={columnsDefinitions?.map((definition) => definition.id).filter((id) => id !== columnId) ?? []}
+            disableClearable={false}
+            disableCloseOnSelect
+            allowNewValue={false}
+            freeSolo={false}
+            onBlur={undefined}
+        />
     );
 
     const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
@@ -372,20 +395,7 @@ export default function ColumnCreationDialog({
                             {formulaField}
                         </Grid>
                         <Grid item sx={styles.field}>
-                            <MultipleAutocompleteInput
-                                label="spreadsheet/custom_column/column_dependencies"
-                                name={COLUMN_DEPENDENCIES}
-                                options={
-                                    columnsDefinitions
-                                        ?.map((definition) => definition.id)
-                                        .filter((id) => id !== columnId) ?? []
-                                }
-                                disableClearable={false}
-                                disableCloseOnSelect
-                                allowNewValue={false}
-                                freeSolo={false}
-                                onBlur={undefined}
-                            />
+                            {dependenciesField}
                         </Grid>
                     </Grid>
                 </DialogContent>
