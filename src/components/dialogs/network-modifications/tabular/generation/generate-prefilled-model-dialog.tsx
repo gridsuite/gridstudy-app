@@ -141,8 +141,8 @@ export default function GeneratePrefilledModelDialog({
                                     name={SELECTED_FILTERS}
                                     elementType={ElementType.FILTER}
                                     equipmentTypes={[equipmentType]}
-                                    label="Filters"
-                                    titleId="SelectFilters"
+                                    label="filter"
+                                    titleId="FiltersListsSelection"
                                     allowMultiSelect={true}
                                 />
                             </Box>
