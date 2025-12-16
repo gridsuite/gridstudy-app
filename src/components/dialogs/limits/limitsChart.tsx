@@ -227,7 +227,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
             }
             layout="horizontal"
             yAxis={[
-                // We can't disable the yAxis, so we have to give empty data and 0 width.
+                // We can't totally disable the yAxis, so we have to give empty data
                 {
                     id: 'leftAxis',
                     data: [''],
