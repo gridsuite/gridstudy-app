@@ -10,6 +10,7 @@ import {
     ATTACHMENT_LINE_ID,
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
+    BUS_OR_BUSBAR_SECTION,
     CONNECTIVITY,
     ID,
     LINE1_ID,
@@ -29,7 +30,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
 
@@ -52,6 +53,7 @@ const LineAttachToVoltageLevelForm = ({
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
     });
+    const { setValue } = useFormContext();
 
     const onLineDialogClose = () => {
         setLineDialogOpen(false);
@@ -128,9 +130,10 @@ const LineAttachToVoltageLevelForm = ({
 
     const busbarSectionOptions = useMemo(() => {
         if (isVoltageLevelEdit) {
+            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`, null);
             return voltageLevelToEdit.busbarSections;
         }
-    }, [isVoltageLevelEdit, voltageLevelToEdit]);
+    }, [isVoltageLevelEdit, voltageLevelToEdit, setValue]);
 
     const connectivityForm = (
         <ConnectivityForm
