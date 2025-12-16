@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useState, useCallback } from 'react';
-import { Box } from '@mui/material';
+import { memo, useCallback } from 'react';
 import type { UUID } from 'node:crypto';
 import { AssociatedSldPanel } from './associated-sld-panel';
 import { AssociatedSldsChips } from './associated-slds-chips';
@@ -15,49 +14,32 @@ import { useSldLayout } from './hooks/use-sld-layout';
 
 interface NadAssociatedPanelsContainerProps {
     readonly nadPanelId: UUID;
+    readonly onDragStateChange?: (isDragging: boolean) => void;
 }
 
 export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsContainer({
     nadPanelId,
+    onDragStateChange,
 }: NadAssociatedPanelsContainerProps) {
-    const [isDraggingAny, setIsDraggingAny] = useState(false);
-
     const { associatedPanelIds, visibleSldPanels, focusedSldId, handleBringToFront, handleToggleSldVisibility } =
         useSldPanels({ nadPanelId });
 
-    const { handleReorganize, handleHideAll } = useSldLayout({
+    const { handleReorganize, toggleHideAll } = useSldLayout({
         nadPanelId,
         visibleSldPanels,
         associatedPanelIds,
     });
 
     const handleDragStart = useCallback(() => {
-        setIsDraggingAny(true);
-    }, []);
+        onDragStateChange?.(true);
+    }, [onDragStateChange]);
 
     const handleDragEnd = useCallback(() => {
-        setIsDraggingAny(false);
-    }, []);
+        onDragStateChange?.(false);
+    }, [onDragStateChange]);
 
     return (
         <>
-            {/* Overlay to block NAD interactions during drag */}
-            {isDraggingAny && (
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 999,
-                        pointerEvents: 'auto',
-                        cursor: 'grabbing',
-                    }}
-                />
-            )}
-
-            {/* Associated SLD panels */}
             {visibleSldPanels.map((sldPanelId) => (
                 <AssociatedSldPanel
                     key={sldPanelId}
@@ -74,7 +56,7 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
                 nadPanelId={nadPanelId}
                 onToggleVisibility={handleToggleSldVisibility}
                 onReorganize={handleReorganize}
-                onHideAll={handleHideAll}
+                onHideAll={toggleHideAll}
             />
         </>
     );

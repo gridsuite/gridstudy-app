@@ -52,12 +52,12 @@ export const useSldPanels = ({ nadPanelId }: UseSldPanelsParams): UseSldPanelsRe
 
     // Determine focused SLD based on highest z-index
     const focusedSldId = useMemo(() => {
-        if (visibleSldPanels.length === 0) return null;
-        return visibleSldPanels.reduce((maxId, id) => {
+        return visibleSldPanels.reduce<UUID | null>((maxId, id) => {
+            if (maxId === null) return id;
             const maxPanel = panelsData[maxId];
             const currentPanel = panelsData[id];
             return currentPanel?.zIndex > maxPanel?.zIndex ? id : maxId;
-        }, visibleSldPanels[0]);
+        }, null);
     }, [visibleSldPanels, panelsData]);
 
     const handleBringToFront = useCallback(

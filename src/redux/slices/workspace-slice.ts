@@ -450,12 +450,7 @@ const workspacesSlice = createSlice({
                 };
             });
 
-            // Ensure SLD panel is visible and has highest z-index among associated SLDs
-            updatePanel(state, sldPanelId, (panel) => {
-                panel.zIndex = workspace.nextZIndex++;
-            });
-
-            // Restore focus to NAD
+            // Restore focus to NAD (createPanel sets focus to the new SLD)
             bringToFront(workspace, nadPanelId);
         },
 

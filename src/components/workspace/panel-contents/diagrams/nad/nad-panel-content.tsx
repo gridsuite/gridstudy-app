@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box } from '@mui/material';
 import type { DiagramAdditionalMetadata } from '../../../../grid-layout/cards/diagrams/diagram.type';
@@ -38,6 +38,7 @@ export const NadPanelContent = memo(function NadPanelContent({
     currentRootNetworkUuid,
 }: NadPanelContentProps) {
     const dispatch = useDispatch();
+    const [isDraggingSld, setIsDraggingSld] = useState(false);
     const diagramMetadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
         | NADPanelMetadata
         | undefined;
@@ -113,7 +114,14 @@ export const NadPanelContent = memo(function NadPanelContent({
 
     return (
         <Box sx={{ display: 'flex', height: '100%' }}>
-            <Box sx={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+            <Box
+                sx={{
+                    flex: 1,
+                    overflow: 'hidden',
+                    position: 'relative',
+                    pointerEvents: isDraggingSld ? 'none' : 'auto',
+                }}
+            >
                 <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
                     <NetworkAreaDiagramContent
                         voltageLevelIds={diagram.voltageLevelIds || []}
@@ -138,7 +146,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                         onSaveNad={handleSaveNad}
                     />
                 </DiagramWrapper>
-                <NadAssociatedPanelsContainer nadPanelId={panelId} />
+                <NadAssociatedPanelsContainer nadPanelId={panelId} onDragStateChange={setIsDraggingSld} />
             </Box>
             <NadNavigationSidebar nadPanelId={panelId} />
         </Box>

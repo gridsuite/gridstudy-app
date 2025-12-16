@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { IconButton } from '@mui/material';
+import { IconButton, type SxProps, type Theme } from '@mui/material';
 import { Link as LinkIcon } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
@@ -19,7 +19,7 @@ import { AssociateNadMenu } from './associate-nad-menu';
 interface SldAssociationButtonProps {
     panelId: UUID;
     title: string;
-    iconButtonStyles: any;
+    iconButtonStyles: SxProps<Theme>;
 }
 
 /**

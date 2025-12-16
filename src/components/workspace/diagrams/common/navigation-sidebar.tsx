@@ -12,8 +12,7 @@ import { useIntl } from 'react-intl';
 
 interface NavigationSidebarProps {
     navigationHistory: string[];
-    shouldBeCollapsed: boolean;
-    hasHistory: boolean;
+    isCollapsed: boolean;
     isDisabled: boolean;
     isAbsolutePositioned?: boolean;
     isItemSelected?: (voltageLevelId: string) => boolean;
@@ -24,38 +23,38 @@ interface NavigationSidebarProps {
 const COLLAPSED_WIDTH = 40;
 const EXPANDED_WIDTH = 160;
 
-const getBackgroundColor = (theme: Theme, shouldBeCollapsed: boolean) => {
-    if (shouldBeCollapsed) {
+const getBackgroundColor = (theme: Theme, isCollapsed: boolean) => {
+    if (isCollapsed) {
         return 'transparent';
     }
     return theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33';
 };
 
-const getBorderRight = (theme: Theme, shouldBeCollapsed: boolean, isAbsolutePositioned: boolean) => {
-    if (isAbsolutePositioned && shouldBeCollapsed) {
+const getBorderRight = (theme: Theme, isCollapsed: boolean, isAbsolutePositioned: boolean) => {
+    if (isAbsolutePositioned && isCollapsed) {
         return 'none';
     }
     return `1px solid ${theme.palette.divider}`;
 };
 
 const styles = {
-    sidebar: (theme: Theme, shouldBeCollapsed: boolean, isAbsolutePositioned: boolean) => ({
-        width: shouldBeCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
-        borderRight: getBorderRight(theme, shouldBeCollapsed, isAbsolutePositioned),
+    sidebar: (theme: Theme, isCollapsed: boolean, isAbsolutePositioned: boolean) => ({
+        width: isCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
+        borderRight: getBorderRight(theme, isCollapsed, isAbsolutePositioned),
         borderLeft: isAbsolutePositioned ? 'none' : `1px solid ${theme.palette.divider}`,
-        backgroundColor: getBackgroundColor(theme, shouldBeCollapsed),
+        backgroundColor: getBackgroundColor(theme, isCollapsed),
         display: 'flex',
-        flexDirection: 'column' as const,
+        flexDirection: 'column',
         flexShrink: 0,
-        overflowX: 'hidden' as const,
-        ...(shouldBeCollapsed &&
+        overflowX: 'hidden',
+        ...(isCollapsed &&
             isAbsolutePositioned && {
-                position: 'absolute' as const,
+                position: 'absolute',
                 left: 0,
                 top: 0,
                 bottom: 0,
                 zIndex: 100,
-                pointerEvents: 'none' as const,
+                pointerEvents: 'none',
             }),
     }),
     header: (theme: Theme, hasHistory: boolean) => ({
@@ -63,7 +62,7 @@ const styles = {
         alignItems: 'center',
         p: 1,
         cursor: hasHistory ? 'pointer' : 'default',
-        pointerEvents: 'auto' as const,
+        pointerEvents: 'auto',
         '&:hover': {
             backgroundColor: hasHistory ? theme.palette.action.hover : 'transparent',
         },
@@ -73,15 +72,14 @@ const styles = {
     }),
     list: {
         flex: 1,
-        overflow: 'auto' as const,
+        overflow: 'auto',
         py: 0,
     },
 };
 
 export const NavigationSidebar = memo(function NavigationSidebar({
     navigationHistory,
-    shouldBeCollapsed,
-    hasHistory,
+    isCollapsed,
     isDisabled,
     isAbsolutePositioned = false,
     isItemSelected,
@@ -90,13 +88,14 @@ export const NavigationSidebar = memo(function NavigationSidebar({
 }: NavigationSidebarProps) {
     const theme = useTheme();
     const intl = useIntl();
+    const hasHistory = navigationHistory.length > 0;
 
     return (
-        <Box sx={styles.sidebar(theme, shouldBeCollapsed, isAbsolutePositioned)}>
+        <Box sx={styles.sidebar(theme, isCollapsed, isAbsolutePositioned)}>
             {/* Header */}
             <Box onClick={hasHistory ? onToggleCollapse : undefined} sx={styles.header(theme, hasHistory)}>
                 <HistoryIcon sx={styles.icon(theme, hasHistory)} />
-                {!shouldBeCollapsed && (
+                {!isCollapsed && (
                     <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
                         {intl.formatMessage({ id: 'history' })}
                     </Typography>
@@ -104,13 +103,13 @@ export const NavigationSidebar = memo(function NavigationSidebar({
             </Box>
 
             {/* List */}
-            {!shouldBeCollapsed && (
+            {!isCollapsed && (
                 <List dense sx={styles.list}>
                     {navigationHistory.map((voltageLevelId, index) => (
                         <ListItemButton
                             key={`${voltageLevelId}-${index}`}
                             selected={isItemSelected ? isItemSelected(voltageLevelId) : false}
-                            onClick={() => !isDisabled && onNavigate(voltageLevelId)}
+                            onClick={() => onNavigate(voltageLevelId)}
                             disabled={isDisabled}
                         >
                             <ListItemIcon sx={{ minWidth: 32 }}>

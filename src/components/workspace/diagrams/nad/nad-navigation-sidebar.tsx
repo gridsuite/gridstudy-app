@@ -60,8 +60,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
     return (
         <NavigationSidebar
             navigationHistory={reversedHistory}
-            shouldBeCollapsed={shouldBeCollapsed}
-            hasHistory={hasHistory}
+            isCollapsed={shouldBeCollapsed}
             isDisabled={!isBuilt}
             isItemSelected={(id) => associatedVoltageLevelIds.includes(id)}
             onToggleCollapse={handleToggleExpand}

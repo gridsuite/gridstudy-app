@@ -16,6 +16,11 @@ export const NAD_SLD_CONSTANTS = {
     CHIP_BAR_HEIGHT: 48,
     TOP_CONTROLS_HEIGHT: 40, // Height of NAD diagram controls at the top
 
+    // Chip bar dimensions (in pixels) for calculating visible chip limit
+    CHIP_WIDTH: 90, // Approximate width of a single chip
+    COUNTER_CHIP_WIDTH: 40, // Width of the "+N" overflow counter chip
+    BUTTON_WIDTH: 30, // Width of action buttons (hide/show, remove, reorganip bar dimensions (in pixels) for calculating visible chip limitze)
+
     // Layout positioning (relative values)
     PANEL_DEFAULT_WIDTH: 0.35,
     PANEL_DEFAULT_HEIGHT: 0.6,
@@ -25,4 +30,8 @@ export const NAD_SLD_CONSTANTS = {
     GRID_START_X: 0.01,
     GRID_GAP_X: 0.03,
     GRID_GAP_Y: 0.03,
+    // Grid layout bounds: 0.98 ensures 2% margin from edges for available space
+    GRID_AVAILABLE_SPACE: 0.98,
+    // Grid vertical offset: 0.99 leaves 1% margin from bottom when calculating start Y position
+    GRID_VERTICAL_OFFSET: 0.99,
 } as const;

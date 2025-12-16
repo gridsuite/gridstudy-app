@@ -28,8 +28,7 @@ export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
         return (
             <NavigationSidebar
                 navigationHistory={navigationHistory}
-                shouldBeCollapsed={shouldBeCollapsed}
-                hasHistory={hasHistory}
+                isCollapsed={shouldBeCollapsed}
                 isDisabled={isDisabled}
                 isAbsolutePositioned
                 isItemSelected={(id) => id === currentVoltageLevelId}

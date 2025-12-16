@@ -17,7 +17,7 @@ import type { UUID } from 'node:crypto';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
-import { SldAssociationButton } from './use-sld-association-button';
+import { SldAssociationButton } from './sld-association-button';
 
 const getHeaderStyles = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
     let backgroundColor: string;

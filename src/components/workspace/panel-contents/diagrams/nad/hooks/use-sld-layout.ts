@@ -28,7 +28,7 @@ export interface UseSldLayoutParams {
 
 export interface UseSldLayoutReturn {
     readonly handleReorganize: (mode: LayoutMode) => void;
-    readonly handleHideAll: () => void;
+    readonly toggleHideAll: () => void;
 }
 
 /**
@@ -69,10 +69,15 @@ export const useSldLayout = ({
                 // Grid layout: calculate optimal grid dimensions
                 const cols = Math.ceil(Math.sqrt(count));
                 const rows = Math.ceil(count / cols);
-                const panelWidth = (0.98 - (cols - 1) * NAD_SLD_CONSTANTS.GRID_GAP_X) / cols;
-                const panelHeight = (0.98 - (rows - 1) * NAD_SLD_CONSTANTS.GRID_GAP_Y) / rows;
+                const panelWidth =
+                    (NAD_SLD_CONSTANTS.GRID_AVAILABLE_SPACE - (cols - 1) * NAD_SLD_CONSTANTS.GRID_GAP_X) / cols;
+                const panelHeight =
+                    (NAD_SLD_CONSTANTS.GRID_AVAILABLE_SPACE - (rows - 1) * NAD_SLD_CONSTANTS.GRID_GAP_Y) / rows;
                 const totalHeight = rows * panelHeight + (rows - 1) * NAD_SLD_CONSTANTS.GRID_GAP_Y;
-                const startY = Math.max(NAD_SLD_CONSTANTS.GRID_START_X, 0.99 - totalHeight);
+                const startY = Math.max(
+                    NAD_SLD_CONSTANTS.GRID_START_X,
+                    NAD_SLD_CONSTANTS.GRID_VERTICAL_OFFSET - totalHeight
+                );
 
                 visibleSldPanels.forEach((sldPanelId, index) => {
                     const col = index % cols;
@@ -95,7 +100,7 @@ export const useSldLayout = ({
     );
 
     // Toggle between hide all and show all SLDs
-    const handleHideAll = useCallback(() => {
+    const toggleHideAll = useCallback(() => {
         if (visibleSldPanels.length > 0) {
             dispatch(closeAllAssociatedSlds(nadPanelId));
         } else {
@@ -107,6 +112,6 @@ export const useSldLayout = ({
 
     return {
         handleReorganize,
-        handleHideAll,
+        toggleHideAll,
     };
 };

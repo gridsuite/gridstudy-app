@@ -24,6 +24,7 @@ import {
 import { deleteAssociatedSld, removeAllAssociatedSlds } from '../../../../../redux/slices/workspace-slice';
 import { type MuiStyles, PopupConfirmationDialog } from '@gridsuite/commons-ui';
 import { LayoutMode } from './hooks/use-sld-layout';
+import { NAD_SLD_CONSTANTS } from './constants';
 
 interface AssociatedSldsChipsProps {
     readonly nadPanelId: UUID;
@@ -152,16 +153,15 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
             if (!containerRef.current) {
                 return;
             }
-            const chipWidth = 90;
-            const counterChipWidth = 40;
-            const hideShowButtonWidth = onHideAll ? 30 : 0;
-            const removeAllButtonWidth = hasMultiplePanels ? 30 : 0;
-            const buttonGroupWidth = hasReorganizeButton ? 30 : 0;
+            const hideShowButtonWidth = onHideAll ? NAD_SLD_CONSTANTS.BUTTON_WIDTH : 0;
+            const removeAllButtonWidth = hasMultiplePanels ? NAD_SLD_CONSTANTS.BUTTON_WIDTH : 0;
+            const buttonGroupWidth = hasReorganizeButton ? NAD_SLD_CONSTANTS.BUTTON_WIDTH : 0;
 
             const containerWidth = containerRef.current.clientWidth;
-            const reservedWidth = hideShowButtonWidth + removeAllButtonWidth + buttonGroupWidth + counterChipWidth;
+            const reservedWidth =
+                hideShowButtonWidth + removeAllButtonWidth + buttonGroupWidth + NAD_SLD_CONSTANTS.COUNTER_CHIP_WIDTH;
             const availableWidth = containerWidth - reservedWidth;
-            const maxChips = Math.max(1, Math.floor(availableWidth / chipWidth));
+            const maxChips = Math.max(1, Math.floor(availableWidth / NAD_SLD_CONSTANTS.CHIP_WIDTH));
             setChipLimit(maxChips);
         };
 
@@ -189,11 +189,8 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
         dispatch(deleteAssociatedSld(sldPanelId));
     };
 
-    const renderChip = (
-        { id, title, isVisible }: { id: UUID; title: string | undefined; isVisible: boolean },
-        inMenu = false
-    ) => {
-        const chip = (
+    const renderChip = ({ id, title, isVisible }: { id: UUID; title: string | undefined; isVisible: boolean }) => {
+        return (
             <Chip
                 key={id}
                 label={title}
@@ -204,14 +201,6 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
                 deleteIcon={<CloseIcon fontSize="small" />}
                 sx={styles.chip}
             />
-        );
-
-        return inMenu ? (
-            <MenuItem key={id} sx={styles.menuItem} onClick={() => onToggleVisibility(id)}>
-                {chip}
-            </MenuItem>
-        ) : (
-            chip
         );
     };
 
@@ -261,7 +250,15 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
                             }}
                             sx={styles.menu}
                         >
-                            {hiddenPanels.map((panel) => renderChip(panel, true))}
+                            {hiddenPanels.map((panel) => (
+                                <MenuItem
+                                    key={panel.id}
+                                    sx={styles.menuItem}
+                                    onClick={() => onToggleVisibility(panel.id)}
+                                >
+                                    {renderChip(panel)}
+                                </MenuItem>
+                            ))}
                         </Menu>
                     </>
                 )}
