@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { DirectoryItemSelector, DirectoryItemSelectorProps, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { separator } from './export-network-utils';
 import { useController } from 'react-hook-form';
+import { UUID } from 'node:crypto';
 
 export interface DirectoryItemSelectProps extends Omit<DirectoryItemSelectorProps, 'onClose' | 'open'> {
     name: string;
@@ -11,9 +12,10 @@ export interface DirectoryItemSelectProps extends Omit<DirectoryItemSelectorProp
 
 export function DirectoryItemSelect({ name, ...props }: Readonly<DirectoryItemSelectProps>) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [selectedPath, setSelectedPath] = useState<string>('');
 
     const {
-        field: { onChange, value },
+        field: { onChange },
         fieldState: { error },
     } = useController({ name });
 
@@ -24,12 +26,17 @@ export function DirectoryItemSelect({ name, ...props }: Readonly<DirectoryItemSe
             if (nodes.length > 0) {
                 let updatedFolder: string = nodes[0].name;
                 let parentNode: TreeViewFinderNodeProps = nodes[0];
+                let nodeId: UUID | null = null;
                 while (parentNode.parents && parentNode.parents?.length > 0) {
                     parentNode = parentNode?.parents[0];
                     updatedFolder = parentNode.name + separator + updatedFolder;
+                    nodeId = parentNode.id;
+                }
+                if (nodeId) {
+                    onChange(nodeId);
                 }
                 updatedFolder = separator + updatedFolder;
-                onChange(updatedFolder);
+                setSelectedPath(updatedFolder);
             }
             setIsOpen(false);
         },
@@ -40,14 +47,14 @@ export function DirectoryItemSelect({ name, ...props }: Readonly<DirectoryItemSe
         <Box>
             <Stack direction={'row'} alignItems="center" justifyContent="space-between">
                 <Typography variant="body2" color="textSecondary" noWrap>
-                    {value || <FormattedMessage id="NoFolder" />}
+                    {selectedPath || <FormattedMessage id="NoFolder" />}
                     {error?.message && (
                         <FormHelperText error>{intl.formatMessage({ id: error?.message })}</FormHelperText>
                     )}
                 </Typography>
 
                 <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
-                    <FormattedMessage id={value ? 'edit' : 'Select'} />
+                    <FormattedMessage id={selectedPath ? 'edit' : 'Select'} />
                 </Button>
             </Stack>
 

@@ -26,11 +26,12 @@ import { useParameterState } from '../parameters/use-parameters-state';
 import { AppState } from '../../../redux/reducer';
 
 import {
+    DESCRIPTION,
     EXPORT_DESTINATION,
     EXPORT_FORMAT,
     EXPORT_PARAMETERS,
     FILE_NAME,
-    FOLDER_NAME,
+    FOLDER_ID,
 } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -57,7 +58,15 @@ import { DirectoryItemSelect } from './directory-item-select';
 interface ExportNetworkDialogProps {
     open: boolean;
     onClose: () => void;
-    onClick: (nodeUuid: UUID, params: Record<string, any>, selectedFormat: string, fileName: string) => void;
+    onClick: (
+        nodeUuid: UUID,
+        params: Record<string, any>,
+        selectedFormat: string,
+        fileName: string,
+        exportToExplorer: boolean,
+        parentDirectoryUuid?: string,
+        description?: string
+    ) => void;
     studyUuid: UUID;
     nodeUuid: UUID;
 }
@@ -120,7 +129,15 @@ export function ExportNetworkDialog({
 
     const onSubmit = useCallback(
         (data: ExportNetworkFormData) => {
-            onClick(nodeUuid, data[EXPORT_PARAMETERS], data[EXPORT_FORMAT], data[FILE_NAME]);
+            onClick(
+                nodeUuid,
+                data[EXPORT_PARAMETERS],
+                data[EXPORT_FORMAT],
+                data[FILE_NAME],
+                data[EXPORT_FORMAT] !== ExportDestinationType.MY_COMPUTER,
+                data[FOLDER_ID],
+                data[DESCRIPTION]
+            );
         },
         [nodeUuid, onClick]
     );
@@ -172,7 +189,7 @@ export function ExportNetworkDialog({
                     <Box>
                         <DescriptionField />
                         <DirectoryItemSelect
-                            name={FOLDER_NAME}
+                            name={FOLDER_ID}
                             types={[ElementType.DIRECTORY]}
                             multiSelect={false}
                             onlyLeaves={false}

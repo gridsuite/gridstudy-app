@@ -10,7 +10,7 @@ import {
     EXPORT_FORMAT,
     EXPORT_PARAMETERS,
     FILE_NAME,
-    FOLDER_NAME,
+    FOLDER_ID,
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import { DESCRIPTION, MAX_CHAR_DESCRIPTION, Parameter } from '@gridsuite/commons-ui';
@@ -30,7 +30,7 @@ export const schema = yup.object().shape({
     [FILE_NAME]: yup.string().required(),
     [EXPORT_DESTINATION]: yup.string().oneOf(Object.values(ExportDestinationType)).required(),
     [DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION).optional(),
-    [FOLDER_NAME]: yup.string().when([EXPORT_DESTINATION], {
+    [FOLDER_ID]: yup.string().when([EXPORT_DESTINATION], {
         is: ExportDestinationType.GRID_EXPLORE,
         then: (schema) => schema.required(),
     }),
@@ -42,7 +42,6 @@ export const emptyData = {
     [FILE_NAME]: '',
     [EXPORT_DESTINATION]: ExportDestinationType.GRID_EXPLORE,
     [DESCRIPTION]: '',
-    [FOLDER_NAME]: '',
     [EXPORT_FORMAT]: '',
     [EXPORT_PARAMETERS]: emptyObj,
 };

@@ -406,7 +406,10 @@ export function exportNetworkFile(
     rootNetworkUuid: UUID,
     params: Record<string, any>,
     selectedFormat: string,
-    fileName: string
+    fileName: string,
+    exportToExplorer: boolean,
+    parentDirectoryUuid?: UUID,
+    description?: string
 ): Promise<UUID> {
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
@@ -420,6 +423,14 @@ export function exportNetworkFile(
     }
     if (!isBlankOrEmpty(fileName)) {
         urlSearchParams.append('fileName', fileName);
+    }
+
+    urlSearchParams.append('exportToExplorer', String(exportToExplorer));
+    if (parentDirectoryUuid && !isBlankOrEmpty(parentDirectoryUuid)) {
+        urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    }
+    if (description && !isBlankOrEmpty(description)) {
+        urlSearchParams.append('description', description);
     }
 
     const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';

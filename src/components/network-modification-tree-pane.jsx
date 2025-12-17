@@ -460,8 +460,18 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     const [openExportDialog, setOpenExportDialog] = useState(false);
 
     const handleClickExportNodeNetwork = useCallback(
-        (nodeUuid, params, selectedFormat, fileName) => {
-            exportNetworkFile(studyUuid, nodeUuid, currentRootNetworkUuid, params, selectedFormat, fileName)
+        (nodeUuid, params, selectedFormat, fileName, exportToExplorer, parentDirectoryUuid, description) => {
+            exportNetworkFile(
+                studyUuid,
+                nodeUuid,
+                currentRootNetworkUuid,
+                params,
+                selectedFormat,
+                fileName,
+                exportToExplorer,
+                parentDirectoryUuid,
+                description
+            )
                 .then((response) => {
                     subscribeExport(response, fileName);
                 })
