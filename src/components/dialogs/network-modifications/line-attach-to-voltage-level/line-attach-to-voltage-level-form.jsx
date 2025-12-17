@@ -16,6 +16,7 @@ import {
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
+    SUBSTATION_CREATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useMemo, useState } from 'react';
