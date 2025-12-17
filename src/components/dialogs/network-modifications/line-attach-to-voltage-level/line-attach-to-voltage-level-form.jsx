@@ -161,7 +161,7 @@ const LineAttachToVoltageLevelForm = ({
                             // other attributes than id and name must be present
                             startIcon={
                                 attachmentPoint != null &&
-                                Object.keys(attachmentPoint).some((key) => key === 'substationCreation') ? (
+                                Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION) ? (
                                     <EditIcon />
                                 ) : (
                                     <AddIcon />
