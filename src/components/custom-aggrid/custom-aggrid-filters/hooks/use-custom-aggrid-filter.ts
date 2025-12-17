@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { debounce } from '@mui/material';
 import { GridApi } from 'ag-grid-community';
 import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
-import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-filter.type';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -40,6 +40,10 @@ export const useCustomAggridFilter = (
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
     const [tolerance, setTolerance] = useState<number | undefined>();
 
+    // Track if user is currently editing to prevent external sync from overriding input
+    const isEditingRef = useRef(false);
+    const editingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const { filters, dispatchFilters } = useFilterSelector(type, tab);
 
     const updateFilter = useCallback(
@@ -47,13 +51,20 @@ export const useCustomAggridFilter = (
             const newFilter = {
                 column: colId,
                 dataType: data.dataType,
-                tolerance: data.dataType === FILTER_DATA_TYPES.NUMBER ? computeTolerance(data.value) : undefined,
+                tolerance:
+                    data.dataType === FILTER_DATA_TYPES.NUMBER &&
+                    data.type !== FILTER_TEXT_COMPARATORS.IS_EMPTY &&
+                    data.type !== FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY
+                        ? computeTolerance(data.value)
+                        : undefined,
                 type: data.type,
                 value: data.value,
             };
 
             let updatedFilters: FilterConfig[];
-            if (!data.value) {
+            const filterWithoutValue =
+                data.type === FILTER_TEXT_COMPARATORS.IS_EMPTY || data.type === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY;
+            if (!data.value && !filterWithoutValue) {
                 updatedFilters = removeElementFromArrayWithFieldValue(filters, colId);
             } else {
                 updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
@@ -65,14 +76,37 @@ export const useCustomAggridFilter = (
         [updateFilterCallback, api, dispatchFilters, filters]
     );
 
+    // We intentionally exclude `updateFilter` from dependencies.
+    // `updateFilter` depends on `filters`, which changes on every filter update.
+    // Including it would recreate the debounced function on each change,
+    // canceling any pending debounced call and preventing updates from being sent.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedUpdateFilter = useCallback(
-        debounce((data) => updateFilter(colId, data), debounceMs),
+        debounce((data) => {
+            updateFilter(colId, data);
+            isEditingRef.current = false;
+        }, debounceMs),
         [colId, debounceMs]
     );
 
+    // Cleanup debounce on unmount
+    useEffect(() => {
+        return () => {
+            debouncedUpdateFilter.clear();
+            if (editingTimeoutRef.current) {
+                clearTimeout(editingTimeoutRef.current);
+            }
+        };
+    }, [debouncedUpdateFilter]);
+
     const handleChangeFilterValue = useCallback(
         (filterData: FilterData) => {
+            isEditingRef.current = true;
+            if (editingTimeoutRef.current) clearTimeout(editingTimeoutRef.current);
+            editingTimeoutRef.current = setTimeout(() => {
+                isEditingRef.current = false;
+            }, debounceMs);
+
             setSelectedFilterData(filterData.value);
             setTolerance(filterData.tolerance);
             debouncedUpdateFilter({
@@ -82,32 +116,65 @@ export const useCustomAggridFilter = (
                 tolerance: filterData.tolerance,
             });
         },
-        [dataType, debouncedUpdateFilter, selectedFilterComparator]
+        [dataType, debouncedUpdateFilter, selectedFilterComparator, debounceMs]
     );
 
     const handleChangeComparator = useCallback(
         (newType: string) => {
             setSelectedFilterComparator(newType);
-            if (selectedFilterData) {
+            const filterWithoutValue =
+                newType === FILTER_TEXT_COMPARATORS.IS_EMPTY || newType === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY;
+            if (filterWithoutValue) {
+                updateFilter(colId, {
+                    value: true,
+                    type: newType,
+                    dataType,
+                    tolerance: tolerance,
+                });
+            } else if (selectedFilterData && selectedFilterData !== true) {
                 updateFilter(colId, {
                     value: selectedFilterData,
                     type: newType,
                     dataType,
                     tolerance: tolerance,
                 });
+            } else {
+                // We switch from IS_EMPTY or IS_NOT_EMPTY comparator to a comparator with a value
+                setSelectedFilterData(undefined);
+                const updatedFilters = removeElementFromArrayWithFieldValue(filters, colId);
+                updateFilterCallback?.(api, updatedFilters);
+                dispatchFilters(updatedFilters);
             }
         },
-        [colId, dataType, selectedFilterData, tolerance, updateFilter]
+        [
+            colId,
+            dataType,
+            selectedFilterData,
+            tolerance,
+            updateFilter,
+            filters,
+            updateFilterCallback,
+            api,
+            dispatchFilters,
+        ]
     );
 
     useEffect(() => {
-        if (!selectedFilterComparator) {
+        if (!selectedFilterComparator && comparators.length > 0) {
             setSelectedFilterComparator(comparators[0]);
         }
     }, [selectedFilterComparator, comparators]);
 
+    // Sync from external filter changes (Redux store)
+    // Only sync when NOT actively editing to prevent race conditions
     useEffect(() => {
+        // Skip sync if user is currently editing
+        if (isEditingRef.current) {
+            return;
+        }
+
         const filterObject = filters?.find((filter) => filter.column === colId);
+
         if (filterObject) {
             setSelectedFilterData(filterObject.value);
             setSelectedFilterComparator(filterObject.type ?? '');

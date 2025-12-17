@@ -57,6 +57,15 @@ export interface GeneratorEquipmentInfos {
     plannedActivePowerSetPoint?: number;
 }
 
+export interface LoadEquipmentInfos {
+    properties?: Record<string, string>;
+    p0: number;
+    q0: number;
+}
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
 
-export type GenericEquipmentInfos = BranchEquipmentInfos | GeneratorEquipmentInfos | VoltageLevelTooltipInfos;
+export type GenericEquipmentInfos =
+    | BranchEquipmentInfos
+    | GeneratorEquipmentInfos
+    | LoadEquipmentInfos
+    | VoltageLevelTooltipInfos;

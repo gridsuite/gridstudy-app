@@ -99,20 +99,22 @@ export function stashModifications(studyUuid: UUID | null, nodeUuid: UUID | unde
     });
 }
 
-export function setModificationActivated(
+export function setModificationMetadata(
     studyUuid: UUID | null,
     nodeUuid: UUID | undefined,
     modificationUuid: UUID,
-    activated: boolean
-) {
+    metadata: Partial<NetworkModificationMetadata>
+): Promise<Response> {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('activated', String(activated));
     urlSearchParams.append('uuids', String([modificationUuid]));
-    const modificationUpdateActiveUrl =
-        getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
-    console.debug(modificationUpdateActiveUrl);
-    return backendFetch(modificationUpdateActiveUrl, {
+    const modificationUpdateUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    return backendFetch(modificationUpdateUrl, {
         method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(metadata),
     });
 }
 
