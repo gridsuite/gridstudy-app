@@ -98,7 +98,7 @@ export const styles = {
         },
         '& .vl-title-icon': {
             fontSize: '20px',
-            lineHeight: '0px',
+            lineHeight: '18px',
         },
     }),
     divSingleLineDiagramHideLockAndBolt: {
