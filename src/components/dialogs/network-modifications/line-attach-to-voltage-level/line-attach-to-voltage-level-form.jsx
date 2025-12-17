@@ -144,7 +144,7 @@ const LineAttachToVoltageLevelForm = ({
             currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
-
+    console.log('attachmentPoint', attachmentPoint);
     return (
         <>
             <GridSection title="LineToAttachTo" />
@@ -161,9 +161,7 @@ const LineAttachToVoltageLevelForm = ({
                             // other attributes than id and name must be present
                             startIcon={
                                 attachmentPoint != null &&
-                                Object.keys(attachmentPoint).some(
-                                    (key) => key !== 'equipmentId' && key !== 'equipmentName'
-                                ) ? (
+                                Object.keys(attachmentPoint).some((key) => key === 'substationCreation') ? (
                                     <EditIcon />
                                 ) : (
                                     <AddIcon />
@@ -226,7 +224,7 @@ const LineAttachToVoltageLevelForm = ({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onAttachmentPointModificationDo}
                     editData={attachmentPoint}
-                    isAttachementPointModification={true}
+                    isAttachmentPointModification={true}
                     titleId={'SpecifyAttachmentPoint'}
                 />
             )}
