@@ -1731,5 +1731,10 @@
     "removeAll": "Close All",
     "removeAllAssociatedSldsConfirmation": "Are you sure you want to close all associated voltage levels?",
     "createNewNAD": "Create New NAD",
-    "existingNAD": "Existing NAD"
+    "existingNAD": "Existing NAD",
+    "unbuildAllNodesTooltip": "Unbuild all nodes",
+    "unbuildAllNodesDialogTitle": "Confirmation",
+    "unbuildAllNodesDialogContent": "All built networks for all nodes of the tree and all root networks as well as all calculation results will be deleted",
+    "unbuildAllNodesError": "An error occurred while unbuilding all nodes"
+
 }
