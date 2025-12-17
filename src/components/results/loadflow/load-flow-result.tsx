@@ -34,6 +34,7 @@ const styles = {
         overflowX: 'auto' as const,
         height: '100%',
         padding: '8px',
+        paddingBottom: '64px',
     },
 };
 
@@ -123,7 +124,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     />
                 </div>
                 <br />
-
                 <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
                     <FormattedMessage id="LoadFlowResultsCountryAdequacies" />
                 </h4>
@@ -142,11 +142,10 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     />
                 </div>
                 <br />
-
                 <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
                     <FormattedMessage id="LoadFlowResultsExchanges" />
                 </h4>
-                <div style={{ minHeight: '300px', height: '100%', paddingBottom: '32px' }}>
+                <div style={{ minHeight: '300px', height: '100%' }}>
                     <RenderTableAndExportCsv
                         gridRef={exchangesGridRef}
                         columns={exchangesColumnDefs}
