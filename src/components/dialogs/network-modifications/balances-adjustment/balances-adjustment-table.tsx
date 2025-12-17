@@ -115,7 +115,7 @@ export default function BalancesAdjustmentTable() {
             useFieldArrayOutput={useFieldArrayOutputBalancesAdjustment}
             createRows={createRow}
             columnsDefinition={columnsDefinition}
-            tableHeight={270}
+            tableHeight={450}
             withAddRowsDialog={false}
             disableDragAndDrop={true}
             showMoveArrow={false}
