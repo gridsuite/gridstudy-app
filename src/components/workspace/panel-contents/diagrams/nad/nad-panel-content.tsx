@@ -144,6 +144,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                         onUpdatePositions={handleUpdatePositions}
                         onReplaceNad={handleReplaceNad}
                         onSaveNad={handleSaveNad}
+                        nadPanelId={panelId}
                     />
                 </DiagramWrapper>
                 <NadAssociatedPanelsContainer nadPanelId={panelId} onDragStateChange={setIsDraggingSld} />
