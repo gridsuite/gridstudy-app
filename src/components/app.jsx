@@ -41,7 +41,7 @@ import {
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
-    selectEnableDeveloperMode,
+    selectIsDeveloperMode,
     selectFavoriteContingencyLists,
     selectLanguage,
     selectTheme,
@@ -122,7 +122,7 @@ const App = () => {
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
                         break;
                     case PARAM_DEVELOPER_MODE:
-                        dispatch(selectEnableDeveloperMode(param.value === 'true'));
+                        dispatch(selectIsDeveloperMode(param.value === 'true'));
                         break;
                     case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));

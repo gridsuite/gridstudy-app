@@ -15,6 +15,7 @@ import {
     snackWithFallback,
     useModificationLabelComputer,
     useSnackMessage,
+    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
