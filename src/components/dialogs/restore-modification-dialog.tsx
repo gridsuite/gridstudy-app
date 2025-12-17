@@ -11,7 +11,6 @@ import {
     CancelButton,
     CheckBoxList,
     type MuiStyles,
-    NetworkModificationMetadata,
     snackWithFallback,
     useModificationLabelComputer,
     useSnackMessage,
@@ -58,7 +57,6 @@ interface RestoreModificationDialogProps {
  * @param {EventListener} onClose Event to close the dialog
  * @param modifToRestore List of network modifications to restore
  * @param currentNode the current node
- * @param studyUuid Id of the current study
  */
 
 const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreModificationDialogProps) => {
