@@ -69,7 +69,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 }) => {
     const intl = useIntl();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
 
@@ -219,13 +219,13 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'DynamicSimulation',
                 computingType: [ComputingType.DYNAMIC_SIMULATION],
-                displayed: enableDeveloperMode && dynamicSimulationAvailability === OptionalServicesStatus.Up,
+                displayed: isDeveloperMode && dynamicSimulationAvailability === OptionalServicesStatus.Up,
                 renderResult: renderDynamicSimulationResult,
             },
             {
                 id: 'DynamicSecurityAnalysis',
                 computingType: [ComputingType.DYNAMIC_SECURITY_ANALYSIS],
-                displayed: enableDeveloperMode && dynamicSecurityAnalysisAvailability === OptionalServicesStatus.Up,
+                displayed: isDeveloperMode && dynamicSecurityAnalysisAvailability === OptionalServicesStatus.Up,
                 renderResult: renderDynamicSecurityAnalysisResult,
             },
             {
@@ -237,7 +237,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'StateEstimation',
                 computingType: [ComputingType.STATE_ESTIMATION],
-                displayed: enableDeveloperMode && stateEstimationAvailability === OptionalServicesStatus.Up,
+                displayed: isDeveloperMode && stateEstimationAvailability === OptionalServicesStatus.Up,
                 renderResult: renderStateEstimationResult,
             },
             {
@@ -255,7 +255,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderSensitivityAnalysisResult,
         shortCircuitAvailability,
         renderShortCircuitAnalysisResult,
-        enableDeveloperMode,
+        isDeveloperMode,
         dynamicSimulationAvailability,
         renderDynamicSimulationResult,
         dynamicSecurityAnalysisAvailability,
@@ -296,12 +296,12 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     };
 
-    const previousEnableDeveloperMode = usePrevious(enableDeveloperMode);
+    const previousIsDeveloperMode = usePrevious(isDeveloperMode);
     useEffect(() => {
-        if (!enableDeveloperMode && previousEnableDeveloperMode !== enableDeveloperMode) {
+        if (!isDeveloperMode && previousIsDeveloperMode !== isDeveloperMode) {
             setTabIndex(0);
         }
-    }, [enableDeveloperMode, previousEnableDeveloperMode, lastCompletedComputation]);
+    }, [isDeveloperMode, previousIsDeveloperMode, lastCompletedComputation]);
 
     const handleChangeTab = useCallback(
         (event: React.SyntheticEvent, newTabIndex: number) => {

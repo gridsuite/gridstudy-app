@@ -94,7 +94,7 @@ export const getPrefilledModelSchema = () => {
 };
 
 export const emptyFormData: PrefilledModelFormType = {
-    [RESTRICT_BY_FILTER]: false,
+    [RESTRICT_BY_FILTER]: true,
     [SELECTED_FILTERS]: [],
     [USE_CURRENT_GRID_STATE]: false,
     [SELECTED_COLUMN_GROUPS]: [],
