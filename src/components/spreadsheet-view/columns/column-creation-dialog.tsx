@@ -68,6 +68,12 @@ const styles = {
     },
     field: { width: '90%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
+    link: (theme) => ({
+        color: theme.palette.info.light,
+        '&:hover': {
+            color: theme.palette.info.light,
+        },
+    }),
 } as const satisfies MuiStyles;
 
 const COLUMN_NAME_REGEX = /\W/g;
@@ -142,19 +148,13 @@ export default function ColumnCreationDialog({
                             <FormattedMessage
                                 id="spreadsheet/custom_column/column_content_description"
                                 values={{
-                                    br: () => <br />, // To have line break
                                     Link: (mathJS) => (
                                         <Link
                                             href={MATHJS_LINK}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             underline="hover"
-                                            sx={{
-                                                color: '#90caf9', // A light blue that works well with both light/dark tooltip backgrounds
-                                                '&:hover': {
-                                                    color: '#90caf9',
-                                                },
-                                            }}
+                                            sx={styles.link}
                                         >
                                             {mathJS}
                                         </Link>
