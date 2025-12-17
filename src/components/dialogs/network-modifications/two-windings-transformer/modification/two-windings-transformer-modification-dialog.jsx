@@ -57,8 +57,8 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     STATE_ESTIMATION,
     STEPS,
     TAP_POSITION,
@@ -491,13 +491,13 @@ const TwoWindingsTransformerModificationDialog = ({
                     ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
                     : [],
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
-                    limits[SELECTED_LIMITS_GROUP_1],
+                    limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1],
                     intl.formatMessage({
                         id: 'None',
                     })
                 ),
                 selectedLimitsGroup2: addOperationTypeToSelectedOpLG(
-                    limits[SELECTED_LIMITS_GROUP_2],
+                    limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2],
                     intl.formatMessage({
                         id: 'None',
                     })
