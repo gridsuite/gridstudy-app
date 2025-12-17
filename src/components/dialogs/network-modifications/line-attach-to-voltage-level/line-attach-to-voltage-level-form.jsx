@@ -144,7 +144,7 @@ const LineAttachToVoltageLevelForm = ({
             currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
-    console.log('attachmentPoint', attachmentPoint);
+
     return (
         <>
             <GridSection title="LineToAttachTo" />
