@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useLayoutEffect, useRef, useCallback, useState, useEffect } from 'react';
+import { useLayoutEffect, useRef, useCallback, useState, useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RunningStatus from 'components/utils/running-status';
 import {
@@ -82,7 +82,7 @@ type NetworkAreaDiagramContentProps = {
     readonly onSaveNad?: () => void;
 };
 
-function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
+const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const {
         visible,
         voltageLevelIds,
@@ -576,6 +576,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             {renderDynamicSimulationEventDialog()}
         </>
     );
-}
+});
 
 export default NetworkAreaDiagramContent;

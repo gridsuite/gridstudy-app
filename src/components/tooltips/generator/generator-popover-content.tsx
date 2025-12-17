@@ -6,16 +6,18 @@
  */
 
 import { Grid, Table, TableContainer, TableRow } from '@mui/material';
-import { formatValue, styles } from '../generic-equipment-popover-utils';
+import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
 import { CellRender } from '../cell-render';
 import { GeneratorEquipmentInfos } from '../equipment-popover-type';
 import { GeneratorActivePowerTable } from './generator-active-power-table';
 import { GeneratorVoltageRegulationTable } from './generator-voltage-regulation-table';
+import RunningStatus from 'components/utils/running-status';
 interface GeneratorPopoverContentProps {
     equipmentInfos: GeneratorEquipmentInfos;
+    loadFlowStatus?: RunningStatus;
 }
 
-export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = ({ equipmentInfos }) => {
+export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = ({ equipmentInfos, loadFlowStatus }) => {
     return (
         <Grid container direction="column" rowSpacing={2} alignItems="center">
             <Grid item sx={styles.grid}>
@@ -25,7 +27,7 @@ export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = (
                             <CellRender isLabel label="ActivePower" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
                             <CellRender
                                 value={formatValue(equipmentInfos.p && Math.round(equipmentInfos.p))}
-                                colStyle={styles.cell}
+                                colStyle={cellWithStatus(loadFlowStatus)}
                             />
                         </TableRow>
 
@@ -37,7 +39,7 @@ export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = (
                             />
                             <CellRender
                                 value={formatValue(equipmentInfos.q && Math.round(equipmentInfos.q))}
-                                colStyle={styles.cell}
+                                colStyle={cellWithStatus(loadFlowStatus)}
                             />
                         </TableRow>
                     </Table>
