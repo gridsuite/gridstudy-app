@@ -1602,6 +1602,10 @@
     "searchVoltageLevelInNad": "Rechercher un poste",
     "noResultsFound": "Aucun résultat trouvé",
     "hide": "Masquer",
+    "hideAll": "Tout masquer",
+    "showAll": "Tout afficher",
+    "gridLayout": "Disposition en grille",
+    "cascadeLayout": "Disposition en cascade",
     "hideLabels": "Masquer les libellés en mode edition",
     "showLabels": "Afficher les libellés",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
@@ -1714,5 +1718,11 @@
     "MinimumActivePowerTooltip": "Pmin (MW)",
     "MaximumActivePowerTooltip": "Pmax (MW)",
     "MinimumReactivePowerTooltip": "Pmin (MW)",
-    "MaximumReactivePowerTooltip": "Pmax (MW)"
+    "MaximumReactivePowerTooltip": "Pmax (MW)",
+    "ConsQ": "Qcons (Mvar)",
+    "ConsP": "Pcons (MW)",
+    "removeAll": "Tout fermer",
+    "removeAllAssociatedSldsConfirmation": "Êtes-vous sûr de vouloir fermer tous les postes associés ?",
+    "createNewNAD": "Créer un nouveau NAD",
+    "existingNAD": "NAD existant"
 }

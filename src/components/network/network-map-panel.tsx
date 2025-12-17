@@ -25,6 +25,7 @@ import {
     type NetworkMapProps,
     type NetworkMapRef,
 } from '@powsybl/network-viewer';
+import { type Color } from '@deck.gl/core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapEquipment as BaseEquipment } from '../menus/base-equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
@@ -73,6 +74,7 @@ import { getBaseVoltageNetworkMapColor } from 'utils/colors';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
+import { useBaseVoltages } from '../../hooks/use-base-voltages';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -170,6 +172,8 @@ export const NetworkMapPanel = ({
 
     const lineFullPathRef = useRef<boolean>(null);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+
+    const { getBaseVoltage } = useBaseVoltages();
 
     /*
         This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -1023,6 +1027,13 @@ export const NetworkMapPanel = ({
         }
     };
 
+    const getNetworkMapColor = useCallback(
+        (voltageValue: number): Color => {
+            return getBaseVoltageNetworkMapColor(getBaseVoltage(voltageValue)) as Color;
+        },
+        [getBaseVoltage]
+    );
+
     const renderMap = () => (
         <>
             <Box
@@ -1113,8 +1124,7 @@ export const NetworkMapPanel = ({
                         onDrawEvent(event);
                     }}
                     shouldDisableToolTip={isInDrawingMode.value}
-                    // @ts-ignore
-                    getNominalVoltageColor={getBaseVoltageNetworkMapColor}
+                    getNominalVoltageColor={getNetworkMapColor}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                 {renderSearchEquipment()}

@@ -1605,6 +1605,10 @@
     "searchVoltageLevelInNad": "Search voltage level",
     "noResultsFound": "No results found",
     "hide": "Hide",
+    "hideAll": "Hide all",
+    "showAll": "Show all",
+    "gridLayout": "Grid layout",
+    "cascadeLayout": "Cascade layout",
     "hideLabels": "Hide labels in edit mode",
     "showLabels": "Show labels",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
@@ -1721,5 +1725,11 @@
     "MinimumActivePowerTooltip": "Pmin (MW)",
     "MaximumActivePowerTooltip": "Pmax (MW)",
     "MinimumReactivePowerTooltip": "Pmin (MW)",
-    "MaximumReactivePowerTooltip": "Pmax (MW)"
+    "MaximumReactivePowerTooltip": "Pmax (MW)",
+    "ConsQ": "Qcons (Mvar)",
+    "ConsP": "Pcons (MW)",
+    "removeAll": "Close All",
+    "removeAllAssociatedSldsConfirmation": "Are you sure you want to close all associated voltage levels?",
+    "createNewNAD": "Create New NAD",
+    "existingNAD": "Existing NAD"
 }

@@ -38,12 +38,14 @@ const optionalPanelSizeSchema = object({
 const sldMetadataSchema = object({
     diagramId: string().required(),
     navigationHistory: array(string()).optional(),
+    parentNadPanelId: string().optional(),
 });
 
 const nadMetadataSchema = object({
     nadConfigUuid: string().optional(),
     filterUuid: string().optional(),
     savedWorkspaceConfigUuid: string().optional(),
+    navigationHistory: array(string()).optional(),
 });
 
 const panelMetadataSchema = yup.lazy((value) => {
