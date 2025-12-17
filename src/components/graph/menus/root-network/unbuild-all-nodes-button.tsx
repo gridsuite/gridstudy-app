@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import { CancelButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { StopCircleOutlined } from '@mui/icons-material';
 import {
@@ -14,7 +20,7 @@ import { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { unbuildAllStudyNodes } from 'services/study';
+import { unbuildAllStudyNodes } from 'services/study/study';
 
 const styles = {
     button: {

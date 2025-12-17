@@ -286,13 +286,6 @@ export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootN
     return backendFetchText(url, { method: 'post' });
 }
 
-export function unbuildAllStudyNodes(studyUuid: UUID) {
-    console.info('Unbuild all nodes in study ' + studyUuid + ' ...');
-    const url = getStudyUrl(studyUuid) + '/nodes/unbuild-all';
-    console.debug(url);
-    return backendFetchText(url, { method: 'post' });
-}
-
 export function buildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         'Build node ' +
