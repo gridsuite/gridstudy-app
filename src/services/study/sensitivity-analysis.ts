@@ -11,7 +11,6 @@ import type { UUID } from 'node:crypto';
 import {
     CsvConfig,
     SelectorFilterOptions,
-    SensitivityAnalysisFactorsCountParameters,
     SensitivityAnalysisParametersInfos,
     SensitivityResult,
     SensitivityResultFilterOptions,
