@@ -46,10 +46,8 @@ export default function SubstationsAutocomplete({
         fieldState: { error },
     } = useController({ name });
 
-    const handleChange = (_: SyntheticEvent, value: string[], reason: string) => {
-        if (reason !== 'blur') {
-            onChange(value);
-        }
+    const handleChange = (_: SyntheticEvent, value: string[]) => {
+        onChange(value);
     };
 
     return (
