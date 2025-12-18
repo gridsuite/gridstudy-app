@@ -29,6 +29,7 @@ import type {
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
+    TableSortConfig,
     TableSortKeysType,
 } from './reducer';
 import type { RunningStatus } from '../components/utils/running-status';
@@ -1400,19 +1401,22 @@ export type InitTableDefinitionsAction = {
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters?: SpreadsheetFilterState;
     globalFilterSpreadsheetState?: GlobalFilterSpreadsheetState;
+    tablesSorts?: TableSortConfig;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
     tablesFilters: SpreadsheetFilterState = {},
-    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {}
+    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {},
+    tablesSorts: TableSortConfig = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
     tablesFilters,
     globalFilterSpreadsheetState,
+    tablesSorts,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';

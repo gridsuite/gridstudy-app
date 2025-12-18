@@ -16,7 +16,7 @@ import {
     BooleanFilterValue,
     updateFilters,
 } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { FilterConfig, FilterType } from '../../../types/custom-aggrid-types';
+import { FilterConfig, FilterType, SortConfig } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
     CustomColDef,
@@ -27,7 +27,7 @@ import {
 import type { UUID } from 'node:crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
 import { ROW_INDEX_COLUMN_ID } from '../constants';
-import { updateSpreadsheetColumn } from 'services/study/study-config';
+import { updateSpreadsheetColumn, updateSpreadsheetSort } from 'services/study/study-config';
 import { ColumnDefinition } from '../types/spreadsheet.type';
 import { mapColDefToDto } from '../add-spreadsheet/dialogs/add-spreadsheet-utils';
 
@@ -37,8 +37,16 @@ const updateAndPersistFilters = (colDef: ColumnDefinition, tab: string, api: Gri
     if (studyUuid) {
         const filter = filters?.find((f) => f.column === colDef.id);
         const columnDto = mapColDefToDto(colDef, filter);
-        updateSpreadsheetColumn(studyUuid, tab as UUID, colDef.uuid, columnDto);
+        updateSpreadsheetColumn(studyUuid, tab as UUID, colDef.uuid, columnDto).then();
     }
+};
+
+const persistSort = (colDef: ColumnDefinition, tab: string, api: GridApi, sortConfig: SortConfig): Promise<void> => {
+    const studyUuid = api?.getGridOption('context')?.studyUuid;
+    if (studyUuid) {
+        return updateSpreadsheetSort(studyUuid, tab as UUID, sortConfig);
+    }
+    return Promise.resolve();
 };
 
 export const textColumnDefinition = (colDef: ColumnDefinition, tab: string): ColDef => {
@@ -49,6 +57,7 @@ export const textColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
+                persistSort: persistSort.bind(null, colDef, tab),
             },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
@@ -92,6 +101,7 @@ export const enumColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
+                persistSort: persistSort.bind(null, colDef, tab),
             },
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
@@ -120,6 +130,7 @@ export const numberColumnDefinition = (colDef: ColumnDefinition, tab: string): C
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
+                persistSort: persistSort.bind(null, colDef, tab),
             },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
@@ -173,6 +184,7 @@ export const booleanColumnDefinition = (colDef: ColumnDefinition, tab: string): 
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
+                persistSort: persistSort.bind(null, colDef, tab),
             },
             filterComponent: CustomAggridBooleanFilter,
             filterComponentParams: {
