@@ -6,8 +6,10 @@
  */
 import { Identifiable, yupConfig as yup, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
+import { SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
+    MAX_Q_AT_NOMINAL_V,
     REACTIVE_CAPABILITY_CURVE,
     REACTIVE_CAPABILITY_CURVE_P_0,
     REACTIVE_CAPABILITY_CURVE_P_MAX,
@@ -20,11 +22,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
 } from 'components/utils/field-constants';
-import {
-    mapGeneratorDataForTable,
-    mapShuntCompensatorDataForTable,
-    mapTwtDataForTable,
-} from 'utils/spreadsheet-equipments-mapper';
+import { mapGeneratorDataForTable, mapTwtDataForTable } from 'utils/spreadsheet-equipments-mapper';
 
 export const styles = {
     dialogContent: {
@@ -168,6 +166,23 @@ export const mapReactiveCapabilityCurvePointsToFormFields = (equipment: Record<s
     return formattedEquipment;
 };
 
+export const mapShuntCompensatorToFormFields = (shuntCompensator: Record<string, any>) => {
+    const formattedCompensator = { ...shuntCompensator };
+
+    if (formattedCompensator.type === undefined) {
+        formattedCompensator.type =
+            formattedCompensator.maxSusceptance > 0
+                ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
+                : SHUNT_COMPENSATOR_TYPES.REACTOR.id;
+    }
+
+    return {
+        ...formattedCompensator,
+        [MAX_Q_AT_NOMINAL_V]:
+            Number(formattedCompensator.qatNominalV) * Number(formattedCompensator.maximumSectionCount),
+    };
+};
+
 export const mapPrefilledEquipments = (equipmentType: EQUIPMENT_TYPES, equipments: Identifiable[]) => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
@@ -175,7 +190,7 @@ export const mapPrefilledEquipments = (equipmentType: EQUIPMENT_TYPES, equipment
         case EQUIPMENT_TYPES.GENERATOR:
             return equipments.map((eq) => mapReactiveCapabilityCurvePointsToFormFields(mapGeneratorDataForTable(eq)));
         case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-            return equipments.map(mapShuntCompensatorDataForTable);
+            return equipments.map(mapShuntCompensatorToFormFields);
         case EQUIPMENT_TYPES.BATTERY:
             return equipments.map(mapReactiveCapabilityCurvePointsToFormFields);
         default:
