@@ -46,8 +46,10 @@ export default function SubstationsAutocomplete({
         fieldState: { error },
     } = useController({ name });
 
-    const handleChange = (_: SyntheticEvent, value: string[]) => {
-        onChange(value);
+    const handleChange = (_: SyntheticEvent, value: string[], reason: string) => {
+        if (reason !== 'blur') {
+            onChange(value);
+        }
     };
 
     return (
@@ -59,7 +61,6 @@ export default function SubstationsAutocomplete({
             options={substations}
             size={'small'}
             freeSolo
-            autoSelect
             sx={styles.autocomplete}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
