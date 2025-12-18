@@ -8,6 +8,7 @@
 import { PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import type { Action } from 'redux';
 import {
+    BaseVoltage,
     ComputingType,
     type GsLang,
     type GsLangUser,
@@ -73,6 +74,7 @@ import type { RootNetworkMetadata } from 'components/graph/menus/network-modific
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -108,6 +110,7 @@ export type AppActions =
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
+    | StoreNadViewBoxAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
@@ -639,10 +642,10 @@ export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_
     [PARAM_DEVELOPER_MODE]: boolean;
 };
 
-export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableDeveloperModeAction {
+export function selectIsDeveloperMode(isDeveloperMode: boolean): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
-        [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
+        [PARAM_DEVELOPER_MODE]: isDeveloperMode,
     };
 }
 
@@ -700,6 +703,18 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[])
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
+    };
+}
+
+export const SET_BASE_VOLTAGE_LIST = 'SET_BASE_VOLTAGE_LIST';
+export type SetBaseVoltageListAction = Readonly<Action<typeof SET_BASE_VOLTAGE_LIST>> & {
+    baseVoltages: BaseVoltage[];
+};
+
+export function setBaseVoltageList(baseVoltageList: BaseVoltage[]): SetBaseVoltageListAction {
+    return {
+        type: SET_BASE_VOLTAGE_LIST,
+        baseVoltages: baseVoltageList,
     };
 }
 
@@ -764,6 +779,18 @@ export function setNodeSelectionForCopy(
         nodeSelectionForCopy: nodeSelectionForCopy,
     };
 }
+
+export const STORE_NAD_VIEW_BOX = 'STORE_NAD_VIEW_BOX';
+
+export type StoreNadViewBoxAction = {
+    type: typeof STORE_NAD_VIEW_BOX;
+    nadViewBox: { nadUuid: UUID; viewBox: ViewBoxLike | null };
+};
+
+export const StoreNadViewBox = (nadUuid: UUID, viewBox: ViewBoxLike | null): StoreNadViewBoxAction => ({
+    type: STORE_NAD_VIEW_BOX,
+    nadViewBox: { nadUuid, viewBox },
+});
 
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
