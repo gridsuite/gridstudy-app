@@ -69,6 +69,8 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER:
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER_LEG:
             return { equipmentType: EquipmentType.THREE_WINDINGS_TRANSFORMER };
+        case FEEDER_TYPES.VOLTAGE_LEVEL:
+            return { equipmentType: EquipmentType.VOLTAGE_LEVEL };
         default: {
             console.log('bad feeder type ', feederType);
             return null;
@@ -117,6 +119,9 @@ export const equipmentsWithPopover = [
     FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER,
     FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER,
     FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER_LEG,
+    FEEDER_TYPES.LOAD,
+    FEEDER_TYPES.VOLTAGE_LEVEL,
+    FEEDER_TYPES.GENERATOR,
 ];
 
 /**

@@ -19,7 +19,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/column_precision': 'Précision',
     'spreadsheet/custom_column/column_content': 'Entrer la formule',
     'spreadsheet/custom_column/column_dependencies': 'Entrer les dépendances de la formule',
-    'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau), des IDs de colonnes (pour faire référence au contenu d'une autre colonne) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau). Exemple : maxP - p pour afficher la réserve de puissance active dans le tableur des groupes.`,
+    'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau), des IDs de colonnes (pour faire référence au contenu d'une autre colonne) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau).\n\nExemple : maxP - targetP pour afficher la réserve de puissance active dans le tableur des groupes.`,
     'spreadsheet/custom_column/error/id_not_conform':
         'Un ID de colonne ne doit contenir ni espace ni caractère spécial et ne doit pas commencer par un chiffre',
     'spreadsheet/custom_column/error/id_le_60': 'Un ID de colonne ne peut dépasser 60 caractères',
@@ -79,7 +79,7 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Remplacer',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Ajouter',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
-        "Vous êtes sur le point de remplacer le contenu actuel de l'onglet 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
+        "Vous êtes sur le point de remplacer le contenu actuel du panneau 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Ajouter feuille de calcul',
     'spreadsheet/create_new_spreadsheet/empty_spreadsheet_option': 'Ajouter une feuille',
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Choisir un modèle',

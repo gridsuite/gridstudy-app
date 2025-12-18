@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ExportCsvButton, PARAM_LANGUAGE, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
@@ -26,6 +26,7 @@ import { SensiKind } from './sensitivity-analysis-result.type';
 import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 interface SensitivityExportButtonProps {
     studyUuid: UUID;
@@ -54,7 +55,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
 
-    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
     const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
     const sortConfig = useSelector(

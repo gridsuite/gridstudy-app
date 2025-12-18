@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useLayoutEffect, useRef, useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useLayoutEffect, useRef, useCallback, useState, useEffect, memo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import RunningStatus from 'components/utils/running-status';
 import {
     buildPositionsFromNadMetadata,
@@ -54,8 +54,10 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
+import { StoreNadViewBox } from 'redux/actions';
 
 type NetworkAreaDiagramContentProps = {
+    readonly nadPanelId: UUID;
     readonly voltageLevelIds: string[];
     readonly voltageLevelToExpandIds: string[];
     readonly voltageLevelToOmitIds: string[];
@@ -66,6 +68,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svgScalingFactor?: number;
     readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
+    readonly isNadCreationFromFilter: boolean;
     readonly visible: boolean;
     readonly onVoltageLevelClick: (voltageLevelId: string) => void;
     readonly onUpdateVoltageLevels: (params: {
@@ -73,12 +76,13 @@ type NetworkAreaDiagramContentProps = {
         voltageLevelToExpandIds: string[];
         voltageLevelToOmitIds: string[];
     }) => void;
+    readonly onUpdateVoltageLevelsFromFilter: (filterUuid: UUID) => void;
     readonly onUpdatePositions: (positions: DiagramConfigPosition[]) => void;
     readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
     readonly onSaveNad?: () => void;
 };
 
-function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
+const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const {
         visible,
         voltageLevelIds,
@@ -87,13 +91,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         positions,
         onVoltageLevelClick,
         onUpdateVoltageLevels,
+        onUpdateVoltageLevelsFromFilter,
         onUpdatePositions,
         onReplaceNad,
+        nadPanelId,
         svg,
         svgMetadata,
         svgScalingFactor,
         svgVoltageLevels,
         loadingState,
+        isNadCreationFromFilter,
         showInSpreadsheet,
         onSaveNad,
     } = props;
@@ -113,7 +120,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
-
+    const nadViewBox = useSelector((state: AppState) => state.nadViewBox);
+    const dispatch = useDispatch();
     // save nad when exiting edit mode
     const handleSetIsEditNadMode = useCallback(
         (newMode: boolean) => {
@@ -324,6 +332,13 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, onUpdateVoltageLevels]
     );
 
+    const handleAddVoltageLevelsFromFilter = useCallback(
+        (filterUuid: UUID) => {
+            onUpdateVoltageLevelsFromFilter(filterUuid);
+        },
+        [onUpdateVoltageLevelsFromFilter]
+    );
+
     const handleExpandVoltageLevelId = useCallback(
         (voltageLevelIdToExpand: string) => {
             onUpdateVoltageLevels({
@@ -417,6 +432,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [svgMetadata]
     );
 
+    useEffect(() => {
+        const handleSwitchWorkspace = () => {
+            if (!diagramViewerRef?.current) return;
+            const viewBox = diagramViewerRef.current.getViewBox() ?? null;
+            dispatch(StoreNadViewBox(nadPanelId, viewBox));
+        };
+        globalThis.addEventListener('workspace:switchWorkspace', handleSwitchWorkspace);
+        return () => globalThis.removeEventListener('workspace:switchWorkspace', handleSwitchWorkspace);
+    }, [nadPanelId, diagramViewerRef, dispatch]);
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -437,7 +462,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onSelectNodeCallback: handleNodeLeftClick,
                 onToggleHoverCallback: handleToggleHover,
                 onRightClickCallback: showEquipmentMenu,
-                initialViewBox: diagramViewerRef?.current?.getViewBox(),
+                initialViewBox: nadViewBox[nadPanelId] ?? diagramViewerRef?.current?.getViewBox(),
             };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
@@ -472,6 +497,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         handleNodeLeftClick,
         handleToggleHover,
         loadingState,
+        nadViewBox,
+        nadPanelId,
     ]);
 
     const closeMenu = () => {
@@ -535,9 +562,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onToggleEditNadMode={handleSetIsEditNadMode}
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                 onAddVoltageLevel={handleAddVoltageLevel}
+                onAddVoltageLevelsFromFilter={handleAddVoltageLevelsFromFilter}
                 onToggleShowLabels={handleToggleShowLabels}
                 isShowLabels={showLabels}
                 isDiagramLoading={loadingState}
+                isNadCreationFromFilter={isNadCreationFromFilter}
                 svgVoltageLevels={svgVoltageLevels}
                 onFocusVoltageLevel={handleFocusVoltageLevel}
             />
@@ -547,6 +576,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             {renderDynamicSimulationEventDialog()}
         </>
     );
-}
+});
 
 export default NetworkAreaDiagramContent;

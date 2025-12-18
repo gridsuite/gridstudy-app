@@ -13,6 +13,7 @@ import {
     ElementType,
     fetchDirectoryElementPath,
     Parameter,
+    PARAM_DEVELOPER_MODE,
     SelectInput,
     snackWithFallback,
     TextInput,
@@ -21,7 +22,6 @@ import {
 import { ExportFormatProperties, getAvailableExportFormats } from '../../../services/study';
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import { useParameterState } from '../parameters/use-parameters-state';
 import { AppState } from '../../../redux/reducer';
 
@@ -81,7 +81,7 @@ export function ExportNetworkDialog({
     const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
     const [parameters, setParameters] = useState<Parameter[]>();
     const { snackError } = useSnackMessage();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
     const nodeName = useMemo(() => treeNodes?.find((node) => node.id === nodeUuid)?.data.label, [treeNodes, nodeUuid]);
@@ -115,7 +115,7 @@ export function ExportNetworkDialog({
         if (open) {
             getAvailableExportFormats().then((formats) => {
                 const XIIDM_FORMAT = 'XIIDM';
-                const availableFormats = enableDeveloperMode
+                const availableFormats = isDeveloperMode
                     ? formats
                     : Object.fromEntries(Object.entries(formats).filter(([key]) => key === XIIDM_FORMAT));
 
@@ -125,7 +125,7 @@ export function ExportNetworkDialog({
                 setFormatsWithParameters(availableFormats);
             });
         }
-    }, [open, enableDeveloperMode]);
+    }, [open, isDeveloperMode]);
 
     const onSubmit = useCallback(
         (data: ExportNetworkFormData) => {
