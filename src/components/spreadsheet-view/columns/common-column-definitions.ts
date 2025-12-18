@@ -21,8 +21,8 @@ import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-
 import {
     CustomColDef,
     FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
+    SPREADSHEET_FILTER_NUMBER_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import type { UUID } from 'node:crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
@@ -66,8 +66,13 @@ export const textColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
                     tab,
                     updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
                     dataType: FILTER_DATA_TYPES.TEXT,
-                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    debounceMs: 200,
+                    comparators: [
+                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                        FILTER_TEXT_COMPARATORS.CONTAINS,
+                        FILTER_TEXT_COMPARATORS.IS_EMPTY,
+                        FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY,
+                    ],
+                    debounceMs: 500,
                 },
             },
         },
@@ -139,8 +144,8 @@ export const numberColumnDefinition = (colDef: ColumnDefinition, tab: string): C
                     tab,
                     updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
                     dataType: FILTER_DATA_TYPES.NUMBER,
-                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    debounceMs: 200,
+                    comparators: Object.values(SPREADSHEET_FILTER_NUMBER_COMPARATORS),
+                    debounceMs: 500,
                 },
             },
         },

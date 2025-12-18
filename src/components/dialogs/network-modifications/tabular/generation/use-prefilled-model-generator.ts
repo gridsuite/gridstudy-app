@@ -155,28 +155,30 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
             const selectedGroups = columnGroups.filter((g) => selectedColumnGroups.includes(g.labelId));
 
             // 4. Data rows
-            equipments.forEach((equipment) => {
-                const row = csvColumns.map((column) => {
-                    // ID is always filled
-                    if (column === EQUIPMENT_ID) {
-                        return equipment.id ?? '';
-                    }
-
-                    // Check if this column is part of selected groups
-                    for (const group of selectedGroups) {
-                        const columnIndex = group.csvColumns.indexOf(column);
-                        if (columnIndex !== -1) {
-                            const networkField = group.networkFields[columnIndex];
-                            const value = getNestedValue(equipment, networkField);
-                            const fieldDef = getFieldDefinition(column);
-                            return formatValueForCsv(value, fieldDef);
+            equipments
+                .toSorted((equipment1, equipment2) => equipment1.id.localeCompare(equipment2.id))
+                .forEach((equipment) => {
+                    const row = csvColumns.map((column) => {
+                        // ID is always filled
+                        if (column === EQUIPMENT_ID) {
+                            return equipment.id ?? '';
                         }
-                    }
 
-                    return '';
+                        // Check if this column is part of selected groups
+                        for (const group of selectedGroups) {
+                            const columnIndex = group.csvColumns.indexOf(column);
+                            if (columnIndex !== -1) {
+                                const networkField = group.networkFields[columnIndex];
+                                const value = getNestedValue(equipment, networkField);
+                                const fieldDef = getFieldDefinition(column);
+                                return formatValueForCsv(value, fieldDef);
+                            }
+                        }
+
+                        return '';
+                    });
+                    csvRows.push(row.join(delimiter));
                 });
-                csvRows.push(row.join(delimiter));
-            });
 
             return csvRows.join('\n');
         },

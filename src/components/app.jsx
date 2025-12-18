@@ -42,7 +42,7 @@ import {
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
-    selectEnableDeveloperMode,
+    selectIsDeveloperMode,
     selectFavoriteContingencyLists,
     selectLanguage,
     selectTheme,
@@ -66,6 +66,7 @@ import {
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 import { SortWay } from '../types/custom-aggrid-types.ts';
+import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -123,7 +124,7 @@ const App = () => {
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
                         break;
                     case PARAM_DEVELOPER_MODE:
-                        dispatch(selectEnableDeveloperMode(param.value === 'true'));
+                        dispatch(selectIsDeveloperMode(param.value === 'true'));
                         break;
                     case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));
@@ -161,6 +162,8 @@ const App = () => {
     });
 
     useStudyNavigationSync();
+
+    useBaseVoltages();
 
     const networkVisuParamsUpdated = useCallback(
         (event) => {

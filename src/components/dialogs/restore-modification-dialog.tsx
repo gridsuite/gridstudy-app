@@ -14,12 +14,12 @@ import {
     snackWithFallback,
     useModificationLabelComputer,
     useSnackMessage,
+    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { NetworkModificationMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { toggleElementFromList } from 'components/utils/utils';
 
 const styles = {
@@ -57,7 +57,6 @@ interface RestoreModificationDialogProps {
  * @param {EventListener} onClose Event to close the dialog
  * @param modifToRestore List of network modifications to restore
  * @param currentNode the current node
- * @param studyUuid Id of the current study
  */
 
 const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreModificationDialogProps) => {

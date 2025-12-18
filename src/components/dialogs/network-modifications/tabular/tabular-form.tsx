@@ -479,7 +479,13 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         separator={language === LANG_FRENCH ? ';' : ','}
                     >
                         <Button variant="contained" disabled={!csvColumns?.length}>
-                            <FormattedMessage id="GenerateEmptyModel" />
+                            <FormattedMessage
+                                id={
+                                    dialogMode === TabularModificationType.CREATION
+                                        ? 'GenerateSkeleton'
+                                        : 'GenerateEmptyModel'
+                                }
+                            />
                         </Button>
                     </CsvDownloader>
                 </Grid>
