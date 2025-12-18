@@ -10,6 +10,7 @@ import {
     type AuthenticationActions,
     type AuthenticationRouterErrorAction,
     type AuthenticationRouterErrorState,
+    BaseVoltage,
     type CommonStoreState,
     ComputingType,
     type GsLang,
@@ -106,6 +107,10 @@ import {
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
+    PCCMIN_ANALYSIS_RESULT_FILTER,
+    PCCMIN_ANALYSIS_RESULT_PAGINATION,
+    type PccminAnalysisResultFilterAction,
+    PccminAnalysisResultPaginationAction,
     REMOVE_COLUMN_DEFINITION,
     REMOVE_EQUIPMENT_DATA,
     REMOVE_FROM_RECENT_GLOBAL_FILTERS,
@@ -131,10 +136,11 @@ import {
     RESET_LOGS_FILTER,
     RESET_LOGS_PAGINATION,
     RESET_MAP_EQUIPMENTS,
+    RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    RESET_PCCMIN_ANALYSIS_PAGINATION,
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
     RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
-    RESET_PCCMIN_ANALYSIS_PAGINATION,
     type ResetAllSpreadsheetGlobalFiltersAction,
     type ResetEquipmentsAction,
     type ResetEquipmentsByTypesAction,
@@ -142,10 +148,11 @@ import {
     type ResetLogsFilterAction,
     ResetLogsPaginationAction,
     type ResetMapEquipmentsAction,
+    type ResetOneBusShortcircuitAnalysisDiagramAction,
+    ResetPccminAnalysisPaginationAction,
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
     ResetShortcircuitAnalysisPaginationAction,
-    ResetPccminAnalysisPaginationAction,
     SAVE_SPREADSHEET_GS_FILTER,
     type SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
@@ -167,6 +174,7 @@ import {
     SET_ACTIVE_SPREADSHEET_TAB,
     SET_ADDED_SPREADSHEET_TAB,
     SET_APP_TAB_INDEX,
+    SET_BASE_VOLTAGE_LIST,
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
@@ -176,7 +184,6 @@ import {
     SET_MODIFICATIONS_IN_PROGRESS,
     SET_MONO_ROOT_STUDY,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-    RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
     SET_RELOAD_MAP_NEEDED,
@@ -186,6 +193,7 @@ import {
     SetActiveSpreadsheetTabAction,
     SetAddedSpreadsheetTabAction,
     type SetAppTabIndexAction,
+    SetBaseVoltageListAction,
     type SetCalculationSelectionsAction,
     type SetComputationStartingAction,
     type SetComputingStatusAction,
@@ -195,7 +203,6 @@ import {
     type SetModificationsInProgressAction,
     type SetMonoRootStudyAction,
     type SetOneBusShortcircuitAnalysisDiagramAction,
-    type ResetOneBusShortcircuitAnalysisDiagramAction,
     type SetOptionalServicesAction,
     type SetParamsLoadedAction,
     type SetReloadMapNeededAction,
@@ -206,10 +213,6 @@ import {
     SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
     type ShortcircuitAnalysisResultFilterAction,
     ShortcircuitAnalysisResultPaginationAction,
-    PCCMIN_ANALYSIS_RESULT_FILTER,
-    PCCMIN_ANALYSIS_RESULT_PAGINATION,
-    type PccminAnalysisResultFilterAction,
-    PccminAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
@@ -234,6 +237,8 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
+    STORE_NAD_VIEW_BOX,
+    StoreNadViewBoxAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -345,12 +350,13 @@ import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & StudyUpdateNotification;
-
+export type NadViewBox = Record<UUID, ViewBoxLike | null>;
 export enum EquipmentUpdateType {
     LINES = 'lines',
     TIE_LINES = 'tieLines',
@@ -545,6 +551,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nodeAliases: NodeAlias[];
 
     nodeSelectionForCopy: NodeSelectionForCopy;
+    nadViewBox: NadViewBox;
     copiedNetworkModifications: CopiedNetworkModifications;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
@@ -566,6 +573,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     syncEnabled: boolean;
+
+    baseVoltages: BaseVoltage[];
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
         [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
@@ -693,6 +702,7 @@ const initialTablesState: TablesState = {
 
 const initialState: AppState = {
     syncEnabled: false,
+    baseVolatges: null,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
     isDirtyComputationParameters: false,
@@ -707,6 +717,7 @@ const initialState: AppState = {
         copyType: null,
         allChildren: null,
     },
+    nadViewBox: {},
     copiedNetworkModifications: {
         networkModificationUuids: [],
         copyInfos: null,
@@ -953,6 +964,10 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
         state.syncEnabled = getLocalStorageSyncEnabled(state.studyUuid);
+    });
+
+    builder.addCase(SET_BASE_VOLTAGE_LIST, (state, action: SetBaseVoltageListAction) => {
+        state.baseVoltages = action.baseVoltages;
     });
 
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
@@ -1367,6 +1382,11 @@ export const reducer = createReducer(initialState, (builder) => {
             )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
+    });
+
+    builder.addCase(STORE_NAD_VIEW_BOX, (state, action: StoreNadViewBoxAction) => {
+        const { nadUuid, viewBox } = action.nadViewBox;
+        state.nadViewBox[nadUuid] = viewBox;
     });
 
     builder.addCase(COPIED_NETWORK_MODIFICATIONS, (state, action: CopiedNetworkModificationsAction) => {

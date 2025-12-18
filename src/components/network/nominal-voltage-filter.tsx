@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { BaseVoltage, type MuiStyles } from '@gridsuite/commons-ui';
-import { getBaseVoltageIntervalName } from 'utils/base-voltages-utils';
-import { getLocalStorageBaseVoltages } from 'redux/session-storage/local-storage';
+import { useBaseVoltages } from '../../hooks/use-base-voltages';
 
 const styles = {
     nominalVoltageZone: {
@@ -56,23 +55,13 @@ export default function NominalVoltageFilter({
     filteredNominalVoltages,
     onChange,
 }: Readonly<NominalVoltageFilterProps>) {
+    const { baseVoltages, getBaseVoltage } = useBaseVoltages();
     const [voltageLevelIntervals, setVoltageLevelIntervals] = useState<VoltageLevelValuesInterval[]>(
-        getLocalStorageBaseVoltages().map(({ name, minValue, maxValue }) => ({
-            name,
-            minValue,
-            maxValue,
-            vlListValues: [],
-            isChecked: true,
-        }))
-    );
-
-    useEffect(() => {
-        const newIntervals = getLocalStorageBaseVoltages().map((interval) => {
-            const vlListValues = nominalVoltages.filter((vnom) => getBaseVoltageIntervalName(vnom) === interval.name);
+        baseVoltages.map((interval) => {
+            const vlListValues = nominalVoltages.filter((vnom) => getBaseVoltage(vnom)?.name === interval.name);
             return { ...interval, vlListValues, isChecked: true };
-        });
-        setVoltageLevelIntervals(newIntervals);
-    }, [nominalVoltages]);
+        })
+    );
 
     const handleToggle = useCallback(
         (interval: VoltageLevelValuesInterval) => {
