@@ -90,3 +90,10 @@ export const reindexAllRootNetwork = (studyUuid: UUID, currentRootNetworkUuid: U
         headers: { 'Content-Type': 'application/json' },
     });
 };
+
+export function unbuildAllStudyNodes(studyUuid: UUID) {
+    console.info('Unbuild all nodes in study ' + studyUuid + ' ...');
+    const url = getStudyUrl(studyUuid) + '/nodes/unbuild-all';
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+}
