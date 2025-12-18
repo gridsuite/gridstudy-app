@@ -46,6 +46,7 @@ import {
 } from './export-network-utils';
 import { useIntl } from 'react-intl';
 import { DirectoryItemSelect } from './directory-item-select';
+import { NetworkExportInfos } from '../../../services/study-types';
 
 /**
  * Dialog to export the network case
@@ -58,15 +59,7 @@ import { DirectoryItemSelect } from './directory-item-select';
 interface ExportNetworkDialogProps {
     open: boolean;
     onClose: () => void;
-    onClick: (
-        nodeUuid: UUID,
-        params: Record<string, any>,
-        selectedFormat: string,
-        fileName: string,
-        exportToExplorer: boolean,
-        parentDirectoryUuid?: string,
-        description?: string
-    ) => void;
+    onClick: (nodeUuid: UUID, params: Record<string, any>, exportInfos: NetworkExportInfos) => void;
     studyUuid: UUID;
     nodeUuid: UUID;
 }
@@ -129,15 +122,13 @@ export function ExportNetworkDialog({
 
     const onSubmit = useCallback(
         (data: ExportNetworkFormData) => {
-            onClick(
-                nodeUuid,
-                data[EXPORT_PARAMETERS],
-                data[EXPORT_FORMAT],
-                data[FILE_NAME],
-                data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER,
-                data[FOLDER_ID],
-                data[DESCRIPTION]
-            );
+            onClick(nodeUuid, data[EXPORT_PARAMETERS], {
+                selectedFormat: data[EXPORT_FORMAT],
+                fileName: data[FILE_NAME],
+                exportToExplorer: data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER,
+                parentDirectoryUuid: data[FOLDER_ID],
+                description: data[DESCRIPTION],
+            });
         },
         [nodeUuid, onClick]
     );
