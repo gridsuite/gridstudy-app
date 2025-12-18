@@ -134,7 +134,7 @@ export function ExportNetworkDialog({
                 data[EXPORT_PARAMETERS],
                 data[EXPORT_FORMAT],
                 data[FILE_NAME],
-                data[EXPORT_FORMAT] !== ExportDestinationType.MY_COMPUTER,
+                data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER,
                 data[FOLDER_ID],
                 data[DESCRIPTION]
             );

@@ -1710,7 +1710,6 @@
     "destination": "Destination",
 
     "ActivePower": "P (MW)",
-
     "reactivePowerTooltip": "Q (MVar)",
     "tooltip.u": "U (kV)",
     "tooltip.umin": "Umin (kV)",
