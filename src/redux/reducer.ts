@@ -235,6 +235,8 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
+    STORE_NAD_VIEW_BOX,
+    StoreNadViewBoxAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -343,12 +345,13 @@ import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & StudyUpdateNotification;
-
+export type NadViewBox = Record<UUID, ViewBoxLike | null>;
 export enum EquipmentUpdateType {
     LINES = 'lines',
     TIE_LINES = 'tieLines',
@@ -538,6 +541,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nodeAliases: NodeAlias[];
 
     nodeSelectionForCopy: NodeSelectionForCopy;
+    nadViewBox: NadViewBox;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
@@ -702,6 +706,7 @@ const initialState: AppState = {
         copyType: null,
         allChildren: null,
     },
+    nadViewBox: {},
     tables: initialTablesState,
     nodeAliases: [],
     calculationSelections: {},
@@ -1362,6 +1367,11 @@ export const reducer = createReducer(initialState, (builder) => {
             )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
+    });
+
+    builder.addCase(STORE_NAD_VIEW_BOX, (state, action: StoreNadViewBoxAction) => {
+        const { nadUuid, viewBox } = action.nadViewBox;
+        state.nadViewBox[nadUuid] = viewBox;
     });
 
     builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {

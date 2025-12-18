@@ -1724,5 +1724,9 @@
     "removeAll": "Tout fermer",
     "removeAllAssociatedSldsConfirmation": "Êtes-vous sûr de vouloir fermer tous les postes associés ?",
     "createNewNAD": "Créer un nouveau NAD",
-    "existingNAD": "NAD existant"
+    "existingNAD": "NAD existant",
+    "unbuildAllNodesTooltip": "Déréaliser tous les nœuds",
+    "unbuildAllNodesDialogTitle": "Confirmation",
+    "unbuildAllNodesDialogContent": "Toutes les réalisations de tous les nœuds de l'arbre pour tous les réseaux racines ainsi que tous les résultats de calcul seront supprimés",
+    "unbuildAllNodesError": "Une erreur est survenue lors de la déréalisation de l'ensemble des nœuds"
 }
