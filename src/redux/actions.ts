@@ -74,6 +74,7 @@ import type { RootNetworkMetadata } from 'components/graph/menus/network-modific
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -109,6 +110,7 @@ export type AppActions =
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
+    | StoreNadViewBoxAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
@@ -777,6 +779,18 @@ export function setNodeSelectionForCopy(
         nodeSelectionForCopy: nodeSelectionForCopy,
     };
 }
+
+export const STORE_NAD_VIEW_BOX = 'STORE_NAD_VIEW_BOX';
+
+export type StoreNadViewBoxAction = {
+    type: typeof STORE_NAD_VIEW_BOX;
+    nadViewBox: { nadUuid: UUID; viewBox: ViewBoxLike | null };
+};
+
+export const StoreNadViewBox = (nadUuid: UUID, viewBox: ViewBoxLike | null): StoreNadViewBoxAction => ({
+    type: STORE_NAD_VIEW_BOX,
+    nadViewBox: { nadUuid, viewBox },
+});
 
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
