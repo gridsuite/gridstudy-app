@@ -57,6 +57,49 @@ export const styles = {
         '& .sld-pst-arrow': {
             stroke: theme.palette.text.primary,
         },
+        '.legend-root': {
+            display: 'inline-flex',
+            gap: '8px',
+            padding: '8px',
+            margin: '4px',
+            boxShadow: theme.shadows[2],
+            borderRadius: '2px',
+            backgroundColor: theme.sld.backgroundColor,
+        },
+        '& .legend-table td': {
+            padding: '2px 16px',
+        },
+        '& .legend-block': {
+            minWidth: '100px',
+        },
+        '& .legend-table': {
+            width: '100%',
+            borderCollapse: 'collapse',
+        },
+        '& .legend-title': {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '600',
+            fontSize: '14px',
+            margin: '0 16px 4px 16px',
+        },
+        '& .bus-circle': {
+            width: '18px',
+            height: '18px',
+            borderRadius: '50%',
+            display: 'inline-block',
+        },
+        '& .bus-circle:hover': {
+            transform: 'scale(1.2)',
+        },
+        '& .legend-table tr': {
+            borderBlock: theme.sld.border,
+        },
+        '& .vl-title-icon': {
+            fontSize: '20px',
+            lineHeight: '18px',
+        },
     }),
     divSingleLineDiagramHideLockAndBolt: {
         '& .sld-flash, .sld-lock': {
@@ -81,13 +124,9 @@ export const styles = {
         },
     },
     divDiagramLoadflowInvalid: {
-        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-voltage polygon, & .sld-angle polygon, & .sld-consumption-sum polygon, & .sld-production-sum polygon':
+        '& .sld-active-power, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum':
             {
                 opacity: INVALID_COMPUTATION_OPACITY,
-            },
-        '& .sld-active-power text, & .sld-reactive-power text, & .sld-current-value text, & .sld-permanent-limit-percentage text, & .sld-voltage text, & .sld-angle text, & .sld-consumption-sum text, & .sld-production-sum text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info, & .sld-consumption-sum.sld-bus-legend-info, & .sld-production-sum.sld-bus-legend-info':
-            {
-                fill: '#787F81',
             },
         '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
             animation: 'none !important',
@@ -104,11 +143,8 @@ export const styles = {
             },
     },
     divDiagramShortCircuitInvalid: {
-        '& .sld-icc polygon': {
+        '& .sld-icc': {
             opacity: INVALID_COMPUTATION_OPACITY,
-        },
-        '& .sld-icc.sld-bus-legend-info': {
-            fill: '#787F81',
         },
     },
     hideLabels: {
