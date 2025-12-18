@@ -155,31 +155,6 @@ export function setSensitivityAnalysisParameters(
     });
 }
 
-export function getSensitivityAnalysisFactorsCount(
-    studyUuid: UUID | null,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    isInjectionsSet: boolean,
-    newParams: SensitivityAnalysisFactorsCountParameters
-) {
-    console.info('get sensitivity analysis parameters computing count');
-    const urlSearchParams = new URLSearchParams();
-    const jsoned = JSON.stringify(isInjectionsSet);
-    urlSearchParams.append('isInjectionsSet', jsoned);
-    Object.keys(newParams)
-        // @ts-ignore
-        .filter((key) => newParams[key])
-        // @ts-ignore
-        .forEach((key) => urlSearchParams.append(`ids[${key}]`, newParams[key]));
-
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}
-      /sensitivity-analysis/factors-count?${urlSearchParams}`;
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'GET',
-    });
-}
-
 export function exportSensitivityResultsAsCsv(
     studyUuid: UUID,
     currentNodeUuid: UUID,
