@@ -7,13 +7,14 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Typography } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Tooltip, Typography } from '@mui/material';
 import {
     AutocompleteInput,
     CancelButton,
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
+    mergeSx,
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
@@ -49,6 +50,7 @@ import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../servi
 import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floating-popover-treeview-wrapper';
 import { isFormulaContentSizeOk } from './utils/formula-validator';
 import { MAX_FORMULA_CHARACTERS } from '../constants';
+import InfoIcon from '@mui/icons-material/Info';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -59,14 +61,19 @@ export type ColumnCreationDialogProps = {
 
 const styles = {
     dialogContent: {
-        width: '40%',
-        height: '72%',
-        maxWidth: 'none',
-        margin: 'auto',
+        width: '45vw',
+        maxWidth: '45vw',
+        display: 'flex',
+        flexDirection: 'column',
     },
-    columnDescription: { width: '95%', marginTop: '20px', marginBottom: '20px' },
-    field: { width: '70%' },
+    field: { width: '90%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
+    link: (theme) => ({
+        color: theme.palette.info.light,
+        '&:hover': {
+            color: theme.palette.info.light,
+        },
+    }),
 } as const satisfies MuiStyles;
 
 const COLUMN_NAME_REGEX = /\W/g;
@@ -104,7 +111,7 @@ export default function ColumnCreationDialog({
 
     const generateColumnId = useCallback(() => {
         if (columnId === '') {
-            setValue(COLUMN_ID, watchColumnName.replace(COLUMN_NAME_REGEX, ''));
+            setValue(COLUMN_ID, watchColumnName.replaceAll(COLUMN_NAME_REGEX, ''));
         }
     }, [columnId, watchColumnName, setValue]);
 
@@ -120,6 +127,58 @@ export default function ColumnCreationDialog({
     );
 
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
+
+    const dialogTitle = (
+        <Grid container spacing={2} justifyContent={'space-between'} alignItems="center">
+            <Grid item xs={6}>
+                <Typography variant="h6">
+                    <FormattedMessage
+                        id={
+                            isCreate
+                                ? 'spreadsheet/custom_column/add_columns'
+                                : 'spreadsheet/custom_column/edit_columns'
+                        }
+                    />
+                </Typography>
+            </Grid>
+            <Grid item xs={6} container spacing={2} justifyContent={'right'}>
+                <Grid item>
+                    <Tooltip
+                        title={
+                            <FormattedMessage
+                                id="spreadsheet/custom_column/column_content_description"
+                                values={{
+                                    Link: (mathJS) => (
+                                        <Link
+                                            href={MATHJS_LINK}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            underline="hover"
+                                            sx={styles.link}
+                                        >
+                                            {mathJS}
+                                        </Link>
+                                    ),
+                                }}
+                            />
+                        }
+                        color="primary"
+                        placement="left-end"
+                        componentsProps={{
+                            tooltip: {
+                                sx: {
+                                    maxWidth: 500,
+                                    whiteSpace: 'pre-line', // to preserves line breaks
+                                },
+                            },
+                        }}
+                    >
+                        <InfoIcon />
+                    </Tooltip>
+                </Grid>
+            </Grid>
+        </Grid>
+    );
 
     const columnType = (
         <AutocompleteInput
@@ -145,13 +204,26 @@ export default function ColumnCreationDialog({
             <ExpandingTextField
                 name={FORMULA}
                 label="spreadsheet/custom_column/column_content"
-                minRows={3}
-                rows={3}
+                minRows={8}
+                rows={8}
                 maxCharactersNumber={MAX_FORMULA_CHARACTERS}
                 sx={{ flexGrow: 1 }}
                 acceptValue={isFormulaContentSizeOk}
             />
         </FloatingPopoverTreeviewWrapper>
+    );
+
+    const dependenciesField = (
+        <MultipleAutocompleteInput
+            label="spreadsheet/custom_column/column_dependencies"
+            name={COLUMN_DEPENDENCIES}
+            options={columnsDefinitions?.map((definition) => definition.id).filter((id) => id !== columnId) ?? []}
+            disableClearable={false}
+            disableCloseOnSelect
+            allowNewValue={false}
+            freeSolo={false}
+            onBlur={undefined}
+        />
     );
 
     const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
@@ -301,33 +373,10 @@ export default function ColumnCreationDialog({
                 aria-labelledby="custom-column-dialog-edit-title"
                 PaperProps={{ sx: styles.dialogContent }}
             >
-                <DialogTitle id="custom-column-dialog-edit-title">
-                    {intl.formatMessage({
-                        id: isCreate
-                            ? 'spreadsheet/custom_column/add_columns'
-                            : 'spreadsheet/custom_column/edit_columns',
-                    })}
-                </DialogTitle>
+                <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
                     <Grid container spacing={2} direction="column" alignItems="center">
-                        <Typography align={'justify'} sx={styles.columnDescription}>
-                            <FormattedMessage
-                                id="spreadsheet/custom_column/column_content_description"
-                                values={{
-                                    Link: (mathJS) => (
-                                        <Link
-                                            href={MATHJS_LINK}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            underline="hover"
-                                        >
-                                            {mathJS}
-                                        </Link>
-                                    ),
-                                }}
-                            />
-                        </Typography>
-                        <Grid item sx={styles.field}>
+                        <Grid item sx={mergeSx(styles.field, { marginTop: '5px' })}>
                             {columnNameField}
                         </Grid>
                         <Grid item sx={styles.field}>
@@ -345,20 +394,7 @@ export default function ColumnCreationDialog({
                             {formulaField}
                         </Grid>
                         <Grid item sx={styles.field}>
-                            <MultipleAutocompleteInput
-                                label="spreadsheet/custom_column/column_dependencies"
-                                name={COLUMN_DEPENDENCIES}
-                                options={
-                                    columnsDefinitions
-                                        ?.map((definition) => definition.id)
-                                        .filter((id) => id !== columnId) ?? []
-                                }
-                                disableClearable={false}
-                                disableCloseOnSelect
-                                allowNewValue={false}
-                                freeSolo={false}
-                                onBlur={undefined}
-                            />
+                            {dependenciesField}
                         </Grid>
                     </Grid>
                 </DialogContent>

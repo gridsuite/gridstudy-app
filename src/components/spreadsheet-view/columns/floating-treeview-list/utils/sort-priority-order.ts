@@ -102,7 +102,6 @@ export const FIELDS_PRIORITY_ORDER = [
     '*.minQ',
     '*.maxQ',
     'minMaxReactiveLimits',
-    'participate',
     'activePowerControl',
     'reactiveCapabilityCurvePoints',
     'batteryShortCircuit',
