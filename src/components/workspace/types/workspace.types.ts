@@ -24,6 +24,7 @@ export enum PanelType {
 export interface SLDPanelMetadata {
     diagramId: string;
     navigationHistory?: string[];
+    parentNadPanelId?: UUID; // Reference to parent NAD panel if associated
 }
 
 export interface NADPanelMetadata {
@@ -33,6 +34,7 @@ export interface NADPanelMetadata {
     voltageLevelToOmitIds?: string[];
     savedWorkspaceConfigUuid?: UUID;
     initialVoltageLevelIds?: string[];
+    navigationHistory?: string[]; // History of clicked voltage levels
 }
 
 export interface SpreadsheetPanelMetadata {
@@ -71,6 +73,7 @@ export interface PanelState {
     position: PanelPosition;
     size: PanelSize;
     zIndex: number;
+    orderIndex: number;
     isMinimized: boolean;
     isMaximized: boolean;
     isPinned: boolean;
@@ -85,6 +88,7 @@ export interface Workspace {
     panels: Record<UUID, PanelState>;
     focusedPanelId: UUID | null;
     nextZIndex: number;
+    nextOrderIndex: number;
 }
 
 export interface WorkspacesState {

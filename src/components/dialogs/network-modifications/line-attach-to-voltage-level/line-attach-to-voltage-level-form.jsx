@@ -17,6 +17,7 @@ import {
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
+    SUBSTATION_CREATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useMemo, useState } from 'react';
@@ -164,9 +165,7 @@ const LineAttachToVoltageLevelForm = ({
                             // other attributes than id and name must be present
                             startIcon={
                                 attachmentPoint != null &&
-                                Object.keys(attachmentPoint).some(
-                                    (key) => key !== 'equipmentId' && key !== 'equipmentName'
-                                ) ? (
+                                Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION) ? (
                                     <EditIcon />
                                 ) : (
                                     <AddIcon />
@@ -229,7 +228,7 @@ const LineAttachToVoltageLevelForm = ({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onAttachmentPointModificationDo}
                     editData={attachmentPoint}
-                    isAttachementPointModification={true}
+                    isAttachmentPointModification={true}
                     titleId={'SpecifyAttachmentPoint'}
                 />
             )}

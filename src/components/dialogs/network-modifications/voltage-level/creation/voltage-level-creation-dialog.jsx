@@ -170,8 +170,20 @@ const formSchema = yup
                 is: (lowShortCircuitCurrentLimit) => lowShortCircuitCurrentLimit != null,
                 then: (schema) => schema.required(),
             }),
-        [BUS_BAR_COUNT]: yup.number().min(1, 'BusBarCountMustBeGreaterThanOrEqualToOne').nullable().required(),
-        [SECTION_COUNT]: yup.number().min(1, 'SectionCountMustBeGreaterThanOrEqualToOne').nullable().required(),
+        [BUS_BAR_COUNT]: yup
+            .number()
+            .nullable()
+            .when([IS_ATTACHMENT_POINT_CREATION], {
+                is: (isAttachmentPointCreation) => isAttachmentPointCreation === false,
+                then: (schema) => schema.min(1, 'BusBarCountMustBeGreaterThanOrEqualToOne').required(),
+            }),
+        [SECTION_COUNT]: yup
+            .number()
+            .nullable()
+            .when([IS_ATTACHMENT_POINT_CREATION], {
+                is: (isAttachmentPointCreation) => isAttachmentPointCreation === false,
+                then: (schema) => schema.min(1, 'SectionCountMustBeGreaterThanOrEqualToOne').required(),
+            }),
         [SWITCHES_BETWEEN_SECTIONS]: yup
             .string()
             .nullable()
@@ -199,7 +211,7 @@ const VoltageLevelCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     onCreateVoltageLevel = createVoltageLevel,
-    isAttachementPointModification = false,
+    isAttachmentPointModification = false,
     titleId = 'CreateVoltageLevel',
     ...dialogProps
 }) => {
@@ -207,12 +219,12 @@ const VoltageLevelCreationDialog = ({
     const { snackError, snackWarning } = useSnackMessage();
 
     const defaultValues = useMemo(() => {
-        if (isAttachementPointModification) {
+        if (isAttachmentPointModification) {
             return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true, [IS_ATTACHMENT_POINT_CREATION]: true };
         } else {
             return emptyFormData;
         }
-    }, [isAttachementPointModification]);
+    }, [isAttachmentPointModification]);
 
     const formMethods = useForm({
         defaultValues: defaultValues,
@@ -225,7 +237,7 @@ const VoltageLevelCreationDialog = ({
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
             const isSubstationCreation =
-                (!fromCopy && voltageLevel.substationCreation?.equipmentId != null) || isAttachementPointModification;
+                (!fromCopy && voltageLevel.substationCreation?.equipmentId != null) || isAttachmentPointModification;
             const shortCircuitLimits = {
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -267,7 +279,7 @@ const VoltageLevelCreationDialog = ({
                     [SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
                     [COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
                     [SWITCH_KINDS]: switchKinds,
-                    [IS_ATTACHMENT_POINT_CREATION]: isAttachementPointModification,
+                    [IS_ATTACHMENT_POINT_CREATION]: isAttachmentPointModification,
                     ...properties,
                 },
                 { keepDefaultValues: true }
@@ -295,7 +307,7 @@ const VoltageLevelCreationDialog = ({
                 });
             }
         },
-        [isAttachementPointModification, reset, intl, setValue, snackWarning]
+        [isAttachmentPointModification, reset, intl, setValue, snackWarning]
     );
 
     // Supervisor watches to trigger validation for interdependent constraints
