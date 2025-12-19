@@ -101,7 +101,9 @@ import {
     type NetworkModificationTreeNodesReorderAction,
     type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
+    COPIED_NETWORK_MODIFICATIONS,
     type NodeSelectionForCopyAction,
+    type CopiedNetworkModificationsAction,
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
@@ -235,6 +237,8 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
+    STORE_NAD_VIEW_BOX,
+    StoreNadViewBoxAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -336,19 +340,23 @@ import {
     SortConfig,
     SortWay,
 } from '../types/custom-aggrid-types';
-import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    NetworkModificationCopyInfos,
+    RootNetworkMetadata,
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & StudyUpdateNotification;
-
+export type NadViewBox = Record<UUID, ViewBoxLike | null>;
 export enum EquipmentUpdateType {
     LINES = 'lines',
     TIE_LINES = 'tieLines',
@@ -491,9 +499,14 @@ export type NadTextMovement = {
 export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
-    nodeType: NetworkModificationNodeType | undefined;
+    nodeType?: NetworkModificationNodeType | null;
     copyType: ValueOf<typeof CopyType> | null;
-    allChildren: NetworkModificationNodeInfos[] | null;
+    allChildren?: NetworkModificationNodeInfos[] | null;
+};
+
+export type CopiedNetworkModifications = {
+    networkModificationUuids: UUID[];
+    copyInfos: NetworkModificationCopyInfos | null;
 };
 
 export type Actions = AppActions | AuthenticationActions;
@@ -538,6 +551,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nodeAliases: NodeAlias[];
 
     nodeSelectionForCopy: NodeSelectionForCopy;
+    nadViewBox: NadViewBox;
+    copiedNetworkModifications: CopiedNetworkModifications;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
@@ -701,6 +716,11 @@ const initialState: AppState = {
         nodeType: undefined,
         copyType: null,
         allChildren: null,
+    },
+    nadViewBox: {},
+    copiedNetworkModifications: {
+        networkModificationUuids: [],
+        copyInfos: null,
     },
     tables: initialTablesState,
     nodeAliases: [],
@@ -1362,6 +1382,15 @@ export const reducer = createReducer(initialState, (builder) => {
             )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
+    });
+
+    builder.addCase(STORE_NAD_VIEW_BOX, (state, action: StoreNadViewBoxAction) => {
+        const { nadUuid, viewBox } = action.nadViewBox;
+        state.nadViewBox[nadUuid] = viewBox;
+    });
+
+    builder.addCase(COPIED_NETWORK_MODIFICATIONS, (state, action: CopiedNetworkModificationsAction) => {
+        state.copiedNetworkModifications = action.copiedNetworkModifications;
     });
 
     builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {

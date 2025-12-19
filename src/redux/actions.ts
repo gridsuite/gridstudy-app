@@ -28,6 +28,7 @@ import type {
     ComputingStatusParameters,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
+    CopiedNetworkModifications,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
     TableSortKeysType,
@@ -74,6 +75,7 @@ import type { RootNetworkMetadata } from 'components/graph/menus/network-modific
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -109,6 +111,8 @@ export type AppActions =
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
+    | StoreNadViewBoxAction
+    | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
@@ -775,6 +779,32 @@ export function setNodeSelectionForCopy(
     return {
         type: NODE_SELECTION_FOR_COPY,
         nodeSelectionForCopy: nodeSelectionForCopy,
+    };
+}
+
+export const STORE_NAD_VIEW_BOX = 'STORE_NAD_VIEW_BOX';
+
+export type StoreNadViewBoxAction = {
+    type: typeof STORE_NAD_VIEW_BOX;
+    nadViewBox: { nadUuid: UUID; viewBox: ViewBoxLike | null };
+};
+
+export const StoreNadViewBox = (nadUuid: UUID, viewBox: ViewBoxLike | null): StoreNadViewBoxAction => ({
+    type: STORE_NAD_VIEW_BOX,
+    nadViewBox: { nadUuid, viewBox },
+});
+
+export const COPIED_NETWORK_MODIFICATIONS = 'COPIED_NETWORK_MODIFICATIONS';
+export type CopiedNetworkModificationsAction = Readonly<Action<typeof COPIED_NETWORK_MODIFICATIONS>> & {
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>;
+};
+
+export function setCopiedNetworkModifications(
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>
+): CopiedNetworkModificationsAction {
+    return {
+        type: COPIED_NETWORK_MODIFICATIONS,
+        copiedNetworkModifications: copiedNetworkModifications,
     };
 }
 
