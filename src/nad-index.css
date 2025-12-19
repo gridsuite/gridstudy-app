@@ -260,7 +260,7 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
     display: none;
 }
 
-/* Hides the voltage levels 50 to 120 when zoomed out. */
+/* Hides the voltage levels 50 to 100 when zoomed out. */
 .nad-zoom-15000 :is(
     .nad-voltage-level-3, .nad-voltage-level-4
     ) {
