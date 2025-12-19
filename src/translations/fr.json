@@ -443,9 +443,10 @@
     "LoadFlowResultsCurrentViolations": "Contraintes de transit",
     "LoadFlowResultsVoltageViolations": "Contraintes de tension",
     "LoadFlowResultsSummary": "Bilan",
-    "LoadFlowResultsSynchronousComponents": "Composantes synchrones",
+    "LoadFlowResultsConnectedComponents": "Composantes connexes",
     "LoadFlowResultsCountryAdequacies": "Equilibres par pays",
     "LoadFlowResultsExchanges": "Echanges",
+    "LoadFlowResultsMainComponentToolTip": "Dans la composante connexe principale uniquement (0)",
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.categories": "Catégories",
@@ -478,6 +479,7 @@
     "borders": "Frontières",
     "isOk": "Ok",
     "metrics": "Métriques",
+    "activePowerMismatch": "Compensation (MW)",
 
     "SmartSubstationLayout": "Smart",
     "SmartWithHorizontalCompactionSubstationLayout": "Smart avec compaction horizontale",

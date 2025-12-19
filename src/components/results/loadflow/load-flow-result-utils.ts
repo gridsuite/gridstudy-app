@@ -532,6 +532,17 @@ export const componentColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'activePowerMismatch' }),
+            colId: 'distributedActivePower',
+            field: 'distributedActivePower',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'slackBusId' }),
             colId: 'id',
             field: 'id',
