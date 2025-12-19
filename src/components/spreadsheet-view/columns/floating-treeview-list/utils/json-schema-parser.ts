@@ -30,38 +30,32 @@ export type TreeNode = {
  */
 function formatSpecialCases(nodeId: string): string {
     // Add trailing dot for any property-related nodes
-    if (nodeId.includes('roperties')) {
+    if (nodeId.includes('roperties') && !nodeId.includes('limitsProperties')) {
         return `${nodeId}.`;
     }
 
     // Handle operational limits groups with array notation
-    if (
-        wildcardMatch('operationalLimitsGroup*', nodeId) ||
-        wildcardMatch('operationalLimitsGroup*.temporaryLimitsByName.*', nodeId) ||
-        wildcardMatch('selectedOperationalLimitsGroup*.temporaryLimitsByName.*', nodeId)
-    ) {
+    if (wildcardMatch('*perationalLimitsGroup*', nodeId)) {
         // Standard group1/group2 get array brackets appended
         if (
             [
                 'operationalLimitsGroup1',
                 'operationalLimitsGroup2',
-                'operationalLimitsGroup1.temporaryLimitsByName',
-                'operationalLimitsGroup2.temporaryLimitsByName',
                 'selectedOperationalLimitsGroup1.temporaryLimitsByName',
                 'selectedOperationalLimitsGroup2.temporaryLimitsByName',
             ].includes(nodeId)
         ) {
             return `${nodeId}[]`;
+        } else if (wildcardMatch('operationalLimitsGroup*temporaryLimitsByName*', nodeId)) {
+            return nodeId.replace(/(operationalLimitsGroup\w*)(\.\w*)/, '$1[]$2[]');
+        } else if (wildcardMatch('selectedOperationalLimitsGroup*temporaryLimitsByName*', nodeId)) {
+            return nodeId.replace(
+                /(selectedOperationalLimitsGroup\d+)\.temporaryLimitsByName(\.\w+)/,
+                '$1.temporaryLimitsByName[]$2'
+            );
         }
-
         // Nested groups get brackets inserted before the first and the last dot
-        let replacingString = nodeId.replace(/(operationalLimitsGroup\w*)(\.)/, '$1[]$2');
-        const firstIndex = replacingString.indexOf('[].');
-        const lastIndex = replacingString.lastIndexOf('.');
-        if (lastIndex > -1 && lastIndex > firstIndex + 2) {
-            replacingString = replacingString.substring(0, lastIndex) + '[]' + replacingString.substring(lastIndex);
-        }
-        return replacingString;
+        return nodeId.replace(/(operationalLimitsGroup\w*)(\.\w*)/, '$1[]$2');
     }
 
     return nodeId;
