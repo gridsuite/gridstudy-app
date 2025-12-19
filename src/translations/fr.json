@@ -479,7 +479,7 @@
     "borders": "Frontières",
     "isOk": "Ok",
     "metrics": "Métriques",
-    "activePowerMismatch": "Compensation (MW)",
+    "distributedActivePower": "Compensation (MW)",
 
     "SmartSubstationLayout": "Smart",
     "SmartWithHorizontalCompactionSubstationLayout": "Smart avec compaction horizontale",

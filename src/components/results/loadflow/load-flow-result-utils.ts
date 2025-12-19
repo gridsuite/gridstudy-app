@@ -532,7 +532,7 @@ export const componentColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'activePowerMismatch' }),
+            headerName: intl.formatMessage({ id: 'distributedActivePower' }),
             colId: 'distributedActivePower',
             field: 'distributedActivePower',
             context: {

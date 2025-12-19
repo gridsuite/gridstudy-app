@@ -477,7 +477,7 @@
     "netPosition": "Net position (MW)",
     "exchange": "Net position - Exchanges (MW)",
     "borders": "Borders",
-    "activePowerMismatch": "Active power regulation (MW)",
+    "distributedActivePower": "Active power regulation (MW)",
 
     "isOk": "Ok",
     "metrics": "Metrics",
