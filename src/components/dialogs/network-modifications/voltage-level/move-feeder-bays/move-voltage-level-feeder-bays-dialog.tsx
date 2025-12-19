@@ -199,6 +199,8 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 editData?.feederBays &&
                 editData?.feederBays?.length > 0
             ) {
+                // when an equipment is not present in feederBaysInfos but is in editData.feederBays it is moved to the end of editData.feederBays to make rowId correspond
+                editData.feederBays = moveNotFoundItemToEnd(editData.feederBays, feederBaysInfos);
                 mergedRowData = editData.feederBays.filter(Boolean).map((bay, index) => ({
                     equipmentId: bay.equipmentId,
                     busbarSectionId: bay.busbarSectionId,
@@ -218,6 +220,16 @@ export default function MoveVoltageLevelFeederBaysDialog({
         [editData, isNodeBuiltValue]
     );
 
+    const moveNotFoundItemToEnd = (listToMove: MoveFeederBayInfos[], listToCheck: FeederBays) => {
+        return listToMove
+            .filter((feederDataRow) => listToCheck.some((element) => element.equipmentId === feederDataRow.equipmentId))
+            .concat(
+                listToMove.filter(
+                    (feederDataRow) => !listToCheck.some((element) => element.equipmentId === feederDataRow.equipmentId)
+                )
+            );
+    };
+
     const handleVoltageLevelDataFetch = useCallback(
         (feederBaysInfos: FeederBaysInfos, busesOrbusbarSections: Identifiable[]) => {
             const busbarSectionIds = busesOrbusbarSections?.map((b) => b.id) ?? null;
@@ -233,6 +245,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 rowId: `${item.equipmentId}-${index}`,
             }));
             setFeederBaysPreviousValues(feederBaysWithRowIds);
+            console.log('feederBaysWithRowIds', feederBaysWithRowIds);
             // merge row data between actual values in network and user's modification infos
             const mergedRowDataWithKeys = mergeRowData(feederBaysWithRowIds, busbarSectionIds);
             // reset default values for RHF state
