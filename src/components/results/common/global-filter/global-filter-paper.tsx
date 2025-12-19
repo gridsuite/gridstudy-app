@@ -5,13 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
-import {
-    getResultsGlobalFiltersChipStyle,
-    GLOBAL_FILTERS_CELL_HEIGHT,
-    IMPORT_FILTER_HEIGHT,
-    resultsGlobalFilterStyles,
-} from './global-filter-styles';
+import { Box, Button, Grid, ListItemButton, Paper, Tooltip, Typography } from '@mui/material';
+import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -19,8 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType } from '../utils';
 import { GlobalFilter } from './global-filter-types';
-import { fetchSubstationPropertiesGlobalFilters, getOptionLabel, RECENT_FILTER } from './global-filter-utils';
-import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
+import { fetchSubstationPropertiesGlobalFilters, RECENT_FILTER } from './global-filter-utils';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {
     DirectoryItemSelector,
@@ -28,10 +22,11 @@ import {
     ElementType,
     fetchElementsInfos,
     mergeSx,
-    OverflowableChip,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
+import SelectedGlobalFilters from './selected-global-filters';
+import { InfoOutlined } from '@mui/icons-material';
 
 const XS_COLUMN1: number = 3.5;
 const XS_COLUMN2: number = 4;
@@ -49,13 +44,11 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         filterGroupSelected,
         setFilterGroupSelected,
         selectedGlobalFilters,
-        setSelectedGlobalFilters,
         onChange,
         filterCategories,
         genericFiltersStrictMode,
         equipmentTypes,
     } = useContext(GlobalFilterContext);
-    const { translate } = useLocalizedCountries();
     const intl = useIntl();
     const [categories, setCategories] = useState<string[]>([]);
 
@@ -137,6 +130,23 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         [equipmentTypes, genericFiltersStrictMode]
     );
 
+    const TextWithToolTip = useCallback(
+        ({ text, tooltipMessage }) => (
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                }}
+            >
+                <FormattedMessage id={text} />
+                <Tooltip title={intl.formatMessage({ id: tooltipMessage })} arrow placement="right">
+                    <InfoOutlined color="info" fontSize="medium" sx={resultsGlobalFilterStyles.cellTooltip} />
+                </Tooltip>
+            </Box>
+        ),
+        [intl]
+    );
+
     return (
         <>
             <ClickAwayListener
@@ -156,7 +166,10 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 <Paper sx={resultsGlobalFilterStyles.dropdown}>
                     <Grid container>
                         <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellHeader}>
-                            <FormattedMessage id={'results.globalFilter.categories'} />
+                            <TextWithToolTip
+                                text="results.globalFilter.categories"
+                                tooltipMessage="results.globalFilter.categoriesHelp"
+                            />
                         </Grid>
                         <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellHeader} />
                         <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellHeader}>
@@ -179,7 +192,16 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                                             selected={category === filterGroupSelected}
                                         >
                                             <ListItemText
-                                                primary={<FormattedMessage id={'results.globalFilter.' + category} />}
+                                                primary={
+                                                    category === 'genericFilter' ? (
+                                                        <TextWithToolTip
+                                                            text="results.globalFilter.genericFilter"
+                                                            tooltipMessage="results.globalFilter.elementsHelp"
+                                                        />
+                                                    ) : (
+                                                        <FormattedMessage id={'results.globalFilter.' + category} />
+                                                    )
+                                                }
                                             />
                                         </ListItemButton>
                                     );
@@ -211,23 +233,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                             )}
                         </Grid>
                         <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
-                            <List sx={mergeSx(resultsGlobalFilterStyles.list, { overflowY: 'auto' })}>
-                                {selectedGlobalFilters.map((element: GlobalFilter) => (
-                                    <ListItem key={element.label} sx={{ height: '1.8em' }}>
-                                        <OverflowableChip
-                                            label={getOptionLabel(element, translate)}
-                                            sx={getResultsGlobalFiltersChipStyle(element.filterType)}
-                                            onDelete={() => {
-                                                const newSelectedGlobalFilters = selectedGlobalFilters.filter(
-                                                    (filter) => filter !== element
-                                                );
-                                                setSelectedGlobalFilters(newSelectedGlobalFilters);
-                                                onChange(newSelectedGlobalFilters);
-                                            }}
-                                        />
-                                    </ListItem>
-                                ))}
-                            </List>
+                            <SelectedGlobalFilters />
                         </Grid>
                     </Grid>
                 </Paper>

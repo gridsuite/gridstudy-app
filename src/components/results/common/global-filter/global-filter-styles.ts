@@ -68,6 +68,9 @@ export const resultsGlobalFilterStyles = {
         border: '1px solid',
         borderColor: theme.palette.divider,
     }),
+    cellTooltip: (theme) => ({
+        paddingLeft: theme.spacing(1),
+    }),
     cell: (theme) => ({
         borderLeft: '1px solid',
         borderColor: theme.palette.divider,

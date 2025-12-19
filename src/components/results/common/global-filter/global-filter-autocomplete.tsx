@@ -125,7 +125,7 @@ function GlobalFilterAutocomplete({
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
-    const autocompleteRef = useRef<HTMLDivElement>(null);
+    const autocompleteRef = useRef<HTMLDivElement | null>(null);
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
