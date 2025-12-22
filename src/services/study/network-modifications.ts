@@ -43,7 +43,7 @@ import {
     LoadModificationInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    ShuntCompensatorCreationInfo,
+    ShuntCompensatorCreationInfos,
     ShuntCompensatorModificationInfo,
     StaticVarCompensatorCreationInfo,
     SubstationCreationInfo,
@@ -62,9 +62,9 @@ import { ExcludedNetworkModifications } from 'components/graph/menus/network-mod
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
-    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
-    OLGS_MODIFICATION_TYPE,
     ENABLE_OLG_MODIFICATION,
+    OLGS_MODIFICATION_TYPE,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
@@ -564,27 +564,20 @@ export function createGenerator({
 }
 
 export function createShuntCompensator({
+    shuntCompensatorCreationInfos,
     studyUuid,
     nodeUuid,
-    shuntCompensatorId,
-    shuntCompensatorName,
-    maxSusceptance,
-    maxQAtNominalV,
-    shuntCompensatorType,
-    sectionCount,
-    maximumSectionCount,
-    connectivity,
-    isUpdate = false,
     modificationUuid,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties,
-}: ShuntCompensatorCreationInfo) {
+    isUpdate,
+}: {
+    shuntCompensatorCreationInfos: ShuntCompensatorCreationInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let createShuntUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (isUpdate) {
+    if (modificationUuid) {
         createShuntUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating shunt compensator creation');
     } else {
@@ -597,23 +590,7 @@ export function createShuntCompensator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
-            equipmentId: shuntCompensatorId,
-            equipmentName: shuntCompensatorName,
-            maxSusceptance: maxSusceptance,
-            maxQAtNominalV: maxQAtNominalV,
-            shuntCompensatorType: shuntCompensatorType,
-            sectionCount: sectionCount,
-            maximumSectionCount: maximumSectionCount,
-            voltageLevelId: connectivity.voltageLevel.id,
-            busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            connectionPosition: connectionPosition,
-            terminalConnected: terminalConnected,
-            properties,
-        }),
+        body: JSON.stringify(shuntCompensatorCreationInfos),
     });
 }
 

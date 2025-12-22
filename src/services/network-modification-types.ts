@@ -498,22 +498,21 @@ export interface GeneratorCreationInfos {
     properties: Property[] | null;
 }
 
-export interface ShuntCompensatorCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    shuntCompensatorId: string;
-    shuntCompensatorName: string | null;
-    maxSusceptance: number | null;
-    maxQAtNominalV: number | null;
-    shuntCompensatorType: string;
-    sectionCount: number;
-    maximumSectionCount: number;
-    connectivity: any;
-    isUpdate: boolean;
-    modificationUuid: string;
+export interface ShuntCompensatorCreationInfos {
+    type: ModificationType;
+    uuid?: string;
+    equipmentId: string;
+    equipmentName: string | null;
+    maxSusceptance?: number | null;
+    maxQAtNominalV?: number | null;
+    shuntCompensatorType?: string | null;
+    sectionCount?: number | null;
+    maximumSectionCount?: number | null;
+    voltageLevelId: string | null;
+    busOrBusbarSectionId: string | null;
     connectionDirection: string | null;
     connectionName: string | null;
-    connectionPosition: string | null;
+    connectionPosition: number | null;
     terminalConnected: boolean | null;
     properties: Property[] | null;
 }
