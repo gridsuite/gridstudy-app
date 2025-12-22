@@ -443,9 +443,10 @@
     "LoadFlowResultsCurrentViolations": "Current violations",
     "LoadFlowResultsVoltageViolations": "Voltage violations",
     "LoadFlowResultsSummary": "Summary",
-    "LoadFlowResultsSynchronousComponents": "Synchronous components",
+    "LoadFlowResultsConnectedComponents": "Connected components",
     "LoadFlowResultsCountryAdequacies": "Country adequacies",
     "LoadFlowResultsExchanges": "Exchanges",
+    "LoadFlowResultsMainComponentToolTip": "Main connected component only (0)",
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.categories": "Categories",
@@ -476,6 +477,7 @@
     "netPosition": "Net position (MW)",
     "exchange": "Net position - Exchanges (MW)",
     "borders": "Borders",
+    "distributedActivePower": "Active power regulation (MW)",
 
     "isOk": "Ok",
     "metrics": "Metrics",

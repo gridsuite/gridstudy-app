@@ -11,7 +11,7 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@gridsuite/commons-ui": "0.148.0",
+        "@gridsuite/commons-ui": "0.149.0",
         "@hello-pangea/dnd": "^18.0.1",
         "@hookform/resolvers": "^4.1.3",
         "@mui/icons-material": "^5.18.0",
