@@ -1553,7 +1553,7 @@ export function loadScaling(
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
     variationType: string,
-    variations: Variations
+    variations: Variations[]
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LOAD_SCALING.type,

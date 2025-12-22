@@ -26,19 +26,34 @@ import GridItem from '../../../commons/grid-item';
 
 const LOADS = [EQUIPMENT_TYPES.LOAD];
 
-const VariationForm = ({ name, index }) => {
+interface VariationFormProps {
+    name: string;
+    index: number;
+}
+
+interface ValueType {
+    type?: string;
+    specificMetadata?: {
+        type?: string;
+        filterEquipmentsAttributes?: {
+            distributionKey?: number;
+        }[];
+    };
+}
+
+const VariationForm = ({ name, index }: VariationFormProps) => {
     const variationMode = useWatch({
         name: `${name}.${index}.${VARIATION_MODE}`,
     });
 
     const variationType = useWatch({
         name: VARIATION_TYPE,
-    });
+    }) as keyof typeof VARIATION_TYPES;
 
     const itemFilter = useCallback(
-        (value) => {
+        (value: ValueType) => {
             if (value?.type === ElementType.FILTER && variationMode === ACTIVE_VARIATION_MODES.VENTILATION.id) {
-                return (
+                return !!(
                     value?.specificMetadata?.type === IDENTIFIER_LIST &&
                     value?.specificMetadata?.filterEquipmentsAttributes?.every((filter) => !!filter.distributionKey)
                 );
