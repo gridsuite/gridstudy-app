@@ -26,7 +26,7 @@ import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { FilterType } from '../utils';
+import { FilterType, isGenericFilter } from '../utils';
 import { OverflowableText, OverflowableChip } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { GlobalFilter } from './global-filter-types';
@@ -178,7 +178,7 @@ function GlobalFilterAutocomplete({
                               : option.filterType === filterGroupSelected
                     )
                     .filter((option: GlobalFilter) =>
-                        genericFiltersStrictMode && option.filterType === FilterType.GENERIC_FILTER
+                        genericFiltersStrictMode && isGenericFilter(option)
                             ? filterableEquipmentTypes.includes(option.equipmentType as EQUIPMENT_TYPES)
                             : true
                     )
@@ -196,7 +196,7 @@ function GlobalFilterAutocomplete({
                 }),
             // recent generic filters are displayed 2 times : once in the recent filters (see above) and also in the generic filters :
             ...recentGlobalFilters
-                .filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
+                .filter((filter) => isGenericFilter(filter))
                 .map((filter) => {
                     return { ...filter, recent: false };
                 }),
@@ -243,7 +243,7 @@ function GlobalFilterAutocomplete({
     );
 
     const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => {
-        if (option.filterType === FilterType.GENERIC_FILTER) {
+        if (isGenericFilter(option)) {
             return (
                 option.label === value.label &&
                 option.filterType === value.filterType &&

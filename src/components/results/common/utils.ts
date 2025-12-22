@@ -8,6 +8,7 @@ import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
+import { GlobalFilter } from './global-filter/global-filter-types';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -36,10 +37,21 @@ export const translateLimitNameFrontToBack = (limitName: string, intl: IntlShape
 export enum FilterType {
     VOLTAGE_LEVEL = 'voltageLevel',
     COUNTRY = 'country',
-    // TODO : renommer to 'elements'? => attention back !
-    // TODO : ajouter une catégorie postes et sites ? => bof pour le back...
-    GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library
+    // TODO : ajouter une catégorie postes et sites ? => bof pour le back... +> donc tout en front et rien en back ? => confirmer avec étienneH
+    GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library (except voltage level and substation filters)
+    SUBSTATION_OR_VL = 'substationOrVoltageLevel', // voltage levels and substation generic filters which uses the filter library
     SUBSTATION_PROPERTY = 'substationProperty',
+}
+
+export function isGenericFilter(filter: GlobalFilter): boolean {
+    return isGenericFilterType(filter.filterType);
+}
+
+export function isGenericFilterType(filterType: string | undefined): boolean {
+    return (
+        filterType !== undefined &&
+        (filterType === FilterType.GENERIC_FILTER || filterType === FilterType.SUBSTATION_OR_VL)
+    );
 }
 
 export interface Selector {

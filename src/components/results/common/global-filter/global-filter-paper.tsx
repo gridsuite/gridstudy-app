@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Grid, ListItemButton, Paper, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Grid, ListItemButton, Paper, Typography } from '@mui/material';
 import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
-import { FilterType } from '../utils';
+import { FilterType, isGenericFilterType } from '../utils';
 import { GlobalFilter } from './global-filter-types';
 import { fetchSubstationPropertiesGlobalFilters, RECENT_FILTER } from './global-filter-utils';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -26,7 +26,8 @@ import {
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
 import SelectedGlobalFilters from './selected-global-filters';
-import { InfoOutlined } from '@mui/icons-material';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { TextWithToolTip } from './text-with-tooltip';
 
 const XS_COLUMN1: number = 3.5;
 const XS_COLUMN2: number = 4;
@@ -69,6 +70,13 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 ...(substationPropertiesGlobalFilters ? Array.from(substationPropertiesGlobalFilters.keys()) : []),
             ];
             // generic filters always at the end of the menus
+            const substationCategory: string[] = sortedCategories.splice(
+                sortedCategories.indexOf(FilterType.SUBSTATION_OR_VL),
+                1
+            );
+            if (substationCategory.length > 0) {
+                sortedCategories.push(substationCategory[0]);
+            }
             const genericFilterCategory: string[] = sortedCategories.splice(
                 sortedCategories.indexOf(FilterType.GENERIC_FILTER),
                 1
@@ -108,14 +116,29 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 // ignore already selected filters and non-generic filters :
                 if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
                     // add the others
-                    newlySelectedFilters.push({
-                        uuid: element.elementUuid,
-                        equipmentType: element.specificMetadata?.equipmentType,
-                        label: element.elementName,
-                        filterType: FilterType.GENERIC_FILTER,
-                        filterTypeFromMetadata: element.specificMetadata?.type,
-                        recent: true,
-                    });
+                    const equipmentType = element.specificMetadata?.equipmentType;
+                    if (
+                        equipmentType === EQUIPMENT_TYPES.SUBSTATION ||
+                        equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL
+                    ) {
+                        newlySelectedFilters.push({
+                            uuid: element.elementUuid,
+                            equipmentType: element.specificMetadata?.equipmentType,
+                            label: element.elementName,
+                            filterType: FilterType.SUBSTATION_OR_VL,
+                            filterTypeFromMetadata: element.specificMetadata?.type,
+                            recent: true,
+                        });
+                    } else {
+                        newlySelectedFilters.push({
+                            uuid: element.elementUuid,
+                            equipmentType: element.specificMetadata?.equipmentType,
+                            label: element.elementName,
+                            filterType: FilterType.GENERIC_FILTER,
+                            filterTypeFromMetadata: element.specificMetadata?.type,
+                            recent: true,
+                        });
+                    }
                 }
             });
 
@@ -128,23 +151,6 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
     const allowedEquipmentTypes = useMemo(
         () => (genericFiltersStrictMode ? equipmentTypes : undefined),
         [equipmentTypes, genericFiltersStrictMode]
-    );
-
-    const TextWithToolTip = useCallback(
-        ({ text, tooltipMessage }) => (
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                }}
-            >
-                <FormattedMessage id={text} />
-                <Tooltip title={intl.formatMessage({ id: tooltipMessage })} arrow placement="right">
-                    <InfoOutlined color="info" fontSize="medium" sx={resultsGlobalFilterStyles.cellTooltip} />
-                </Tooltip>
-            </Box>
-        ),
-        [intl]
     );
 
     return (
@@ -211,15 +217,14 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                         <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
                             <Box
                                 sx={mergeSx(resultsGlobalFilterStyles.list, {
-                                    height:
-                                        filterGroupSelected === FilterType.GENERIC_FILTER
-                                            ? `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`
-                                            : `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+                                    height: isGenericFilterType(filterGroupSelected)
+                                        ? `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`
+                                        : `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
                                 })}
                             >
                                 {children}
                             </Box>
-                            {filterGroupSelected === FilterType.GENERIC_FILTER && (
+                            {isGenericFilterType(filterGroupSelected) && (
                                 <Button
                                     startIcon={<FileUploadIcon />}
                                     fullWidth={true}

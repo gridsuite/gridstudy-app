@@ -457,6 +457,7 @@
     "results.globalFilter.fillerText": "Filtering",
     "results.globalFilter.recent": "Recent",
     "results.globalFilter.genericFilter": "Elements",
+    "results.globalFilter.substationOrVoltageLevel": "Substations or voltage levels",
     "results.globalFilter.elementsHelp": "Those filters exclude other elements type",
     "results.globalFilter.country": "Countries",
     "results.globalFilter.voltageLevel": "Voltage levels",

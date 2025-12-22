@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { cyan } from '@mui/material/colors';
+import { cyan, lime } from '@mui/material/colors';
 import { FilterType } from '../utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
@@ -20,6 +20,9 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
             break;
         case FilterType.GENERIC_FILTER:
             chipStyle = resultsGlobalFilterStyles.chipGenericFilter;
+            break;
+        case FilterType.SUBSTATION_OR_VL:
+            chipStyle = resultsGlobalFilterStyles.chipSubstationOrVoltageLevel;
             break;
         case FilterType.SUBSTATION_PROPERTY:
             chipStyle = resultsGlobalFilterStyles.chipSubstationProperty;
@@ -146,6 +149,14 @@ export const resultsGlobalFilterStyles = {
         },
         '&.MuiChip-root:hover, &.MuiChip-root:focus': {
             backgroundColor: `${cyan['700']}!important`,
+        },
+    },
+    chipSubstationOrVoltageLevel: {
+        '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
+            backgroundColor: `${lime['800']}!important`,
+        },
+        '&.MuiChip-root:hover, &.MuiChip-root:focus': {
+            backgroundColor: `${lime['900']}!important`,
         },
     },
     chipSubstationProperty: (theme) => ({
