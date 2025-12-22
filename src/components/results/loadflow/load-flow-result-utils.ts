@@ -163,6 +163,7 @@ export const useFetchFiltersEnums = (): {
 
     useEffect(() => {
         if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
+            setLoading(false);
             return;
         }
 
