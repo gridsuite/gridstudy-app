@@ -16,6 +16,7 @@ import { ConverterStationElementModificationInfos } from '../components/dialogs/
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
+import { VARIATION_TYPES } from '../components/network/constants';
 
 export enum OperationType {
     SET = 'SET',
@@ -355,6 +356,8 @@ type VariationFilter = {
     name: string;
     specificMetadata: { type: string };
 };
+
+export type VariationType = keyof typeof VARIATION_TYPES;
 
 export interface Variations {
     variationMode: string | null;
