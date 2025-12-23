@@ -487,8 +487,8 @@ const AppWrapperWithRedux = () => {
     const rootCssVars = useMemo(() => {
         const themeVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
         return {
-            ...themeVars,
             ...getBaseVoltagesCssVars(theme, baseVoltages),
+            ...themeVars,
         };
     }, [theme, baseVoltages]);
 
