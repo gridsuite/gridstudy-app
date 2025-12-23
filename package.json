@@ -5,8 +5,8 @@
     "private": true,
     "type": "module",
     "engines": {
-        "node": ">=22",
-        "npm": "^10.9.2"
+        "node": ">=24",
+        "npm": "^11.6.2"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
