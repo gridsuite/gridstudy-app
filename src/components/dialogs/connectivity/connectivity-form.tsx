@@ -67,7 +67,7 @@ interface ConnectivityFormProps {
     withDirectionsInfos?: boolean;
     withPosition: boolean;
     voltageLevelOptions?: Identifiable[];
-    newBusOrBusbarSectionOptions?: [];
+    newBusOrBusbarSectionOptions?: Option[];
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;

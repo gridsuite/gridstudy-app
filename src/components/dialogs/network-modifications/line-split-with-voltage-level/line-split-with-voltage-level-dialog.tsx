@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    MODIFICATION_TYPES,
+    Option,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -19,7 +25,6 @@ import {
     SLIDER_PERCENTAGE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
@@ -31,7 +36,7 @@ import {
     getConnectivityWithoutPositionValidationSchema,
     getNewVoltageLevelData,
 } from '../../connectivity/connectivity-form-utils';
-import LineSplitWithVoltageLevelForm from './line-split-with-voltage-level-form';
+import LineSplitWithVoltageLevelForm, { ExtendedVoltageLevelFormInfos } from './line-split-with-voltage-level-form';
 import LineSplitWithVoltageLevelIllustration from './line-split-with-voltage-level-illustration';
 import {
     getLineToAttachOrSplitEmptyFormData,
@@ -42,9 +47,14 @@ import { buildNewBusbarSections } from 'components/utils/utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { divideLine } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
+import { FetchStatus } from '../../../../services/utils.type';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import { getNewVoltageLevelOptions } from '../../../utils/utils';
+import { UUID } from 'node:crypto';
+import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
+import { DeepNullable } from '../../../utils/ts-utils';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -67,6 +77,31 @@ const formSchema = yup
     })
     .required();
 
+export type LineSplitWithVoltageLevelDialogSchemaForm = yup.InferType<typeof formSchema>;
+
+export interface LineSplitEditData {
+    uuid?: UUID;
+    lineToSplitId: string;
+    percent: number;
+    newLine1Id: string;
+    newLine1Name?: string;
+    newLine2Id: string;
+    newLine2Name?: string;
+    bbsOrBusId: string;
+    existingVoltageLevelId?: string;
+    mayNewVoltageLevelInfos?: VoltageLevelFormInfos;
+}
+
+export interface LineSplitWithVoltageLevelDialogProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    editData?: LineSplitEditData;
+    isUpdate: boolean;
+    editDataFetchStatus?: FetchStatus;
+    onClose: () => void;
+}
+
 /**
  * Dialog to create line split with voltage level in the network
  * @param studyUuid the study we are currently working on
@@ -85,24 +120,24 @@ const LineSplitWithVoltageLevelDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: LineSplitWithVoltageLevelDialogProps) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const currentNodeUuid = currentNode?.id;
 
-    const [newVoltageLevel, setNewVoltageLevel] = useState(null);
+    const [newVoltageLevel, setNewVoltageLevel] = useState<ExtendedVoltageLevelFormInfos | null>(null);
 
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<LineSplitWithVoltageLevelDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<LineSplitWithVoltageLevelDialogSchemaForm>>(formSchema),
     });
 
     const { reset, getValues, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (lineSplit) => {
+        (lineSplit: LineSplitEditData) => {
             let formData = {
                 [LINE1_ID]: lineSplit.newLine1Id,
                 [LINE1_NAME]: lineSplit.newLine1Name,
@@ -118,7 +153,7 @@ const LineSplitWithVoltageLevelDialog = ({
                         lineSplit?.existingVoltageLevelId ?? lineSplit?.mayNewVoltageLevelInfos?.equipmentId,
                 }),
             };
-            const newVoltageLevel = lineSplit?.mayNewVoltageLevelInfos;
+            const newVoltageLevel = lineSplit?.mayNewVoltageLevelInfos as ExtendedVoltageLevelFormInfos;
             if (newVoltageLevel) {
                 formData = {
                     ...formData,
@@ -148,13 +183,25 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (lineSplit) => {
+        (lineSplit: DeepNullable<LineSplitWithVoltageLevelDialogSchemaForm>) => {
+            if (
+                !editData ||
+                !editData.uuid ||
+                !lineSplit ||
+                !lineSplit[CONNECTIVITY] ||
+                !lineSplit[LINE_TO_ATTACH_OR_SPLIT_ID] ||
+                !lineSplit[SLIDER_PERCENTAGE] ||
+                !lineSplit[LINE1_ID] ||
+                !lineSplit[LINE2_ID]
+            ) {
+                return;
+            }
             const currentVoltageLevelId = lineSplit[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
             const isNewVoltageLevel = newVoltageLevel?.equipmentId === currentVoltageLevelId;
             divideLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
+                modificationUuid: editData.uuid,
                 lineToSplitId: lineSplit[LINE_TO_ATTACH_OR_SPLIT_ID],
                 percent: parseFloat(lineSplit[SLIDER_PERCENTAGE]),
                 mayNewVoltageLevelInfos: isNewVoltageLevel ? newVoltageLevel : null,
@@ -199,7 +246,7 @@ const LineSplitWithVoltageLevelDialog = ({
             switchKinds,
             couplingDevices,
             topologyKind,
-        }) => {
+        }: VoltageLevelCreationInfo) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
                     type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
@@ -285,19 +332,12 @@ const LineSplitWithVoltageLevelDialog = ({
                     voltageLevelToEdit={newVoltageLevel}
                     onVoltageLevelChange={onVoltageLevelChange}
                     allVoltageLevelOptions={voltageLevelOptions}
+                    isUpdate={isUpdate}
+                    editDateFetchStatus={editDataFetchStatus}
                 />
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-LineSplitWithVoltageLevelDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
 };
 
 export default LineSplitWithVoltageLevelDialog;

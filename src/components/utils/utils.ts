@@ -100,12 +100,12 @@ export const getObjectId = (object: string | { id: string }) => {
 };
 
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
-    const newBusbarSections = [];
+    const newBusbarSections: Option[] = [];
     for (let i = 0; i < busbarCount; i++) {
         for (let j = 0; j < sectionCount; j++) {
             newBusbarSections.push({
                 id: equipmentId + '_' + (i + 1) + '_' + (j + 1),
-                name: '',
+                label: '',
             });
         }
     }

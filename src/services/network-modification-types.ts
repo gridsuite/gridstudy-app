@@ -331,6 +331,7 @@ export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
     substationCreation?: SubstationCreationInfo | null;
     ipMin: number | null;
     ipMax: number | null;
+    topologyKind?: string;
 }
 
 export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
