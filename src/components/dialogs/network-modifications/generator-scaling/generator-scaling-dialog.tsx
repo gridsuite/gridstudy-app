@@ -13,7 +13,7 @@ import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
 import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
-import { getVariationsSchema } from './variation/variation-utils.js';
+import { getVariationsSchema } from './variation/variation-utils';
 import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { generatorScaling } from '../../../../services/study/network-modifications';
