@@ -14,15 +14,26 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos.js';
-import CharacteristicsForm from '../characteristics-pane/characteristics-form.tsx';
+import type { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
+import CharacteristicsForm from '../characteristics-pane/characteristics-form';
 
-const ShuntCompensatorModificationForm = ({
+export interface ShuntCompensatorModificationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    shuntCompensatorToModify?: ShuntCompensatorFormInfos | null;
+    equipmentId: string;
+}
+
+export default function ShuntCompensatorModificationForm({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
-    shuntCompensatorInfos,
+    shuntCompensatorToModify,
     equipmentId,
-}) => {
+}: Readonly<ShuntCompensatorModificationFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
     const shuntCompensatorIdField = (
         <TextField
@@ -42,12 +53,14 @@ const ShuntCompensatorModificationForm = ({
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={shuntCompensatorInfos?.name}
+            previousValue={shuntCompensatorToModify?.name}
             clearable
         />
     );
 
-    const characteristicsForm = <CharacteristicsForm previousValues={shuntCompensatorInfos} isModification={true} />;
+    const characteristicsForm = (
+        <CharacteristicsForm previousValues={shuntCompensatorToModify ?? undefined} isModification={true} />
+    );
 
     const connectivityForm = (
         <ConnectivityForm
@@ -57,7 +70,7 @@ const ShuntCompensatorModificationForm = ({
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
-            previousValues={shuntCompensatorInfos}
+            previousValues={shuntCompensatorToModify ?? undefined}
         />
     );
 
@@ -79,6 +92,4 @@ const ShuntCompensatorModificationForm = ({
             <PropertiesForm networkElementType={'shuntCompensator'} isModification={true} />
         </>
     );
-};
-
-export default ShuntCompensatorModificationForm;
+}

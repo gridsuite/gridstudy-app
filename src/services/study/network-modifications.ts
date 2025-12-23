@@ -44,7 +44,7 @@ import {
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfos,
-    ShuntCompensatorModificationInfo,
+    ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
     SubstationCreationInfo,
     SubstationModificationInfo,
@@ -596,28 +596,21 @@ export function createShuntCompensator({
 }
 
 export function modifyShuntCompensator({
+    shuntCompensatorModificationInfos,
     studyUuid,
     nodeUuid,
-    modificationUuid = undefined,
-    shuntCompensatorId,
-    shuntCompensatorName,
-    maximumSectionCount,
-    sectionCount,
-    maxSusceptance,
-    maxQAtNominalV,
-    shuntCompensatorType,
-    voltageLevelId,
-    busOrBusbarSectionId = undefined,
-    connectionName = undefined,
-    connectionDirection = undefined,
-    connectionPosition = undefined,
-    terminalConnected = undefined,
-    properties,
-}: ShuntCompensatorModificationInfo) {
+    modificationUuid,
+    isUpdate,
+}: {
+    shuntCompensatorModificationInfos: ShuntCompensatorModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
+    if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating shunt compensator modification');
     } else {
@@ -630,23 +623,7 @@ export function modifyShuntCompensator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
-            equipmentId: shuntCompensatorId,
-            equipmentName: toModificationOperation(shuntCompensatorName),
-            maximumSectionCount: toModificationOperation(maximumSectionCount),
-            sectionCount: toModificationOperation(sectionCount),
-            maxSusceptance: toModificationOperation(maxSusceptance),
-            maxQAtNominalV: toModificationOperation(maxQAtNominalV),
-            shuntCompensatorType: toModificationOperation(shuntCompensatorType),
-            voltageLevelId: toModificationOperation(voltageLevelId),
-            busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-            connectionDirection: toModificationOperation(connectionDirection),
-            connectionName: toModificationOperation(connectionName),
-            connectionPosition: toModificationOperation(connectionPosition),
-            terminalConnected: toModificationOperation(terminalConnected),
-            properties,
-        }),
+        body: JSON.stringify(shuntCompensatorModificationInfos),
     });
 }
 
