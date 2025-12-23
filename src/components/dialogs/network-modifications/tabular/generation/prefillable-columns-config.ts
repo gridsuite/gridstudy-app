@@ -111,7 +111,7 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['name'],
         },
         {
-            labelId: NOMINAL_V,
+            labelId: 'withoutUnit.nominalV',
             csvColumns: [NOMINAL_V],
             networkFields: ['nominalV'],
         },
@@ -126,12 +126,12 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['highVoltageLimit'],
         },
         {
-            labelId: IP_MIN,
+            labelId: 'withoutunit.ipMin',
             csvColumns: [IP_MIN],
             networkFields: ['identifiableShortCircuit.ipMin'],
         },
         {
-            labelId: IP_MAX,
+            labelId: 'withoutunit.ipMax',
             csvColumns: [IP_MAX],
             networkFields: ['identifiableShortCircuit.ipMax'],
         },
@@ -144,12 +144,12 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['name'],
         },
         {
-            labelId: R,
+            labelId: 'withoutunit.r',
             csvColumns: [R],
             networkFields: ['r'],
         },
         {
-            labelId: X,
+            labelId: 'withoutunit.x',
             csvColumns: [X],
             networkFields: ['x'],
         },
@@ -196,22 +196,22 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['name'],
         },
         {
-            labelId: R,
+            labelId: 'withoutunit.r',
             csvColumns: [R],
             networkFields: ['r'],
         },
         {
-            labelId: X,
+            labelId: 'withoutunit.x',
             csvColumns: [X],
             networkFields: ['x'],
         },
         {
-            labelId: G,
+            labelId: 'withoutunit.g',
             csvColumns: [G],
             networkFields: ['g'],
         },
         {
-            labelId: B,
+            labelId: 'withoutunit.b',
             csvColumns: [B],
             networkFields: ['b'],
         },
@@ -379,17 +379,17 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['activePowerControl.droop'],
         },
         {
-            labelId: TRANSIENT_REACTANCE,
+            labelId: 'withoutunit.directTransX',
             csvColumns: [TRANSIENT_REACTANCE],
             networkFields: ['generatorShortCircuit.directTransX'],
         },
         {
-            labelId: STEP_UP_TRANSFORMER_REACTANCE,
+            labelId: 'withoutunit.stepUpTransformerX',
             csvColumns: [STEP_UP_TRANSFORMER_REACTANCE],
             networkFields: ['generatorShortCircuit.stepUpTransformerX'],
         },
         {
-            labelId: PLANNED_ACTIVE_POWER_SET_POINT,
+            labelId: 'withoutunit.plannedActivePowerSetPoint',
             csvColumns: [PLANNED_ACTIVE_POWER_SET_POINT],
             networkFields: ['generatorStartup.plannedActivePowerSetPoint'],
         },

@@ -44,7 +44,7 @@ export enum NetworkModificationCopyType {
     INSERT = 'INSERT',
 }
 
-export interface NetworkModificationCopyInfo {
+export interface NetworkModificationCopyInfos {
     copyType: NetworkModificationCopyType;
     originStudyUuid?: UUID;
     originNodeUuid?: UUID;
