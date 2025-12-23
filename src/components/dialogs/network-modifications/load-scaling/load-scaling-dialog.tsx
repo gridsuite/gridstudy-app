@@ -19,11 +19,11 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { loadScaling } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import { UUID } from 'node:crypto';
-import { Variations } from '../../../../services/network-modification-types';
+import { Variations, VariationType } from '../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 
 interface LoadScalingFormData {
-    [VARIATION_TYPE]: string;
+    [VARIATION_TYPE]: VariationType;
     [VARIATIONS]: Variations[];
 }
 
@@ -47,7 +47,7 @@ interface LoadScalingDialogProps {
     editDataFetchStatus?: string;
     editData?: {
         uuid: UUID;
-        [VARIATION_TYPE]: string;
+        [VARIATION_TYPE]: VariationType;
         [VARIATIONS]: Variations[];
     };
 }

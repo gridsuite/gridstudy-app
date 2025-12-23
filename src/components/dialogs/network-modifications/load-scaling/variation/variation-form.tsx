@@ -20,6 +20,7 @@ import { ACTIVE_VARIATION_MODES, REACTIVE_VARIATION_MODES, VARIATION_TYPES } fro
 import { ActivePowerAdornment } from '../../../dialog-utils';
 import { IDENTIFIER_LIST } from './variation-utils';
 import GridItem from '../../../commons/grid-item';
+import { VariationType } from '../../../../../services/network-modification-types';
 
 const LOADS = [EQUIPMENT_TYPES.LOAD];
 
@@ -45,7 +46,7 @@ const VariationForm = ({ name, index }: LoadScalingVariationFormProps) => {
 
     const variationType = useWatch({
         name: VARIATION_TYPE,
-    }) as keyof typeof VARIATION_TYPES;
+    }) as VariationType;
 
     const itemFilter = useCallback(
         (value: ItemValueType) => {
