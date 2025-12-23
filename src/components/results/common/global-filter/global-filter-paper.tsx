@@ -148,10 +148,22 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         [onChange, selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown]
     );
 
-    const allowedEquipmentTypes = useMemo(
-        () => (genericFiltersStrictMode ? equipmentTypes : undefined),
-        [equipmentTypes, genericFiltersStrictMode]
-    );
+    /**
+     * substations and voltage levels filters are not part of the regular selectable elements filters.
+     * They are selected through their specific filter category (FilterType.SUBSTATION_OR_VL)
+     */
+    const allowedEquipmentTypes = useMemo(() => {
+        if (filterGroupSelected === FilterType.SUBSTATION_OR_VL) {
+            return [EQUIPMENT_TYPES.SUBSTATION, EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+        }
+
+        return genericFiltersStrictMode
+            ? equipmentTypes
+            : Object.values(EQUIPMENT_TYPES.toString()).filter(
+                  (equipmentType) =>
+                      equipmentType !== EQUIPMENT_TYPES.SUBSTATION && equipmentType !== EQUIPMENT_TYPES.VOLTAGE_LEVEL
+              );
+    }, [equipmentTypes, genericFiltersStrictMode, filterGroupSelected]);
 
     return (
         <>
