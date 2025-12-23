@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
+import { DirectoryItemsInput, SelectInput, FloatInput, ElementType } from '@gridsuite/commons-ui';
 import {
     FILTERS,
     REACTIVE_VARIATION_MODE,
@@ -16,29 +16,42 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { ACTIVE_VARIATION_MODES, REACTIVE_VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
-import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment } from '../../../dialog-utils';
-import { ElementType } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
 import GridItem from '../../../commons/grid-item';
+import { VariationType } from '../../../../../services/network-modification-types';
 
 const LOADS = [EQUIPMENT_TYPES.LOAD];
 
-const VariationForm = ({ name, index }) => {
+interface LoadScalingVariationFormProps {
+    name: string;
+    index: number;
+}
+
+interface ItemValueType {
+    type?: string;
+    specificMetadata?: {
+        type?: string;
+        filterEquipmentsAttributes?: {
+            distributionKey?: number;
+        }[];
+    };
+}
+
+const VariationForm = ({ name, index }: LoadScalingVariationFormProps) => {
     const variationMode = useWatch({
         name: `${name}.${index}.${VARIATION_MODE}`,
     });
 
     const variationType = useWatch({
         name: VARIATION_TYPE,
-    });
+    }) as VariationType;
 
     const itemFilter = useCallback(
-        (value) => {
+        (value: ItemValueType) => {
             if (value?.type === ElementType.FILTER && variationMode === ACTIVE_VARIATION_MODES.VENTILATION.id) {
-                return (
+                return !!(
                     value?.specificMetadata?.type === IDENTIFIER_LIST &&
                     value?.specificMetadata?.filterEquipmentsAttributes?.every((filter) => !!filter.distributionKey)
                 );

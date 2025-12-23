@@ -52,6 +52,7 @@ import {
     TwoWindingsTransformerCreationInfo,
     TwoWindingsTransformerModificationInfo,
     Variations,
+    VariationType,
     VoltageLevelCreationInfo,
     VoltageLeveModificationInfo,
     VSCCreationInfo,
@@ -1552,8 +1553,8 @@ export function loadScaling(
     studyUuid: string,
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
-    variationType: string,
-    variations: Variations
+    variationType: VariationType,
+    variations: Variations[]
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LOAD_SCALING.type,
