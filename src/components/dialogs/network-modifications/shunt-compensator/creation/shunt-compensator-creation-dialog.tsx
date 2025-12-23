@@ -123,24 +123,27 @@ export default function ShuntCompensatorCreationDialog({
 
     const fromSearchCopyToFormValues = useCallback(
         (shuntCompensator: ShuntCompensatorFormInfos) => {
-            reset({
-                [EQUIPMENT_ID]: shuntCompensator.id + '(1)',
-                [EQUIPMENT_NAME]: shuntCompensator.name ?? '',
-                ...getConnectivityFormData({
-                    busbarSectionId: shuntCompensator.busOrBusbarSectionId,
-                    connectionDirection: shuntCompensator.connectablePosition.connectionDirection,
-                    connectionName: shuntCompensator.connectablePosition.connectionName,
-                    voltageLevelId: shuntCompensator.voltageLevelId,
-                    // terminalConnected is not copied on purpose: we use the default value (true) in all cases
-                }),
-                ...getCharacteristicsCreateFormDataFromSearchCopy({
-                    bPerSection: shuntCompensator.bPerSection,
-                    qAtNominalV: shuntCompensator.qAtNominalV,
-                    sectionCount: shuntCompensator.sectionCount,
-                    maximumSectionCount: shuntCompensator.maximumSectionCount,
-                }),
-                ...copyEquipmentPropertiesForCreation(shuntCompensator),
-            });
+            reset(
+                {
+                    [EQUIPMENT_ID]: shuntCompensator.id + '(1)',
+                    [EQUIPMENT_NAME]: shuntCompensator.name ?? '',
+                    ...getConnectivityFormData({
+                        busbarSectionId: shuntCompensator.busOrBusbarSectionId,
+                        connectionDirection: shuntCompensator.connectablePosition.connectionDirection,
+                        connectionName: shuntCompensator.connectablePosition.connectionName,
+                        voltageLevelId: shuntCompensator.voltageLevelId,
+                        // terminalConnected is not copied on purpose: we use the default value (true) in all cases
+                    }),
+                    ...getCharacteristicsCreateFormDataFromSearchCopy({
+                        bPerSection: shuntCompensator.bPerSection,
+                        qAtNominalV: shuntCompensator.qAtNominalV,
+                        sectionCount: shuntCompensator.sectionCount,
+                        maximumSectionCount: shuntCompensator.maximumSectionCount,
+                    }),
+                    ...copyEquipmentPropertiesForCreation(shuntCompensator),
+                },
+                { keepDefaultValues: true }
+            );
             if (!shuntCompensator.isLinear) {
                 snackWarning({
                     headerId: 'partialCopyShuntCompensator',
