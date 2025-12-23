@@ -18,12 +18,12 @@ import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constant
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { generatorScaling } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
-import { Variations } from '../../../../services/network-modification-types';
+import { Variations, VariationType } from '../../../../services/network-modification-types';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 
 interface GeneratorScalingFormData {
-    [VARIATION_TYPE]: string;
+    [VARIATION_TYPE]: VariationType;
     [VARIATIONS]: Variations[];
 }
 
@@ -47,7 +47,7 @@ interface GeneratorScalingDialogProps {
     editDataFetchStatus?: string;
     editData?: {
         uuid: UUID;
-        [VARIATION_TYPE]: string;
+        [VARIATION_TYPE]: VariationType;
         [VARIATIONS]: Variations[];
     };
 }
@@ -73,8 +73,8 @@ const GeneratorScalingDialog = ({
     useEffect(() => {
         if (editData) {
             reset({
-                [VARIATION_TYPE]: editData.variationType,
-                [VARIATIONS]: editData.variations,
+                [VARIATION_TYPE]: editData[VARIATION_TYPE],
+                [VARIATIONS]: editData[VARIATIONS],
             });
         }
     }, [editData, reset]);

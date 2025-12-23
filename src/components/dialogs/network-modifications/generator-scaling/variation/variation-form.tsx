@@ -31,6 +31,7 @@ import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { ActivePowerAdornment } from '../../../dialog-utils';
 import { IDENTIFIER_LIST } from './variation-utils';
 import GridItem from '../../../commons/grid-item';
+import { VariationType } from '../../../../../services/network-modification-types';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
@@ -63,7 +64,7 @@ const VariationForm = ({ name, index }: GeneratorScalingVariationFormProps) => {
 
     const variationType = useWatch({
         name: VARIATION_TYPE,
-    }) as keyof typeof VARIATION_TYPES;
+    }) as VariationType;
 
     const { setValue } = useFormContext();
 
