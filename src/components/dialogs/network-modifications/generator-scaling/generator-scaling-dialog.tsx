@@ -13,13 +13,21 @@ import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
 import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
-import { getVariationsSchema } from './variation/variation-utils';
+import { getVariationsSchema } from './variation/variation-utils.js';
 import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { generatorScaling } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
+import { Variations } from '../../../../services/network-modification-types';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
 
-const emptyFormData = {
+interface GeneratorScalingFormData {
+    [VARIATION_TYPE]: string;
+    [VARIATIONS]: Variations[];
+}
+
+const emptyFormData: GeneratorScalingFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
     [VARIATIONS]: [],
 };
@@ -30,7 +38,19 @@ const formSchema = yup
         [VARIATION_TYPE]: yup.string().required(),
         ...getVariationsSchema(VARIATIONS),
     })
-    .required();
+    .required() as yup.ObjectSchema<GeneratorScalingFormData>;
+
+interface GeneratorScalingDialogProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    isUpdate: boolean;
+    editDataFetchStatus?: string;
+    editData?: {
+        uuid: UUID;
+        [VARIATION_TYPE]: string;
+        [VARIATIONS]: Variations[];
+    };
+}
 
 const GeneratorScalingDialog = ({
     editData,
@@ -39,7 +59,7 @@ const GeneratorScalingDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: GeneratorScalingDialogProps) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
@@ -64,7 +84,7 @@ const GeneratorScalingDialog = ({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (generatorScalingInfos) => {
+        (generatorScalingInfos: GeneratorScalingFormData) => {
             generatorScaling(
                 studyUuid,
                 currentNodeUuid,
