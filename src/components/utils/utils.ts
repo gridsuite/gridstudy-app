@@ -15,15 +15,16 @@ import {
     CURRENT_LIMITS,
     ID,
     LIMITS_PROPERTIES,
-    MODIFICATION_TYPE,
     NAME,
     SELECTED,
     TEMPORARY_LIMIT_DURATION,
-    TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
 } from './field-constants';
-import { TemporaryLimitFormSchema } from '../dialogs/limits/operational-limits-groups-types';
+import {
+    OperationalLimitsGroupFormSchema,
+    TemporaryLimitFormSchema,
+} from '../dialogs/limits/operational-limits-groups-types';
 import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
@@ -126,17 +127,9 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): TemporaryLimitsData[] =>
-    temporaryLimits?.map((limit: TemporaryLimitsData) => {
-        return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [MODIFICATION_TYPE]: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
-        };
-    });
-
-export const formatBackToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormSchema[] =>
+export const formatTemporaryLimitsModificationToFormSchema = (
+    temporaryLimits: TemporaryLimit[]
+): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME]?.value ?? '',
@@ -156,7 +149,9 @@ export const formatMapInfosToTemporaryLimitsFormSchema = (
         };
     });
 
-export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsData[]) => {
+export const formatCompleteCurrentLimit = (
+    completeLimitsGroups: CurrentLimitsData[]
+): OperationalLimitsGroupFormSchema[] => {
     const formattedCompleteLimitsGroups = [];
     if (completeLimitsGroups) {
         for (const elt of completeLimitsGroups) {
@@ -168,7 +163,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsDa
                     [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
                         permanentLimit: elt.permanentLimit,
-                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
+                        temporaryLimits: addSelectedFieldToRows(elt.temporaryLimits),
                     },
                 });
             }

@@ -30,7 +30,7 @@ import {
 import {
     areArrayElementsUnique,
     formatMapInfosToTemporaryLimitsFormSchema,
-    formatBackToTemporaryLimitsFormSchema,
+    formatTemporaryLimitsModificationToFormSchema,
     toModificationOperation,
 } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
@@ -182,7 +182,7 @@ export const formatOpLimitGroupsToFormInfos = (
                 limitsProperties: opLimitGroup.limitsProperties,
                 currentLimits: {
                     permanentLimit: opLimitGroup.currentLimits.permanentLimit,
-                    temporaryLimits: formatBackToTemporaryLimitsFormSchema(opLimitGroup.currentLimits.temporaryLimits),
+                    temporaryLimits: formatTemporaryLimitsModificationToFormSchema(opLimitGroup.currentLimits.temporaryLimits),
                 },
             };
         });
