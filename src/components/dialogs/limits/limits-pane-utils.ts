@@ -18,8 +18,8 @@ import {
     OLG_IS_DUPLICATE,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
@@ -136,8 +136,8 @@ function hasDuplicateOperationalLimitsGroups(context: TestContext) {
 const limitsValidationSchemaCreation = (id: string) => {
     const completeLimitsGroupSchema = {
         [OPERATIONAL_LIMITS_GROUPS]: yup.array(yup.object().shape(limitsGroupValidationSchema())).required(),
-        [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
-        [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: yup.string().nullable(),
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: yup.string().nullable(),
         [ENABLE_OLG_MODIFICATION]: yup.boolean(),
     };
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
@@ -150,8 +150,8 @@ export const getLimitsValidationSchema = (id: string = LIMITS) => {
 const limitsEmptyFormData = (isModification: boolean, id: string) => {
     const limitsGroup = {
         [OPERATIONAL_LIMITS_GROUPS]: [],
-        [SELECTED_LIMITS_GROUP_1]: null,
-        [SELECTED_LIMITS_GROUP_2]: null,
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: null,
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: null,
         [ENABLE_OLG_MODIFICATION]: !isModification,
     };
 
@@ -190,16 +190,16 @@ export const formatOpLimitGroupsToFormInfos = (
 
 export const getAllLimitsFormData = (
     operationalLimitsGroups: OperationalLimitsGroupFormSchema[] = [],
-    selectedOperationalLimitsGroup1: string | null = null,
-    selectedOperationalLimitsGroup2: string | null = null,
+    selectedOperationalLimitsGroupId1: string | null = null,
+    selectedOperationalLimitsGroupId2: string | null = null,
     enableOLGModification: boolean | null = true,
     id = LIMITS
 ) => {
     return {
         [id]: {
             [OPERATIONAL_LIMITS_GROUPS]: operationalLimitsGroups,
-            [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroup1,
-            [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroup2,
+            [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: selectedOperationalLimitsGroupId1,
+            [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: selectedOperationalLimitsGroupId2,
             [ENABLE_OLG_MODIFICATION]: !!enableOLGModification,
         },
     };

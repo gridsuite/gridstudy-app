@@ -524,8 +524,8 @@ export interface ShuntCompensatorCreationInfo {
 export interface LineCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    lineId: string;
-    lineName: string | null;
+    equipmentId: string;
+    equipmentName: string | null;
     r: number;
     x: number;
     g1: number;
@@ -536,9 +536,9 @@ export interface LineCreationInfo {
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
     busOrBusbarSectionId2: string;
-    limitsGroups: OperationalLimitsGroup[];
-    selectedLimitsGroup1: string;
-    selectedLimitsGroup2: string;
+    operationalLimitsGroups: OperationalLimitsGroup[];
+    selectedOperationalLimitsGroupId1: string;
+    selectedOperationalLimitsGroupId2: string;
     isUpdate: boolean;
     modificationUuid: string;
     connectionName1: string | null;
@@ -567,8 +567,8 @@ export interface LineModificationInfos {
     g2: AttributeModification<number> | null;
     b2: AttributeModification<number> | null;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroup1: AttributeModification<string> | null;
-    selectedOperationalLimitsGroup2: AttributeModification<string> | null;
+    selectedOperationalLimitsGroupId1: AttributeModification<string> | null;
+    selectedOperationalLimitsGroupId2: AttributeModification<string> | null;
     [ENABLE_OLG_MODIFICATION]: boolean;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;

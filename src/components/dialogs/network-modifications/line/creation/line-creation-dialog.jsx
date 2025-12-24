@@ -35,8 +35,8 @@ import {
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
     R,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     TAB_HEADER,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
@@ -185,8 +185,8 @@ const LineCreationDialog = ({
                 }),
                 ...getAllLimitsFormData(
                     formatCompleteCurrentLimit(line.currentLimits),
-                    line.selectedOperationalLimitsGroup1 ?? null,
-                    line.selectedOperationalLimitsGroup2 ?? null
+                    line.selectedOperationalLimitsGroupId1 ?? null,
+                    line.selectedOperationalLimitsGroupId2 ?? null
                 ),
                 ...copyEquipmentPropertiesForCreation(line),
             },
@@ -237,8 +237,8 @@ const LineCreationDialog = ({
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    line?.selectedOperationalLimitsGroup1 ?? null,
-                    line?.selectedOperationalLimitsGroup2 ?? null
+                    line?.selectedOperationalLimitsGroupId1 ?? null,
+                    line?.selectedOperationalLimitsGroupId2 ?? null
                 ),
                 ...getPropertiesFromModification(line.properties),
             });
@@ -299,8 +299,8 @@ const LineCreationDialog = ({
             onCreateLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                lineId: header[EQUIPMENT_ID],
-                lineName: sanitizeString(header[EQUIPMENT_NAME]),
+                equipmentId: header[EQUIPMENT_ID],
+                equipmentName: sanitizeString(header[EQUIPMENT_NAME]),
                 r: characteristics[R],
                 x: characteristics[X],
                 g1: convertOutputValue(FieldType.G1, characteristics[G1]),
@@ -311,9 +311,9 @@ const LineCreationDialog = ({
                 busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                limitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
-                selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
-                selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
+                operationalLimitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
+                selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1],
+                selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2],
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
                 connectionName1: sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),

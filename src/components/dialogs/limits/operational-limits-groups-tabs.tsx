@@ -10,8 +10,8 @@ import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useStat
 import {
     LIMITS_PROPERTIES,
     OPERATIONAL_LIMITS_GROUPS,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
 } from '../../utils/field-constants';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
@@ -62,10 +62,10 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             name: operationalLimitsGroupsFormName,
         });
         const selectedLimitsGroups1: string = useWatch({
-            name: `${parentFormName}.${SELECTED_LIMITS_GROUP_1}`,
+            name: `${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID1}`,
         });
         const selectedLimitsGroups2: string = useWatch({
-            name: `${parentFormName}.${SELECTED_LIMITS_GROUP_2}`,
+            name: `${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID2}`,
         });
 
         const handleOpenMenu = useCallback(

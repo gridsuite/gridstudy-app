@@ -40,8 +40,8 @@ import {
     MEASUREMENT_Q2,
     OPERATIONAL_LIMITS_GROUPS,
     R,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     STATE_ESTIMATION,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
@@ -211,8 +211,8 @@ const LineModificationDialog = ({
                 }),
                 ...getAllLimitsFormData(
                     formatOpLimitGroupsToFormInfos(lineModification.operationalLimitsGroups),
-                    lineModification.selectedOperationalLimitsGroup1?.value ?? null,
-                    lineModification.selectedOperationalLimitsGroup2?.value ?? null,
+                    lineModification.selectedOperationalLimitsGroupId1?.value ?? null,
+                    lineModification.selectedOperationalLimitsGroupId2?.value ?? null,
                     lineModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
@@ -249,14 +249,14 @@ const LineModificationDialog = ({
                 operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
                     ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
                     : [],
-                selectedOperationalLimitsGroup1: addOperationTypeToSelectedOpLG(
-                    limits[SELECTED_LIMITS_GROUP_1],
+                selectedOperationalLimitsGroupId1: addOperationTypeToSelectedOpLG(
+                    limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1],
                     intl.formatMessage({
                         id: 'None',
                     })
                 ),
-                selectedOperationalLimitsGroup2: addOperationTypeToSelectedOpLG(
-                    limits[SELECTED_LIMITS_GROUP_2],
+                selectedOperationalLimitsGroupId2: addOperationTypeToSelectedOpLG(
+                    limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2],
                     intl.formatMessage({
                         id: 'None',
                     })
