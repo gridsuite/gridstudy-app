@@ -67,16 +67,11 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     );
 
     const filterTypes = useMemo<GlobalFilterSelectorProps['filterableEquipmentTypes']>(() => {
-        let fTypes = [
+        return [
             ...(tableDefinition.type === SpreadsheetEquipmentType.BRANCH
                 ? [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]
                 : [tableDefinition.type as unknown as EQUIPMENT_TYPES]),
-            EQUIPMENT_TYPES.SUBSTATION,
         ];
-        if (tableDefinition.type !== SpreadsheetEquipmentType.SUBSTATION) {
-            fTypes.push(EQUIPMENT_TYPES.VOLTAGE_LEVEL);
-        }
-        return fTypes;
     }, [tableDefinition.type]);
 
     useEffect(() => {

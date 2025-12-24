@@ -14,6 +14,7 @@ import { useContext } from 'react';
 import { GlobalFilterContext } from './global-filter-context';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { FormattedMessage } from 'react-intl';
+import { FilterType } from '../utils';
 
 function SelectedGlobalFilters() {
     const { selectedGlobalFilters, setSelectedGlobalFilters, onChange } = useContext(GlobalFilterContext);
@@ -21,19 +22,24 @@ function SelectedGlobalFilters() {
 
     const filtersByCategories: Map<string, GlobalFilter[]> = new Map();
     selectedGlobalFilters.forEach((filter: GlobalFilter) => {
-        if (!filtersByCategories.has(filter.filterType)) {
-            filtersByCategories.set(filter.filterType, []);
+        let displayedCategoryTitle: string = 'results.globalFilter.' + filter.filterType;
+        // generic filters are separated and displayed by equipment type :
+        if (filter.filterType === FilterType.GENERIC_FILTER && filter.equipmentType !== undefined) {
+            displayedCategoryTitle = filter.equipmentType;
         }
-        filtersByCategories.get(filter.filterType)?.push(filter);
+        if (!filtersByCategories.has(displayedCategoryTitle)) {
+            filtersByCategories.set(displayedCategoryTitle, []);
+        }
+        filtersByCategories.get(displayedCategoryTitle)?.push(filter);
     });
 
     return (
         <Box sx={resultsGlobalFilterStyles.selectedFiltersPanel}>
             <>
-                {Array.from(filtersByCategories).map(([category, filters]) => (
+                {Array.from(filtersByCategories).map(([displayedCategoryTitle, filters]) => (
                     <>
                         <Typography component="div" margin={0}>
-                            <FormattedMessage id={'results.globalFilter.' + category} />
+                            <FormattedMessage id={displayedCategoryTitle} />
                         </Typography>
                         <LineSeparator />
                         <Box sx={resultsGlobalFilterStyles.selectedFiltersSubGroup}>
