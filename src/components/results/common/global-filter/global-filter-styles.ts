@@ -32,7 +32,7 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
 };
 
 const AUTOCOMPLETE_WIDTH: number = 520;
-const POPPER_EXTRA_WIDTH: number = 250;
+const POPPER_EXTRA_WIDTH: number = 300;
 export const GLOBAL_FILTERS_CELL_HEIGHT: number = 400;
 export const IMPORT_FILTER_HEIGHT: number = 40;
 
@@ -86,6 +86,20 @@ export const resultsGlobalFilterStyles = {
         width: '100%',
         maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
     }),
+    selectedFiltersPanel: () => ({
+        overflowY: 'auto',
+        paddingLeft: 1,
+        paddingTop: 1,
+        maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+    }),
+    selectedFiltersSubGroup: (theme) => ({
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        color: theme.palette.text.secondary,
+        fontSize: '1em',
+        paddingBottom: 1,
+    }),
     importFilterButton: (theme) => ({
         color: theme.palette.text.secondary,
         fontSize: '0.8em',
@@ -109,7 +123,7 @@ export const resultsGlobalFilterStyles = {
     chip: {
         '&.MuiChip-root': {
             borderRadius: '100px solid',
-            margin: '4px 2px 4px 2px',
+            margin: '1px 2px 1px 2px',
             padding: '0',
             color: 'white',
         },

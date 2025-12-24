@@ -29,9 +29,9 @@ import SelectedGlobalFilters from './selected-global-filters';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { TextWithToolTip } from './text-with-tooltip';
 
-const XS_COLUMN1: number = 3.5;
+const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;
-const XS_COLUMN3: number = 4.5;
+const XS_COLUMN3: number = 5;
 
 type GlobalFilterPaperProps = PropsWithChildren<{
     autocompleteRef?: RefObject<HTMLElement | null>;

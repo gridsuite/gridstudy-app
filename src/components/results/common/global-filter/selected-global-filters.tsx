@@ -6,39 +6,57 @@
  */
 
 import { GlobalFilter } from './global-filter-types';
-import List from '@mui/material/List';
-import { mergeSx, OverflowableChip } from '@gridsuite/commons-ui';
+import { LineSeparator, OverflowableChip } from '@gridsuite/commons-ui';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
-import { ListItem } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { getOptionLabel } from './global-filter-utils';
 import { useContext } from 'react';
 import { GlobalFilterContext } from './global-filter-context';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
+import { FormattedMessage } from 'react-intl';
 
 function SelectedGlobalFilters() {
     const { selectedGlobalFilters, setSelectedGlobalFilters, onChange } = useContext(GlobalFilterContext);
     const { translate } = useLocalizedCountries();
 
+    const filtersByCategories: Map<string, GlobalFilter[]> = new Map();
+    selectedGlobalFilters.forEach((filter: GlobalFilter) => {
+        if (!filtersByCategories.has(filter.filterType)) {
+            filtersByCategories.set(filter.filterType, []);
+        }
+        filtersByCategories.get(filter.filterType)?.push(filter);
+    });
+
     return (
-        <List sx={mergeSx(resultsGlobalFilterStyles.list, { overflowY: 'auto' })}>
+        <Box sx={resultsGlobalFilterStyles.selectedFiltersPanel}>
             <>
-                {selectedGlobalFilters.map((element: GlobalFilter) => (
-                    <ListItem key={element.label} sx={{ height: '1.8em' }}>
-                        <OverflowableChip
-                            label={getOptionLabel(element, translate)}
-                            sx={getResultsGlobalFiltersChipStyle(element.filterType)}
-                            onDelete={() => {
-                                const newSelectedGlobalFilters = selectedGlobalFilters.filter(
-                                    (filter) => filter !== element
-                                );
-                                setSelectedGlobalFilters(newSelectedGlobalFilters);
-                                onChange(newSelectedGlobalFilters);
-                            }}
-                        />
-                    </ListItem>
+                {Array.from(filtersByCategories).map(([category, filters]) => (
+                    <>
+                        <Typography component="div" margin={0}>
+                            <FormattedMessage id={'results.globalFilter.' + category} />
+                        </Typography>
+                        <LineSeparator />
+                        <Box sx={resultsGlobalFilterStyles.selectedFiltersSubGroup}>
+                            <>
+                                {filters.map((element: GlobalFilter) => (
+                                    <OverflowableChip
+                                        label={getOptionLabel(element, translate)}
+                                        sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                                        onDelete={() => {
+                                            const newSelectedGlobalFilters = selectedGlobalFilters.filter(
+                                                (filter) => filter !== element
+                                            );
+                                            setSelectedGlobalFilters(newSelectedGlobalFilters);
+                                            onChange(newSelectedGlobalFilters);
+                                        }}
+                                    />
+                                ))}
+                            </>
+                        </Box>
+                    </>
                 ))}
             </>
-        </List>
+        </Box>
     );
 }
 
