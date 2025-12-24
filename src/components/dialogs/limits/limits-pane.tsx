@@ -59,7 +59,7 @@ export function LimitsPane({
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
 
-    const getCurrentLimits = (equipmentToModify: any, operationalLimitsGroupId: string): CurrentLimits | null => {
+    const getCurrentLimits = (equipmentToModify: any, operationalLimitsGroupId: string): CurrentLimitsData | null => {
         if (equipmentToModify?.currentLimits) {
             return equipmentToModify.currentLimits.find(
                 (currentLimit: CurrentLimitsData) =>

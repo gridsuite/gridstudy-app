@@ -9,7 +9,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import { useCallback, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { Limit, TemporaryLimit } from '../../../services/network-modification-types';
+import { TemporaryLimitsData } from '../../../services/study/network-map.type';
 import { AxisValueFormatterContext, BarSeriesType } from '@mui/x-charts/models';
 
 export interface LimitsGraphProps {
@@ -47,7 +47,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
     const permanentLimit: number | null = currentLimits.permanentLimit ?? previousPermanentLimit ?? null;
 
     const isIncoherent = useCallback(
-        (maxValuePermanentLimit: number, item: Limit, previousItem?: Limit) => {
+        (maxValuePermanentLimit: number, item: TemporaryLimitsData, previousItem?: TemporaryLimitsData) => {
             // Incoherent cases :
             //  threshold without tempo that is not permanent limit when permanent limit exists
             //  threshold with biggest tempo and biggest value than the previous threshold
@@ -79,7 +79,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
     );
 
     const { series, ticks, max } = useMemo(() => {
-        const thresholds: Limit[] = [];
+        const thresholds: TemporaryLimitsData[] = [];
         let noValueThresholdFound = false;
         let maxValuePermanentLimit: number = 0;
 
@@ -94,8 +94,8 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
 
         if (currentLimits?.temporaryLimits) {
             currentLimits.temporaryLimits
-                .filter((field: TemporaryLimit) => field.name && (field.acceptableDuration || field.value))
-                .forEach((field: TemporaryLimit) => {
+                .filter((field: TemporaryLimitsData) => field.name && (field.acceptableDuration || field.value))
+                .forEach((field: TemporaryLimitsData) => {
                     if (!field.value) {
                         noValueThresholdFound = true;
                     }

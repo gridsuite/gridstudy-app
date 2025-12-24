@@ -30,7 +30,7 @@ import {
 import {
     areArrayElementsUnique,
     formatMapInfosToTemporaryLimitsFormSchema,
-    formatToTemporaryLimitsFormSchema,
+    formatTemporaryLimitsModificationToFormSchema,
     toModificationOperation,
 } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
@@ -182,7 +182,9 @@ export const formatOpLimitGroupsToFormInfos = (
                 limitsProperties: opLimitGroup.limitsProperties,
                 currentLimits: {
                     permanentLimit: opLimitGroup.currentLimits.permanentLimit,
-                    temporaryLimits: formatToTemporaryLimitsFormSchema(opLimitGroup.currentLimits.temporaryLimits),
+                    temporaryLimits: formatTemporaryLimitsModificationToFormSchema(
+                        opLimitGroup.currentLimits.temporaryLimits
+                    ),
                 },
             };
         });
@@ -242,26 +244,6 @@ export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitFormSchema[
             name: sanitizeString(name) ?? '',
         })) || [];
 
-const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitFormSchema[], limit: TemporaryLimit) =>
-    temporaryLimits?.find(
-        (l: TemporaryLimitFormSchema) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration
-    );
-
-export const updateTemporaryLimits = (
-    temporaryLimitsForm: TemporaryLimitFormSchema[],
-    temporaryLimitsToModify: TemporaryLimit[] // from map server
-) => {
-    let updatedTemporaryLimits = temporaryLimitsForm ?? [];
-    //add temporary limits from map server that are not in the form values
-    temporaryLimitsToModify?.forEach((limit: TemporaryLimit) => {
-        if (findTemporaryLimitForm(updatedTemporaryLimits, limit) === undefined) {
-            updatedTemporaryLimits?.push(temporaryLimitToTemporaryLimitFormSchema(limit));
-        }
-    });
-
-    return updatedTemporaryLimits;
-};
-
 export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimitsData[]) => {
     return currentLimits?.map((currentLimit: CurrentLimitsData) => {
         return {
@@ -315,9 +297,9 @@ export const addModificationTypeToTemporaryLimits = (
 ): TemporaryLimit[] => {
     return formTemporaryLimits.map((limit: TemporaryLimitFormSchema) => {
         return {
-            name: limit?.name ?? '',
-            acceptableDuration: limit?.acceptableDuration ?? null,
-            value: limit?.value ?? null,
+            name: toModificationOperation(limit?.name),
+            acceptableDuration: toModificationOperation(limit?.acceptableDuration),
+            value: toModificationOperation(limit?.value),
             modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
@@ -366,12 +348,4 @@ export const addModificationTypeToOpLimitsGroups = (
             temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
         };
     });
-};
-
-export const temporaryLimitToTemporaryLimitFormSchema = (temporaryLimit: TemporaryLimit): TemporaryLimitFormSchema => {
-    return {
-        [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
-        [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
-        [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value,
-    };
 };
