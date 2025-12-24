@@ -182,7 +182,9 @@ export const formatOpLimitGroupsToFormInfos = (
                 limitsProperties: opLimitGroup.limitsProperties,
                 currentLimits: {
                     permanentLimit: opLimitGroup.currentLimits.permanentLimit,
-                    temporaryLimits: formatTemporaryLimitsModificationToFormSchema(opLimitGroup.currentLimits.temporaryLimits),
+                    temporaryLimits: formatTemporaryLimitsModificationToFormSchema(
+                        opLimitGroup.currentLimits.temporaryLimits
+                    ),
                 },
             };
         });
