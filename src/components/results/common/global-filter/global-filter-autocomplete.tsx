@@ -27,7 +27,7 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { FilterType } from '../utils';
-import { OverflowableText, OverflowableChip } from '@gridsuite/commons-ui';
+import { OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
@@ -160,29 +160,28 @@ function GlobalFilterAutocomplete({
 
     const filterOptions = useCallback(
         (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
-            return (
-                options
-                    // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
-                    .filter((option: GlobalFilter) => {
-                        const labelToMatch: string =
-                            option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
-                        return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
-                    })
-                    .filter((option: GlobalFilter) =>
-                        // recent filters are a group in itself
-                        option?.recent
-                            ? filterGroupSelected === RECENT_FILTER
-                            : // if the filter has a subtype it should be filtered through it instead of filterType
-                              option.filterSubtype
-                              ? option.filterSubtype === filterGroupSelected
-                              : option.filterType === filterGroupSelected
-                    )
-                    .filter((option: GlobalFilter) =>
-                        genericFiltersStrictMode && option.filterType === FilterType.GENERIC_FILTER
-                            ? filterableEquipmentTypes.includes(option.equipmentType as EQUIPMENT_TYPES)
-                            : true
-                    )
-            );
+            const filteredOptions = options
+                // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
+                .filter((option: GlobalFilter) => {
+                    const labelToMatch: string =
+                        option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                    return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
+                })
+                .filter((option: GlobalFilter) =>
+                    // recent filters are a group in itself
+                    option?.recent
+                        ? filterGroupSelected === RECENT_FILTER
+                        : // if the filter has a subtype it should be filtered through it instead of filterType
+                          option.filterSubtype
+                          ? option.filterSubtype === filterGroupSelected
+                          : option.filterType === filterGroupSelected
+                )
+                .filter((option: GlobalFilter) =>
+                    genericFiltersStrictMode && option.filterType === FilterType.GENERIC_FILTER
+                        ? filterableEquipmentTypes.includes(option.equipmentType as EQUIPMENT_TYPES)
+                        : true
+                );
+            return filterGroupSelected === RECENT_FILTER ? filteredOptions.slice(0, 10) : filteredOptions;
         },
         [filterGroupSelected, filterableEquipmentTypes, genericFiltersStrictMode, translate]
     );
