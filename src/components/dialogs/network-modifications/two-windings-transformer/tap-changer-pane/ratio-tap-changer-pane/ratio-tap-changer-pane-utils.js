@@ -135,21 +135,21 @@ const ratioTapChangerValidationSchema = (isModification, id) => ({
             .number()
             .nullable()
             .when(ENABLED, {
-                is: (enabled) => enabled && !isModification,
+                is: (enabled) => enabled,
                 then: (schema) => schema.required(),
             }),
         [HIGH_TAP_POSITION]: yup
             .number()
             .nullable()
             .when(ENABLED, {
-                is: (enabled) => enabled && !isModification,
+                is: (enabled) => enabled,
                 then: (schema) => schema.required(),
             }),
         [TAP_POSITION]: yup
             .number()
             .nullable()
             .when(ENABLED, {
-                is: (enabled) => enabled && !isModification,
+                is: (enabled) => enabled,
                 then: (schema) =>
                     schema
                         .required()
