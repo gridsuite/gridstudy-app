@@ -304,8 +304,8 @@ export function generatorScaling(
     studyUuid: UUID,
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
-    variationType: string,
-    variations: any[]
+    variationType: VariationType,
+    variations: Variations[]
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATOR_SCALING.type,

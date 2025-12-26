@@ -20,23 +20,13 @@ import { ACTIVE_VARIATION_MODES, REACTIVE_VARIATION_MODES, VARIATION_TYPES } fro
 import { ActivePowerAdornment } from '../../../dialog-utils';
 import { IDENTIFIER_LIST } from './variation-utils';
 import GridItem from '../../../commons/grid-item';
-import { VariationType } from '../../../../../services/network-modification-types';
+import { ItemFilterType, VariationType } from '../../../../../services/network-modification-types';
 
 const LOADS = [EQUIPMENT_TYPES.LOAD];
 
 interface LoadScalingVariationFormProps {
     name: string;
     index: number;
-}
-
-interface ItemValueType {
-    type?: string;
-    specificMetadata?: {
-        type?: string;
-        filterEquipmentsAttributes?: {
-            distributionKey?: number;
-        }[];
-    };
 }
 
 const VariationForm = ({ name, index }: LoadScalingVariationFormProps) => {
@@ -49,7 +39,7 @@ const VariationForm = ({ name, index }: LoadScalingVariationFormProps) => {
     }) as VariationType;
 
     const itemFilter = useCallback(
-        (value: ItemValueType) => {
+        (value: ItemFilterType) => {
             if (value?.type === ElementType.FILTER && variationMode === ACTIVE_VARIATION_MODES.VENTILATION.id) {
                 return !!(
                     value?.specificMetadata?.type === IDENTIFIER_LIST &&
