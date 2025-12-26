@@ -9,10 +9,10 @@ import React, { useCallback, useContext, useMemo, useRef } from 'react';
 import {
     Autocomplete,
     AutocompleteCloseReason,
+    AutocompleteProps,
     AutocompleteRenderGetTagProps,
     AutocompleteRenderGroupParams,
     AutocompleteRenderInputParams,
-    AutocompleteRenderOptionState,
     Box,
     Checkbox,
     Chip,
@@ -268,15 +268,15 @@ function GlobalFilterAutocomplete({
         return '';
     }, []);
 
-    const renderOption = useCallback(
-        (props: any, option: GlobalFilter, state: AutocompleteRenderOptionState) => {
-            const { key, children, color, ...otherProps } = props;
+    const renderOption = useCallback<NonNullable<AutocompleteProps<GlobalFilter, true, false, false>['renderOption']>>(
+        (props, option, state) => {
+            const { children, color, ...otherProps } = props;
             // recent selected options are not displayed in the recent tab :
             const hideOption = state.selected && option.recent;
             const label = getOptionLabel(option, translate, intl) ?? '';
             return (
                 !hideOption && (
-                    <ListItemButton key={key} selected={state.selected} component="li" {...otherProps}>
+                    <ListItemButton selected={state.selected} component="li" {...otherProps}>
                         <Checkbox size="small" checked={state.selected} />
                         {option.filterType === FilterType.VOLTAGE_LEVEL ? (
                             <Tooltip title={formatVoltageRange(option)} placement="right">
