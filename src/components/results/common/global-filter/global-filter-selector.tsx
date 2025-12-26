@@ -32,6 +32,9 @@ export default function GlobalFilterSelector({
         if (!categories.includes(FilterType.GENERIC_FILTER) && !disableGenericFilters) {
             categories.push(FilterType.GENERIC_FILTER);
         }
+        if (!categories.includes(FilterType.SUBSTATION_OR_VL) && !disableGenericFilters) {
+            categories.push(FilterType.SUBSTATION_OR_VL);
+        }
         return categories;
     }, [filters, disableGenericFilters]);
 

@@ -5,22 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
-import {
-    getResultsGlobalFiltersChipStyle,
-    GLOBAL_FILTERS_CELL_HEIGHT,
-    IMPORT_FILTER_HEIGHT,
-    resultsGlobalFilterStyles,
-} from './global-filter-styles';
+import { Box, Button, Grid, ListItemButton, Paper, Typography } from '@mui/material';
+import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
-import { FilterType } from '../utils';
+import { FilterType, isGenericFilterType } from '../utils';
 import { GlobalFilter } from './global-filter-types';
-import { fetchSubstationPropertiesGlobalFilters, getOptionLabel, RECENT_FILTER } from './global-filter-utils';
-import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
+import { fetchSubstationPropertiesGlobalFilters, RECENT_FILTER } from './global-filter-utils';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {
     DirectoryItemSelector,
@@ -28,14 +22,16 @@ import {
     ElementType,
     fetchElementsInfos,
     mergeSx,
-    OverflowableChip,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
+import SelectedGlobalFilters from './selected-global-filters';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { TextWithToolTip } from './text-with-tooltip';
 
-const XS_COLUMN1: number = 3.5;
+const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;
-const XS_COLUMN3: number = 4.5;
+const XS_COLUMN3: number = 5;
 
 type GlobalFilterPaperProps = PropsWithChildren<{
     autocompleteRef?: RefObject<HTMLElement | null>;
@@ -49,13 +45,11 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         filterGroupSelected,
         setFilterGroupSelected,
         selectedGlobalFilters,
-        setSelectedGlobalFilters,
         onChange,
         filterCategories,
         genericFiltersStrictMode,
         equipmentTypes,
     } = useContext(GlobalFilterContext);
-    const { translate } = useLocalizedCountries();
     const intl = useIntl();
     const [categories, setCategories] = useState<string[]>([]);
 
@@ -76,6 +70,13 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 ...(substationPropertiesGlobalFilters ? Array.from(substationPropertiesGlobalFilters.keys()) : []),
             ];
             // generic filters always at the end of the menus
+            const substationCategory: string[] = sortedCategories.splice(
+                sortedCategories.indexOf(FilterType.SUBSTATION_OR_VL),
+                1
+            );
+            if (substationCategory.length > 0) {
+                sortedCategories.push(substationCategory[0]);
+            }
             const genericFilterCategory: string[] = sortedCategories.splice(
                 sortedCategories.indexOf(FilterType.GENERIC_FILTER),
                 1
@@ -115,14 +116,29 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 // ignore already selected filters and non-generic filters :
                 if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
                     // add the others
-                    newlySelectedFilters.push({
-                        uuid: element.elementUuid,
-                        equipmentType: element.specificMetadata?.equipmentType,
-                        label: element.elementName,
-                        filterType: FilterType.GENERIC_FILTER,
-                        filterTypeFromMetadata: element.specificMetadata?.type,
-                        recent: true,
-                    });
+                    const equipmentType = element.specificMetadata?.equipmentType;
+                    if (
+                        equipmentType === EQUIPMENT_TYPES.SUBSTATION ||
+                        equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL
+                    ) {
+                        newlySelectedFilters.push({
+                            uuid: element.elementUuid,
+                            equipmentType: element.specificMetadata?.equipmentType,
+                            label: element.elementName,
+                            filterType: FilterType.SUBSTATION_OR_VL,
+                            filterTypeFromMetadata: element.specificMetadata?.type,
+                            recent: true,
+                        });
+                    } else {
+                        newlySelectedFilters.push({
+                            uuid: element.elementUuid,
+                            equipmentType: element.specificMetadata?.equipmentType,
+                            label: element.elementName,
+                            filterType: FilterType.GENERIC_FILTER,
+                            filterTypeFromMetadata: element.specificMetadata?.type,
+                            recent: true,
+                        });
+                    }
                 }
             });
 
@@ -132,10 +148,22 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         [onChange, selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown]
     );
 
-    const allowedEquipmentTypes = useMemo(
-        () => (genericFiltersStrictMode ? equipmentTypes : undefined),
-        [equipmentTypes, genericFiltersStrictMode]
-    );
+    /**
+     * substations and voltage levels filters are not part of the regular selectable elements filters.
+     * They are selected through their specific filter category (FilterType.SUBSTATION_OR_VL)
+     */
+    const allowedEquipmentTypes = useMemo(() => {
+        if (filterGroupSelected === FilterType.SUBSTATION_OR_VL) {
+            return [EQUIPMENT_TYPES.SUBSTATION, EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+        }
+
+        return genericFiltersStrictMode
+            ? equipmentTypes
+            : Object.values(EQUIPMENT_TYPES.toString()).filter(
+                  (equipmentType) =>
+                      equipmentType !== EQUIPMENT_TYPES.SUBSTATION && equipmentType !== EQUIPMENT_TYPES.VOLTAGE_LEVEL
+              );
+    }, [equipmentTypes, genericFiltersStrictMode, filterGroupSelected]);
 
     return (
         <>
@@ -156,7 +184,10 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 <Paper sx={resultsGlobalFilterStyles.dropdown}>
                     <Grid container>
                         <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellHeader}>
-                            <FormattedMessage id={'results.globalFilter.categories'} />
+                            <TextWithToolTip
+                                text="results.globalFilter.categories"
+                                tooltipMessage="results.globalFilter.categoriesHelp"
+                            />
                         </Grid>
                         <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellHeader} />
                         <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellHeader}>
@@ -179,7 +210,16 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                                             selected={category === filterGroupSelected}
                                         >
                                             <ListItemText
-                                                primary={<FormattedMessage id={'results.globalFilter.' + category} />}
+                                                primary={
+                                                    category === 'genericFilter' ? (
+                                                        <TextWithToolTip
+                                                            text="results.globalFilter.genericFilter"
+                                                            tooltipMessage="results.globalFilter.elementsHelp"
+                                                        />
+                                                    ) : (
+                                                        <FormattedMessage id={'results.globalFilter.' + category} />
+                                                    )
+                                                }
                                             />
                                         </ListItemButton>
                                     );
@@ -189,15 +229,14 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                         <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
                             <Box
                                 sx={mergeSx(resultsGlobalFilterStyles.list, {
-                                    height:
-                                        filterGroupSelected === FilterType.GENERIC_FILTER
-                                            ? `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`
-                                            : `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+                                    height: isGenericFilterType(filterGroupSelected)
+                                        ? `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`
+                                        : `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
                                 })}
                             >
                                 {children}
                             </Box>
-                            {filterGroupSelected === FilterType.GENERIC_FILTER && (
+                            {isGenericFilterType(filterGroupSelected) && (
                                 <Button
                                     startIcon={<FileUploadIcon />}
                                     fullWidth={true}
@@ -211,23 +250,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                             )}
                         </Grid>
                         <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
-                            <List sx={mergeSx(resultsGlobalFilterStyles.list, { overflowY: 'auto' })}>
-                                {selectedGlobalFilters.map((element: GlobalFilter) => (
-                                    <ListItem key={element.label} sx={{ height: '1.8em' }}>
-                                        <OverflowableChip
-                                            label={getOptionLabel(element, translate)}
-                                            sx={getResultsGlobalFiltersChipStyle(element.filterType)}
-                                            onDelete={() => {
-                                                const newSelectedGlobalFilters = selectedGlobalFilters.filter(
-                                                    (filter) => filter !== element
-                                                );
-                                                setSelectedGlobalFilters(newSelectedGlobalFilters);
-                                                onChange(newSelectedGlobalFilters);
-                                            }}
-                                        />
-                                    </ListItem>
-                                ))}
-                            </List>
+                            <SelectedGlobalFilters />
                         </Grid>
                     </Grid>
                 </Paper>

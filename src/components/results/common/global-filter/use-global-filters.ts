@@ -7,7 +7,7 @@
 
 import { useCallback, useState } from 'react';
 import { GlobalFilter, GlobalFilters } from './global-filter-types';
-import { FilterType } from '../utils';
+import { FilterType, isGenericFilter } from '../utils';
 
 export function isGlobalFilterParameter(globalFilters: GlobalFilters | undefined): globalFilters is GlobalFilters {
     return (
@@ -34,7 +34,7 @@ export default function useGlobalFilters() {
 
         const genericFilters: Set<string> = new Set(
             value
-                .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
+                .filter((filter: GlobalFilter): boolean => isGenericFilter(filter))
                 .map((filter: GlobalFilter) => filter.uuid ?? '')
                 .filter((uuid: string): boolean => uuid !== '')
         );
