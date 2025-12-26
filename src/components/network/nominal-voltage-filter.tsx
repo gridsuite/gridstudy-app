@@ -55,10 +55,10 @@ export default function NominalVoltageFilter({
     filteredNominalVoltages,
     onChange,
 }: Readonly<NominalVoltageFilterProps>) {
-    const { baseVoltages, getBaseVoltage } = useBaseVoltages();
+    const { baseVoltages, getBaseVoltageInterval } = useBaseVoltages();
     const [voltageLevelIntervals, setVoltageLevelIntervals] = useState<VoltageLevelValuesInterval[]>(
         baseVoltages.map((interval) => {
-            const vlListValues = nominalVoltages.filter((vnom) => getBaseVoltage(vnom)?.name === interval.name);
+            const vlListValues = nominalVoltages.filter((vnom) => getBaseVoltageInterval(vnom)?.name === interval.name);
             return { ...interval, vlListValues, isChecked: true };
         })
     );

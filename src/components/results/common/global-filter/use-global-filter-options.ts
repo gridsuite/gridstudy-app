@@ -7,16 +7,18 @@
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useEffect, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
-import { fetchAllCountries, fetchAllNominalVoltages } from '../../../../services/study/network-map';
+import { fetchAllCountries } from '../../../../services/study/network-map';
 import { FilterType } from '../utils';
 import { fetchSubstationPropertiesGlobalFilters } from './global-filter-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
+import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 
 export const useGlobalFilterOptions = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const { baseVoltages } = useBaseVoltages();
 
     const { snackError } = useSnackMessage();
 
@@ -24,6 +26,16 @@ export const useGlobalFilterOptions = () => {
     const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
     // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
     const [propertiesFilter, setPropertiesFilter] = useState<GlobalFilter[]>([]);
+
+    useEffect(() => {
+        const newVoltageLevelsFilter = baseVoltages.map((voltage) => ({
+            label: voltage.name,
+            minValue: voltage.minValue,
+            maxValue: voltage.maxValue,
+            filterType: FilterType.VOLTAGE_LEVEL,
+        }));
+        setVoltageLevelsFilter(newVoltageLevelsFilter);
+    }, [baseVoltages]);
 
     useEffect(() => {
         if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
@@ -38,19 +50,6 @@ export const useGlobalFilterOptions = () => {
                 })
                 .catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
-                });
-
-            fetchAllNominalVoltages(studyUuid, currentNode.id, currentRootNetworkUuid)
-                .then((nominalVoltages) => {
-                    setVoltageLevelsFilter(
-                        nominalVoltages.map((nominalV: number) => ({
-                            label: nominalV.toString(),
-                            filterType: FilterType.VOLTAGE_LEVEL,
-                        }))
-                    );
-                })
-                .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'FetchNominalVoltagesError' });
                 });
 
             fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {

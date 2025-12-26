@@ -34,13 +34,14 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
                 : ([equipmentType as unknown as FilterEquipmentType] as const),
         [equipmentType]
     );
-    const filterIds = useGlobalFilterResults(globalFilterSpreadsheetState, equipmentTypes);
+    const filteredEquipmentIds = useGlobalFilterResults(globalFilterSpreadsheetState, equipmentTypes);
     useEffect(() => {
         gridRef.current?.api?.onFilterChanged();
-    }, [filterIds, gridRef]);
+    }, [filteredEquipmentIds, gridRef]);
+    // Check if the equipment of the row belongs to the filtered equipments
     const doesFormulaFilteringPass = useCallback<NonNullable<GridOptions<TData>['doesExternalFilterPass']>>(
-        (node) => node.data?.id !== undefined && (filterIds?.includes(node.data?.id) ?? true),
-        [filterIds]
+        (node) => node.data?.id !== undefined && (filteredEquipmentIds?.includes(node.data?.id) ?? true),
+        [filteredEquipmentIds]
     );
     const isExternalFilterPresent = useCallback<NonNullable<GridOptions<TData>['isExternalFilterPresent']>>(
         () => globalFilterSpreadsheetState.length > 0,
