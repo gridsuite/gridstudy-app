@@ -430,6 +430,16 @@ export function exportNetworkFile(
     });
 }
 
+export function fetchExportNetworkFile(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID, exportUuid: UUID) {
+    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) + '/download-file';
+    const urlSearchParams = new URLSearchParams();
+    if (!isBlankOrEmpty(exportUuid)) {
+        urlSearchParams.append('exportUuid', exportUuid);
+    }
+    const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';
+    return backendFetch(url + suffix);
+}
+
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {
     const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EQUIPMENT_INFOS_TYPES.TAB.type}`;
     return backendFetchJson(fetchEquipmentTypeSchemaUrl, {
