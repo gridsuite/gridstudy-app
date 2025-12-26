@@ -24,10 +24,10 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
+import { Delete as DeleteIcon, FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { FilterType } from '../utils';
 import { OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
@@ -38,6 +38,9 @@ import GlobalFilterPaper from './global-filter-paper';
 import IconButton from '@mui/material/IconButton';
 import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import { GlobalFilterContext } from './global-filter-context';
+import { removeFromRecentGlobalFilters } from '../../../../redux/actions';
+import { AppDispatch } from '../../../../redux/store';
+import { UUID } from 'node:crypto';
 
 const TAG_LIMIT_NUMBER: number = 4;
 
@@ -125,6 +128,7 @@ function GlobalFilterAutocomplete({
         genericFiltersStrictMode,
     } = useContext(GlobalFilterContext);
     const intl = useIntl();
+    const dispatch = useDispatch<AppDispatch>();
     const { translate } = useLocalizedCountries();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
     const autocompleteRef = useRef<HTMLDivElement>(null);
@@ -274,22 +278,53 @@ function GlobalFilterAutocomplete({
             // recent selected options are not displayed in the recent tab :
             const hideOption = state.selected && option.recent;
             const label = getOptionLabel(option, translate, intl) ?? '';
+
+            let content: React.ReactNode;
+            switch (option.filterType) {
+                case FilterType.VOLTAGE_LEVEL:
+                    content = (
+                        <Tooltip title={formatVoltageRange(option)} placement="right">
+                            <Typography>{label}</Typography>
+                        </Tooltip>
+                    );
+                    break;
+                case FilterType.GENERIC_FILTER:
+                    content = (
+                        <>
+                            <OverflowableText text={label} width="100%" />
+                            <IconButton
+                                sx={{
+                                    display: 'none',
+                                    '.MuiListItemButton-root:hover &': {
+                                        display: 'inline-flex',
+                                    },
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    selectedGlobalFilters.find((f) => f.uuid === option.uuid) &&
+                                        onChange(selectedGlobalFilters.filter((f) => f.uuid !== option.uuid));
+                                    dispatch(removeFromRecentGlobalFilters(option.uuid as UUID)); // generic filter so has uuid
+                                }}
+                            >
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        </>
+                    );
+                    break;
+                default:
+                    content = <OverflowableText text={label} />;
+            }
+
             return (
                 !hideOption && (
                     <ListItemButton selected={state.selected} component="li" {...otherProps}>
                         <Checkbox size="small" checked={state.selected} />
-                        {option.filterType === FilterType.VOLTAGE_LEVEL ? (
-                            <Tooltip title={formatVoltageRange(option)} placement="right">
-                                <Typography>{label}</Typography>
-                            </Tooltip>
-                        ) : (
-                            <OverflowableText text={label} />
-                        )}
+                        {content}
                     </ListItemButton>
                 )
             );
         },
-        [translate, intl, formatVoltageRange]
+        [translate, intl, dispatch, formatVoltageRange, onChange, selectedGlobalFilters]
     );
 
     const PaperComponentMemo = useCallback(
@@ -362,6 +397,7 @@ function GlobalFilterAutocomplete({
                         sx: {
                             '& .MuiAutocomplete-option': {
                                 paddingLeft: 0,
+                                paddingRight: 0,
                             },
                             height: '100%',
                             maxHeight: '100%',
