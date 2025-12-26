@@ -55,6 +55,7 @@ import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popov
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import { StoreNadViewBox } from 'redux/actions';
+import { useBaseVoltages } from '../../../../../hooks/use-base-voltages';
 
 type NetworkAreaDiagramContentProps = {
     readonly nadPanelId: UUID;
@@ -121,6 +122,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
     const nadViewBox = useSelector((state: AppState) => state.nadViewBox);
+    const { baseVoltages } = useBaseVoltages();
     const dispatch = useDispatch();
     // save nad when exiting edit mode
     const handleSetIsEditNadMode = useCallback(
@@ -468,7 +470,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 svgRef.current,
                 svg,
                 svgMetadata ?? null,
-                nadViewerParameters
+                nadViewerParameters,
+                baseVoltages.map(({ name }) => name)
             );
 
             // Repositioning the nodes with specified positions
@@ -499,6 +502,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         loadingState,
         nadViewBox,
         nadPanelId,
+        baseVoltages,
     ]);
 
     const closeMenu = () => {
