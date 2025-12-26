@@ -12,6 +12,7 @@ import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../components/
 import withEquipmentMenu from '../components/menus/equipment-menu';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import type { UUID } from 'node:crypto';
+import { withVoltageLevelMenu } from 'components/menus/voltage-level-menu';
 
 type EquipmentMenuProps = {
     position?: [number, number] | null;
@@ -77,7 +78,7 @@ export const useEquipmentMenu = ({
         () => ({
             MenuBranch: withOperatingStatusMenu(BaseEquipmentMenu),
             MenuSubstation: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.SUBSTATION, null, 'substation-menus'),
-            MenuVoltageLevel: withEquipmentMenu(
+            MenuVoltageLevel: withVoltageLevelMenu(
                 BaseEquipmentMenu,
                 EquipmentType.VOLTAGE_LEVEL,
                 null,
