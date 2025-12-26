@@ -43,7 +43,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
 }: CustomHeaderComponentProps<F, T>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
-    const { handleSortChange } = useCustomAggridSort(column.getId(), sortParams);
+    const { handleSortChange } = useCustomAggridSort(column.getId(), sortParams, api);
     const isSortable = !!sortParams;
     const handleClickHeader = () => {
         handleSortChange && handleSortChange();

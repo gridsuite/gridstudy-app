@@ -173,6 +173,13 @@ const spreadsheetEn = {
     'spreadsheet/formula/function-reference/disabled':
         'Function references are disabled. Functions must be called with parameters',
 
+    //save dialog
+    'spreadsheet/save-dialog/include': 'Include',
+    'spreadsheet/save-dialog/spreadsheet': 'Spreadsheet',
+    'spreadsheet/save-dialog/filters': 'Filters',
+    'spreadsheet/save-dialog/columns_visibility': 'Columns visibility',
+    'spreadsheet/save-dialog/columns_sorting': 'Columns sorting',
+
     // Column types
     TEXT: 'Text',
     NUMBER: 'Number',

@@ -83,13 +83,13 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<AddSpre
             const tabIndex = tablesDefinitions.length;
             const tabName = formData[SPREADSHEET_NAME];
             const modelId = formData[SPREADSHEET_MODEL][0].id;
-
             getSpreadsheetModel(modelId)
                 .then((selectedModel) => {
                     addNewSpreadsheet({
                         studyUuid,
                         columns: selectedModel.columns,
                         globalFilters: selectedModel.globalFilters,
+                        sortConfig: selectedModel.sortConfig,
                         sheetType: selectedModel.sheetType,
                         nodeAliases: selectedModel.nodeAliases,
                         resetNodeAliases,

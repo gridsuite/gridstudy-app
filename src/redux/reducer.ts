@@ -1091,8 +1091,8 @@ export const reducer = createReducer(initialState, (builder) => {
             .reduce((acc, tabUuid) => {
                 acc[tabUuid] = [
                     {
-                        colId: 'id',
-                        sort: SortWay.ASC,
+                        colId: action?.tablesSorts?.[tabUuid]?.[0]?.colId ?? 'id',
+                        sort: action?.tablesSorts?.[tabUuid]?.[0]?.sort ?? SortWay.ASC,
                     },
                 ];
                 return acc;

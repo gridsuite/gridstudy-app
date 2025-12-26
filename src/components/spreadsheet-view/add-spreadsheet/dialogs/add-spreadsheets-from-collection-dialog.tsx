@@ -77,11 +77,17 @@ export default function AddSpreadsheetsFromCollectionDialog({ open }: Readonly<D
             const appendMode = formData.spreadsheetCollectionMode === SpreadsheetCollectionImportMode.APPEND;
             updateStudySpreadsheetConfigCollection(studyUuid, collectionId, appendMode)
                 .then((collectionData: SpreadsheetCollectionDto) => {
-                    const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                    const { tablesFilters, tableGlobalFilters, tableDefinitions, tablesSorts } =
                         processSpreadsheetsCollectionData(collectionData);
                     resetNodeAliases(appendMode, collectionData.nodeAliases);
                     dispatch(
-                        initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters)
+                        initTableDefinitions(
+                            collectionData.id,
+                            tableDefinitions,
+                            tablesFilters,
+                            tableGlobalFilters,
+                            tablesSorts
+                        )
                     );
                 })
                 .catch((error) => {

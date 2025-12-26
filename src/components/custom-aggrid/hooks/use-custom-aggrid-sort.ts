@@ -8,15 +8,16 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, TableSortKeysType } from '../../../redux/reducer';
 import { setTableSort } from '../../../redux/actions';
-import { SortWay } from '../../../types/custom-aggrid-types';
+import { SortConfig, SortWay } from '../../../types/custom-aggrid-types';
 
 export type SortParams = {
     table: TableSortKeysType;
     tab: string;
     isChildren?: boolean;
+    persistSort?: (api: unknown, sort: SortConfig) => Promise<void>;
 };
 
-export const useCustomAggridSort = (colId: string, sortParams?: SortParams) => {
+export const useCustomAggridSort = (colId: string, sortParams?: SortParams, api?: any) => {
     const sortConfig = useSelector((state: AppState) =>
         sortParams ? state.tableSort[sortParams.table][sortParams.tab] : undefined
     );
@@ -44,8 +45,14 @@ export const useCustomAggridSort = (colId: string, sortParams?: SortParams) => {
             .filter((sort) => (sort.children ?? false) !== (sortParams.isChildren ?? false))
             .concat({ colId, sort: newSort, children: sortParams.isChildren });
 
-        dispatch(setTableSort(sortParams.table, sortParams.tab, updatedSortConfig));
-    }, [sortParams, sortConfig, isColumnSorted, columnSort?.sort, colId, dispatch]);
+        if (sortParams && sortParams.persistSort && updatedSortConfig?.[0]) {
+            sortParams
+                .persistSort(api, updatedSortConfig[0])
+                .then(() => dispatch(setTableSort(sortParams.table, sortParams.tab, updatedSortConfig)));
+        } else {
+            dispatch(setTableSort(sortParams.table, sortParams.tab, updatedSortConfig));
+        }
+    }, [sortParams, sortConfig, isColumnSorted, columnSort?.sort, colId, api, dispatch]);
 
     return { columnSort, handleSortChange };
 };
