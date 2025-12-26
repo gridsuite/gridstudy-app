@@ -230,12 +230,12 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 <Typography sx={styles.typography}>
                     <FormattedMessage id="TotalInjection" />
                 </Typography>
-                <Typography sx={styles.totalTypography}>{totalInjection.toFixed(2)} MVar</Typography>
+                <Typography sx={styles.totalTypography}>{totalInjection.toFixed(2)} Mvar</Typography>
 
                 <Typography sx={styles.secondTypography}>
                     <FormattedMessage id="TotalConsumption" />
                 </Typography>
-                <Typography sx={styles.totalTypography}>{totalConsumption.toFixed(2)} MVar</Typography>
+                <Typography sx={styles.totalTypography}>{totalConsumption.toFixed(2)} Mvar</Typography>
 
                 {result.reactiveSlacksOverThreshold && (
                     <Typography sx={styles.reactiveSlacksOverThresholdTypography}>
