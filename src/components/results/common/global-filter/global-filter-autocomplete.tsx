@@ -12,6 +12,7 @@ import {
     AutocompleteRenderGetTagProps,
     AutocompleteRenderGroupParams,
     AutocompleteRenderInputParams,
+    AutocompleteRenderOptionState,
     Box,
     Checkbox,
     Chip,
@@ -20,6 +21,8 @@ import {
     ListItemButton,
     PaperProps,
     TextField,
+    Tooltip,
+    Typography,
 } from '@mui/material';
 import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
@@ -27,12 +30,11 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { FilterType } from '../utils';
-import { OverflowableText, OverflowableChip } from '@gridsuite/commons-ui';
+import { OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import GlobalFilterPaper from './global-filter-paper';
-import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import { GlobalFilterContext } from './global-filter-context';
@@ -219,7 +221,7 @@ function GlobalFilterAutocomplete({
 
     const inputFieldChip = useCallback(
         (element: GlobalFilter, index: number, getTagsProps: AutocompleteRenderGetTagProps, filtersNumber: number) => {
-            const label = getOptionLabel(element, translate);
+            const label = getOptionLabel(element, translate, intl);
             const key: string = `inputFieldChip_${element.label}`;
             if (index < TAG_LIMIT_NUMBER) {
                 return (
@@ -239,7 +241,7 @@ function GlobalFilterAutocomplete({
 
             return undefined;
         },
-        [translate]
+        [translate, intl]
     );
 
     const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => {
@@ -258,6 +260,37 @@ function GlobalFilterAutocomplete({
             );
         }
     }, []);
+
+    const formatVoltageRange = useCallback((option: GlobalFilter): string => {
+        if (option.minValue != null && option.maxValue != null) {
+            return `[${option.minValue} kV, ${option.maxValue} kV[`;
+        }
+        return '';
+    }, []);
+
+    const renderOption = useCallback(
+        (props: any, option: GlobalFilter, state: AutocompleteRenderOptionState) => {
+            const { key, children, color, ...otherProps } = props;
+            // recent selected options are not displayed in the recent tab :
+            const hideOption = state.selected && option.recent;
+            const label = getOptionLabel(option, translate, intl) ?? '';
+            return (
+                !hideOption && (
+                    <ListItemButton key={key} selected={state.selected} component="li" {...otherProps}>
+                        <Checkbox size="small" checked={state.selected} />
+                        {option.filterType === FilterType.VOLTAGE_LEVEL ? (
+                            <Tooltip title={formatVoltageRange(option)} placement="right">
+                                <Typography>{label}</Typography>
+                            </Tooltip>
+                        ) : (
+                            <OverflowableText text={label} />
+                        )}
+                    </ListItemButton>
+                )
+            );
+        },
+        [translate, intl, formatVoltageRange]
+    );
 
     const PaperComponentMemo = useCallback(
         (props: PaperProps) => <GlobalFilterPaper {...props} autocompleteRef={autocompleteRef} />,
@@ -317,19 +350,7 @@ function GlobalFilterAutocomplete({
                         return <Box key={'keyBoxGroup_' + group}>{children}</Box>;
                     }}
                     // renderOption : the checkboxes visible when we focus on the AutoComplete
-                    renderOption={(props, option: GlobalFilter, { selected }) => {
-                        const { key, children, color, ...otherProps } = props;
-                        // recent selected options are not displayed in the recent tab :
-                        const hideOption = selected && option.recent;
-                        return (
-                            !hideOption && (
-                                <ListItemButton key={key} selected={selected} component="li" {...otherProps}>
-                                    <Checkbox size="small" checked={selected} />
-                                    <OverflowableText text={getOptionLabel(option, translate) ?? ''} />
-                                </ListItemButton>
-                            )
-                        );
-                    }}
+                    renderOption={renderOption}
                     // Allows to find the corresponding chips without taking into account the recent status
                     isOptionEqualToValue={isOptionEqualToValue}
                     filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
