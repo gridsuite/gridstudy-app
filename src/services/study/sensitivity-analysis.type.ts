@@ -73,14 +73,6 @@ export interface SensitivityAnalysisParametersInfos {
     sensitivityNodes?: SensitivityNodes[];
 }
 
-export type SensitivityAnalysisFactorsCountParameters = {
-    injections?: string[];
-    monitoredBranches?: string[];
-    contingencies?: string[];
-    hvdcs?: string[];
-    psts?: string[];
-};
-
 // result types
 export type SelectorFilterOptions = {
     tabSelection: string;
