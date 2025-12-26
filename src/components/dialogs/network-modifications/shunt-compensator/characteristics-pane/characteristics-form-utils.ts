@@ -6,24 +6,24 @@
  */
 
 import {
-    SHUNT_COMPENSATOR_TYPE,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
-    MAXIMUM_SECTION_COUNT,
-    SECTION_COUNT,
-    SWITCHED_ON_SUSCEPTANCE,
-    SWITCHED_ON_Q_AT_NOMINAL_V,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
+    MAXIMUM_SECTION_COUNT,
+    SECTION_COUNT,
+    SHUNT_COMPENSATOR_TYPE,
+    SWITCHED_ON_Q_AT_NOMINAL_V,
+    SWITCHED_ON_SUSCEPTANCE,
 } from 'components/utils/field-constants';
 import { computeSwitchedOnValue } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
 
-const characteristicsValidationSchema = (isModification) => ({
+const characteristicsValidationSchema = (isModification = false) => ({
     [CHARACTERISTICS_CHOICE]: yup.string().required(),
     [SHUNT_COMPENSATOR_TYPE]: yup.string().when([CHARACTERISTICS_CHOICE], {
-        is: (characteristicsChoice) =>
+        is: (characteristicsChoice: string) =>
             characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && !isModification,
         then: (schema) =>
             schema.oneOf([SHUNT_COMPENSATOR_TYPES.CAPACITOR.id, SHUNT_COMPENSATOR_TYPES.REACTOR.id]).required(),
@@ -40,14 +40,15 @@ const getCharacteristicsCreateFormValidationSchema = () => {
             .number()
             .nullable()
             .when([CHARACTERISTICS_CHOICE], {
-                is: (characteristicsChoice) => characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+                is: (characteristicsChoice: string) =>
+                    characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
                 then: (schema) => schema.min(0, 'ShuntCompensatorErrorQAtNominalVoltageLessThanZero').required(),
             }),
         [MAX_SUSCEPTANCE]: yup
             .number()
             .nullable()
             .when([CHARACTERISTICS_CHOICE], {
-                is: (characteristicsChoice) => characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+                is: (characteristicsChoice: string) => characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
                 then: (schema) => schema.required(),
             }),
         [MAXIMUM_SECTION_COUNT]: yup.number().required().min(1, 'MaximumSectionCountMustBeGreaterOrEqualToOne'),
@@ -65,7 +66,7 @@ const getCharacteristicsModificationFormValidationSchema = () => {
     return {
         [MAX_Q_AT_NOMINAL_V]: yup.number().nullable().min(0, 'ShuntCompensatorErrorQAtNominalVoltageLessThanZero'),
         [MAX_SUSCEPTANCE]: yup.number().nullable(),
-        [MAXIMUM_SECTION_COUNT]: yup.number().min(1, 'MaximumSectionCountMustBeGreaterOrEqualToOne').nullable(),
+        [MAXIMUM_SECTION_COUNT]: yup.number().nullable().min(1, 'MaximumSectionCountMustBeGreaterOrEqualToOne'),
         [SECTION_COUNT]: yup.number().nullable().min(0, 'SectionCountMustBeBetweenZeroAndMaximumSectionCount'),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().nullable(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().nullable(),
@@ -97,6 +98,12 @@ export const getCharacteristicsFormData = ({
     shuntCompensatorType,
     sectionCount,
     maximumSectionCount,
+}: {
+    maxSusceptance: number | null;
+    maxQAtNominalV: number | null;
+    shuntCompensatorType?: string | null;
+    sectionCount?: number | null;
+    maximumSectionCount?: number | null;
 }) => {
     return {
         [CHARACTERISTICS_CHOICE]: maxSusceptance
@@ -107,26 +114,33 @@ export const getCharacteristicsFormData = ({
         [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,
-        [SWITCHED_ON_Q_AT_NOMINAL_V]: maxQAtNominalV
-            ? computeSwitchedOnValue(sectionCount, maximumSectionCount, maxQAtNominalV)
-            : null,
-        [SWITCHED_ON_SUSCEPTANCE]: maxSusceptance
-            ? computeSwitchedOnValue(sectionCount, maximumSectionCount, maxSusceptance)
-            : null,
+        [SWITCHED_ON_Q_AT_NOMINAL_V]:
+            maxQAtNominalV && sectionCount && maximumSectionCount
+                ? computeSwitchedOnValue(sectionCount, maximumSectionCount, maxQAtNominalV)
+                : null,
+        [SWITCHED_ON_SUSCEPTANCE]:
+            maxSusceptance && sectionCount && maximumSectionCount
+                ? computeSwitchedOnValue(sectionCount, maximumSectionCount, maxSusceptance)
+                : null,
     };
 };
 
 export const getCharacteristicsCreateFormDataFromSearchCopy = ({
-    bperSection,
+    bPerSection,
     qAtNominalV,
     sectionCount,
     maximumSectionCount,
+}: {
+    bPerSection: number;
+    qAtNominalV: number;
+    sectionCount: number;
+    maximumSectionCount: number;
 }) => {
     return {
         [CHARACTERISTICS_CHOICE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-        [MAX_SUSCEPTANCE]: bperSection * maximumSectionCount,
+        [MAX_SUSCEPTANCE]: bPerSection * maximumSectionCount,
         [SHUNT_COMPENSATOR_TYPE]:
-            bperSection > 0 ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
+            bPerSection > 0 ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
         [MAX_Q_AT_NOMINAL_V]: qAtNominalV * maximumSectionCount,
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,
