@@ -6,30 +6,27 @@
  */
 
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { showInSpreadsheet, openSLD } from '../../../../redux/slices/workspace-slice';
 import { PanelType } from '../../../workspace/types/workspace.types';
 import { EquipmentType } from '@gridsuite/commons-ui';
+import { useWorkspaceActions } from '../../hooks/use-workspace-actions';
 
 export const useDiagramNavigation = () => {
-    const dispatch = useDispatch();
+    const { showInSpreadsheet, openSLD } = useWorkspaceActions();
 
     const handleShowInSpreadsheet = useCallback(
         (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => {
             if (equipment.equipmentId && equipment.equipmentType) {
-                dispatch(
-                    showInSpreadsheet({ equipmentId: equipment.equipmentId, equipmentType: equipment.equipmentType })
-                );
+                showInSpreadsheet({ equipmentId: equipment.equipmentId, equipmentType: equipment.equipmentType });
             }
         },
-        [dispatch]
+        [showInSpreadsheet]
     );
 
     const handleOpenVoltageLevelDiagram = useCallback(
         (voltageLevelId: string) => {
-            dispatch(openSLD({ id: voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+            openSLD({ id: voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
         },
-        [dispatch]
+        [openSLD]
     );
 
     return {

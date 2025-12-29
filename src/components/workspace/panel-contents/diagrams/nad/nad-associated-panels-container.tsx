@@ -25,7 +25,6 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
         useSldPanels({ nadPanelId });
 
     const { handleReorganize, toggleHideAll } = useSldLayout({
-        nadPanelId,
         visibleSldPanels,
         associatedPanelIds,
     });
@@ -51,7 +50,6 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
                 />
             ))}
 
-            {/* Chips bar at bottom */}
             <AssociatedSldsChips
                 nadPanelId={nadPanelId}
                 onToggleVisibility={handleToggleSldVisibility}

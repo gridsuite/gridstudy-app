@@ -10,10 +10,10 @@ import { Box, IconButton, Theme } from '@mui/material';
 import { Close, Minimize, PushPin, PushPinOutlined, Fullscreen, FullscreenExit } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { closePanel, toggleMinimize, toggleMaximize, togglePin } from '../../../redux/slices/workspace-slice';
 import type { UUID } from 'node:crypto';
+import { useWorkspaceActions } from '../hooks/use-workspace-actions';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
@@ -92,8 +92,8 @@ interface PanelHeaderProps {
 }
 
 export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximized, isFocused }: PanelHeaderProps) => {
-    const dispatch = useDispatch();
     const intl = useIntl();
+    const { deletePanel, toggleMinimize, toggleMaximize, togglePin } = useWorkspaceActions();
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
@@ -104,7 +104,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
         } else if (panelType === PanelType.NAD) {
             globalThis.dispatchEvent(new CustomEvent('nadPanel:requestClose', { detail: panelId }));
         } else {
-            dispatch(closePanel(panelId));
+            deletePanel(panelId);
         }
     };
 
@@ -121,7 +121,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     className="panel-header-close-button"
                     size="small"
                     sx={styles.iconButton}
-                    onClick={() => dispatch(togglePin(panelId))}
+                    onClick={() => togglePin(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
                     {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
@@ -136,7 +136,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                         className="panel-header-close-button"
                         size="small"
                         sx={styles.iconButton}
-                        onClick={() => dispatch(toggleMinimize(panelId))}
+                        onClick={() => toggleMinimize(panelId)}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         <Minimize fontSize="small" />
@@ -146,7 +146,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     className="panel-header-close-button"
                     size="small"
                     sx={styles.iconButton}
-                    onClick={() => dispatch(toggleMaximize(panelId))}
+                    onClick={() => toggleMaximize(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
                     {isMaximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}

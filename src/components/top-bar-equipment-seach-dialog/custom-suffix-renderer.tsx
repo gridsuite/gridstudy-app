@@ -14,7 +14,7 @@ import { centerOnSubstation } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
-import { openNAD } from '../../redux/slices/workspace-slice';
+import { useWorkspaceActions } from '../workspace/hooks/use-workspace-actions';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
@@ -28,6 +28,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
     ...tagRendererProps
 }) => {
     const dispatch = useDispatch<AppDispatch>();
+    const { openNAD } = useWorkspaceActions();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -63,9 +64,9 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
         (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.stopPropagation();
             onClose?.();
-            dispatch(openNAD({ name: element.id, initialVoltageLevelIds: [element.id] }));
+            openNAD({ name: element.id, initialVoltageLevelIds: [element.id] });
         },
-        [dispatch, element.id, onClose]
+        [openNAD, element.id, onClose]
     );
 
     if (

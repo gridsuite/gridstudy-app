@@ -27,8 +27,11 @@ import { useNodeAliases } from '../../hooks/use-node-aliases';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
-import { openSLD, updatePanelMetadata } from '../../../../redux/slices/workspace-slice';
+import { selectTempData } from '../../../../redux/slices/workspace-session-selectors';
+import { clearTempData } from '../../../../redux/slices/workspace-session-slice';
+import type { RootState } from '../../../../redux/store';
 import type { UUID } from 'node:crypto';
+import { useWorkspaceActions } from '../../../workspace/hooks/use-workspace-actions';
 
 const styles = {
     table: (theme) => ({
@@ -54,7 +57,6 @@ interface SpreadsheetContentProps {
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
     disabled: boolean;
-    equipmentId: string | null;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
     active: boolean;
 }
@@ -67,12 +69,14 @@ export const SpreadsheetContent = memo(
         tableDefinition,
         columns,
         disabled,
-        equipmentId,
         registerRowCounterEvents,
         active,
     }: SpreadsheetContentProps) => {
         const [isGridReady, setIsGridReady] = useState(false);
+        const tempData = useSelector((state: RootState) => selectTempData(state, panelId));
+        const dispatch = useDispatch();
         const { nodeAliases } = useNodeAliases();
+        const { openSLD } = useWorkspaceActions();
         const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
         const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
         const { fetchNodesEquipmentData } = useFetchEquipment();
@@ -102,31 +106,22 @@ export const SpreadsheetContent = memo(
                 equipmentType: tableDefinition?.type,
             });
 
-        const dispatch = useDispatch();
-
         const handleEquipmentScroll = useCallback(() => {
-            if (equipmentId && gridRef.current?.api && isGridReady) {
-                const selectedRow = gridRef.current.api.getRowNode(equipmentId);
+            const targetEquipmentId = tempData?.targetEquipmentId;
+            if (targetEquipmentId && gridRef.current?.api && isGridReady) {
+                const selectedRow = gridRef.current.api.getRowNode(targetEquipmentId);
                 if (selectedRow) {
                     gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
                     selectedRow.setSelected(true, true);
-                    // Clear the metadata after successfully scrolling to equipment
-                    dispatch(
-                        updatePanelMetadata({
-                            panelId,
-                            metadata: {
-                                targetEquipmentId: undefined,
-                                targetEquipmentType: undefined,
-                            },
-                        })
-                    );
+                    // Clear the temp data after successfully scrolling
+                    dispatch(clearTempData(panelId));
                 }
             }
-        }, [equipmentId, gridRef, isGridReady, dispatch, panelId]);
+        }, [tempData, gridRef, isGridReady, dispatch, panelId]);
 
         useEffect(() => {
             handleEquipmentScroll();
-        }, [handleEquipmentScroll, equipmentId]);
+        }, [handleEquipmentScroll]);
 
         const onFirstDataRendered = useCallback(() => {
             handleEquipmentScroll();
@@ -206,9 +201,9 @@ export const SpreadsheetContent = memo(
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? PanelType.SLD_SUBSTATION
                         : PanelType.SLD_VOLTAGE_LEVEL;
-                dispatch(openSLD({ id: equipmentId, panelType }));
+                openSLD({ id: equipmentId, panelType });
             },
-            [dispatch, tableDefinition?.type]
+            [openSLD, tableDefinition?.type]
         );
 
         return (

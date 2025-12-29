@@ -9,10 +9,10 @@ import { useState, memo, useMemo } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { selectPanelMetadata, selectAssociatedVoltageLevelIds } from '../../../../redux/slices/workspace-selectors';
+import { selectPanel, selectAssociatedVoltageLevelIds } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';
-import type { NADPanelMetadata } from '../../types/workspace.types';
+import type { NADPanel } from '../../types/workspace.types';
 import { NavigationSidebar } from '../common/navigation-sidebar';
 import { useNadSldAssociation } from '../../panel-contents/diagrams/nad/hooks/use-nad-sld-association';
 
@@ -34,16 +34,16 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         shallowEqual
     );
 
-    const metadata = useSelector(
-        (state: RootState) => selectPanelMetadata(state, nadPanelId) as NADPanelMetadata | undefined,
+    const nadPanel = useSelector(
+        (state: RootState) => selectPanel(state, nadPanelId) as NADPanel | undefined,
         shallowEqual
     );
 
     const { handleNavigationSidebarClick } = useNadSldAssociation({ nadPanelId });
 
     const reversedHistory = useMemo(
-        () => [...(metadata?.navigationHistory || [])].reverse(),
-        [metadata?.navigationHistory]
+        () => [...(nadPanel?.navigationHistory || [])].reverse(),
+        [nadPanel?.navigationHistory]
     );
 
     const hasHistory = reversedHistory.length > 0;

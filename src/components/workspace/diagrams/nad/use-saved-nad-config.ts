@@ -6,15 +6,19 @@
  */
 
 import { useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import { PREFIX_STUDY_QUERIES } from '../../../../services/study';
 import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 import type { DiagramConfigPosition } from '../../../../services/explore';
-import { updatePanelMetadata } from '../../../../redux/slices/workspace-slice';
+import { updatePanels, deletePanels } from '../../../../redux/slices/workspace-slice';
+import { selectPanel } from '../../../../redux/slices/workspace-selectors';
+import type { RootState } from '../../../../redux/store';
+import { NADPanel } from '../../../workspace/types/workspace.types';
 
 export const useSavedNadConfig = (studyUuid: UUID, panelId: UUID, savedWorkspaceConfigUuid?: UUID) => {
     const dispatch = useDispatch();
+    const nadPanel = useSelector((state: RootState) => selectPanel(state, panelId)) as NADPanel | undefined;
 
     const cleanupSavedNadConfig = useCallback(() => {
         if (savedWorkspaceConfigUuid) {
@@ -31,6 +35,8 @@ export const useSavedNadConfig = (studyUuid: UUID, panelId: UUID, savedWorkspace
             positions: DiagramConfigPosition[],
             scalingFactor?: number
         ): Promise<UUID | null> => {
+            if (!nadPanel) return Promise.resolve(null);
+
             const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/nad-configs`;
 
             return backendFetchJson(url, {
@@ -44,12 +50,7 @@ export const useSavedNadConfig = (studyUuid: UUID, panelId: UUID, savedWorkspace
                 }),
             })
                 .then((response: UUID) => {
-                    dispatch(
-                        updatePanelMetadata({
-                            panelId,
-                            metadata: { savedWorkspaceConfigUuid: response },
-                        })
-                    );
+                    dispatch(updatePanels([{ ...nadPanel, savedWorkspaceConfigUuid: response }]));
                     return response;
                 })
                 .catch((error) => {
@@ -57,14 +58,14 @@ export const useSavedNadConfig = (studyUuid: UUID, panelId: UUID, savedWorkspace
                     return null;
                 });
         },
-        [studyUuid, panelId, dispatch, savedWorkspaceConfigUuid]
+        [studyUuid, nadPanel, dispatch, savedWorkspaceConfigUuid]
     );
 
     useEffect(() => {
         const handleCloseRequest = (event: CustomEvent<UUID>) => {
             if (event.detail === panelId) {
                 cleanupSavedNadConfig();
-                dispatch({ type: 'workspace/closePanel', payload: panelId });
+                dispatch(deletePanels([panelId]));
             }
         };
 

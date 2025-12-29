@@ -44,7 +44,6 @@ import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-secu
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
-import { closePanel } from 'redux/slices/workspace-slice';
 import type { UUID } from 'node:crypto';
 import {
     ComputingType,
@@ -69,6 +68,7 @@ import {
     setShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
+import { useWorkspaceActions } from './workspace/hooks/use-workspace-actions';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -85,6 +85,7 @@ enum TAB_VALUES {
 
 const ParametersTabs: FunctionComponent = () => {
     const dispatch = useDispatch();
+    const { deletePanel } = useWorkspaceActions();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -243,12 +244,12 @@ const ParametersTabs: FunctionComponent = () => {
             dispatch(confirmLeaveParametersTab());
         } else if (pendingClosePanelId !== null) {
             // User confirmed close - actually close the panel
-            dispatch(closePanel(pendingClosePanelId));
+            deletePanel(pendingClosePanelId);
             setPendingClosePanelId(null);
         }
         dispatch(setDirtyComputationParameters(false));
         setIsLeavingPopupOpen(false);
-    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch]);
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch, deletePanel]);
 
     const handleLeavingPopupClose = useCallback(() => {
         setIsLeavingPopupOpen(false);

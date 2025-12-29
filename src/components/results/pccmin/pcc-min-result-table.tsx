@@ -8,7 +8,7 @@
 import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, Button, LinearProgress } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, OverflowableText } from '@gridsuite/commons-ui';
@@ -21,8 +21,8 @@ import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 import { GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
-import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
+import { useWorkspaceActions } from 'components/workspace/hooks/use-workspace-actions';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -40,7 +40,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const gridRef = useRef<AgGridReact>(null);
-    const dispatch = useDispatch();
+    const { openSLD } = useWorkspaceActions();
 
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
@@ -48,7 +48,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
             const onClick = () => {
                 const vlId = node?.data?.voltageLevelId;
                 if (vlId) {
-                    dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                    openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
                 }
             };
             if (value) {
@@ -59,7 +59,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
                 );
             }
         },
-        [dispatch]
+        [openSLD]
     );
 
     const columns = useMemo(

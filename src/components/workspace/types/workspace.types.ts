@@ -21,29 +21,6 @@ export enum PanelType {
     EVENT_SCENARIO = 'EVENT_SCENARIO',
 }
 
-export interface SLDPanelMetadata {
-    diagramId: string;
-    navigationHistory?: string[];
-    parentNadPanelId?: UUID; // Reference to parent NAD panel if associated
-}
-
-export interface NADPanelMetadata {
-    nadConfigUuid?: UUID;
-    filterUuid?: UUID;
-    currentFilterUuid?: UUID;
-    voltageLevelToOmitIds?: string[];
-    savedWorkspaceConfigUuid?: UUID;
-    initialVoltageLevelIds?: string[];
-    navigationHistory?: string[]; // History of clicked voltage levels
-}
-
-export interface SpreadsheetPanelMetadata {
-    targetEquipmentId?: string;
-    targetEquipmentType?: string;
-}
-
-export type PanelMetadata = SLDPanelMetadata | NADPanelMetadata | SpreadsheetPanelMetadata | Record<string, never>;
-
 // Position and size stored as relative values (0-1) to container
 export interface PanelPosition {
     x: number; // 0-1
@@ -58,40 +35,68 @@ export interface PanelSize {
     height: number;
 }
 
-export interface RelativeLayout {
-    x: number; // 0-1
-    y: number; // 0-1
-    width: number; // 0-1
-    height: number; // 0-1
-}
-
-export interface PanelState {
+// Base panel interface - common fields for all panel types
+interface BasePanel {
     id: UUID;
-    type: PanelType;
     title: string;
-    metadata?: PanelMetadata;
     position: PanelPosition;
     size: PanelSize;
-    zIndex: number;
-    orderIndex: number;
-    isMinimized: boolean;
+    isMinimized: boolean; // For NAD/SLD: minimized to dock; For toggles: hidden
     isMaximized: boolean;
     isPinned: boolean;
-    isClosed: boolean;
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;
+}
+
+export interface NADPanel extends BasePanel {
+    type: PanelType.NAD;
+    nadConfigUuid?: UUID;
+    filterUuid?: UUID;
+    currentFilterUuid?: UUID;
+    voltageLevelToOmitIds?: string[];
+    savedWorkspaceConfigUuid?: UUID;
+    navigationHistory?: string[];
+}
+
+export interface SLDVoltageLevelPanel extends BasePanel {
+    type: PanelType.SLD_VOLTAGE_LEVEL;
+    diagramId: string;
+    parentNadPanelId?: UUID; // Reference to parent NAD panel if associated
+    navigationHistory?: string[];
+}
+
+export interface SLDSubstationPanel extends BasePanel {
+    type: PanelType.SLD_SUBSTATION;
+    diagramId: string;
+}
+
+export interface GenericPanel extends BasePanel {
+    type:
+        | PanelType.TREE
+        | PanelType.LOGS
+        | PanelType.RESULTS
+        | PanelType.PARAMETERS
+        | PanelType.MAP
+        | PanelType.NODE_EDITOR
+        | PanelType.EVENT_SCENARIO
+        | PanelType.SPREADSHEET;
+}
+
+export type PanelState = NADPanel | SLDVoltageLevelPanel | SLDSubstationPanel | GenericPanel;
+
+export interface WorkspaceMetadata {
+    id: UUID;
+    name: string;
+    panelCount: number;
 }
 
 export interface Workspace {
     id: UUID;
     name: string;
-    panels: Record<UUID, PanelState>;
-    focusedPanelId: UUID | null;
-    nextZIndex: number;
-    nextOrderIndex: number;
+    panels: PanelState[];
 }
 
 export interface WorkspacesState {
-    workspaces: Workspace[];
-    activeWorkspaceId: UUID;
+    workspacesMetadata: WorkspaceMetadata[];
+    activeWorkspace: Workspace | null;
 }

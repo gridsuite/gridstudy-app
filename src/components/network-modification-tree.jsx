@@ -11,8 +11,8 @@ import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { reorderNetworkModificationTreeNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { openOrFocusPanel } from '../redux/slices/workspace-slice';
 import { isSameNode } from './graph/util/model-functions';
+import { useWorkspaceActions } from './workspace/hooks/use-workspace-actions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
@@ -62,6 +62,7 @@ const styles = {
 
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const dispatch = useDispatch();
+    const { togglePanel } = useWorkspaceActions();
     const { snackError } = useSnackMessage();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -96,13 +97,13 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === NodeType.NETWORK_MODIFICATION) {
-                dispatch(openOrFocusPanel({ panelType: PanelType.NODE_EDITOR }));
+                togglePanel({ panelType: PanelType.NODE_EDITOR });
             }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);
             }
         },
-        [currentNode, dispatch, setCurrentTreeNodeWithSync]
+        [currentNode, togglePanel, setCurrentTreeNodeWithSync]
     );
 
     /**
@@ -344,7 +345,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
 export default NetworkModificationTree;
 
 NetworkModificationTree.propTypes = {
-    prevTreeDisplay: PropTypes.object,
     onNodeContextMenu: PropTypes.func.isRequired,
     studyUuid: PropTypes.string.isRequired,
 };

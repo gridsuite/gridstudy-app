@@ -6,7 +6,7 @@
  */
 
 import { memo, useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { Box, Chip, Button, ButtonGroup, IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -20,11 +20,12 @@ import type { RootState } from '../../../../../redux/store';
 import {
     selectAssociatedPanelDetails,
     selectVisibleAssociatedSldPanels,
+    selectAssociatedPanelIds,
 } from '../../../../../redux/slices/workspace-selectors';
-import { deleteAssociatedSld, removeAllAssociatedSlds } from '../../../../../redux/slices/workspace-slice';
 import { type MuiStyles, PopupConfirmationDialog } from '@gridsuite/commons-ui';
 import { LayoutMode } from './hooks/use-sld-layout';
 import { NAD_SLD_CONSTANTS } from './constants';
+import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
 
 interface AssociatedSldsChipsProps {
     readonly nadPanelId: UUID;
@@ -128,7 +129,7 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     onHideAll,
 }: AssociatedSldsChipsProps) {
     const intl = useIntl();
-    const dispatch = useDispatch();
+    const { deletePanel, deletePanels } = useWorkspaceActions();
     const containerRef = useRef<HTMLDivElement>(null);
     const [chipLimit, setChipLimit] = useState(5);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -140,6 +141,10 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     );
     const visibleSldPanels = useSelector(
         (state: RootState) => selectVisibleAssociatedSldPanels(state, nadPanelId),
+        shallowEqual
+    );
+    const associatedPanelIds = useSelector(
+        (state: RootState) => selectAssociatedPanelIds(state, nadPanelId),
         shallowEqual
     );
 
@@ -184,19 +189,27 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
         setAnchorEl(null);
     };
 
-    const handleChipDelete = (sldPanelId: UUID, event: React.MouseEvent) => {
-        event.stopPropagation();
-        dispatch(deleteAssociatedSld(sldPanelId));
+    const handleChipClick = (sldPanelId: UUID) => {
+        onToggleVisibility(sldPanelId);
+        handleCloseMenu();
     };
 
-    const renderChip = ({ id, title, isVisible }: { id: UUID; title: string | undefined; isVisible: boolean }) => {
+    const handleChipDelete = (sldPanelId: UUID, event: React.MouseEvent) => {
+        event.stopPropagation();
+        deletePanel(sldPanelId);
+    };
+
+    const renderChip = (
+        { id, title, isVisible }: { id: UUID; title: string | undefined; isVisible: boolean },
+        inMenu = false
+    ) => {
         return (
             <Chip
                 key={id}
                 label={title}
                 size="small"
                 color={isVisible ? 'primary' : 'default'}
-                onClick={() => onToggleVisibility(id)}
+                onClick={inMenu ? undefined : () => onToggleVisibility(id)}
                 onDelete={(e) => handleChipDelete(id, e)}
                 deleteIcon={<CloseIcon fontSize="small" />}
                 sx={styles.chip}
@@ -209,7 +222,7 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     };
 
     const handleConfirmRemoveAll = () => {
-        dispatch(removeAllAssociatedSlds(nadPanelId));
+        deletePanels(associatedPanelIds);
         setShowRemoveAllConfirmation(false);
     };
 
@@ -251,12 +264,8 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
                             sx={styles.menu}
                         >
                             {hiddenPanels.map((panel) => (
-                                <MenuItem
-                                    key={panel.id}
-                                    sx={styles.menuItem}
-                                    onClick={() => onToggleVisibility(panel.id)}
-                                >
-                                    {renderChip(panel)}
+                                <MenuItem key={panel.id} sx={styles.menuItem} onClick={() => handleChipClick(panel.id)}>
+                                    {renderChip(panel, true)}
                                 </MenuItem>
                             ))}
                         </Menu>

@@ -47,8 +47,8 @@ import {
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
-import { openSLD, showInSpreadsheet } from '../../redux/slices/workspace-slice';
 import { PanelType } from '../workspace/types/workspace.types';
+import { useWorkspaceActions } from '../workspace/hooks/use-workspace-actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -157,6 +157,7 @@ export const NetworkMapPanel = ({
     }, [treeModel]);
 
     const dispatch = useDispatch();
+    const { showInSpreadsheet, openSLD } = useWorkspaceActions();
 
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] = useState(false);
     const [isInitialized, setInitialized] = useState(false);
@@ -292,7 +293,7 @@ export const NetworkMapPanel = ({
         studyUuid,
         disabled,
         onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => {
-            dispatch(showInSpreadsheet({ equipmentId, equipmentType }));
+            showInSpreadsheet({ equipmentId, equipmentType });
         },
         onDeleteEquipment: handleDeleteEquipment,
         onOpenModificationDialog: handleOpenModificationDialog,
@@ -1011,10 +1012,10 @@ export const NetworkMapPanel = ({
         (vlId: string) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode.value) {
-                dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
             }
         },
-        [dispatch, isInDrawingMode]
+        [openSLD, isInDrawingMode]
     );
 
     const getHvdcExtendedEquipmentType = (hvdcType: string): ExtendedEquipmentType | null => {
@@ -1202,9 +1203,9 @@ export const NetworkMapPanel = ({
                 return;
             }
             const panelType = isSubstation ? PanelType.SLD_SUBSTATION : PanelType.SLD_VOLTAGE_LEVEL;
-            dispatch(openSLD({ id, panelType }));
+            openSLD({ id, panelType });
         },
-        [dispatch]
+        [openSLD]
     );
 
     return (

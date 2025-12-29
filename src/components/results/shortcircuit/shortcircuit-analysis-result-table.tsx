@@ -17,7 +17,7 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import {
     ComputingType,
@@ -29,7 +29,6 @@ import {
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { openSLD } from '../../../redux/slices/workspace-slice';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { PanelType } from '../../workspace/types/workspace.types';
@@ -47,6 +46,7 @@ import {
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { useWorkspaceActions } from 'components/workspace/hooks/use-workspace-actions';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -104,13 +104,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 }) => {
     const intl = useIntl();
     const theme = useTheme();
-    const dispatch = useDispatch();
+    const { openSLD } = useWorkspaceActions();
 
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value } = props || {};
             const onClick = () => {
-                dispatch(openSLD({ id: value, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                openSLD({ id: value, panelType: PanelType.SLD_VOLTAGE_LEVEL });
             };
             if (value) {
                 return (
@@ -120,7 +120,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 );
             }
         },
-        [dispatch]
+        [openSLD]
     );
 
     const getEnumLabel = useCallback(

@@ -22,60 +22,56 @@ interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
-    equipmentId: string | null;
     active: boolean;
 }
 
-export const Spreadsheet = memo(
-    ({ panelId, currentNode, tableDefinition, disabled, equipmentId, active }: SpreadsheetProps) => {
-        const gridRef = useRef<AgGridReact>(null);
+export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabled, active }: SpreadsheetProps) => {
+    const gridRef = useRef<AgGridReact>(null);
 
-        const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
-        const rowCounterInfos = useFilteredRowCounterInfo({
-            gridRef,
-            tableDefinition,
-            disabled,
-        });
+    const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
+    const rowCounterInfos = useFilteredRowCounterInfo({
+        gridRef,
+        tableDefinition,
+        disabled,
+    });
 
-        const displayedColsDefs = useMemo(() => {
-            const columns = tableDefinition?.columns;
-            const visibleColDefs =
-                columns?.map((column) => {
-                    return columnsDefinitions.reduce((acc, curr) => {
-                        if (curr.colId === column.id) {
-                            return curr;
-                        }
-                        return acc;
-                    }, {} as CustomColDef);
-                }) || [];
+    const displayedColsDefs = useMemo(() => {
+        const columns = tableDefinition?.columns;
+        const visibleColDefs =
+            columns?.map((column) => {
+                return columnsDefinitions.reduce((acc, curr) => {
+                    if (curr.colId === column.id) {
+                        return curr;
+                    }
+                    return acc;
+                }, {} as CustomColDef);
+            }) || [];
 
-            // Return row index column first, followed by visible columns
-            // Pass the table UUID to the rowIndexColumnDefinition
-            return [rowIndexColumnDefinition(tableDefinition?.uuid || ''), ...visibleColDefs];
-        }, [columnsDefinitions, tableDefinition?.columns, tableDefinition?.uuid]);
+        // Return row index column first, followed by visible columns
+        // Pass the table UUID to the rowIndexColumnDefinition
+        return [rowIndexColumnDefinition(tableDefinition?.uuid || ''), ...visibleColDefs];
+    }, [columnsDefinitions, tableDefinition?.columns, tableDefinition?.uuid]);
 
-        return (
-            <>
-                <SpreadsheetToolbar
-                    gridRef={gridRef}
-                    tableDefinition={tableDefinition}
-                    rowCounterInfos={rowCounterInfos}
-                    columns={displayedColsDefs}
-                    disabled={disabled}
-                />
+    return (
+        <>
+            <SpreadsheetToolbar
+                gridRef={gridRef}
+                tableDefinition={tableDefinition}
+                rowCounterInfos={rowCounterInfos}
+                columns={displayedColsDefs}
+                disabled={disabled}
+            />
 
-                <SpreadsheetContent
-                    panelId={panelId}
-                    gridRef={gridRef}
-                    currentNode={currentNode}
-                    tableDefinition={tableDefinition}
-                    columns={displayedColsDefs}
-                    disabled={disabled}
-                    equipmentId={equipmentId}
-                    registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
-                    active={active}
-                />
-            </>
-        );
-    }
-);
+            <SpreadsheetContent
+                panelId={panelId}
+                gridRef={gridRef}
+                currentNode={currentNode}
+                tableDefinition={tableDefinition}
+                columns={displayedColsDefs}
+                disabled={disabled}
+                registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
+                active={active}
+            />
+        </>
+    );
+});

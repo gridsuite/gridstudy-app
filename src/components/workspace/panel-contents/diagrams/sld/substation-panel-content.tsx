@@ -14,9 +14,9 @@ import type { UUID } from 'node:crypto';
 import { useSldDiagram } from '../../../diagrams/sld/use-sld-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
-import { selectPanelMetadata } from '../../../../../redux/slices/workspace-selectors';
+import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
-import { SLDPanelMetadata } from 'components/workspace/types/workspace.types';
+import { SLDSubstationPanel } from 'components/workspace/types/workspace.types';
 
 interface SubstationPanelContentProps {
     panelId: UUID;
@@ -31,13 +31,11 @@ export const SubstationPanelContent = ({
     currentNodeId,
     currentRootNetworkUuid,
 }: SubstationPanelContentProps) => {
-    const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
-        | SLDPanelMetadata
-        | undefined;
+    const panel = useSelector((state: RootState) => selectPanel(state, panelId)) as SLDSubstationPanel | undefined;
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.SUBSTATION,
-        diagramId: metadata!.diagramId,
+        diagramId: panel!.diagramId,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
@@ -45,17 +43,17 @@ export const SubstationPanelContent = ({
 
     const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
 
-    if (!metadata) {
+    if (!panel) {
         return null;
     }
 
     return (
-        <Box sx={{ height: '100%', width: '100%' }}>
+        <Box sx={{ height: '100%', overflow: 'hidden' }}>
             <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
                 <SingleLineDiagramContent
                     diagramParams={{
                         type: DiagramType.SUBSTATION,
-                        substationId: metadata.diagramId,
+                        substationId: panel.diagramId,
                     }}
                     showInSpreadsheet={handleShowInSpreadsheet}
                     studyUuid={studyUuid}

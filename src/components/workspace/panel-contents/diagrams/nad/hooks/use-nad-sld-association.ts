@@ -6,16 +6,11 @@
  */
 
 import { useCallback } from 'react';
-import { useDispatch, useStore } from 'react-redux';
+import { useStore } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../../redux/store';
-import {
-    addToNadNavigationHistory,
-    openSldAndAssociateToNad,
-    openPanel,
-    updatePanelZIndex,
-} from '../../../../../../redux/slices/workspace-slice';
 import { selectPanel, selectAssociatedSldByVoltageLevelId } from '../../../../../../redux/slices/workspace-selectors';
+import { useWorkspaceActions } from '../../../../hooks/use-workspace-actions';
 
 export interface UseAssociateVoltageLevelParams {
     readonly nadPanelId: UUID | null;
@@ -28,8 +23,8 @@ export interface UseAssociateVoltageLevelReturn {
 export const useAssociateVoltageLevel = ({
     nadPanelId,
 }: UseAssociateVoltageLevelParams): UseAssociateVoltageLevelReturn => {
-    const dispatch = useDispatch();
     const store = useStore<RootState>();
+    const { addToNadNavigationHistory, openSldAndAssociateToNad, openPanel, focusPanel } = useWorkspaceActions();
 
     const handleAssociate = useCallback(
         (voltageLevelId: string, updateHistory: boolean = true) => {
@@ -37,7 +32,7 @@ export const useAssociateVoltageLevel = ({
 
             // Update navigation history if requested (only for direct voltage level clicks, not sidebar navigation)
             if (updateHistory) {
-                dispatch(addToNadNavigationHistory({ panelId: nadPanelId, voltageLevelId }));
+                addToNadNavigationHistory({ panelId: nadPanelId, voltageLevelId });
             }
 
             // Check if voltage level is already associated using selector
@@ -45,21 +40,19 @@ export const useAssociateVoltageLevel = ({
             const existingSldPanelId = selectAssociatedSldByVoltageLevelId(state, nadPanelId, voltageLevelId);
 
             if (existingSldPanelId) {
-                // Already associated, ensure it's visible and bring to front (without stealing NAD focus)
+                // Already associated, ensure it's visible and bring to front
                 const panel = selectPanel(state, existingSldPanelId);
-                if (panel?.isClosed) {
-                    // openPanel handles z-index for attached SLDs without stealing focus
-                    dispatch(openPanel(existingSldPanelId));
-                } else {
-                    // Panel already open, update z-index without stealing focus from NAD
-                    dispatch(updatePanelZIndex(existingSldPanelId));
+                if (panel?.isMinimized) {
+                    openPanel(existingSldPanelId);
                 }
+                // Focus brings panel to front (moves to end of array)
+                focusPanel(existingSldPanelId);
             } else {
-                // Not associated yet, open and associate it (reducer handles opening and z-index)
-                dispatch(openSldAndAssociateToNad({ voltageLevelId, nadPanelId }));
+                // Not associated yet, open and associate it
+                openSldAndAssociateToNad({ voltageLevelId, nadPanelId });
             }
         },
-        [dispatch, nadPanelId, store]
+        [nadPanelId, store, addToNadNavigationHistory, openSldAndAssociateToNad, openPanel, focusPanel]
     );
 
     return { handleAssociate };

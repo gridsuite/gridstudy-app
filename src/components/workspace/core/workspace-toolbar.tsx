@@ -32,10 +32,10 @@ import {
 import { TopBarEquipmentSearchDialog } from '../../top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useParameterState } from '../../dialogs/parameters/use-parameters-state';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import { PanelType } from '../types/workspace.types';
-import { togglePanel, closePanel, openSLD, openNAD } from '../../../redux/slices/workspace-slice';
+import { useWorkspaceActions } from '../hooks/use-workspace-actions';
 import { selectIsPanelTypeOpen, selectOpenPanels } from '../../../redux/slices/workspace-selectors';
 
 const styles = {
@@ -67,7 +67,7 @@ const styles = {
 
 export const WorkspaceToolbar = () => {
     const intl = useIntl();
-    const dispatch = useDispatch();
+    const { togglePanel, openSLD, openNAD, deletePanel } = useWorkspaceActions();
 
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
@@ -90,18 +90,18 @@ export const WorkspaceToolbar = () => {
         if (!isDeveloperMode) {
             const eventScenarioPanels = allPanels.filter((panel) => panel.type === PanelType.EVENT_SCENARIO);
             eventScenarioPanels.forEach((panel) => {
-                dispatch(closePanel(panel.id));
+                deletePanel(panel.id);
             });
         }
-    }, [isDeveloperMode, allPanels, dispatch]);
+    }, [isDeveloperMode, allPanels, deletePanel]);
 
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements.length > 0 && selectedElements[0].type) {
             const element = selectedElements[0];
             if (element.type === ElementType.DIAGRAM_CONFIG) {
-                dispatch(openNAD({ name: element.name, nadConfigUuid: element.id }));
+                openNAD({ name: element.name, nadConfigUuid: element.id });
             } else if (element.type === ElementType.FILTER) {
-                dispatch(openNAD({ name: element.name, filterUuid: element.id }));
+                openNAD({ name: element.name, filterUuid: element.id });
             }
         }
         setIsLoadSelectorOpen(false);
@@ -110,9 +110,9 @@ export const WorkspaceToolbar = () => {
     const handleSearchEquipment = (equipment: EquipmentInfos) => {
         if (equipment.type === EquipmentType.VOLTAGE_LEVEL || equipment.voltageLevelId) {
             const vlId = equipment.voltageLevelId || equipment.id;
-            dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+            openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
         } else if (equipment.type === EquipmentType.SUBSTATION) {
-            dispatch(openSLD({ id: equipment.id, panelType: PanelType.SLD_SUBSTATION }));
+            openSLD({ id: equipment.id, panelType: PanelType.SLD_SUBSTATION });
         }
     };
 
@@ -126,7 +126,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="tree"
                         selected={isTreeOpen}
-                        onClick={() => dispatch(togglePanel(PanelType.TREE))}
+                        onClick={() => togglePanel(PanelType.TREE)}
                         sx={styles.toggleButton}
                     >
                         <AccountTree fontSize="small" sx={{ transform: 'scaleY(-1) rotate(-90deg)' }} />
@@ -136,7 +136,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="node-editor"
                         selected={isNodeEditorOpen}
-                        onClick={() => dispatch(togglePanel(PanelType.NODE_EDITOR))}
+                        onClick={() => togglePanel(PanelType.NODE_EDITOR)}
                         sx={styles.toggleButton}
                     >
                         <Tune fontSize="small" />
@@ -147,7 +147,7 @@ export const WorkspaceToolbar = () => {
                         <ToggleButton
                             value="event-scenario"
                             selected={isEventScenarioOpen}
-                            onClick={() => dispatch(togglePanel(PanelType.EVENT_SCENARIO))}
+                            onClick={() => togglePanel(PanelType.EVENT_SCENARIO)}
                             sx={styles.toggleButton}
                         >
                             <OfflineBoltOutlined fontSize="small" />
@@ -158,7 +158,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="spreadsheet"
                         selected={isSpreadsheetOpen}
-                        onClick={() => dispatch(togglePanel(PanelType.SPREADSHEET))}
+                        onClick={() => togglePanel(PanelType.SPREADSHEET)}
                         sx={styles.toggleButton}
                     >
                         <TableChart fontSize="small" />
@@ -168,7 +168,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="results"
                         selected={isResultsOpen}
-                        onClick={() => dispatch(togglePanel(PanelType.RESULTS))}
+                        onClick={() => togglePanel(PanelType.RESULTS)}
                         sx={styles.toggleButton}
                     >
                         <Assessment fontSize="small" />
@@ -178,7 +178,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="logs"
                         selected={isLogsOpen}
-                        onClick={() => dispatch(togglePanel(PanelType.LOGS))}
+                        onClick={() => togglePanel(PanelType.LOGS)}
                         sx={styles.toggleButton}
                     >
                         <TextSnippet fontSize="small" />
@@ -188,7 +188,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="parameters"
                         selected={isParametersOpen}
-                        onClick={() => dispatch(togglePanel(PanelType.PARAMETERS))}
+                        onClick={() => togglePanel(PanelType.PARAMETERS)}
                         sx={styles.toggleButton}
                     >
                         <Settings fontSize="small" />
@@ -223,7 +223,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="map"
                         selected={isMapOpen}
-                        onClick={() => dispatch(togglePanel(PanelType.MAP))}
+                        onClick={() => togglePanel(PanelType.MAP)}
                         sx={styles.toggleButton}
                     >
                         <Public fontSize="small" />

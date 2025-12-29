@@ -6,16 +6,17 @@
  */
 
 import { useState, useMemo, memo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Box, Tabs, Tab, Theme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { selectOpenPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
-import { closePanel, focusPanel, toggleMinimize } from '../../../redux/slices/workspace-slice';
+import { selectOpenPanels } from '../../../redux/slices/workspace-selectors';
+import { selectFocusedPanelId } from '../../../redux/slices/workspace-session-selectors';
 import { PanelType } from '../types/workspace.types';
 import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
+import { useWorkspaceActions } from '../hooks/use-workspace-actions';
 
 const styles = {
     dock: (theme: Theme) => ({
@@ -61,7 +62,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const WorkspaceDock = memo(() => {
-    const dispatch = useDispatch();
+    const { toggleMinimize, focusPanel } = useWorkspaceActions();
     const allPanels = useSelector(selectOpenPanels);
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);
@@ -89,15 +90,15 @@ export const WorkspaceDock = memo(() => {
     }
 
     const handleMinimizedPanelClick = (panelId: UUID) => {
-        dispatch(toggleMinimize(panelId));
-        dispatch(focusPanel(panelId));
+        toggleMinimize(panelId);
+        focusPanel(panelId);
     };
 
     const handleActivePanelClick = (panelId: UUID) => {
         if (panelId === focusedPanelId) {
-            dispatch(toggleMinimize(panelId));
+            toggleMinimize(panelId);
         } else {
-            dispatch(focusPanel(panelId));
+            focusPanel(panelId);
         }
     };
 
@@ -134,7 +135,7 @@ export const WorkspaceDock = memo(() => {
                                     }}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        dispatch(closePanel(panel.id));
+                                        toggleMinimize(panel.id);
                                     }}
                                 >
                                     <Close />

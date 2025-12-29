@@ -23,8 +23,9 @@ import {
     setRootNetworks,
     studyUpdated,
 } from '../redux/actions';
-import { initializeWorkspaces } from '../redux/slices/workspace-slice';
+import { setWorkspacesMetadata, setActiveWorkspace } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
+import { getWorkspacesMetadata, getWorkspace } from '../services/study/workspace';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
@@ -56,7 +57,6 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
-import { loadWorkspacesFromStorage } from 'redux/slices/workspace-storage';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -504,11 +504,22 @@ export function StudyContainer() {
             websocketExpectedCloseRef.current = false;
             dispatch(openStudy(studyUuid));
 
-            const savedWorkspaces = loadWorkspacesFromStorage(studyUuid);
-            if (savedWorkspaces) {
-                dispatch(initializeWorkspaces(savedWorkspaces));
-            }
+            // Load workspaces metadata from backend
+            getWorkspacesMetadata(studyUuid)
+                .then((workspacesMetadata) => {
+                    dispatch(setWorkspacesMetadata(workspacesMetadata));
 
+                    // Load the first workspace (or default)
+                    // TODO: Remember last active workspace per study
+                    if (workspacesMetadata.length > 0) {
+                        return getWorkspace(studyUuid, workspacesMetadata[0].id);
+                    }
+                })
+                .then((workspace) => {
+                    if (workspace) {
+                        dispatch(setActiveWorkspace(workspace));
+                    }
+                });
             return function () {
                 websocketExpectedCloseRef.current = true;
                 dispatch(closeStudy());

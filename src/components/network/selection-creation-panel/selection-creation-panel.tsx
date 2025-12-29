@@ -25,7 +25,7 @@ import {
     FOLDER_NAME,
 } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
@@ -38,7 +38,7 @@ import {
     getSelectionCreationSchema,
 } from './selection-creation-schema';
 import { VoltageLevel } from '../../utils/equipment-types';
-import { openNAD } from '../../../redux/slices/workspace-slice';
+import { useWorkspaceActions } from '../../workspace/hooks/use-workspace-actions';
 
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
@@ -67,7 +67,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const { pendingState, onSaveSelection } = useSaveMap();
-    const dispatch = useDispatch();
+    const { openNAD } = useWorkspaceActions();
     const formMethods = useForm<Nullable<SelectionCreationPanelFormSchema>>({
         defaultValues: emptyFormData,
         // "Nullable" to allow null values as default values for required values
@@ -108,7 +108,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 )
                 .filter((id): id is string => !!id);
 
-            dispatch(openNAD({ name: formData.name, initialVoltageLevelIds: voltageLevelIds }));
+            openNAD({ name: formData.name, initialVoltageLevelIds: voltageLevelIds });
             return;
         }
 
