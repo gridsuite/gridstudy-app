@@ -272,7 +272,7 @@ export function calculateSusceptance(distance: number, linearCapacity: number) {
 
 export function getNewVoltageLevelOptions(
     formattedVoltageLevel: VoltageLevel,
-    oldVoltageLevelId: string,
+    oldVoltageLevelId: string | undefined,
     voltageLevelOptions: VoltageLevel[]
 ) {
     const newVoltageLevelOptions =

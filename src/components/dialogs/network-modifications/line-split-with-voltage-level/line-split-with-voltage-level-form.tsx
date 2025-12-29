@@ -24,8 +24,7 @@ import { UUID } from 'node:crypto';
 import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
-
-// TODO : create type for BusBarSectionType : busbarSections = BusBarSectionType[]
+import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
 
 export interface ExtendedVoltageLevelFormInfos extends VoltageLevelFormInfos {
     busbarSections?: Option[];
@@ -33,11 +32,11 @@ export interface ExtendedVoltageLevelFormInfos extends VoltageLevelFormInfos {
     busbarCount: number;
 }
 
-export interface LineSplitWithVoltageLevelFormProps {
+interface LineSplitWithVoltageLevelFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    onVoltageLevelCreationDo: (voltageLevel: any) => Promise<string>;
+    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit: ExtendedVoltageLevelFormInfos | null;
     onVoltageLevelChange?: () => void;
     allVoltageLevelOptions: Identifiable[];
@@ -89,11 +88,7 @@ const LineSplitWithVoltageLevelForm = ({
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     const busbarSectionOptions = useMemo<Option[]>(() => {
-        if (isVoltageLevelEdit && voltageLevelToEdit && voltageLevelToEdit.busbarSections) {
-            return voltageLevelToEdit.busbarSections;
-        } else {
-            return [];
-        }
+        return isVoltageLevelEdit && voltageLevelToEdit?.busbarSections ? voltageLevelToEdit.busbarSections : [];
     }, [isVoltageLevelEdit, voltageLevelToEdit]);
 
     const connectivityForm = (

@@ -642,7 +642,7 @@ export interface SubstationCreationInfo {
 export interface DivideLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    modificationUuid?: UUID;
     lineToSplitId: string;
     percent: number;
     mayNewVoltageLevelInfos: any;

@@ -9,13 +9,16 @@ import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMess
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
     CONNECTIVITY,
     ID,
+    LEFT_SIDE_PERCENTAGE,
     LINE1_ID,
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
     LINE_TO_ATTACH_OR_SPLIT_ID,
+    RIGHT_SIDE_PERCENTAGE,
     SLIDER_PERCENTAGE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
@@ -49,6 +52,25 @@ import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { DeepNullable } from '../../../utils/ts-utils';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
+import { VoltageLevel } from '../../../utils/equipment-types';
+
+interface ConnectivityData {
+    [VOLTAGE_LEVEL]: { [ID]: string };
+    [BUS_OR_BUSBAR_SECTION]: { [ID]: string };
+    [CONNECTED]: boolean;
+}
+
+interface LineSplitWithVoltageLevelFormData {
+    [LINE1_ID]: string;
+    [LINE1_NAME]: string;
+    [LINE2_ID]: string;
+    [LINE2_NAME]: string;
+    [LINE_TO_ATTACH_OR_SPLIT_ID]: string | null;
+    [SLIDER_PERCENTAGE]: number;
+    [LEFT_SIDE_PERCENTAGE]: number;
+    [RIGHT_SIDE_PERCENTAGE]: number;
+    [CONNECTIVITY]: ConnectivityData;
+}
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -69,11 +91,11 @@ const formSchema = yup
         ...getLineToAttachOrSplitFormValidationSchema(),
         ...getConnectivityWithoutPositionValidationSchema(),
     })
-    .required();
+    .required() as yup.ObjectSchema<LineSplitWithVoltageLevelFormData>;
 
 export type LineSplitWithVoltageLevelDialogSchemaForm = yup.InferType<typeof formSchema>;
 
-export interface LineSplitEditData {
+interface LineSplitEditData {
     uuid?: UUID;
     lineToSplitId: string;
     percent: number;
@@ -86,7 +108,7 @@ export interface LineSplitEditData {
     mayNewVoltageLevelInfos?: VoltageLevelFormInfos;
 }
 
-export interface LineSplitWithVoltageLevelDialogProps {
+interface LineSplitWithVoltageLevelDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
@@ -115,7 +137,7 @@ const LineSplitWithVoltageLevelDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }: LineSplitWithVoltageLevelDialogProps) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState<VoltageLevel[]>([]);
 
     const currentNodeUuid = currentNode?.id;
 
@@ -132,6 +154,12 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (lineSplit: LineSplitEditData) => {
+            const connectivityData = getConnectivityData({
+                busbarSectionId: lineSplit.bbsOrBusId,
+                voltageLevelId: lineSplit?.existingVoltageLevelId ?? lineSplit?.mayNewVoltageLevelInfos?.equipmentId,
+            });
+            const newVoltageLevel = lineSplit?.mayNewVoltageLevelInfos as ExtendedVoltageLevelFormInfos;
+
             let formData = {
                 [LINE1_ID]: lineSplit.newLine1Id,
                 [LINE1_NAME]: lineSplit.newLine1Name,
@@ -141,23 +169,17 @@ const LineSplitWithVoltageLevelDialog = ({
                     lineToAttachOrSplitId: lineSplit.lineToSplitId,
                     percent: lineSplit.percent,
                 }),
-                ...getConnectivityData({
-                    busbarSectionId: lineSplit.bbsOrBusId,
-                    voltageLevelId:
-                        lineSplit?.existingVoltageLevelId ?? lineSplit?.mayNewVoltageLevelInfos?.equipmentId,
-                }),
-            };
-            const newVoltageLevel = lineSplit?.mayNewVoltageLevelInfos as ExtendedVoltageLevelFormInfos;
-            if (newVoltageLevel) {
-                formData = {
-                    ...formData,
+                ...connectivityData,
+                ...(newVoltageLevel && {
                     [CONNECTIVITY]: {
-                        ...formData[CONNECTIVITY],
+                        ...connectivityData[CONNECTIVITY],
                         [VOLTAGE_LEVEL]: getNewVoltageLevelData(newVoltageLevel),
                     },
-                };
-            }
+                }),
+            };
+
             reset(formData);
+
             if (newVoltageLevel) {
                 newVoltageLevel.busbarSections = buildNewBusbarSections(
                     newVoltageLevel?.equipmentId,
@@ -179,8 +201,6 @@ const LineSplitWithVoltageLevelDialog = ({
     const onSubmit = useCallback(
         (lineSplit: DeepNullable<LineSplitWithVoltageLevelDialogSchemaForm>) => {
             if (
-                !editData ||
-                !editData.uuid ||
                 !lineSplit ||
                 !lineSplit[CONNECTIVITY] ||
                 !lineSplit[LINE_TO_ATTACH_OR_SPLIT_ID] ||
@@ -195,12 +215,12 @@ const LineSplitWithVoltageLevelDialog = ({
             divideLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData.uuid,
+                modificationUuid: editData?.uuid,
                 lineToSplitId: lineSplit[LINE_TO_ATTACH_OR_SPLIT_ID],
-                percent: parseFloat(lineSplit[SLIDER_PERCENTAGE]),
+                percent: lineSplit[SLIDER_PERCENTAGE],
                 mayNewVoltageLevelInfos: isNewVoltageLevel ? newVoltageLevel : null,
-                existingVoltageLevelId: currentVoltageLevelId,
-                bbsOrBusId: lineSplit[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                existingVoltageLevelId: currentVoltageLevelId ?? '',
+                bbsOrBusId: lineSplit[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID] ?? '',
                 newLine1Id: lineSplit[LINE1_ID],
                 newLine1Name: sanitizeString(lineSplit[LINE1_NAME]),
                 newLine2Id: lineSplit[LINE2_ID],
@@ -219,7 +239,7 @@ const LineSplitWithVoltageLevelDialog = ({
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
             fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((values) => {
-                setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)));
+                setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)) as VoltageLevel[]);
             });
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
@@ -241,7 +261,7 @@ const LineSplitWithVoltageLevelDialog = ({
             couplingDevices,
             topologyKind,
         }: VoltageLevelCreationInfo) => {
-            return new Promise(() => {
+            return new Promise<string>(() => {
                 const preparedVoltageLevel = {
                     type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
                     equipmentId: voltageLevelId,
@@ -253,21 +273,20 @@ const LineSplitWithVoltageLevelDialog = ({
                     highVoltageLimit: highVoltageLimit,
                     ipMin: ipMin,
                     ipMax: ipMax,
-                    busbarCount: busbarCount,
-                    sectionCount: sectionCount,
+                    busbarCount: busbarCount ?? 0,
+                    sectionCount: sectionCount ?? 0,
                     switchKinds: switchKinds,
                     couplingDevices: couplingDevices,
                     topologyKind: topologyKind,
+                    busbarSections:
+                        sectionCount && busbarCount
+                            ? buildNewBusbarSections(voltageLevelId, sectionCount, busbarCount)
+                            : [],
                 };
-                preparedVoltageLevel.busbarSections = buildNewBusbarSections(
-                    preparedVoltageLevel.equipmentId,
-                    preparedVoltageLevel.sectionCount,
-                    preparedVoltageLevel.busbarCount
-                );
                 // we keep the old voltage level id, so it can be removed for from voltage level options
                 const oldVoltageLevelId = newVoltageLevel?.equipmentId;
 
-                const formattedVoltageLevel = getNewVoltageLevelData(preparedVoltageLevel);
+                const formattedVoltageLevel = getNewVoltageLevelData(preparedVoltageLevel) as unknown as VoltageLevel;
 
                 // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
                 const newVoltageLevelOptions = getNewVoltageLevelOptions(
@@ -327,7 +346,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     onVoltageLevelChange={onVoltageLevelChange}
                     allVoltageLevelOptions={voltageLevelOptions}
                     isUpdate={isUpdate}
-                    editDateFetchStatus={editDataFetchStatus}
+                    editDataFetchStatus={editDataFetchStatus}
                 />
             </ModificationDialog>
         </CustomFormProvider>
