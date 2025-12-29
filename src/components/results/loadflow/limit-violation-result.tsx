@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -35,17 +35,11 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
 
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] = useState(false);
-
     //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
     const openLoaderTab = useOpenLoaderShortWait({
         isLoading:
             // We want the loader to start when the loadflow begins
-            loadFlowStatus === RunningStatus.RUNNING ||
-            // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
-            // and "the data is post processed and can be displayed"
-            (!isOverloadedEquipmentsReady && loadFlowStatus === RunningStatus.SUCCEED) ||
-            isLoadingResult,
+            loadFlowStatus === RunningStatus.RUNNING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -83,7 +77,7 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
 
         return (
             <>
-                <Box sx={{ height: '4px' }}>{openLoaderTab && <LinearProgress />}</Box>
+                <Box sx={{ height: '12px', marginTop: '12px' }}>{openLoaderTab && <LinearProgress />}</Box>
                 <RenderTableAndExportCsv
                     gridRef={gridRef}
                     columns={columnDefs}
@@ -97,13 +91,6 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
             </>
         );
     };
-
-    useEffect(() => {
-        //reset everything at initial state
-        if (loadFlowStatus === RunningStatus.FAILED || loadFlowStatus === RunningStatus.IDLE) {
-            setIsOverloadedEquipmentsReady(false);
-        }
-    }, [loadFlowStatus]);
 
     return renderLoadFlowLimitViolations();
 };

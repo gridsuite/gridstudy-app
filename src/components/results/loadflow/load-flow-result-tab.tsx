@@ -50,9 +50,11 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { ICellRendererParams } from 'ag-grid-community';
-import { Button } from '@mui/material';
+import { Button, LinearProgress } from '@mui/material';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
 
 const styles = {
     flexWrapper: {
@@ -261,6 +263,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
 
+    const openLoaderReportTab = useOpenLoaderShortWait({
+        isLoading: loadFlowStatus === RunningStatus.RUNNING || isLoadingResult,
+        delay: RESULTS_LOADING_DELAY,
+    });
+
     return (
         <>
             <Box sx={styles.flexWrapper}>
@@ -317,10 +324,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     })}
                 />
             )}
-            {tabIndex === 3 &&
-                (loadFlowStatus === RunningStatus.SUCCEED || loadFlowStatus === RunningStatus.FAILED) && (
-                    <ComputationReportViewer reportType={ComputingType.LOAD_FLOW} />
-                )}
+            {tabIndex === 3 && (
+                <>
+                    <Box sx={{ height: '12px', marginTop: '12px' }}>{openLoaderReportTab && <LinearProgress />}</Box>
+                    {(loadFlowStatus === RunningStatus.SUCCEED || loadFlowStatus === RunningStatus.FAILED) && (
+                        <ComputationReportViewer reportType={ComputingType.LOAD_FLOW} />
+                    )}
+                </>
+            )}
         </>
     );
 };
