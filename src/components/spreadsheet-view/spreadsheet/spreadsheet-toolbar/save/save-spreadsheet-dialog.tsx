@@ -21,7 +21,7 @@ import { v4 as uuid4 } from 'uuid';
 import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
-import { SaveDialog } from './save-dialog';
+import { SaveSpreadsheetModelDialog } from './save-spreadsheet-model-dialog';
 export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
@@ -149,11 +149,11 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
     return (
         <>
             {showSaveDialog && studyUuid && (
-                <SaveDialog
+                <SaveSpreadsheetModelDialog
                     open={showSaveDialog}
                     onClose={handleSaveDialogClose}
                     onSave={saveSpreadsheetColumnsConfiguration}
-                    OnUpdate={updateSpreadsheetColumnsConfiguration}
+                    onUpdate={updateSpreadsheetColumnsConfiguration}
                     type={ElementType.SPREADSHEET_CONFIG}
                     titleId={'spreadsheet/save/dialog_title'}
                     studyUuid={studyUuid}

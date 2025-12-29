@@ -6,7 +6,12 @@
  */
 import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '@gridsuite/commons-ui';
+import {
+    BooleanCellRenderer,
+    DefaultCellRenderer,
+    NumericCellRenderer,
+    snackWithFallback,
+} from '@gridsuite/commons-ui';
 import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
 import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
@@ -30,26 +35,46 @@ import { ROW_INDEX_COLUMN_ID } from '../constants';
 import { updateSpreadsheetColumn, updateSpreadsheetSort } from 'services/study/study-config';
 import { ColumnDefinition } from '../types/spreadsheet.type';
 import { mapColDefToDto } from '../add-spreadsheet/dialogs/add-spreadsheet-utils';
+import { SnackInputs } from '@gridsuite/commons-ui';
 
-const updateAndPersistFilters = (colDef: ColumnDefinition, tab: string, api: GridApi, filters: FilterConfig[]) => {
+const updateAndPersistFilters = (
+    colDef: ColumnDefinition,
+    tab: string,
+    snackError: (snackInputs: SnackInputs) => void,
+    api: GridApi,
+    filters: FilterConfig[]
+) => {
     updateFilters(api, filters);
     const studyUuid = api.getGridOption('context')?.studyUuid;
     if (studyUuid) {
         const filter = filters?.find((f) => f.column === colDef.id);
         const columnDto = mapColDefToDto(colDef, filter);
-        updateSpreadsheetColumn(studyUuid, tab as UUID, colDef.uuid, columnDto).then();
+        updateSpreadsheetColumn(studyUuid, tab as UUID, colDef.uuid, columnDto).catch((error) => {
+            snackWithFallback(snackError, error);
+        });
     }
 };
 
-const persistSort = (colDef: ColumnDefinition, tab: string, api: GridApi, sortConfig: SortConfig): Promise<void> => {
+const persistSort = (
+    tab: string,
+    snackError: (snackInputs: SnackInputs) => void,
+    api: GridApi,
+    sortConfig: SortConfig
+): Promise<void> => {
     const studyUuid = api?.getGridOption('context')?.studyUuid;
     if (studyUuid) {
-        return updateSpreadsheetSort(studyUuid, tab as UUID, sortConfig);
+        return updateSpreadsheetSort(studyUuid, tab as UUID, sortConfig).catch((error) => {
+            snackWithFallback(snackError, error);
+        });
     }
     return Promise.resolve();
 };
 
-export const textColumnDefinition = (colDef: ColumnDefinition, tab: string): ColDef => {
+export const textColumnDefinition = (
+    colDef: ColumnDefinition,
+    tab: string,
+    snackError: (snackInputs: SnackInputs) => void
+): ColDef => {
     return {
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
@@ -57,14 +82,14 @@ export const textColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
-                persistSort: persistSort.bind(null, colDef, tab),
+                persistSort: persistSort.bind(null, tab, snackError),
             },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
                     type: FilterType.Spreadsheet,
                     tab,
-                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
+                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     dataType: FILTER_DATA_TYPES.TEXT,
                     comparators: [
                         FILTER_TEXT_COMPARATORS.STARTS_WITH,
@@ -83,7 +108,11 @@ export const textColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
     };
 };
 
-export const enumColumnDefinition = (colDef: ColumnDefinition, tab: string): ColDef => {
+export const enumColumnDefinition = (
+    colDef: ColumnDefinition,
+    tab: string,
+    snackError: (snackInputs: SnackInputs) => void
+): ColDef => {
     return {
         filterParams: {
             filterOptions: [
@@ -106,14 +135,14 @@ export const enumColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
-                persistSort: persistSort.bind(null, colDef, tab),
+                persistSort: persistSort.bind(null, tab, snackError),
             },
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
                 filterParams: {
                     type: FilterType.Spreadsheet,
                     tab,
-                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
+                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     dataType: FILTER_DATA_TYPES.TEXT,
                     debounceMs: 200,
                 },
@@ -126,7 +155,11 @@ export const enumColumnDefinition = (colDef: ColumnDefinition, tab: string): Col
     };
 };
 
-export const numberColumnDefinition = (colDef: ColumnDefinition, tab: string): ColDef => {
+export const numberColumnDefinition = (
+    colDef: ColumnDefinition,
+    tab: string,
+    snackError: (snackInputs: SnackInputs) => void
+): ColDef => {
     return {
         filter: 'agNumberColumnFilter',
         headerComponent: CustomHeaderComponent,
@@ -135,14 +168,14 @@ export const numberColumnDefinition = (colDef: ColumnDefinition, tab: string): C
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
-                persistSort: persistSort.bind(null, colDef, tab),
+                persistSort: persistSort.bind(null, tab, snackError),
             },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
                     type: FilterType.Spreadsheet,
                     tab,
-                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
+                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     dataType: FILTER_DATA_TYPES.NUMBER,
                     comparators: Object.values(SPREADSHEET_FILTER_NUMBER_COMPARATORS),
                     debounceMs: 500,
@@ -159,7 +192,11 @@ export const numberColumnDefinition = (colDef: ColumnDefinition, tab: string): C
     };
 };
 
-export const booleanColumnDefinition = (colDef: ColumnDefinition, tab: string): ColDef => {
+export const booleanColumnDefinition = (
+    colDef: ColumnDefinition,
+    tab: string,
+    snackError: (snackInputs: SnackInputs) => void
+): ColDef => {
     return {
         filterParams: {
             filterOptions: [
@@ -189,7 +226,7 @@ export const booleanColumnDefinition = (colDef: ColumnDefinition, tab: string): 
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
-                persistSort: persistSort.bind(null, colDef, tab),
+                persistSort: persistSort.bind(null, tab, snackError),
             },
             filterComponent: CustomAggridBooleanFilter,
             filterComponentParams: {
@@ -197,7 +234,7 @@ export const booleanColumnDefinition = (colDef: ColumnDefinition, tab: string): 
                     type: FilterType.Spreadsheet,
                     tab,
                     dataType: FILTER_DATA_TYPES.BOOLEAN,
-                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
+                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     debounceMs: 50,
                 },
             },

@@ -237,7 +237,7 @@ export function processSpreadsheetsCollectionData(collectionData: SpreadsheetCol
     const tablesSorts: TableSortConfig = collectionData.spreadsheetConfigs.reduce(
         (sorts, spreadsheetConfig) => ({
             ...sorts,
-            [spreadsheetConfig.id]: [spreadsheetConfig?.sortConfig],
+            [spreadsheetConfig.id]: spreadsheetConfig?.sortConfig ? [spreadsheetConfig.sortConfig] : [],
         }),
         {}
     );

@@ -70,7 +70,7 @@ export type SaveDialogProps = {
     type: ElementType;
     titleId: string;
     onSave: (data: IElementCreationDialog) => void;
-    OnUpdate?: (data: IElementUpdateDialog) => void;
+    onUpdate?: (data: IElementUpdateDialog) => void;
     prefixIdForGeneratedName?: string;
     initialOperation?: OperationType;
     selectorTitleId?: string;
@@ -113,10 +113,10 @@ const emptyFormData: FormData = {
     [FieldConstants.OPERATION_TYPE]: OperationType.CREATE,
 };
 
-export function SaveDialog({
+export function SaveSpreadsheetModelDialog({
     open,
     onSave,
-    OnUpdate,
+    onUpdate,
     onClose,
     type,
     titleId,
@@ -283,7 +283,7 @@ export function SaveDialog({
                     [FieldConstants.FOLDER_ID]: destinationFolder.id,
                 };
                 onSave(creationData);
-            } else if (!isCreateMode && selectedItem && OnUpdate) {
+            } else if (!isCreateMode && selectedItem && onUpdate) {
                 // Handle update
                 const updateData: IElementUpdateDialog = {
                     [FieldConstants.ID]: selectedItem.id,
@@ -292,10 +292,10 @@ export function SaveDialog({
                     elementFullPath: selectedItem.fullPath,
                     parentFolderId: selectedItem.parentFolderId,
                 };
-                OnUpdate(updateData);
+                onUpdate(updateData);
             }
         },
-        [isCreateMode, onSave, OnUpdate, destinationFolder, selectedItem]
+        [isCreateMode, onSave, onUpdate, destinationFolder, selectedItem]
     );
 
     // Render folder/item chooser
@@ -359,7 +359,9 @@ export function SaveDialog({
                 </Grid>
                 <Grid item>
                     <FormControl component="fieldset">
-                        <FormLabel>{intl.formatMessage({ id: 'spreadsheet/save-dialog/include' })}</FormLabel>
+                        <FormLabel focused={false}>
+                            {intl.formatMessage({ id: 'spreadsheet/save-dialog/include' })}
+                        </FormLabel>
                         <FormGroup aria-label="save-options" row>
                             <FormControlLabel
                                 sx={{ mr: 5 }}
