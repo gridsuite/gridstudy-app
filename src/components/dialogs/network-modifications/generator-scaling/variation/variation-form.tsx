@@ -32,6 +32,7 @@ import { ActivePowerAdornment } from '../../../dialog-utils';
 import { IDENTIFIER_LIST } from './variation-utils';
 import GridItem from '../../../commons/grid-item';
 import { ItemFilterType, VariationType } from '../../../../../services/network-modification-types';
+import { UUID } from 'node:crypto';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
@@ -60,7 +61,7 @@ const VariationForm = ({ name, index }: GeneratorScalingVariationFormProps) => {
 
     const updateMetadata = useCallback(
         (filtersWithoutMetadata: ElementAttributes[]) => {
-            const ids = filtersWithoutMetadata.map((f) => f.elementUuid);
+            const ids = filtersWithoutMetadata.filter((f) => f.id !== undefined).map((f) => f.id as UUID);
             fetchElementsInfos(ids, [], [])
                 .then((results) => {
                     const newFilters = filters.map((filter: ElementAttributes) => {
