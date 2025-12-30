@@ -14,9 +14,9 @@ import {
     LOSS_COEFFICIENT,
 } from 'components/utils/field-constants';
 import { percentageTextField } from '../../dialog-utils';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import FrequencyReservePane from './frequency-reserve-pane';
-import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane.js';
+import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
 import GridItem from '../../commons/grid-item';
 import GridSection from '../../commons/grid-section';
 import { useEffect, useState } from 'react';
@@ -37,8 +37,7 @@ const GenerationDispatchForm = ({
     currentRootNetworkUuid,
 }: Readonly<GenerationDispatchFormProps>) => {
     const currentNodeUuid = currentNode?.id;
-
-    const [substations, setSubstations] = useState([]);
+    const [substations, setSubstations] = useState<string[]>([]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
@@ -49,8 +48,8 @@ const GenerationDispatchForm = ({
                 [],
                 EquipmentType.SUBSTATION,
                 true
-            ).then((values) => {
-                setSubstations(values.sort((a: string, b: string) => a.localeCompare(b)));
+            ).then((values: string[]) => {
+                setSubstations(values.sort((a, b) => a.localeCompare(b)));
             });
         }
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
@@ -79,9 +78,9 @@ const GenerationDispatchForm = ({
     const defaultOutageRateField = (
         <Grid container spacing={2}>
             <Grid item xs={12}>
-                <Box component="span" fontWeight="fontWeightMedium">
+                <Typography variant="body1" component="h4" fontWeight="fontWeightMedium">
                     <FormattedMessage id="GeneratorAvailability" />
-                </Box>
+                </Typography>
             </Grid>
             <Grid item xs={12}>
                 <FloatInput name={DEFAULT_OUTAGE_RATE} label={'DefaultOutageRate'} adornment={percentageTextField} />
@@ -119,9 +118,9 @@ const GenerationDispatchForm = ({
             </Grid>
             <Grid container spacing={2}>
                 <Grid item>
-                    <Box component="span" fontWeight="fontWeightMedium">
+                    <Typography variant="body1" component="h4" fontWeight="fontWeightMedium">
                         <FormattedMessage id="frequencyReserve" />
-                    </Box>
+                    </Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <FrequencyReservePane />
