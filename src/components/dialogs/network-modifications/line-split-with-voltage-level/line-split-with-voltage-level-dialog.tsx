@@ -288,7 +288,7 @@ const LineSplitWithVoltageLevelDialog = ({
 
                 const formattedVoltageLevel = getNewVoltageLevelData(preparedVoltageLevel) as unknown as VoltageLevel;
 
-                // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
+                // we add the new voltage level (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
                 const newVoltageLevelOptions = getNewVoltageLevelOptions(
                     formattedVoltageLevel,
                     oldVoltageLevelId,
