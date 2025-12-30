@@ -149,7 +149,7 @@ const GenerationDispatchDialog = ({
             generationDispatch({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.modificationUuid ?? undefined,
+                uuid: editData?.uuid,
                 lossCoefficient: generation?.lossCoefficient,
                 defaultOutageRate: generation?.defaultOutageRate,
                 generatorsWithoutOutage: generation[GENERATORS_WITHOUT_OUTAGE],

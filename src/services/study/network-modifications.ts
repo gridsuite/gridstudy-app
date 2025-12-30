@@ -264,7 +264,7 @@ export function switchOnEquipment(
 export function generationDispatch({
     studyUuid,
     nodeUuid,
-    modificationUuid,
+    uuid,
     lossCoefficient,
     defaultOutageRate,
     generatorsWithoutOutage,
@@ -283,15 +283,15 @@ export function generationDispatch({
     });
 
     let generationDispatchUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    if (modificationUuid) {
+    if (uuid) {
         console.info('Updating generation dispatch ', body);
-        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
+        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(uuid);
     } else {
         console.info('Creating generation dispatch ', body);
     }
 
     return backendFetchText(generationDispatchUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',

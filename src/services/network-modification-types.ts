@@ -808,7 +808,7 @@ type GenerationDispatchInfos = {
 export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {
     studyUuid: UUID;
     nodeUuid: UUID;
-    modificationUuid?: UUID;
+    uuid?: UUID;
 };
 
 export interface TopologyVoltageLevelModificationInfos {
