@@ -21,7 +21,6 @@ import {
     SUBSTATION_IDS,
     SUBSTATIONS_GENERATORS_ORDERING,
 } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import yup from 'components/utils/yup-config';
@@ -29,8 +28,21 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { ModificationDialog } from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 import { generationDispatch } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
 import { addSelectedFieldToRows } from 'components/utils/utils';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { UUID } from 'node:crypto';
+import { FetchStatus } from 'services/utils.type';
+import { DeepNullable } from '../../../utils/ts-utils';
+import { GenerationDispatchModificationInfos } from '../../../../services/network-modification-types';
+
+interface GenerationDispatchProps {
+    editData: GenerationDispatchModificationInfos;
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus: FetchStatus;
+}
 
 const emptyFormData = {
     [LOSS_COEFFICIENT]: null,
@@ -41,17 +53,17 @@ const emptyFormData = {
     [SUBSTATIONS_GENERATORS_ORDERING]: [],
 };
 
-const getGeneratorsFiltersSchema = (id) => ({
-    [id]: yup.array().of(
+const getGeneratorsFiltersSchema = () => {
+    return yup.array().of(
         yup.object().shape({
             [ID]: yup.string().required(),
             [NAME]: yup.string().required(),
         })
-    ),
-});
+    );
+};
 
-const getGeneratorsFrequencyReserveSchema = (id) => ({
-    [id]: yup.array().of(
+const getGeneratorsFrequencyReserveSchema = () => {
+    return yup.array().of(
         yup.object().shape({
             [GENERATORS_FILTERS]: yup
                 .array()
@@ -64,28 +76,30 @@ const getGeneratorsFrequencyReserveSchema = (id) => ({
                 .min(1),
             [FREQUENCY_RESERVE]: yup.number().nullable().min(0).max(100).required(),
         })
-    ),
-});
+    );
+};
 
-const getSubstationsGeneratorsOrderingSchema = (id) => ({
-    [id]: yup.array().of(
+const getSubstationsGeneratorsOrderingSchema = () => {
+    return yup.array().of(
         yup.object().shape({
             [SUBSTATION_IDS]: yup.array().of(yup.string().required()).min(1).required(),
         })
-    ),
-});
+    );
+};
 
 const formSchema = yup
     .object()
     .shape({
         [LOSS_COEFFICIENT]: yup.number().nullable().min(0).max(100).required(),
         [DEFAULT_OUTAGE_RATE]: yup.number().nullable().min(0).max(100).required(),
-        ...getGeneratorsFiltersSchema(GENERATORS_WITHOUT_OUTAGE),
-        ...getGeneratorsFiltersSchema(GENERATORS_WITH_FIXED_ACTIVE_POWER),
-        ...getGeneratorsFrequencyReserveSchema(GENERATORS_FREQUENCY_RESERVES),
-        ...getSubstationsGeneratorsOrderingSchema(SUBSTATIONS_GENERATORS_ORDERING),
+        [GENERATORS_WITHOUT_OUTAGE]: getGeneratorsFiltersSchema(),
+        [GENERATORS_WITH_FIXED_ACTIVE_POWER]: getGeneratorsFiltersSchema(),
+        [GENERATORS_FREQUENCY_RESERVES]: getGeneratorsFrequencyReserveSchema(),
+        [SUBSTATIONS_GENERATORS_ORDERING]: getSubstationsGeneratorsOrderingSchema(),
     })
     .required();
+
+type GenerationDispatchFormInfos = yup.InferType<typeof formSchema>;
 
 const GenerationDispatchDialog = ({
     editData,
@@ -95,26 +109,30 @@ const GenerationDispatchDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: Readonly<GenerationDispatchProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<GenerationDispatchFormInfos>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<GenerationDispatchFormInfos>>(formSchema),
     });
 
     const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (generation) => {
+        (generation: GenerationDispatchModificationInfos) => {
             reset({
                 [LOSS_COEFFICIENT]: generation.lossCoefficient,
                 [DEFAULT_OUTAGE_RATE]: generation.defaultOutageRate,
                 [GENERATORS_WITHOUT_OUTAGE]: generation.generatorsWithoutOutage,
                 [GENERATORS_WITH_FIXED_ACTIVE_POWER]: generation.generatorsWithFixedSupply,
-                [GENERATORS_FREQUENCY_RESERVES]: addSelectedFieldToRows(generation.generatorsFrequencyReserve),
-                [SUBSTATIONS_GENERATORS_ORDERING]: addSelectedFieldToRows(generation.substationsGeneratorsOrdering),
+                [GENERATORS_FREQUENCY_RESERVES]: generation.generatorsFrequencyReserve
+                    ? addSelectedFieldToRows(generation.generatorsFrequencyReserve)
+                    : [],
+                [SUBSTATIONS_GENERATORS_ORDERING]: generation.substationsGeneratorsOrdering
+                    ? addSelectedFieldToRows(generation.substationsGeneratorsOrdering)
+                    : [],
             });
         },
         [reset]
@@ -127,15 +145,15 @@ const GenerationDispatchDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (generation) => {
+        (generation: GenerationDispatchFormInfos) => {
             generationDispatch({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid ?? undefined,
+                modificationUuid: editData?.modificationUuid ?? undefined,
                 lossCoefficient: generation?.lossCoefficient,
                 defaultOutageRate: generation?.defaultOutageRate,
                 generatorsWithoutOutage: generation[GENERATORS_WITHOUT_OUTAGE],
-                generatorsWithFixedActivePower: generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
+                generatorsWithFixedSupply: generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
                 generatorsFrequencyReserve: generation[GENERATORS_FREQUENCY_RESERVES],
                 substationsGeneratorsOrdering: generation[SUBSTATIONS_GENERATORS_ORDERING],
             }).catch((error) => {
@@ -175,14 +193,6 @@ const GenerationDispatchDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-GenerationDispatchDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
 };
 
 export default GenerationDispatchDialog;

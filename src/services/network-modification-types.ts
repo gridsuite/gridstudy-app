@@ -791,17 +791,25 @@ export type EquipmentAttributeModificationInfos = {
     equipmentType: string;
 };
 
-export interface GenerationDispatchInfo {
+type GenerationDispatchInfos = {
+    lossCoefficient?: number | null;
+    defaultOutageRate?: number | null;
+    generatorsWithoutOutage?: Filter[];
+    generatorsWithFixedSupply?: Filter[];
+    generatorsFrequencyReserve?: {
+        generatorsFilters?: Filter[];
+        frequencyReserve: number;
+    }[];
+    substationsGeneratorsOrdering?: {
+        substationIds: string[];
+    }[];
+};
+
+export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: UUID;
-    lossCoefficient: number;
-    defaultOutageRate: number;
-    generatorsWithoutOutage: any;
-    generatorsWithFixedActivePower: any;
-    generatorsFrequencyReserve: any;
-    substationsGeneratorsOrdering: any;
-}
+};
 
 export interface TopologyVoltageLevelModificationInfos {
     type: ModificationType;
