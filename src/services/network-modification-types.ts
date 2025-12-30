@@ -792,17 +792,21 @@ export type EquipmentAttributeModificationInfos = {
 };
 
 type GenerationDispatchInfos = {
-    lossCoefficient?: number | null;
-    defaultOutageRate?: number | null;
-    generatorsWithoutOutage?: Filter[];
-    generatorsWithFixedSupply?: Filter[];
-    generatorsFrequencyReserve?: {
-        generatorsFilters?: Filter[];
-        frequencyReserve: number;
-    }[];
-    substationsGeneratorsOrdering?: {
-        substationIds: string[];
-    }[];
+    lossCoefficient: number | null;
+    defaultOutageRate: number | null;
+    generatorsWithoutOutage: Filter[] | null;
+    generatorsWithFixedSupply: Filter[] | null;
+    generatorsFrequencyReserve:
+        | {
+              generatorsFilters: Filter[];
+              frequencyReserve: number;
+          }[]
+        | null;
+    substationsGeneratorsOrdering:
+        | {
+              substationIds: string[];
+          }[]
+        | null;
 };
 
 export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {

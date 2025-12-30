@@ -73,7 +73,8 @@ const getGeneratorsFrequencyReserveSchema = () => {
                         [NAME]: yup.string().required(),
                     })
                 )
-                .min(1),
+                .min(1)
+                .required(),
             [FREQUENCY_RESERVE]: yup.number().nullable().min(0).max(100).required(),
         })
     );
@@ -150,12 +151,12 @@ const GenerationDispatchDialog = ({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 uuid: editData?.uuid,
-                lossCoefficient: generation?.lossCoefficient,
-                defaultOutageRate: generation?.defaultOutageRate,
-                generatorsWithoutOutage: generation[GENERATORS_WITHOUT_OUTAGE],
-                generatorsWithFixedSupply: generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
-                generatorsFrequencyReserve: generation[GENERATORS_FREQUENCY_RESERVES],
-                substationsGeneratorsOrdering: generation[SUBSTATIONS_GENERATORS_ORDERING],
+                lossCoefficient: generation.lossCoefficient,
+                defaultOutageRate: generation.defaultOutageRate,
+                generatorsWithoutOutage: generation[GENERATORS_WITHOUT_OUTAGE] ?? null,
+                generatorsWithFixedSupply: generation[GENERATORS_WITH_FIXED_ACTIVE_POWER] ?? null,
+                generatorsFrequencyReserve: generation[GENERATORS_FREQUENCY_RESERVES] ?? null,
+                substationsGeneratorsOrdering: generation[SUBSTATIONS_GENERATORS_ORDERING] ?? null,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'GenerationDispatchError' });
             });
