@@ -17,6 +17,7 @@ import {
     NAD_ZOOM_LEVELS,
     getEquipmentTypeFromFeederType,
     equipmentsWithPopover,
+    equipmentsWithContextualMenu,
 } from '../diagram-utils';
 import {
     NetworkAreaDiagramViewer,
@@ -55,6 +56,7 @@ import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popov
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import { StoreNadViewBox } from 'redux/actions';
+import { DiagramAdditionalMetadata } from '../diagram.type';
 
 type NetworkAreaDiagramContentProps = {
     readonly nadPanelId: UUID;
@@ -65,7 +67,7 @@ type NetworkAreaDiagramContentProps = {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
-    readonly svgScalingFactor?: number;
+    readonly additionalMetadata?: DiagramAdditionalMetadata;
     readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
     readonly isNadCreationFromFilter: boolean;
@@ -97,7 +99,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         nadPanelId,
         svg,
         svgMetadata,
-        svgScalingFactor,
+        additionalMetadata,
         svgVoltageLevels,
         loadingState,
         isNadCreationFromFilter,
@@ -184,7 +186,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
             {
-                scalingFactor: svgScalingFactor,
+                scalingFactor: additionalMetadata?.scalingFactor,
                 voltageLevelIds: svgVoltageLevels ?? [],
                 positions: svgMetadata ? buildPositionsFromNadMetadata(svgMetadata) : [],
             },
@@ -207,7 +209,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         updateDiagramConfig(
             data.id,
             {
-                scalingFactor: svgScalingFactor,
+                scalingFactor: additionalMetadata?.scalingFactor,
                 voltageLevelIds: svgVoltageLevels ?? [],
                 positions: svgMetadata ? buildPositionsFromNadMetadata(svgMetadata) : [],
             },
@@ -256,15 +258,22 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
 
     const showEquipmentMenu = useCallback(
         (svgId: string, equipmentId: string, equipmentType: string, mousePosition: Point) => {
-            // don't display the equipment menu in edit mode.
-            if (isEditNadMode) {
+            if (isEditNadMode || !equipmentsWithContextualMenu.includes(equipmentType)) {
                 return;
             }
 
             const openMenu = (equipmentType: EquipmentType, equipmentSubtype: ExtendedEquipmentType | null = null) => {
-                const equipment = { id: equipmentId };
+                const equipment: Partial<MapEquipment> = { id: equipmentId };
+                if (equipmentType === EquipmentType.VOLTAGE_LEVEL) {
+                    const vlSubstationId = additionalMetadata?.voltageLevels.find(
+                        (vl) => vl.id === equipmentId
+                    )?.substationId;
+                    if (vlSubstationId) {
+                        equipment.substationId = vlSubstationId;
+                    }
+                }
                 openEquipmentMenu(
-                    equipment as MapEquipment,
+                    equipment as MapEquipment, //TODO, improve typing, this is NOT really MapEquipment
                     mousePosition.x,
                     mousePosition.y,
                     equipmentType,
@@ -309,6 +318,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         },
         [
             isEditNadMode,
+            additionalMetadata,
             openEquipmentMenu,
             currentNode?.id,
             currentRootNetworkUuid,
