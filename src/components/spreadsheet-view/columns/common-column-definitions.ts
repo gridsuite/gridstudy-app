@@ -11,6 +11,7 @@ import {
     DefaultCellRenderer,
     NumericCellRenderer,
     snackWithFallback,
+    SnackInputs,
 } from '@gridsuite/commons-ui';
 import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
 import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
@@ -35,7 +36,6 @@ import { ROW_INDEX_COLUMN_ID } from '../constants';
 import { updateSpreadsheetColumn, updateSpreadsheetSort } from 'services/study/study-config';
 import { ColumnDefinition } from '../types/spreadsheet.type';
 import { mapColDefToDto } from '../add-spreadsheet/dialogs/add-spreadsheet-utils';
-import { SnackInputs } from '@gridsuite/commons-ui';
 
 const updateAndPersistFilters = (
     colDef: ColumnDefinition,

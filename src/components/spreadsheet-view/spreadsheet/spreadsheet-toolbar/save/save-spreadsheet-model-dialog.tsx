@@ -22,7 +22,6 @@ import {
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { DirectoryInitConfig, initializeDirectory } from '@gridsuite/commons-ui';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -35,6 +34,8 @@ import {
     TreeViewFinderNodeProps,
     UniqueNameInput,
     useSnackMessage,
+    DirectoryInitConfig,
+    initializeDirectory,
 } from '@gridsuite/commons-ui';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
