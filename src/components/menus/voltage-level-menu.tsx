@@ -56,12 +56,12 @@ export const withVoltageLevelMenu = (
             };
         }, [voltageLevel.id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
-        if (!voltageLevelInfos?.subtationId || isLoading) {
+        if (!voltageLevelInfos?.substationId || isLoading) {
             return;
         }
 
         return (
-            <EquipmentMenu {...props} equipment={{ ...voltageLevel, substationId: voltageLevelInfos.subtationId }} />
+            <EquipmentMenu {...props} equipment={{ ...voltageLevel, substationId: voltageLevelInfos.substationId }} />
         );
     };
 };

@@ -17,7 +17,6 @@ import {
     NAD_ZOOM_LEVELS,
     getEquipmentTypeFromFeederType,
     equipmentsWithPopover,
-    equipmentsWithContextualMenu,
 } from '../diagram-utils';
 import {
     NetworkAreaDiagramViewer,
@@ -258,7 +257,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const showEquipmentMenu = useCallback(
         (svgId: string, equipmentId: string, equipmentType: string, mousePosition: Point) => {
             // don't display the equipment menu in edit mode.
-            if (isEditNadMode || !equipmentsWithContextualMenu.includes(equipmentType)) {
+            if (isEditNadMode) {
                 return;
             }
 
