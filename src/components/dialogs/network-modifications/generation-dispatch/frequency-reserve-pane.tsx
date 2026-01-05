@@ -82,16 +82,14 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<F
     };
 
     return (
-        <>
-            <DndTable
-                arrayFormName={`${id}`}
-                useFieldArrayOutput={useFieldArrayOutputFrequencyReserve}
-                createRows={createFrequencyReserveRows}
-                columnsDefinition={completedColumnsDefinition}
-                tableHeight={270}
-                withAddRowsDialog={false}
-            />
-        </>
+        <DndTable
+            arrayFormName={`${id}`}
+            useFieldArrayOutput={useFieldArrayOutputFrequencyReserve}
+            createRows={createFrequencyReserveRows}
+            columnsDefinition={completedColumnsDefinition}
+            tableHeight={270}
+            withAddRowsDialog={false}
+        />
     );
 };
 

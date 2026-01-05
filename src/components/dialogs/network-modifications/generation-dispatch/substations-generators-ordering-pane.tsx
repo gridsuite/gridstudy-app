@@ -54,16 +54,14 @@ const SubstationsGeneratorsOrderingPane = ({ substations }: Readonly<Substations
     const createSubstationsGeneratorsOrderingRows = () => [newRowData];
 
     return (
-        <>
-            <DndTable
-                arrayFormName={`${id}`}
-                useFieldArrayOutput={useFieldArraySubstationsGeneratorsOrdering}
-                createRows={createSubstationsGeneratorsOrderingRows}
-                columnsDefinition={columnsDefinition}
-                tableHeight={270}
-                withAddRowsDialog={false}
-            />
-        </>
+        <DndTable
+            arrayFormName={`${id}`}
+            useFieldArrayOutput={useFieldArraySubstationsGeneratorsOrdering}
+            createRows={createSubstationsGeneratorsOrderingRows}
+            columnsDefinition={columnsDefinition}
+            tableHeight={270}
+            withAddRowsDialog={false}
+        />
     );
 };
 
