@@ -138,7 +138,7 @@ const VoltageLevelModificationDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }: VoltageLevelModificationDialogProps) => {
-    const currentNodeUuid: UUID = currentNode?.id as UUID;
+    const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
     const [voltageLevelInfos, setVoltageLevelInfos] = useState<VoltageLevelFormData | null>(null);
@@ -249,27 +249,29 @@ const VoltageLevelModificationDialog = ({
 
     const onSubmit = useCallback(
         (voltageLevel: VoltageLevelFormData) => {
-            modifyVoltageLevel({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid as UUID,
-                modificationUuid: editData?.uuid,
-                voltageLevelId: selectedId as string,
-                voltageLevelName: voltageLevel[EQUIPMENT_NAME],
-                nominalV: voltageLevel[NOMINAL_V],
-                lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
-                highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                lowShortCircuitCurrentLimit: convertOutputValue(
-                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
-                ),
-                highShortCircuitCurrentLimit: convertOutputValue(
-                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
-                ),
-                properties: toModificationProperties(voltageLevel),
-            }).catch((error: Error) => {
-                snackWithFallback(snackError, error, { headerId: 'VoltageLevelModificationError' });
-            });
+            if (selectedId != null) {
+                modifyVoltageLevel({
+                    studyUuid: studyUuid,
+                    nodeUuid: currentNodeUuid as UUID,
+                    modificationUuid: editData?.uuid,
+                    voltageLevelId: selectedId,
+                    voltageLevelName: voltageLevel[EQUIPMENT_NAME],
+                    nominalV: voltageLevel[NOMINAL_V],
+                    lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
+                    highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
+                    lowShortCircuitCurrentLimit: convertOutputValue(
+                        FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                        voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
+                    ),
+                    highShortCircuitCurrentLimit: convertOutputValue(
+                        FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+                        voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
+                    ),
+                    properties: toModificationProperties(voltageLevel),
+                }).catch((error: Error) => {
+                    snackWithFallback(snackError, error, { headerId: 'VoltageLevelModificationError' });
+                });
+            }
         },
         [editData, studyUuid, currentNodeUuid, selectedId, snackError]
     );

@@ -69,7 +69,6 @@ import {
 } from '../../common/properties/property-utils';
 import { UUID } from 'node:crypto';
 import { VoltageLevelCreationInfo } from '../../../../../services/network-modification-types';
-import PropTypes from 'prop-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 interface CouplingDevice {
@@ -263,7 +262,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     titleId = 'CreateVoltageLevel',
     ...dialogProps
 }) => {
-    const currentNodeUuid = currentNode?.id;
+    const currentNodeUuid = currentNode?.id as UUID;
     const { snackError, snackWarning } = useSnackMessage();
 
     const defaultValues = useMemo((): VoltageLevelFormData => {
@@ -430,7 +429,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 : null;
             onCreateVoltageLevel({
                 studyUuid: studyUuid as UUID,
-                nodeUuid: currentNodeUuid as UUID,
+                nodeUuid: currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
                 substationId: substationCreation === null ? voltageLevel[SUBSTATION_ID] : null,
@@ -487,7 +486,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                     {...dialogProps}
                 >
                     <VoltageLevelCreationForm
-                        currentNodeUuid={currentNodeUuid as UUID}
+                        currentNodeUuid={currentNodeUuid}
                         studyUuid={studyUuid as UUID}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                     />
@@ -496,7 +495,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                         onClose={searchCopy.handleCloseSearchDialog}
                         equipmentType={EquipmentType.VOLTAGE_LEVEL}
                         onSelectionChange={searchCopy.handleSelectionChange}
-                        currentNodeUuid={currentNodeUuid as UUID}
+                        currentNodeUuid={currentNodeUuid}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                     />
                 </ModificationDialog>
