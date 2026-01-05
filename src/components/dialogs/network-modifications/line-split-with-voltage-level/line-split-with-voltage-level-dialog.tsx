@@ -286,7 +286,12 @@ const LineSplitWithVoltageLevelDialog = ({
                 // we keep the old voltage level id, so it can be removed for from voltage level options
                 const oldVoltageLevelId = newVoltageLevel?.equipmentId;
 
-                const formattedVoltageLevel = getNewVoltageLevelData(preparedVoltageLevel) as unknown as VoltageLevel;
+                const formattedVoltageLevel = {
+                    id: preparedVoltageLevel.equipmentId,
+                    name: preparedVoltageLevel.equipmentName ?? '',
+                    substationId: preparedVoltageLevel.substationId ?? undefined,
+                    nominalV: preparedVoltageLevel.nominalV ?? 0,
+                };
 
                 // we add the new voltage level (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
                 const newVoltageLevelOptions = getNewVoltageLevelOptions(
