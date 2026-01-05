@@ -505,14 +505,4 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     );
 };
 
-VoltageLevelCreationDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
-    isUpdate: PropTypes.bool,
-    onCreateVoltageLevel: PropTypes.func,
-    editDataFetchStatus: PropTypes.string,
-};
-
 export default VoltageLevelCreationDialog;
