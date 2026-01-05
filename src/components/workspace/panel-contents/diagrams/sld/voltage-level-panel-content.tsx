@@ -44,7 +44,7 @@ export const VoltageLevelPanelContent = ({
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.VOLTAGE_LEVEL,
-        diagramId: sldFields!.diagramId,
+        diagramId: sldFields?.diagramId ?? '',
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,

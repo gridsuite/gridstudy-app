@@ -34,7 +34,7 @@ export const SubstationPanelContent = ({
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.SUBSTATION,
-        diagramId: sldFields!.diagramId,
+        diagramId: sldFields?.diagramId ?? '',
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,

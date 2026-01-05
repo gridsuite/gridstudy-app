@@ -511,7 +511,7 @@ export function StudyContainer() {
                     dispatch(setWorkspacesMetadata(workspacesMetadata));
 
                     // Load the first workspace (or default)
-                    // TODO: Remember last active workspace per study
+                    // TODO: Remember last active workspace per study and load it instead of the first one ??
                     if (workspacesMetadata.length > 0) {
                         return getWorkspace(studyUuid, workspacesMetadata[0].id);
                     }
