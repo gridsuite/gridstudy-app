@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
 import {
     ADDITIONAL_PROPERTIES,
@@ -17,7 +16,7 @@ import {
     NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, FloatInput, TextInput } from '@gridsuite/commons-ui';
 import { filledTextField, KiloAmpereAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
