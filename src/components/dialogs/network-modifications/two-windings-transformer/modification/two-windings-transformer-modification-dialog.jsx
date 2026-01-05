@@ -686,9 +686,15 @@ const TwoWindingsTransformerModificationDialog = ({
                                         regulationSide: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_SIDE}`),
                                         targetV: getValues(`${RATIO_TAP_CHANGER}.${TARGET_V}`),
                                         targetDeadband: getValues(`${RATIO_TAP_CHANGER}.${TARGET_DEADBAND}`),
-                                        lowTapPosition: twt?.ratioTapChanger?.lowTapPosition,
-                                        highTapPosition: twt?.ratioTapChanger?.highTapPosition,
-                                        tapPosition: twt?.ratioTapChanger?.tapPosition,
+                                        lowTapPosition:
+                                            getValues(`${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`) ??
+                                            twt?.ratioTapChanger?.lowTapPosition,
+                                        highTapPosition:
+                                            getValues(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`) ??
+                                            twt?.ratioTapChanger?.highTapPosition,
+                                        tapPosition:
+                                            getValues(`${RATIO_TAP_CHANGER}.${TAP_POSITION}`) ??
+                                            twt?.ratioTapChanger?.tapPosition,
                                         steps: addSelectedFieldToRows(getRatioTapChangerSteps(twt)),
                                         equipmentId: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
                                         equipmentType: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
