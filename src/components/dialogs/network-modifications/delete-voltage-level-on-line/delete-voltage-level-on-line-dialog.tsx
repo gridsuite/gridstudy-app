@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../commons/modificationDialog';
-import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form.js';
+import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 import { deleteVoltageLevelOnLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import DeleteVoltageLevelOnLineIllustration from './delete-voltage-level-on-line-illustration';
