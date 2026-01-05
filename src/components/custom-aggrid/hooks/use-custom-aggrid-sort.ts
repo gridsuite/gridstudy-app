@@ -8,19 +8,22 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, TableSortKeysType } from '../../../redux/reducer';
 import { setTableSort } from '../../../redux/actions';
-import { SortWay } from '../../../types/custom-aggrid-types';
+import { SortConfig, SortWay } from '../../../types/custom-aggrid-types';
+import { GridApi } from 'ag-grid-community';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 
 export type SortParams = {
     table: TableSortKeysType;
     tab: string;
     isChildren?: boolean;
+    persistSort?: (api: GridApi, sort: SortConfig) => Promise<void>;
 };
 
-export const useCustomAggridSort = (colId: string, sortParams?: SortParams) => {
+export const useCustomAggridSort = (colId: string, sortParams?: SortParams, api?: GridApi) => {
     const sortConfig = useSelector((state: AppState) =>
         sortParams ? state.tableSort[sortParams.table][sortParams.tab] : undefined
     );
-
+    const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
     const columnSort = sortConfig?.find((value) => value.colId === colId);
@@ -44,8 +47,11 @@ export const useCustomAggridSort = (colId: string, sortParams?: SortParams) => {
             .filter((sort) => (sort.children ?? false) !== (sortParams.isChildren ?? false))
             .concat({ colId, sort: newSort, children: sortParams.isChildren });
 
+        if (sortParams && sortParams.persistSort && updatedSortConfig?.[0] && api) {
+            sortParams.persistSort(api, updatedSortConfig[0]).catch((error) => snackWithFallback(snackError, error));
+        }
         dispatch(setTableSort(sortParams.table, sortParams.tab, updatedSortConfig));
-    }, [sortParams, sortConfig, isColumnSorted, columnSort?.sort, colId, dispatch]);
+    }, [sortParams, sortConfig, isColumnSorted, columnSort?.sort, colId, api, dispatch, snackError]);
 
     return { columnSort, handleSortChange };
 };

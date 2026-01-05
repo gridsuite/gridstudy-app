@@ -18,8 +18,16 @@ import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constant
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { loadScaling } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
+import { UUID } from 'node:crypto';
+import { Variations, VariationType } from '../../../../services/network-modification-types';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
 
-const emptyFormData = {
+interface LoadScalingFormData {
+    [VARIATION_TYPE]: VariationType;
+    [VARIATIONS]: Variations[];
+}
+
+const emptyFormData: LoadScalingFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
     [VARIATIONS]: [],
 };
@@ -30,9 +38,28 @@ const formSchema = yup
         [VARIATION_TYPE]: yup.string().required(),
         ...getVariationsSchema(VARIATIONS),
     })
-    .required();
+    .required() as yup.ObjectSchema<LoadScalingFormData>;
 
-const LoadScalingDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
+interface LoadScalingDialogProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    isUpdate: boolean;
+    editDataFetchStatus?: string;
+    editData?: {
+        uuid: UUID;
+        [VARIATION_TYPE]: VariationType;
+        [VARIATIONS]: Variations[];
+    };
+}
+
+const LoadScalingDialog = ({
+    editData,
+    currentNode,
+    studyUuid,
+    isUpdate,
+    editDataFetchStatus,
+    ...dialogProps
+}: LoadScalingDialogProps) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
@@ -46,8 +73,8 @@ const LoadScalingDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
     useEffect(() => {
         if (editData) {
             reset({
-                [VARIATION_TYPE]: editData.variationType,
-                [VARIATIONS]: editData.variations,
+                [VARIATION_TYPE]: editData[VARIATION_TYPE],
+                [VARIATIONS]: editData[VARIATIONS],
             });
         }
     }, [editData, reset]);
@@ -57,7 +84,7 @@ const LoadScalingDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
     }, [reset]);
 
     const onSubmit = useCallback(
-        (loadScalingInfos) => {
+        (loadScalingInfos: LoadScalingFormData) => {
             loadScaling(
                 studyUuid,
                 currentNodeUuid,

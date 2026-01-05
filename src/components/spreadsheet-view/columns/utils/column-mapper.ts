@@ -21,7 +21,7 @@ import {
     type CustomColDef,
 } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
-import { ErrorCellRenderer } from '@gridsuite/commons-ui';
+import { ErrorCellRenderer, SnackInputs } from '@gridsuite/commons-ui';
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
@@ -47,22 +47,22 @@ const createValueGetter =
         }
     };
 
-export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
+export const mapColumns = (tableDefinition: SpreadsheetTabDefinition, snackError: (snackInputs: SnackInputs) => void) =>
     tableDefinition?.columns.map((colDef): CustomColDef => {
         let baseDefinition: ColDef;
 
         switch (colDef.type) {
             case COLUMN_TYPES.NUMBER:
-                baseDefinition = numberColumnDefinition(colDef, tableDefinition.uuid);
+                baseDefinition = numberColumnDefinition(colDef, tableDefinition.uuid, snackError);
                 break;
             case COLUMN_TYPES.TEXT:
-                baseDefinition = textColumnDefinition(colDef, tableDefinition.uuid);
+                baseDefinition = textColumnDefinition(colDef, tableDefinition.uuid, snackError);
                 break;
             case COLUMN_TYPES.BOOLEAN:
-                baseDefinition = booleanColumnDefinition(colDef, tableDefinition.uuid);
+                baseDefinition = booleanColumnDefinition(colDef, tableDefinition.uuid, snackError);
                 break;
             case COLUMN_TYPES.ENUM:
-                baseDefinition = enumColumnDefinition(colDef, tableDefinition.uuid);
+                baseDefinition = enumColumnDefinition(colDef, tableDefinition.uuid, snackError);
                 break;
             default:
                 baseDefinition = {};

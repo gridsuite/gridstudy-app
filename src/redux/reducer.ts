@@ -101,7 +101,9 @@ import {
     type NetworkModificationTreeNodesReorderAction,
     type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
+    COPIED_NETWORK_MODIFICATIONS,
     type NodeSelectionForCopyAction,
+    type CopiedNetworkModificationsAction,
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
@@ -338,7 +340,10 @@ import {
     SortConfig,
     SortWay,
 } from '../types/custom-aggrid-types';
-import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    NetworkModificationCopyInfos,
+    RootNetworkMetadata,
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
@@ -494,9 +499,14 @@ export type NadTextMovement = {
 export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
-    nodeType: NetworkModificationNodeType | undefined;
+    nodeType?: NetworkModificationNodeType | null;
     copyType: ValueOf<typeof CopyType> | null;
-    allChildren: NetworkModificationNodeInfos[] | null;
+    allChildren?: NetworkModificationNodeInfos[] | null;
+};
+
+export type CopiedNetworkModifications = {
+    networkModificationUuids: UUID[];
+    copyInfos: NetworkModificationCopyInfos | null;
 };
 
 export type Actions = AppActions | AuthenticationActions;
@@ -542,6 +552,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     nodeSelectionForCopy: NodeSelectionForCopy;
     nadViewBox: NadViewBox;
+    copiedNetworkModifications: CopiedNetworkModifications;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
@@ -707,6 +718,10 @@ const initialState: AppState = {
         allChildren: null,
     },
     nadViewBox: {},
+    copiedNetworkModifications: {
+        networkModificationUuids: [],
+        copyInfos: null,
+    },
     tables: initialTablesState,
     nodeAliases: [],
     calculationSelections: {},
@@ -1076,8 +1091,8 @@ export const reducer = createReducer(initialState, (builder) => {
             .reduce((acc, tabUuid) => {
                 acc[tabUuid] = [
                     {
-                        colId: 'id',
-                        sort: SortWay.ASC,
+                        colId: action?.tablesSorts?.[tabUuid]?.[0]?.colId ?? 'id',
+                        sort: action?.tablesSorts?.[tabUuid]?.[0]?.sort ?? SortWay.ASC,
                     },
                 ];
                 return acc;
@@ -1372,6 +1387,10 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(STORE_NAD_VIEW_BOX, (state, action: StoreNadViewBoxAction) => {
         const { nadUuid, viewBox } = action.nadViewBox;
         state.nadViewBox[nadUuid] = viewBox;
+    });
+
+    builder.addCase(COPIED_NETWORK_MODIFICATIONS, (state, action: CopiedNetworkModificationsAction) => {
+        state.copiedNetworkModifications = action.copiedNetworkModifications;
     });
 
     builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {

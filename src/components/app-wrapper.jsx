@@ -235,6 +235,9 @@ const lightTheme = createTheme({
             background: '#F5F5F5',
         },
     },
+    sld: {
+        border: '1px solid rgba(0,0,0,0.1)',
+    },
 });
 
 const darkTheme = createTheme({
@@ -347,6 +350,10 @@ const darkTheme = createTheme({
             border: '2px solid #D9D9D9',
             background: '#121212',
         },
+    },
+    sld: {
+        backgroundColor: '#36343B',
+        border: '1px solid rgba(255,255,255,0.1)',
     },
 });
 
