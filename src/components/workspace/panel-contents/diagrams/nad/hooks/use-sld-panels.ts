@@ -60,7 +60,7 @@ export const useSldPanels = ({ nadPanelId }: UseSldPanelsParams): UseSldPanelsRe
             const panel = panels.find((p) => p.id === sldPanelId);
             if (!panel) return;
 
-            const isVisible = !panel.isMinimized;
+            const isVisible = !panel.minimized;
 
             if (isVisible) {
                 if (focusedSldId === sldPanelId) {

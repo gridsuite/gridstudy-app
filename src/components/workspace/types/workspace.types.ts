@@ -41,9 +41,9 @@ interface BasePanel {
     title: string;
     position: PanelPosition;
     size: PanelSize;
-    isMinimized: boolean; // For NAD/SLD: minimized to dock; For toggles: hidden
-    isMaximized: boolean;
-    isPinned: boolean;
+    minimized: boolean; // For NAD/SLD: minimized to dock; For toggles: hidden
+    maximized: boolean;
+    pinned: boolean;
     zIndex?: number; // Client-only, not persisted to backend
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;

@@ -48,9 +48,9 @@ const createPanelBase = (panelType: PanelType) => {
         id: uuidv4() as UUID,
         position: config.defaultPosition,
         size: config.defaultSize,
-        isMinimized: false,
-        isMaximized: false,
-        isPinned: false,
+        minimized: false,
+        maximized: false,
+        pinned: false,
     };
 };
 
@@ -126,7 +126,7 @@ export const useWorkspaceActions = () => {
                     const existing = findExistingSLD(panels, id);
 
                     if (existing) {
-                        const updated = { ...existing, isMinimized: false };
+                        const updated = { ...existing, minimized: false };
                         dispatch(updatePanels([updated]));
                         doFocusPanel(existing.id);
                         syncToBackend([updated]);
@@ -191,15 +191,15 @@ export const useWorkspaceActions = () => {
                     const existing = findPanelByType(panels, panelType);
 
                     if (existing) {
-                        if (existing.isMinimized) {
+                        if (existing.minimized) {
                             // If minimized, restore and focus
-                            const updated = { ...existing, isMinimized: false };
+                            const updated = { ...existing, minimized: false };
                             dispatch(updatePanels([updated]));
                             doFocusPanel(existing.id);
                             syncToBackend([updated]);
                         } else if (focusedPanelId === existing.id) {
                             // If already focused, minimize it
-                            const updated = { ...existing, isMinimized: true };
+                            const updated = { ...existing, minimized: true };
                             dispatch(updatePanels([updated]));
                             syncToBackend([updated]);
                         } else {
@@ -271,7 +271,7 @@ export const useWorkspaceActions = () => {
                     const panel = findPanelById(panels, panelId);
                     if (!panel) return;
 
-                    const updated = { ...panel, isMinimized: !panel.isMinimized };
+                    const updated = { ...panel, minimized: !panel.minimized };
                     dispatch(updatePanels([updated]));
                     syncToBackend([updated]);
                 }),
@@ -285,8 +285,8 @@ export const useWorkspaceActions = () => {
 
                     for (const panelId of panelIds) {
                         const panel = findPanelById(panels, panelId);
-                        if (panel && !panel.isMinimized) {
-                            panelsToUpdate.push({ ...panel, isMinimized: true });
+                        if (panel && !panel.minimized) {
+                            panelsToUpdate.push({ ...panel, minimized: true });
                         }
                     }
 
@@ -303,11 +303,11 @@ export const useWorkspaceActions = () => {
                     if (!panel) return;
 
                     let updated: PanelState;
-                    if (panel.isMaximized) {
+                    if (panel.maximized) {
                         // Restore to previous size/position
                         updated = {
                             ...panel,
-                            isMaximized: false,
+                            maximized: false,
                             position: panel.restorePosition || panel.position,
                             size: panel.restoreSize || panel.size,
                             restorePosition: undefined,
@@ -319,7 +319,7 @@ export const useWorkspaceActions = () => {
                         // Maximize and save current position/size
                         updated = {
                             ...panel,
-                            isMaximized: true,
+                            maximized: true,
                             restorePosition: panel.position,
                             restoreSize: panel.size,
                         };
@@ -334,7 +334,7 @@ export const useWorkspaceActions = () => {
                     const panel = findPanelById(panels, panelId);
                     if (!panel) return;
 
-                    const updated = { ...panel, isPinned: !panel.isPinned };
+                    const updated = { ...panel, pinned: !panel.pinned };
                     dispatch(updatePanels([updated]));
                     syncToBackend([updated]);
                 }),
@@ -345,7 +345,7 @@ export const useWorkspaceActions = () => {
                     const panel = findPanelById(panels, panelId);
                     if (!panel) return;
 
-                    const updated = { ...panel, isMinimized: false };
+                    const updated = { ...panel, minimized: false };
                     dispatch(updatePanels([updated]));
                     syncToBackend([updated]);
                 }),
@@ -499,7 +499,7 @@ export const useWorkspaceActions = () => {
                             ...spreadsheetPanel,
                             targetEquipmentId: equipmentId,
                             targetEquipmentType: equipmentType,
-                            isMinimized: false,
+                            minimized: false,
                         };
                         dispatch(updatePanels([updatedPanel]));
                         doFocusPanel(spreadsheetPanel.id);
@@ -529,8 +529,8 @@ export const useWorkspaceActions = () => {
 
                     for (const panelId of panelIds) {
                         const panel = findPanelById(panels, panelId);
-                        if (panel?.isMinimized) {
-                            panelsToUpdate.push({ ...panel, isMinimized: false });
+                        if (panel?.minimized) {
+                            panelsToUpdate.push({ ...panel, minimized: false });
                         }
                     }
 

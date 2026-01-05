@@ -54,11 +54,13 @@ const workspacesSlice = createSlice({
         updatePanels: (state, action: PayloadAction<PanelState[]>) => {
             if (!state.activeWorkspace) return;
 
+            const activeWorkspace = state.activeWorkspace;
+
             action.payload.forEach((updatedPanel) => {
-                const index = state.activeWorkspace!.panels.findIndex((p) => p.id === updatedPanel.id);
+                const index = activeWorkspace.panels.findIndex((p) => p.id === updatedPanel.id);
                 if (index >= 0) {
-                    state.activeWorkspace!.panels[index] = {
-                        ...state.activeWorkspace!.panels[index],
+                    activeWorkspace.panels[index] = {
+                        ...activeWorkspace.panels[index],
                         ...updatedPanel,
                     };
                     // If zIndex was explicitly set and it's higher than nextZIndex, update counter
@@ -68,7 +70,7 @@ const workspacesSlice = createSlice({
                 } else {
                     // New panel - assign zIndex
                     updatedPanel.zIndex ??= state.nextZIndex++;
-                    state.activeWorkspace!.panels.push(updatedPanel);
+                    activeWorkspace.panels.push(updatedPanel);
                 }
             });
         },

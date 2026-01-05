@@ -53,7 +53,7 @@ export const TreePanelContent = ({ panelId, studyUuid, currentRootNetworkUuid }:
         if (actualWidth && actualHeight) {
             prevSizeRef.current = { width: actualWidth, height: actualHeight };
         }
-    }, [panelState?.size, panelState?.isMaximized, getViewport, setViewport]);
+    }, [panelState?.size, panelState?.maximized, getViewport, setViewport]);
 
     return (
         <Box ref={containerRef} sx={{ width: '100%', height: '100%' }}>

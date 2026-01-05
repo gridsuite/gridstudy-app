@@ -12,7 +12,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../../../services/study';
-import { mergePositions } from '../../../grid-layout/cards/diagrams/diagram-utils';
+import { mergePositions, buildPositionsFromNadMetadata } from '../../../grid-layout/cards/diagrams/diagram-utils';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
@@ -62,48 +62,50 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
     // Helper to process SVG data - extracted to reduce nesting
     const processSvgData = useCallback(
-        async (svgData: any) => {
+        async (svgData: any, isLoadingFromSavedConfig = false) => {
             if (!svgData) return;
 
-            let savedConfigUuid: UUID | null = null;
-            let updatedDiagram: NetworkAreaDiagram;
+            const vlIdsFromSvg =
+                (svgData.additionalMetadata as { voltageLevels?: { id: string }[] })?.voltageLevels?.map(
+                    (vl) => vl.id
+                ) ?? [];
+            const scalingFactor = (svgData.additionalMetadata as { scalingFactor?: number })?.scalingFactor;
 
-            // Update diagram and capture the result
+            let newVoltageLevelIds: string[] = [];
+            let newVoltageLevelToOmitIds: string[] = [];
+            let newPositions: any[] = [];
+
             setDiagram((prev) => {
-                const vlIdsFromSvg =
-                    (svgData.additionalMetadata as { voltageLevels?: { id: string }[] })?.voltageLevels?.map(
-                        (vl) => vl.id
-                    ) ?? [];
+                newVoltageLevelIds = [...new Set([...(prev.voltageLevelIds || []), ...vlIdsFromSvg])];
+                newVoltageLevelToOmitIds = (prev.voltageLevelToOmitIds || []).filter(
+                    (vlId: string) => !vlIdsFromSvg.includes(vlId)
+                );
+                // Replace positions when loading from saved config, merge when building incrementally
+                newPositions = isLoadingFromSavedConfig
+                    ? buildPositionsFromNadMetadata(svgData.metadata as DiagramMetadata)
+                    : mergePositions(prev.positions || [], svgData.metadata as DiagramMetadata);
 
-                updatedDiagram = {
+                return {
                     ...prev,
                     svg: svgData,
                     voltageLevelToExpandIds: [],
-                    voltageLevelIds: [...new Set([...(prev.voltageLevelIds || []), ...vlIdsFromSvg])],
-                    voltageLevelToOmitIds: (prev.voltageLevelToOmitIds || []).filter(
-                        (vlId: string) => !vlIdsFromSvg.includes(vlId)
-                    ),
-                    positions: mergePositions(prev.positions || [], svgData.metadata as DiagramMetadata),
+                    voltageLevelIds: newVoltageLevelIds,
+                    voltageLevelToOmitIds: newVoltageLevelToOmitIds,
+                    positions: newPositions,
                 };
-
-                return updatedDiagram;
             });
 
             // Auto-save NAD if no saved config exists
-            if (!nadFields?.savedWorkspaceConfigUuid && updatedDiagram!.voltageLevelIds.length > 0) {
-                const scalingFactor = (svgData.additionalMetadata as { scalingFactor?: number })?.scalingFactor;
-                savedConfigUuid = await saveNadConfig(
-                    updatedDiagram!.voltageLevelIds,
-                    updatedDiagram!.positions,
-                    scalingFactor
-                );
+            let savedConfigUuid: UUID | null = null;
+            if (!nadFields?.savedWorkspaceConfigUuid && newVoltageLevelIds.length > 0) {
+                savedConfigUuid = await saveNadConfig(newVoltageLevelIds, newPositions, scalingFactor);
             }
 
             // Update panel fields: clear initialVoltageLevelIds after first fetch and update voltageLevelToOmitIds
             updateNADFields({
                 panelId,
                 fields: {
-                    voltageLevelToOmitIds: updatedDiagram!.voltageLevelToOmitIds,
+                    voltageLevelToOmitIds: newVoltageLevelToOmitIds,
                     ...(nadFields?.initialVoltageLevelIds && { initialVoltageLevelIds: undefined }),
                     ...(savedConfigUuid && { savedWorkspaceConfigUuid: savedConfigUuid }),
                 },
@@ -160,8 +162,8 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
                     // Use saved config if forced by notification or if in initial edit mode
                     const isEditMode =
-                        (forceSavedConfig && nadFields?.savedWorkspaceConfigUuid) ||
-                        (nadFields?.savedWorkspaceConfigUuid && !hasVoltageLevels && !hasExpandIds);
+                        (forceSavedConfig && !!nadFields?.savedWorkspaceConfigUuid) ||
+                        (!!nadFields?.savedWorkspaceConfigUuid && !hasVoltageLevels && !hasExpandIds);
 
                     const fetchOptions: RequestInit = {
                         method: 'POST',
@@ -186,7 +188,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                     };
 
                     fetchSvg(url, fetchOptions)
-                        .then(processSvgData)
+                        .then((svgData) => processSvgData(svgData, isEditMode))
                         .catch(handleFetchError)
                         .finally(handleFetchComplete);
 

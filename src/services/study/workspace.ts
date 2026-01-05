@@ -82,7 +82,8 @@ export function fetchPanels(studyUuid: UUID, workspaceId: UUID, panelIds?: UUID[
     const urlSearchParams = new URLSearchParams();
     panelIds?.forEach((id) => urlSearchParams.append('ids', id));
     const queryString = urlSearchParams.toString();
-    const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels${queryString ? `?${queryString}` : ''}`;
+    const baseUrl = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels`;
+    const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
     console.debug(url);
     return backendFetchJson(url);
 }

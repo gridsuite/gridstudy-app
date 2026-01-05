@@ -32,12 +32,12 @@ export const selectFocusedPanelId = (state: RootState) => state.workspace.focuse
 
 // Selector for visible panel IDs only (stable unless panels are added/removed/minimized)
 export const selectVisiblePanelIds = createSelector([selectPanels], (panels): UUID[] =>
-    panels.filter((p) => !p.isMinimized).map((p) => p.id)
+    panels.filter((p) => !p.minimized).map((p) => p.id)
 );
 
 export const selectIsPanelTypeOpen = createSelector(
     [selectPanels, (_state: RootState, panelType: PanelType) => panelType],
-    (panels, panelType): boolean => panels.some((p) => p.type === panelType && !p.isMinimized)
+    (panels, panelType): boolean => panels.some((p) => p.type === panelType && !p.minimized)
 );
 
 export const selectOpenPanels = createSelector([selectPanels], (panels) => {
@@ -48,7 +48,7 @@ export const selectOpenPanels = createSelector([selectPanels], (panels) => {
         }
     });
 
-    return panels.filter((p) => !p.isMinimized && !attachedSldIds.has(p.id));
+    return panels.filter((p) => !p.minimized && !attachedSldIds.has(p.id));
 });
 
 export const selectOpenPanelIds = createSelector([selectOpenPanels], (openPanels) => openPanels.map((p) => p.id));
@@ -75,9 +75,7 @@ export const selectVisibleAssociatedSldPanels = createSelector(
     [selectPanels, (_state: RootState, nadPanelId: UUID) => nadPanelId],
     (panels, nadPanelId): UUID[] => {
         return panels
-            .filter(
-                (p) => p.type === PanelType.SLD_VOLTAGE_LEVEL && p.parentNadPanelId === nadPanelId && !p.isMinimized
-            )
+            .filter((p) => p.type === PanelType.SLD_VOLTAGE_LEVEL && p.parentNadPanelId === nadPanelId && !p.minimized)
             .map((p) => p.id);
     }
 );
@@ -90,7 +88,7 @@ export const selectAssociatedPanelDetails = createSelector(
             .map((p) => ({
                 id: p.id,
                 title: p.title,
-                isVisible: !p.isMinimized,
+                isVisible: !p.minimized,
             }));
     }
 );

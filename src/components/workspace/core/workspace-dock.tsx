@@ -80,7 +80,7 @@ export const WorkspaceDock = memo(() => {
     // Find the index of the focused panel in the filtered panels array
     const selectedTabIndex = useMemo(() => {
         if (!focusedPanelId) return false;
-        const index = panels.findIndex((p) => p.id === focusedPanelId && !p.isMinimized);
+        const index = panels.findIndex((p) => p.id === focusedPanelId && !p.minimized);
         return index >= 0 ? index : false;
     }, [focusedPanelId, panels]);
 
@@ -130,7 +130,7 @@ export const WorkspaceDock = memo(() => {
                                     component="span"
                                     sx={{
                                         ...styles.closeButton,
-                                        visibility: hoveredTab === panel.id && !panel.isPinned ? 'visible' : 'hidden',
+                                        visibility: hoveredTab === panel.id && !panel.pinned ? 'visible' : 'hidden',
                                     }}
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -142,7 +142,7 @@ export const WorkspaceDock = memo(() => {
                             </Box>
                         }
                         onClick={() =>
-                            panel.isMinimized ? handleMinimizedPanelClick(panel.id) : handleActivePanelClick(panel.id)
+                            panel.minimized ? handleMinimizedPanelClick(panel.id) : handleActivePanelClick(panel.id)
                         }
                         sx={{
                             minHeight: 36,

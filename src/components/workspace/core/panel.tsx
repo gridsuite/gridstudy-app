@@ -23,11 +23,11 @@ import { positionToRelative, sizeToRelative, calculatePanelDimensions } from './
 
 const RESIZE_HANDLE_SIZE = 12;
 
-const getBorder = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
+const getBorder = (theme: Theme, isFocused: boolean, maximized: boolean) => {
     if (theme.palette.mode === 'light') {
         return `1px solid ${theme.palette.grey[500]}`;
     }
-    if (isFocused && !isMaximized) {
+    if (isFocused && !maximized) {
         return `1px solid ${theme.palette.grey[100]}`;
     }
     return `1px solid ${theme.palette.grey[800]}`;
@@ -134,7 +134,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
     const minHeight = config.minSize?.height || 200;
 
     // Calculate panel dimensions and position
-    const dimensions = panel.isMaximized
+    const dimensions = panel.maximized
         ? { x: 0, y: 0, width: containerRect.width, height: containerRect.height }
         : calculatePanelDimensions(panel.position, panel.size, containerRect, { width: minWidth, height: minHeight });
 
@@ -147,15 +147,15 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
             onResizeStart={handleFocus}
             onResizeStop={handleResizeStop}
             dragHandleClassName="panel-header"
-            disableDragging={panel.isMaximized || panel.isPinned}
-            enableResizing={!panel.isMaximized && !panel.isPinned}
+            disableDragging={panel.maximized || panel.pinned}
+            enableResizing={!panel.maximized && !panel.pinned}
             bounds="parent"
             minWidth={minWidth}
             minHeight={minHeight}
             resizeHandleStyles={styles.resizeHandles}
             style={{
-                // For NAD panels, isMinimized=true means minimized (hide content, keep in dock)
-                display: panel.type === PanelType.NAD && panel.isMinimized ? 'none' : 'block',
+                // For NAD panels, minimized=true means minimized (hide content, keep in dock)
+                display: panel.type === PanelType.NAD && panel.minimized ? 'none' : 'block',
                 zIndex: panel.zIndex ?? 0,
             }}
         >
@@ -167,15 +167,15 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
                     panelId={panelId}
                     title={panel.title}
                     panelType={panel.type}
-                    isPinned={panel.isPinned}
-                    isMaximized={panel.isMaximized}
+                    pinned={panel.pinned}
+                    maximized={panel.maximized}
                     isFocused={isFocused}
                 />
                 <Box
                     className="panel-content"
                     sx={(theme) => ({
                         ...styles.content(theme),
-                        border: getBorder(theme, isFocused, panel.isMaximized),
+                        border: getBorder(theme, isFocused, panel.maximized),
                     })}
                 >
                     {studyUuid && currentRootNetworkUuid && currentNode

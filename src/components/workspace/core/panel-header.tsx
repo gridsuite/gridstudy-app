@@ -19,7 +19,7 @@ import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { SldAssociationButton } from './sld-association-button';
 
-const getHeaderStyles = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
+const getHeaderStyles = (theme: Theme, isFocused: boolean, maximized: boolean) => {
     let backgroundColor: string;
     let border: string;
     if (theme.palette.mode === 'light') {
@@ -28,7 +28,7 @@ const getHeaderStyles = (theme: Theme, isFocused: boolean, isMaximized: boolean)
     } else {
         backgroundColor = '#292e33';
         border =
-            isFocused && !isMaximized ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
+            isFocused && !maximized ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
     }
 
     return {
@@ -86,12 +86,12 @@ interface PanelHeaderProps {
     panelId: UUID;
     title: string;
     panelType: PanelType;
-    isPinned: boolean;
-    isMaximized: boolean;
+    pinned: boolean;
+    maximized: boolean;
     isFocused: boolean;
 }
 
-export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximized, isFocused }: PanelHeaderProps) => {
+export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized, isFocused }: PanelHeaderProps) => {
     const intl = useIntl();
     const { deletePanel, toggleMinimize, toggleMaximize, togglePin } = useWorkspaceActions();
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
@@ -109,7 +109,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
     };
 
     return (
-        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, isMaximized)}>
+        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, maximized)}>
             <Box sx={styles.title}>
                 <Box sx={styles.titleContent}>
                     {getPanelConfig(panelType).icon}
@@ -124,7 +124,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     onClick={() => togglePin(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
-                    {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
+                    {pinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                 </IconButton>
                 {panelType === PanelType.SLD_VOLTAGE_LEVEL && (
                     <SldAssociationButton panelId={panelId} title={title} iconButtonStyles={styles.iconButton} />
@@ -149,7 +149,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     onClick={() => toggleMaximize(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
-                    {isMaximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
+                    {maximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
                 </IconButton>
                 <IconButton
                     className="panel-header-close-button"
@@ -157,7 +157,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     sx={styles.iconButton}
                     onClick={handleClose}
                     onMouseDown={(e) => e.stopPropagation()}
-                    disabled={isPinned}
+                    disabled={pinned}
                 >
                     <Close fontSize="small" />
                 </IconButton>
