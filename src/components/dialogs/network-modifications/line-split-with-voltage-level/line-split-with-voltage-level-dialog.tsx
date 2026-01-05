@@ -201,8 +201,7 @@ const LineSplitWithVoltageLevelDialog = ({
     const onSubmit = useCallback(
         (lineSplit: DeepNullable<LineSplitWithVoltageLevelDialogSchemaForm>) => {
             if (
-                !lineSplit ||
-                !lineSplit[CONNECTIVITY] ||
+                !lineSplit?.[CONNECTIVITY] ||
                 !lineSplit[LINE_TO_ATTACH_OR_SPLIT_ID] ||
                 !lineSplit[SLIDER_PERCENTAGE] ||
                 !lineSplit[LINE1_ID] ||
@@ -239,7 +238,7 @@ const LineSplitWithVoltageLevelDialog = ({
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
             fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((values) => {
-                setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)) as VoltageLevel[]);
+                setVoltageLevelOptions(values.toSorted((a, b) => a?.id?.localeCompare(b?.id)) as VoltageLevel[]);
             });
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
