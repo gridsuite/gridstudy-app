@@ -15,7 +15,6 @@ import {
     REPLACING_LINE_1_ID,
     REPLACING_LINE_1_NAME,
 } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
@@ -26,11 +25,33 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { deleteAttachingLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import DeleteAttachingLineIllustration from './delete-attaching-line-illustration';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { UUID } from 'node:crypto';
+import { NetworkModificationData } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
-const emptyFormData = {
-    [ATTACHED_LINE_ID]: null,
-    [LINE_TO_ATTACH_TO_1_ID]: null,
-    [LINE_TO_ATTACH_TO_2_ID]: null,
+interface DeleteAttachingLineFormData {
+    [ATTACHED_LINE_ID]: string;
+    [LINE_TO_ATTACH_TO_1_ID]: string;
+    [LINE_TO_ATTACH_TO_2_ID]: string;
+    [REPLACING_LINE_1_ID]: string;
+    [REPLACING_LINE_1_NAME]?: string;
+}
+
+interface DeleteAttachingLineDialogProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    editData?: NetworkModificationData;
+    isUpdate: boolean;
+    editDataFetchStatus: string;
+    onClose: () => void;
+    onValidated?: () => void;
+}
+
+const emptyFormData: DeleteAttachingLineFormData = {
+    [ATTACHED_LINE_ID]: '',
+    [LINE_TO_ATTACH_TO_1_ID]: '',
+    [LINE_TO_ATTACH_TO_2_ID]: '',
     [REPLACING_LINE_1_ID]: '',
     [REPLACING_LINE_1_NAME]: '',
 };
@@ -64,12 +85,12 @@ const DeleteAttachingLineDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: DeleteAttachingLineDialogProps) => {
     const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeleteAttachingLineFormData>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -83,13 +104,13 @@ const DeleteAttachingLineDialog = ({
     });
 
     const fromEditDataToFormValues = useCallback(
-        (editData) => {
+        (editData: NetworkModificationData) => {
             reset({
                 [ATTACHED_LINE_ID]: editData.attachedLineId,
                 [LINE_TO_ATTACH_TO_1_ID]: editData.lineToAttachTo1Id,
                 [LINE_TO_ATTACH_TO_2_ID]: editData.lineToAttachTo2Id,
                 [REPLACING_LINE_1_ID]: editData.replacingLine1Id,
-                [REPLACING_LINE_1_NAME]: editData.replacingLine1Name,
+                [REPLACING_LINE_1_NAME]: editData.replacingLine1Name ?? '',
             });
         },
         [reset]
@@ -102,7 +123,7 @@ const DeleteAttachingLineDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (formData) => {
+        (formData: DeleteAttachingLineFormData) => {
             deleteAttachingLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -111,7 +132,7 @@ const DeleteAttachingLineDialog = ({
                 lineToAttachTo2Id: formData[LINE_TO_ATTACH_TO_2_ID],
                 attachedLineId: formData[ATTACHED_LINE_ID],
                 replacingLine1Id: formData[REPLACING_LINE_1_ID],
-                replacingLine1Name: sanitizeString(formData[REPLACING_LINE_1_NAME]),
+                replacingLine1Name: sanitizeString(formData[REPLACING_LINE_1_NAME] ?? ''),
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'DeleteAttachingLineError' });
             });
@@ -144,15 +165,6 @@ const DeleteAttachingLineDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-DeleteAttachingLineDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
 };
 
 export default DeleteAttachingLineDialog;
