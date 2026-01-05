@@ -9,10 +9,12 @@ import { useState, memo, useMemo } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { selectPanel, selectAssociatedVoltageLevelIds } from '../../../../redux/slices/workspace-selectors';
+import {
+    selectNadNavigationHistory,
+    selectAssociatedVoltageLevelIds,
+} from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';
-import type { NADPanel } from '../../types/workspace.types';
 import { NavigationSidebar } from '../common/navigation-sidebar';
 import { useNadSldAssociation } from '../../panel-contents/diagrams/nad/hooks/use-nad-sld-association';
 
@@ -34,17 +36,14 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         shallowEqual
     );
 
-    const nadPanel = useSelector(
-        (state: RootState) => selectPanel(state, nadPanelId) as NADPanel | undefined,
+    const navigationHistory = useSelector(
+        (state: RootState) => selectNadNavigationHistory(state, nadPanelId),
         shallowEqual
     );
 
     const { handleNavigationSidebarClick } = useNadSldAssociation({ nadPanelId });
 
-    const reversedHistory = useMemo(
-        () => [...(nadPanel?.navigationHistory || [])].reverse(),
-        [nadPanel?.navigationHistory]
-    );
+    const reversedHistory = useMemo(() => [...(navigationHistory || [])].reverse(), [navigationHistory]);
 
     const hasHistory = reversedHistory.length > 0;
     const shouldBeCollapsed = !isExpanded || !hasHistory;

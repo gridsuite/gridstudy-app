@@ -97,7 +97,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === NodeType.NETWORK_MODIFICATION) {
-                togglePanel({ panelType: PanelType.NODE_EDITOR });
+                togglePanel({ panelType: PanelType.MODIFICATIONS });
             }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);

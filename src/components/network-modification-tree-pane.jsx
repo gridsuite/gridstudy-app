@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
     networkModificationHandleSubtree,
     networkModificationTreeNodeAdded,
@@ -45,7 +45,10 @@ import useExportSubscription from '../hooks/use-export-subscription';
 import { exportNetworkFile } from '../services/study/network.js';
 import { useCopiedNodes } from 'hooks/copy-paste/use-copied-nodes';
 
-export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
+export const NetworkModificationTreePane = memo(function NetworkModificationTreePane({
+    studyUuid,
+    currentRootNetworkUuid,
+}) {
     const dispatch = useDispatch();
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
     const [nodesToRestore, setNodesToRestore] = useState([]);
@@ -506,11 +509,11 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
             )}
         </>
     );
-};
-
-export default NetworkModificationTreePane;
+});
 
 NetworkModificationTreePane.propTypes = {
     studyUuid: PropTypes.string.isRequired,
     currentRootNetworkUuid: PropTypes.string.isRequired,
 };
+
+export default NetworkModificationTreePane;

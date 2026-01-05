@@ -11,8 +11,7 @@ import { Box, Tabs, Tab, Theme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { selectOpenPanels } from '../../../redux/slices/workspace-selectors';
-import { selectFocusedPanelId } from '../../../redux/slices/workspace-session-selectors';
+import { selectFocusedPanelId, selectPanels } from '../../../redux/slices/workspace-selectors';
 import { PanelType } from '../types/workspace.types';
 import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
@@ -63,7 +62,7 @@ const styles = {
 
 export const WorkspaceDock = memo(() => {
     const { toggleMinimize, focusPanel } = useWorkspaceActions();
-    const allPanels = useSelector(selectOpenPanels);
+    const allPanels = useSelector(selectPanels);
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);
 
@@ -71,7 +70,7 @@ export const WorkspaceDock = memo(() => {
         () =>
             allPanels.filter(
                 (panel) =>
-                    panel.type === PanelType.SLD_VOLTAGE_LEVEL ||
+                    (panel.type === PanelType.SLD_VOLTAGE_LEVEL && !panel.parentNadPanelId) ||
                     panel.type === PanelType.SLD_SUBSTATION ||
                     panel.type === PanelType.NAD
             ),

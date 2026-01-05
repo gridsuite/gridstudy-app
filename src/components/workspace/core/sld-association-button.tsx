@@ -11,9 +11,8 @@ import { Link as LinkIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import { useWorkspaceActions } from '../hooks/use-workspace-actions';
-import { selectPanel } from '../../../redux/slices/workspace-selectors';
+import { selectSldDiagramFields } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
-import type { SLDVoltageLevelPanel } from '../types/workspace.types';
 import { AssociateNadMenu } from './associate-nad-menu';
 
 interface SldAssociationButtonProps {
@@ -29,7 +28,7 @@ interface SldAssociationButtonProps {
 export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAssociationButtonProps) => {
     const { associateSldToNad, createNadAndAssociateSld } = useWorkspaceActions();
     const [associateMenuAnchor, setAssociateMenuAnchor] = useState<HTMLElement | null>(null);
-    const panel = useSelector((state: RootState) => selectPanel(state, panelId)) as SLDVoltageLevelPanel | undefined;
+    const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
 
     const handleAssociateClick = (event: React.MouseEvent<HTMLElement>) => {
         setAssociateMenuAnchor(event.currentTarget);
@@ -44,10 +43,10 @@ export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAs
     };
 
     const handleCreateNad = () => {
-        if (panel?.diagramId) {
+        if (sldFields?.diagramId) {
             createNadAndAssociateSld({
                 sldPanelId: panelId,
-                voltageLevelId: panel.diagramId,
+                voltageLevelId: sldFields.diagramId,
                 voltageLevelName: title,
             });
         }
@@ -70,7 +69,7 @@ export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAs
                 onClose={handleAssociateMenuClose}
                 onSelectNad={handleSelectNad}
                 onCreateNad={handleCreateNad}
-                voltageLevelId={panel?.diagramId}
+                voltageLevelId={sldFields?.diagramId}
             />
         </>
     );

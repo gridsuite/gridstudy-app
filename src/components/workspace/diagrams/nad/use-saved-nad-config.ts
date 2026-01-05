@@ -6,28 +6,27 @@
  */
 
 import { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import { PREFIX_STUDY_QUERIES } from '../../../../services/study';
 import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 import type { DiagramConfigPosition } from '../../../../services/explore';
-import { updatePanels, deletePanels } from '../../../../redux/slices/workspace-slice';
-import { selectPanel } from '../../../../redux/slices/workspace-selectors';
+import { useWorkspaceActions } from '../../../workspace/hooks/use-workspace-actions';
+import { selectActiveWorkspaceId } from '../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../redux/store';
-import { NADPanel } from '../../../workspace/types/workspace.types';
 
 export const useSavedNadConfig = (studyUuid: UUID, panelId: UUID, savedWorkspaceConfigUuid?: UUID) => {
-    const dispatch = useDispatch();
-    const nadPanel = useSelector((state: RootState) => selectPanel(state, panelId)) as NADPanel | undefined;
+    const { deletePanel } = useWorkspaceActions();
+    const workspaceId = useSelector((state: RootState) => selectActiveWorkspaceId(state));
 
     const cleanupSavedNadConfig = useCallback(() => {
-        if (savedWorkspaceConfigUuid) {
-            const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/nad-configs/${savedWorkspaceConfigUuid}`;
+        if (savedWorkspaceConfigUuid && workspaceId) {
+            const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/workspaces/${workspaceId}/saved-nad-configs/${savedWorkspaceConfigUuid}`;
             backendFetch(url, { method: 'DELETE' }).catch((error) =>
                 console.error('Failed to delete NAD config:', error)
             );
         }
-    }, [studyUuid, savedWorkspaceConfigUuid]);
+    }, [studyUuid, workspaceId, savedWorkspaceConfigUuid]);
 
     const saveNadConfig = useCallback(
         (
@@ -35,9 +34,12 @@ export const useSavedNadConfig = (studyUuid: UUID, panelId: UUID, savedWorkspace
             positions: DiagramConfigPosition[],
             scalingFactor?: number
         ): Promise<UUID | null> => {
-            if (!nadPanel) return Promise.resolve(null);
+            if (!workspaceId) {
+                console.error('Cannot save NAD config: no active workspace');
+                return Promise.resolve(null);
+            }
 
-            const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/nad-configs`;
+            const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/workspaces/${workspaceId}/saved-nad-configs`;
 
             return backendFetchJson(url, {
                 method: 'POST',
@@ -50,7 +52,6 @@ export const useSavedNadConfig = (studyUuid: UUID, panelId: UUID, savedWorkspace
                 }),
             })
                 .then((response: UUID) => {
-                    dispatch(updatePanels([{ ...nadPanel, savedWorkspaceConfigUuid: response }]));
                     return response;
                 })
                 .catch((error) => {
@@ -58,20 +59,20 @@ export const useSavedNadConfig = (studyUuid: UUID, panelId: UUID, savedWorkspace
                     return null;
                 });
         },
-        [studyUuid, nadPanel, dispatch, savedWorkspaceConfigUuid]
+        [studyUuid, workspaceId, savedWorkspaceConfigUuid]
     );
 
     useEffect(() => {
         const handleCloseRequest = (event: CustomEvent<UUID>) => {
             if (event.detail === panelId) {
                 cleanupSavedNadConfig();
-                dispatch(deletePanels([panelId]));
+                deletePanel(panelId);
             }
         };
 
         globalThis.addEventListener('nadPanel:requestClose', handleCloseRequest as EventListener);
         return () => globalThis.removeEventListener('nadPanel:requestClose', handleCloseRequest as EventListener);
-    }, [panelId, cleanupSavedNadConfig, dispatch]);
+    }, [panelId, cleanupSavedNadConfig, deletePanel]);
 
     return { saveNadConfig, cleanupSavedNadConfig };
 };

@@ -15,7 +15,6 @@ import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
 import type { AppState } from '../../../../../redux/reducer';
 import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
-import { selectZIndexForPanel } from '../../../../../redux/slices/workspace-session-selectors';
 import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
 import { VoltageLevelPanelContent } from '../sld/voltage-level-panel-content';
 import { NAD_SLD_CONSTANTS } from './constants';
@@ -112,7 +111,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     const currentNodeId = useSelector((state: AppState) => state.currentTreeNode?.id);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const sldPanel = useSelector((state: RootState) => selectPanel(state, sldPanelId), shallowEqual);
-    const zIndex = useSelector((state: RootState) => selectZIndexForPanel(state, sldPanelId)) ?? 1;
+    const zIndex = sldPanel?.zIndex ?? 1;
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
@@ -172,10 +171,14 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                 height: targetHeight,
             };
 
-            updatePanelGeometry(sldPanelId, {
-                position: relativePosition,
-                size: newSize,
-            });
+            updatePanelGeometry(
+                sldPanelId,
+                {
+                    position: relativePosition,
+                    size: newSize,
+                },
+                true // skipBackendSync
+            );
         },
         [updatePanelGeometry, sldPanelId, containerRect, relativeSize.height, relativePosition]
     );

@@ -24,12 +24,11 @@ import { useColumnManagement } from './hooks/use-column-management';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useNodeAliases } from '../../hooks/use-node-aliases';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
-import { selectTempData } from '../../../../redux/slices/workspace-session-selectors';
-import { clearTempData } from '../../../../redux/slices/workspace-session-slice';
 import type { RootState } from '../../../../redux/store';
+import { selectPanelTargetEquipment } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import { useWorkspaceActions } from '../../../workspace/hooks/use-workspace-actions';
 
@@ -73,10 +72,9 @@ export const SpreadsheetContent = memo(
         active,
     }: SpreadsheetContentProps) => {
         const [isGridReady, setIsGridReady] = useState(false);
-        const tempData = useSelector((state: RootState) => selectTempData(state, panelId));
-        const dispatch = useDispatch();
+        const targetEquipment = useSelector((state: RootState) => selectPanelTargetEquipment(state, panelId));
         const { nodeAliases } = useNodeAliases();
-        const { openSLD } = useWorkspaceActions();
+        const { openSLD, clearTargetEquipment } = useWorkspaceActions();
         const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
         const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
         const { fetchNodesEquipmentData } = useFetchEquipment();
@@ -107,17 +105,17 @@ export const SpreadsheetContent = memo(
             });
 
         const handleEquipmentScroll = useCallback(() => {
-            const targetEquipmentId = tempData?.targetEquipmentId;
+            const targetEquipmentId = targetEquipment?.targetEquipmentId;
             if (targetEquipmentId && gridRef.current?.api && isGridReady) {
                 const selectedRow = gridRef.current.api.getRowNode(targetEquipmentId);
                 if (selectedRow) {
                     gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
                     selectedRow.setSelected(true, true);
-                    // Clear the temp data after successfully scrolling
-                    dispatch(clearTempData(panelId));
+                    // Clear the target equipment after successfully scrolling
+                    clearTargetEquipment(panelId);
                 }
             }
-        }, [tempData, gridRef, isGridReady, dispatch, panelId]);
+        }, [targetEquipment, gridRef, isGridReady, clearTargetEquipment, panelId]);
 
         useEffect(() => {
             handleEquipmentScroll();

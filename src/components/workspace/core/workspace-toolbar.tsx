@@ -78,7 +78,7 @@ export const WorkspaceToolbar = () => {
     const isLogsOpen = useSelector((state: RootState) => selectIsPanelTypeOpen(state, PanelType.LOGS));
     const isResultsOpen = useSelector((state: RootState) => selectIsPanelTypeOpen(state, PanelType.RESULTS));
     const isParametersOpen = useSelector((state: RootState) => selectIsPanelTypeOpen(state, PanelType.PARAMETERS));
-    const isNodeEditorOpen = useSelector((state: RootState) => selectIsPanelTypeOpen(state, PanelType.NODE_EDITOR));
+    const isNodeEditorOpen = useSelector((state: RootState) => selectIsPanelTypeOpen(state, PanelType.MODIFICATIONS));
     const isEventScenarioOpen = useSelector((state: RootState) =>
         selectIsPanelTypeOpen(state, PanelType.EVENT_SCENARIO)
     );
@@ -136,7 +136,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="node-editor"
                         selected={isNodeEditorOpen}
-                        onClick={() => togglePanel(PanelType.NODE_EDITOR)}
+                        onClick={() => togglePanel(PanelType.MODIFICATIONS)}
                         sx={styles.toggleButton}
                     >
                         <Tune fontSize="small" />

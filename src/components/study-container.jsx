@@ -57,6 +57,7 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
+import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -536,6 +537,8 @@ export function StudyContainer() {
         currentNodeRef.current = currentNode;
         currentRootNetworkUuidRef.current = currentRootNetworkUuid;
     }, [currentNode, currentRootNetworkUuid]);
+
+    useWorkspaceNotifications(studyUuid);
 
     return (
         <WaitingLoader

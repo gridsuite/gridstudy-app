@@ -6,7 +6,6 @@
  */
 
 import { memo, useCallback, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { Box } from '@mui/material';
 import type { DiagramAdditionalMetadata } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import NetworkAreaDiagramContent from '../../../../grid-layout/cards/diagrams/networkAreaDiagram/network-area-diagram-content';
@@ -19,10 +18,7 @@ import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navig
 import { NadNavigationSidebar } from '../../../diagrams/nad/nad-navigation-sidebar';
 import { NadAssociatedPanelsContainer } from './nad-associated-panels-container';
 import { useNadSldAssociation } from './hooks/use-nad-sld-association';
-import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
-import { NADPanel } from '../../../types/workspace.types';
-import type { RootState } from '../../../../../redux/store';
-import { updatePanels } from '../../../../../redux/slices/workspace-slice';
+import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
 
 interface NadPanelContentProps {
     panelId: UUID;
@@ -38,10 +34,9 @@ export const NadPanelContent = memo(function NadPanelContent({
     currentRootNetworkUuid,
 }: NadPanelContentProps) {
     const [isDraggingSld, setIsDraggingSld] = useState(false);
-    const dispatch = useDispatch();
-    const nadPanel = useSelector((state: RootState) => selectPanel(state, panelId)) as NADPanel | undefined;
 
     const { handleVoltageLevelClick } = useNadSldAssociation({ nadPanelId: panelId });
+    const { updateNADFields } = useWorkspaceActions();
 
     const { diagram, loading, globalError, updateDiagram, handleSaveNad, cleanupSavedNadConfig } = useNadDiagram({
         panelId,
@@ -63,10 +58,9 @@ export const NadPanelContent = memo(function NadPanelContent({
     // Update voltage levels from a filter in global state (redux)
     const handleUpdateVoltageLevelsFromFilter = useCallback(
         (filterUuid?: UUID) => {
-            if (!nadPanel) return;
-            dispatch(updatePanels([{ ...nadPanel, currentFilterUuid: filterUuid }]));
+            updateNADFields({ panelId, fields: { currentFilterUuid: filterUuid } });
         },
-        [nadPanel, dispatch]
+        [panelId, updateNADFields]
     );
 
     // Update positions in local state only - no Redux dispatch, no fetch
@@ -81,29 +75,21 @@ export const NadPanelContent = memo(function NadPanelContent({
     // The useEffect in use-nad-diagram will handle the fetch when panel data changes
     const handleReplaceNad = useCallback(
         (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
-            if (!nadPanel) return;
-
             // Delete the old saved config before replacing
             cleanupSavedNadConfig();
 
-            dispatch(
-                updatePanels([
-                    {
-                        ...nadPanel,
-                        title: name,
-                        nadConfigUuid,
-                        filterUuid,
-                        savedWorkspaceConfigUuid: undefined,
-                    },
-                ])
-            );
+            updateNADFields({
+                panelId,
+                fields: {
+                    title: name,
+                    nadConfigUuid,
+                    filterUuid,
+                    savedWorkspaceConfigUuid: undefined,
+                },
+            });
         },
-        [nadPanel, dispatch, cleanupSavedNadConfig]
+        [panelId, cleanupSavedNadConfig, updateNADFields]
     );
-
-    if (!nadPanel) {
-        return null;
-    }
 
     return (
         <Box sx={{ display: 'flex', height: '100%' }}>

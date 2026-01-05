@@ -17,7 +17,7 @@ export enum PanelType {
     SLD_SUBSTATION = 'SLD_SUBSTATION',
     NAD = 'NAD',
     MAP = 'MAP',
-    NODE_EDITOR = 'NODE_EDITOR',
+    MODIFICATIONS = 'MODIFICATIONS',
     EVENT_SCENARIO = 'EVENT_SCENARIO',
 }
 
@@ -44,6 +44,7 @@ interface BasePanel {
     isMinimized: boolean; // For NAD/SLD: minimized to dock; For toggles: hidden
     isMaximized: boolean;
     isPinned: boolean;
+    zIndex?: number; // Client-only, not persisted to backend
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;
 }
@@ -56,6 +57,7 @@ export interface NADPanel extends BasePanel {
     voltageLevelToOmitIds?: string[];
     savedWorkspaceConfigUuid?: UUID;
     navigationHistory?: string[];
+    initialVoltageLevelIds?: string[]; // For initial diagram load
 }
 
 export interface SLDVoltageLevelPanel extends BasePanel {
@@ -70,6 +72,12 @@ export interface SLDSubstationPanel extends BasePanel {
     diagramId: string;
 }
 
+export interface SpreadsheetPanel extends BasePanel {
+    type: PanelType.SPREADSHEET;
+    targetEquipmentId?: string; // For scroll-to-equipment feature
+    targetEquipmentType?: string; // For scroll-to-equipment feature
+}
+
 export interface GenericPanel extends BasePanel {
     type:
         | PanelType.TREE
@@ -77,12 +85,11 @@ export interface GenericPanel extends BasePanel {
         | PanelType.RESULTS
         | PanelType.PARAMETERS
         | PanelType.MAP
-        | PanelType.NODE_EDITOR
-        | PanelType.EVENT_SCENARIO
-        | PanelType.SPREADSHEET;
+        | PanelType.MODIFICATIONS
+        | PanelType.EVENT_SCENARIO;
 }
 
-export type PanelState = NADPanel | SLDVoltageLevelPanel | SLDSubstationPanel | GenericPanel;
+export type PanelState = NADPanel | SLDVoltageLevelPanel | SLDSubstationPanel | SpreadsheetPanel | GenericPanel;
 
 export interface WorkspaceMetadata {
     id: UUID;
@@ -99,4 +106,6 @@ export interface Workspace {
 export interface WorkspacesState {
     workspacesMetadata: WorkspaceMetadata[];
     activeWorkspace: Workspace | null;
+    focusedPanelId: UUID | null;
+    nextZIndex: number;
 }

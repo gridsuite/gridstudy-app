@@ -12,6 +12,7 @@ import { Alert, Paper } from '@mui/material';
 import SpreadsheetTabs from './spreadsheet-tabs/spreadsheet-tabs';
 import { AppState } from '../../redux/reducer';
 import type { RootState } from '../../redux/store';
+import { selectPanelTargetEquipment } from '../../redux/slices/workspace-selectors';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './types/spreadsheet.type';
 import { CurrentTreeNode } from '../graph/tree-node.type';
 import type { UUID } from 'node:crypto';
@@ -23,7 +24,6 @@ import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from '
 import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
 import { type MuiStyles, PopupConfirmationDialog, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
-import { selectTempData } from '../../redux/slices/workspace-session-selectors';
 
 const styles = {
     invalidNode: {
@@ -50,10 +50,10 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panel
     const activeSpreadsheetTabUuid = useSelector((state: AppState) => state.tables.activeTabUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    // Read target equipment from tempData (transient session data)
-    const tempData = useSelector((state: RootState) => selectTempData(state, panelId));
-    const targetEquipmentId = tempData?.targetEquipmentId;
-    const targetEquipmentType = tempData?.targetEquipmentType;
+    // Get target equipment from panel
+    const targetEquipment = useSelector((state: RootState) => selectPanelTargetEquipment(state, panelId));
+    const targetEquipmentId = targetEquipment?.targetEquipmentId;
+    const targetEquipmentType = targetEquipment?.targetEquipmentType;
 
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
 

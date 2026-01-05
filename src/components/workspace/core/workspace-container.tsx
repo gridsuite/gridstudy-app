@@ -9,7 +9,7 @@ import { useRef, useState, useCallback, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import { selectPanelsWithZIndex, selectFocusedPanelId } from '../../../redux/slices/workspace-session-selectors';
+import { selectOpenPanelIds, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
 import type { SnapRect } from './utils/snap-utils';
 import { toPixels } from './utils/coordinate-utils';
 import { Panel } from './panel';
@@ -42,7 +42,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const WorkspaceContainer = () => {
-    const panelsWithZIndex = useSelector(selectPanelsWithZIndex);
+    const visiblePanelIds = useSelector(selectOpenPanelIds);
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
@@ -75,15 +75,14 @@ export const WorkspaceContainer = () => {
         <Box sx={styles.container}>
             <Box ref={containerRef} sx={styles.panelsArea}>
                 {containerRect &&
-                    panelsWithZIndex.map((panelWithZIndex) => (
+                    visiblePanelIds.map((panelId) => (
                         <Panel
-                            key={panelWithZIndex.id}
-                            panelId={panelWithZIndex.id}
-                            zIndex={panelWithZIndex.zIndex}
+                            key={panelId}
+                            panelId={panelId}
                             containerRect={containerRect}
-                            snapPreview={draggingPanelId === panelWithZIndex.id ? snapPreview : null}
+                            snapPreview={draggingPanelId === panelId ? snapPreview : null}
                             onSnapPreview={handleSnapPreview}
-                            isFocused={panelWithZIndex.id === focusedPanelId}
+                            isFocused={panelId === focusedPanelId}
                         />
                     ))}
                 {snapPreview && containerRect && (

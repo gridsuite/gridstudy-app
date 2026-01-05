@@ -77,7 +77,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
                 setCurrentTreeNodeWithSync({ ...node });
                 triggerTreeNodeFocus();
             }
-            togglePanel(PanelType.NODE_EDITOR);
+            togglePanel(PanelType.MODIFICATIONS);
             dispatch(setHighlightModification(modification.modificationUuid));
         },
         [dispatch, nodeUuid, setCurrentTreeNodeWithSync, treeNodes, triggerTreeNodeFocus, togglePanel]

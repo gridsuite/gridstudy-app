@@ -10,18 +10,14 @@ import { reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 import { setUserStore } from './user-store';
 import workspacesReducer from './slices/workspace-slice';
-import workspaceSessionReducer from './slices/workspace-session-slice';
-import { workspaceSyncMiddleware } from './middleware/workspace-sync-middleware';
 
 const combineReducers = (state: any, action: any) => {
     const appState = reducer(state, action);
     const workspacesState = workspacesReducer(state?.workspace, action);
-    const workspaceSessionState = workspaceSessionReducer(state?.workspaceSession, action);
 
     return {
         ...appState,
         workspace: workspacesState,
-        workspaceSession: workspaceSessionState,
     };
 };
 
@@ -31,7 +27,7 @@ export const store = configureStore({
         getDefaultMiddleware({
             serializableCheck: false,
             immutableCheck: false,
-        }).concat(workspaceSyncMiddleware),
+        }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

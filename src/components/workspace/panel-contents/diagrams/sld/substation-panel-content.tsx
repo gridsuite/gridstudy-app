@@ -14,9 +14,8 @@ import type { UUID } from 'node:crypto';
 import { useSldDiagram } from '../../../diagrams/sld/use-sld-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
-import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
+import { selectSldDiagramFields } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
-import { SLDSubstationPanel } from 'components/workspace/types/workspace.types';
 
 interface SubstationPanelContentProps {
     panelId: UUID;
@@ -31,11 +30,11 @@ export const SubstationPanelContent = ({
     currentNodeId,
     currentRootNetworkUuid,
 }: SubstationPanelContentProps) => {
-    const panel = useSelector((state: RootState) => selectPanel(state, panelId)) as SLDSubstationPanel | undefined;
+    const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.SUBSTATION,
-        diagramId: panel!.diagramId,
+        diagramId: sldFields!.diagramId,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
@@ -43,17 +42,17 @@ export const SubstationPanelContent = ({
 
     const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
 
-    if (!panel) {
+    if (!sldFields) {
         return null;
     }
 
     return (
-        <Box sx={{ height: '100%', overflow: 'hidden' }}>
+        <Box sx={{ height: '100%', width: '100%' }}>
             <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
                 <SingleLineDiagramContent
                     diagramParams={{
                         type: DiagramType.SUBSTATION,
-                        substationId: panel.diagramId,
+                        substationId: sldFields.diagramId,
                     }}
                     showInSpreadsheet={handleShowInSpreadsheet}
                     studyUuid={studyUuid}

@@ -6,15 +6,14 @@
  */
 
 import { useCallback, useState } from 'react';
-import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../../redux/store';
 import {
     selectAssociatedPanelIds,
     selectVisibleAssociatedSldPanels,
+    selectPanels,
 } from '../../../../../../redux/slices/workspace-selectors';
-import { selectAssociatedPanelsData } from '../../../../../../redux/slices/workspace-session-selectors';
-import { updateZIndex } from '../../../../../../redux/slices/workspace-session-slice';
 import { useWorkspaceActions } from '../../../../hooks/use-workspace-actions';
 
 export interface UseSldPanelsParams {
@@ -34,14 +33,8 @@ export interface UseSldPanelsReturn {
  * Tracks local focus state and handles visibility toggles.
  */
 export const useSldPanels = ({ nadPanelId }: UseSldPanelsParams): UseSldPanelsReturn => {
-    const dispatch = useDispatch();
-    const { toggleMinimize, openPanel } = useWorkspaceActions();
-
-    const selectPanelsDataForNad = useCallback(
-        (state: RootState) => selectAssociatedPanelsData(state, nadPanelId),
-        [nadPanelId]
-    );
-    const panelsData = useSelector(selectPanelsDataForNad, shallowEqual);
+    const panels = useSelector(selectPanels, shallowEqual);
+    const { toggleMinimize, openPanel, updateZIndexOnly } = useWorkspaceActions();
 
     const associatedPanelIds = useSelector(
         (state: RootState) => selectAssociatedPanelIds(state, nadPanelId),
@@ -57,14 +50,14 @@ export const useSldPanels = ({ nadPanelId }: UseSldPanelsParams): UseSldPanelsRe
     const handleBringToFront = useCallback(
         (sldPanelId: UUID) => {
             setFocusedSldId(sldPanelId);
-            dispatch(updateZIndex(sldPanelId));
+            updateZIndexOnly(sldPanelId);
         },
-        [dispatch]
+        [updateZIndexOnly]
     );
 
     const handleToggleSldVisibility = useCallback(
         (sldPanelId: UUID) => {
-            const panel = panelsData[sldPanelId];
+            const panel = panels.find((p) => p.id === sldPanelId);
             if (!panel) return;
 
             const isVisible = !panel.isMinimized;
@@ -81,7 +74,7 @@ export const useSldPanels = ({ nadPanelId }: UseSldPanelsParams): UseSldPanelsRe
                 handleBringToFront(sldPanelId);
             }
         },
-        [panelsData, focusedSldId, handleBringToFront, toggleMinimize, openPanel]
+        [panels, focusedSldId, handleBringToFront, toggleMinimize, openPanel]
     );
 
     return {

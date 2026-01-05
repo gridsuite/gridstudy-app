@@ -26,7 +26,7 @@ import {
     type NetworkMapRef,
 } from '@powsybl/network-viewer';
 import { type Color } from '@deck.gl/core';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapEquipment as BaseEquipment } from '../menus/base-equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-voltage-filter';
@@ -127,12 +127,12 @@ type NetworkMapPanelProps = {
     triggerMapResizeOnChange?: any[];
 };
 
-export const NetworkMapPanel = ({
+export const NetworkMapPanel = memo(function NetworkMapPanel({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
     triggerMapResizeOnChange,
-}: NetworkMapPanelProps) => {
+}: NetworkMapPanelProps) {
     const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
 
     const mapEquipments = useSelector((state: AppState) => state.mapEquipments);
@@ -1231,6 +1231,6 @@ export const NetworkMapPanel = ({
             )}
         </>
     );
-};
+});
 
 export default NetworkMapPanel;

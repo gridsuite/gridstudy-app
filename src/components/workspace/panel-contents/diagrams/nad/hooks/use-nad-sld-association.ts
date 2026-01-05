@@ -9,7 +9,7 @@ import { useCallback } from 'react';
 import { useStore } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../../redux/store';
-import { selectPanel, selectAssociatedSldByVoltageLevelId } from '../../../../../../redux/slices/workspace-selectors';
+import { selectAssociatedSldByVoltageLevelId } from '../../../../../../redux/slices/workspace-selectors';
 import { useWorkspaceActions } from '../../../../hooks/use-workspace-actions';
 
 export interface UseAssociateVoltageLevelParams {
@@ -24,7 +24,7 @@ export const useAssociateVoltageLevel = ({
     nadPanelId,
 }: UseAssociateVoltageLevelParams): UseAssociateVoltageLevelReturn => {
     const store = useStore<RootState>();
-    const { addToNadNavigationHistory, openSldAndAssociateToNad, openPanel, focusPanel } = useWorkspaceActions();
+    const { addToNadNavigationHistory, openSldAndAssociateToNad, openPanel, updateZIndexOnly } = useWorkspaceActions();
 
     const handleAssociate = useCallback(
         (voltageLevelId: string, updateHistory: boolean = true) => {
@@ -41,18 +41,16 @@ export const useAssociateVoltageLevel = ({
 
             if (existingSldPanelId) {
                 // Already associated, ensure it's visible and bring to front
-                const panel = selectPanel(state, existingSldPanelId);
-                if (panel?.isMinimized) {
-                    openPanel(existingSldPanelId);
-                }
+                // openPanel will check if panel is minimized and restore it if needed
+                openPanel(existingSldPanelId);
                 // Focus brings panel to front (moves to end of array)
-                focusPanel(existingSldPanelId);
+                updateZIndexOnly(existingSldPanelId);
             } else {
                 // Not associated yet, open and associate it
                 openSldAndAssociateToNad({ voltageLevelId, nadPanelId });
             }
         },
-        [nadPanelId, store, addToNadNavigationHistory, openSldAndAssociateToNad, openPanel, focusPanel]
+        [nadPanelId, store, addToNadNavigationHistory, openSldAndAssociateToNad, openPanel, updateZIndexOnly]
     );
 
     return { handleAssociate };

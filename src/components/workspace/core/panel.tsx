@@ -67,13 +67,12 @@ const styles = {
 
 interface PanelProps {
     panelId: UUID;
-    zIndex: number;
     containerRect: DOMRect;
     snapPreview: SnapRect | null;
     onSnapPreview: (panelId: UUID, preview: SnapRect | null) => void;
     isFocused: boolean;
 }
-export const Panel = memo(({ panelId, zIndex, containerRect, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
+export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
     const workspaceActions = useWorkspaceActions();
     const panel = useSelector((state: RootState) => selectPanel(state, panelId));
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -157,7 +156,7 @@ export const Panel = memo(({ panelId, zIndex, containerRect, snapPreview, onSnap
             style={{
                 // For NAD panels, isMinimized=true means minimized (hide content, keep in dock)
                 display: panel.type === PanelType.NAD && panel.isMinimized ? 'none' : 'block',
-                zIndex: zIndex,
+                zIndex: panel.zIndex ?? 0,
             }}
         >
             <Box
