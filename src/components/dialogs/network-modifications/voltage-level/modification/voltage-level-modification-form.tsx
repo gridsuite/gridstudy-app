@@ -8,6 +8,7 @@
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
 import {
+    ADDITIONAL_PROPERTIES,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -23,7 +24,24 @@ import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 
-const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
+interface VoltageLevelFormData {
+    [EQUIPMENT_NAME]?: string;
+    [SUBSTATION_ID]?: string;
+    [NOMINAL_V]?: number;
+    [LOW_VOLTAGE_LIMIT]?: number;
+    [HIGH_VOLTAGE_LIMIT]?: number;
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
+    [ADDITIONAL_PROPERTIES]?: any;
+    [key: string]: any;
+}
+
+interface VoltageLevelModificationFormProps {
+    voltageLevelInfos: VoltageLevelFormData | null | undefined;
+    equipmentId: string;
+}
+
+const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }: VoltageLevelModificationFormProps) => {
     const voltageLevelIdField = (
         <TextField
             size="small"
@@ -59,7 +77,7 @@ const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
             // Because of a mui/material bug, the disabled attribute do not work properly.
             // It should be fixed after v5.12.2. For the moment, instead of fetching the
             // substation list to display in this AutocompleteInput, we only show the current substation.
-            options={[voltageLevelInfos?.substationId]}
+            options={[voltageLevelInfos?.substationId ?? '']}
             getOptionLabel={getObjectId}
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) => value}

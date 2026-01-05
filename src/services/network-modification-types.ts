@@ -310,14 +310,14 @@ export interface SubstationModificationInfo {
 }
 
 export interface VoltageLeveInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
+    studyUuid: string | undefined;
+    nodeUuid: UUID | undefined;
     voltageLevelId: string;
-    voltageLevelName: string | null;
+    voltageLevelName?: string | null;
     substationId?: string | null;
-    nominalV: number | null;
-    lowVoltageLimit: number | null;
-    highVoltageLimit: number | null;
+    nominalV?: number | null;
+    lowVoltageLimit?: number | null;
+    highVoltageLimit?: number | null;
     busbarCount?: number;
     sectionCount?: number;
     switchKinds?: any[];
