@@ -34,7 +34,7 @@ export const CouplingOmnibusForm = () => {
     const sectionOptions = useMemo(() => {
         if (watchVoltageLevelID && watchBusBarCount && watchSectionCount) {
             return buildNewBusbarSections(watchVoltageLevelID, watchSectionCount, watchBusBarCount).map((section) => {
-                return section.id;
+                return typeof section !== 'string' ? section.id : section;
             });
         }
         return [];
