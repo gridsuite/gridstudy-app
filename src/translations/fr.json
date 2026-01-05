@@ -1740,5 +1740,8 @@
     "unbuildAllNodesTooltip": "Déréaliser tous les nœuds",
     "unbuildAllNodesDialogTitle": "Confirmation",
     "unbuildAllNodesDialogContent": "Toutes les réalisations de tous les nœuds de l'arbre pour tous les réseaux racines ainsi que tous les résultats de calcul seront supprimés",
-    "unbuildAllNodesError": "Une erreur est survenue lors de la déréalisation de l'ensemble des nœuds"
+    "unbuildAllNodesError": "Une erreur est survenue lors de la déréalisation de l'ensemble des nœuds",
+    "uuidCopiedToClipboard": "L'UUID a été copié dans le presse-papier système",
+    "uuidCopiedToClipboardError": "L'UUID n'a pas pu être copié dans le presse-papier système",
+    "uuid": "UUID"
 }

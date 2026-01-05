@@ -1747,5 +1747,8 @@
     "unbuildAllNodesTooltip": "Unbuild all nodes",
     "unbuildAllNodesDialogTitle": "Confirmation",
     "unbuildAllNodesDialogContent": "All built networks for all nodes of the tree and all root networks as well as all calculation results will be deleted",
-    "unbuildAllNodesError": "An error occurred while unbuilding all nodes"
+    "unbuildAllNodesError": "An error occurred while unbuilding all nodes",
+    "uuidCopiedToClipboard": "Uuid copied to system clipboard",
+    "uuidCopiedToClipboardError": "Uuid could not be copied to system clipboard",
+    "uuid": "UUID"
 }
