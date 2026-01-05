@@ -290,6 +290,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     name: preparedVoltageLevel.equipmentName ?? '',
                     substationId: preparedVoltageLevel.substationId ?? undefined,
                     nominalV: preparedVoltageLevel.nominalV ?? 0,
+                    topologyKind: preparedVoltageLevel.topologyKind,
                 };
 
                 // we add the new voltage level (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
