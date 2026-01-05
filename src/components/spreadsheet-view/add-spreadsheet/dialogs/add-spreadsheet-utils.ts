@@ -23,11 +23,11 @@ import {
     setAddedSpreadsheetTab,
     updateTableDefinition,
 } from 'redux/actions';
-import { FilterConfig, SortWay } from 'types/custom-aggrid-types';
+import { FilterConfig, SortConfig, SortWay } from 'types/custom-aggrid-types';
 import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
-import { GlobalFilterSpreadsheetState, SpreadsheetFilterState } from 'redux/reducer';
+import { GlobalFilterSpreadsheetState, SpreadsheetFilterState, TableSortConfig } from 'redux/reducer';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
 import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
 import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
@@ -97,7 +97,8 @@ const createSpreadsheetConfig = (
     columns: ColumnDefinitionDto[],
     globalFilters: GlobalFilter[],
     sheetType: SpreadsheetEquipmentType,
-    tabName: string
+    tabName: string,
+    sortConfig?: SortConfig
 ) => ({
     name: tabName,
     sheetType,
@@ -106,6 +107,7 @@ const createSpreadsheetConfig = (
         dependencies: col?.[COLUMN_DEPENDENCIES]?.length ? JSON.stringify(col[COLUMN_DEPENDENCIES]) : undefined,
     })),
     globalFilters,
+    sortConfig: sortConfig,
 });
 
 const handleSuccess = (
@@ -125,7 +127,7 @@ const handleSuccess = (
             newTableDefinition.columns = model.columns.map((col: ColumnDefinitionDto) => ({
                 ...col,
                 dependencies: col?.dependencies?.length ? JSON.parse(col.dependencies) : undefined,
-                visible: true,
+                visible: col.visible,
                 locked: false,
             }));
             const columnsFilters = extractColumnsFilters(model.columns);
@@ -133,7 +135,14 @@ const handleSuccess = (
             dispatch(updateTableDefinition(newTableDefinition));
             dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
             dispatch(saveSpreadsheetGlobalFilters(uuid, formattedGlobalFilters));
-            dispatch(addSortForNewSpreadsheet(uuid, [{ colId: 'id', sort: SortWay.ASC }]));
+            dispatch(
+                addSortForNewSpreadsheet(uuid, [
+                    {
+                        colId: model.sortConfig ? model.sortConfig.colId : 'id',
+                        sort: model.sortConfig ? model.sortConfig.sort : SortWay.ASC,
+                    },
+                ])
+            );
         })
         .catch((error) => {
             snackWithFallback(snackError, error, {
@@ -149,6 +158,7 @@ interface AddNewSpreadsheetParams {
     studyUuid: UUID;
     columns: ColumnDefinitionDto[];
     globalFilters?: GlobalFilter[];
+    sortConfig?: SortConfig;
     sheetType: SpreadsheetEquipmentType;
     tabIndex: number;
     tabName: string;
@@ -164,6 +174,7 @@ export const addNewSpreadsheet = ({
     studyUuid,
     columns,
     globalFilters = [],
+    sortConfig,
     sheetType,
     tabIndex,
     tabName,
@@ -176,7 +187,7 @@ export const addNewSpreadsheet = ({
 }: AddNewSpreadsheetParams) => {
     const columnsDefinition = mapColumnsDto(columns);
     const newTableDefinition = createNewTableDefinition(columnsDefinition, sheetType, tabIndex, tabName);
-    const spreadsheetConfig = createSpreadsheetConfig(columnsDefinition, globalFilters, sheetType, tabName);
+    const spreadsheetConfig = createSpreadsheetConfig(columnsDefinition, globalFilters, sheetType, tabName, sortConfig);
 
     addSpreadsheetConfigToCollection(studyUuid, spreadsheetsCollectionUuid, spreadsheetConfig)
         .then((uuid: UUID) => {
@@ -195,6 +206,7 @@ export interface ProcessedCollectionData {
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters: SpreadsheetFilterState;
     tableGlobalFilters: GlobalFilterSpreadsheetState;
+    tablesSorts: TableSortConfig;
 }
 
 export function processSpreadsheetsCollectionData(collectionData: SpreadsheetCollectionDto): ProcessedCollectionData {
@@ -222,5 +234,13 @@ export function processSpreadsheetsCollectionData(collectionData: SpreadsheetCol
         {}
     );
 
-    return { tableDefinitions, tablesFilters, tableGlobalFilters };
+    const tablesSorts: TableSortConfig = collectionData.spreadsheetConfigs.reduce(
+        (sorts, spreadsheetConfig) => ({
+            ...sorts,
+            [spreadsheetConfig.id]: spreadsheetConfig?.sortConfig ? [spreadsheetConfig.sortConfig] : [],
+        }),
+        {}
+    );
+
+    return { tableDefinitions, tablesFilters, tableGlobalFilters, tablesSorts };
 }
