@@ -16,6 +16,7 @@ import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
 import type { UUID } from 'node:crypto';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 interface SpreadsheetProps {
     panelId: UUID;
@@ -27,8 +28,9 @@ interface SpreadsheetProps {
 
 export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabled, active }: SpreadsheetProps) => {
     const gridRef = useRef<AgGridReact>(null);
+    const { snackError } = useSnackMessage();
 
-    const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
+    const columnsDefinitions = useMemo(() => mapColumns(tableDefinition, snackError), [tableDefinition, snackError]);
     const rowCounterInfos = useFilteredRowCounterInfo({
         gridRef,
         tableDefinition,
