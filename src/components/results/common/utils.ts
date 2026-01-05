@@ -37,7 +37,6 @@ export const translateLimitNameFrontToBack = (limitName: string, intl: IntlShape
 export enum FilterType {
     VOLTAGE_LEVEL = 'voltageLevel',
     COUNTRY = 'country',
-    // TODO : ajouter une catégorie postes et sites ? => bof pour le back... +> donc tout en front et rien en back ? => confirmer avec étienneH
     GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library (except voltage level and substation filters)
     SUBSTATION_OR_VL = 'substationOrVoltageLevel', // voltage levels and substation generic filters which uses the filter library
     SUBSTATION_PROPERTY = 'substationProperty',

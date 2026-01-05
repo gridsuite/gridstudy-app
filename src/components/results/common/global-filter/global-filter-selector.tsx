@@ -14,7 +14,7 @@ import { FilterType } from '../utils';
 export type GlobalFilterSelectorProps = GlobalFilterAutocompleteProps & {
     onChange: (globalFilters: GlobalFilter[]) => void;
     preloadedGlobalFilters?: GlobalFilter[];
-    genericFiltersStrictMode?: boolean;
+    genericFiltersStrictMode: boolean;
     disableGenericFilters?: boolean;
 };
 export default function GlobalFilterSelector({

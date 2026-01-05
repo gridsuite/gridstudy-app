@@ -18,7 +18,8 @@ import type { UUID } from 'node:crypto';
 export interface GlobalFilters {
     nominalV?: string[];
     countryCode?: string[];
-    genericFilter?: string[]; // UUIDs of the generic filters
+    genericFilter?: string[]; // UUIDs of the generic filters (excluding voltage levels and substations)
+    substationOrVoltageLevelFilter?: string[]; // UUIDs of the voltage levels and substations generic filters
     // substation property filters fetched from user configuration
     substationProperty?: Object; // Map<string, string[]>;
     limitViolationsTypes?: LimitTypes[];
