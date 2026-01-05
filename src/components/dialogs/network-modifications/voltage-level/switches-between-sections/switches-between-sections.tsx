@@ -8,23 +8,31 @@
 import { IconButton } from '@mui/material';
 import { TextInput } from '@gridsuite/commons-ui';
 import { SECTION_COUNT, SWITCHES_BETWEEN_SECTIONS, SWITCH_KINDS, SWITCH_KIND } from 'components/utils/field-constants';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { CreateSwitchesDialog } from './create-switches-between-sections/create-switches-dialog';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import GridItem from '../../../commons/grid-item';
 
-export const SwitchesBetweenSections = () => {
+export interface SwitchKindData {
+    [SWITCH_KIND]: string;
+}
+
+export interface CreateSwitchesFormData {
+    [SWITCH_KINDS]: SwitchKindData[];
+}
+
+export const SwitchesBetweenSections = (): ReactElement => {
     const { getValues, setValue } = useFormContext();
     const [openCreateSwitchesDialog, setOpenCreateSwitchesDialog] = useState(false);
 
-    const watchSectionCount = useWatch({ name: SECTION_COUNT });
-    const watchSwitchesBetweenSections = useWatch({
+    const watchSectionCount: number = useWatch({ name: SECTION_COUNT });
+    const watchSwitchesBetweenSections: string = useWatch({
         name: SWITCHES_BETWEEN_SECTIONS,
     });
 
-    const addIconAdorment = useCallback((clickCallback) => {
+    const addIconAdornment = useCallback((clickCallback: () => void): ReactElement => {
         return (
             <IconButton onClick={clickCallback}>
                 <ArrowDropDownIcon />
@@ -40,7 +48,7 @@ export const SwitchesBetweenSections = () => {
 
     const intl = useIntl();
     const setSwitchesKinds = useCallback(
-        (data) => {
+        (data: CreateSwitchesFormData) => {
             const map = data[SWITCH_KINDS].map((switchData) => {
                 return intl.formatMessage({ id: switchData[SWITCH_KIND] });
             });
@@ -54,26 +62,27 @@ export const SwitchesBetweenSections = () => {
     );
 
     const handleCreateSwitchesDialog = useCallback(
-        (data) => {
+        (data: CreateSwitchesFormData) => {
             setSwitchesKinds(data);
         },
         [setSwitchesKinds]
     );
 
-    const sectionCountRef = useRef(watchSectionCount);
-    const switchesBetweenSectionsRef = useRef(watchSwitchesBetweenSections);
+    const sectionCountRef = useRef<number>(watchSectionCount);
+    const switchesBetweenSectionsRef = useRef<string>(watchSwitchesBetweenSections);
+
     useEffect(() => {
         // If the user changes the section count, we reset the switches between sections
         if (
             sectionCountRef.current !== watchSectionCount &&
             switchesBetweenSectionsRef.current === watchSwitchesBetweenSections
         ) {
-            const initialKindDisconnector = { switchKind: 'DISCONNECTOR' };
+            const initialKindDisconnector: SwitchKindData = { switchKind: 'DISCONNECTOR' };
             let list = [];
             if (watchSectionCount >= 1) {
                 list = Array(watchSectionCount - 1).fill(initialKindDisconnector);
             }
-            const data = { switchKinds: list };
+            const data: CreateSwitchesFormData = { switchKinds: list };
             setSwitchesKinds(data);
         }
         sectionCountRef.current = watchSectionCount;
@@ -85,13 +94,11 @@ export const SwitchesBetweenSections = () => {
             name={SWITCHES_BETWEEN_SECTIONS}
             label={'SwitchesBetweenSections'}
             formProps={{
-                inputProps: { readOnly: true },
+                disabled: true,
                 multiline: true,
             }}
-            customAdornment={addIconAdorment(handleClickOpenSwitchesPane)}
-        >
-            <></>
-        </TextInput>
+            customAdornment={addIconAdornment(handleClickOpenSwitchesPane)}
+        ></TextInput>
     );
 
     if (isNaN(watchSectionCount) || watchSectionCount <= 1) {

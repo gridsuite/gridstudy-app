@@ -8,26 +8,39 @@
 import { Dialog, DialogActions } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import CreateSwitchesDialogSubmitButton from './create-switches-dialog-submit-button';
-import CreateSwitchesForm from './create-switches-form';
-import { getCreateSwitchesEmptyFormData, getCreateSwitchesValidationSchema } from './create-switches-dialog-utils';
+import CreateSwitchesDialogSubmitButton from './create-switches-dialog-submit-button.js';
+import CreateSwitchesForm from './create-switches-form.js';
+import { getCreateSwitchesEmptyFormData, getCreateSwitchesValidationSchema } from './create-switches-dialog-utils.js';
 import { SWITCH_KINDS } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { CancelButton, CustomFormProvider } from '@gridsuite/commons-ui';
+import { CreateSwitchesFormData, SwitchKindData } from '../switches-between-sections';
 
 const formSchema = yup.object().shape({
     ...getCreateSwitchesValidationSchema(),
-});
+}) as yup.ObjectSchema<CreateSwitchesFormData>;
 
-export const CreateSwitchesDialog = (props) => {
-    const sectionCount = props.sectionCount;
+interface CreateSwitchesDialogProps {
+    sectionCount: number;
+    handleCreateSwitchesDialog: (data: CreateSwitchesFormData) => void;
+    setOpenCreateSwitchesDialog: React.Dispatch<React.SetStateAction<boolean>>;
+    openCreateSwitchesDialog: boolean;
+    switchKinds: SwitchKindData[];
+}
+
+export const CreateSwitchesDialog = ({
+    sectionCount,
+    handleCreateSwitchesDialog,
+    setOpenCreateSwitchesDialog,
+    openCreateSwitchesDialog,
+    switchKinds,
+}: CreateSwitchesDialogProps) => {
     const emptyFormData = getCreateSwitchesEmptyFormData(sectionCount);
-    const formMethods = useForm({
+    const formMethods = useForm<CreateSwitchesFormData>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { handleCreateSwitchesDialog, setOpenCreateSwitchesDialog, openCreateSwitchesDialog, switchKinds } = props;
 
     const { reset } = formMethods;
 
@@ -44,7 +57,7 @@ export const CreateSwitchesDialog = (props) => {
         setOpenCreateSwitchesDialog(false);
     };
 
-    const handleSave = (data) => {
+    const handleSave = (data: CreateSwitchesFormData) => {
         handleCreateSwitchesDialog(data);
         handleCloseDialog();
     };
