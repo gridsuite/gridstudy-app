@@ -80,7 +80,7 @@ export const SwitchesBetweenSections = (): ReactElement => {
             const initialKindDisconnector: SwitchKindData = { switchKind: 'DISCONNECTOR' };
             let list = [];
             if (watchSectionCount >= 1) {
-                list = Array(watchSectionCount - 1).fill(initialKindDisconnector);
+                list = new Array(watchSectionCount - 1).fill(initialKindDisconnector);
             }
             const data: CreateSwitchesFormData = { switchKinds: list };
             setSwitchesKinds(data);
@@ -101,7 +101,7 @@ export const SwitchesBetweenSections = (): ReactElement => {
         ></TextInput>
     );
 
-    if (isNaN(watchSectionCount) || watchSectionCount <= 1) {
+    if (Number.isNaN(watchSectionCount) || watchSectionCount <= 1) {
         return <></>;
     } else {
         return (
