@@ -150,7 +150,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                         placeholder={intl.formatMessage({ id: 'filter.filterOoo' })}
                         InputProps={{
                             type: 'number',
-                            endAdornment: <InputAdornment position="end">mn</InputAdornment>,
+                            endAdornment: <InputAdornment position="end">min</InputAdornment>,
                             inputProps: { min: 0 },
                         }}
                         sx={styles.noArrows}
