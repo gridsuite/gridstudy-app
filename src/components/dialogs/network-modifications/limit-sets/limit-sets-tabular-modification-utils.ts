@@ -15,8 +15,8 @@ import {
     MODIFICATION_TYPE,
     MODIFICATIONS_TABLE,
     PERMANENT_LIMIT,
-    SELECTED_OPERATIONAL_LIMITS_GROUP_1,
-    SELECTED_OPERATIONAL_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     SIDE,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -61,8 +61,8 @@ type LimitSetModification = {
     date: string;
     equipmentId: string;
     operationalLimitsGroups: OperationalLimitGroup[];
-    selectedOperationalLimitsGroup1: AttributeModification<string>;
-    selectedOperationalLimitsGroup2: AttributeModification<string>;
+    selectedOperationalLimitsGroupId1: AttributeModification<string>;
+    selectedOperationalLimitsGroupId2: AttributeModification<string>;
     stashed: boolean;
 };
 
@@ -112,12 +112,12 @@ export const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, 
 export const formatSelectedOperationalGroupId = (modification: ModificationRow) => {
     if (modification[IS_ACTIVE]) {
         if (modification[SIDE] === APPLICABILITY.SIDE1.id) {
-            modification.selectedOperationalLimitsGroup1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
+            modification.selectedOperationalLimitsGroupId1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
         } else if (modification[SIDE] === APPLICABILITY.SIDE2.id) {
-            modification.selectedOperationalLimitsGroup2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
+            modification.selectedOperationalLimitsGroupId2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
         } else if (modification[SIDE] === APPLICABILITY.EQUIPMENT.id) {
-            modification.selectedOperationalLimitsGroup1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
-            modification.selectedOperationalLimitsGroup2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
+            modification.selectedOperationalLimitsGroupId1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
+            modification.selectedOperationalLimitsGroupId2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
         }
     }
 };
@@ -173,12 +173,12 @@ const mapOperationalLimitGroupBackToFront = (
     let row: ModificationRow = {};
     row[EQUIPMENT_ID] = modification[EQUIPMENT_ID];
     row[IS_ACTIVE] =
-        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1]?.value === group.id &&
+        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?.value === group.id &&
             group.applicability === APPLICABILITY.SIDE1.id) ||
-        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2]?.value === group.id &&
+        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?.value === group.id &&
             group.applicability === APPLICABILITY.SIDE2.id) ||
-        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2]?.value === group.id &&
-            modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1]?.value === group.id &&
+        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?.value === group.id &&
+            modification[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?.value === group.id &&
             group.applicability === APPLICABILITY.EQUIPMENT.id);
     row[SIDE] = group[APPLICABILITY_FIELD];
     row[LIMIT_GROUP_NAME] = group.id;
