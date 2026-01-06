@@ -259,6 +259,7 @@ const LineSplitWithVoltageLevelDialog = ({
             switchKinds,
             couplingDevices,
             topologyKind,
+            properties,
         }: VoltageLevelCreationInfo) => {
             return new Promise<string>(() => {
                 const preparedVoltageLevel = {
@@ -281,6 +282,7 @@ const LineSplitWithVoltageLevelDialog = ({
                         sectionCount && busbarCount
                             ? buildNewBusbarSections(voltageLevelId, sectionCount, busbarCount)
                             : [],
+                    properties: properties,
                 };
                 // we keep the old voltage level id, so it can be removed for from voltage level options
                 const oldVoltageLevelId = newVoltageLevel?.equipmentId;
