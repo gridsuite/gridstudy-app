@@ -15,8 +15,8 @@ import {
     MODIFICATION_TYPE,
     MODIFICATIONS_TABLE,
     PERMANENT_LIMIT,
-    SELECTED_OPERATIONAL_LIMITS_GROUP_1,
-    SELECTED_OPERATIONAL_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     SIDE,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -34,9 +34,9 @@ import { AttributeModification } from '../../../../services/network-modification
 import { APPLICABILITY } from '../../../network/constants';
 
 type TemporaryLimit = {
-    name: string;
-    value: number;
-    acceptableDuration: number;
+    name: AttributeModification<string>;
+    value: AttributeModification<number>;
+    acceptableDuration: AttributeModification<number>;
 };
 
 type CurrentLimits = {
@@ -61,8 +61,8 @@ type LimitSetModification = {
     date: string;
     equipmentId: string;
     operationalLimitsGroups: OperationalLimitGroup[];
-    selectedOperationalLimitsGroup1: AttributeModification<string>;
-    selectedOperationalLimitsGroup2: AttributeModification<string>;
+    selectedOperationalLimitsGroupId1: AttributeModification<string>;
+    selectedOperationalLimitsGroupId2: AttributeModification<string>;
     stashed: boolean;
 };
 
@@ -91,14 +91,14 @@ const getAmountTemporaryLimits = (editData: LimitSetModificationMetadata) => {
     return maxLength;
 };
 
-const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, amountMaxTemporaryLimits: number) => {
+export const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, amountMaxTemporaryLimits: number) => {
     const temporaryLimits = [];
     for (let i = 1; i <= amountMaxTemporaryLimits; i++) {
         if (modification[TEMPORARY_LIMIT_NAME + i]) {
             temporaryLimits.push({
-                name: modification[TEMPORARY_LIMIT_NAME + i],
-                value: modification[TEMPORARY_LIMIT_VALUE + i],
-                acceptableDuration: modification[TEMPORARY_LIMIT_DURATION + i],
+                name: toModificationOperation(modification[TEMPORARY_LIMIT_NAME + i]),
+                value: toModificationOperation(modification[TEMPORARY_LIMIT_VALUE + i]),
+                acceptableDuration: toModificationOperation(modification[TEMPORARY_LIMIT_DURATION + i]),
                 //If we aren't modifying an existing limit set, temporary limits modification is necessarily of ADDED type
                 modificationType:
                     modification[MODIFICATION_TYPE] === LIMIT_SETS_MODIFICATION_TYPE.MODIFY
@@ -112,12 +112,12 @@ const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, amountM
 export const formatSelectedOperationalGroupId = (modification: ModificationRow) => {
     if (modification[IS_ACTIVE]) {
         if (modification[SIDE] === APPLICABILITY.SIDE1.id) {
-            modification.selectedOperationalLimitsGroup1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
+            modification.selectedOperationalLimitsGroupId1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
         } else if (modification[SIDE] === APPLICABILITY.SIDE2.id) {
-            modification.selectedOperationalLimitsGroup2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
+            modification.selectedOperationalLimitsGroupId2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
         } else if (modification[SIDE] === APPLICABILITY.EQUIPMENT.id) {
-            modification.selectedOperationalLimitsGroup1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
-            modification.selectedOperationalLimitsGroup2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
+            modification.selectedOperationalLimitsGroupId1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
+            modification.selectedOperationalLimitsGroupId2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
         }
     }
 };
@@ -143,9 +143,9 @@ const formatTemporaryLimitsBackToFront = (temporaryLimits: TemporaryLimit[]) => 
         const index = i + 1; // Fields are 1-indexed
         const tempLimit = temporaryLimits[i];
 
-        modification[TEMPORARY_LIMIT_NAME + index] = tempLimit.name;
-        modification[TEMPORARY_LIMIT_VALUE + index] = tempLimit.value;
-        modification[TEMPORARY_LIMIT_DURATION + index] = tempLimit.acceptableDuration;
+        modification[TEMPORARY_LIMIT_NAME + index] = tempLimit.name?.value;
+        modification[TEMPORARY_LIMIT_VALUE + index] = tempLimit.value?.value;
+        modification[TEMPORARY_LIMIT_DURATION + index] = tempLimit.acceptableDuration?.value;
     }
     return modification;
 };
@@ -173,12 +173,12 @@ const mapOperationalLimitGroupBackToFront = (
     let row: ModificationRow = {};
     row[EQUIPMENT_ID] = modification[EQUIPMENT_ID];
     row[IS_ACTIVE] =
-        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1]?.value === group.id &&
+        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?.value === group.id &&
             group.applicability === APPLICABILITY.SIDE1.id) ||
-        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2]?.value === group.id &&
+        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?.value === group.id &&
             group.applicability === APPLICABILITY.SIDE2.id) ||
-        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2]?.value === group.id &&
-            modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1]?.value === group.id &&
+        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?.value === group.id &&
+            modification[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?.value === group.id &&
             group.applicability === APPLICABILITY.EQUIPMENT.id);
     row[SIDE] = group[APPLICABILITY_FIELD];
     row[LIMIT_GROUP_NAME] = group.id;
