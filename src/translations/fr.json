@@ -1622,8 +1622,8 @@
     "showLabels": "Afficher les libellés",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
     "labeledGroupSecurity": "Sécurité",
-    "selectedOperationalLimitsGroup1": "Jeu de limites actif côté 1",
-    "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
+    "selectedOperationalLimitsGroupId1": "Jeu de limites actif côté 1",
+    "selectedOperationalLimitsGroupId2": "Jeu de limites actif côté 2",
     "OpenMapCard": "Afficher la carte géographique",
     "MapCard": "Carte",
     "MapCardNotAvailable": "La carte n'est pas disponible",
@@ -1740,5 +1740,8 @@
     "unbuildAllNodesTooltip": "Déréaliser tous les nœuds",
     "unbuildAllNodesDialogTitle": "Confirmation",
     "unbuildAllNodesDialogContent": "Toutes les réalisations de tous les nœuds de l'arbre pour tous les réseaux racines ainsi que tous les résultats de calcul seront supprimés",
-    "unbuildAllNodesError": "Une erreur est survenue lors de la déréalisation de l'ensemble des nœuds"
+    "unbuildAllNodesError": "Une erreur est survenue lors de la déréalisation de l'ensemble des nœuds",
+    "uuidCopiedToClipboard": "L'UUID a été copié dans le presse-papier système",
+    "uuidCopiedToClipboardError": "L'UUID n'a pas pu être copié dans le presse-papier système",
+    "uuid": "UUID"
 }

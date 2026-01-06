@@ -184,7 +184,7 @@ const spreadsheetFr = {
     'spreadsheet/save-dialog/spreadsheet': 'Tableur',
     'spreadsheet/save-dialog/include': 'Inclure',
     'spreadsheet/save-dialog/filters': 'Filtres',
-    'spreadsheet/save-dialog/columns_visibility': 'Visibilté des colonnes',
+    'spreadsheet/save-dialog/columns_visibility': 'Visibilité des colonnes',
     'spreadsheet/save-dialog/columns_sorting': 'Tri des colonnes',
 
     // Column types

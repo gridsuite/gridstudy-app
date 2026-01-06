@@ -10,7 +10,7 @@ import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/fie
 import { useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
-import { TextInput } from '@gridsuite/commons-ui';
+import { Identifiable, Option, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
@@ -20,6 +20,29 @@ import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants'
 import { useWatch } from 'react-hook-form';
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
+import { UUID } from 'node:crypto';
+import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { FetchStatus } from '../../../../services/utils.type';
+import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
+
+export interface ExtendedVoltageLevelFormInfos extends VoltageLevelFormInfos {
+    busbarSections?: Option[];
+    sectionCount: number;
+    busbarCount: number;
+}
+
+interface LineSplitWithVoltageLevelFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
+    voltageLevelToEdit: ExtendedVoltageLevelFormInfos | null;
+    onVoltageLevelChange?: () => void;
+    allVoltageLevelOptions: Identifiable[];
+    isUpdate: boolean;
+    editDataFetchStatus?: FetchStatus;
+}
 
 const LineSplitWithVoltageLevelForm = ({
     studyUuid,
@@ -28,7 +51,9 @@ const LineSplitWithVoltageLevelForm = ({
     onVoltageLevelCreationDo,
     voltageLevelToEdit,
     allVoltageLevelOptions,
-}) => {
+    isUpdate,
+    editDataFetchStatus,
+}: LineSplitWithVoltageLevelFormProps) => {
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
 
     const voltageLevelIdWatch = useWatch({
@@ -62,15 +87,13 @@ const LineSplitWithVoltageLevelForm = ({
 
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
-    const busbarSectionOptions = useMemo(() => {
-        if (isVoltageLevelEdit) {
-            return voltageLevelToEdit.busbarSections;
-        }
+    const busbarSectionOptions = useMemo<Option[]>(() => {
+        return isVoltageLevelEdit && voltageLevelToEdit?.busbarSections ? voltageLevelToEdit.busbarSections : [];
     }, [isVoltageLevelEdit, voltageLevelToEdit]);
 
     const connectivityForm = (
         <ConnectivityForm
-            label={'VoltageLevelToSplitAt'}
+            voltageLevelSelectLabel={'VoltageLevelToSplitAt'}
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
@@ -120,6 +143,8 @@ const LineSplitWithVoltageLevelForm = ({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
                     editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
+                    isUpdate={isUpdate}
+                    editDataFetchStatus={editDataFetchStatus}
                 />
             )}
         </>
