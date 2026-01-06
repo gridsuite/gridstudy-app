@@ -25,8 +25,8 @@ export interface LineModificationFormInfos {
     g2: number;
     b2: number;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroup1: string | null;
-    selectedOperationalLimitsGroup2: string | null;
+    selectedOperationalLimitsGroupId1: string | null;
+    selectedOperationalLimitsGroupId2: string | null;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
