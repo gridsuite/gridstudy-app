@@ -8,7 +8,6 @@
 import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
-import PropTypes from 'prop-types';
 import {
     ATTACHED_LINE_ID,
     BUS_BAR_SECTION_ID,
@@ -32,14 +31,26 @@ import { ModificationDialog } from 'components/dialogs/commons/modificationDialo
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 import {
     getConnectivityData,
+    getConnectivityPropertiesValidationSchema,
     getConnectivityWithoutPositionEmptyFormData,
-    getConnectivityWithoutPositionValidationSchema,
 } from '../../connectivity/connectivity-form-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
+import { FetchStatus } from 'services/utils.type';
 import LineAttachToSplitLinesIllustration from './lines-attach-to-split-lines-illustration';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { UUID } from 'node:crypto';
+import { DeepNullable } from '../../../utils/ts-utils';
+
+interface LinesAttachToSplitLinesProps {
+    editData: any;
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus: FetchStatus;
+}
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
@@ -62,9 +73,11 @@ const formSchema = yup
         [REPLACING_LINE_1_NAME]: yup.string(),
         [REPLACING_LINE_2_ID]: yup.string().required(),
         [REPLACING_LINE_2_NAME]: yup.string(),
-        ...getConnectivityWithoutPositionValidationSchema(),
+        [CONNECTIVITY]: yup.object().shape(getConnectivityPropertiesValidationSchema()),
     })
     .required();
+
+type LinesAttachToSplitLinesFormInfos = yup.InferType<typeof formSchema>;
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.
@@ -84,13 +97,13 @@ const LinesAttachToSplitLinesDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: Readonly<LinesAttachToSplitLinesProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<LinesAttachToSplitLinesFormInfos>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<LinesAttachToSplitLinesFormInfos>>(formSchema),
     });
 
     const { reset } = formMethods;
@@ -114,7 +127,7 @@ const LinesAttachToSplitLinesDialog = ({
     }, [editData, reset]);
 
     const onSubmit = useCallback(
-        (linesAttachToSplitLine) => {
+        (linesAttachToSplitLine: LinesAttachToSplitLinesFormInfos) => {
             linesAttachToSplitLines({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -122,8 +135,8 @@ const LinesAttachToSplitLinesDialog = ({
                 lineToAttachTo1Id: linesAttachToSplitLine[LINE_TO_ATTACH_TO_1_ID],
                 lineToAttachTo2Id: linesAttachToSplitLine[LINE_TO_ATTACH_TO_2_ID],
                 attachedLineId: linesAttachToSplitLine[ATTACHED_LINE_ID],
-                voltageLevelId: linesAttachToSplitLine[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                bbsBusId: linesAttachToSplitLine[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                voltageLevelId: linesAttachToSplitLine[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID] ?? null,
+                bbsBusId: linesAttachToSplitLine[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID] ?? null,
                 replacingLine1Id: linesAttachToSplitLine[REPLACING_LINE_1_ID],
                 replacingLine1Name: sanitizeString(linesAttachToSplitLine[REPLACING_LINE_1_NAME]),
                 replacingLine2Id: linesAttachToSplitLine[REPLACING_LINE_2_ID],
@@ -165,15 +178,6 @@ const LinesAttachToSplitLinesDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-LinesAttachToSplitLinesDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
 };
 
 export default LinesAttachToSplitLinesDialog;
