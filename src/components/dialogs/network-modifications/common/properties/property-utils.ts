@@ -174,9 +174,8 @@ export const modificationPropertiesSchema = yup.object({
                 [VALUE]: yup
                     .string()
                     .nullable()
-                    .when([PREVIOUS_VALUE, DELETION_MARK], {
-                        is: (previousValue: string | null, deletionMark: boolean) =>
-                            previousValue === null && !deletionMark,
+                    .when([ADDED], {
+                        is: (added: boolean) => added,
                         then: (schema) => schema.required(),
                     }),
                 [PREVIOUS_VALUE]: yup.string().nullable(),
