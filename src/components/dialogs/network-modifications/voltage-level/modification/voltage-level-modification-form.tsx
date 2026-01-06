@@ -11,8 +11,10 @@ import {
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
+    IDENTIFIABLE_SHORT_CIRCUIT,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
+    NAME,
     NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
@@ -22,17 +24,18 @@ import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { Properties } from '../../common/properties/property-utils';
 
 interface VoltageLevelFormData {
-    [EQUIPMENT_NAME]?: string;
+    [NAME]?: string;
     [SUBSTATION_ID]?: string;
     [NOMINAL_V]?: number;
     [LOW_VOLTAGE_LIMIT]?: number;
     [HIGH_VOLTAGE_LIMIT]?: number;
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
-    [ADDITIONAL_PROPERTIES]?: any;
-    [key: string]: any;
+    [IDENTIFIABLE_SHORT_CIRCUIT]?: { ipMin: number; ipMax: number };
+    [ADDITIONAL_PROPERTIES]?: Properties;
 }
 
 interface VoltageLevelModificationFormProps {

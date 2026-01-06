@@ -310,8 +310,8 @@ export interface SubstationModificationInfo {
 }
 
 export interface VoltageLeveInfo {
-    studyUuid: string | undefined;
-    nodeUuid: UUID | undefined;
+    studyUuid: string;
+    nodeUuid: UUID;
     voltageLevelId: string;
     voltageLevelName?: string | null;
     substationId?: string | null;

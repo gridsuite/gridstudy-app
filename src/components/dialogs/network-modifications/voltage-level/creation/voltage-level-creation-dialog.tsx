@@ -110,7 +110,7 @@ interface VoltageLevelFormData {
     [IS_ATTACHMENT_POINT_CREATION]: boolean;
     [SUBSTATION_CREATION]: Properties;
     [TOPOLOGY_KIND]?: string;
-    [key: string]: any;
+    uuid?: UUID;
 }
 
 /**
@@ -144,7 +144,6 @@ const emptyFormData: VoltageLevelFormData = {
     [COUNTRY]: null,
     [IS_ATTACHMENT_POINT_CREATION]: false,
     [SUBSTATION_CREATION]: emptyProperties,
-    ...emptyProperties,
 };
 
 const formSchema = yup
