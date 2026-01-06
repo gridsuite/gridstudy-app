@@ -5,7 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemsInput, snackWithFallback } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemsInput,
+    ElementAttributes,
+    snackWithFallback,
+    fetchElementsInfos,
+    ElementType,
+    useSnackMessage,
+    FloatInput,
+    SelectInput,
+} from '@gridsuite/commons-ui';
 import {
     FILTERS,
     ID,
@@ -18,18 +27,21 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
-import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment } from '../../../dialog-utils';
-import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
-import { fetchElementsInfos } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
+import { ItemFilterType, VariationType } from '../../../../../services/network-modification-types';
+import { UUID } from 'node:crypto';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
-const VariationForm = ({ name, index }) => {
+interface GeneratorScalingVariationFormProps {
+    name: string;
+    index: number;
+}
+
+const VariationForm = ({ name, index }: GeneratorScalingVariationFormProps) => {
     const { snackError } = useSnackMessage();
     const filterFieldName = useMemo(() => `${name}.${index}.${FILTERS}`, [name, index]);
 
@@ -43,16 +55,16 @@ const VariationForm = ({ name, index }) => {
 
     const variationType = useWatch({
         name: VARIATION_TYPE,
-    });
+    }) as VariationType;
 
     const { setValue } = useFormContext();
 
     const updateMetadata = useCallback(
-        (filtersWithoutMetadata) => {
-            const ids = filtersWithoutMetadata.map((f) => f.id);
+        (filtersWithoutMetadata: ElementAttributes[]) => {
+            const ids = filtersWithoutMetadata.filter((f) => f.id !== undefined).map((f) => f.id as UUID);
             fetchElementsInfos(ids, [], [])
                 .then((results) => {
-                    const newFilters = filters.map((filter) => {
+                    const newFilters = filters.map((filter: ElementAttributes) => {
                         const filterWithMetadata = results.find((f) => f.elementUuid === filter.id);
                         if (filterWithMetadata) {
                             return {
@@ -80,7 +92,7 @@ const VariationForm = ({ name, index }) => {
             filters.length > 0
         ) {
             // collect all filters without metadata
-            const filtersWithoutMetadata = filters.filter((filter) => {
+            const filtersWithoutMetadata = filters.filter((filter: ElementAttributes) => {
                 return !filter?.specificMetadata;
             });
 
@@ -91,14 +103,14 @@ const VariationForm = ({ name, index }) => {
     }, [variationMode, filters, updateMetadata]);
 
     const itemFilter = useCallback(
-        (value) => {
+        (value: ItemFilterType) => {
             if (value?.type === ElementType.FILTER) {
                 if (variationMode === VARIATION_MODES.STACKING_UP.id) {
                     return value?.specificMetadata?.type === IDENTIFIER_LIST;
                 }
 
                 if (variationMode === VARIATION_MODES.VENTILATION.id) {
-                    return (
+                    return !!(
                         value?.specificMetadata?.type === IDENTIFIER_LIST &&
                         value?.specificMetadata?.filterEquipmentsAttributes?.every((fil) => !!fil.distributionKey)
                     );

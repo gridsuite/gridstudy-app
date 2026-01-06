@@ -360,6 +360,16 @@ type VariationFilter = {
 
 export type VariationType = keyof typeof VARIATION_TYPES;
 
+export interface ItemFilterType {
+    type?: string;
+    specificMetadata?: {
+        type?: string;
+        filterEquipmentsAttributes?: {
+            distributionKey?: number;
+        }[];
+    };
+}
+
 export interface Variations {
     variationMode: string | null;
     variationValue: number | null;
