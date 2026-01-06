@@ -331,6 +331,7 @@ export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
     substationCreation?: SubstationCreationInfo | null;
     ipMin: number | null;
     ipMax: number | null;
+    topologyKind?: string;
 }
 
 export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
@@ -641,7 +642,7 @@ export interface SubstationCreationInfo {
 export interface DivideLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    modificationUuid?: UUID;
     lineToSplitId: string;
     percent: number;
     mayNewVoltageLevelInfos: any;

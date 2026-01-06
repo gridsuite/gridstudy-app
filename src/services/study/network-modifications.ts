@@ -1631,7 +1631,7 @@ export function linesAttachToSplitLines({
 export function deleteVoltageLevelOnLine(
     studyUuid: string,
     nodeUuid: UUID,
-    modificationUuid: UUID,
+    modificationUuid: UUID | undefined,
     lineToAttachTo1Id: string,
     lineToAttachTo2Id: string,
     replacingLine1Id: string,
