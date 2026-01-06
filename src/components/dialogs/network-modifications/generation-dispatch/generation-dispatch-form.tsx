@@ -49,7 +49,7 @@ const GenerationDispatchForm = ({
                 EquipmentType.SUBSTATION,
                 true
             ).then((values: string[]) => {
-                setSubstations(values.sort((a, b) => a.localeCompare(b)));
+                setSubstations(values.toSorted((a, b) => a.localeCompare(b)));
             });
         }
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
