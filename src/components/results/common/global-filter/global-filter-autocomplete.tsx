@@ -178,7 +178,7 @@ function GlobalFilterAutocomplete({
                               : option.filterType === filterGroupSelected
                     )
                     .filter((option: GlobalFilter) =>
-                        genericFiltersStrictMode && isGenericFilter(option)
+                        genericFiltersStrictMode && option.filterType === FilterType.GENERIC_FILTER
                             ? filterableEquipmentTypes.includes(option.equipmentType as EQUIPMENT_TYPES)
                             : true
                     )
