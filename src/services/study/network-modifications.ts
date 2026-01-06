@@ -31,7 +31,7 @@ import {
     CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
-    GenerationDispatchInfo,
+    GenerationDispatchModificationInfos,
     GeneratorCreationInfos,
     GeneratorModificationInfos,
     LCCCreationInfo,
@@ -63,9 +63,9 @@ import { ExcludedNetworkModifications } from 'components/graph/menus/network-mod
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
-    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
-    OLGS_MODIFICATION_TYPE,
     ENABLE_OLG_MODIFICATION,
+    OLGS_MODIFICATION_TYPE,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
@@ -264,34 +264,34 @@ export function switchOnEquipment(
 export function generationDispatch({
     studyUuid,
     nodeUuid,
-    modificationUuid,
+    uuid,
     lossCoefficient,
     defaultOutageRate,
     generatorsWithoutOutage,
-    generatorsWithFixedActivePower,
+    generatorsWithFixedSupply,
     generatorsFrequencyReserve,
     substationsGeneratorsOrdering,
-}: GenerationDispatchInfo) {
+}: GenerationDispatchModificationInfos) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
         lossCoefficient: lossCoefficient,
         defaultOutageRate: defaultOutageRate,
         generatorsWithoutOutage: generatorsWithoutOutage,
-        generatorsWithFixedSupply: generatorsWithFixedActivePower,
+        generatorsWithFixedSupply: generatorsWithFixedSupply,
         generatorsFrequencyReserve: generatorsFrequencyReserve,
         substationsGeneratorsOrdering: substationsGeneratorsOrdering,
     });
 
     let generationDispatchUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    if (modificationUuid) {
+    if (uuid) {
         console.info('Updating generation dispatch ', body);
-        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
+        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(uuid);
     } else {
         console.info('Creating generation dispatch ', body);
     }
 
     return backendFetchText(generationDispatchUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -304,8 +304,8 @@ export function generatorScaling(
     studyUuid: UUID,
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
-    variationType: string,
-    variations: any[]
+    variationType: VariationType,
+    variations: Variations[]
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATOR_SCALING.type,

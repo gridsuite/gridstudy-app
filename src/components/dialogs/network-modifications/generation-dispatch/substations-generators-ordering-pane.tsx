@@ -9,34 +9,37 @@ import { SUBSTATIONS_GENERATORS_ORDERING, SUBSTATION_IDS } from 'components/util
 import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
-import { DndTable, DndColumnType } from '@gridsuite/commons-ui';
+import { DndTable, DndColumnType, DndColumn } from '@gridsuite/commons-ui';
 import SubstationsAutocomplete from './substations-autocomplete.js';
 
-const SubstationsGeneratorsOrderingPane = ({ substations }) => {
+interface SubstationsGeneratorsOrderingPaneProps {
+    substations: string[];
+}
+
+export type EnrichedDndColumn = DndColumn & { initialValue: unknown[] | null };
+
+const SubstationsGeneratorsOrderingPane = ({ substations }: Readonly<SubstationsGeneratorsOrderingPaneProps>) => {
     const intl = useIntl();
     const id = SUBSTATIONS_GENERATORS_ORDERING;
 
-    const columnsDefinition = useMemo(() => {
+    const columnsDefinition = useMemo<EnrichedDndColumn[]>(() => {
         return [
             {
-                label: 'Substations',
+                label: intl
+                    .formatMessage({ id: 'Substations' })
+                    .toLowerCase()
+                    .replace(/^\w/, (c) => c.toUpperCase()),
                 dataKey: SUBSTATION_IDS,
-                initialValue: [],
+                initialValue: [] as unknown[],
                 editable: true,
                 type: DndColumnType.CUSTOM,
-                component: (rowIndex) =>
+                component: (rowIndex: number) =>
                     SubstationsAutocomplete({
                         name: `${id}[${rowIndex}].${SUBSTATION_IDS}`,
                         substations: substations,
                     }),
             },
-        ].map((column) => ({
-            ...column,
-            label: intl
-                .formatMessage({ id: column.label })
-                .toLowerCase()
-                .replace(/^\w/, (c) => c.toUpperCase()),
-        }));
+        ];
     }, [intl, substations, id]);
 
     const useFieldArraySubstationsGeneratorsOrdering = useFieldArray({
@@ -44,23 +47,21 @@ const SubstationsGeneratorsOrderingPane = ({ substations }) => {
     });
 
     const newRowData = useMemo(() => {
-        const newRowData = {};
+        const newRowData: Record<string, unknown[] | null> = {};
         columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
     const createSubstationsGeneratorsOrderingRows = () => [newRowData];
 
     return (
-        <>
-            <DndTable
-                arrayFormName={`${id}`}
-                useFieldArrayOutput={useFieldArraySubstationsGeneratorsOrdering}
-                createRows={createSubstationsGeneratorsOrderingRows}
-                columnsDefinition={columnsDefinition}
-                tableHeight={270}
-                withAddRowsDialog={false}
-            />
-        </>
+        <DndTable
+            arrayFormName={`${id}`}
+            useFieldArrayOutput={useFieldArraySubstationsGeneratorsOrdering}
+            createRows={createSubstationsGeneratorsOrderingRows}
+            columnsDefinition={columnsDefinition}
+            tableHeight={270}
+            withAddRowsDialog={false}
+        />
     );
 };
 
