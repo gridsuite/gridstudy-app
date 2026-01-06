@@ -6,33 +6,38 @@
  */
 
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { DirectoryItemsInput, FloatInput, FieldLabel } from '@gridsuite/commons-ui';
+import { DirectoryItemsInput, ElementType, EquipmentType, FieldLabel, FloatInput } from '@gridsuite/commons-ui';
 import {
-    LOSS_COEFFICIENT,
     DEFAULT_OUTAGE_RATE,
-    GENERATORS_WITHOUT_OUTAGE,
     GENERATORS_WITH_FIXED_ACTIVE_POWER,
+    GENERATORS_WITHOUT_OUTAGE,
+    LOSS_COEFFICIENT,
 } from 'components/utils/field-constants';
 import { percentageTextField } from '../../dialog-utils';
 import { Box, Grid, Typography } from '@mui/material';
-import { formatPercentageValue, isValidPercentage } from '../../percentage-area/percentage-area-utils';
-import { ElementType } from '@gridsuite/commons-ui';
 import FrequencyReservePane from './frequency-reserve-pane';
-import { FormattedMessage } from 'react-intl';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
 import GridItem from '../../commons/grid-item';
 import GridSection from '../../commons/grid-section';
 import { useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { UUID } from 'node:crypto';
+import { FormattedMessage } from 'react-intl';
 
-const GenerationDispatchForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
+interface GenerationDispatchFormProps {
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
+}
+
+const GenerationDispatchForm = ({
+    currentNode,
+    studyUuid,
+    currentRootNetworkUuid,
+}: Readonly<GenerationDispatchFormProps>) => {
     const currentNodeUuid = currentNode?.id;
-
-    const [substations, setSubstations] = useState([]);
-
-    const handleCoefficientValueChange = (id, value) => {
-        return formatPercentageValue(value);
-    };
+    const [substations, setSubstations] = useState<string[]>([]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
@@ -40,23 +45,17 @@ const GenerationDispatchForm = ({ currentNode, studyUuid, currentRootNetworkUuid
                 studyUuid,
                 currentNodeUuid,
                 currentRootNetworkUuid,
-                undefined,
-                EQUIPMENT_TYPES.SUBSTATION,
+                [],
+                EquipmentType.SUBSTATION,
                 true
-            ).then((values) => {
-                setSubstations(values.sort((a, b) => a.localeCompare(b)));
+            ).then((values: string[]) => {
+                setSubstations(values.toSorted((a, b) => a.localeCompare(b)));
             });
         }
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const lossCoefficientField = (
-        <FloatInput
-            name={LOSS_COEFFICIENT}
-            label={'LossCoefficient'}
-            adornment={percentageTextField}
-            acceptValue={isValidPercentage}
-            outputTransform={(value) => handleCoefficientValueChange(LOSS_COEFFICIENT, value)}
-        />
+        <FloatInput name={LOSS_COEFFICIENT} label={'LossCoefficient'} adornment={percentageTextField} />
     );
 
     const generatorsWithFixedActivePowerField = (
@@ -70,6 +69,7 @@ const GenerationDispatchForm = ({ currentNode, studyUuid, currentRootNetworkUuid
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
+                    label={'FiltersListsSelection'}
                 />
             </Grid>
         </Grid>
@@ -78,18 +78,12 @@ const GenerationDispatchForm = ({ currentNode, studyUuid, currentRootNetworkUuid
     const defaultOutageRateField = (
         <Grid container spacing={2}>
             <Grid item xs={12}>
-                <Typography variant="span" component="h4">
+                <Typography variant="body1" component="h4" fontWeight="fontWeightMedium">
                     <FormattedMessage id="GeneratorAvailability" />
                 </Typography>
             </Grid>
             <Grid item xs={12}>
-                <FloatInput
-                    name={DEFAULT_OUTAGE_RATE}
-                    label={'DefaultOutageRate'}
-                    adornment={percentageTextField}
-                    acceptValue={isValidPercentage}
-                    outputTransform={(value) => handleCoefficientValueChange(DEFAULT_OUTAGE_RATE, value)}
-                />
+                <FloatInput name={DEFAULT_OUTAGE_RATE} label={'DefaultOutageRate'} adornment={percentageTextField} />
             </Grid>
         </Grid>
     );
@@ -105,6 +99,7 @@ const GenerationDispatchForm = ({ currentNode, studyUuid, currentRootNetworkUuid
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
+                    label={'FiltersListsSelection'}
                 />
             </Grid>
         </Grid>
@@ -123,7 +118,7 @@ const GenerationDispatchForm = ({ currentNode, studyUuid, currentRootNetworkUuid
             </Grid>
             <Grid container spacing={2}>
                 <Grid item>
-                    <Typography variant="span" component="h4">
+                    <Typography variant="body1" component="h4" fontWeight="fontWeightMedium">
                         <FormattedMessage id="frequencyReserve" />
                     </Typography>
                 </Grid>
