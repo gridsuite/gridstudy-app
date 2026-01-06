@@ -15,7 +15,6 @@ import {
     REPLACING_LINE_1_ID,
     REPLACING_LINE_1_NAME,
 } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
@@ -25,8 +24,17 @@ import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 import { deleteVoltageLevelOnLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import DeleteVoltageLevelOnLineIllustration from './delete-voltage-level-on-line-illustration';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
 
-const emptyFormData = {
+interface DeleteVoltageLevelOnLineFormData {
+    [LINE_TO_ATTACH_TO_1_ID]: string | null;
+    [LINE_TO_ATTACH_TO_2_ID]: string | null;
+    [REPLACING_LINE_1_ID]: string;
+    [REPLACING_LINE_1_NAME]: string;
+}
+
+const emptyFormData: DeleteVoltageLevelOnLineFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
     [LINE_TO_ATTACH_TO_2_ID]: null,
     [REPLACING_LINE_1_ID]: '',
@@ -41,7 +49,22 @@ const formSchema = yup
         [REPLACING_LINE_1_ID]: yup.string().required(),
         [REPLACING_LINE_1_NAME]: yup.string(),
     })
-    .required();
+    .required() as yup.ObjectSchema<DeleteVoltageLevelOnLineFormData>;
+
+interface DeleteVoltageLevelOnLineDialogProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    editData?: {
+        uuid: UUID;
+        [LINE_TO_ATTACH_TO_1_ID]: string | null;
+        [LINE_TO_ATTACH_TO_2_ID]: string | null;
+        [REPLACING_LINE_1_ID]: string;
+        [REPLACING_LINE_1_NAME]: string;
+    };
+    isUpdate: boolean;
+    editDataFetchStatus?: string;
+}
 
 /**
  * Dialog to delete a voltage level on a line
@@ -61,7 +84,7 @@ const DeleteVoltageLevelOnLineDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: DeleteVoltageLevelOnLineDialogProps) => {
     const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
@@ -80,7 +103,7 @@ const DeleteVoltageLevelOnLineDialog = ({
     });
 
     const fromEditDataToFormValues = useCallback(
-        (editData) => {
+        (editData: DeleteVoltageLevelOnLineFormData) => {
             reset({
                 [LINE_TO_ATTACH_TO_1_ID]: editData.lineToAttachTo1Id,
                 [LINE_TO_ATTACH_TO_2_ID]: editData.lineToAttachTo2Id,
@@ -98,18 +121,20 @@ const DeleteVoltageLevelOnLineDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (formData) => {
-            deleteVoltageLevelOnLine(
-                studyUuid,
-                currentNodeUuid,
-                editData ? editData.uuid : undefined,
-                formData[LINE_TO_ATTACH_TO_1_ID],
-                formData[LINE_TO_ATTACH_TO_2_ID],
-                formData[REPLACING_LINE_1_ID],
-                sanitizeString(formData[REPLACING_LINE_1_NAME])
-            ).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'DeleteVoltageLevelOnLineError' });
-            });
+        (formData: DeleteVoltageLevelOnLineFormData) => {
+            if (formData[LINE_TO_ATTACH_TO_1_ID] && formData[LINE_TO_ATTACH_TO_2_ID]) {
+                deleteVoltageLevelOnLine(
+                    studyUuid,
+                    currentNodeUuid,
+                    editData ? editData.uuid : undefined,
+                    formData[LINE_TO_ATTACH_TO_1_ID],
+                    formData[LINE_TO_ATTACH_TO_2_ID],
+                    formData[REPLACING_LINE_1_ID],
+                    sanitizeString(formData[REPLACING_LINE_1_NAME])
+                ).catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'DeleteVoltageLevelOnLineError' });
+                });
+            }
         },
         [currentNodeUuid, editData, snackError, studyUuid]
     );
@@ -139,15 +164,6 @@ const DeleteVoltageLevelOnLineDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-DeleteVoltageLevelOnLineDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
 };
 
 export default DeleteVoltageLevelOnLineDialog;
