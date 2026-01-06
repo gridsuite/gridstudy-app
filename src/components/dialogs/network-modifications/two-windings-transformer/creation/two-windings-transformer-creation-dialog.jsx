@@ -47,8 +47,8 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
@@ -253,8 +253,8 @@ const TwoWindingsTransformerCreationDialog = ({
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    twt?.selectedOperationalLimitsGroup1 ?? null,
-                    twt?.selectedOperationalLimitsGroup2 ?? null
+                    twt?.selectedOperationalLimitsGroupId1 ?? null,
+                    twt?.selectedOperationalLimitsGroupId2 ?? null
                 ),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -337,8 +337,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     }),
                     ...getAllLimitsFormData(
                         formatCompleteCurrentLimit(twt.currentLimits),
-                        twt.selectedOperationalLimitsGroup1 ?? null,
-                        twt.selectedOperationalLimitsGroup2 ?? null
+                        twt.selectedOperationalLimitsGroupId1 ?? null,
+                        twt.selectedOperationalLimitsGroupId2 ?? null
                     ),
                     ...getRatioTapChangerFormData({
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -553,8 +553,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 ratedU1: characteristics[RATED_U1],
                 ratedU2: characteristics[RATED_U2],
                 limitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
-                selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
-                selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
+                selectedLimitsGroup1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1],
+                selectedLimitsGroup2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2],
                 voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
                 busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID],

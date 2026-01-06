@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GsLang } from '@gridsuite/commons-ui';
+import { GsLangUser } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 
 export enum DistributionType {
@@ -73,14 +73,6 @@ export interface SensitivityAnalysisParametersInfos {
     sensitivityNodes?: SensitivityNodes[];
 }
 
-export type SensitivityAnalysisFactorsCountParameters = {
-    injections?: string[];
-    monitoredBranches?: string[];
-    contingencies?: string[];
-    hvdcs?: string[];
-    psts?: string[];
-};
-
 // result types
 export type SelectorFilterOptions = {
     tabSelection: string;
@@ -90,7 +82,7 @@ export type CsvConfig = {
     csvHeaders: string[];
     resultTab: string;
     sensitivityFunctionType?: string;
-    language: GsLang;
+    language: GsLangUser;
 };
 export type SensitivityOfTo = {
     type: 'SensitivityOfTo' | 'SensitivityWithContingency'; // discrimination field

@@ -10,8 +10,6 @@ import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const instance = create(all);
 
-export const limitedEvaluate = instance.evaluate;
-
 // Custom error class for MathJS validation errors
 export class MathJsValidationError extends Error {
     constructor(public error: string) {
@@ -19,6 +17,15 @@ export class MathJsValidationError extends Error {
         this.name = 'MathJsValidationError';
     }
 }
+
+const originalEvaluate = instance.evaluate;
+export const limitedEvaluate = (expr: string | string[], scope?: object) => {
+    const result = originalEvaluate(expr, scope);
+    if (typeof result === 'function') {
+        throw new MathJsValidationError('spreadsheet/formula/function-reference/disabled');
+    }
+    return result;
+};
 
 instance.import(
     {
@@ -52,6 +59,10 @@ instance.import(
         equal: function (a: any, b: any) {
             // == instead of === to be able to compare strings to numbers
             return a === b;
+        },
+        unequal: function (a: any, b: any) {
+            // != instead of !== to be able to compare strings to numbers
+            return a !== b;
         },
         match: function (expr: string, variable: string, flags: string = '') {
             return RegExp(expr, flags).test(variable);

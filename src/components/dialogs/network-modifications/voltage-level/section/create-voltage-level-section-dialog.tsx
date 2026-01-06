@@ -70,7 +70,7 @@ const emptyFormData = {
     [SWITCHES_BEFORE_SECTIONS]: null,
     [SWITCHES_AFTER_SECTIONS]: null,
     [ALL_BUS_BAR_SECTIONS]: false,
-    [NEW_SWITCH_STATES]: false,
+    [NEW_SWITCH_STATES]: true,
     [SWITCH_BEFORE_NOT_REQUIRED]: false,
     [SWITCH_AFTER_NOT_REQUIRED]: false,
 };
@@ -203,7 +203,7 @@ export default function CreateVoltageLevelSectionDialog({
                     : POSITION_NEW_SECTION_SIDE.BEFORE.id,
                 [SWITCHES_BEFORE_SECTIONS]: editData?.leftSwitchKind ?? null,
                 [SWITCHES_AFTER_SECTIONS]: editData?.rightSwitchKind ?? null,
-                [NEW_SWITCH_STATES]: !(editData?.switchOpen ?? false),
+                [NEW_SWITCH_STATES]: !(editData?.switchOpen ?? true),
             });
         },
         [reset]
@@ -249,7 +249,7 @@ export default function CreateVoltageLevelSectionDialog({
                     voltageLevelSection?.isAfterBusBarSectionId === POSITION_NEW_SECTION_SIDE.AFTER.id,
                 leftSwitchKind: voltageLevelSection?.switchesBeforeSections || null,
                 rightSwitchKind: voltageLevelSection?.switchesAfterSections || null,
-                switchOpen: !voltageLevelSection?.newSwitchStates || false,
+                switchOpen: !voltageLevelSection?.newSwitchStates,
             } satisfies CreateVoltageLevelSectionInfos;
             createVoltageLevelSection({
                 voltageLevelSectionInfos: voltageLevelSectionInfos,

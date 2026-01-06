@@ -27,6 +27,8 @@ const ByFilterDeletionForm = () => {
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([
             EQUIPMENT_TYPES.SWITCH,
+            EQUIPMENT_TYPES.DISCONNECTOR,
+            EQUIPMENT_TYPES.BREAKER,
             EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
             EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
             EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
@@ -71,12 +73,10 @@ const ByFilterDeletionForm = () => {
     }, [handleEquipmentTypeChange, getOptionLabel, typesOptions]);
 
     return (
-        <>
-            <Grid container spacing={2}>
-                <GridItem>{equipmentTypeField}</GridItem>
-                <GridItem>{filtersField}</GridItem>
-            </Grid>
-        </>
+        <Grid container spacing={2} padding={0.5} alignItems={'center'}>
+            <GridItem>{equipmentTypeField}</GridItem>
+            <GridItem>{filtersField}</GridItem>
+        </Grid>
     );
 };
 

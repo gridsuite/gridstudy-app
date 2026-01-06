@@ -174,9 +174,8 @@ export const modificationPropertiesSchema = yup.object({
                 [VALUE]: yup
                     .string()
                     .nullable()
-                    .when([PREVIOUS_VALUE, DELETION_MARK], {
-                        is: (previousValue: string | null, deletionMark: boolean) =>
-                            previousValue === null && !deletionMark,
+                    .when([ADDED], {
+                        is: (added: boolean) => added,
                         then: (schema) => schema.required(),
                     }),
                 [PREVIOUS_VALUE]: yup.string().nullable(),
@@ -200,3 +199,5 @@ const checkUniquePropertyNames = (
     const validValues = properties.filter((v) => v.name);
     return validValues.length === new Set(validValues.map((v) => v.name)).size;
 };
+export const getPropertyValue = (properties: Record<string, string> | undefined, keyName: string): string | undefined =>
+    properties?.[keyName];

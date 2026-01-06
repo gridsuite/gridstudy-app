@@ -7,9 +7,15 @@
 
 import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
 import { BasicModificationDialog } from '../../commons/basicModificationDialog';
-import { BooleanCellRenderer, DefaultCellRenderer } from '../../../custom-aggrid/cell-renderers';
+import {
+    BooleanCellRenderer,
+    CsvExport,
+    CustomAGGrid,
+    DefaultCellRenderer,
+    type MuiStyles,
+} from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Grid, Tab, Tabs } from '@mui/material';
+import { Box, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import {
@@ -24,7 +30,6 @@ import {
     V,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import { CustomAGGrid, CsvExport, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { FetchStatus } from '../../../../services/utils.type';
 import type { ColDef, RowDataUpdatedEvent } from 'ag-grid-community';
@@ -161,6 +166,9 @@ export interface EditData {
     vscConverterStations: VscConverterStationData[];
     shuntCompensators: ShuntCompensatorData[];
     buses: BusData[];
+    rootNetworkName?: string;
+    nodeName?: string;
+    computationDate?: string;
 }
 
 interface VoltageInitModificationProps {
@@ -363,6 +371,35 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 gap: '15px',
             }}
         >
+            <Box>
+                {editData?.rootNetworkName && (
+                    <Typography variant="subtitle1">
+                        <FormattedMessage
+                            id="VoltageinitRootNetworkName"
+                            values={{ rootNetworkName: editData.rootNetworkName }}
+                        />
+                    </Typography>
+                )}
+                {editData?.nodeName && (
+                    <Typography variant="subtitle1">
+                        <FormattedMessage id="VoltageinitNodeName" values={{ nodeName: editData.nodeName }} />
+                    </Typography>
+                )}
+                {editData?.computationDate && (
+                    <Typography variant="subtitle1">
+                        <FormattedMessage
+                            id="VoltageinitDate"
+                            values={{
+                                computationDate: new Intl.DateTimeFormat(intl.locale, {
+                                    dateStyle: 'long',
+                                    timeStyle: 'long',
+                                    hour12: false,
+                                }).format(new Date(editData.computationDate)),
+                            }}
+                        />
+                    </Typography>
+                )}
+            </Box>
             <Grid container>
                 <Tabs value={tabIndex} variant="scrollable" onChange={(event, newValue) => handleTabChange(newValue)}>
                     <Tab label={<FormattedMessage id="Generators" />} />
@@ -510,7 +547,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             tableNamePrefix="VoltageInit_"
                             disabled={rowData.length === 0 || editDataFetchStatus === FetchStatus.RUNNING}
                             language={language}
-                            exportDataAsCsv={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
+                            getData={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
                         />
                     </Box>
                     <Box sx={styles.grid}>

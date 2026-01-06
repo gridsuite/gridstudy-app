@@ -10,8 +10,8 @@ import {
     ENABLE_OLG_MODIFICATION,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
 } from 'components/utils/field-constants';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.js';
@@ -44,11 +44,11 @@ export function LimitsPane({
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
-    const { setValue } = useFormContext();
+    const { getValues, reset } = useFormContext();
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups: OperationalLimitsGroupFormSchema[] = useWatch({
+    const limitsGroups = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const olgEditable: boolean = useWatch({
@@ -59,7 +59,7 @@ export function LimitsPane({
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
 
-    const getCurrentLimits = (equipmentToModify: any, operationalLimitsGroupId: string): CurrentLimits | null => {
+    const getCurrentLimits = (equipmentToModify: any, operationalLimitsGroupId: string): CurrentLimitsData | null => {
         if (equipmentToModify?.currentLimits) {
             return equipmentToModify.currentLimits.find(
                 (currentLimit: CurrentLimitsData) =>
@@ -85,7 +85,17 @@ export function LimitsPane({
         const resetOLGs: OperationalLimitsGroupFormSchema[] = mapServerLimitsGroupsToFormInfos(
             equipmentToModify?.currentLimits ?? []
         );
-        setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, resetOLGs);
+        const currentValues = getValues();
+        reset(
+            {
+                ...currentValues,
+                [LIMITS]: {
+                    [OPERATIONAL_LIMITS_GROUPS]: resetOLGs,
+                    [ENABLE_OLG_MODIFICATION]: false,
+                },
+            },
+            { keepDefaultValues: true }
+        );
     };
 
     return (
@@ -118,21 +128,21 @@ export function LimitsPane({
                 </Grid>
                 <Grid item xs={3}>
                     <SelectedOperationalLimitGroup
-                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
+                        selectedFormName={`${id}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID1}`}
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
                         label="Side1"
                         filteredApplicability={APPLICABILITY.SIDE1.id}
-                        previousValue={equipmentToModify?.selectedOperationalLimitsGroup1}
+                        previousValue={equipmentToModify?.selectedOperationalLimitsGroupId1}
                         isABranchModif={!!equipmentToModify}
                     />
                 </Grid>
                 <Grid item xs={3}>
                     <SelectedOperationalLimitGroup
-                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
+                        selectedFormName={`${id}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID2}`}
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
                         label="Side2"
                         filteredApplicability={APPLICABILITY.SIDE2.id}
-                        previousValue={equipmentToModify?.selectedOperationalLimitsGroup2}
+                        previousValue={equipmentToModify?.selectedOperationalLimitsGroupId2}
                         isABranchModif={!!equipmentToModify}
                     />
                 </Grid>
@@ -144,7 +154,7 @@ export function LimitsPane({
                     <Box
                         sx={{
                             display: 'flex',
-                            justifyContent: 'space-between',
+                            alignItems: 'center',
                         }}
                     >
                         <GridSection title="LimitSets" />
@@ -152,9 +162,6 @@ export function LimitsPane({
                             <AddIcon />
                         </IconButton>
                     </Box>
-                </Grid>
-                <Grid container item xs={6.25} />
-                <Grid item xs={4}>
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
                         parentFormName={id}

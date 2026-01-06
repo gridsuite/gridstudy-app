@@ -31,6 +31,7 @@ import {
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
     ID,
+    IS_ATTACHMENT_POINT_CREATION,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
     NAME,
@@ -47,7 +48,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
@@ -95,6 +96,7 @@ const emptyFormData = {
     [SUBSTATION_CREATION_ID]: null,
     [SUBSTATION_NAME]: null,
     [COUNTRY]: null,
+    [IS_ATTACHMENT_POINT_CREATION]: false,
     [SUBSTATION_CREATION]: emptyProperties,
     ...emptyProperties,
 };
@@ -142,7 +144,13 @@ const formSchema = yup
         [SUBSTATION_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
-        [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+        [NOMINAL_V]: yup
+            .number()
+            .nullable()
+            .when([IS_ATTACHMENT_POINT_CREATION], {
+                is: (isAttachmentPointCreation) => isAttachmentPointCreation === false,
+                then: (schema) => schema.min(0, 'mustBeGreaterOrEqualToZero').required(),
+            }),
         [LOW_VOLTAGE_LIMIT]: yup
             .number()
             .nullable()
@@ -162,8 +170,20 @@ const formSchema = yup
                 is: (lowShortCircuitCurrentLimit) => lowShortCircuitCurrentLimit != null,
                 then: (schema) => schema.required(),
             }),
-        [BUS_BAR_COUNT]: yup.number().min(1, 'BusBarCountMustBeGreaterThanOrEqualToOne').nullable().required(),
-        [SECTION_COUNT]: yup.number().min(1, 'SectionCountMustBeGreaterThanOrEqualToOne').nullable().required(),
+        [BUS_BAR_COUNT]: yup
+            .number()
+            .nullable()
+            .when([IS_ATTACHMENT_POINT_CREATION], {
+                is: (isAttachmentPointCreation) => isAttachmentPointCreation === false,
+                then: (schema) => schema.min(1, 'BusBarCountMustBeGreaterThanOrEqualToOne').required(),
+            }),
+        [SECTION_COUNT]: yup
+            .number()
+            .nullable()
+            .when([IS_ATTACHMENT_POINT_CREATION], {
+                is: (isAttachmentPointCreation) => isAttachmentPointCreation === false,
+                then: (schema) => schema.min(1, 'SectionCountMustBeGreaterThanOrEqualToOne').required(),
+            }),
         [SWITCHES_BETWEEN_SECTIONS]: yup
             .string()
             .nullable()
@@ -191,38 +211,33 @@ const VoltageLevelCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     onCreateVoltageLevel = createVoltageLevel,
+    isAttachmentPointModification = false,
+    titleId = 'CreateVoltageLevel',
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError, snackWarning } = useSnackMessage();
 
+    const defaultValues = useMemo(() => {
+        if (isAttachmentPointModification) {
+            return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true, [IS_ATTACHMENT_POINT_CREATION]: true };
+        } else {
+            return emptyFormData;
+        }
+    }, [isAttachmentPointModification]);
+
     const formMethods = useForm({
-        defaultValues: emptyFormData,
+        defaultValues: defaultValues,
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, getValues, watch, trigger, subscribe } = formMethods;
-
-    // Watch LOW_VOLTAGE_LIMIT changed
-    useEffect(() => {
-        const callback = subscribe({
-            name: [`${HIGH_VOLTAGE_LIMIT}`],
-            formState: {
-                values: true,
-            },
-            callback: ({ isSubmitted }) => {
-                if (isSubmitted) {
-                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
-                }
-            },
-        });
-        return () => callback();
-    }, [trigger, subscribe]);
+    const { reset, setValue, getValues, trigger, subscribe } = formMethods;
 
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
-            const isSubstationCreation = !fromCopy && voltageLevel.substationCreation?.equipmentId != null;
+            const isSubstationCreation =
+                (!fromCopy && voltageLevel.substationCreation?.equipmentId != null) || isAttachmentPointModification;
             const shortCircuitLimits = {
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -264,6 +279,7 @@ const VoltageLevelCreationDialog = ({
                     [SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
                     [COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
                     [SWITCH_KINDS]: switchKinds,
+                    [IS_ATTACHMENT_POINT_CREATION]: isAttachmentPointModification,
                     ...properties,
                 },
                 { keepDefaultValues: true }
@@ -291,26 +307,59 @@ const VoltageLevelCreationDialog = ({
                 });
             }
         },
-        [setValue, intl, reset, snackWarning]
+        [isAttachmentPointModification, reset, intl, setValue, snackWarning]
     );
 
     // Supervisor watches to trigger validation for interdependent constraints
     useEffect(() => {
-        const subscription = watch((value, { name }) => {
-            // Watch EQUIPMENT_ID, SUBSTATION_CREATION_ID and SUBSTATION_CREATION_ID changed
-            // force trigger validation if the target has a value
-            if (name === EQUIPMENT_ID && getValues(SUBSTATION_ID)) {
-                trigger(SUBSTATION_ID);
-            }
-            if (name === EQUIPMENT_ID && getValues(SUBSTATION_CREATION_ID)) {
-                trigger(SUBSTATION_CREATION_ID);
-            }
-            if ((name === SUBSTATION_ID || name === SUBSTATION_CREATION_ID) && getValues(EQUIPMENT_ID)) {
-                trigger(EQUIPMENT_ID);
-            }
+        // Watch HIGH_VOLTAGE_LIMIT changed
+        const unsubscribeHighVoltageLimit = subscribe({
+            name: [`${HIGH_VOLTAGE_LIMIT}`],
+            formState: {
+                values: true,
+            },
+            callback: ({ isSubmitted }) => {
+                if (isSubmitted) {
+                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
+                }
+            },
         });
-        return () => subscription.unsubscribe();
-    }, [watch, trigger, getValues]);
+
+        // Watch EQUIPMENT_ID changed
+        const unsubscribeEquipmentId = subscribe({
+            name: [EQUIPMENT_ID],
+            formState: {
+                values: true,
+            },
+            callback: () => {
+                if (getValues(SUBSTATION_ID)) {
+                    trigger(SUBSTATION_ID);
+                }
+                if (getValues(SUBSTATION_CREATION_ID)) {
+                    trigger(SUBSTATION_CREATION_ID);
+                }
+            },
+        });
+
+        // Watch SUBSTATION_ID or SUBSTATION_CREATION_ID changed
+        const unsubscribeSubstationIds = subscribe({
+            name: [SUBSTATION_ID, SUBSTATION_CREATION_ID],
+            formState: {
+                values: true,
+            },
+            callback: () => {
+                if (getValues(EQUIPMENT_ID)) {
+                    trigger(EQUIPMENT_ID);
+                }
+            },
+        });
+
+        return () => {
+            unsubscribeHighVoltageLimit();
+            unsubscribeEquipmentId();
+            unsubscribeSubstationIds();
+        };
+    }, [subscribe, trigger, getValues]);
 
     const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
 
@@ -383,7 +432,7 @@ const VoltageLevelCreationDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 maxWidth={'md'}
-                titleId="CreateVoltageLevel"
+                titleId={titleId}
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}

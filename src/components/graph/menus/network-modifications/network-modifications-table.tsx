@@ -5,15 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, SetStateAction, useRef } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     CustomAGGrid,
     type MuiStyles,
     type NetworkModificationMetadata,
+    NetworkModificationNameCellRenderer,
     useModificationLabelComputer,
 } from '@gridsuite/commons-ui';
 import type {
     CellClickedEvent,
+    CellMouseOverEvent,
     ColDef,
     GetRowIdParams,
     IRowDragItem,
@@ -37,8 +39,8 @@ import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { ExcludedNetworkModifications } from './network-modification-menu.type';
-import { NetworkModificationNameCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import { AgGridReact } from 'ag-grid-react';
+import DescriptionRenderer from './DescriptionRenderer';
 
 const styles = {
     container: (theme) => ({
@@ -89,6 +91,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
+    const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>();
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -142,6 +145,14 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 minWidth: 200,
                 flex: 1,
                 cellStyle: { cursor: 'pointer' },
+            },
+            {
+                colId: 'modificationDescription',
+                cellRenderer: DescriptionRenderer,
+                cellRendererParams: {
+                    hoveredRowIndex: hoveredRowIndex,
+                },
+                width: 30,
             },
             {
                 cellRenderer: SwitchCellRenderer,
@@ -199,6 +210,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         currentRootNetworkUuid,
         modificationsToExclude,
         setModificationsToExclude,
+        hoveredRowIndex,
     ]);
 
     const getRowId = (params: GetRowIdParams<NetworkModificationMetadata>) => params.data.uuid;
@@ -245,6 +257,10 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                     checkboxes: true,
                     headerCheckbox: true,
                 }}
+                onCellMouseOver={(event: CellMouseOverEvent<NetworkModificationMetadata>) =>
+                    setHoveredRowIndex(event.rowIndex ?? null)
+                }
+                onCellMouseOut={() => setHoveredRowIndex(null)}
                 defaultColDef={defaultColumnDefinition}
                 onCellClicked={handleCellClick}
                 onRowSelected={onRowSelected}

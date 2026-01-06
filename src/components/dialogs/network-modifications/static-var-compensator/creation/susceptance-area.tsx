@@ -78,7 +78,7 @@ export const SusceptanceArea = () => {
             disabled={true}
             size={'small'}
             InputProps={{
-                endAdornment: <InputAdornment position="start">MVar</InputAdornment>,
+                endAdornment: <InputAdornment position="start">Mvar</InputAdornment>,
             }}
         />
     );
@@ -90,7 +90,7 @@ export const SusceptanceArea = () => {
             disabled={true}
             size={'small'}
             InputProps={{
-                endAdornment: <InputAdornment position="start">MVar</InputAdornment>,
+                endAdornment: <InputAdornment position="start">Mvar</InputAdornment>,
             }}
         />
     );

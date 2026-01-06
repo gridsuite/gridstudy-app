@@ -10,7 +10,7 @@
 .nad-text-edges { /* Hidden for now */
     display: none;
 }
-.nad-disconnected .nad-edge-path {
+.nad-disconnected.nad-edge-path {
     stroke-dasharray: 0.45%, 0.45%;
 }
 .nad-vl-nodes .nad-busnode {
@@ -83,14 +83,11 @@ foreignObject.nad-text-nodes {
     stroke-linejoin: round;
     paint-order: stroke;
 }
-.nad-disconnected {
-    --vl-color: #808080;
-}
-g.nad-disconnected > g.nad-disconnected {
+
+g.nad-disconnected > .nad-disconnected.nad-edge-path {
     /* When both edges of a line are disconnected in a NAD, both of them and their parent have the .nad-disconnected class */
     --vl-color: #808080;
 }
-
 
 @keyframes line-blink {
     50% {
@@ -184,7 +181,7 @@ g.nad-disconnected > g.nad-disconnected {
 
 /* Makes the dashed lines' spaces consistent when zooming */
 :is(.nad-zoom-0, .nad-zoom-2000) :is(
-    .nad-disconnected .nad-edge-path
+    .nad-disconnected.nad-edge-path
     ) {
     stroke-dasharray: 10 10;
 }
@@ -258,14 +255,14 @@ g.nad-disconnected > g.nad-disconnected {
 
 /* Hides the voltage levels 0 to 50 when zoomed out. */
 :is(.nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
-    .nad-vl0to30, .nad-vl30to50
+    .nad-voltage-level-1, .nad-voltage-level-2
     ) {
     display: none;
 }
 
-/* Hides the voltage levels 50 to 120 when zoomed out. */
+/* Hides the voltage levels 50 to 100 when zoomed out. */
 .nad-zoom-15000 :is(
-    .nad-vl50to70, .nad-vl70to120
+    .nad-voltage-level-3, .nad-voltage-level-4
     ) {
     display: none;
 }

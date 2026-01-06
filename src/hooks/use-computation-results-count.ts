@@ -6,9 +6,8 @@
  */
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import RunningStatus from 'components/utils/running-status';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 /**
@@ -52,7 +51,7 @@ export const useComputationResultsCount = () => {
     );
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     // we dont distinguish between technical errors and computation errors
@@ -77,11 +76,10 @@ export const useComputationResultsCount = () => {
         dynamicSecurityAnalysisStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     const stateEstimationResultPresent =
-        enableDeveloperMode &&
+        isDeveloperMode &&
         (stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
-    const pccMinResultPresent =
-        enableDeveloperMode && (pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+    const pccMinResultPresent = pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     return [
         loadflowResultPresent,

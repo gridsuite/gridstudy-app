@@ -16,10 +16,10 @@ const styles = {
         flexGrow: 1,
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(1),
+        padding: theme.spacing(0.5),
     }),
     minimizedPanel: (theme) => ({
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.spacing(0.5),
     }),
     icon: {
         display: 'flex',
@@ -48,7 +48,7 @@ const RootNetworkMinimizedPanelContent: React.FC<RootNetworkMinimizedPanelConten
                 <Chip size="small" label={currentRootNetwork?.tag} color="primary" />
                 <Box sx={styles.icon}>
                     <Badge overlap="circular" color="primary" variant="dot">
-                        <RemoveRedEyeIcon />
+                        <RemoveRedEyeIcon fontSize="small" />
                     </Badge>
                 </Box>
             </Stack>

@@ -5,7 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ID, SELECTED_LIMITS_GROUP_1, SELECTED_LIMITS_GROUP_2 } from '../../utils/field-constants';
+import {
+    ID,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
+} from '../../utils/field-constants';
 import { FieldValues, UseFieldArrayAppend, UseFieldArrayRemove, useFormContext } from 'react-hook-form';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -13,19 +17,23 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { ContentCopy, Delete } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
-import { PopoverProps } from '@mui/material/Popover';
 import { APPLICABILITY } from '../../network/constants';
 import { useCallback } from 'react';
 import { CurrentLimitsData } from '../../../services/study/network-map.type';
 import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
 
+export interface ContextMenuCoordinates {
+    x: null | number;
+    y: null | number;
+    tabIndex: null | number;
+}
+
 export interface LimitsGroupsContextualMenuProps {
     parentFormName: string;
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
-    menuAnchorEl: PopoverProps['anchorEl'];
     handleCloseMenu: () => void;
-    activatedByMenuTabIndex: number | null;
+    contextMenuCoordinates: ContextMenuCoordinates;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
     currentLimitsToModify: CurrentLimitsData[];
@@ -43,8 +51,8 @@ export function LimitsGroupsContextualMenu({
     parentFormName,
     indexSelectedLimitSet,
     setIndexSelectedLimitSet,
-    menuAnchorEl,
     handleCloseMenu,
+    contextMenuCoordinates,
     selectedLimitsGroups1,
     selectedLimitsGroups2,
     operationalLimitsGroups,
@@ -63,13 +71,13 @@ export function LimitsGroupsContextualMenu({
                 selectedLimitsGroups1 === tabName &&
                 (applicability === APPLICABILITY.SIDE1.id || applicability === APPLICABILITY.EQUIPMENT.id)
             ) {
-                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, null);
+                setValue(`${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID1}`, null);
             }
             if (
                 selectedLimitsGroups2 === tabName &&
                 (applicability === APPLICABILITY.SIDE2.id || applicability === APPLICABILITY.EQUIPMENT.id)
             ) {
-                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, null);
+                setValue(`${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID2}`, null);
             }
             removeLimitsGroups(indexSelectedLimitSet);
             setIndexSelectedLimitSet(null);
@@ -109,7 +117,16 @@ export function LimitsGroupsContextualMenu({
     ]);
 
     return (
-        <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
+        <Menu
+            open={contextMenuCoordinates.tabIndex != null}
+            onClose={handleCloseMenu}
+            anchorReference="anchorPosition"
+            anchorPosition={
+                contextMenuCoordinates.y !== null && contextMenuCoordinates.x !== null
+                    ? { top: contextMenuCoordinates.y, left: contextMenuCoordinates.x }
+                    : undefined
+            }
+        >
             <MenuItem onClick={handleDeleteTab}>
                 <ListItemIcon>
                     <Delete fontSize="small" />

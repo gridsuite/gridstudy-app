@@ -17,7 +17,7 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useSnackMessage, ComputingType, snackWithFallback } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -203,15 +203,18 @@ function PagedSensitivityAnalysisResult({
         snackError,
     ]);
 
+    // Debounce the fetch to avoid excessive calls
+    const debouncedFetchResult = useDebounce(fetchResult, 1000);
+
     useEffect(() => {
         if (sensiStatus === RunningStatus.RUNNING) {
             setResult(null);
         }
         if (sensiStatus === RunningStatus.SUCCEED) {
             fetchFilterOptions();
-            fetchResult();
+            debouncedFetchResult();
         }
-    }, [sensiStatus, fetchResult, fetchFilterOptions, globalFilters]);
+    }, [sensiStatus, debouncedFetchResult, fetchFilterOptions, globalFilters]);
 
     return (
         <>

@@ -5,22 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    PARAM_DEVELOPER_MODE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LANGUAGE,
-    PARAM_THEME,
-    PARAM_USE_NAME,
-    PARAMS_LOADED,
-} from '../utils/config-params';
+import { PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import type { Action } from 'redux';
 import {
+    BaseVoltage,
     ComputingType,
     type GsLang,
     type GsLangUser,
     type GsTheme,
     type Identifiable,
     type NetworkVisualizationParameters,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { UnknownArray } from 'type-fest';
@@ -29,11 +26,12 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     ComputingStatusParameters,
-    DiagramGridLayoutConfig,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
+    CopiedNetworkModifications,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
+    TableSortConfig,
     TableSortKeysType,
 } from './reducer';
 import type { RunningStatus } from '../components/utils/running-status';
@@ -55,7 +53,6 @@ import {
     SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
-import { StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
@@ -75,11 +72,11 @@ import {
     ShortcircuitAnalysisTab,
     SortConfig,
 } from '../types/custom-aggrid-types';
-import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -115,13 +112,13 @@ export type AppActions =
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
+    | StoreNadViewBoxAction
+    | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
     | RemoveNotificationByNodeAction
     | SetModificationsInProgressAction
-    | OpenDiagramAction
-    | OpenNadListAction
     | SetComputingStatusAction
     | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
@@ -648,10 +645,10 @@ export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_
     [PARAM_DEVELOPER_MODE]: boolean;
 };
 
-export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableDeveloperModeAction {
+export function selectIsDeveloperMode(isDeveloperMode: boolean): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
-        [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
+        [PARAM_DEVELOPER_MODE]: isDeveloperMode,
     };
 }
 
@@ -709,6 +706,18 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[])
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
+    };
+}
+
+export const SET_BASE_VOLTAGE_LIST = 'SET_BASE_VOLTAGE_LIST';
+export type SetBaseVoltageListAction = Readonly<Action<typeof SET_BASE_VOLTAGE_LIST>> & {
+    baseVoltages: BaseVoltage[];
+};
+
+export function setBaseVoltageList(baseVoltageList: BaseVoltage[]): SetBaseVoltageListAction {
+    return {
+        type: SET_BASE_VOLTAGE_LIST,
+        baseVoltages: baseVoltageList,
     };
 }
 
@@ -774,24 +783,38 @@ export function setNodeSelectionForCopy(
     };
 }
 
+export const STORE_NAD_VIEW_BOX = 'STORE_NAD_VIEW_BOX';
+
+export type StoreNadViewBoxAction = {
+    type: typeof STORE_NAD_VIEW_BOX;
+    nadViewBox: { nadUuid: UUID; viewBox: ViewBoxLike | null };
+};
+
+export const StoreNadViewBox = (nadUuid: UUID, viewBox: ViewBoxLike | null): StoreNadViewBoxAction => ({
+    type: STORE_NAD_VIEW_BOX,
+    nadViewBox: { nadUuid, viewBox },
+});
+
+export const COPIED_NETWORK_MODIFICATIONS = 'COPIED_NETWORK_MODIFICATIONS';
+export type CopiedNetworkModificationsAction = Readonly<Action<typeof COPIED_NETWORK_MODIFICATIONS>> & {
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>;
+};
+
+export function setCopiedNetworkModifications(
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>
+): CopiedNetworkModificationsAction {
+    return {
+        type: COPIED_NETWORK_MODIFICATIONS,
+        copiedNetworkModifications: copiedNetworkModifications,
+    };
+}
+
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
 
 export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
-    };
-}
-
-export const SET_TOGGLE_OPTIONS = 'SET_TOGGLE_OPTIONS';
-export type SetToggleOptionsAction = Readonly<Action<typeof SET_TOGGLE_OPTIONS>> & {
-    toggleOptions: StudyDisplayMode[];
-};
-
-export function setToggleOptions(toggleOptions: StudyDisplayMode[]): SetToggleOptionsAction {
-    return {
-        type: SET_TOGGLE_OPTIONS,
-        toggleOptions: toggleOptions,
     };
 }
 
@@ -852,34 +875,6 @@ export function setModificationsInProgress(isModificationsInProgress: boolean): 
     return {
         type: SET_MODIFICATIONS_IN_PROGRESS,
         isModificationsInProgress: isModificationsInProgress,
-    };
-}
-
-export const OPEN_DIAGRAM = 'OPEN_DIAGRAM';
-export type OpenDiagramAction = Readonly<Action<typeof OPEN_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction {
-    return {
-        type: OPEN_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
-export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
-    name: string;
-    ids: string[];
-};
-
-export function openNadList(name: string, ids: string[]): OpenNadListAction {
-    return {
-        type: OPEN_NAD_LIST,
-        name: name,
-        ids: ids,
     };
 }
 
@@ -960,10 +955,10 @@ export function setOptionalServices(optionalServices: IOptionalService[]): SetOp
 }
 
 export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type SetOneBusShortcircuitAnalysisDiagramAction = Readonly<
-    Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
-> &
-    OneBusShortCircuitAnalysisDiagram;
+export type SetOneBusShortcircuitAnalysisDiagramAction = Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM> &
+    OneBusShortCircuitAnalysisDiagram & {
+        [key: string]: any;
+    };
 export function setOneBusShortcircuitAnalysisDiagram(
     diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'],
     studyUuid: OneBusShortCircuitAnalysisDiagram['studyUuid'],
@@ -980,9 +975,11 @@ export function setOneBusShortcircuitAnalysisDiagram(
 }
 
 export const RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type ResetOneBusShortcircuitAnalysisDiagramAction = Readonly<
-    Action<typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
->;
+export type ResetOneBusShortcircuitAnalysisDiagramAction = Action<
+    typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM
+> & {
+    [key: string]: any;
+};
 export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircuitAnalysisDiagramAction {
     return {
         type: RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
@@ -1447,19 +1444,22 @@ export type InitTableDefinitionsAction = {
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters?: SpreadsheetFilterState;
     globalFilterSpreadsheetState?: GlobalFilterSpreadsheetState;
+    tablesSorts?: TableSortConfig;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
     tablesFilters: SpreadsheetFilterState = {},
-    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {}
+    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {},
+    tablesSorts: TableSortConfig = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
     tablesFilters,
     globalFilterSpreadsheetState,
+    tablesSorts,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
@@ -1557,27 +1557,6 @@ export type ResetAllSpreadsheetGlobalFiltersAction = Readonly<Action<typeof RESE
 export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
-    };
-}
-
-export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
-export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
-
-export function resetDiagramEvent(): ResetDiagramEventAction {
-    return {
-        type: RESET_DIAGRAM_EVENT,
-    };
-}
-
-export const SET_DIAGRAM_GRID_LAYOUT = 'SET_DIAGRAM_GRID_LAYOUT';
-export type SetDiagramGridLayoutAction = Readonly<Action<typeof SET_DIAGRAM_GRID_LAYOUT>> & {
-    diagramGridLayout: DiagramGridLayoutConfig;
-};
-
-export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig): SetDiagramGridLayoutAction {
-    return {
-        type: SET_DIAGRAM_GRID_LAYOUT,
-        diagramGridLayout: diagramGridLayout,
     };
 }
 

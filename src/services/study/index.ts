@@ -17,7 +17,7 @@ import {
     ExtendedEquipmentType,
     Parameter,
 } from '@gridsuite/commons-ui';
-import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 
 export function safeEncodeURIComponent(value: string | null | undefined): string {
@@ -225,7 +225,7 @@ export function copyOrMoveModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
     modificationToCutUuidList: UUID[],
-    copyInfos: NetworkModificationCopyInfo
+    copyInfos: NetworkModificationCopyInfos
 ) {
     console.info(copyInfos.copyType + ' modifications');
     const copyOrMoveModificationUrl =

@@ -8,9 +8,10 @@
 import { Box } from '@mui/material';
 import { Controls, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { reorderNetworkModificationTreeNodes, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
+import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import { reorderNetworkModificationTreeNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import { openOrFocusPanel } from '../redux/slices/workspace-slice';
 import { isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
@@ -26,12 +27,13 @@ import {
 import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
-import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { PARAM_DEVELOPER_MODE, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
-import { StudyDisplayMode } from './network-modification.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
+import { PanelType } from './workspace/types/workspace.types';
+import { useParameterState } from './dialogs/parameters/use-parameters-state.js';
 
 const styles = {
     modificationTree: (theme) => ({
@@ -48,7 +50,7 @@ const styles = {
             backgroundColor: theme.palette.background.paper,
         },
     }),
-    labelBox: (theme) => ({
+    labelBox: () => ({
         flexGrow: 1,
         display: 'flex',
         alignItems: 'flex-end',
@@ -61,13 +63,12 @@ const styles = {
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
-
-    const toggleOptions = useSelector((state) => state.toggleOptions);
 
     const { fitView, setCenter, getZoom } = useReactFlow();
 
@@ -92,34 +93,10 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
         updateNodePositions();
     }, [updateNodePositions]);
 
-    const handleRootNodeClick = useCallback((toggleOptions) => {
-        const hasRemovableOptions =
-            toggleOptions.includes(StudyDisplayMode.MODIFICATIONS) ||
-            toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO);
-
-        if (!hasRemovableOptions) {
-            return toggleOptions;
-        }
-
-        return toggleOptions.filter(
-            (opt) => opt !== StudyDisplayMode.MODIFICATIONS && opt !== StudyDisplayMode.EVENT_SCENARIO
-        );
-    }, []);
-
-    // close modifications/ event scenario when current node is root
-    useEffect(() => {
-        if (currentNode?.type === NodeType.ROOT) {
-            const newOptions = handleRootNodeClick(toggleOptions);
-            if (newOptions !== toggleOptions) {
-                dispatch(setToggleOptions(newOptions));
-            }
-        }
-    }, [currentNode, dispatch, handleRootNodeClick, toggleOptions]);
-
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === NodeType.NETWORK_MODIFICATION) {
-                dispatch(setModificationsDrawerOpen());
+                dispatch(openOrFocusPanel({ panelType: PanelType.NODE_EDITOR }));
             }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);
@@ -347,11 +324,13 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                     style={{ margin: '10px', marginBottom: '30px' }}
                     showZoom={false}
                     showInteractive={false}
-                    showFitView={false}
+                    showFitView={false} // We customize (for its tooltip) the fitView button below so we don't use the reactflow native one
                 >
-                    <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
-                        <CropFreeIcon />
-                    </TreeControlButton>
+                    {enableDeveloperMode && (
+                        <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
+                            <CropFreeIcon />
+                        </TreeControlButton>
+                    )}
                     <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
                         <CenterFocusIcon />
                     </TreeControlButton>

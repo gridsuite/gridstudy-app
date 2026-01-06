@@ -30,21 +30,66 @@ export type TreeNode = {
  */
 function formatSpecialCases(nodeId: string): string {
     // Add trailing dot for any property-related nodes
-    if (nodeId.includes('roperties')) {
+    if (nodeId.includes('roperties') && !nodeId.includes('limitsProperties')) {
         return `${nodeId}.`;
     }
 
     // Handle operational limits groups with array notation
-    if (wildcardMatch('operationalLimitsGroup*', nodeId)) {
+    if (wildcardMatch('*perationalLimitsGroup*', nodeId)) {
         // Standard group1/group2 get array brackets appended
-        if (['operationalLimitsGroup1', 'operationalLimitsGroup2'].includes(nodeId)) {
+        if (
+            [
+                'operationalLimitsGroup1',
+                'operationalLimitsGroup2',
+                'selectedOperationalLimitsGroup1.temporaryLimitsByName',
+                'selectedOperationalLimitsGroup2.temporaryLimitsByName',
+            ].includes(nodeId)
+        ) {
             return `${nodeId}[]`;
+        } else if (wildcardMatch('operationalLimitsGroup*temporaryLimitsByName*', nodeId)) {
+            return nodeId.replace(/(operationalLimitsGroup\w*)(\.\w*)/, '$1[]$2[]');
+        } else if (wildcardMatch('selectedOperationalLimitsGroup*temporaryLimitsByName*', nodeId)) {
+            return nodeId.replace(
+                /(selectedOperationalLimitsGroup\d+)\.temporaryLimitsByName(\.\w+)/,
+                '$1.temporaryLimitsByName[]$2'
+            );
         }
-        // Nested groups get brackets inserted before the dot
-        return nodeId.replace(/(operationalLimitsGroup\w*)(\.)/, '$1[]$2');
+        // Nested groups get brackets inserted before the first and the last dot
+        return nodeId.replace(/(operationalLimitsGroup\w*)(\.\w*)/, '$1[]$2');
     }
 
     return nodeId;
+}
+
+/**
+ * Formats type for special cases in the tree structure.
+ * Handles operational limits groups and temporary limits by name
+ *
+ * @param nodeId - The node identifier to format
+ * @param primaryType - The primary type of the node (e.g., object, array)
+ * @returns New type for node with special syntax
+ *
+ * @example
+ * formatSpecialTypes('operationalLimitsGroup1') --> array
+ * formatSpecialCases('operationalLimitsGroup1.temporaryLimitsByName') --> array
+ * formatSpecialCases('selectedOperationalLimitsGroup2.temporaryLimitsByName') --> array
+ */
+function formatSpecialTypes(nodeId: string, primaryType: string): string {
+    // Change type of operational limits groups and temporary limits by name to array
+    if (
+        [
+            'operationalLimitsGroup1',
+            'operationalLimitsGroup2',
+            'operationalLimitsGroup1.temporaryLimitsByName',
+            'operationalLimitsGroup2.temporaryLimitsByName',
+            'selectedOperationalLimitsGroup1.temporaryLimitsByName',
+            'selectedOperationalLimitsGroup2.temporaryLimitsByName',
+        ].includes(nodeId)
+    ) {
+        return 'array';
+    }
+
+    return primaryType;
 }
 
 /**
@@ -65,6 +110,23 @@ function filterRedundantProperties(nodeId: string, equipmentType: SpreadsheetEqu
     // Lines and transformers don't need the 'type' property
     if ([SpreadsheetEquipmentType.LINE, SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER].includes(equipmentType)) {
         exclusionList.push('type');
+    }
+
+    // temporaryLimits are no longer returned from the backend for lines and transformers in the spreadsheet
+    if (
+        [
+            SpreadsheetEquipmentType.LINE,
+            SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER,
+            SpreadsheetEquipmentType.BRANCH,
+        ].includes(equipmentType)
+    ) {
+        const BRANCH_EXCLUSIONS = new Set([
+            'selectedOperationalLimitsGroup1.temporaryLimits',
+            'selectedOperationalLimitsGroup2.temporaryLimits',
+            'operationalLimitsGroup1.temporaryLimits',
+            'operationalLimitsGroup2.temporaryLimits',
+        ]);
+        exclusionList.push(...BRANCH_EXCLUSIONS);
     }
 
     // Two-winding transformers don't need the 'country' property
@@ -268,7 +330,7 @@ function buildObjectPropertyNodes(
             return {
                 id: formatSpecialCases(nodeId),
                 label: key,
-                type: primaryType,
+                type: formatSpecialTypes(nodeId, primaryType),
                 children,
             };
         });

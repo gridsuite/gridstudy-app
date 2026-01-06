@@ -8,6 +8,8 @@
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
+import { JSX } from 'react';
+
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
     originalCaseUuid: UUID;
@@ -36,23 +38,13 @@ export interface ExcludedNetworkModifications {
     modificationUuidsToExclude: UUID[];
 }
 
-export interface NetworkModificationMetadata {
-    uuid: UUID;
-    type: string;
-    date: Date;
-    stashed: boolean;
-    activated: boolean;
-    messageType: string;
-    messageValues: string;
-}
-
 export enum NetworkModificationCopyType {
     COPY = 'COPY',
     MOVE = 'MOVE',
     INSERT = 'INSERT',
 }
 
-export interface NetworkModificationCopyInfo {
+export interface NetworkModificationCopyInfos {
     copyType: NetworkModificationCopyType;
     originStudyUuid?: UUID;
     originNodeUuid?: UUID;

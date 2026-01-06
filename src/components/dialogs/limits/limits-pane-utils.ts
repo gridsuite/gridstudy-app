@@ -18,8 +18,8 @@ import {
     OLG_IS_DUPLICATE,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
@@ -30,7 +30,7 @@ import {
 import {
     areArrayElementsUnique,
     formatMapInfosToTemporaryLimitsFormSchema,
-    formatToTemporaryLimitsFormSchema,
+    formatTemporaryLimitsModificationToFormSchema,
     toModificationOperation,
 } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
@@ -81,7 +81,6 @@ const currentLimitsValidationSchema = () => ({
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(temporaryLimitsValidationSchema())
-        .required()
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
             const namesArray = !array
                 ? []
@@ -137,8 +136,8 @@ function hasDuplicateOperationalLimitsGroups(context: TestContext) {
 const limitsValidationSchemaCreation = (id: string) => {
     const completeLimitsGroupSchema = {
         [OPERATIONAL_LIMITS_GROUPS]: yup.array(yup.object().shape(limitsGroupValidationSchema())).required(),
-        [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
-        [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: yup.string().nullable(),
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: yup.string().nullable(),
         [ENABLE_OLG_MODIFICATION]: yup.boolean(),
     };
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
@@ -151,8 +150,8 @@ export const getLimitsValidationSchema = (id: string = LIMITS) => {
 const limitsEmptyFormData = (isModification: boolean, id: string) => {
     const limitsGroup = {
         [OPERATIONAL_LIMITS_GROUPS]: [],
-        [SELECTED_LIMITS_GROUP_1]: null,
-        [SELECTED_LIMITS_GROUP_2]: null,
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: null,
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: null,
         [ENABLE_OLG_MODIFICATION]: !isModification,
     };
 
@@ -183,7 +182,9 @@ export const formatOpLimitGroupsToFormInfos = (
                 limitsProperties: opLimitGroup.limitsProperties,
                 currentLimits: {
                     permanentLimit: opLimitGroup.currentLimits.permanentLimit,
-                    temporaryLimits: formatToTemporaryLimitsFormSchema(opLimitGroup.currentLimits.temporaryLimits),
+                    temporaryLimits: formatTemporaryLimitsModificationToFormSchema(
+                        opLimitGroup.currentLimits.temporaryLimits
+                    ),
                 },
             };
         });
@@ -191,16 +192,16 @@ export const formatOpLimitGroupsToFormInfos = (
 
 export const getAllLimitsFormData = (
     operationalLimitsGroups: OperationalLimitsGroupFormSchema[] = [],
-    selectedOperationalLimitsGroup1: string | null = null,
-    selectedOperationalLimitsGroup2: string | null = null,
+    selectedOperationalLimitsGroupId1: string | null = null,
+    selectedOperationalLimitsGroupId2: string | null = null,
     enableOLGModification: boolean | null = true,
     id = LIMITS
 ) => {
     return {
         [id]: {
             [OPERATIONAL_LIMITS_GROUPS]: operationalLimitsGroups,
-            [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroup1,
-            [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroup2,
+            [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: selectedOperationalLimitsGroupId1,
+            [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: selectedOperationalLimitsGroupId2,
             [ENABLE_OLG_MODIFICATION]: !!enableOLGModification,
         },
     };
@@ -242,26 +243,6 @@ export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitFormSchema[
             ...temporaryLimit,
             name: sanitizeString(name) ?? '',
         })) || [];
-
-const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitFormSchema[], limit: TemporaryLimit) =>
-    temporaryLimits?.find(
-        (l: TemporaryLimitFormSchema) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration
-    );
-
-export const updateTemporaryLimits = (
-    temporaryLimitsForm: TemporaryLimitFormSchema[],
-    temporaryLimitsToModify: TemporaryLimit[] // from map server
-) => {
-    let updatedTemporaryLimits = temporaryLimitsForm ?? [];
-    //add temporary limits from map server that are not in the form values
-    temporaryLimitsToModify?.forEach((limit: TemporaryLimit) => {
-        if (findTemporaryLimitForm(updatedTemporaryLimits, limit) === undefined) {
-            updatedTemporaryLimits?.push(temporaryLimitToTemporaryLimitFormSchema(limit));
-        }
-    });
-
-    return updatedTemporaryLimits;
-};
 
 export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimitsData[]) => {
     return currentLimits?.map((currentLimit: CurrentLimitsData) => {
@@ -316,9 +297,9 @@ export const addModificationTypeToTemporaryLimits = (
 ): TemporaryLimit[] => {
     return formTemporaryLimits.map((limit: TemporaryLimitFormSchema) => {
         return {
-            name: limit?.name ?? '',
-            acceptableDuration: limit?.acceptableDuration ?? null,
-            value: limit?.value ?? null,
+            name: toModificationOperation(limit?.name),
+            acceptableDuration: toModificationOperation(limit?.acceptableDuration),
+            value: toModificationOperation(limit?.value),
             modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
@@ -367,12 +348,4 @@ export const addModificationTypeToOpLimitsGroups = (
             temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
         };
     });
-};
-
-export const temporaryLimitToTemporaryLimitFormSchema = (temporaryLimit: TemporaryLimit): TemporaryLimitFormSchema => {
-    return {
-        [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
-        [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
-        [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value,
-    };
 };

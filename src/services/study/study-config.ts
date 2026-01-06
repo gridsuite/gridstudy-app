@@ -14,7 +14,7 @@ import {
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
-import { DiagramGridLayoutDto } from 'components/grid-layout/diagram-grid-layout.types';
+import { SortConfig } from '../../types/custom-aggrid-types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');
@@ -141,6 +141,17 @@ export function updateSpreadsheetModel(
     });
 }
 
+export function updateSpreadsheetSort(studyUuid: UUID, spreadsheetModelUuid: UUID, sortConfig: SortConfig) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/sort`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sortConfig),
+    });
+}
+
 export function setGlobalFiltersToSpreadsheetConfig(
     studyUuid: UUID,
     spreadsheetModelUuid: UUID,
@@ -204,24 +215,6 @@ export function reorderSpreadsheetConfigs(studyUuid: UUID, collectionUuid: UUID,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newOrder),
-    });
-}
-
-export function getDiagramGridLayout(studyUuid: UUID) {
-    const fetchUrl = `${getStudyUrl(studyUuid)}/diagram-grid-layout`;
-    console.debug(fetchUrl);
-    return backendFetchJson(fetchUrl);
-}
-
-export function saveDiagramGridLayout(studyUuid: UUID, diagramGridLayout: DiagramGridLayoutDto) {
-    const fetchUrl = `${getStudyUrl(studyUuid)}/diagram-grid-layout`;
-    console.debug(fetchUrl);
-    return backendFetchJson(fetchUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(diagramGridLayout),
     });
 }
 

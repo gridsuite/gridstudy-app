@@ -22,7 +22,7 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { SELECTED } from '../../utils/field-constants';
-import { TemporaryLimit } from '../../../services/network-modification-types';
+import { TemporaryLimitsData } from '../../../services/study/network-map.type';
 
 const styles = {
     columnsStyle: {
@@ -64,12 +64,12 @@ interface TemporaryLimitsTableProps {
     columnsDefinition: (ColumnText | ColumnNumeric)[];
     createRow: () => any[];
     disabled?: boolean;
-    previousValues: TemporaryLimit[];
+    previousValues: TemporaryLimitsData[];
     getPreviousValue: (
         rowIndex: number,
         column: ColumnText | ColumnNumeric,
         arrayFormName: string,
-        temporaryLimits: TemporaryLimit[]
+        temporaryLimits: TemporaryLimitsData[]
     ) => number | undefined;
     isValueModified: (rowIndex: number, arrayFormName: string) => boolean;
     disableAddingRows?: boolean;
@@ -157,11 +157,7 @@ function TemporaryLimitsTable({
     return (
         <Grid item container spacing={1}>
             <Grid item container>
-                <TableContainer
-                    sx={{
-                        border: 'solid 1px rgba(0,0,0,0.1)',
-                    }}
-                >
+                <TableContainer>
                     <Table stickyHeader size="small" padding="none">
                         {renderTableHead()}
                         {renderTableBody()}

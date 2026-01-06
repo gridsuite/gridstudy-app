@@ -48,6 +48,9 @@ export const CONNECTION_NAME2 = 'connectionName2';
 export const CONNECTION_POSITION2 = 'connectionPosition2';
 export const IS_REMOVED = 'isRemoved';
 export const IS_SEPARATOR = 'isSeparator';
+export const FILE_NAME = 'fileName';
+export const EXPORT_FORMAT = 'exportFormat';
+export const EXPORT_PARAMETERS = 'exportParameters';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -64,8 +67,8 @@ export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationTy
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const IS_ACTIVE = 'isActive';
-export const SELECTED_OPERATIONAL_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
-export const SELECTED_OPERATIONAL_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_ID1 = 'selectedOperationalLimitsGroupId1';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_ID2 = 'selectedOperationalLimitsGroupId2';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
 export const CSV_FILENAME = 'csvFilename';
 
@@ -84,8 +87,6 @@ export const LIMITS_PROPERTIES = 'limitsProperties';
 export const OLG_IS_DUPLICATE = 'operationalLimitsGroupsIsDuplicate';
 export const ENABLE_OLG_MODIFICATION = 'enableOLGModification';
 export const OLGS_MODIFICATION_TYPE = 'operationalLimitsGroupsModificationType';
-export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
-export const SELECTED_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
 export const PERMANENT_LIMIT = 'permanentLimit';
 export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
@@ -267,6 +268,8 @@ export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 export const IP_MIN = 'ipMin';
 export const IP_MAX = 'ipMax';
+export const IS_ATTACHMENT_POINT_CREATION = 'isAttachmentPointCreation';
+
 // dnd table
 export const SELECTED = 'selected';
 export const ACTIVATED = 'activated';

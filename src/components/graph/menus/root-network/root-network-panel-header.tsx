@@ -14,7 +14,6 @@ import {
     LeftPanelOpenIcon,
     type MuiStyles,
     OverflowableText,
-    type Parameter,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -27,24 +26,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
+import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 
 const styles = {
     headerPanel: (theme) => ({
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(1),
+        padding: theme.spacing(0.5),
     }),
     rootNameTitle: {
         fontWeight: 'bold',
     },
     headerLeftContainer: (theme) => ({
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.spacing(0.5),
         display: 'flex',
         alignItems: 'center',
         flexGrow: 1,
     }),
     uploadButton: (theme) => ({
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.spacing(0.5),
     }),
 } as const satisfies MuiStyles;
 
@@ -149,15 +149,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
         );
     };
 
-    const doCreateRootNetwork = ({
-        name,
-        tag,
-        description,
-        caseName,
-        caseId,
-        currentParameters,
-        caseFormat,
-    }: FormData) => {
+    const doCreateRootNetwork = ({ name, tag, description, caseId, currentParameters, caseFormat }: FormData) => {
         if (!studyUuid) {
             return;
         }
@@ -196,6 +188,9 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
             <Box sx={styles.headerPanel}>
                 <Box sx={styles.headerLeftContainer}>
                     <OverflowableText sx={styles.rootNameTitle} text={intl.formatMessage({ id: 'root' })} />
+                    {isRootNetworkPanelMinimized && !isMonoRootStudy && (
+                        <RootNetworkMinimizedPanelContent isRootNetworkPanelMinimized={isRootNetworkPanelMinimized} />
+                    )}
 
                     <Tooltip title={<FormattedMessage id={'addNetwork'} />}>
                         <span>
@@ -205,12 +200,12 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                                 sx={styles.uploadButton}
                                 disabled={rootNetworks.length >= MAX_ROOT_NETWORKS_NUMBER || isRootNetworksProcessing}
                             >
-                                <FileUpload />
+                                <FileUpload fontSize="small" />
                             </IconButton>
                         </span>
                     </Tooltip>
                     <IconButton size={'small'} onClick={openSearch}>
-                        <SearchIcon />
+                        <SearchIcon fontSize="small" />
                     </IconButton>
                 </Box>
                 <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>

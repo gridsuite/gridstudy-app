@@ -10,29 +10,30 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
     AutocompleteInput,
+    BooleanNullableCellRenderer,
     CustomAGGrid,
+    DefaultCellRenderer,
+    DirectoryItemSelector,
+    ElementType,
     ErrorInput,
     fetchStudyMetadata,
     FieldErrorAlert,
     LANG_FRENCH,
+    type MuiStyles,
+    type TreeViewFinderNodeProps,
     useSnackMessage,
     useStateBoolean,
-    DirectoryItemSelector,
-    ElementType,
-    type TreeViewFinderNodeProps,
-    type MuiStyles,
 } from '@gridsuite/commons-ui';
 import {
+    CSV_FILENAME,
     EQUIPMENT_ID,
     MODIFICATIONS_TABLE,
-    CSV_FILENAME,
     TABULAR_PROPERTIES,
     TYPE,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
@@ -56,6 +57,9 @@ import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
 import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
 import { getObjectId } from '../../../utils/utils';
 import { useFilterCsvGenerator } from './use-filter-csv-generator';
+import { usePrefilledModelGenerator } from './generation/use-prefilled-model-generator';
+import GeneratePrefilledModelDialog from './generation/generate-prefilled-model-dialog';
+import { PrefilledModelGenerationParams } from './generation/utils';
 
 const dialogStyles = {
     grid: { height: 500, width: '100%' },
@@ -73,6 +77,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const { setValue, clearErrors, setError } = useFormContext();
     const propertiesDialogOpen = useStateBoolean(false);
     const generateFromFilterOpen = useStateBoolean(false);
+    const prefilledModelDialogOpen = useStateBoolean(false);
     const language = useSelector((state: AppState) => state.computedLanguage);
     const [predefinedEquipmentProperties, setPredefinedEquipmentProperties] = useState<PredefinedEquipmentProperties>(
         {}
@@ -272,6 +277,20 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         language: language,
     });
 
+    const { handleGeneratePrefilledModel } = usePrefilledModelGenerator({
+        equipmentType,
+        csvColumns,
+        commentLines,
+        predefinedEquipmentProperties,
+    });
+
+    const onPrefilledModelGenerate = useCallback(
+        (params: PrefilledModelGenerationParams) => {
+            handleGeneratePrefilledModel(params);
+        },
+        [handleGeneratePrefilledModel]
+    );
+
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
             // Only update modifications table if a valid file upload exists
@@ -460,19 +479,27 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         separator={language === LANG_FRENCH ? ';' : ','}
                     >
                         <Button variant="contained" disabled={!csvColumns?.length}>
-                            <FormattedMessage id="GenerateSkeleton" />
+                            <FormattedMessage
+                                id={
+                                    dialogMode === TabularModificationType.CREATION
+                                        ? 'GenerateSkeleton'
+                                        : 'GenerateEmptyModel'
+                                }
+                            />
                         </Button>
                     </CsvDownloader>
                 </Grid>
-                <Grid item>
-                    <Button
-                        variant="contained"
-                        disabled={!equipmentType}
-                        onClick={() => generateFromFilterOpen.setTrue()}
-                    >
-                        <FormattedMessage id="GenerateTemplateFromFilter" />
-                    </Button>
-                </Grid>
+                {dialogMode === TabularModificationType.MODIFICATION && (
+                    <Grid item>
+                        <Button
+                            variant="contained"
+                            disabled={!equipmentType}
+                            onClick={() => prefilledModelDialogOpen.setTrue()}
+                        >
+                            <FormattedMessage id="GeneratePrefilledModel" />
+                        </Button>
+                    </Grid>
+                )}
                 <Grid item>
                     <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
                     {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
@@ -505,6 +532,13 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 title={intl.formatMessage({ id: 'Filters' })}
                 multiSelect={false}
             />
+            {dialogMode === TabularModificationType.MODIFICATION && (
+                <GeneratePrefilledModelDialog
+                    open={prefilledModelDialogOpen}
+                    equipmentType={equipmentType}
+                    onGenerate={onPrefilledModelGenerate}
+                />
+            )}
         </Grid>
     );
 }

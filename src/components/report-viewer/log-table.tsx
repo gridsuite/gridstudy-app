@@ -6,7 +6,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { CustomAGGrid, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
+import { CustomAGGrid, MessageLogCellRenderer, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
@@ -28,7 +28,6 @@ import { ComputingAndNetworkModificationType, Log, SelectedReportLog, SeverityLe
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { MessageLogCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
@@ -170,9 +169,14 @@ const LogTable = ({
     useEffect(() => {
         if (severities && severities.length > 0) {
             // Reset filters will trigger initialization regardless of current filter state
-            // Otherwise, only initialize if not already done and no filters present :
+            // Otherwise, only initialize if not already done and no filters present, or if not already done
+            // and severity not already in current filter state
             // This is to avoid overwriting filters when user unchecks all severities manually
-            const needsInitialization = resetFilters || (!filtersInitialized && severityFilter.length === 0);
+            const severityNotAlreadyInFilter = severities.some((severity) => !severityFilter.includes(severity));
+            const needsInitialization =
+                resetFilters ||
+                (!filtersInitialized && severityFilter.length === 0) ||
+                (!filtersInitialized && severityNotAlreadyInFilter);
 
             if (needsInitialization) {
                 dispatch(
@@ -188,7 +192,7 @@ const LogTable = ({
                 setFiltersInitialized(true);
             }
         }
-    }, [severities, dispatch, reportType, resetFilters, filtersInitialized, severityFilter.length]);
+    }, [severities, dispatch, reportType, resetFilters, filtersInitialized, severityFilter]);
 
     useEffect(() => {
         if (selectedReport.id && selectedReport.type) {
