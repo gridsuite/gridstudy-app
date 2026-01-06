@@ -35,33 +35,29 @@ function SelectedGlobalFilters() {
 
     return (
         <Box sx={resultsGlobalFilterStyles.selectedFiltersPanel}>
-            <>
-                {Array.from(filtersByCategories).map(([displayedCategoryTitle, filters]) => (
-                    <>
-                        <Typography component="div" margin={0}>
-                            <FormattedMessage id={displayedCategoryTitle} />
-                        </Typography>
-                        <LineSeparator />
-                        <Box sx={resultsGlobalFilterStyles.selectedFiltersSubGroup}>
-                            <>
-                                {filters.map((element: GlobalFilter) => (
-                                    <OverflowableChip
-                                        label={getOptionLabel(element, translate)}
-                                        sx={getResultsGlobalFiltersChipStyle(element.filterType)}
-                                        onDelete={() => {
-                                            const newSelectedGlobalFilters = selectedGlobalFilters.filter(
-                                                (filter) => filter !== element
-                                            );
-                                            setSelectedGlobalFilters(newSelectedGlobalFilters);
-                                            onChange(newSelectedGlobalFilters);
-                                        }}
-                                    />
-                                ))}
-                            </>
-                        </Box>
-                    </>
-                ))}
-            </>
+            {Array.from(filtersByCategories).map(([displayedCategoryTitle, filters]) => (
+                <>
+                    <Typography component="div" margin={0}>
+                        <FormattedMessage id={displayedCategoryTitle} />
+                    </Typography>
+                    <LineSeparator />
+                    <Box sx={resultsGlobalFilterStyles.selectedFiltersSubGroup}>
+                        {filters.map((element: GlobalFilter) => (
+                            <OverflowableChip
+                                label={getOptionLabel(element, translate)}
+                                sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                                onDelete={() => {
+                                    const newSelectedGlobalFilters = selectedGlobalFilters.filter(
+                                        (filter) => filter !== element
+                                    );
+                                    setSelectedGlobalFilters(newSelectedGlobalFilters);
+                                    onChange(newSelectedGlobalFilters);
+                                }}
+                            />
+                        ))}
+                    </Box>
+                </>
+            ))}
         </Box>
     );
 }

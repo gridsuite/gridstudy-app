@@ -55,12 +55,25 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
 
     const standardCategories: string[] = useMemo(() => {
         const allCategories = Object.values(FilterType) as string[];
-        const filteredCategories = allCategories.filter(
-            (category) =>
-                filterCategories.includes(category as FilterType) && category !== FilterType.SUBSTATION_PROPERTY
-        );
+        const filteredCategories = allCategories
+            .filter(
+                (category) =>
+                    filterCategories.includes(category as FilterType) && category !== FilterType.SUBSTATION_PROPERTY
+            )
+            .filter((category) => {
+                // when we are filtering voltage levels the GENERIC_FILTER FilterType is hidden because the SUBSTATION_OR_VL FilterType is enough
+                const onlyVoltageLevels = equipmentTypes?.every(
+                    (equipment) => equipment === EQUIPMENT_TYPES.VOLTAGE_LEVEL
+                );
+                return !(category === FilterType.GENERIC_FILTER && onlyVoltageLevels);
+            })
+            .filter((category) => {
+                // when we are filtering substations the SUBSTATION_OR_VL makes no sense and is removed :
+                const onlySubstations = equipmentTypes?.every((equipment) => equipment === EQUIPMENT_TYPES.SUBSTATION);
+                return !(category === FilterType.SUBSTATION_OR_VL && onlySubstations);
+            });
         return [RECENT_FILTER, ...filteredCategories];
-    }, [filterCategories]);
+    }, [filterCategories, equipmentTypes]);
 
     // fetches extra global filter subcategories if there are some in the local config
     useEffect(() => {
@@ -159,7 +172,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
 
         return genericFiltersStrictMode
             ? equipmentTypes
-            : Object.values(EQUIPMENT_TYPES.toString()).filter(
+            : Object.values(EQUIPMENT_TYPES).filter(
                   (equipmentType) =>
                       equipmentType !== EQUIPMENT_TYPES.SUBSTATION && equipmentType !== EQUIPMENT_TYPES.VOLTAGE_LEVEL
               );
