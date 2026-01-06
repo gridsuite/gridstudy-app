@@ -38,8 +38,8 @@ export type BranchInfos = Equipment & {
     busOrBusbarSectionId1: string;
     busOrBusbarSectionId2: string;
     currentLimits: CurrentLimitsData[];
-    selectedOperationalLimitsGroup1: string;
-    selectedOperationalLimitsGroup2: string;
+    selectedOperationalLimitsGroupId1: string;
+    selectedOperationalLimitsGroupId2: string;
 };
 
 export interface CurrentLimitsData {
