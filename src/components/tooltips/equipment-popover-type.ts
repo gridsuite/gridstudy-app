@@ -6,7 +6,7 @@
  */
 
 import { EquipmentInfos, Identifiable } from '@gridsuite/commons-ui';
-import { CurrentLimits } from 'services/network-modification-types';
+import { CurrentLimitsData } from '../../services/study/network-map.type';
 
 export interface CommonBranchEquipmentInfos extends EquipmentInfos {
     i1: number;
@@ -17,8 +17,8 @@ export interface CommonBranchEquipmentInfos extends EquipmentInfos {
     q2: number;
     r: number;
     x: number;
-    currentLimits1: CurrentLimits;
-    currentLimits2: CurrentLimits;
+    currentLimits1: CurrentLimitsData;
+    currentLimits2: CurrentLimitsData;
     selectedOperationalLimitsGroupId1?: string;
     selectedOperationalLimitsGroupId2?: string;
 }
@@ -62,6 +62,7 @@ export interface LoadEquipmentInfos {
     p0: number;
     q0: number;
 }
+
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
 
 export type GenericEquipmentInfos =
