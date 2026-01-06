@@ -16,6 +16,7 @@ import { ConverterStationElementModificationInfos } from '../components/dialogs/
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
+import { VARIATION_TYPES } from '../components/network/constants';
 
 export enum OperationType {
     SET = 'SET',
@@ -277,9 +278,9 @@ export interface OperationalLimitsGroup {
 }
 
 export interface Limit {
-    name: string;
-    acceptableDuration: number | null;
-    value: number | null;
+    name: AttributeModification<string> | null;
+    acceptableDuration: AttributeModification<number> | null;
+    value: AttributeModification<number> | null;
 }
 
 export interface TemporaryLimit extends Limit {
@@ -330,6 +331,7 @@ export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
     substationCreation?: SubstationCreationInfo | null;
     ipMin: number | null;
     ipMax: number | null;
+    topologyKind?: string;
 }
 
 export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
@@ -355,6 +357,8 @@ type VariationFilter = {
     name: string;
     specificMetadata: { type: string };
 };
+
+export type VariationType = keyof typeof VARIATION_TYPES;
 
 export interface Variations {
     variationMode: string | null;
@@ -521,8 +525,8 @@ export interface ShuntCompensatorCreationInfo {
 export interface LineCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    lineId: string;
-    lineName: string | null;
+    equipmentId: string;
+    equipmentName: string | null;
     r: number;
     x: number;
     g1: number;
@@ -533,9 +537,9 @@ export interface LineCreationInfo {
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
     busOrBusbarSectionId2: string;
-    limitsGroups: OperationalLimitsGroup[];
-    selectedLimitsGroup1: string;
-    selectedLimitsGroup2: string;
+    operationalLimitsGroups: OperationalLimitsGroup[];
+    selectedOperationalLimitsGroupId1: string;
+    selectedOperationalLimitsGroupId2: string;
     isUpdate: boolean;
     modificationUuid: string;
     connectionName1: string | null;
@@ -564,8 +568,8 @@ export interface LineModificationInfos {
     g2: AttributeModification<number> | null;
     b2: AttributeModification<number> | null;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroup1: AttributeModification<string> | null;
-    selectedOperationalLimitsGroup2: AttributeModification<string> | null;
+    selectedOperationalLimitsGroupId1: AttributeModification<string> | null;
+    selectedOperationalLimitsGroupId2: AttributeModification<string> | null;
     [ENABLE_OLG_MODIFICATION]: boolean;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
@@ -638,7 +642,7 @@ export interface SubstationCreationInfo {
 export interface DivideLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    modificationUuid?: UUID;
     lineToSplitId: string;
     percent: number;
     mayNewVoltageLevelInfos: any;
@@ -687,7 +691,7 @@ export interface LinesAttachToSplitLinesInfo {
 export interface DeleteAttachingLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    modificationUuid?: UUID;
     lineToAttachTo1Id: string;
     lineToAttachTo2Id: string;
     attachedLineId: string;
