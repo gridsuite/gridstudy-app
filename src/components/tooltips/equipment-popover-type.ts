@@ -19,8 +19,8 @@ export interface CommonBranchEquipmentInfos extends EquipmentInfos {
     x: number;
     currentLimits1: CurrentLimitsData;
     currentLimits2: CurrentLimitsData;
-    selectedOperationalLimitsGroup1?: string;
-    selectedOperationalLimitsGroup2?: string;
+    selectedOperationalLimitsGroupId1?: string;
+    selectedOperationalLimitsGroupId2?: string;
 }
 
 export type VoltageLevelTooltipBusInfos = {
