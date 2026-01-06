@@ -129,29 +129,17 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 // ignore already selected filters and non-generic filters :
                 if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
                     // add the others
-                    const equipmentType = element.specificMetadata?.equipmentType;
-                    if (
-                        equipmentType === EQUIPMENT_TYPES.SUBSTATION ||
-                        equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL
-                    ) {
-                        newlySelectedFilters.push({
-                            uuid: element.elementUuid,
-                            equipmentType: element.specificMetadata?.equipmentType,
-                            label: element.elementName,
-                            filterType: FilterType.SUBSTATION_OR_VL,
-                            filterTypeFromMetadata: element.specificMetadata?.type,
-                            recent: true,
-                        });
-                    } else {
-                        newlySelectedFilters.push({
-                            uuid: element.elementUuid,
-                            equipmentType: element.specificMetadata?.equipmentType,
-                            label: element.elementName,
-                            filterType: FilterType.GENERIC_FILTER,
-                            filterTypeFromMetadata: element.specificMetadata?.type,
-                            recent: true,
-                        });
-                    }
+                    const substationOrVoltageLevel =
+                        element.specificMetadata?.equipmentType === EQUIPMENT_TYPES.SUBSTATION ||
+                        element.specificMetadata?.equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL;
+                    newlySelectedFilters.push({
+                        uuid: element.elementUuid,
+                        equipmentType: element.specificMetadata?.equipmentType,
+                        label: element.elementName,
+                        filterType: substationOrVoltageLevel ? FilterType.SUBSTATION_OR_VL : FilterType.GENERIC_FILTER,
+                        filterTypeFromMetadata: element.specificMetadata?.type,
+                        recent: true,
+                    });
                 }
             });
 
