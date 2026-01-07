@@ -1585,7 +1585,7 @@ export function loadScaling(
 export function linesAttachToSplitLines({
     studyUuid,
     nodeUuid,
-    modificationUuid,
+    uuid,
     lineToAttachTo1Id,
     lineToAttachTo2Id,
     attachedLineId,
@@ -1611,15 +1611,15 @@ export function linesAttachToSplitLines({
 
     let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (modificationUuid) {
-        lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        lineAttachUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating attaching lines to splitting lines');
     } else {
         console.info('Creating attaching lines to splitting lines');
     }
 
     return backendFetchText(lineAttachUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',

@@ -686,7 +686,7 @@ export interface AttachLineInfo {
 export interface LinesAttachToSplitLinesInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    uuid?: UUID;
     lineToAttachTo1Id: string;
     lineToAttachTo2Id: string;
     attachedLineId: string;

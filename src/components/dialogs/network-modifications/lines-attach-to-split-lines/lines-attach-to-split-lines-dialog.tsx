@@ -39,12 +39,13 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';
 import { FetchStatus } from 'services/utils.type';
 import LineAttachToSplitLinesIllustration from './lines-attach-to-split-lines-illustration';
-import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import type { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
 import { DeepNullable } from '../../../utils/ts-utils';
+import { LinesAttachToSplitLinesInfo } from '../../../../services/network-modification-types';
 
 interface LinesAttachToSplitLinesProps {
-    editData: any;
+    editData?: LinesAttachToSplitLinesInfo;
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
     currentRootNetworkUuid: UUID;
@@ -131,7 +132,7 @@ const LinesAttachToSplitLinesDialog = ({
             linesAttachToSplitLines({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData ? editData.uuid : undefined,
+                uuid: editData ? editData.uuid : undefined,
                 lineToAttachTo1Id: linesAttachToSplitLine[LINE_TO_ATTACH_TO_1_ID],
                 lineToAttachTo2Id: linesAttachToSplitLine[LINE_TO_ATTACH_TO_2_ID],
                 attachedLineId: linesAttachToSplitLine[ATTACHED_LINE_ID],
