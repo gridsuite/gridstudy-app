@@ -124,10 +124,7 @@ const SubstationModificationDialog = ({
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string) => {
-            if (!equipmentId) {
-                setSubstationToModify(null);
-                reset(emptyFormData, { keepDefaultValues: true });
-            } else {
+            if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
@@ -157,6 +154,9 @@ const SubstationModificationDialog = ({
                             setSubstationToModify(null);
                         }
                     });
+            } else {
+                setSubstationToModify(null);
+                reset(emptyFormData, { keepDefaultValues: true });
             }
         },
         [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, editData]
