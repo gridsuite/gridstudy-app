@@ -12,7 +12,11 @@ import { SWITCH_KIND } from 'components/utils/field-constants';
 import { useFieldArray } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 
-const CreateSwitchesForm = ({ id }) => {
+interface CreateSwitchesFormProps {
+    id: string;
+}
+
+const CreateSwitchesForm = ({ id }: CreateSwitchesFormProps) => {
     const { fields: rows } = useFieldArray({ name: `${id}` });
     return (
         <>
@@ -36,8 +40,8 @@ const CreateSwitchesForm = ({ id }) => {
                                     name={`${id}.${index}.${SWITCH_KIND}`}
                                     label={'SwitchBetweenSectionsLabel'}
                                     labelValues={{
-                                        index1: index + 1,
-                                        index2: index + 2,
+                                        index1: String(index + 1),
+                                        index2: String(index + 2),
                                     }}
                                     size={'small'}
                                 />

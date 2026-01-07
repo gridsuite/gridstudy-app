@@ -6,14 +6,19 @@
  */
 
 import { Button } from '@mui/material';
-import { useFormContext } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useFormContext } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
+import { CreateSwitchesFormData } from '../switches-between-sections';
 
-const CreateSwitchesDialogSubmitButton = ({ handleSave }) => {
+interface CreateSwitchesDialogSubmitButtonProps {
+    handleSave: (data: CreateSwitchesFormData) => void | Promise<void>;
+}
+
+const CreateSwitchesDialogSubmitButton = ({ handleSave }: CreateSwitchesDialogSubmitButtonProps) => {
     const { handleSubmit } = useFormContext();
 
     return (
-        <Button onClick={handleSubmit(handleSave)} variant="outlined">
+        <Button onClick={handleSubmit(handleSave as SubmitHandler<FieldValues>)} variant="outlined">
             <FormattedMessage id="validate" />
         </Button>
     );
