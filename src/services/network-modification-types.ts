@@ -313,11 +313,11 @@ export interface VoltageLeveInfo {
     studyUuid: string;
     nodeUuid: UUID;
     voltageLevelId: string;
-    voltageLevelName: string | null;
+    voltageLevelName?: string | null;
     substationId?: string | null;
-    nominalV: number | null;
-    lowVoltageLimit: number | null;
-    highVoltageLimit: number | null;
+    nominalV?: number | null;
+    lowVoltageLimit?: number | null;
+    highVoltageLimit?: number | null;
     busbarCount?: number;
     sectionCount?: number;
     switchKinds?: any[];
@@ -328,7 +328,7 @@ export interface VoltageLeveInfo {
 }
 
 export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
-    substationCreation?: SubstationCreationInfo | null;
+    substationCreation?: AttachedSubstationCreationInfo | null;
     ipMin: number | null;
     ipMax: number | null;
     topologyKind?: string;
@@ -635,6 +635,14 @@ export interface TwoWindingsTransformerCreationInfo {
     connectionPosition2: string | null;
     connected1: boolean;
     connected2: boolean;
+    properties: Property[] | null;
+}
+
+export interface AttachedSubstationCreationInfo {
+    type: ModificationType;
+    equipmentId: string | null;
+    equipmentName: string | null;
+    country: string | null;
     properties: Property[] | null;
 }
 

@@ -69,7 +69,7 @@ const GenerationDispatchForm = ({
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
-                    label={'FiltersListsSelection'}
+                    label={''}
                 />
             </Grid>
         </Grid>
@@ -99,7 +99,7 @@ const GenerationDispatchForm = ({
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
-                    label={'FiltersListsSelection'}
+                    label={''}
                 />
             </Grid>
         </Grid>
