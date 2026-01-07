@@ -91,8 +91,18 @@ const getSubstationsGeneratorsOrderingSchema = () => {
 const formSchema = yup
     .object()
     .shape({
-        [LOSS_COEFFICIENT]: yup.number().nullable().min(0).max(100).required(),
-        [DEFAULT_OUTAGE_RATE]: yup.number().nullable().min(0).max(100).required(),
+        [LOSS_COEFFICIENT]: yup
+            .number()
+            .nullable()
+            .min(0, 'NormalizedPercentage')
+            .max(100, 'NormalizedPercentage')
+            .required(),
+        [DEFAULT_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'NormalizedPercentage')
+            .max(100, 'NormalizedPercentage')
+            .required(),
         [GENERATORS_WITHOUT_OUTAGE]: getGeneratorsFiltersSchema(),
         [GENERATORS_WITH_FIXED_ACTIVE_POWER]: getGeneratorsFiltersSchema(),
         [GENERATORS_FREQUENCY_RESERVES]: getGeneratorsFrequencyReserveSchema(),
