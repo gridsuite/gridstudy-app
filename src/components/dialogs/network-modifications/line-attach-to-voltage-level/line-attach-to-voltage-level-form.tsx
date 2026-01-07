@@ -52,8 +52,8 @@ interface LineAttachToVoltageLevelFormProps {
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
-    attachmentPoint: VoltageLevelCreationInfo;
-    setAttachmentPoint: Dispatch<SetStateAction<VoltageLevelCreationInfo>>;
+    attachmentPoint: ExtendedVoltageLevelCreationInfo;
+    setAttachmentPoint: Dispatch<SetStateAction<ExtendedVoltageLevelCreationInfo>>;
     allVoltageLevelOptions: Identifiable[];
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;

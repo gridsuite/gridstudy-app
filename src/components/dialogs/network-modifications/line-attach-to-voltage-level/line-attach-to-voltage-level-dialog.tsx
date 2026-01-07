@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    MODIFICATION_TYPES,
+    ModificationType,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
@@ -125,7 +131,8 @@ const LineAttachToVoltageLevelDialog = ({
 
     const [attachmentLine, setAttachmentLine] = useState<AttachmentLine>();
     const [newVoltageLevel, setNewVoltageLevel] = useState<ExtendedVoltageLevelCreationInfo>();
-    const [attachmentPoint, setAttachmentPoint] = useState<VoltageLevelCreationInfo>({
+    const [attachmentPoint, setAttachmentPoint] = useState<ExtendedVoltageLevelCreationInfo>({
+        type: ModificationType.VOLTAGE_LEVEL_CREATION,
         studyUuid: studyUuid,
         nodeUuid: currentNodeUuid,
         equipmentId: '',
@@ -312,6 +319,7 @@ const LineAttachToVoltageLevelDialog = ({
         }: VoltageLevelCreationInfo) => {
             return new Promise<string>(() => {
                 const preparedVoltageLevel: ExtendedVoltageLevelCreationInfo = {
+                    type: ModificationType.VOLTAGE_LEVEL_CREATION,
                     nodeUuid: currentNodeUuid,
                     studyUuid: studyUuid,
                     voltageLevelId: voltageLevelId,
@@ -388,7 +396,8 @@ const LineAttachToVoltageLevelDialog = ({
             properties,
         }: VoltageLevelCreationInfo) => {
             return new Promise<string>(() => {
-                const attachmentPointData: VoltageLevelCreationInfo = {
+                const attachmentPointData: ExtendedVoltageLevelCreationInfo = {
+                    type: ModificationType.VOLTAGE_LEVEL_CREATION,
                     nodeUuid: currentNodeUuid,
                     studyUuid: studyUuid,
                     equipmentId: voltageLevelId,

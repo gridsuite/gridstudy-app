@@ -670,6 +670,7 @@ export interface DivideLineInfo {
 }
 
 export interface ExtendedVoltageLevelCreationInfo extends VoltageLevelCreationInfo {
+    type: ModificationType.VOLTAGE_LEVEL_CREATION;
     busbarSections?: Option[];
 }
 
@@ -681,7 +682,7 @@ export interface AttachLineInfo {
     percent: number;
     attachmentPointId: string;
     attachmentPointName: string | null;
-    attachmentPointDetailInformation: VoltageLevelCreationInfo;
+    attachmentPointDetailInformation: ExtendedVoltageLevelCreationInfo;
     mayNewVoltageLevelInfos?: ExtendedVoltageLevelCreationInfo;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
