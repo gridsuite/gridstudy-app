@@ -11,14 +11,14 @@ import { downloadZipFile } from '../services/utils';
 import { fetchExportNetworkFile } from '../services/study/network';
 import { useIntl } from 'react-intl';
 
-export function useExportDownload(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function useExportDownload() {
     const { snackError, snackSuccess } = useSnackMessage();
     const intl = useIntl();
 
     const downloadExportNetworkFile = useCallback(
         (exportUuid: UUID) => {
             let filename = 'export.zip';
-            fetchExportNetworkFile(studyUuid, currentNodeUuid, currentRootNetworkUuid, exportUuid)
+            fetchExportNetworkFile(exportUuid)
                 .then(async (response) => {
                     const contentDisposition = response.headers.get('Content-Disposition');
                     if (contentDisposition?.includes('filename=')) {
@@ -40,7 +40,7 @@ export function useExportDownload(studyUuid: UUID, currentNodeUuid: UUID, curren
                     snackWithFallback(snackError, error, { headerId: 'export.message.failed' });
                 });
         },
-        [currentNodeUuid, currentRootNetworkUuid, intl, snackError, snackSuccess, studyUuid]
+        [intl, snackError, snackSuccess]
     );
     return { downloadExportNetworkFile };
 }

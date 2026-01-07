@@ -16,11 +16,10 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { isExportNetworkNotification } from '../types/notification-types';
 import { buildExportIdentifier, isExportSubscribed, unsetExportSubscription } from '../utils/export-network-utils';
-import { UUID } from 'node:crypto';
 
-export default function useExportNotification(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export default function useExportNotification() {
     const { snackError } = useSnackMessage();
-    const { downloadExportNetworkFile } = useExportDownload(studyUuid, currentNodeUuid, currentRootNetworkUuid);
+    const { downloadExportNetworkFile } = useExportDownload();
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const handleExportNotification = useCallback(

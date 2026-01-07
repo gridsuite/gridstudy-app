@@ -430,8 +430,8 @@ export function exportNetworkFile(
     });
 }
 
-export function fetchExportNetworkFile(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID, exportUuid: UUID) {
-    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) + '/download-file';
+export function fetchExportNetworkFile(exportUuid: UUID) {
+    const url = PREFIX_STUDY_QUERIES + '/download-file';
     const urlSearchParams = new URLSearchParams();
     if (!isBlankOrEmpty(exportUuid)) {
         urlSearchParams.append('exportUuid', exportUuid);
