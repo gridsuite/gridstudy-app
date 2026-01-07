@@ -8,9 +8,9 @@
 import { Dialog, DialogActions } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import CreateSwitchesDialogSubmitButton from './create-switches-dialog-submit-button.js';
-import CreateSwitchesForm from './create-switches-form.js';
-import { getCreateSwitchesEmptyFormData, getCreateSwitchesValidationSchema } from './create-switches-dialog-utils.js';
+import CreateSwitchesDialogSubmitButton from './create-switches-dialog-submit-button';
+import CreateSwitchesForm from './create-switches-form';
+import { getCreateSwitchesEmptyFormData, getCreateSwitchesValidationSchema } from './create-switches-dialog-utils';
 import { SWITCH_KINDS } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import React, { useEffect } from 'react';
