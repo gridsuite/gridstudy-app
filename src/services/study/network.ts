@@ -431,7 +431,7 @@ export function exportNetworkFile(
 }
 
 export function fetchExportNetworkFile(exportUuid: UUID) {
-    const url = PREFIX_STUDY_QUERIES + '/download-file';
+    const url = PREFIX_STUDY_QUERIES + '/v1/download-file';
     const urlSearchParams = new URLSearchParams();
     if (!isBlankOrEmpty(exportUuid)) {
         urlSearchParams.append('exportUuid', exportUuid);
