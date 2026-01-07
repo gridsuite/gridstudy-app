@@ -38,7 +38,7 @@ export enum FilterType {
     VOLTAGE_LEVEL = 'voltageLevel',
     COUNTRY = 'country',
     GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library (except voltage level and substation filters)
-    SUBSTATION_OR_VL = 'substationOrVoltageLevel', // voltage levels and substation generic filters which uses the filter library
+    SUBSTATION_OR_VL = 'substationOrVoltageLevelFilter', // voltage levels and substation generic filters which uses the filter library
     SUBSTATION_PROPERTY = 'substationProperty',
 }
 
