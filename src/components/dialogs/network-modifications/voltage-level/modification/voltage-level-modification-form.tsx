@@ -5,25 +5,45 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
 import {
+    ADDITIONAL_PROPERTIES,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
+    IDENTIFIABLE_SHORT_CIRCUIT,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
+    NAME,
     NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, FloatInput, TextInput } from '@gridsuite/commons-ui';
 import { filledTextField, KiloAmpereAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { Properties } from '../../common/properties/property-utils';
 
-const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
+interface VoltageLevelFormData {
+    [NAME]?: string;
+    [SUBSTATION_ID]?: string;
+    [NOMINAL_V]?: number;
+    [LOW_VOLTAGE_LIMIT]?: number;
+    [HIGH_VOLTAGE_LIMIT]?: number;
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
+    [IDENTIFIABLE_SHORT_CIRCUIT]?: { ipMin: number; ipMax: number };
+    [ADDITIONAL_PROPERTIES]?: Properties;
+}
+
+interface VoltageLevelModificationFormProps {
+    voltageLevelInfos: VoltageLevelFormData | null | undefined;
+    equipmentId: string;
+}
+
+const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }: VoltageLevelModificationFormProps) => {
     const voltageLevelIdField = (
         <TextField
             size="small"
@@ -59,7 +79,7 @@ const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
             // Because of a mui/material bug, the disabled attribute do not work properly.
             // It should be fixed after v5.12.2. For the moment, instead of fetching the
             // substation list to display in this AutocompleteInput, we only show the current substation.
-            options={[voltageLevelInfos?.substationId]}
+            options={[voltageLevelInfos?.substationId ?? '']}
             getOptionLabel={getObjectId}
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) => value}
