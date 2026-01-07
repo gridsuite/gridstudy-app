@@ -7,7 +7,7 @@
 
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
@@ -25,12 +25,22 @@ import {
     getConcatenatedProperties,
     getPropertiesFromModification,
     modificationPropertiesSchema,
+    Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { AttributeModification } from 'services/network-modification-types';
 
-const emptyFormData = {
+interface SubstationModificationFormData {
+    [EQUIPMENT_NAME]?: string;
+    [COUNTRY]: string | null;
+    [ADDITIONAL_PROPERTIES]?: Property[];
+}
+
+const emptyFormData: SubstationModificationFormData = {
     [EQUIPMENT_NAME]: '',
     [COUNTRY]: null,
     ...emptyProperties,
@@ -42,17 +52,36 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
     })
-    .concat(modificationPropertiesSchema);
+    .concat(modificationPropertiesSchema) as yup.ObjectSchema<SubstationModificationFormData>;
+
+interface SubstationModificationEditData {
+    uuid?: UUID;
+    equipmentId: string;
+    equipmentName?: AttributeModification<string> | null;
+    country: AttributeModification<string> | null;
+    properties?: Property[] | null;
+}
+
+interface SubstationModificationDialogProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus?: string;
+    editData?: SubstationModificationEditData;
+    defaultIdValue?: string;
+}
 
 /**
  * Dialog to modify a substation in the network
  * @param editData the data to edit
  * @param defaultIdValue the default substation id
  * @param currentNode The node we are currently working on
+ * @param currentRootNetworkUuid The root network we are currently working on
  * @param studyUuid the study we are currently working on
- * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param isUpdate check if edition form
  * @param editDataFetchStatus indicates the status of fetching EditData
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const SubstationModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
@@ -63,7 +92,7 @@ const SubstationModificationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: SubstationModificationDialogProps) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
@@ -84,7 +113,7 @@ const SubstationModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
                 [COUNTRY]: editData.country?.value ?? null,
-                ...getPropertiesFromModification(editData.properties),
+                ...getPropertiesFromModification(editData?.properties ?? undefined),
             });
         }
     }, [reset, editData]);
@@ -94,7 +123,7 @@ const SubstationModificationDialog = ({
     }, [reset]);
 
     const onEquipmentIdChange = useCallback(
-        (equipmentId) => {
+        (equipmentId: string) => {
             if (!equipmentId) {
                 setSubstationToModify(null);
                 reset(emptyFormData, { keepDefaultValues: true });
@@ -140,7 +169,7 @@ const SubstationModificationDialog = ({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (substation) => {
+        (substation: SubstationModificationFormData) => {
             modifySubstation({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -189,16 +218,12 @@ const SubstationModificationDialog = ({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.SUBSTATION}
+                        equipmentType={EquipmentType.SUBSTATION}
                         fillerHeight={5}
                     />
                 )}
                 {selectedId != null && (
-                    <SubstationModificationForm
-                        studyUuid={studyUuid}
-                        substationToModify={substationToModify}
-                        equipmentId={selectedId}
-                    />
+                    <SubstationModificationForm substationToModify={substationToModify} equipmentId={selectedId} />
                 )}
             </ModificationDialog>
         </CustomFormProvider>
