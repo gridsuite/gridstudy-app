@@ -20,9 +20,8 @@ import {
     SUBSTATION_CREATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { useCallback, useMemo, useState } from 'react';
-
-import { TextInput } from '@gridsuite/commons-ui';
+import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
+import { Identifiable, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
@@ -34,6 +33,31 @@ import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to
 import { useFormContext, useWatch } from 'react-hook-form';
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import {
+    AttachmentLine,
+    ExtendedVoltageLevelCreationInfo,
+    LineCreationInfo,
+    VoltageLevelCreationInfo,
+} from '../../../../services/network-modification-types';
+import { FetchStatus } from '../../../../services/utils.type';
+
+interface LineAttachToVoltageLevelFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    onLineCreationDo: (line: LineCreationInfo) => Promise<string>;
+    lineToEdit?: AttachmentLine;
+    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
+    voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
+    onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
+    attachmentPoint: VoltageLevelCreationInfo;
+    setAttachmentPoint: Dispatch<SetStateAction<VoltageLevelCreationInfo>>;
+    allVoltageLevelOptions: Identifiable[];
+    isUpdate: boolean;
+    editDataFetchStatus?: FetchStatus;
+}
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
@@ -47,7 +71,9 @@ const LineAttachToVoltageLevelForm = ({
     attachmentPoint,
     setAttachmentPoint,
     allVoltageLevelOptions,
-}) => {
+    isUpdate,
+    editDataFetchStatus,
+}: Readonly<LineAttachToVoltageLevelFormProps>) => {
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
     const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
@@ -90,7 +116,7 @@ const LineAttachToVoltageLevelForm = ({
     );
 
     const onAttachmentPointIdChange = useCallback(
-        (value) => {
+        (value: string) => {
             setAttachmentPoint((prevAttachmentPoint) => {
                 return { ...prevAttachmentPoint, equipmentId: value };
             });
@@ -103,7 +129,7 @@ const LineAttachToVoltageLevelForm = ({
     );
 
     const onAttachmentPointNameChange = useCallback(
-        (value) => {
+        (value: string) => {
             setAttachmentPoint((prevAttachmentPoint) => {
                 return { ...prevAttachmentPoint, equipmentName: value };
             });
@@ -130,15 +156,17 @@ const LineAttachToVoltageLevelForm = ({
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     const busbarSectionOptions = useMemo(() => {
-        if (isVoltageLevelEdit) {
+        if (isVoltageLevelEdit && voltageLevelToEdit?.busbarSections) {
             setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`, null);
             return voltageLevelToEdit.busbarSections;
+        } else {
+            return [];
         }
     }, [isVoltageLevelEdit, voltageLevelToEdit, setValue]);
 
     const connectivityForm = (
         <ConnectivityForm
-            label={'AttachedVoltageLevelId'}
+            voltageLevelSelectLabel={'AttachedVoltageLevelId'}
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
@@ -230,6 +258,8 @@ const LineAttachToVoltageLevelForm = ({
                     editData={attachmentPoint}
                     isAttachmentPointModification={true}
                     titleId={'SpecifyAttachmentPoint'}
+                    isUpdate={isUpdate}
+                    editDataFetchStatus={editDataFetchStatus}
                 />
             )}
             {voltageLevelDialogOpen && (
@@ -241,6 +271,8 @@ const LineAttachToVoltageLevelForm = ({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
                     editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
+                    isUpdate={isUpdate}
+                    editDataFetchStatus={editDataFetchStatus}
                 />
             )}
             {lineDialogOpen && (
@@ -253,6 +285,8 @@ const LineAttachToVoltageLevelForm = ({
                     displayConnectivity={false}
                     onCreateLine={onLineCreationDo}
                     editData={lineToEdit}
+                    isUpdate={isUpdate}
+                    editDataFetchStatus={editDataFetchStatus}
                 />
             )}
         </>

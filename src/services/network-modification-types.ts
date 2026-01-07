@@ -14,7 +14,7 @@ import {
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
-import { ModificationType } from '@gridsuite/commons-ui';
+import { ModificationType, Option } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 
@@ -312,6 +312,8 @@ export interface SubstationModificationInfo {
 export interface VoltageLeveInfo {
     studyUuid: string;
     nodeUuid: UUID;
+    equipmentId: string;
+    equipmentName: string | null;
     voltageLevelId: string;
     voltageLevelName: string | null;
     substationId?: string | null;
@@ -349,7 +351,10 @@ export interface AttachmentLine {
     b1: number;
     g2: number;
     b2: number;
-    currentLimits: CurrentLimits;
+    operationalLimitsGroups: OperationalLimitsGroup[];
+    selectedOperationalLimitsGroupId1: string;
+    selectedOperationalLimitsGroupId2: string;
+    properties: Property[] | null;
 }
 
 type VariationFilter = {
@@ -664,16 +669,20 @@ export interface DivideLineInfo {
     newLine2Name: string | null;
 }
 
+export interface ExtendedVoltageLevelCreationInfo extends VoltageLevelCreationInfo {
+    busbarSections?: Option[];
+}
+
 export interface AttachLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    modificationUuid?: UUID;
     lineToAttachToId: string;
     percent: number;
     attachmentPointId: string;
     attachmentPointName: string | null;
     attachmentPointDetailInformation: VoltageLevelCreationInfo;
-    mayNewVoltageLevelInfos: VoltageLevelCreationInfo;
+    mayNewVoltageLevelInfos?: ExtendedVoltageLevelCreationInfo;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
     attachmentLine: AttachmentLine;
