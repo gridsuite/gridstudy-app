@@ -27,6 +27,7 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     onSelect,
 }) => {
     const intl = useIntl();
+    const orderedVoltageLevels = useMemo(() => voltageLevels.sort(), [voltageLevels]);
 
     const highlightText = useMemo(
         () => (text: string, highlight: string) => {
@@ -53,7 +54,13 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
         onClose();
     };
 
-    if (!open || voltageLevels.length === 0) {
+    const NoMaxHeightPopper = styled(Popper)({
+        '& .MuiAutocomplete-listbox': {
+            maxHeight: 'none',
+        },
+    });
+
+    if (!open || orderedVoltageLevels.length === 0) {
         return null;
     }
 
@@ -71,12 +78,8 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                         }}
                         ListboxComponent={VoltageLevelSearchMenuList}
                         // if not set, max popper heigt is 40vh, which is not enough to display ~8 elements
-                        PopperComponent={styled(Popper)({
-                            '& .MuiAutocomplete-listbox': {
-                                maxHeight: 'none',
-                            },
-                        })}
-                        options={voltageLevels}
+                        PopperComponent={(props) => <NoMaxHeightPopper {...props} />}
+                        options={orderedVoltageLevels}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -97,7 +100,7 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                             const { key, ...optionProps } = props;
                             return (
                                 <li key={key} {...optionProps}>
-                                    <div>{highlightText(option, inputValue)}</div>
+                                    {highlightText(option, inputValue)}
                                 </li>
                             );
                         }}

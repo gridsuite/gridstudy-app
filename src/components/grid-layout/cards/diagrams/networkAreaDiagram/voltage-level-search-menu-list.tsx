@@ -1,15 +1,19 @@
 import * as React from 'react';
-import Typography from '@mui/material/Typography';
 import { List, RowComponentProps } from 'react-window';
 
-function Row({ index, style, items }: RowComponentProps<{ items: React.ReactNode[] }>) {
+function MenuRow({
+    index,
+    style,
+    items,
+}: RowComponentProps<{ items: React.ReactElement<React.HTMLAttributes<HTMLLIElement>>[] }>) {
     const option = items[index];
 
-    return (
-        <Typography component="li" key={index} style={style} noWrap>
-            {option}
-        </Typography>
-    );
+    return React.cloneElement(option, {
+        style: {
+            ...(option.props.style ?? {}),
+            ...style,
+        },
+    });
 }
 
 const ITEM_HEIGHT = 36;
@@ -22,7 +26,7 @@ export const VoltageLevelSearchMenuList = React.forwardRef<HTMLDivElement, React
     (props, ref) => {
         const { children, ...other } = props;
 
-        const items = children as React.ReactNode[];
+        const items = children as React.ReactElement<React.HTMLAttributes<HTMLLIElement>>[];
 
         const height =
             (items.length > MAX_ITEMS ? ITEM_HEIGHT * MAX_ITEMS : items.length * ITEM_HEIGHT) + 2 * LISTBOX_PADDING;
@@ -32,7 +36,7 @@ export const VoltageLevelSearchMenuList = React.forwardRef<HTMLDivElement, React
                 <List
                     rowCount={items.length}
                     rowHeight={ITEM_HEIGHT}
-                    rowComponent={Row}
+                    rowComponent={MenuRow}
                     rowProps={{ items }}
                     overscanCount={5}
                     style={{
