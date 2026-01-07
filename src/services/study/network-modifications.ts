@@ -1468,7 +1468,7 @@ export function divideLine({
 export function attachLine({
     studyUuid,
     nodeUuid,
-    modificationUuid,
+    uuid,
     lineToAttachToId,
     percent,
     attachmentPointId,
@@ -1501,16 +1501,15 @@ export function attachLine({
     });
 
     let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (modificationUuid) {
-        lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        lineAttachUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating line attach to voltage level');
     } else {
         console.info('Creating line attach to voltage level');
     }
 
     return backendFetchText(lineAttachUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',

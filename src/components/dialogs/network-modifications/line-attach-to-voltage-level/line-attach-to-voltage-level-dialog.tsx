@@ -230,7 +230,7 @@ const LineAttachToVoltageLevelDialog = ({
             attachLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.modificationUuid,
+                uuid: editData?.uuid,
                 lineToAttachToId: lineAttach[LINE_TO_ATTACH_OR_SPLIT_ID],
                 percent: lineAttach[SLIDER_PERCENTAGE],
                 attachmentPointId: lineAttach[ATTACHMENT_POINT_ID],
@@ -248,15 +248,7 @@ const LineAttachToVoltageLevelDialog = ({
                 snackWithFallback(snackError, error, { headerId: 'LineAttachmentError' });
             });
         },
-        [
-            attachmentLine,
-            attachmentPoint,
-            currentNodeUuid,
-            editData?.modificationUuid,
-            newVoltageLevel,
-            snackError,
-            studyUuid,
-        ]
+        [attachmentLine, attachmentPoint, currentNodeUuid, editData, newVoltageLevel, snackError, studyUuid]
     );
 
     useEffect(() => {

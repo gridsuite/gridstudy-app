@@ -677,7 +677,7 @@ export interface ExtendedVoltageLevelCreationInfo extends VoltageLevelCreationIn
 export interface AttachLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid?: UUID;
+    uuid?: UUID;
     lineToAttachToId: string;
     percent: number;
     attachmentPointId: string;
