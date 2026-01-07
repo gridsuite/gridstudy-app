@@ -7,13 +7,13 @@
 
 import { Dialog, DialogActions } from '@mui/material';
 import { Resolver, useForm } from 'react-hook-form';
-import CreateRuleForm from './create-rule-form.js';
+import CreateRuleForm from './create-rule-form';
 import { getCreateRuleValidationSchema, getCreateRuleEmptyFormData } from './create-rule-dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
-import CreateRuleDialogSubmitButton from './create-rule-dialog-submit-button.js';
+import CreateRuleDialogSubmitButton from './create-rule-dialog-submit-button';
 import { CancelButton, CustomFormProvider } from '@gridsuite/commons-ui';
-import { CreateRuleDialogProps, CreateRuleFormInput } from './create-rule-dialog.types.js';
+import { CreateRuleDialogProps, CreateRuleFormInput } from './create-rule-dialog.types';
 import { useCallback } from 'react';
 
 const EMPTY_FORM_DATA = getCreateRuleEmptyFormData();
