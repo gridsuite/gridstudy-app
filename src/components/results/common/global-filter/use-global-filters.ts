@@ -70,7 +70,7 @@ export default function useGlobalFilters() {
         newGlobalFilter.nominalV = [...nominalVs];
         newGlobalFilter.countryCode = [...countryCodes];
         newGlobalFilter.genericFilter = [...genericFilters];
-        newGlobalFilter.substationOrVoltageLevelFilter = [...substationOrVoltageLevelFilter];
+        newGlobalFilter.substationOrVoltageLevelFilter = Array.from(substationOrVoltageLevelFilter);
 
         if (substationProperties.size > 0) {
             newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);

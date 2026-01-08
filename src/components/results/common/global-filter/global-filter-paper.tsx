@@ -61,9 +61,14 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                     filterCategories.includes(category as FilterType) && category !== FilterType.SUBSTATION_PROPERTY
             )
             .filter((category) => {
-                // when we are filtering voltage levels the GENERIC_FILTER FilterType is hidden because the SUBSTATION_OR_VL FilterType is enough
-                const onlyVoltageLevels =
-                    equipmentTypes?.length === 1 && equipmentTypes[0] === EQUIPMENT_TYPES.VOLTAGE_LEVEL;
+                // for the following EQUIPMENT_TYPES the GENERIC_FILTER FilterType is hidden
+                // because the SUBSTATION_OR_VL FilterType handles all the possible filters
+                const onlyVoltageLevels = equipmentTypes?.every(
+                    (equipment) =>
+                        equipment === EQUIPMENT_TYPES.VOLTAGE_LEVEL ||
+                        equipment === EQUIPMENT_TYPES.BUS ||
+                        equipment === EQUIPMENT_TYPES.BUSBAR_SECTION
+                );
                 return !(category === FilterType.GENERIC_FILTER && onlyVoltageLevels);
             })
             .filter((category) => {
