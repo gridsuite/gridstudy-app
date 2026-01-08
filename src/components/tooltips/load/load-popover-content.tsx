@@ -15,6 +15,7 @@ interface LoadPopoverContentProps {
 }
 
 export const LoadPopoverContent: React.FC<LoadPopoverContentProps> = ({ equipmentInfos }) => {
+    const typeAffineFixe = getPropertyValue(equipmentInfos?.properties, 'typeAffineFixe');
     return (
         <Grid container direction="column" rowSpacing={2} alignItems="center">
             <Grid item sx={styles.grid}>
@@ -31,13 +32,16 @@ export const LoadPopoverContent: React.FC<LoadPopoverContentProps> = ({ equipmen
                                 <CellRender value={formatValue(Math.round(equipmentInfos.q0))} colStyle={styles.cell} />
                             </TableRow>
 
-                            <TableRow>
-                                <CellRender isLabel label="Type" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                                <CellRender
-                                    value={formatValue(getPropertyValue(equipmentInfos?.properties, 'typeAffineFixe'))}
-                                    colStyle={styles.cell}
-                                />
-                            </TableRow>
+                            {typeAffineFixe && (
+                                <TableRow>
+                                    <CellRender
+                                        isLabel
+                                        label="Type"
+                                        colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                                    />
+                                    <CellRender value={formatValue(typeAffineFixe)} colStyle={styles.cell} />
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>

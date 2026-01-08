@@ -169,9 +169,14 @@ const LogTable = ({
     useEffect(() => {
         if (severities && severities.length > 0) {
             // Reset filters will trigger initialization regardless of current filter state
-            // Otherwise, only initialize if not already done and no filters present :
+            // Otherwise, only initialize if not already done and no filters present, or if not already done
+            // and severity not already in current filter state
             // This is to avoid overwriting filters when user unchecks all severities manually
-            const needsInitialization = resetFilters || (!filtersInitialized && severityFilter.length === 0);
+            const severityNotAlreadyInFilter = severities.some((severity) => !severityFilter.includes(severity));
+            const needsInitialization =
+                resetFilters ||
+                (!filtersInitialized && severityFilter.length === 0) ||
+                (!filtersInitialized && severityNotAlreadyInFilter);
 
             if (needsInitialization) {
                 dispatch(
@@ -187,7 +192,7 @@ const LogTable = ({
                 setFiltersInitialized(true);
             }
         }
-    }, [severities, dispatch, reportType, resetFilters, filtersInitialized, severityFilter.length]);
+    }, [severities, dispatch, reportType, resetFilters, filtersInitialized, severityFilter]);
 
     useEffect(() => {
         if (selectedReport.id && selectedReport.type) {

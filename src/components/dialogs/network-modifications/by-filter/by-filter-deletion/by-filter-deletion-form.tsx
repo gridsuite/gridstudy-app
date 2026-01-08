@@ -27,6 +27,8 @@ const ByFilterDeletionForm = () => {
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([
             EQUIPMENT_TYPES.SWITCH,
+            EQUIPMENT_TYPES.DISCONNECTOR,
+            EQUIPMENT_TYPES.BREAKER,
             EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
             EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
             EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,

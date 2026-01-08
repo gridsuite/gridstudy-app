@@ -180,6 +180,13 @@ const spreadsheetFr = {
     'spreadsheet/formula/function-reference/disabled':
         'Les références de fonctions sont désactivées, elles doivent être appelées avec des paramètres',
 
+    // Save dialog
+    'spreadsheet/save-dialog/spreadsheet': 'Tableur',
+    'spreadsheet/save-dialog/include': 'Inclure',
+    'spreadsheet/save-dialog/filters': 'Filtres',
+    'spreadsheet/save-dialog/columns_visibility': 'Visibilité des colonnes',
+    'spreadsheet/save-dialog/columns_sorting': 'Tri des colonnes',
+
     // Column types
     TEXT: 'Texte',
     NUMBER: 'Nombre',

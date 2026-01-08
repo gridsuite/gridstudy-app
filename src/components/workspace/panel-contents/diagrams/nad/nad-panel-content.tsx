@@ -131,9 +131,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                         showInSpreadsheet={handleShowInSpreadsheet}
                         svg={diagram.svg?.svg ?? undefined}
                         svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
-                        svgScalingFactor={
-                            (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined)?.scalingFactor
-                        }
+                        additionalMetadata={diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined}
                         svgVoltageLevels={diagram.voltageLevelIds}
                         loadingState={loading}
                         isNadCreationFromFilter={!!diagram.filterUuid}
