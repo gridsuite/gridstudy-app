@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
 import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { transformIfFrenchNumber } from '../../tabular/tabular-common.js';
+import { roundToDefaultPrecision } from '../../../../../utils/rounding.js';
 
 const TapChangerSteps = ({
     tapChanger,
@@ -169,7 +170,7 @@ const TapChangerSteps = ({
             let current = lowTap;
 
             currentTapRows.forEach((row, index) => {
-                currentTapRows[index][createTapRuleColumn] = current;
+                currentTapRows[index][createTapRuleColumn] = roundToDefaultPrecision(current);
                 current += interval;
             });
             replace(currentTapRows);
