@@ -94,7 +94,7 @@ export const resultsGlobalFilterStyles = {
     }),
     selectedFiltersSubGroup: (theme) => ({
         display: 'block',
-        paddingTop: 0,
+        paddingTop: 1,
         paddingBottom: 0,
         color: theme.palette.text.secondary,
     }),

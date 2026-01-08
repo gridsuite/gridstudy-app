@@ -6,9 +6,9 @@
  */
 
 import { GlobalFilter } from './global-filter-types';
-import { LineSeparator, OverflowableChip } from '@gridsuite/commons-ui';
+import { OverflowableChip } from '@gridsuite/commons-ui';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
-import { Box, List, ListItem } from '@mui/material';
+import { Box, Divider, List, ListItem, Typography } from '@mui/material';
 import { getOptionLabel } from './global-filter-utils';
 import { useContext } from 'react';
 import { GlobalFilterContext } from './global-filter-context';
@@ -49,8 +49,10 @@ function SelectedGlobalFilters() {
         <List sx={resultsGlobalFilterStyles.selectedFiltersPanel}>
             {Array.from(filtersByCategories).map(([displayedCategoryTitle, filters], index) => (
                 <ListItem key={displayedCategoryTitle} sx={resultsGlobalFilterStyles.selectedFiltersSubGroup}>
-                    {index !== 0 && <LineSeparator sx={{ margin: 2 }} />}
-                    <FormattedMessage id={displayedCategoryTitle} />
+                    {index !== 0 && <Divider />}
+                    <Typography sx={{ marginTop: 1 }}>
+                        <FormattedMessage id={displayedCategoryTitle} />
+                    </Typography>
                     <Box sx={resultsGlobalFilterStyles.selectedFiltersChips}>
                         {filters.map((element: GlobalFilter) => (
                             <OverflowableChip
