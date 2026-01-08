@@ -6,7 +6,8 @@
  */
 
 import {
-    RATIO_TAP_CHANGER,
+    PHASE_TAP_CHANGER,
+    STEPS_ALPHA,
     STEPS_CONDUCTANCE,
     STEPS_RATIO,
     STEPS_REACTANCE,
@@ -18,10 +19,26 @@ import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
-import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
+import { PHASE_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 import { DndColumnType } from '@gridsuite/commons-ui';
+import { PhaseTapChangerData } from '../tap-changer-pane.types';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
-const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
+export interface PhaseTapChangerPaneStepsProps {
+    disabled?: boolean;
+    previousValues?: PhaseTapChangerData;
+    editData?: Record<string, unknown>;
+    currentNode: CurrentTreeNode;
+    isModification?: boolean;
+}
+
+const PhaseTapChangerPaneSteps = ({
+    disabled,
+    previousValues,
+    editData,
+    currentNode,
+    isModification = false,
+}: PhaseTapChangerPaneStepsProps) => {
     const intl = useIntl();
 
     const COLUMNS_DEFINITIONS = useMemo(() => {
@@ -71,6 +88,14 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 type: DndColumnType.NUMERIC,
                 clearable: false,
             },
+            {
+                label: 'Alpha',
+                dataKey: STEPS_ALPHA,
+                initialValue: 0,
+                editable: true,
+                type: DndColumnType.NUMERIC,
+                clearable: false,
+            },
         ].map((column) => ({
             ...column,
             label: intl
@@ -87,10 +112,11 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
             intl.formatMessage({ id: 'ImportFileConductance' }),
             intl.formatMessage({ id: 'ImportFileSusceptance' }),
             intl.formatMessage({ id: 'Ratio' }),
+            intl.formatMessage({ id: 'ImportFileAlpha' }),
         ];
     }, [intl]);
 
-    const handleImportRow = (val) => {
+    const handleImportRow = (val: Record<string, string>): Record<string, string | number> => {
         return {
             [STEPS_RESISTANCE]: parseIntData(
                 val[
@@ -124,31 +150,52 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 ],
                 0
             ),
-            [STEPS_RATIO]: isNaN(parseFloat(val[intl.formatMessage({ id: 'Ratio' })]))
+            [STEPS_RATIO]: isNaN(parseFloat(String(val[intl.formatMessage({ id: 'Ratio' })])))
                 ? 1
-                : parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
+                : parseFloat(String(val[intl.formatMessage({ id: 'Ratio' })])),
+            [STEPS_ALPHA]: isNaN(
+                parseFloat(
+                    String(
+                        val[
+                            intl.formatMessage({
+                                id: 'ImportFileAlpha',
+                            })
+                        ]
+                    )
+                )
+            )
+                ? 1
+                : parseFloat(
+                      String(
+                          val[
+                              intl.formatMessage({
+                                  id: 'ImportFileAlpha',
+                              })
+                          ]
+                      )
+                  ),
         };
     };
 
     return (
         <TapChangerSteps
-            tapChanger={RATIO_TAP_CHANGER}
-            ruleType={RATIO_TAP}
-            createTapRuleColumn={STEPS_RATIO}
+            tapChanger={PHASE_TAP_CHANGER}
+            ruleType={PHASE_TAP}
+            createTapRuleColumn={STEPS_ALPHA}
             columnsDefinition={COLUMNS_DEFINITIONS}
             csvColumns={csvColumns}
-            createRuleMessageId="CreateRegulationRule"
-            createRuleAllowNegativeValues={false}
-            importRuleMessageId="ImportRegulationRule"
+            createRuleMessageId="CreateDephasingRule"
+            createRuleAllowNegativeValues={true}
+            importRuleMessageId="ImportDephasingRule"
             resetButtonMessageId="ResetRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={previousValues}
-            editData={editData?.[RATIO_TAP_CHANGER]}
+            editData={editData?.[PHASE_TAP_CHANGER] as Record<string, unknown> | undefined}
             currentNode={currentNode}
             isModification={isModification}
         />
     );
 };
 
-export default RatioTapChangerPaneSteps;
+export default PhaseTapChangerPaneSteps;

@@ -29,6 +29,7 @@ import { useMemo } from 'react';
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
+import { PhaseTapChangerData, PhaseTapChangerPaneProps } from '../tap-changer-pane.types';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -39,7 +40,7 @@ const PhaseTapChangerPane = ({
     previousValues,
     editData,
     isModification = false,
-}) => {
+}: PhaseTapChangerPaneProps) => {
     const intl = useIntl();
 
     const phaseTapChangerEnabledWatch = useWatch({
@@ -54,8 +55,8 @@ const PhaseTapChangerPane = ({
         name: `${id}.${REGULATION_TYPE}`,
     });
 
-    const getPhaseTapChangerRegulationModeLabel = (phaseTapChangerFormValues) => {
-        const computedRegulationMode = getComputedPhaseTapChangerRegulationMode(phaseTapChangerFormValues);
+    const getPhaseTapChangerRegulationModeLabel = (phaseTapChangerFormValues?: PhaseTapChangerData | null) => {
+        const computedRegulationMode = getComputedPhaseTapChangerRegulationMode(phaseTapChangerFormValues ?? undefined);
         if (computedRegulationMode) {
             return intl.formatMessage({
                 id: computedRegulationMode?.label,
@@ -63,7 +64,7 @@ const PhaseTapChangerPane = ({
         }
     };
 
-    const getRegulatingPreviousValue = (field, tap) => {
+    const getRegulatingPreviousValue = (field: string, tap?: PhaseTapChangerData) => {
         if (
             (tap?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                 field === FLOW_SET_POINT_REGULATING_VALUE) ||
@@ -72,7 +73,7 @@ const PhaseTapChangerPane = ({
         ) {
             return tap?.regulationValue;
         } else {
-            return null;
+            return undefined;
         }
     };
 
@@ -81,7 +82,10 @@ const PhaseTapChangerPane = ({
     }, [regulationTypeWatch, previousValues]);
 
     const regulationMode = useMemo(() => {
-        return regulationModeWatch || getComputedPhaseTapChangerRegulationMode(previousValues?.phaseTapChanger)?.id;
+        return (
+            regulationModeWatch ||
+            getComputedPhaseTapChangerRegulationMode(previousValues?.phaseTapChanger ?? undefined)?.id
+        );
     }, [regulationModeWatch, previousValues]);
 
     const regulationModeField = (
@@ -105,7 +109,7 @@ const PhaseTapChangerPane = ({
             adornment={AmpereAdornment}
             previousValue={getRegulatingPreviousValue(
                 CURRENT_LIMITER_REGULATING_VALUE,
-                previousValues?.phaseTapChanger
+                previousValues?.phaseTapChanger ?? undefined
             )}
         />
     );
@@ -118,7 +122,10 @@ const PhaseTapChangerPane = ({
             formProps={{
                 disabled: !phaseTapChangerEnabledWatch,
             }}
-            previousValue={getRegulatingPreviousValue(FLOW_SET_POINT_REGULATING_VALUE, previousValues?.phaseTapChanger)}
+            previousValue={getRegulatingPreviousValue(
+                FLOW_SET_POINT_REGULATING_VALUE,
+                previousValues?.phaseTapChanger ?? undefined
+            )}
         />
     );
 
@@ -172,7 +179,7 @@ const PhaseTapChangerPane = ({
             <GridSection title="TapsSection" heading={4} />
             <PhaseTapChangerPaneSteps
                 disabled={!phaseTapChangerEnabledWatch}
-                previousValues={previousValues?.phaseTapChanger}
+                previousValues={previousValues?.phaseTapChanger ?? undefined}
                 editData={editData}
                 currentNode={currentNode}
                 isModification={isModification}
