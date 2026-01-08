@@ -88,8 +88,7 @@ export const resultsGlobalFilterStyles = {
     }),
     selectedFiltersPanel: () => ({
         overflowY: 'auto',
-        paddingLeft: 1,
-        paddingTop: 1,
+        padding: 0,
         maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
     }),
     selectedFiltersSubGroup: (theme) => ({
@@ -98,7 +97,7 @@ export const resultsGlobalFilterStyles = {
         flexWrap: 'wrap',
         color: theme.palette.text.secondary,
         fontSize: '1em',
-        paddingBottom: 1,
+        paddingTop: 0,
     }),
     importFilterButton: (theme) => ({
         color: theme.palette.text.secondary,

@@ -12,7 +12,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
-import { FilterType, isGenericFilterType } from '../utils';
+import { FilterType, isCriteriaFilterType } from '../utils';
 import { GlobalFilter } from './global-filter-types';
 import { fetchSubstationPropertiesGlobalFilters, RECENT_FILTER } from './global-filter-utils';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -62,14 +62,14 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
             )
             .filter((category) => {
                 // when we are filtering voltage levels the GENERIC_FILTER FilterType is hidden because the SUBSTATION_OR_VL FilterType is enough
-                const onlyVoltageLevels = equipmentTypes?.every(
-                    (equipment) => equipment === EQUIPMENT_TYPES.VOLTAGE_LEVEL
-                );
+                const onlyVoltageLevels =
+                    equipmentTypes?.length === 1 && equipmentTypes[0] === EQUIPMENT_TYPES.VOLTAGE_LEVEL;
                 return !(category === FilterType.GENERIC_FILTER && onlyVoltageLevels);
             })
             .filter((category) => {
                 // when we are filtering substations the SUBSTATION_OR_VL makes no sense and is removed :
-                const onlySubstations = equipmentTypes?.every((equipment) => equipment === EQUIPMENT_TYPES.SUBSTATION);
+                const onlySubstations =
+                    equipmentTypes?.length === 1 && equipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION;
                 return !(category === FilterType.SUBSTATION_OR_VL && onlySubstations);
             });
         return [RECENT_FILTER, ...filteredCategories];
@@ -82,7 +82,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 ...standardCategories,
                 ...(substationPropertiesGlobalFilters ? Array.from(substationPropertiesGlobalFilters.keys()) : []),
             ];
-            // generic filters always at the end of the menus
+            // criteria filters are always at the end of the menu
             const substationCategory: string[] = sortedCategories.splice(
                 sortedCategories.indexOf(FilterType.SUBSTATION_OR_VL),
                 1
@@ -230,14 +230,14 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                         <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
                             <Box
                                 sx={mergeSx(resultsGlobalFilterStyles.list, {
-                                    height: isGenericFilterType(filterGroupSelected)
+                                    height: isCriteriaFilterType(filterGroupSelected)
                                         ? `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`
                                         : `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
                                 })}
                             >
                                 {children}
                             </Box>
-                            {isGenericFilterType(filterGroupSelected) && (
+                            {isCriteriaFilterType(filterGroupSelected) && (
                                 <Button
                                     startIcon={<FileUploadIcon />}
                                     fullWidth={true}

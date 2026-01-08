@@ -8,7 +8,7 @@
 import { GlobalFilter } from './global-filter-types';
 import { LineSeparator, OverflowableChip } from '@gridsuite/commons-ui';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
-import { Box, Typography } from '@mui/material';
+import { Box, List, ListItem, Typography } from '@mui/material';
 import { getOptionLabel } from './global-filter-utils';
 import { useContext } from 'react';
 import { GlobalFilterContext } from './global-filter-context';
@@ -34,9 +34,9 @@ function SelectedGlobalFilters() {
     });
 
     return (
-        <Box sx={resultsGlobalFilterStyles.selectedFiltersPanel}>
+        <List sx={resultsGlobalFilterStyles.selectedFiltersPanel}>
             {Array.from(filtersByCategories).map(([displayedCategoryTitle, filters]) => (
-                <>
+                <ListItem key={displayedCategoryTitle} sx={{ display: 'block' }}>
                     <Typography component="div" margin={0}>
                         <FormattedMessage id={displayedCategoryTitle} />
                     </Typography>
@@ -56,9 +56,9 @@ function SelectedGlobalFilters() {
                             />
                         ))}
                     </Box>
-                </>
+                </ListItem>
             ))}
-        </Box>
+        </List>
     );
 }
 

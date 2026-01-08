@@ -13,7 +13,7 @@ import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../.
 import { type AppState } from '../../../../../redux/reducer';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
-import { isGenericFilter } from '../../../../results/common/utils';
+import { isCriteriaFilter } from '../../../../results/common/utils';
 import GlobalFilterSelector, {
     type GlobalFilterSelectorProps,
 } from '../../../../results/common/global-filter/global-filter-selector';
@@ -77,7 +77,7 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     useEffect(() => {
         if (globalFilterSpreadsheetState) {
             dispatch(
-                addToRecentGlobalFilters(globalFilterSpreadsheetState?.filter((filter) => isGenericFilter(filter)))
+                addToRecentGlobalFilters(globalFilterSpreadsheetState?.filter((filter) => isCriteriaFilter(filter)))
             );
         }
     }, [dispatch, globalFilterSpreadsheetState]);

@@ -7,7 +7,7 @@
 
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
-import { FilterType, isGenericFilter } from '../utils';
+import { FilterType, isCriteriaFilter } from '../utils';
 import type { UUID } from 'node:crypto';
 import {
     ElementAttributes,
@@ -58,7 +58,7 @@ export default function GlobalFilterProvider({
 
             const notFoundGenericFilterUuids: UUID[] = [];
             const genericFiltersUuids: UUID[] = mutableFilters
-                .filter((globalFilter) => isGenericFilter(globalFilter))
+                .filter((globalFilter) => isCriteriaFilter(globalFilter))
                 .map((globalFilter) => globalFilter.uuid)
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 

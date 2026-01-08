@@ -42,11 +42,11 @@ export enum FilterType {
     SUBSTATION_PROPERTY = 'substationProperty',
 }
 
-export function isGenericFilter(filter: GlobalFilter): boolean {
-    return isGenericFilterType(filter.filterType);
+export function isCriteriaFilter(filter: GlobalFilter): boolean {
+    return isCriteriaFilterType(filter.filterType);
 }
 
-export function isGenericFilterType(filterType: string | undefined): boolean {
+export function isCriteriaFilterType(filterType: string | undefined): boolean {
     return (
         filterType !== undefined &&
         (filterType === FilterType.GENERIC_FILTER || filterType === FilterType.SUBSTATION_OR_VL)
