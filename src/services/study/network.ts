@@ -431,7 +431,7 @@ export function exportNetworkFile(
 }
 
 export function fetchExportNetworkFile(exportUuid: UUID) {
-    const url = PREFIX_STUDY_QUERIES + '/v1/download-file' + exportUuid;
+    const url = PREFIX_STUDY_QUERIES + '/v1/download-file/' + exportUuid;
     return backendFetch(url);
 }
 
