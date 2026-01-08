@@ -15,7 +15,7 @@ type TextWithToolTipProps = {
     tooltipMessage: string;
 };
 
-export function TextWithToolTip({ text, tooltipMessage }: Readonly<TextWithToolTipProps>) {
+export function TextWithInfoIcon({ text, tooltipMessage }: Readonly<TextWithToolTipProps>) {
     const intl = useIntl();
 
     return (

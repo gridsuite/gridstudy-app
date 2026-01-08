@@ -27,7 +27,7 @@ import {
 import { GlobalFilterContext } from './global-filter-context';
 import SelectedGlobalFilters from './selected-global-filters';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { TextWithToolTip } from './text-with-tooltip';
+import { TextWithInfoIcon } from './text-with-info-icon';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;
@@ -190,7 +190,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 <Paper sx={resultsGlobalFilterStyles.dropdown}>
                     <Grid container>
                         <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellHeader}>
-                            <TextWithToolTip
+                            <TextWithInfoIcon
                                 text="results.globalFilter.categories"
                                 tooltipMessage="results.globalFilter.categoriesHelp"
                             />
@@ -218,7 +218,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                                             <ListItemText
                                                 primary={
                                                     category === 'genericFilter' ? (
-                                                        <TextWithToolTip
+                                                        <TextWithInfoIcon
                                                             text="results.globalFilter.genericFilter"
                                                             tooltipMessage="results.globalFilter.elementsHelp"
                                                         />
