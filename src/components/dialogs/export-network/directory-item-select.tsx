@@ -33,11 +33,10 @@ export function DirectoryItemSelect({ name, ...props }: Readonly<DirectoryItemSe
             if (nodes.length > 0) {
                 let updatedFolder: string = nodes[0].name;
                 let parentNode: TreeViewFinderNodeProps = nodes[0];
-                let nodeId: UUID | null = null;
+                let nodeId: UUID | null = parentNode?.id;
                 while (parentNode.parents && parentNode.parents?.length > 0) {
                     parentNode = parentNode?.parents[0];
                     updatedFolder = parentNode.name + separator + updatedFolder;
-                    nodeId = parentNode.id;
                 }
                 if (nodeId) {
                     onChange(nodeId);

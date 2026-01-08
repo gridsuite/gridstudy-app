@@ -36,14 +36,12 @@ export default function useExportNotification() {
                     if (error) {
                         snackWithFallback(snackError, error, { headerId: 'export.message.failed' });
                     } else {
-                        if (!exportToExplorer) {
-                            downloadExportNetworkFile(exportUuid);
-                        } else {
-                            snackSuccess({
-                                messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: '' }),
-                                persist: true,
-                            });
-                        }
+                        exportToExplorer
+                            ? snackSuccess({
+                                  messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: '' }),
+                                  persist: true,
+                              })
+                            : downloadExportNetworkFile(exportUuid);
                     }
                 }
             }
