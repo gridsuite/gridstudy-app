@@ -313,11 +313,11 @@ export interface VoltageLeveInfo {
     studyUuid: string;
     nodeUuid: UUID;
     voltageLevelId: string;
-    voltageLevelName: string | null;
+    voltageLevelName?: string | null;
     substationId?: string | null;
-    nominalV: number | null;
-    lowVoltageLimit: number | null;
-    highVoltageLimit: number | null;
+    nominalV?: number | null;
+    lowVoltageLimit?: number | null;
+    highVoltageLimit?: number | null;
     busbarCount?: number;
     sectionCount?: number;
     switchKinds?: any[];
@@ -328,7 +328,7 @@ export interface VoltageLeveInfo {
 }
 
 export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
-    substationCreation?: SubstationCreationInfo | null;
+    substationCreation?: AttachedSubstationCreationInfo | null;
     ipMin: number | null;
     ipMax: number | null;
     topologyKind?: string;
@@ -359,6 +359,16 @@ type VariationFilter = {
 };
 
 export type VariationType = keyof typeof VARIATION_TYPES;
+
+export interface ItemFilterType {
+    type?: string;
+    specificMetadata?: {
+        type?: string;
+        filterEquipmentsAttributes?: {
+            distributionKey?: number;
+        }[];
+    };
+}
 
 export interface Variations {
     variationMode: string | null;
@@ -628,6 +638,14 @@ export interface TwoWindingsTransformerCreationInfo {
     properties: Property[] | null;
 }
 
+export interface AttachedSubstationCreationInfo {
+    type: ModificationType;
+    equipmentId: string | null;
+    equipmentName: string | null;
+    country: string | null;
+    properties: Property[] | null;
+}
+
 export interface SubstationCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
@@ -792,17 +810,29 @@ export type EquipmentAttributeModificationInfos = {
     equipmentType: string;
 };
 
-export interface GenerationDispatchInfo {
+type GenerationDispatchInfos = {
+    lossCoefficient: number | null;
+    defaultOutageRate: number | null;
+    generatorsWithoutOutage: Filter[] | null;
+    generatorsWithFixedSupply: Filter[] | null;
+    generatorsFrequencyReserve:
+        | {
+              generatorsFilters: Filter[];
+              frequencyReserve: number;
+          }[]
+        | null;
+    substationsGeneratorsOrdering:
+        | {
+              substationIds: string[];
+          }[]
+        | null;
+};
+
+export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {
     studyUuid: UUID;
     nodeUuid: UUID;
-    modificationUuid?: UUID;
-    lossCoefficient: number;
-    defaultOutageRate: number;
-    generatorsWithoutOutage: any;
-    generatorsWithFixedActivePower: any;
-    generatorsFrequencyReserve: any;
-    substationsGeneratorsOrdering: any;
-}
+    uuid?: UUID;
+};
 
 export interface TopologyVoltageLevelModificationInfos {
     type: ModificationType;

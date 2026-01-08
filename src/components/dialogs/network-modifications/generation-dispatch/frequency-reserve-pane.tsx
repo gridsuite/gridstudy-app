@@ -9,40 +9,44 @@ import { FREQUENCY_RESERVE, GENERATORS_FILTERS, GENERATORS_FREQUENCY_RESERVES } 
 import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { Tooltip, IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { DndTable, DndColumnType, ElementType } from '@gridsuite/commons-ui';
+import { DndColumnType, DndTable, ElementType, EquipmentType } from '@gridsuite/commons-ui';
+import { EnrichedDndColumn } from './substations-generators-ordering-pane';
 
-const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
+interface FrequencyReservePaneProps {
+    id?: string;
+}
+
+const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<FrequencyReservePaneProps>) => {
     const intl = useIntl();
 
-    const columnsDefinition = useMemo(() => {
+    const columnsDefinition = useMemo<EnrichedDndColumn[]>(() => {
         return [
             {
-                label: 'GeneratorFilter',
+                label: intl
+                    .formatMessage({ id: 'GeneratorFilter' })
+                    .toLowerCase()
+                    .replace(/^\w/, (c) => c.toUpperCase()),
                 dataKey: GENERATORS_FILTERS,
                 initialValue: [],
                 editable: true,
                 type: DndColumnType.DIRECTORY_ITEMS,
-                equipmentTypes: [EQUIPMENT_TYPES.GENERATOR],
+                equipmentTypes: [EquipmentType.GENERATOR],
                 elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
             },
             {
-                label: 'FrequencyReserve',
+                label: intl
+                    .formatMessage({ id: 'FrequencyReserve' })
+                    .toLowerCase()
+                    .replace(/^\w/, (c) => c.toUpperCase()),
                 dataKey: FREQUENCY_RESERVE,
                 initialValue: null,
                 editable: true,
                 type: DndColumnType.NUMERIC,
             },
-        ].map((column) => ({
-            ...column,
-            label: intl
-                .formatMessage({ id: column.label })
-                .toLowerCase()
-                .replace(/^\w/, (c) => c.toUpperCase()),
-        }));
+        ];
     }, [intl]);
 
     const useFieldArrayOutputFrequencyReserve = useFieldArray({
@@ -50,7 +54,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
     });
 
     const newRowData = useMemo(() => {
-        const newRowData = {};
+        const newRowData: Record<string, unknown[] | null> = {};
         columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
@@ -78,16 +82,14 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
     };
 
     return (
-        <>
-            <DndTable
-                arrayFormName={`${id}`}
-                useFieldArrayOutput={useFieldArrayOutputFrequencyReserve}
-                createRows={createFrequencyReserveRows}
-                columnsDefinition={completedColumnsDefinition}
-                tableHeight={270}
-                withAddRowsDialog={false}
-            />
-        </>
+        <DndTable
+            arrayFormName={`${id}`}
+            useFieldArrayOutput={useFieldArrayOutputFrequencyReserve}
+            createRows={createFrequencyReserveRows}
+            columnsDefinition={completedColumnsDefinition}
+            tableHeight={270}
+            withAddRowsDialog={false}
+        />
     );
 };
 

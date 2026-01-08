@@ -142,7 +142,7 @@ const LineSplitWithVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
+                    editData={isVoltageLevelEdit ? (voltageLevelToEdit as any) : null}
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                 />
