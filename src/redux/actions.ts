@@ -28,8 +28,10 @@ import type {
     ComputingStatusParameters,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
+    CopiedNetworkModifications,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
+    TableSortConfig,
     TableSortKeysType,
 } from './reducer';
 import type { RunningStatus } from '../components/utils/running-status';
@@ -111,6 +113,7 @@ export type AppActions =
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
     | StoreNadViewBoxAction
+    | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
@@ -792,6 +795,20 @@ export const StoreNadViewBox = (nadUuid: UUID, viewBox: ViewBoxLike | null): Sto
     nadViewBox: { nadUuid, viewBox },
 });
 
+export const COPIED_NETWORK_MODIFICATIONS = 'COPIED_NETWORK_MODIFICATIONS';
+export type CopiedNetworkModificationsAction = Readonly<Action<typeof COPIED_NETWORK_MODIFICATIONS>> & {
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>;
+};
+
+export function setCopiedNetworkModifications(
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>
+): CopiedNetworkModificationsAction {
+    return {
+        type: COPIED_NETWORK_MODIFICATIONS,
+        copiedNetworkModifications: copiedNetworkModifications,
+    };
+}
+
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
 
@@ -1427,19 +1444,22 @@ export type InitTableDefinitionsAction = {
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters?: SpreadsheetFilterState;
     globalFilterSpreadsheetState?: GlobalFilterSpreadsheetState;
+    tablesSorts?: TableSortConfig;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
     tablesFilters: SpreadsheetFilterState = {},
-    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {}
+    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {},
+    tablesSorts: TableSortConfig = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
     tablesFilters,
     globalFilterSpreadsheetState,
+    tablesSorts,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';

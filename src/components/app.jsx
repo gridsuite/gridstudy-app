@@ -37,6 +37,7 @@ import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/util
 import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
+    addSortForNewSpreadsheet,
     initTableDefinitions,
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
@@ -64,6 +65,7 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
+import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
 
 const noUserManager = { instance: null, error: null };
@@ -181,9 +183,11 @@ const App = () => {
 
     const resetTableDefinitions = useCallback(
         (collection) => {
-            const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+            const { tablesFilters, tableGlobalFilters, tableDefinitions, tablesSorts } =
                 processSpreadsheetsCollectionData(collection);
-            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters));
+            dispatch(
+                initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters, tablesSorts)
+            );
         },
         [dispatch]
     );
@@ -201,6 +205,14 @@ const App = () => {
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
                     dispatch(saveSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
+                    dispatch(
+                        addSortForNewSpreadsheet(tabUuid, [
+                            {
+                                colId: model.sortConfig ? model.sortConfig.colId : 'id',
+                                sort: model.sortConfig ? model.sortConfig.sort : SortWay.ASC,
+                            },
+                        ])
+                    );
                 })
                 .catch((error) => {
                     snackWithFallback(snackError, error, {
