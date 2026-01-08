@@ -89,7 +89,7 @@ const formSchema = yup
         [LINE2_ID]: yup.string().required(),
         [LINE2_NAME]: yup.string(),
         [CONNECTIVITY]: yup.object().shape({
-            ...getConnectivityPropertiesValidationSchema(false),
+            ...getConnectivityPropertiesValidationSchema(false), // TODO DBR rollback ?
         }),
         ...getLineToAttachOrSplitFormValidationSchema(),
         hackForValidation: yup.string(),
@@ -136,18 +136,9 @@ const LineAttachToVoltageLevelDialog = ({
         studyUuid: studyUuid,
         nodeUuid: currentNodeUuid,
         equipmentId: '',
-        equipmentName: null,
-        voltageLevelId: '',
-        voltageLevelName: null,
-        substationId: undefined,
-        nominalV: null,
-        lowVoltageLimit: null,
-        highVoltageLimit: null,
         properties: null,
-        substationCreation: undefined,
         ipMax: null,
         ipMin: null,
-        topologyKind: '',
     });
 
     const { snackError } = useSnackMessage();
@@ -293,8 +284,8 @@ const LineAttachToVoltageLevelDialog = ({
 
     const onVoltageLevelCreationDo = useCallback(
         ({
-            voltageLevelId,
-            voltageLevelName,
+            equipmentId,
+            equipmentName,
             substationId,
             substationCreation,
             nominalV,
@@ -314,10 +305,8 @@ const LineAttachToVoltageLevelDialog = ({
                     type: ModificationType.VOLTAGE_LEVEL_CREATION,
                     nodeUuid: currentNodeUuid,
                     studyUuid: studyUuid,
-                    voltageLevelId: voltageLevelId,
-                    voltageLevelName: voltageLevelName,
-                    equipmentId: voltageLevelId,
-                    equipmentName: voltageLevelName,
+                    equipmentId,
+                    equipmentName,
                     substationId: substationId,
                     substationCreation: substationCreation,
                     nominalV: nominalV,
@@ -333,7 +322,7 @@ const LineAttachToVoltageLevelDialog = ({
                     properties: properties,
                     busbarSections:
                         sectionCount && busbarCount
-                            ? buildNewBusbarSections(voltageLevelId, sectionCount, busbarCount)
+                            ? buildNewBusbarSections(equipmentId, sectionCount, busbarCount)
                             : [],
                 };
 
@@ -374,8 +363,8 @@ const LineAttachToVoltageLevelDialog = ({
 
     const onAttachmentPointModificationDo = useCallback(
         ({
-            voltageLevelId,
-            voltageLevelName,
+            equipmentId,
+            equipmentName,
             nominalV,
             substationCreation,
             lowVoltageLimit,
@@ -392,10 +381,8 @@ const LineAttachToVoltageLevelDialog = ({
                     type: ModificationType.VOLTAGE_LEVEL_CREATION,
                     nodeUuid: currentNodeUuid,
                     studyUuid: studyUuid,
-                    equipmentId: voltageLevelId,
-                    voltageLevelId: voltageLevelId,
-                    equipmentName: voltageLevelName,
-                    voltageLevelName: voltageLevelName,
+                    equipmentId,
+                    equipmentName,
                     nominalV: nominalV,
                     substationCreation: substationCreation,
                     lowVoltageLimit: lowVoltageLimit,

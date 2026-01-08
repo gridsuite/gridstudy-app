@@ -313,9 +313,7 @@ export interface VoltageLeveInfo {
     studyUuid: string;
     nodeUuid: UUID;
     equipmentId: string;
-    equipmentName: string | null;
-    voltageLevelId: string;
-    voltageLevelName?: string | null;
+    equipmentName?: string;
     substationId?: string | null;
     nominalV?: number | null;
     lowVoltageLimit?: number | null;

@@ -270,7 +270,7 @@ const LineAttachToVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
+                    editData={isVoltageLevelEdit ? voltageLevelToEdit : undefined}
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                 />

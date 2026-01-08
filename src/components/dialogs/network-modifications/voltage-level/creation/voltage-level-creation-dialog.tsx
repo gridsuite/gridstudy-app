@@ -449,8 +449,8 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
             onCreateVoltageLevel({
                 studyUuid: studyUuid as UUID,
                 nodeUuid: currentNodeUuid,
-                voltageLevelId: voltageLevel[EQUIPMENT_ID],
-                voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
+                equipmentId: voltageLevel[EQUIPMENT_ID],
+                equipmentName: sanitizeString(voltageLevel[EQUIPMENT_NAME]) ?? undefined,
                 substationId: substationCreation === null ? voltageLevel[SUBSTATION_ID] : null,
                 substationCreation: substationCreation,
                 nominalV: voltageLevel[NOMINAL_V],

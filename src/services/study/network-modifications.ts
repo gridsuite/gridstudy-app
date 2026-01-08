@@ -1292,8 +1292,8 @@ export function modifySubstation({
 export function createVoltageLevel({
     studyUuid,
     nodeUuid,
-    voltageLevelId,
-    voltageLevelName,
+    equipmentId,
+    equipmentName,
     substationId,
     substationCreation,
     nominalV,
@@ -1320,8 +1320,8 @@ export function createVoltageLevel({
 
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
-        equipmentId: voltageLevelId,
-        equipmentName: voltageLevelName,
+        equipmentId,
+        equipmentName,
         substationId: substationId,
         substationCreation: substationCreation,
         nominalV: nominalV,
@@ -1350,8 +1350,8 @@ export function modifyVoltageLevel({
     studyUuid,
     nodeUuid,
     modificationUuid = undefined,
-    voltageLevelId,
-    voltageLevelName,
+    equipmentId,
+    equipmentName,
     nominalV,
     lowVoltageLimit,
     highVoltageLimit,
@@ -1377,8 +1377,8 @@ export function modifyVoltageLevel({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
-            equipmentId: voltageLevelId,
-            equipmentName: toModificationOperation(voltageLevelName),
+            equipmentId,
+            equipmentName: toModificationOperation(equipmentName),
             nominalV: toModificationOperation(nominalV),
             lowVoltageLimit: toModificationOperation(lowVoltageLimit),
             highVoltageLimit: toModificationOperation(highVoltageLimit),
