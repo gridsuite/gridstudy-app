@@ -309,6 +309,12 @@ export interface SubstationModificationInfo {
     properties: Property[] | null;
 }
 
+export enum SwitchKind {
+    BREAKER = 'BREAKER',
+    DISCONNECTOR = 'DISCONNECTOR',
+    LOAD_BREAK_SWITCH = 'LOAD_BREAK_SWITCH',
+}
+
 export interface VoltageLeveInfo {
     studyUuid: string;
     nodeUuid: UUID;
@@ -320,8 +326,8 @@ export interface VoltageLeveInfo {
     highVoltageLimit?: number | null;
     busbarCount?: number;
     sectionCount?: number;
-    switchKinds?: any[];
-    couplingDevices?: any[];
+    switchKinds?: SwitchKind[];
+    couplingDevices?: CouplingDeviceInfos[];
     isUpdate?: boolean;
     modificationUuid?: UUID;
     properties: Property[] | null;

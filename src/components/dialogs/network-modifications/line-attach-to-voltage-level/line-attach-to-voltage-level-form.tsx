@@ -12,19 +12,22 @@ import {
     ATTACHMENT_POINT_NAME,
     BUS_OR_BUSBAR_SECTION,
     CONNECTIVITY,
+    HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     ID,
     LINE1_ID,
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
+    LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     SUBSTATION_CREATION,
+    SWITCH_KIND,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
-import { Identifiable, TextInput } from '@gridsuite/commons-ui';
+import { convertInputValue, FieldType, Identifiable, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { Box, Button, Typography } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
@@ -42,6 +45,8 @@ import {
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
+import { SwitchKindFormData, VoltageLevelCreationFormData } from '../voltage-level/voltage-level.type';
+import { getPropertiesFromModification } from '../common/properties/property-utils';
 
 interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
@@ -74,6 +79,7 @@ const LineAttachToVoltageLevelForm = ({
     isUpdate,
     editDataFetchStatus,
 }: Readonly<LineAttachToVoltageLevelFormProps>) => {
+    const intl = useIntl();
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
     const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
@@ -177,6 +183,49 @@ const LineAttachToVoltageLevelForm = ({
         />
     );
 
+    const dto2Form = (
+        vl: ExtendedVoltageLevelCreationInfo,
+        withAttachmentPoint: boolean
+    ): VoltageLevelCreationFormData => {
+        const isSubstationCreation = vl.substationCreation?.equipmentId != null || withAttachmentPoint;
+        const substationId = isSubstationCreation ? null : (vl.substationId ?? null);
+        const shortCircuitLimits = {
+            [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, vl.ipMin),
+            [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, vl.ipMax),
+        };
+        const switchKinds: SwitchKindFormData[] =
+            vl.switchKinds?.map((switchKind) => ({
+                [SWITCH_KIND]: switchKind,
+            })) || [];
+        const switchesBetweenSections =
+            vl.switchKinds?.map((switchKind: string) => intl.formatMessage({ id: switchKind })).join(' / ') || '';
+        return {
+            isAttachmentPointCreation: withAttachmentPoint,
+            uuid: vl.modificationUuid,
+            equipmentId: vl.equipmentId,
+            equipmentName: vl.equipmentName ?? '',
+            substationId: substationId,
+            AdditionalProperties: vl.properties ?? undefined,
+            nominalV: vl.nominalV ?? null,
+            couplingOmnibus: vl.couplingDevices ?? [],
+            switchKinds: switchKinds,
+            topologyKind: vl.topologyKind ?? null,
+            busbarCount: vl.busbarCount ?? 1,
+            sectionCount: vl.sectionCount ?? 1,
+            lowVoltageLimit: vl.lowVoltageLimit ?? null,
+            highVoltageLimit: vl.highVoltageLimit ?? null,
+            ...shortCircuitLimits,
+            switchesBetweenSections: switchesBetweenSections,
+            addSubstationCreationId: isSubstationCreation,
+            substationCreationId: isSubstationCreation ? (vl.substationCreation?.equipmentId ?? null) : null,
+            substationName: isSubstationCreation ? (vl.substationCreation?.equipmentName ?? null) : null,
+            country: isSubstationCreation ? (vl.substationCreation?.country ?? null) : null,
+            substationCreation: getPropertiesFromModification(
+                isSubstationCreation ? vl.substationCreation?.properties : null
+            ),
+        };
+    };
+
     return (
         <>
             <GridSection title="LineToAttachTo" />
@@ -255,7 +304,7 @@ const LineAttachToVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onAttachmentPointModificationDo}
-                    editData={attachmentPoint}
+                    editData={dto2Form(attachmentPoint, true)}
                     isAttachmentPointModification={true}
                     titleId={'SpecifyAttachmentPoint'}
                     isUpdate={isUpdate}
@@ -270,7 +319,9 @@ const LineAttachToVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={isVoltageLevelEdit ? voltageLevelToEdit : undefined}
+                    editData={
+                        isVoltageLevelEdit && voltageLevelToEdit ? dto2Form(voltageLevelToEdit, false) : undefined
+                    }
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                 />
