@@ -283,7 +283,7 @@ function GlobalFilterAutocomplete({
             switch (option.filterType) {
                 case FilterType.VOLTAGE_LEVEL:
                     content = (
-                        <Tooltip title={formatVoltageRange(option)} placement="right">
+                        <Tooltip title={formatVoltageRange(option)} placement="right" arrow>
                             <Typography>{label}</Typography>
                         </Tooltip>
                     );
