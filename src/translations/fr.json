@@ -457,7 +457,7 @@
     "results.globalFilter.fillerText": "Filtrage",
     "results.globalFilter.recent": "Récents",
     "results.globalFilter.genericFilter": "Ouvrages",
-    "results.globalFilter.substationOrVoltageLevelFilter": "Sites ou postes",
+    "results.globalFilter.substationOrVoltageLevelFilter": "Sites et postes",
     "results.globalFilter.elementsHelp": "Ces filtrages excluent les autres types d'ouvrage",
     "results.globalFilter.country": "Pays",
     "results.globalFilter.voltageLevel": "Niveaux de tension",
