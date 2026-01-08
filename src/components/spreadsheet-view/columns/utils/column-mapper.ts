@@ -21,17 +21,7 @@ import {
     type CustomColDef,
 } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
-import { ErrorCellRenderer } from '@gridsuite/commons-ui';
-import { isAccessorNode, isSymbolNode, parse } from 'mathjs';
-
-function isSingleSymbol(formula: string) {
-    try {
-        const node = parse(formula);
-        return isSymbolNode(node) || isAccessorNode(node);
-    } catch {
-        return false;
-    }
-}
+import { ErrorCellRenderer, SnackInputs } from '@gridsuite/commons-ui';
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
@@ -50,36 +40,29 @@ const createValueGetter =
             const result = limitedEvaluate(escapedFormula, scope);
             return result == null ? undefined : validateFormulaResult(result, colDef.type);
         } catch (e) {
-            if (e instanceof Error) {
-                console.warn(`Error while evaluating formula : ${e.message}`);
-                if (e instanceof MathJsValidationError) {
-                    return { error: e.error };
-                }
-                // If we encounter a single undefined symbol it won't display an error, it's setup this way to prevent interpreting missing data as errors
-                if (!isSingleSymbol(colDef.formula)) {
-                    return { error: 'spreadsheet/formula/error/generic' };
-                }
+            if (e instanceof MathJsValidationError) {
+                return { error: e.error };
             }
             return undefined;
         }
     };
 
-export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
+export const mapColumns = (tableDefinition: SpreadsheetTabDefinition, snackError: (snackInputs: SnackInputs) => void) =>
     tableDefinition?.columns.map((colDef): CustomColDef => {
         let baseDefinition: ColDef;
 
         switch (colDef.type) {
             case COLUMN_TYPES.NUMBER:
-                baseDefinition = numberColumnDefinition(colDef, tableDefinition.uuid);
+                baseDefinition = numberColumnDefinition(colDef, tableDefinition.uuid, snackError);
                 break;
             case COLUMN_TYPES.TEXT:
-                baseDefinition = textColumnDefinition(colDef, tableDefinition.uuid);
+                baseDefinition = textColumnDefinition(colDef, tableDefinition.uuid, snackError);
                 break;
             case COLUMN_TYPES.BOOLEAN:
-                baseDefinition = booleanColumnDefinition(colDef, tableDefinition.uuid);
+                baseDefinition = booleanColumnDefinition(colDef, tableDefinition.uuid, snackError);
                 break;
             case COLUMN_TYPES.ENUM:
-                baseDefinition = enumColumnDefinition(colDef, tableDefinition.uuid);
+                baseDefinition = enumColumnDefinition(colDef, tableDefinition.uuid, snackError);
                 break;
             default:
                 baseDefinition = {};

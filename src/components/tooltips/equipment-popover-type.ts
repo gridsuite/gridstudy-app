@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos } from '@gridsuite/commons-ui';
-import { CurrentLimits } from 'services/network-modification-types';
+import { EquipmentInfos, Identifiable } from '@gridsuite/commons-ui';
+import { CurrentLimitsData } from '../../services/study/network-map.type';
 
 export interface CommonBranchEquipmentInfos extends EquipmentInfos {
     i1: number;
@@ -17,11 +17,27 @@ export interface CommonBranchEquipmentInfos extends EquipmentInfos {
     q2: number;
     r: number;
     x: number;
-    currentLimits1: CurrentLimits;
-    currentLimits2: CurrentLimits;
-    selectedOperationalLimitsGroup1?: string;
-    selectedOperationalLimitsGroup2?: string;
+    currentLimits1: CurrentLimitsData;
+    currentLimits2: CurrentLimitsData;
+    selectedOperationalLimitsGroupId1?: string;
+    selectedOperationalLimitsGroupId2?: string;
 }
+
+export type VoltageLevelTooltipBusInfos = {
+    id: string;
+    u: number;
+    angle: number;
+    generation: number;
+    load: number;
+    balance: number;
+    icc: number;
+};
+
+export type VoltageLevelTooltipInfos = Identifiable & {
+    umin: number;
+    umax: number;
+    busInfos: VoltageLevelTooltipBusInfos[];
+};
 
 export interface LineEquipmentInfos extends CommonBranchEquipmentInfos {}
 
@@ -30,6 +46,27 @@ export interface TwtEquipmentInfos extends CommonBranchEquipmentInfos {
     phaseTapChanger: any;
 }
 
+export interface GeneratorEquipmentInfos {
+    p?: number;
+    q?: number;
+    targetP?: number;
+    targetQ?: number;
+    minP: number;
+    maxP: number;
+    voltageRegulatorOn: boolean;
+    plannedActivePowerSetPoint?: number;
+}
+
+export interface LoadEquipmentInfos {
+    properties?: Record<string, string>;
+    p0: number;
+    q0: number;
+}
+
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
 
-export type GenericEquipmentInfos = BranchEquipmentInfos;
+export type GenericEquipmentInfos =
+    | BranchEquipmentInfos
+    | GeneratorEquipmentInfos
+    | LoadEquipmentInfos
+    | VoltageLevelTooltipInfos;

@@ -28,6 +28,7 @@ import {
     OperatingStatus,
     snackWithFallback,
     useSnackMessage,
+    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
@@ -40,7 +41,6 @@ import {
     tripEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
@@ -105,7 +105,7 @@ const withOperatingStatusMenu =
         const { getNameOrId } = useNameOrId();
         const [equipmentInfos, setEquipmentInfos] = useState<EquipmentInfos | null>(null);
 
-        const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+        const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
         const getTranslationKey = (key: string) => {
             if (equipmentType) {
@@ -262,7 +262,7 @@ const withOperatingStatusMenu =
                             }
                         />
                     </CustomMenuItem>
-                    {enableDeveloperMode && getEventType(equipmentType) && (
+                    {isDeveloperMode && getEventType(equipmentType) && (
                         <DynamicSimulationEventMenuItem
                             equipmentId={equipment.id}
                             equipmentType={equipmentType}

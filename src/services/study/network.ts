@@ -424,7 +424,10 @@ export function exportNetworkFile(
 
     const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';
 
-    return backendFetchJson(url + suffix);
+    return backendFetchJson(url + suffix, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+    });
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {

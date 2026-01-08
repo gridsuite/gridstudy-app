@@ -10,15 +10,17 @@ import {
     ATTACHMENT_LINE_ID,
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
+    BUS_OR_BUSBAR_SECTION,
     CONNECTIVITY,
     ID,
     LINE1_ID,
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
+    SUBSTATION_CREATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
@@ -29,7 +31,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
 
@@ -41,14 +43,18 @@ const LineAttachToVoltageLevelForm = ({
     lineToEdit,
     onVoltageLevelCreationDo,
     voltageLevelToEdit,
+    onAttachmentPointModificationDo,
+    attachmentPoint,
+    setAttachmentPoint,
     allVoltageLevelOptions,
 }) => {
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
-
+    const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
     });
+    const { setValue } = useFormContext();
 
     const onLineDialogClose = () => {
         setLineDialogOpen(false);
@@ -56,6 +62,14 @@ const LineAttachToVoltageLevelForm = ({
 
     const openLineDialog = () => {
         setLineDialogOpen(true);
+    };
+
+    const onAttachmentPointDialogClose = () => {
+        setAttachmentPointDialogOpen(false);
+    };
+
+    const openAttachmentPointDialog = () => {
+        setAttachmentPointDialogOpen(true);
     };
 
     const onVoltageLevelDialogClose = () => {
@@ -75,9 +89,31 @@ const LineAttachToVoltageLevelForm = ({
         />
     );
 
-    const attachmentPointIdField = <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} />;
+    const onAttachmentPointIdChange = useCallback(
+        (value) => {
+            setAttachmentPoint((prevAttachmentPoint) => {
+                return { ...prevAttachmentPoint, equipmentId: value };
+            });
+        },
+        [setAttachmentPoint]
+    );
 
-    const attachmentPointNameField = <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} />;
+    const attachmentPointIdField = (
+        <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} onChange={onAttachmentPointIdChange} />
+    );
+
+    const onAttachmentPointNameChange = useCallback(
+        (value) => {
+            setAttachmentPoint((prevAttachmentPoint) => {
+                return { ...prevAttachmentPoint, equipmentName: value };
+            });
+        },
+        [setAttachmentPoint]
+    );
+
+    const attachmentPointNameField = (
+        <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} onChange={onAttachmentPointNameChange} />
+    );
 
     const lineToIdField = (
         <TextInput name={ATTACHMENT_LINE_ID} label={'AttachedLineId'} formProps={{ disabled: true }} />
@@ -95,9 +131,10 @@ const LineAttachToVoltageLevelForm = ({
 
     const busbarSectionOptions = useMemo(() => {
         if (isVoltageLevelEdit) {
+            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`, null);
             return voltageLevelToEdit.busbarSections;
         }
-    }, [isVoltageLevelEdit, voltageLevelToEdit]);
+    }, [isVoltageLevelEdit, voltageLevelToEdit, setValue]);
 
     const connectivityForm = (
         <ConnectivityForm
@@ -120,6 +157,27 @@ const LineAttachToVoltageLevelForm = ({
             <Grid container spacing={2}>
                 <GridItem>{attachmentPointIdField}</GridItem>
                 <GridItem>{attachmentPointNameField}</GridItem>
+                <GridItem>
+                    {
+                        <Button
+                            onClick={openAttachmentPointDialog}
+                            // as equipmentId and equipmentName are synchronized to check if the icon is add or edit
+                            // other attributes than id and name must be present
+                            startIcon={
+                                attachmentPoint != null &&
+                                Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION) ? (
+                                    <EditIcon />
+                                ) : (
+                                    <AddIcon />
+                                )
+                            }
+                        >
+                            <Typography align="left">
+                                <FormattedMessage id="SpecifyAttachmentPoint" />
+                            </Typography>
+                        </Button>
+                    }
+                </GridItem>
             </Grid>
             <GridSection title="VOLTAGE_LEVEL" />
             <Grid container spacing={2}>
@@ -161,6 +219,19 @@ const LineAttachToVoltageLevelForm = ({
                 <GridItem>{newLine2IdField}</GridItem>
                 <GridItem>{newLine2NameField}</GridItem>
             </Grid>
+            {attachmentPointDialogOpen && (
+                <VoltageLevelCreationDialog
+                    open={true}
+                    onClose={onAttachmentPointDialogClose}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    onCreateVoltageLevel={onAttachmentPointModificationDo}
+                    editData={attachmentPoint}
+                    isAttachmentPointModification={true}
+                    titleId={'SpecifyAttachmentPoint'}
+                />
+            )}
             {voltageLevelDialogOpen && (
                 <VoltageLevelCreationDialog
                     open={true}

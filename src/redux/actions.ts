@@ -5,22 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    PARAM_DEVELOPER_MODE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LANGUAGE,
-    PARAM_THEME,
-    PARAM_USE_NAME,
-    PARAMS_LOADED,
-} from '../utils/config-params';
+import { PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import type { Action } from 'redux';
 import {
+    BaseVoltage,
     ComputingType,
     type GsLang,
     type GsLangUser,
     type GsTheme,
     type Identifiable,
     type NetworkVisualizationParameters,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { UnknownArray } from 'type-fest';
@@ -32,8 +29,10 @@ import type {
     ComputingStatusParameters,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
+    CopiedNetworkModifications,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
+    TableSortConfig,
     TableSortKeysType,
 } from './reducer';
 import type { RunningStatus } from '../components/utils/running-status';
@@ -72,6 +71,7 @@ import type { RootNetworkMetadata } from 'components/graph/menus/network-modific
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -107,6 +107,8 @@ export type AppActions =
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
+    | StoreNadViewBoxAction
+    | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
@@ -635,10 +637,10 @@ export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_
     [PARAM_DEVELOPER_MODE]: boolean;
 };
 
-export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableDeveloperModeAction {
+export function selectIsDeveloperMode(isDeveloperMode: boolean): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
-        [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
+        [PARAM_DEVELOPER_MODE]: isDeveloperMode,
     };
 }
 
@@ -696,6 +698,18 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[])
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
+    };
+}
+
+export const SET_BASE_VOLTAGE_LIST = 'SET_BASE_VOLTAGE_LIST';
+export type SetBaseVoltageListAction = Readonly<Action<typeof SET_BASE_VOLTAGE_LIST>> & {
+    baseVoltages: BaseVoltage[];
+};
+
+export function setBaseVoltageList(baseVoltageList: BaseVoltage[]): SetBaseVoltageListAction {
+    return {
+        type: SET_BASE_VOLTAGE_LIST,
+        baseVoltages: baseVoltageList,
     };
 }
 
@@ -758,6 +772,32 @@ export function setNodeSelectionForCopy(
     return {
         type: NODE_SELECTION_FOR_COPY,
         nodeSelectionForCopy: nodeSelectionForCopy,
+    };
+}
+
+export const STORE_NAD_VIEW_BOX = 'STORE_NAD_VIEW_BOX';
+
+export type StoreNadViewBoxAction = {
+    type: typeof STORE_NAD_VIEW_BOX;
+    nadViewBox: { nadUuid: UUID; viewBox: ViewBoxLike | null };
+};
+
+export const StoreNadViewBox = (nadUuid: UUID, viewBox: ViewBoxLike | null): StoreNadViewBoxAction => ({
+    type: STORE_NAD_VIEW_BOX,
+    nadViewBox: { nadUuid, viewBox },
+});
+
+export const COPIED_NETWORK_MODIFICATIONS = 'COPIED_NETWORK_MODIFICATIONS';
+export type CopiedNetworkModificationsAction = Readonly<Action<typeof COPIED_NETWORK_MODIFICATIONS>> & {
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>;
+};
+
+export function setCopiedNetworkModifications(
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>
+): CopiedNetworkModificationsAction {
+    return {
+        type: COPIED_NETWORK_MODIFICATIONS,
+        copiedNetworkModifications: copiedNetworkModifications,
     };
 }
 
@@ -1337,19 +1377,22 @@ export type InitTableDefinitionsAction = {
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters?: SpreadsheetFilterState;
     globalFilterSpreadsheetState?: GlobalFilterSpreadsheetState;
+    tablesSorts?: TableSortConfig;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
     tablesFilters: SpreadsheetFilterState = {},
-    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {}
+    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {},
+    tablesSorts: TableSortConfig = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
     tablesFilters,
     globalFilterSpreadsheetState,
+    tablesSorts,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';

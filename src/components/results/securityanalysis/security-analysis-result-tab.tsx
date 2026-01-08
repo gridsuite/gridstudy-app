@@ -16,14 +16,14 @@ import {
     useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { AppState } from '../../../redux/reducer';
 import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, type MuiStyles, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -44,8 +44,6 @@ import {
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { useIntl } from 'react-intl/lib';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
@@ -96,32 +94,32 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [tabIndex, setTabIndex] = useState(enableDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [tabIndex, setTabIndex] = useState(isDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
     const tabIndexRef = useRef<number>(null);
     tabIndexRef.current = tabIndex;
     const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
 
     useEffect(() => {
-        if (!enableDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
+        if (!isDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
             // handle tabIndex when dev mode is disabled
             setTabIndex(NMK_RESULTS_TAB_INDEX);
         }
-    }, [enableDeveloperMode]);
+    }, [isDeveloperMode]);
     const securityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     const resultType = useMemo(() => {
-        if (enableDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
+        if (isDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
             return RESULT_TYPE.N;
         } else if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
             return RESULT_TYPE.NMK_CONTINGENCIES;
         } else {
             return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
         }
-    }, [tabIndex, nmkType, enableDeveloperMode]);
+    }, [tabIndex, nmkType, isDeveloperMode]);
 
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][getStoreFields(tabIndex)]
@@ -284,12 +282,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             <Box sx={styles.tabsAndToolboxContainer}>
                 <Box sx={styles.tabs}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
-                        {enableDeveloperMode && <Tab label="N" value={N_RESULTS_TAB_INDEX} />}
+                        {isDeveloperMode && <Tab label="N" value={N_RESULTS_TAB_INDEX} />}
                         <Tab label="N-K" value={NMK_RESULTS_TAB_INDEX} />
                         <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} value={LOGS_TAB_INDEX} />
                     </Tabs>
                 </Box>
-                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode)) && (
+                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
                             onChange={handleGlobalFilterChangeAndUpdate}
@@ -318,8 +316,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             </MenuItem>
                         </Select>
                     )}
-                    {(tabIndex === NMK_RESULTS_TAB_INDEX ||
-                        (tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode)) && (
+                    {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
@@ -333,7 +330,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             </Box>
             <Box sx={styles.loader}>{shouldOpenLoader && <LinearProgress />}</Box>
             <Box sx={styles.resultContainer}>
-                {tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode && (
+                {tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode && (
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}

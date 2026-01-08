@@ -7,14 +7,18 @@
 
 import { useCallback, useMemo } from 'react';
 import Menu from '@mui/material/Menu';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { useSelector } from 'react-redux';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { AppState } from 'redux/reducer';
-import { type EquipmentType, type ExtendedEquipmentType, type MuiStyles } from '@gridsuite/commons-ui';
+import {
+    type EquipmentType,
+    type ExtendedEquipmentType,
+    type MuiStyles,
+    PARAM_DEVELOPER_MODE,
+} from '@gridsuite/commons-ui';
 import { BaseEquipmentMenuProps } from './base-equipment-menu';
 import { MenuBranchProps } from './operating-status-menu';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
@@ -43,7 +47,7 @@ const withEquipmentMenu =
         handleOpenModificationDialog,
         onOpenDynamicSimulationEventDialog,
     }: MenuBranchProps) => {
-        const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+        const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
         // to check is node editable
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -85,7 +89,7 @@ const withEquipmentMenu =
                         handleDeleteEquipment={handleDeleteEquipment}
                         handleOpenModificationDialog={handleOpenModificationDialog}
                     />
-                    {enableDeveloperMode && getEventType(equipmentType) && (
+                    {isDeveloperMode && getEventType(equipmentType) && (
                         <DynamicSimulationEventMenuItem
                             equipmentId={equipment.id}
                             equipmentType={equipmentType}

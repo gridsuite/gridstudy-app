@@ -8,14 +8,15 @@
 import Dialog from '@mui/material/Dialog';
 import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../../../utils/config-params';
+import { PARAM_USE_NAME } from '../../../../../../utils/config-params';
 import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../../../../network/constants';
 import { getVoltageLevelSingleLineDiagramUrl } from '../../../../../../services/study/network';
 import { AppState } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
-import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
+import { useBaseVoltages } from '../../../../../../hooks/use-base-voltages';
+import { PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 
 interface PositionDiagramPaneProps {
     open: boolean;
@@ -37,6 +38,7 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const { baseVoltagesConfig } = useBaseVoltages();
     const voltageLevelSingleLineDiagramUrl = useMemo(() => {
         if (!voltageLevelId) {
             return '';
@@ -56,7 +58,7 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
         sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
         topologicalColoring: true,
         language: language,
-        baseVoltagesConfigInfos: getBaseVoltagesConfig(),
+        baseVoltagesConfigInfos: baseVoltagesConfig,
     };
     const fetchOptions = {
         method: 'POST',

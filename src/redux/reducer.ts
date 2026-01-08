@@ -10,6 +10,7 @@ import {
     type AuthenticationActions,
     type AuthenticationRouterErrorAction,
     type AuthenticationRouterErrorState,
+    BaseVoltage,
     type CommonStoreState,
     ComputingType,
     type GsLang,
@@ -19,6 +20,9 @@ import {
     LOGOUT_ERROR,
     type LogoutErrorAction,
     type NetworkVisualizationParameters,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
     type ShowAuthenticationRouterLoginAction,
@@ -95,7 +99,9 @@ import {
     type NetworkModificationTreeNodesReorderAction,
     type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
+    COPIED_NETWORK_MODIFICATIONS,
     type NodeSelectionForCopyAction,
+    type CopiedNetworkModificationsAction,
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
@@ -158,6 +164,7 @@ import {
     SET_ACTIVE_SPREADSHEET_TAB,
     SET_ADDED_SPREADSHEET_TAB,
     SET_APP_TAB_INDEX,
+    SET_BASE_VOLTAGE_LIST,
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
@@ -176,6 +183,7 @@ import {
     SetActiveSpreadsheetTabAction,
     SetAddedSpreadsheetTabAction,
     type SetAppTabIndexAction,
+    SetBaseVoltageListAction,
     type SetCalculationSelectionsAction,
     type SetComputationStartingAction,
     type SetComputingStatusAction,
@@ -219,6 +227,8 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
+    STORE_NAD_VIEW_BOX,
+    StoreNadViewBoxAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -230,11 +240,8 @@ import {
 } from './session-storage/local-storage';
 import {
     PARAM_COMPUTED_LANGUAGE,
-    PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
-    PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
 } from '../utils/config-params';
@@ -317,19 +324,23 @@ import {
     SortConfig,
     SortWay,
 } from '../types/custom-aggrid-types';
-import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    NetworkModificationCopyInfos,
+    RootNetworkMetadata,
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & StudyUpdateNotification;
-
+export type NadViewBox = Record<UUID, ViewBoxLike | null>;
 export enum EquipmentUpdateType {
     LINES = 'lines',
     TIE_LINES = 'tieLines',
@@ -472,9 +483,14 @@ export type NadTextMovement = {
 export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
-    nodeType: NetworkModificationNodeType | undefined;
+    nodeType?: NetworkModificationNodeType | null;
     copyType: ValueOf<typeof CopyType> | null;
-    allChildren: NetworkModificationNodeInfos[] | null;
+    allChildren?: NetworkModificationNodeInfos[] | null;
+};
+
+export type CopiedNetworkModifications = {
+    networkModificationUuids: UUID[];
+    copyInfos: NetworkModificationCopyInfos | null;
 };
 
 export type Actions = AppActions | AuthenticationActions;
@@ -537,6 +553,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nodeAliases: NodeAlias[];
 
     nodeSelectionForCopy: NodeSelectionForCopy;
+    nadViewBox: NadViewBox;
+    copiedNetworkModifications: CopiedNetworkModifications;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
@@ -556,6 +574,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
     networkVisualizationsParameters: NetworkVisualizationParameters;
     syncEnabled: boolean;
+    baseVoltages: BaseVoltage[];
     [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SecurityAnalysisTab, PaginationConfig>;
     [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SensitivityAnalysisTab, PaginationConfig>;
     [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
@@ -652,6 +671,7 @@ const initialTablesState: TablesState = {
 
 const initialState: AppState = {
     syncEnabled: false,
+    baseVolatges: null,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
     isDirtyComputationParameters: false,
@@ -665,6 +685,11 @@ const initialState: AppState = {
         nodeType: undefined,
         copyType: null,
         allChildren: null,
+    },
+    nadViewBox: {},
+    copiedNetworkModifications: {
+        networkModificationUuids: [],
+        copyInfos: null,
     },
     tables: initialTablesState,
     nodeAliases: [],
@@ -877,6 +902,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state.syncEnabled = getLocalStorageSyncEnabled(state.studyUuid);
     });
 
+    builder.addCase(SET_BASE_VOLTAGE_LIST, (state, action: SetBaseVoltageListAction) => {
+        state.baseVoltages = action.baseVoltages;
+    });
+
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
         state.studyUuid = null;
         state.geoData = null;
@@ -998,8 +1027,8 @@ export const reducer = createReducer(initialState, (builder) => {
             .reduce((acc, tabUuid) => {
                 acc[tabUuid] = [
                     {
-                        colId: 'id',
-                        sort: SortWay.ASC,
+                        colId: action?.tablesSorts?.[tabUuid]?.[0]?.colId ?? 'id',
+                        sort: action?.tablesSorts?.[tabUuid]?.[0]?.sort ?? SortWay.ASC,
                     },
                 ];
                 return acc;
@@ -1289,6 +1318,15 @@ export const reducer = createReducer(initialState, (builder) => {
             )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
+    });
+
+    builder.addCase(STORE_NAD_VIEW_BOX, (state, action: StoreNadViewBoxAction) => {
+        const { nadUuid, viewBox } = action.nadViewBox;
+        state.nadViewBox[nadUuid] = viewBox;
+    });
+
+    builder.addCase(COPIED_NETWORK_MODIFICATIONS, (state, action: CopiedNetworkModificationsAction) => {
+        state.copiedNetworkModifications = action.copiedNetworkModifications;
     });
 
     builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {

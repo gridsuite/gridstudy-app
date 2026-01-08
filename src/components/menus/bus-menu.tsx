@@ -14,7 +14,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { RunningStatus } from 'components/utils/running-status';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
@@ -27,6 +26,7 @@ import {
     CustomMenuItem,
     type EquipmentType,
     type MuiStyles,
+    PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -74,7 +74,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     onClose,
     setModificationInProgress,
 }) => {
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const { snackError } = useSnackMessage();
     const [equipmentInfos, setEquipmentInfos] = useState<EquipmentInfo>();
 
@@ -177,7 +177,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     />
                 </CustomMenuItem>
             )}
-            {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
+            {isDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}
                     equipmentType={convertToEquipmentType(EQUIPMENT_TYPES.BUS)}

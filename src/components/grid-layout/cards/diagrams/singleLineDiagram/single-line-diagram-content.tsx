@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../../../utils/running-status';
 import {
@@ -29,12 +29,18 @@ import {
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
 import { useTheme } from '@mui/material/styles';
-import { ComputingType, EquipmentType, mergeSx, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    mergeSx,
+    snackWithFallback,
+    useSnackMessage,
+    PARAM_DEVELOPER_MODE,
+} from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import { updateSwitchState } from '../../../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { startShortCircuitAnalysis } from '../../../../../services/study/short-circuit-analysis';
 import { useOneBusShortcircuitAnalysisLoader } from './hooks/use-one-bus-shortcircuit-analysis-loader';
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../../../redux/actions';
@@ -61,6 +67,7 @@ interface SingleLineDiagramContentProps {
     readonly diagramParams: VoltageLevelDiagramParams | SubstationDiagramParams;
     readonly onNextVoltageLevelDiagram?: (voltageLevelId: string) => void;
     readonly onNewVoltageLevelDiagram?: (voltageLevelId: string) => void;
+    readonly onSvgLoad?: (width: number, height: number) => void;
 }
 
 type BusMenuState = {
@@ -77,7 +84,7 @@ const defaultBusMenuState: BusMenuState = {
     display: false,
 };
 
-function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
+const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const {
         studyUuid,
         panelId,
@@ -89,6 +96,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         loadingState,
         svg,
         svgMetadata,
+        onSvgLoad,
     } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -105,7 +113,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState<string>('');
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const shortCircuitStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]);
@@ -398,6 +406,11 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             }
 
             diagramViewerRef.current = diagramViewer;
+
+            // Notify parent of SVG dimensions for auto-sizing
+            if (onSvgLoad) {
+                onSvgLoad(diagramViewer.getWidth(), diagramViewer.getHeight());
+            }
         }
     }, [
         svg,
@@ -406,13 +419,14 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         isAnyNodeBuilding,
         showEquipmentMenu,
         showBusMenu,
-        enableDeveloperMode,
+        isDeveloperMode,
         diagramParams.type,
         theme,
         modificationInProgress,
         loadingState,
         locallySwitchedBreaker,
         handleBreakerClick,
+        onSvgLoad,
         handleTogglePopover,
         computationStarting,
         handleNextVoltageLevelClick,
@@ -451,7 +465,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     loadFlowStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramLoadflowInvalid,
                     shortCircuitStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramShortCircuitInvalid,
                     // TODO - lock and strip are hidden on single line diagram temporarly
-                    !enableDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
+                    !isDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
                 )}
                 style={{ height: '100%' }}
             />
@@ -463,6 +477,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             {renderDynamicSimulationEventDialog()}
         </>
     );
-}
+});
 
 export default SingleLineDiagramContent;

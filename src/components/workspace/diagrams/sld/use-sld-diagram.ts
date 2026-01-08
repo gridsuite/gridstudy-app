@@ -8,7 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { Diagram, DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg } from '../../../../services/study';
@@ -16,12 +16,12 @@ import {
     getSubstationSingleLineDiagramUrl,
     getVoltageLevelSingleLineDiagramUrl,
 } from '../../../../services/study/network';
-import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../utils/config-params';
+import { PARAM_USE_NAME } from '../../../../utils/config-params';
 import { SLD_DISPLAY_MODE } from '../../../network/constants';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
-import { getBaseVoltagesConfig } from 'utils/base-voltages-utils';
+import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 
 interface UseSldDiagramProps {
     diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
@@ -43,6 +43,7 @@ export const useSldDiagram = ({
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const { snackError } = useSnackMessage();
+    const { baseVoltagesConfig } = useBaseVoltages();
 
     const [diagram, setDiagram] = useState<Diagram>(
         () =>
@@ -119,7 +120,7 @@ export const useSldDiagram = ({
                             sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
                             topologicalColoring: true,
                             language,
-                            baseVoltagesConfigInfos: getBaseVoltagesConfig(),
+                            baseVoltagesConfigInfos: baseVoltagesConfig,
                         }),
                     };
                 } else if (currentDiagram.type === DiagramType.SUBSTATION) {
@@ -140,7 +141,7 @@ export const useSldDiagram = ({
                             componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
                             topologicalColoring: true,
                             language,
-                            baseVoltagesConfigInfos: getBaseVoltagesConfig(),
+                            baseVoltagesConfigInfos: baseVoltagesConfig,
                         }),
                     };
                 }
@@ -167,6 +168,7 @@ export const useSldDiagram = ({
         currentRootNetworkUuid,
         paramUseName,
         networkVisuParams,
+        baseVoltagesConfig,
         language,
         processSvgData,
         handleFetchError,
