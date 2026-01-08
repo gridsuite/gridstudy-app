@@ -43,6 +43,7 @@ import {
 import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
 import { TapChangerStep } from '../tap-changer-pane.types';
 import { TwoWindingsTransformerData } from '../../two-windings-transformer.types';
+import { TwtEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 
 const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -283,7 +284,7 @@ export const getComputedRegulationTypeId = (twt: TwoWindingsTransformerData) => 
     return regulationType?.id || null;
 };
 
-export const getComputedRegulationMode = (twt: TwoWindingsTransformerData) => {
+export const getComputedRegulationMode = (twt: TwoWindingsTransformerData | TwtEquipmentInfos) => {
     const ratioTapChangerValues = twt?.ratioTapChanger;
     if (!ratioTapChangerValues) {
         return null;
