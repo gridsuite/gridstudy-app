@@ -89,7 +89,6 @@ export const resultsGlobalFilterStyles = {
     selectedFiltersPanel: () => ({
         overflowY: 'auto',
         padding: 0,
-        paddingTop: 1,
         maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
     }),
     selectedFiltersSubGroup: (theme) => ({
