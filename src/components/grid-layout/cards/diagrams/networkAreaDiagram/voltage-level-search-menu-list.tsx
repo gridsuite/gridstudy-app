@@ -18,7 +18,6 @@ function MenuRow({
 
 const ITEM_HEIGHT = 36;
 const MAX_ITEMS = 8;
-const LISTBOX_PADDING = 12;
 
 // component based on exemple from mui v5 https://v5.mui.com/material-ui/react-autocomplete/#virtualization
 // changed a little with methods from our react-window version
@@ -28,8 +27,7 @@ export const VoltageLevelSearchMenuList = React.forwardRef<HTMLDivElement, React
 
         const items = children as React.ReactElement<React.HTMLAttributes<HTMLLIElement>>[];
 
-        const height =
-            (items.length > MAX_ITEMS ? ITEM_HEIGHT * MAX_ITEMS : items.length * ITEM_HEIGHT) + 2 * LISTBOX_PADDING;
+        const height = items.length > MAX_ITEMS ? ITEM_HEIGHT * MAX_ITEMS : items.length * ITEM_HEIGHT;
 
         return (
             <div style={{ height }} ref={ref} {...other}>

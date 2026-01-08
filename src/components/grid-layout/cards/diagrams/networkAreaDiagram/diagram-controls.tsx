@@ -38,7 +38,7 @@ import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import VoltageLevelSearchMenu from './voltage-level-search-menu';
+import { VoltageLevelSearchMenu } from './voltage-level-search-menu';
 
 const styles = {
     actionIcon: (theme) => ({

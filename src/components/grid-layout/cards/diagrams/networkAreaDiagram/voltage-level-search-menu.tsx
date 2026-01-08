@@ -5,11 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo, type FC } from 'react';
-import { useIntl } from 'react-intl';
-import { Menu, TextField, InputAdornment, Box, Autocomplete, styled, Popper } from '@mui/material';
+import { useMemo, useState, type FC } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Menu, TextField, MenuItem, ListItemText, InputAdornment, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import type { MuiStyles } from '@gridsuite/commons-ui';
 import { VoltageLevelSearchMenuList } from './voltage-level-search-menu-list';
+
+const styles = {
+    textField: {
+        m: 1,
+        width: 250,
+        position: 'sticky',
+        top: 0,
+    },
+} as const satisfies MuiStyles;
 
 interface VoltageLevelSearchMenuProps {
     open: boolean;
@@ -19,7 +29,10 @@ interface VoltageLevelSearchMenuProps {
     onSelect: (voltageLevelId: string) => void;
 }
 
-const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
+// tried to change this component with an Autocomplete from MUI
+// Menu being a Popover, and Autocomplete having a Popover as well
+// it does not work very well when we try to open them simultaneously
+export const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     open,
     anchorEl,
     onClose,
@@ -27,7 +40,30 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     onSelect,
 }) => {
     const intl = useIntl();
-    const orderedVoltageLevels = useMemo(() => voltageLevels.sort(), [voltageLevels]);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredVoltageLevels = useMemo(() => {
+        const compareVoltageLevels = (a: string, b: string) => a.localeCompare(b);
+
+        if (!searchTerm) {
+            return voltageLevels.toSorted(compareVoltageLevels);
+        }
+
+        const term = searchTerm.toLowerCase();
+        const filtered = voltageLevels.filter((vlId) => vlId.toLowerCase().includes(term));
+
+        // items starting with search term first, then alphabetically
+        return filtered.toSorted((a, b) => {
+            const aStarts = a.toLowerCase().startsWith(term);
+            const bStarts = b.toLowerCase().startsWith(term);
+
+            if (aStarts !== bStarts) {
+                return aStarts ? -1 : 1;
+            }
+
+            return compareVoltageLevels(a, b);
+        });
+    }, [searchTerm, voltageLevels]);
 
     const highlightText = useMemo(
         () => (text: string, highlight: string) => {
@@ -51,64 +87,53 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     );
 
     const handleClose = () => {
+        setSearchTerm('');
         onClose();
     };
 
-    const NoMaxHeightPopper = styled(Popper)({
-        '& .MuiAutocomplete-listbox': {
-            maxHeight: 'none',
-        },
-    });
+    const handleSelect = (voltageLevelId: string) => {
+        onSelect(voltageLevelId);
+        setSearchTerm('');
+    };
 
-    if (!open || orderedVoltageLevels.length === 0) {
+    if (!open || voltageLevels.length === 0) {
         return null;
     }
 
     return (
-        <>
-            <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                <Box minWidth={250}>
-                    <Autocomplete
-                        size="small"
-                        disableListWrap
-                        onChange={(event: any, newValue: string | null) => {
-                            if (newValue) {
-                                onSelect(newValue);
-                            }
-                        }}
-                        ListboxComponent={VoltageLevelSearchMenuList}
-                        // if not set, max popper heigt is 40vh, which is not enough to display ~8 elements
-                        PopperComponent={(props) => <NoMaxHeightPopper {...props} />}
-                        options={orderedVoltageLevels}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                autoFocus
-                                sx={{ paddingX: '4px' }}
-                                InputProps={{
-                                    ...params.InputProps,
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon fontSize="small" />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                placeholder={intl.formatMessage({ id: 'searchVoltageLevelInNad' })}
-                            />
-                        )}
-                        renderOption={(props, option, { inputValue }) => {
-                            const { key, ...optionProps } = props;
-                            return (
-                                <li key={key} {...optionProps}>
-                                    {highlightText(option, inputValue)}
-                                </li>
-                            );
-                        }}
-                    />
-                </Box>
-            </Menu>
-        </>
+        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+            <TextField
+                autoFocus
+                size="small"
+                placeholder={intl.formatMessage({ id: 'searchVoltageLevelInNad' })}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                sx={styles.textField}
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon fontSize="small" />
+                        </InputAdornment>
+                    ),
+                }}
+            />
+            <Box>
+                {filteredVoltageLevels.length === 0 ? (
+                    <MenuItem disabled>
+                        <ListItemText>
+                            <FormattedMessage id="noResultsFound" />
+                        </ListItemText>
+                    </MenuItem>
+                ) : (
+                    <VoltageLevelSearchMenuList>
+                        {filteredVoltageLevels.map((vlId) => (
+                            <MenuItem key={vlId} onClick={() => handleSelect(vlId)}>
+                                <ListItemText primary={highlightText(vlId, searchTerm)} />
+                            </MenuItem>
+                        ))}
+                    </VoltageLevelSearchMenuList>
+                )}
+            </Box>
+        </Menu>
     );
 };
-
-export default VoltageLevelSearchMenu;
