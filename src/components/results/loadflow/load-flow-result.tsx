@@ -6,7 +6,7 @@
  */
 import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
 import { RowClassParams } from 'ag-grid-community';
@@ -24,6 +24,7 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult, formatCountryAdequaciesResult, formatExchangesResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from 'redux/reducer';
+import GridSection from '../../dialogs/commons/grid-section';
 
 const styles = {
     gridContainer: {
@@ -50,7 +51,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
 
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const synchronousComponentsGridRef = useRef<AgGridReact>(null);
+    const connectedComponentsGridRef = useRef<AgGridReact>(null);
     const countryAdequaciesGridRef = useRef<AgGridReact>(null);
     const exchangesGridRef = useRef<AgGridReact>(null);
 
@@ -106,16 +107,14 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         return (
             <div style={styles.gridContainer}>
                 <Box sx={{ height: '4px' }}>{openLoaderStatusTab && <LinearProgress />}</Box>
-                <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
-                    <FormattedMessage id="LoadFlowResultsSynchronousComponents" />
-                </h4>
+                <GridSection title={'LoadFlowResultsConnectedComponents'} customStyle={{ paddingLeft: '4px' }} />
                 <div style={{ minHeight: '300px', height: '100%' }}>
                     <RenderTableAndExportCsv
-                        gridRef={synchronousComponentsGridRef}
+                        gridRef={connectedComponentsGridRef}
                         columns={componentColumnDefs}
                         defaultColDef={defaultColDef}
                         tableName={intl.formatMessage({
-                            id: 'LoadFlowResultsSynchronousComponents',
+                            id: 'LoadFlowResultsConnectedComponents',
                         })}
                         rows={componentResultRowsToShow}
                         getRowStyle={getRowStyle}
@@ -123,10 +122,12 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                     />
                 </div>
-                <br />
-                <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
-                    <FormattedMessage id="LoadFlowResultsCountryAdequacies" />
-                </h4>
+                <GridSection
+                    title={'LoadFlowResultsCountryAdequacies'}
+                    tooltipEnabled={true}
+                    tooltipMessage={'LoadFlowResultsMainComponentToolTip'}
+                    customStyle={{ paddingLeft: '4px' }}
+                />
                 <div style={{ minHeight: '300px', height: '100%' }}>
                     <RenderTableAndExportCsv
                         gridRef={countryAdequaciesGridRef}
@@ -141,10 +142,12 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                     />
                 </div>
-                <br />
-                <h4 style={{ paddingLeft: '2px', marginBottom: '4px' }}>
-                    <FormattedMessage id="LoadFlowResultsExchanges" />
-                </h4>
+                <GridSection
+                    title={'LoadFlowResultsExchanges'}
+                    tooltipEnabled={true}
+                    tooltipMessage={'LoadFlowResultsMainComponentToolTip'}
+                    customStyle={{ paddingLeft: '4px' }}
+                />
                 <div style={{ minHeight: '300px', height: '100%' }}>
                     <RenderTableAndExportCsv
                         gridRef={exchangesGridRef}

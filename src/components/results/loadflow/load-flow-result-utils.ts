@@ -149,7 +149,7 @@ export const useFetchFiltersEnums = (): {
     loading: boolean;
     result: FilterEnumsType;
 } => {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [result, setResult] = useState<FilterEnumsType>({
         status: null,
@@ -511,6 +511,17 @@ export const componentColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'losses' }),
             colId: 'losses',
             field: 'losses',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'distributedActivePower' }),
+            colId: 'distributedActivePower',
+            field: 'distributedActivePower',
             context: {
                 numeric: true,
                 fractionDigits: 2,

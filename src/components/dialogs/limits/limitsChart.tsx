@@ -9,9 +9,8 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import { useCallback, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { Limit, TemporaryLimit } from '../../../services/network-modification-types';
-import { BarSeriesType } from '@mui/x-charts/models/seriesType/bar';
-import { AxisValueFormatterContext } from '@mui/x-charts/models/axis';
+import { TemporaryLimitsData } from '../../../services/study/network-map.type';
+import { AxisValueFormatterContext, BarSeriesType } from '@mui/x-charts/models';
 
 export interface LimitsGraphProps {
     limitsGroupFormName: string;
@@ -48,7 +47,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
     const permanentLimit: number | null = currentLimits.permanentLimit ?? previousPermanentLimit ?? null;
 
     const isIncoherent = useCallback(
-        (maxValuePermanentLimit: number, item: Limit, previousItem?: Limit) => {
+        (maxValuePermanentLimit: number, item: TemporaryLimitsData, previousItem?: TemporaryLimitsData) => {
             // Incoherent cases :
             //  threshold without tempo that is not permanent limit when permanent limit exists
             //  threshold with biggest tempo and biggest value than the previous threshold
@@ -79,8 +78,8 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
         [intl, permanentLimit]
     );
 
-    const { series, ticks } = useMemo(() => {
-        const thresholds: Limit[] = [];
+    const { series, ticks, max } = useMemo(() => {
+        const thresholds: TemporaryLimitsData[] = [];
         let noValueThresholdFound = false;
         let maxValuePermanentLimit: number = 0;
 
@@ -95,8 +94,8 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
 
         if (currentLimits?.temporaryLimits) {
             currentLimits.temporaryLimits
-                .filter((field: TemporaryLimit) => field.name && (field.acceptableDuration || field.value))
-                .forEach((field: TemporaryLimit) => {
+                .filter((field: TemporaryLimitsData) => field.name && (field.acceptableDuration || field.value))
+                .forEach((field: TemporaryLimitsData) => {
                     if (!field.value) {
                         noValueThresholdFound = true;
                     }
@@ -132,7 +131,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
         let colorIndex = 0;
         let previousSum = 0;
 
-        return thresholds.reduce<{ series: BarSeriesType[]; ticks: Ticks[] }>(
+        return thresholds.reduce<{ series: BarSeriesType[]; ticks: Ticks[]; max: number }>(
             (acc, item, index) => {
                 const isPermanentLimit =
                     (item.name === intl.formatMessage({ id: 'permanentLimit' }) && permanentLimit) ||
@@ -196,31 +195,28 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
                 return {
                     series: updatedSeries,
                     ticks: updatedTicks,
+                    max:
+                        updatedSeries
+                            .flatMap((serie) => serie.data) // Only one number by array.
+                            .filter(Number.isFinite)
+                            // @ts-ignore : We filtered values above.
+                            .reduce((a, b) => a + b, 0) ?? 100,
                 };
             },
-            { series: [], ticks: [] }
+            { series: [], ticks: [], max: 0 }
         );
     }, [currentLimits.temporaryLimits, intl, isIncoherent, permanentLimit]);
 
-    const config = {
-        id: 'topAxis',
-        valueFormatter: (value: number, _context: AxisValueFormatterContext) =>
-            ticks.find((item: Ticks) => item.position === value)?.label,
-    };
+    const tickPositions = ticks.map((t) => t.position);
 
     return (
         <BarChart
-            margin={{ left: 0, right: 0, top: 20 }}
-            height={110}
+            margin={{ left: 20, right: 20, top: 0, bottom: 0 }}
+            height={90}
             slotProps={{
                 legend: {
-                    direction: 'row',
-                    position: { vertical: 'bottom', horizontal: 'middle' },
-                    padding: 0,
-                    itemMarkWidth: 10,
-                    itemMarkHeight: 10,
-                    labelStyle: {
-                        fontSize: 12,
+                    position: {
+                        vertical: 'bottom',
                     },
                 },
             }}
@@ -230,20 +226,36 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
                     : [{ label: intl.formatMessage({ id: 'unlimited' }), data: [100], color: colorPermanentLimit }]
             }
             layout="horizontal"
-            leftAxis={null}
-            bottomAxis={{
-                tickInterval: [...ticks.map((item) => item.position)],
-                disableLine: true,
-                tickLabelStyle: { fontSize: 10 },
-                position: 'bottom',
-            }}
-            topAxis={{
-                tickInterval: [...ticks.map((item) => item.position)],
-                tickLabelStyle: { fontSize: 10 },
-                disableLine: true,
-                position: 'top',
-                ...config,
-            }}
+            yAxis={[
+                // We can't totally disable the yAxis, so we have to give empty data
+                {
+                    id: 'leftAxis',
+                    position: 'none',
+                    data: [''],
+                },
+            ]}
+            xAxis={[
+                {
+                    id: 'bottomAxis',
+                    position: 'bottom',
+                    tickInterval: tickPositions,
+                    tickLabelStyle: { fontSize: 10 },
+                    disableLine: true,
+                    min: 0,
+                    max: max,
+                },
+                {
+                    id: 'topAxis',
+                    position: 'top',
+                    tickInterval: tickPositions,
+                    tickLabelStyle: { fontSize: 10 },
+                    valueFormatter: (value: number, _context: AxisValueFormatterContext) =>
+                        ticks.find((item: Ticks) => item.position === value)?.label ?? '',
+                    disableLine: true,
+                    min: 0,
+                    max: max,
+                },
+            ]}
             sx={{ pointerEvents: 'none' }}
         />
     );

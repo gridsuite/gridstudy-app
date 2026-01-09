@@ -8,7 +8,7 @@ import { UUID } from 'node:crypto';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { downloadZipFile } from '../services/utils';
-import { fetchExportNetworkFile } from '../services/network-conversion';
+import { fetchExportNetworkFile } from '../services/study/network';
 import { useIntl } from 'react-intl';
 
 export function useExportDownload() {

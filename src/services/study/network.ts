@@ -430,6 +430,11 @@ export function exportNetworkFile(
     });
 }
 
+export function fetchExportNetworkFile(exportUuid: UUID) {
+    const url = PREFIX_STUDY_QUERIES + '/v1/download-file/' + exportUuid;
+    return backendFetch(url);
+}
+
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {
     const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EQUIPMENT_INFOS_TYPES.TAB.type}`;
     return backendFetchJson(fetchEquipmentTypeSchemaUrl, {
