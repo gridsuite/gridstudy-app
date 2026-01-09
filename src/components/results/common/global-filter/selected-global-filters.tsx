@@ -13,13 +13,14 @@ import { getOptionLabel } from './global-filter-utils';
 import { useContext } from 'react';
 import { GlobalFilterContext } from './global-filter-context';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { FilterType } from '../utils';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 function SelectedGlobalFilters() {
     const { selectedGlobalFilters, setSelectedGlobalFilters, onChange } = useContext(GlobalFilterContext);
     const { translate } = useLocalizedCountries();
+    const intl = useIntl();
 
     const filtersByCategories: Map<string, GlobalFilter[]> = new Map();
     selectedGlobalFilters.forEach((filter: GlobalFilter) => {
@@ -56,7 +57,7 @@ function SelectedGlobalFilters() {
                     <Box sx={resultsGlobalFilterStyles.selectedFiltersChips}>
                         {filters.map((element: GlobalFilter) => (
                             <OverflowableChip
-                                label={getOptionLabel(element, translate, intel)}
+                                label={getOptionLabel(element, translate, intl)}
                                 sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                                 onDelete={() => {
                                     const newSelectedGlobalFilters = selectedGlobalFilters.filter(
