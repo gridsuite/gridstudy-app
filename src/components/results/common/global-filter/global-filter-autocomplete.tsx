@@ -279,7 +279,7 @@ function GlobalFilterAutocomplete({
                     <ListItemButton selected={state.selected} component="li" {...otherProps}>
                         <Checkbox size="small" checked={state.selected} />
                         {option.filterType === FilterType.VOLTAGE_LEVEL ? (
-                            <Tooltip title={formatVoltageRange(option)} placement="right">
+                            <Tooltip title={formatVoltageRange(option)} placement="right" arrow>
                                 <Typography>{label}</Typography>
                             </Tooltip>
                         ) : (
