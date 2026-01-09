@@ -22,6 +22,7 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { LineCharacteristics } from '../modification/line-modification-type';
+import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 
 const characteristicsValidationSchema = (id: string, displayConnectivity: boolean, modification: boolean) => ({
     [id]: yup.object().shape({
@@ -80,8 +81,8 @@ export const getCharacteristicsFormData = (
         b1: number | null;
         g2: number | null;
         b2: number | null;
-        connectivity1: any;
-        connectivity2: any;
+        connectivity1: Connectivity | null;
+        connectivity2: Connectivity | null;
     },
     id = CHARACTERISTICS
 ) => ({
