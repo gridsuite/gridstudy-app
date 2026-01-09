@@ -10,6 +10,15 @@ import type { UUID } from 'node:crypto';
 import { Property } from '../../common/properties/property-utils';
 import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
 
+export interface LineCharacteristics {
+    r: number | null;
+    x: number | null;
+    g1: number | null;
+    b1: number | null;
+    g2: number | null;
+    b2: number | null;
+}
+
 export interface LineModificationFormInfos {
     equipmentId?: string;
     equipmentName?: string;
@@ -18,12 +27,12 @@ export interface LineModificationFormInfos {
     modificationUuid: string;
     lineId: string;
     lineName: string | null;
-    r: number;
-    x: number;
-    g1: number;
-    b1: number;
-    g2: number;
-    b2: number;
+    r: number | null;
+    x: number | null;
+    g1: number | null;
+    b1: number | null;
+    g2: number | null;
+    b2: number | null;
     operationalLimitsGroups: OperationalLimitsGroup[];
     selectedOperationalLimitsGroupId1: string | null;
     selectedOperationalLimitsGroupId2: string | null;
