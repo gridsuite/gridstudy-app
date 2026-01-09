@@ -7,6 +7,7 @@
 
 import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
+import { CreateRuleFormInput } from './create-rule-dialog.types';
 
 const createRuleValidationSchema = () =>
     yup.object().shape({
@@ -16,9 +17,7 @@ const createRuleValidationSchema = () =>
 
 export const getCreateRuleValidationSchema = () => createRuleValidationSchema();
 
-const createRuleEmptyFormData = () => ({
+export const getCreateRuleEmptyFormData = (): CreateRuleFormInput => ({
     [LOW_TAP_POSITION]: null,
     [HIGH_TAP_POSITION]: null,
 });
-
-export const getCreateRuteEmptyFormData = () => createRuleEmptyFormData();

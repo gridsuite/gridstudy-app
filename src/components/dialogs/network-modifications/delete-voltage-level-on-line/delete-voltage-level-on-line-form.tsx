@@ -7,9 +7,8 @@
 
 import { Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { AutocompleteInput, TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, EquipmentType, TextInput } from '@gridsuite/commons-ui';
 import {
-    ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
     REPLACING_LINE_1_ID,
@@ -19,17 +18,30 @@ import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { getIdOrValue } from 'components/dialogs/commons/utils';
 
-const DeleteAttachingLineForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
+interface DeleteVoltageLevelOnLineFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+}
+
+const DeleteVoltageLevelOnLineForm = ({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+}: DeleteVoltageLevelOnLineFormProps) => {
     const [linesOptions, setLinesOptions] = useState([]);
 
     useEffect(() => {
-        fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, undefined, 'LINE', true).then(
+        fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, [], EquipmentType.LINE, true).then(
             (values) => {
                 setLinesOptions(
                     values
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((value) => {
+                        .sort((a: string, b: string) => a.localeCompare(b))
+                        .map((value: string) => {
                             return { id: value };
                         })
                 );
@@ -46,7 +58,7 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode, currentRootNetworkUui
             label="Line1"
             options={linesOptions}
             getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
+            outputTransform={getIdOrValue}
             size={'small'}
         />
     );
@@ -60,21 +72,7 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode, currentRootNetworkUui
             label="Line2"
             options={linesOptions}
             getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
-            size={'small'}
-        />
-    );
-
-    const attachedLineField = (
-        <AutocompleteInput
-            isOptionEqualToValue={areIdsEqual}
-            allowNewValue
-            forcePopupIcon
-            name={ATTACHED_LINE_ID}
-            label="LineAttached"
-            options={linesOptions}
-            getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
+            outputTransform={getIdOrValue}
             size={'small'}
         />
     );
@@ -92,10 +90,6 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode, currentRootNetworkUui
             <Grid container spacing={2} alignItems="center">
                 <GridItem size={5}>{lineToAttachTo2Field}</GridItem>
             </Grid>
-            <GridSection title="LineAttached" />
-            <Grid container spacing={2} alignItems="center">
-                <GridItem size={5}>{attachedLineField}</GridItem>
-            </Grid>
             <GridSection title="ReplacingLine" />
             <Grid container spacing={2}>
                 <GridItem>{replacingLineIdField}</GridItem>
@@ -105,4 +99,4 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode, currentRootNetworkUui
     );
 };
 
-export default DeleteAttachingLineForm;
+export default DeleteVoltageLevelOnLineForm;
