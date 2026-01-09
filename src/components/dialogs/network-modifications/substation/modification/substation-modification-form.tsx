@@ -14,7 +14,15 @@ import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
 
-const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
+interface SubstationModificationFormProps {
+    substationToModify?: {
+        name?: string;
+        country?: string;
+    } | null;
+    equipmentId: string;
+}
+
+const SubstationModificationForm = ({ substationToModify, equipmentId }: SubstationModificationFormProps) => {
     const { translate } = useLocalizedCountries();
 
     const substationIdField = (
@@ -47,7 +55,7 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
             label={'Country'}
             formProps={filledTextField}
             size={'small'}
-            previousValue={translate(substationToModify?.country)}
+            previousValue={substationToModify?.country ? translate(substationToModify?.country) : ''}
         />
     );
 

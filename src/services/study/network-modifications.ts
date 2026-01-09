@@ -1185,7 +1185,7 @@ export function createSubstation({
         properties,
     });
 
-    if (isUpdate) {
+    if (modificationUuid) {
         url += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating substation creation', { url, body });
     } else {

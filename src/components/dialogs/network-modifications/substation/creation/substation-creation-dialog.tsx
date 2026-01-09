@@ -8,13 +8,18 @@
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect } from 'react';
-import { CustomFormProvider, fetchDefaultCountry, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    fetchDefaultCountry,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
+import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import SubstationCreationForm from './substation-creation-form';
 import { sanitizeString } from '../../../dialog-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -26,10 +31,27 @@ import {
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
+    Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
-const emptyFormData = {
+interface SubstationInfos {
+    id: string;
+    name?: string;
+    country: string | null;
+    properties?: Record<string, string>;
+}
+
+interface SubstationCreationFormData {
+    [EQUIPMENT_ID]: string;
+    [EQUIPMENT_NAME]?: string;
+    [COUNTRY]: string | null;
+    [ADDITIONAL_PROPERTIES]?: Property[];
+}
+
+const emptyFormData: SubstationCreationFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [COUNTRY]: null,
@@ -42,8 +64,35 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
     })
-    .concat(creationPropertiesSchema);
+    .concat(creationPropertiesSchema) as yup.ObjectSchema<SubstationCreationFormData>;
 
+interface SubstationCreationEditData {
+    uuid?: UUID;
+    equipmentId: string;
+    equipmentName?: string;
+    country: string | null;
+    properties?: Property[] | null;
+}
+
+interface SubstationCreationDialogProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus?: string;
+    editData?: SubstationCreationEditData;
+}
+
+/**
+ * Dialog to create a substation in the network
+ * @param editData the data to edit
+ * @param currentNode The node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentRootNetworkUuid The root network we are currently working on
+ * @param isUpdate check if edition form
+ * @param editDataFetchStatus indicates the status of fetching EditData
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ */
 const SubstationCreationDialog = ({
     editData,
     currentNode,
@@ -52,7 +101,7 @@ const SubstationCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: SubstationCreationDialogProps) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
@@ -63,7 +112,7 @@ const SubstationCreationDialog = ({
 
     const { reset, getValues } = formMethods;
 
-    const fromSearchCopyToFormValues = (substation) => {
+    const fromSearchCopyToFormValues = (substation: SubstationInfos) => {
         reset(
             {
                 [EQUIPMENT_ID]: substation.id + '(1)',
@@ -75,7 +124,7 @@ const SubstationCreationDialog = ({
         );
     };
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.SUBSTATION);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.SUBSTATION);
 
     useEffect(() => {
         if (editData) {
@@ -107,7 +156,7 @@ const SubstationCreationDialog = ({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (substation) => {
+        (substation: SubstationCreationFormData) => {
             createSubstation({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -147,7 +196,7 @@ const SubstationCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.SUBSTATION}
+                    equipmentType={EquipmentType.SUBSTATION}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
