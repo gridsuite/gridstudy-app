@@ -12,7 +12,6 @@ import { useSelector } from 'react-redux';
 import { selectPanel } from '../../../redux/slices/workspace-selectors';
 import { useWorkspaceActions } from '../hooks/use-workspace-actions';
 import type { RootState } from '../../../redux/store';
-import { PanelType } from '../types/workspace.types';
 import { PANEL_CONTENT_REGISTRY } from '../panel-contents/panel-content-registry';
 import { PanelHeader } from './panel-header';
 import type { UUID } from 'node:crypto';
@@ -73,7 +72,7 @@ interface PanelProps {
     isFocused: boolean;
 }
 export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
-    const workspaceActions = useWorkspaceActions();
+    const { updatePanelGeometry, focusPanel } = useWorkspaceActions();
     const panel = useSelector((state: RootState) => selectPanel(state, panelId));
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -89,18 +88,18 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
     const handleDragStop: RndDragCallback = useCallback(
         (_e, data) => {
             if (snapPreview) {
-                workspaceActions.updatePanelGeometry(panelId, {
+                updatePanelGeometry(panelId, {
                     position: { x: snapPreview.x, y: snapPreview.y },
                     size: { width: snapPreview.width, height: snapPreview.height },
                 });
             } else {
                 // Convert pixel position back to relative values
                 const relativePosition = positionToRelative({ x: data.x, y: data.y }, containerRect);
-                workspaceActions.updatePanelGeometry(panelId, { position: relativePosition });
+                updatePanelGeometry(panelId, { position: relativePosition });
             }
             onSnapPreview(panelId, null);
         },
-        [workspaceActions, panelId, snapPreview, onSnapPreview, containerRect]
+        [updatePanelGeometry, panelId, snapPreview, onSnapPreview, containerRect]
     );
 
     const handleResizeStop: RndResizeCallback = useCallback(
@@ -114,16 +113,16 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
                 },
                 containerRect
             );
-            workspaceActions.updatePanelGeometry(panelId, { position: relativePosition, size: relativeSize });
+            updatePanelGeometry(panelId, { position: relativePosition, size: relativeSize });
         },
-        [workspaceActions, panelId, containerRect]
+        [updatePanelGeometry, panelId, containerRect]
     );
 
     const handleFocus = useCallback(() => {
         if (!isFocused) {
-            workspaceActions.focusPanel(panelId);
+            focusPanel(panelId);
         }
-    }, [workspaceActions, panelId, isFocused]);
+    }, [focusPanel, panelId, isFocused]);
 
     if (!panel) {
         return null;
@@ -154,8 +153,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
             minHeight={minHeight}
             resizeHandleStyles={styles.resizeHandles}
             style={{
-                // For NAD panels, minimized=true means minimized (hide content, keep in dock)
-                display: panel.type === PanelType.NAD && panel.minimized ? 'none' : 'block',
+                display: panel.minimized ? 'none' : 'block',
                 zIndex: panel.zIndex ?? 0,
             }}
         >

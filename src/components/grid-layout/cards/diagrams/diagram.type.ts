@@ -61,6 +61,7 @@ export type NetworkAreaDiagram = DiagramBase & {
     nadConfigUuid: UUID | undefined;
     filterUuid: UUID | undefined;
     currentFilterUuid: UUID | undefined;
+    savedWorkspaceConfigUuid?: UUID;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];

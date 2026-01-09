@@ -64,7 +64,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
         (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.stopPropagation();
             onClose?.();
-            openNAD({ name: element.id, initialVoltageLevelIds: [element.id] });
+            openNAD({ title: element.id, initialVoltageLevelIds: [element.id] });
         },
         [openNAD, element.id, onClose]
     );

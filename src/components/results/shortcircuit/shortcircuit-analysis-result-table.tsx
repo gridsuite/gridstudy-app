@@ -110,7 +110,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         (props: ICellRendererParams) => {
             const { value } = props || {};
             const onClick = () => {
-                openSLD({ id: value, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+                openSLD({ diagramId: value, panelType: PanelType.SLD_VOLTAGE_LEVEL });
             };
             if (value) {
                 return (

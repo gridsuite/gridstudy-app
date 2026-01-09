@@ -66,7 +66,7 @@ export const useLoadFlowResultColumnActions = ({
                         })
                         .finally(() => {
                             if (vlId) {
-                                openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+                                openSLD({ diagramId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
                                 return;
                             }
                             snackError({

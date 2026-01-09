@@ -9,6 +9,8 @@ import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { getStudyUrl } from './index';
 import type { PanelState } from '../../components/workspace/types/workspace.types';
+import { getClientId } from '../../hooks/use-client-id';
+import type { DiagramConfigPosition } from '../explore';
 
 interface WorkspaceDTO {
     id: UUID;
@@ -44,6 +46,7 @@ export function renameWorkspace(studyUuid: UUID, workspaceId: UUID, name: string
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            clientId: getClientId(),
         },
         body: JSON.stringify(name),
     }).then(() => {});
@@ -58,6 +61,7 @@ export function syncPanels(studyUuid: UUID, workspaceId: UUID, panels: PanelStat
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            clientId: getClientId(),
         },
         body: JSON.stringify(panels),
     }).then(() => {});
@@ -72,6 +76,7 @@ export function deletePanels(studyUuid: UUID, workspaceId: UUID, panelIds: UUID[
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
+            clientId: getClientId(),
         },
         body: JSON.stringify(panelIds),
     }).then(() => {});
@@ -86,4 +91,40 @@ export function fetchPanels(studyUuid: UUID, workspaceId: UUID, panelIds?: UUID[
     const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function saveNadConfig(
+    studyUuid: UUID,
+    workspaceId: UUID,
+    panelId: UUID,
+    config: {
+        id?: UUID | null;
+        scalingFactor?: number;
+        voltageLevelIds: string[];
+        positions: DiagramConfigPosition[];
+    }
+): Promise<UUID> {
+    console.info('save NAD config');
+    const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels/${panelId}/saved-nad-config`;
+    console.debug(url);
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            clientId: getClientId(),
+        },
+        body: JSON.stringify(config),
+    });
+}
+
+export function deleteNadConfig(studyUuid: UUID, workspaceId: UUID, panelId: UUID): Promise<void> {
+    console.info('delete NAD config');
+    const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels/${panelId}/saved-nad-config`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'DELETE',
+        headers: {
+            clientId: getClientId(),
+        },
+    }).then(() => {});
 }

@@ -51,7 +51,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
     const triggerTreeNodeFocus = useTreeNodeFocus();
     const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
     const dispatch = useDispatch();
-    const { togglePanel } = useWorkspaceActions();
+    const { toggleToolPanel } = useWorkspaceActions();
 
     const getModificationLabel = useCallback(
         (modification?: Modification): React.ReactNode => {
@@ -77,10 +77,10 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
                 setCurrentTreeNodeWithSync({ ...node });
                 triggerTreeNodeFocus();
             }
-            togglePanel(PanelType.MODIFICATIONS);
+            toggleToolPanel(PanelType.MODIFICATIONS);
             dispatch(setHighlightModification(modification.modificationUuid));
         },
-        [dispatch, nodeUuid, setCurrentTreeNodeWithSync, treeNodes, triggerTreeNodeFocus, togglePanel]
+        [dispatch, nodeUuid, setCurrentTreeNodeWithSync, treeNodes, triggerTreeNodeFocus, toggleToolPanel]
     );
 
     return (

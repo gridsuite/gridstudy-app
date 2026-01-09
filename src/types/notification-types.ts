@@ -339,6 +339,7 @@ interface WorkspacePanelsDeletedEventDataHeaders extends CommonStudyEventDataHea
 
 interface WorkspaceNadConfigUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.WORKSPACE_NAD_CONFIG_UPDATED;
+    clientId?: string;
 }
 
 interface ModificationsCreationInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {

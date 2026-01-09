@@ -9,11 +9,12 @@ import { useRef, useState, useCallback, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import { selectOpenPanelIds, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
+import { selectOpenPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
 import type { SnapRect } from './utils/snap-utils';
 import { toPixels } from './utils/coordinate-utils';
 import { Panel } from './panel';
 import { WorkspaceDock } from './workspace-dock';
+import { RootState } from 'redux/store';
 
 const styles = {
     container: {
@@ -42,7 +43,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const WorkspaceContainer = () => {
-    const visiblePanelIds = useSelector(selectOpenPanelIds);
+    const visiblePanelIds = useSelector((state: RootState) => selectOpenPanels(state).map((p) => p.id));
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerRect, setContainerRect] = useState<DOMRect | null>(null);

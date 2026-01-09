@@ -8,73 +8,36 @@
 import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { v4 as uuidv4 } from 'uuid';
-import { updatePanels, deletePanels, setFocusedPanelId } from '../../../redux/slices/workspace-slice';
-import { selectFocusedPanelId, selectPanels, selectActiveWorkspaceId } from '../../../redux/slices/workspace-selectors';
+import {
+    updatePanels,
+    deletePanels as deletePanelsRedux,
+    setFocusedPanelId,
+} from '../../../redux/slices/workspace-slice';
+import {
+    selectFocusedPanelId,
+    selectActiveWorkspaceId,
+    selectPanel,
+    selectPanelByType,
+    selectExistingSLD,
+    selectAssociatedPanels,
+    selectVisibleAssociatedSldPanels,
+} from '../../../redux/slices/workspace-selectors';
 import { PanelType } from '../types/workspace.types';
-import { syncPanels as syncPanelsAPI, deletePanels as deletePanelsAPI } from '../../../services/study/workspace';
-import type {
-    PanelState,
-    NADPanel,
-    SLDVoltageLevelPanel,
-    SLDSubstationPanel,
-    SpreadsheetPanel,
-} from '../types/workspace.types';
-import { getPanelConfig, SLD_MAX_NAVIGATION_HISTORY } from '../constants/workspace.constants';
-import type { AppDispatch } from '../../../redux/store';
+import type { PanelState, NADPanel, SpreadsheetPanel } from '../types/workspace.types';
+import { store, type AppDispatch } from '../../../redux/store';
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { NAD_SLD_CONSTANTS } from '../panel-contents/diagrams/nad/constants';
 import { AppState } from 'redux/reducer';
-
-const getDefaultAssociatedSldPositionAndSize = () => ({
-    position: {
-        x: NAD_SLD_CONSTANTS.CASCADE_START_X,
-        y: 1 - NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT,
-    },
-    size: {
-        width: NAD_SLD_CONSTANTS.PANEL_DEFAULT_WIDTH,
-        height: NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT,
-    },
-});
-
-const isSLDPanel = (panel: PanelState): panel is SLDVoltageLevelPanel | SLDSubstationPanel =>
-    panel.type === PanelType.SLD_VOLTAGE_LEVEL || panel.type === PanelType.SLD_SUBSTATION;
-
-const isNADPanel = (panel: PanelState): panel is NADPanel => panel.type === PanelType.NAD;
-
-const createPanelBase = (panelType: PanelType) => {
-    const config = getPanelConfig(panelType);
-    return {
-        id: uuidv4() as UUID,
-        position: config.defaultPosition,
-        size: config.defaultSize,
-        minimized: false,
-        maximized: false,
-        pinned: false,
-    };
-};
-
-const findExistingSLD = (panels: PanelState[], diagramId: string) => {
-    return panels.find(
-        (p) =>
-            isSLDPanel(p) && p.diagramId === diagramId && (p.type === PanelType.SLD_SUBSTATION || !p.parentNadPanelId)
-    );
-};
-
-const findPanelByType = (panels: PanelState[], panelType: PanelType) => {
-    return panels.find((p) => p.type === panelType);
-};
-
-const findPanelById = (panels: PanelState[], panelId: UUID) => {
-    return panels.find((p) => p.id === panelId);
-};
-
-const getAssociatedSldIds = (panels: PanelState[], nadPanelId: UUID): UUID[] => {
-    const associatedPanels = panels.filter(
-        (p) => p.type === PanelType.SLD_VOLTAGE_LEVEL && p.parentNadPanelId === nadPanelId
-    );
-    return associatedPanels.map((p) => p.id);
-};
+import {
+    getDefaultAssociatedSldPositionAndSize,
+    isNADPanel,
+    isSLDVoltageLevelPanel,
+    updateNavigationHistory,
+    createPanelBase,
+    createSLDPanel,
+    createNADPanel,
+} from './workspace-panel-utils';
+import { getPanelConfig } from '../constants/workspace.constants';
+import { panelSyncManager } from '../utils/panel-sync-manager';
 
 export const useWorkspaceActions = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -82,141 +45,67 @@ export const useWorkspaceActions = () => {
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
     return useMemo(() => {
-        // Helper functions to sync with backend
-        const syncToBackend = async (panels: PanelState[]) => {
-            if (!workspaceId) return;
-            try {
-                await syncPanelsAPI(studyUuid as UUID, workspaceId, panels);
-            } catch (error) {
-                console.error('Failed to sync panels to backend:', error);
+        // Core helpers - use store.getState() for state access without subscriptions
+        const getState = () => store.getState();
+
+        const savePanels = (panels: PanelState[], syncToBackend = true) => {
+            dispatch(updatePanels(panels));
+            if (syncToBackend && workspaceId) {
+                panelSyncManager.queueSync(studyUuid as UUID, workspaceId, panels);
             }
         };
 
-        const deleteFromBackend = async (panelIds: UUID[]) => {
-            if (!workspaceId) return;
-            try {
-                await deletePanelsAPI(studyUuid as UUID, workspaceId, panelIds);
-            } catch (error) {
-                console.error('Failed to delete panels from backend:', error);
+        const saveAndFocus = (panel: PanelState, syncToBackend = true) => {
+            savePanels([panel], syncToBackend);
+            focusPanel(panel.id);
+        };
+
+        const savePanel = (panelId: UUID, transform: (panel: PanelState) => PanelState, syncToBackend = true) => {
+            const panel = selectPanel(getState(), panelId);
+            if (panel) {
+                savePanels([transform(panel)], syncToBackend);
             }
         };
-        // Helper to focus a panel by bumping its zIndex
-        const doFocusPanel = (panelId: UUID) =>
-            dispatch((dispatch, getState) => {
-                const state = getState();
-                const panels = selectPanels(state);
-                const panel = findPanelById(panels, panelId);
-                if (panel) {
-                    const nextZ = state.workspace.nextZIndex;
-                    dispatch(updatePanels([{ ...panel, zIndex: nextZ }]));
-                    dispatch(setFocusedPanelId(panelId));
-                }
-            });
+
+        const deletePanels = (panelIds: UUID[]) => {
+            dispatch(deletePanelsRedux(panelIds));
+            if (workspaceId) {
+                panelSyncManager.queueDelete(studyUuid as UUID, workspaceId, panelIds);
+            }
+        };
+
+        const focusPanel = (panelId: UUID) => {
+            const state = getState();
+            const panel = selectPanel(state, panelId);
+            if (panel) {
+                const nextZ = state.workspace.nextZIndex;
+                dispatch(updatePanels([{ ...panel, zIndex: nextZ }]));
+                dispatch(setFocusedPanelId(panelId));
+            }
+        };
 
         return {
-            // ========================================
-            // Actions WITH backend sync
-            // ========================================
-
-            openSLD: ({
-                id,
-                panelType,
-            }: {
-                id: string;
-                panelType: PanelType.SLD_VOLTAGE_LEVEL | PanelType.SLD_SUBSTATION;
-            }) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const existing = findExistingSLD(panels, id);
-
-                    if (existing) {
-                        const updated = { ...existing, minimized: false };
-                        dispatch(updatePanels([updated]));
-                        doFocusPanel(existing.id);
-                        syncToBackend([updated]);
-                    } else {
-                        const newPanel: SLDVoltageLevelPanel | SLDSubstationPanel =
-                            panelType === PanelType.SLD_VOLTAGE_LEVEL
-                                ? {
-                                      ...createPanelBase(panelType),
-                                      type: panelType,
-                                      title: id,
-                                      diagramId: id,
-                                      parentNadPanelId: undefined,
-                                      navigationHistory: [],
-                                  }
-                                : {
-                                      ...createPanelBase(panelType),
-                                      type: panelType,
-                                      title: id,
-                                      diagramId: id,
-                                  };
-                        dispatch(updatePanels([newPanel]));
-                        doFocusPanel(newPanel.id);
-                        syncToBackend([newPanel]);
-                    }
-                }),
-
-            togglePanel: (panelType: PanelType) =>
-                dispatch((dispatch, getState) => {
-                    const state = getState();
-                    const panels = selectPanels(state);
-                    const focusedPanelId = selectFocusedPanelId(state);
-                    const existing = findPanelByType(panels, panelType);
-
-                    if (existing) {
-                        if (existing.minimized) {
-                            // If minimized, restore and focus
-                            const updated = { ...existing, minimized: false };
-                            dispatch(updatePanels([updated]));
-                            doFocusPanel(existing.id);
-                            syncToBackend([updated]);
-                        } else if (focusedPanelId === existing.id) {
-                            // If already focused, minimize it
-                            const updated = { ...existing, minimized: true };
-                            dispatch(updatePanels([updated]));
-                            syncToBackend([updated]);
-                        } else {
-                            // If not focused, just focus it (zIndex change only, no sync needed)
-                            doFocusPanel(existing.id);
-                        }
-                    } else {
-                        // Create new panel and focus
-                        const config = getPanelConfig(panelType);
-                        const newPanel: PanelState = {
-                            ...createPanelBase(panelType),
-                            type: panelType,
-                            title: config.title,
-                        } as PanelState;
-                        dispatch(updatePanels([newPanel]));
-                        doFocusPanel(newPanel.id);
-                        syncToBackend([newPanel]);
-                    }
-                }),
-
-            deletePanel: (panelId: UUID) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const panel = findPanelById(panels, panelId);
-                    if (!panel) return;
-
-                    const toDelete = [panelId];
-
-                    // If deleting NAD, also delete associated SLDs
-                    if (panel.type === PanelType.NAD) {
-                        const associatedSldIds = getAssociatedSldIds(panels, panelId);
-                        toDelete.push(...associatedSldIds);
-                    }
-
-                    dispatch(deletePanels(toDelete));
-                    deleteFromBackend(toDelete);
-                }),
-
-            deletePanels: (panelIds: UUID[]) =>
-                dispatch((dispatch) => {
-                    dispatch(deletePanels(panelIds));
-                    deleteFromBackend(panelIds);
-                }),
+            // Simple panel property toggles
+            toggleMinimized: (panelId: UUID) => savePanel(panelId, (p) => ({ ...p, minimized: !p.minimized })),
+            togglePin: (panelId: UUID) => savePanel(panelId, (p) => ({ ...p, pinned: !p.pinned })),
+            toggleMaximized: (panelId: UUID) =>
+                savePanel(panelId, (p) =>
+                    p.maximized
+                        ? {
+                              ...p,
+                              maximized: false,
+                              position: p.restorePosition || p.position,
+                              size: p.restoreSize || p.size,
+                              restorePosition: undefined,
+                              restoreSize: undefined,
+                          }
+                        : {
+                              ...p,
+                              maximized: true,
+                              restorePosition: p.position,
+                              restoreSize: p.size,
+                          }
+                ),
 
             updatePanelGeometry: (
                 panelId: UUID,
@@ -224,186 +113,55 @@ export const useWorkspaceActions = () => {
                     position?: { x: number; y: number };
                     size?: { width: number; height: number };
                 },
-                skipBackendSync?: boolean
-            ) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const panel = findPanelById(panels, panelId);
-                    if (!panel) return;
+                syncToBackend = true
+            ) => savePanel(panelId, (p) => ({ ...p, ...updates }), syncToBackend),
 
-                    const updated = { ...panel, ...updates };
-                    dispatch(updatePanels([updated]));
-                    if (!skipBackendSync) {
-                        syncToBackend([updated]);
-                    }
-                }),
+            // Associated SLD operations
+            hideAssociatedSlds: (nadPanelId: UUID) => {
+                const panels = selectVisibleAssociatedSldPanels(getState(), nadPanelId);
+                if (panels.length > 0) {
+                    savePanels(panels.map((p) => ({ ...p, minimized: true })));
+                }
+            },
 
-            toggleMinimize: (panelId: UUID) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const panel = findPanelById(panels, panelId);
-                    if (!panel) return;
+            showAssociatedSlds: (nadPanelId: UUID) => {
+                const minimizedPanels = selectAssociatedPanels(getState(), nadPanelId).filter((p) => p.minimized);
+                if (minimizedPanels.length > 0) {
+                    savePanels(minimizedPanels.map((p) => ({ ...p, minimized: false })));
+                    focusPanel(minimizedPanels[0].id);
+                }
+            },
 
-                    const updated = { ...panel, minimized: !panel.minimized };
-                    dispatch(updatePanels([updated]));
-                    syncToBackend([updated]);
-                }),
+            // Panel deletion
+            deletePanel: (panelId: UUID) => {
+                const state = getState();
+                const panel = selectPanel(state, panelId);
+                if (!panel) return;
+                const toDelete = [panelId];
+                // If deleting NAD, also delete associated SLDs
+                if (panel.type === PanelType.NAD) {
+                    toDelete.push(...selectAssociatedPanels(state, panelId).map((p) => p.id));
+                }
+                deletePanels(toDelete);
+            },
 
-            minimizePanels: (panelIds: UUID[]) =>
-                dispatch((dispatch, getState) => {
-                    if (panelIds.length === 0) return;
+            deletePanels,
 
-                    const panels = selectPanels(getState());
-                    const panelsToUpdate: PanelState[] = [];
-
-                    for (const panelId of panelIds) {
-                        const panel = findPanelById(panels, panelId);
-                        if (panel && !panel.minimized) {
-                            panelsToUpdate.push({ ...panel, minimized: true });
-                        }
-                    }
-
-                    if (panelsToUpdate.length > 0) {
-                        dispatch(updatePanels(panelsToUpdate));
-                        syncToBackend(panelsToUpdate);
-                    }
-                }),
-
-            toggleMaximize: (panelId: UUID) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const panel = findPanelById(panels, panelId);
-                    if (!panel) return;
-
-                    let updated: PanelState;
-                    if (panel.maximized) {
-                        // Restore to previous size/position
-                        updated = {
-                            ...panel,
-                            maximized: false,
-                            position: panel.restorePosition || panel.position,
-                            size: panel.restoreSize || panel.size,
-                            restorePosition: undefined,
-                            restoreSize: undefined,
-                        };
-                        dispatch(updatePanels([updated]));
-                        syncToBackend([updated]);
-                    } else {
-                        // Maximize and save current position/size
-                        updated = {
-                            ...panel,
-                            maximized: true,
-                            restorePosition: panel.position,
-                            restoreSize: panel.size,
-                        };
-                        dispatch(updatePanels([updated]));
-                        syncToBackend([updated]);
-                    }
-                }),
-
-            togglePin: (panelId: UUID) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const panel = findPanelById(panels, panelId);
-                    if (!panel) return;
-
-                    const updated = { ...panel, pinned: !panel.pinned };
-                    dispatch(updatePanels([updated]));
-                    syncToBackend([updated]);
-                }),
-
-            openPanel: (panelId: UUID) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const panel = findPanelById(panels, panelId);
-                    if (!panel) return;
-
-                    const updated = { ...panel, minimized: false };
-                    dispatch(updatePanels([updated]));
-                    syncToBackend([updated]);
-                }),
-
-            openSldAndAssociateToNad: ({ voltageLevelId, nadPanelId }: { voltageLevelId: string; nadPanelId: UUID }) =>
-                dispatch((dispatch, _getState) => {
-                    const newPanel: SLDVoltageLevelPanel = {
-                        ...createPanelBase(PanelType.SLD_VOLTAGE_LEVEL),
-                        type: PanelType.SLD_VOLTAGE_LEVEL,
-                        title: voltageLevelId,
-                        diagramId: voltageLevelId,
-                        parentNadPanelId: nadPanelId,
-                        navigationHistory: [],
-                        ...getDefaultAssociatedSldPositionAndSize(),
-                    };
-                    dispatch(updatePanels([newPanel]));
-                    syncToBackend([newPanel]);
-                }),
-
-            associateSldToNad: ({ sldPanelId, nadPanelId }: { sldPanelId: UUID; nadPanelId: UUID }) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const sldPanel = findPanelById(panels, sldPanelId);
-                    if (!sldPanel || sldPanel.type !== PanelType.SLD_VOLTAGE_LEVEL) return;
-
-                    const updated = {
-                        ...sldPanel,
-                        ...getDefaultAssociatedSldPositionAndSize(),
-                        parentNadPanelId: nadPanelId,
-                    };
-                    dispatch(updatePanels([updated]));
-                    doFocusPanel(nadPanelId);
-                    syncToBackend([updated]);
-                }),
-
-            dissociateSldFromNad: (sldPanelId: UUID) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const sldPanel = findPanelById(panels, sldPanelId);
-                    if (!sldPanel || sldPanel.type !== PanelType.SLD_VOLTAGE_LEVEL) return;
-
-                    const updated = { ...sldPanel, parentNadPanelId: undefined };
-                    dispatch(updatePanels([updated]));
-                    doFocusPanel(sldPanelId);
-                    syncToBackend([updated]);
-                }),
-
-            createNadAndAssociateSld: ({
-                sldPanelId,
-                voltageLevelId,
-                voltageLevelName,
+            // SLD operations
+            openSLD: ({
+                diagramId,
+                panelType,
             }: {
-                sldPanelId: UUID;
-                voltageLevelId: string;
-                voltageLevelName?: string;
-            }) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const config = getPanelConfig(PanelType.NAD);
-                    const panelId = uuidv4() as UUID;
-
-                    const sldPanel = findPanelById(panels, sldPanelId);
-                    if (!sldPanel || sldPanel.type !== PanelType.SLD_VOLTAGE_LEVEL) return;
-
-                    const newNadPanel: NADPanel = {
-                        ...createPanelBase(PanelType.NAD),
-                        id: panelId,
-                        type: PanelType.NAD,
-                        title: voltageLevelName || config.title,
-                        initialVoltageLevelIds: [voltageLevelId],
-                        size: sldPanel.size,
-                        position: sldPanel.position,
-                    };
-
-                    const updatedSld = {
-                        ...sldPanel,
-                        ...getDefaultAssociatedSldPositionAndSize(),
-                        parentNadPanelId: newNadPanel.id,
-                    };
-
-                    dispatch(updatePanels([newNadPanel, updatedSld]));
-                    doFocusPanel(newNadPanel.id);
-                    // new NAD panel will be synced later when savedNADConfigUuid is set
-                    syncToBackend([updatedSld]);
-                }),
+                diagramId: string;
+                panelType: PanelType.SLD_VOLTAGE_LEVEL | PanelType.SLD_SUBSTATION;
+            }) => {
+                const existing = selectExistingSLD(getState(), diagramId);
+                if (existing) {
+                    saveAndFocus({ ...existing, minimized: false });
+                } else {
+                    saveAndFocus(createSLDPanel({ panelType, diagramId }));
+                }
+            },
 
             navigateSLD: ({
                 panelId,
@@ -413,36 +171,66 @@ export const useWorkspaceActions = () => {
                 panelId: UUID;
                 voltageLevelId: string;
                 skipHistory?: boolean;
-            }) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const panel = findPanelById(panels, panelId);
-                    if (!panel || panel.type !== PanelType.SLD_VOLTAGE_LEVEL) return;
-
-                    const history = panel.navigationHistory || [];
-
-                    // Add current voltage level to history if:
-                    // 1. Not skipping history (navigating from history itself)
-                    // 2. Navigating to a different voltage level
-                    // 3. Current voltage level is not already at the first position in history
-                    const shouldAddToHistory =
-                        !skipHistory && panel.diagramId !== voltageLevelId && history[0] !== panel.diagramId;
-
-                    const updatedHistory = shouldAddToHistory
-                        ? [panel.diagramId, ...history].slice(0, SLD_MAX_NAVIGATION_HISTORY)
-                        : history;
-
-                    const updated = {
+            }) => {
+                const panel = selectPanel(getState(), panelId);
+                if (!panel || !isSLDVoltageLevelPanel(panel)) return;
+                savePanels([
+                    {
                         ...panel,
                         diagramId: voltageLevelId,
                         title: voltageLevelId,
-                        navigationHistory: updatedHistory,
-                    };
+                        navigationHistory: updateNavigationHistory(panel, voltageLevelId, skipHistory),
+                    },
+                ]);
+            },
 
-                    dispatch(updatePanels([updated]));
-                    syncToBackend([updated]);
-                }),
+            associateVoltageLevelWithNad: ({
+                voltageLevelId,
+                nadPanelId,
+            }: {
+                voltageLevelId: string;
+                nadPanelId: UUID;
+            }) => {
+                const state = getState();
+                const associatedPanels = selectAssociatedPanels(state, nadPanelId);
+                const existingPanel = associatedPanels.find((p) => p.diagramId === voltageLevelId);
 
+                if (existingPanel) {
+                    if (existingPanel.minimized) {
+                        saveAndFocus({ ...existingPanel, minimized: false });
+                    } else {
+                        focusPanel(existingPanel.id);
+                    }
+                } else {
+                    const defaults = getDefaultAssociatedSldPositionAndSize();
+                    savePanels([
+                        createSLDPanel({
+                            panelType: PanelType.SLD_VOLTAGE_LEVEL,
+                            diagramId: voltageLevelId,
+                            parentNadPanelId: nadPanelId,
+                            position: defaults.position,
+                            size: defaults.size,
+                        }),
+                    ]);
+                }
+            },
+
+            associateSldToNad: ({ sldPanelId, nadPanelId }: { sldPanelId: UUID; nadPanelId: UUID }) => {
+                const panel = selectPanel(getState(), sldPanelId);
+                if (!panel || !isSLDVoltageLevelPanel(panel)) return;
+                const posAndSize = getDefaultAssociatedSldPositionAndSize();
+                savePanels([{ ...panel, ...posAndSize, parentNadPanelId: nadPanelId }]);
+                focusPanel(nadPanelId);
+            },
+
+            dissociateSldFromNad: (sldPanelId: UUID) => {
+                const panel = selectPanel(getState(), sldPanelId);
+                if (!panel || !isSLDVoltageLevelPanel(panel)) return;
+                savePanels([{ ...panel, parentNadPanelId: undefined }]);
+                focusPanel(sldPanelId);
+            },
+
+            // NAD operations
             updateNADFields: ({
                 panelId,
                 fields,
@@ -460,149 +248,143 @@ export const useWorkspaceActions = () => {
                         | 'savedWorkspaceConfigUuid'
                     >
                 >;
-            }) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const panel = findPanelById(panels, panelId);
-                    if (panel && isNADPanel(panel)) {
-                        const updated = { ...panel, ...fields };
-                        dispatch(updatePanels([updated]));
-                        syncToBackend([updated]);
+            }) => {
+                const panel = selectPanel(getState(), panelId);
+                if (!panel || !isNADPanel(panel)) return;
+                savePanels([{ ...panel, ...fields }]);
+            },
+
+            addToNadNavigationHistory: ({ panelId, voltageLevelId }: { panelId: UUID; voltageLevelId: string }) => {
+                const panel = selectPanel(getState(), panelId);
+                if (!panel || !isNADPanel(panel)) return;
+                const currentHistory = panel.navigationHistory || [];
+                savePanels([{ ...panel, navigationHistory: [...currentHistory, voltageLevelId] }]);
+            },
+
+            createNadAndAssociateSld: ({
+                sldPanelId,
+                voltageLevelId,
+                voltageLevelName,
+            }: {
+                sldPanelId: UUID;
+                voltageLevelId: string;
+                voltageLevelName?: string;
+            }) => {
+                const state = getState();
+                const sldPanel = selectPanel(state, sldPanelId);
+                if (!sldPanel || !isSLDVoltageLevelPanel(sldPanel)) return;
+
+                const newNadPanel = createNADPanel({
+                    title: voltageLevelName,
+                    initialVoltageLevelIds: [voltageLevelId],
+                    position: sldPanel.position,
+                    size: sldPanel.size,
+                });
+
+                const updatedSld = {
+                    ...sldPanel,
+                    ...getDefaultAssociatedSldPositionAndSize(),
+                    parentNadPanelId: newNadPanel.id,
+                };
+
+                // New NAD panel without backend sync (will be synced later when nadConfigUuid is set)
+                savePanels([newNadPanel], false);
+                savePanels([updatedSld]);
+                focusPanel(newNadPanel.id);
+            },
+
+            toggleToolPanel: (panelType: PanelType) => {
+                const state = getState();
+                const focusedPanelId = selectFocusedPanelId(state);
+                const existing = selectPanelByType(state, panelType);
+
+                if (existing) {
+                    if (existing.minimized) {
+                        saveAndFocus({ ...existing, minimized: false });
+                    } else if (focusedPanelId === existing.id) {
+                        savePanels([{ ...existing, minimized: true }]);
+                    } else {
+                        focusPanel(existing.id);
                     }
-                }),
+                } else {
+                    const config = getPanelConfig(panelType);
+                    saveAndFocus({
+                        ...createPanelBase(panelType),
+                        type: panelType,
+                        title: config.title,
+                    } as PanelState);
+                }
+            },
 
-            openSLDPanels: (panelIds: UUID[]) =>
-                dispatch((dispatch, getState) => {
-                    if (panelIds.length === 0) return;
-
-                    const panels = selectPanels(getState());
-                    const panelsToUpdate: PanelState[] = [];
-
-                    for (const panelId of panelIds) {
-                        const panel = findPanelById(panels, panelId);
-                        if (panel?.minimized) {
-                            panelsToUpdate.push({ ...panel, minimized: false });
-                        }
-                    }
-
-                    if (panelsToUpdate.length > 0) {
-                        dispatch(updatePanels(panelsToUpdate));
-                        syncToBackend(panelsToUpdate);
-                        doFocusPanel(panelsToUpdate[0].id);
-                    }
-                }),
-
-            addToNadNavigationHistory: ({ panelId, voltageLevelId }: { panelId: UUID; voltageLevelId: string }) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const nadPanel = findPanelById(panels, panelId);
-                    if (!nadPanel || !isNADPanel(nadPanel)) return;
-
-                    const currentHistory = nadPanel.navigationHistory || [];
-                    const newHistory = [...currentHistory, voltageLevelId];
-                    dispatch(updatePanels([{ ...nadPanel, navigationHistory: newHistory }]));
-                    syncToBackend([{ ...nadPanel, navigationHistory: newHistory }]);
-                }),
-
-            // ========================================
-            // Actions WITHOUT backend sync
-            // ========================================
-
-            // new NAD panel will be synced later when savedNADConfigUuid is set
+            // NAD panel creation (no backend sync until config is saved)
             openNAD: ({
-                name,
+                title,
                 nadConfigUuid,
                 filterUuid,
                 initialVoltageLevelIds,
             }: {
-                name?: string;
+                title?: string;
                 nadConfigUuid?: UUID;
                 filterUuid?: UUID;
                 initialVoltageLevelIds?: string[];
-            }) =>
-                dispatch((dispatch, _getState) => {
-                    const config = getPanelConfig(PanelType.NAD);
-                    const panelId = uuidv4() as UUID;
+            }) => {
+                const newPanel = createNADPanel({
+                    title,
+                    initialVoltageLevelIds,
+                    nadConfigUuid,
+                    filterUuid,
+                    currentFilterUuid: filterUuid,
+                });
+                saveAndFocus(newPanel, false);
+            },
 
-                    const newPanel: NADPanel = {
-                        ...createPanelBase(PanelType.NAD),
-                        id: panelId,
-                        type: PanelType.NAD,
-                        title: name || config.title,
-                        nadConfigUuid,
-                        filterUuid,
-                        currentFilterUuid: filterUuid,
-                        navigationHistory: [],
-                        initialVoltageLevelIds, // Store in panel for initial diagram load
-                    };
-                    dispatch(updatePanels([newPanel]));
-                    doFocusPanel(newPanel.id);
-                }),
+            // Focus operations
+            focusPanel,
 
-            focusPanel: doFocusPanel,
+            bringToFront: (panelId: UUID) => {
+                const state = getState();
+                const panel = selectPanel(state, panelId);
+                if (panel) {
+                    savePanels([{ ...panel, zIndex: state.workspace.nextZIndex }], false);
+                }
+            },
 
-            updateZIndexOnly: (panelId: UUID) =>
-                dispatch((dispatch, getState) => {
-                    const state = getState();
-                    const panels = selectPanels(state);
-                    const panel = findPanelById(panels, panelId);
-                    if (panel) {
-                        const nextZ = state.workspace.nextZIndex;
-                        dispatch(updatePanels([{ ...panel, zIndex: nextZ }]));
-                    }
-                }),
-
+            // Spreadsheet operations
             showInSpreadsheet: ({
                 equipmentId,
                 equipmentType,
             }: {
                 equipmentId: string;
                 equipmentType: EquipmentType;
-            }) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const spreadsheetPanel = findPanelByType(panels, PanelType.SPREADSHEET) as
-                        | SpreadsheetPanel
-                        | undefined;
+            }) => {
+                const existing = selectPanelByType(getState(), PanelType.SPREADSHEET) as SpreadsheetPanel | undefined;
+                // Transient UI state - don't sync to backend
+                saveAndFocus(
+                    existing
+                        ? {
+                              ...existing,
+                              targetEquipmentId: equipmentId,
+                              targetEquipmentType: equipmentType,
+                              minimized: false,
+                          }
+                        : {
+                              ...createPanelBase(PanelType.SPREADSHEET),
+                              type: PanelType.SPREADSHEET,
+                              title: 'Spreadsheet',
+                              targetEquipmentId: equipmentId,
+                              targetEquipmentType: equipmentType,
+                          },
+                    false
+                );
+            },
 
-                    if (spreadsheetPanel) {
-                        // Store target equipment in panel and restore if minimized
-                        const updatedPanel: SpreadsheetPanel = {
-                            ...spreadsheetPanel,
-                            targetEquipmentId: equipmentId,
-                            targetEquipmentType: equipmentType,
-                            minimized: false,
-                        };
-                        dispatch(updatePanels([updatedPanel]));
-                        doFocusPanel(spreadsheetPanel.id);
-                    } else {
-                        const panelId = uuidv4() as UUID;
-                        const newPanel: SpreadsheetPanel = {
-                            ...createPanelBase(PanelType.SPREADSHEET),
-                            id: panelId,
-                            type: PanelType.SPREADSHEET,
-                            title: 'Spreadsheet',
-                            targetEquipmentId: equipmentId,
-                            targetEquipmentType: equipmentType,
-                        };
-                        dispatch(updatePanels([newPanel]));
-                        doFocusPanel(panelId);
-                    }
-                }),
-
-            clearTargetEquipment: (panelId: UUID) =>
-                dispatch((dispatch, getState) => {
-                    const panels = selectPanels(getState());
-                    const panel = findPanelById(panels, panelId);
-                    if (panel && panel.type === PanelType.SPREADSHEET) {
-                        const updated = {
-                            ...panel,
-                            targetEquipmentId: undefined,
-                            targetEquipmentType: undefined,
-                        };
-                        dispatch(updatePanels([updated]));
-                    }
-                }),
+            clearTargetEquipment: (panelId: UUID) => {
+                const panel = selectPanel(getState(), panelId);
+                if (panel && panel.type === PanelType.SPREADSHEET) {
+                    // Transient UI state - don't sync to backend
+                    savePanels([{ ...panel, targetEquipmentId: undefined, targetEquipmentType: undefined }], false);
+                }
+            },
         };
     }, [dispatch, studyUuid, workspaceId]);
 };

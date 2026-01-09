@@ -24,7 +24,7 @@ export const useDiagramNavigation = () => {
 
     const handleOpenVoltageLevelDiagram = useCallback(
         (voltageLevelId: string) => {
-            openSLD({ id: voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+            openSLD({ diagramId: voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
         },
         [openSLD]
     );

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, memo, useMemo } from 'react';
+import { useState, memo, useMemo, useCallback } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
@@ -16,7 +16,7 @@ import {
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';
 import { NavigationSidebar } from '../common/navigation-sidebar';
-import { useNadSldAssociation } from '../../panel-contents/diagrams/nad/hooks/use-nad-sld-association';
+import { useWorkspaceActions } from '../../hooks/use-workspace-actions';
 
 interface NadNavigationSidebarProps {
     readonly nadPanelId: UUID;
@@ -41,7 +41,14 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         shallowEqual
     );
 
-    const { handleNavigationSidebarClick } = useNadSldAssociation({ nadPanelId });
+    const { associateVoltageLevelWithNad } = useWorkspaceActions();
+
+    const handleNavigationSidebarClick = useCallback(
+        (voltageLevelId: string) => {
+            associateVoltageLevelWithNad({ voltageLevelId, nadPanelId });
+        },
+        [nadPanelId, associateVoltageLevelWithNad]
+    );
 
     const reversedHistory = useMemo(() => [...(navigationHistory || [])].reverse(), [navigationHistory]);
 

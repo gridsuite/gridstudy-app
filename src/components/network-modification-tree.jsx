@@ -62,7 +62,7 @@ const styles = {
 
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const dispatch = useDispatch();
-    const { togglePanel } = useWorkspaceActions();
+    const { toggleToolPanel } = useWorkspaceActions();
     const { snackError } = useSnackMessage();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -97,13 +97,13 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === NodeType.NETWORK_MODIFICATION) {
-                togglePanel({ panelType: PanelType.MODIFICATIONS });
+                toggleToolPanel(PanelType.MODIFICATIONS);
             }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);
             }
         },
-        [currentNode, togglePanel, setCurrentTreeNodeWithSync]
+        [currentNode, toggleToolPanel, setCurrentTreeNodeWithSync]
     );
 
     /**
