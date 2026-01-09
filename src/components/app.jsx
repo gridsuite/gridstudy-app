@@ -38,6 +38,7 @@ import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
+    initComputationResultFilters,
     initTableDefinitions,
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
@@ -52,7 +53,11 @@ import {
     setUpdateNetworkVisualizationParameters,
     updateTableColumns,
 } from '../redux/actions';
-import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
+import {
+    getComputationResultFilters,
+    getNetworkVisualizationParameters,
+    getSpreadsheetConfigCollection,
+} from '../services/study/study-config';
 import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
@@ -67,6 +72,7 @@ import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
+import { setComputationResultFiltersState } from './results/computing-result-filters.type.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -324,6 +330,14 @@ const App = () => {
                 resetTableDefinitions(collection);
             });
 
+            const fetchComputationResultFiltersPromise = getComputationResultFilters(studyUuid).then(
+                (computationResultFiltersInfos) => {
+                    const computationResultFiltersState =
+                        setComputationResultFiltersState(computationResultFiltersInfos);
+                    dispatch(initComputationResultFilters(computationResultFiltersState));
+                }
+            );
+
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
                     dispatch(setOptionalServices(retrieveOptionalServices(services)));
@@ -342,6 +356,7 @@ const App = () => {
                 fetchAppConfigPromise,
                 fetchOptionalServices,
                 fetchSpreadsheetConfigPromise,
+                fetchComputationResultFiltersPromise,
             ])
                 .then(() => {
                     dispatch(setParamsLoaded());

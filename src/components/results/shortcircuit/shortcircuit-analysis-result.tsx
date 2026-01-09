@@ -25,20 +25,27 @@ import {
     PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { useSnackMessage, ComputingType, snackWithFallback } from '@gridsuite/commons-ui';
+import { ComputingType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GridApi, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType, PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
+import {
+    FilterConfig,
+    FilterType,
+    FilterType as AgGridFilterType,
+    PaginationType,
+    ShortcircuitAnalysisTab,
+} from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { useComputationColumnsFilters } from '../../../hooks/use-computation-columns-filters';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -82,7 +89,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
 
-    const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
+    const { filters } = useFilterSelector(AgGridFilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.ShortcircuitAnalysis,
         mappingTabs(analysisType) as ShortcircuitAnalysisTab
@@ -107,6 +114,16 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     const memoizedSetPageCallback = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
+
+    const { persistFilters } = useComputationColumnsFilters(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
+
+    const onFilter = useCallback(
+        (colId: string, api: GridApi, filters: FilterConfig[]) => {
+            memoizedSetPageCallback();
+            persistFilters(colId, api, filters);
+        },
+        [memoizedSetPageCallback, persistFilters]
+    );
 
     // Effects
     useEffect(() => {
@@ -238,7 +255,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 analysisType={analysisType}
                 isFetching={isFetching}
                 filterEnums={filterEnums}
-                onFilter={memoizedSetPageCallback}
+                onFilter={onFilter}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 filters={filters}

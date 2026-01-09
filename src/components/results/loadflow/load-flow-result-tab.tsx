@@ -23,19 +23,19 @@ import {
     exchangesColumnsDefinition,
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
     loadFlowCurrentViolationsColumnsDefinition,
-    componentColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
     makeData,
     mappingFields,
     mappingTabs,
     useFetchFiltersEnums,
+    loadFlowResultColumnsDefinition,
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { StatusCellRender } from '../common/result-cell-renderers';
 import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
@@ -49,12 +49,15 @@ import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
-import { ICellRendererParams } from 'ag-grid-community';
 import { Button, LinearProgress } from '@mui/material';
+import { GridApi, ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
+import { useComputationColumnsFilters } from 'hooks/use-computation-columns-filters';
 
 const styles = {
     flexWrapper: {
@@ -91,7 +94,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
@@ -99,6 +103,13 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     });
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
+    const handleGlobalFilterChangeAndUpdate = useCallback(
+        (newFilters: GlobalFilter[]) => {
+            handleGlobalFilterChange(newFilters);
+            updateGlobalFilters(newFilters);
+        },
+        [handleGlobalFilterChange, updateGlobalFilters]
+    );
     const getEnumLabel = useCallback(
         (value: string) =>
             intl.formatMessage({
@@ -175,6 +186,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         invalidations: loadflowResultInvalidations,
     });
 
+    const { persistFilters } = useComputationColumnsFilters(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
+
+    const onFilter = useCallback(
+        (colId: string, api: GridApi, filters: FilterConfig[]) => {
+            persistFilters(colId, api, filters);
+        },
+        [persistFilters]
+    );
+
     const SubjectIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value, node, colDef } = props || {};
@@ -201,7 +221,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     filterEnums,
                     getEnumLabel,
                     tabIndex,
-                    SubjectIdRenderer
+                    SubjectIdRenderer,
+                    onFilter
                 );
             case 1:
                 return loadFlowVoltageViolationsColumnsDefinition(
@@ -209,17 +230,18 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     filterEnums,
                     getEnumLabel,
                     tabIndex,
-                    SubjectIdRenderer
+                    SubjectIdRenderer,
+                    onFilter
                 );
 
             default:
                 return [];
         }
-    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer]);
+    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer, onFilter]);
 
     const componentColumns = useMemo(() => {
-        return componentColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex, StatusCellRender);
-    }, [tabIndex, intl, filterEnums, getEnumLabel]);
+        return loadFlowResultColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex, StatusCellRender, onFilter);
+    }, [intl, filterEnums, getEnumLabel, tabIndex, onFilter]);
 
     const countryAdequaciesColumns = useMemo(() => {
         return countryAdequaciesColumnsDefinition(intl);
@@ -279,9 +301,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <GlobalFilterSelector
-                        onChange={handleGlobalFilterChange}
+                        onChange={handleGlobalFilterChangeAndUpdate}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
+                        preloadedGlobalFilters={globalFiltersFromState}
                         genericFiltersStrictMode={true}
                     />
                 </Box>
