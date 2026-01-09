@@ -42,6 +42,8 @@ import {
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
+import { PhaseTapChangerData, TapChangerStep } from '../tap-changer-pane.types';
+import { TwoWindingsTransformerData } from '../../two-windings-transformer.types';
 
 const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -55,7 +57,7 @@ const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
         .when([ENABLED, REGULATION_TYPE], {
-            is: (enabled, regulationType) => enabled && regulationType === REGULATION_TYPES.DISTANT.id,
+            is: (enabled: boolean, regulationType: string) => enabled && regulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
     [EQUIPMENT]: yup
@@ -67,12 +69,12 @@ const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
             [TYPE]: yup.string(),
         })
         .when([ENABLED, REGULATION_TYPE], {
-            is: (enabled, regulationType) => enabled && regulationType === REGULATION_TYPES.DISTANT.id,
+            is: (enabled: boolean, regulationType: string) => enabled && regulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
 });
 
-const phaseTapChangerValidationSchema = (isModification, id) => ({
+const phaseTapChangerValidationSchema = (isModification: boolean, id: string) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup
@@ -86,21 +88,23 @@ const phaseTapChangerValidationSchema = (isModification, id) => ({
             .string()
             .nullable()
             .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) => enabled && regulationMode !== PHASE_REGULATION_MODES.OFF.id,
+                is: (enabled: boolean, regulationMode: string) =>
+                    enabled && regulationMode !== PHASE_REGULATION_MODES.OFF.id,
                 then: (schema) => schema.required(),
             }),
         [REGULATION_SIDE]: yup
             .string()
             .nullable()
             .when([ENABLED, REGULATION_TYPE], {
-                is: (enabled, regulationType) => enabled && regulationType === REGULATION_TYPES.LOCAL.id,
+                is: (enabled: boolean, regulationType: string) =>
+                    enabled && regulationType === REGULATION_TYPES.LOCAL.id,
                 then: (schema) => schema.required(),
             }),
         [CURRENT_LIMITER_REGULATING_VALUE]: yup
             .number()
             .nullable()
             .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) =>
+                is: (enabled: boolean, regulationMode: string) =>
                     enabled && regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id,
                 then: (schema) => schema.positive('CurrentLimiterMustBeGreaterThanZero').required(),
             }),
@@ -108,7 +112,7 @@ const phaseTapChangerValidationSchema = (isModification, id) => ({
             .number()
             .nullable()
             .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) =>
+                is: (enabled: boolean, regulationMode: string) =>
                     enabled && regulationMode === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id,
                 then: (schema) => schema.required(),
             }),
@@ -117,7 +121,7 @@ const phaseTapChangerValidationSchema = (isModification, id) => ({
             .number()
             .nullable()
             .when(ENABLED, {
-                is: (enabled) => enabled && !isModification,
+                is: (enabled: boolean) => enabled && !isModification,
                 then: (schema) => schema.required(),
             }),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
@@ -125,7 +129,7 @@ const phaseTapChangerValidationSchema = (isModification, id) => ({
             .number()
             .nullable()
             .when(ENABLED, {
-                is: (enabled) => enabled && !isModification,
+                is: (enabled: boolean) => enabled && !isModification,
                 then: (schema) =>
                     schema
                         .required()
@@ -146,11 +150,11 @@ const phaseTapChangerValidationSchema = (isModification, id) => ({
                 })
             )
             .when(ENABLED, {
-                is: (enabled) => enabled && !isModification,
+                is: (enabled: boolean) => enabled && !isModification,
                 then: (schema) => schema.min(1, 'GeneratePhaseTapRowsError'),
             })
             .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
-                const alphaArray = array.map((step) => step[STEPS_ALPHA]);
+                const alphaArray = (array ?? []).map((step) => step[STEPS_ALPHA]);
                 return areNumbersOrdered(alphaArray) && areArrayElementsUnique(alphaArray);
             }),
         ...getRegulatingTerminalPhaseTapChangerValidationSchema(),
@@ -161,7 +165,7 @@ export const getPhaseTapChangerValidationSchema = (isModification = false, id = 
     return phaseTapChangerValidationSchema(isModification, id);
 };
 
-const phaseTapChangerEmptyFormData = (isModification, id) => ({
+const phaseTapChangerEmptyFormData = (isModification: boolean, id: string) => ({
     [id]: {
         [ENABLED]: false,
         [REGULATION_MODE]: null,
@@ -173,7 +177,7 @@ const phaseTapChangerEmptyFormData = (isModification, id) => ({
         [LOW_TAP_POSITION]: null,
         [HIGH_TAP_POSITION]: null,
         [TAP_POSITION]: null,
-        [STEPS]: [],
+        [STEPS]: [] as TapChangerStep[],
         ...getRegulatingTerminalEmptyFormData(),
     },
 });
@@ -181,6 +185,23 @@ const phaseTapChangerEmptyFormData = (isModification, id) => ({
 export const getPhaseTapChangerEmptyFormData = (isModification = false, id = PHASE_TAP_CHANGER) => {
     return phaseTapChangerEmptyFormData(isModification, id);
 };
+
+interface PhaseTapChangerFormDataInput {
+    [ENABLED]?: boolean;
+    [REGULATION_MODE]?: string | null;
+    [REGULATION_TYPE]?: string | null;
+    [REGULATION_SIDE]?: string | null;
+    [CURRENT_LIMITER_REGULATING_VALUE]?: number | null;
+    flowSetpointRegulatingValue?: number | null;
+    [TARGET_DEADBAND]?: number | null;
+    [LOW_TAP_POSITION]?: number | null;
+    [HIGH_TAP_POSITION]?: number | null;
+    [TAP_POSITION]?: number | null;
+    [STEPS]?: TapChangerStep[];
+    voltageLevelId?: string;
+    equipmentId?: string;
+    equipmentType?: string;
+}
 
 export const getPhaseTapChangerFormData = (
     {
@@ -198,7 +219,7 @@ export const getPhaseTapChangerFormData = (
         voltageLevelId,
         equipmentId,
         equipmentType,
-    },
+    }: PhaseTapChangerFormDataInput,
     id = PHASE_TAP_CHANGER
 ) => ({
     [id]: {
@@ -221,54 +242,61 @@ export const getPhaseTapChangerFormData = (
     },
 });
 
-export const getComputedPhaseTapChangerRegulationMode = (phaseTapChangerFormValues) => {
+type PhaseRegulationMode = (typeof PHASE_REGULATION_MODES)[keyof typeof PHASE_REGULATION_MODES] | undefined;
+
+export const getComputedPhaseTapChangerRegulationMode = (
+    phaseTapChangerFormValues?: PhaseTapChangerData
+): PhaseRegulationMode => {
     if (
         phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.OFF.id ||
         phaseTapChangerFormValues?.[REGULATING] === false
     ) {
         return PHASE_REGULATION_MODES.OFF;
-    } else if (
+    }
+    if (
         phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.CURRENT_LIMITER.id &&
         phaseTapChangerFormValues?.[REGULATING] === true
     ) {
         return PHASE_REGULATION_MODES.CURRENT_LIMITER;
-    } else if (
+    }
+    if (
         phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
         phaseTapChangerFormValues?.[REGULATING] === true
     ) {
         return PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL;
     }
+    return undefined;
 };
 
-export const getPhaseTapRegulationSideId = (twt) => {
+export const getPhaseTapRegulationSideId = (twt?: TwoWindingsTransformerData): string | null => {
     const phaseTapChangerValues = twt?.phaseTapChanger;
     if (!phaseTapChangerValues || !twt) {
         return null;
     }
     if (phaseTapChangerValues?.regulatingTerminalConnectableId === twt?.id) {
         return phaseTapChangerValues?.regulatingTerminalVlId === twt?.voltageLevelId1 ? SIDE.SIDE1.id : SIDE.SIDE2.id;
-    } else {
-        return null;
     }
+    return null;
 };
 
-export const getComputedPhaseRegulationType = (twt) => {
+type RegulationType = (typeof REGULATION_TYPES)[keyof typeof REGULATION_TYPES] | null;
+
+export const getComputedPhaseRegulationType = (twt?: TwoWindingsTransformerData): RegulationType => {
     if (!twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
         return null;
     }
     if (twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !== twt?.id) {
         return REGULATION_TYPES.DISTANT;
-    } else {
-        return REGULATION_TYPES.LOCAL;
     }
+    return REGULATION_TYPES.LOCAL;
 };
 
-export const getComputedPhaseRegulationTypeId = (twt) => {
+export const getComputedPhaseRegulationTypeId = (twt?: TwoWindingsTransformerData): string | null => {
     const regulationType = getComputedPhaseRegulationType(twt);
-    return regulationType?.id || null;
+    return regulationType?.id ?? null;
 };
 
-export const getComputedPreviousPhaseRegulationType = (previousValues) => {
+export const getComputedPreviousPhaseRegulationType = (previousValues?: TwoWindingsTransformerData): string | null => {
     const previousRegulationType = getComputedPhaseRegulationType(previousValues);
-    return previousRegulationType?.id || null;
+    return previousRegulationType?.id ?? null;
 };

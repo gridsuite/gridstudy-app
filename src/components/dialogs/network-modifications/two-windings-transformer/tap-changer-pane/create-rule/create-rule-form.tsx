@@ -11,7 +11,7 @@ import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-cons
 import { FormattedMessage } from 'react-intl';
 import { PHASE_TAP, RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 import GridItem from '../../../../commons/grid-item';
-import { RuleType } from './create-rule-dialog.types';
+import { RuleType } from '../../two-windings-transformer.types';
 
 const TAP_LABELS = {
     [PHASE_TAP]: {

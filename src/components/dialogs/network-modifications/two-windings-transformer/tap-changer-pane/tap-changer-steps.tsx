@@ -11,7 +11,7 @@ import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import { DndTable, IntegerInput, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
+import { DndColumn, DndTable, IntegerInput, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -22,10 +22,30 @@ import {
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
 import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { transformIfFrenchNumber } from '../../tabular/tabular-common.js';
+import { TapChangerColumnDefinition, TapChangerData, TapChangerStep } from './tap-changer-pane.types';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { RuleType } from '../two-windings-transformer.types';
+
+export interface TapChangerStepsProps {
+    tapChanger: string;
+    ruleType: RuleType;
+    createTapRuleColumn: string;
+    columnsDefinition: TapChangerColumnDefinition[];
+    csvColumns: string[];
+    createRuleMessageId: string;
+    createRuleAllowNegativeValues: boolean;
+    importRuleMessageId: string;
+    resetButtonMessageId: string;
+    handleImportRow: (val: Record<string, string>) => Record<string, string | number>;
+    disabled?: boolean;
+    previousValues?: TapChangerData;
+    editData?: Record<string, unknown>;
+    currentNode: CurrentTreeNode;
+    isModification?: boolean;
+}
 
 const TapChangerSteps = ({
     tapChanger,
@@ -43,7 +63,7 @@ const TapChangerSteps = ({
     editData,
     currentNode,
     isModification = false,
-}) => {
+}: TapChangerStepsProps) => {
     const intl = useIntl();
 
     const { trigger, getValues, setValue, clearErrors } = useFormContext();
@@ -75,7 +95,7 @@ const TapChangerSteps = ({
         return trigger(`${tapChanger}.${LOW_TAP_POSITION}`);
     }
 
-    function createTapRows(numberOfRows) {
+    function createTapRows(numberOfRows: number) {
         const currentLowTapPosition = getValues(`${tapChanger}.${LOW_TAP_POSITION}`);
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
@@ -120,22 +140,22 @@ const TapChangerSteps = ({
     }, [currentNode, editData, previousValues, tapStepsWatcher]);
 
     const resetTapNumbers = useCallback(
-        (tapSteps, isModification) => {
-            const currentTapRows = tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
+        (tapSteps: TapChangerStep[] | null, isModification: boolean): void => {
+            const currentTapRows: TapChangerStep[] = tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
 
-            const currentLowTapPosition =
+            const currentLowTapPosition: number | null | undefined =
                 isModification && lowTapPosition === null ? previousValues?.[LOW_TAP_POSITION] : lowTapPosition;
 
             for (
-                let tapPosition = currentLowTapPosition, index = 0;
+                let tapPosition: number | null | undefined = currentLowTapPosition, index = 0;
                 index < currentTapRows.length;
-                tapPosition++, index++
+                tapPosition!++, index++
             ) {
                 setValue(`${tapChanger}.${STEPS}[${index}].${STEPS_TAP}`, tapPosition);
             }
 
-            const newHighTapPosition =
-                currentTapRows.length !== 0 ? currentLowTapPosition + currentTapRows.length - 1 : null;
+            const newHighTapPosition: number | null =
+                currentTapRows.length !== 0 ? (currentLowTapPosition ?? 0) + currentTapRows.length - 1 : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
         [getValues, tapChanger, lowTapPosition, previousValues, setValue]
@@ -152,7 +172,7 @@ const TapChangerSteps = ({
 
     // when we detect a change in tapSteps (so when the size or the order of the list of rows change), we reset the tap fields
     useEffect(() => {
-        resetTapNumbers(tapSteps, isModification);
+        resetTapNumbers(tapSteps as unknown as TapChangerStep[], isModification);
     }, [tapSteps, resetTapNumbers, isModification]);
 
     const handleResetButton = useCallback(() => {
@@ -161,14 +181,14 @@ const TapChangerSteps = ({
         clearErrors(`${tapChanger}.${STEPS}`);
     }, [clearErrors, previousValues, replace, setValue, tapChanger]);
 
-    const handleCreateTapRule = (lowTap, highTap) => {
+    const handleCreateTapRule = (lowTap: number, highTap: number) => {
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
         if (currentTapRows.length > 1) {
             let interval = (highTap - lowTap) / (currentTapRows.length - 1);
             let current = lowTap;
 
-            currentTapRows.forEach((row, index) => {
+            currentTapRows.forEach((_row: TapChangerStep, index: number) => {
                 currentTapRows[index][createTapRuleColumn] = current;
                 current += interval;
             });
@@ -184,18 +204,22 @@ const TapChangerSteps = ({
         });
     }
 
-    const handleImportTapRule = (selectedFile, language, setFileParseError) => {
-        Papa.parse(selectedFile, {
+    const handleImportTapRule = (
+        selectedFile: File,
+        language: string,
+        setFileParseError: (error: string) => void
+    ): void => {
+        Papa.parse<Record<string, string>>(selectedFile, {
             header: true,
             skipEmptyLines: true,
             delimiter: language === LANG_FRENCH ? ';' : ',',
-            transform: (value) => transformIfFrenchNumber(value, language),
-            complete: function (results) {
+            transform: (value: string): string => transformIfFrenchNumber(value, language),
+            complete: function (results: Papa.ParseResult<Record<string, string>>): void {
                 if (results.data.length > MAX_ROWS_NUMBER) {
                     setFileParseError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: MAX_ROWS_NUMBER }));
                     return;
                 }
-                let rows = results.data.map((val) => ({
+                let rows = results.data.map((val: Record<string, string>) => ({
                     ...handleImportRow(val),
                     [SELECTED]: false,
                 }));
@@ -224,7 +248,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: true,
             }}
-            previousValue={computeHighTapPosition(previousValues?.[STEPS])}
+            previousValue={computeHighTapPosition(previousValues?.[STEPS] ?? []) ?? undefined}
         />
     );
 
@@ -261,12 +285,17 @@ const TapChangerSteps = ({
     };
 
     const getTapPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, tapSteps) => {
-            const step = tapSteps?.find((e) => e.index === getValues(arrayFormName)[rowIndex]?.index);
+        (
+            rowIndex: number,
+            column: TapChangerColumnDefinition,
+            arrayFormName: string,
+            tapSteps: TapChangerStep[] | undefined
+        ): number | undefined => {
+            const step = tapSteps?.find((e: TapChangerStep) => e.index === getValues(arrayFormName)[rowIndex]?.index);
             if (step === undefined) {
                 return undefined;
             }
-            return step?.[column.dataKey];
+            return step?.[column.dataKey as keyof TapChangerStep] as number | undefined;
         },
         [getValues]
     );
@@ -288,7 +317,7 @@ const TapChangerSteps = ({
             <DndTable
                 arrayFormName={`${tapChanger}.${STEPS}`}
                 useFieldArrayOutput={useFieldArrayOutput}
-                columnsDefinition={completedColumnsDefinition}
+                columnsDefinition={completedColumnsDefinition as DndColumn[]}
                 tableHeight={400}
                 allowedToAddRows={allowedToAddTapRows}
                 createRows={createTapRows}
@@ -319,19 +348,6 @@ const TapChangerSteps = ({
             />
         </Grid>
     );
-};
-
-TapChangerSteps.prototype = {
-    tapChanger: PropTypes.string.isRequired,
-    ruleType: PropTypes.string.isRequired,
-    createTapRuleColumn: PropTypes.string.isRequired,
-    columnsDefinition: PropTypes.object.isRequired,
-    csvColumns: PropTypes.object.isRequired,
-    createRuleMessageId: PropTypes.string.isRequired,
-    createRuleAllowNegativeValues: PropTypes.bool.isRequired,
-    importRuleMessageId: PropTypes.string.isRequired,
-    handleImportRow: PropTypes.func.isRequired,
-    disabled: PropTypes.bool,
 };
 
 export default TapChangerSteps;

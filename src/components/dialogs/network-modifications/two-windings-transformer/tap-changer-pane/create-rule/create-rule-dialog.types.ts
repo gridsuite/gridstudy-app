@@ -5,9 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PHASE_TAP, RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
-
-export type RuleType = typeof PHASE_TAP | typeof RATIO_TAP;
+import { RuleType } from '../../two-windings-transformer.types';
 
 export interface CreateRuleFormInput {
     lowTapPosition: number | null;

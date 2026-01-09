@@ -170,8 +170,11 @@ export const TARGET_V = 'targetV';
 //tab phase_tap_changer
 export const PHASE_TAP_CHANGER = 'phaseTapChanger';
 export const REGULATION_MODE = 'regulationMode';
+export const REGULATION_VALUE = 'regulationValue';
 export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
+export const REGULATING_TERMINAL_CONNECTABLE_ID = 'regulatingTerminalConnectableId';
+export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectableType';
 
 //ShuntCompensator
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
