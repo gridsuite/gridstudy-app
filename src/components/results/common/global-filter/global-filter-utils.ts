@@ -19,6 +19,7 @@ export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) =>
         case FilterType.VOLTAGE_LEVEL:
             return intl.formatMessage({ id: option.label });
         case FilterType.GENERIC_FILTER:
+        case FilterType.SUBSTATION_OR_VL:
         case FilterType.SUBSTATION_PROPERTY:
             return option.label;
     }

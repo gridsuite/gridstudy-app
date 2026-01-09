@@ -15,6 +15,7 @@ export function isGlobalFilterParameter(globalFilters: GlobalFilters | undefined
         ((globalFilters.countryCode && globalFilters.countryCode.length > 0) ||
             (globalFilters.voltageRanges && globalFilters.voltageRanges.length > 0) ||
             (globalFilters.genericFilter && globalFilters.genericFilter.length > 0) ||
+            (globalFilters.substationOrVoltageLevelFilter && globalFilters.substationOrVoltageLevelFilter.length > 0) ||
             !!globalFilters.substationProperty)
     );
 }
@@ -33,6 +34,13 @@ export default function useGlobalFilters() {
         const genericFilters: Set<string> = new Set(
             value
                 .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
+                .map((filter: GlobalFilter) => filter.uuid ?? '')
+                .filter((uuid: string): boolean => uuid !== '')
+        );
+
+        const substationOrVoltageLevelFilter: Set<string> = new Set(
+            value
+                .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.SUBSTATION_OR_VL)
                 .map((filter: GlobalFilter) => filter.uuid ?? '')
                 .filter((uuid: string): boolean => uuid !== '')
         );
@@ -60,6 +68,7 @@ export default function useGlobalFilters() {
         newGlobalFilter.voltageRanges = voltageRanges;
         newGlobalFilter.countryCode = [...countryCodes];
         newGlobalFilter.genericFilter = [...genericFilters];
+        newGlobalFilter.substationOrVoltageLevelFilter = Array.from(substationOrVoltageLevelFilter);
 
         if (substationProperties.size > 0) {
             newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);

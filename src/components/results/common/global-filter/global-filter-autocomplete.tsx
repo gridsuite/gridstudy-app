@@ -28,8 +28,8 @@ import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { FilterType } from '../utils';
-import { OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
+import { FilterType, isCriteriaFilter } from '../utils';
+import { OverflowableText, OverflowableChip } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
@@ -202,7 +202,7 @@ function GlobalFilterAutocomplete({
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
-    const autocompleteRef = useRef<HTMLDivElement>(null);
+    const autocompleteRef = useRef<HTMLDivElement | null>(null);
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
@@ -273,7 +273,7 @@ function GlobalFilterAutocomplete({
                 }),
             // recent generic filters are displayed 2 times : once in the recent filters (see above) and also in the generic filters :
             ...recentGlobalFilters
-                .filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
+                .filter((filter) => isCriteriaFilter(filter))
                 .map((filter) => {
                     return { ...filter, recent: false };
                 }),
@@ -320,7 +320,7 @@ function GlobalFilterAutocomplete({
     );
 
     const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => {
-        if (option.filterType === FilterType.GENERIC_FILTER) {
+        if (isCriteriaFilter(option)) {
             return (
                 option.label === value.label &&
                 option.filterType === value.filterType &&
