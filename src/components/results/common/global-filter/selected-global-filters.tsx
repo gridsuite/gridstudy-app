@@ -56,7 +56,7 @@ function SelectedGlobalFilters() {
                     <Box sx={resultsGlobalFilterStyles.selectedFiltersChips}>
                         {filters.map((element: GlobalFilter) => (
                             <OverflowableChip
-                                label={getOptionLabel(element, translate)}
+                                label={getOptionLabel(element, translate, intel)}
                                 sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                                 onDelete={() => {
                                     const newSelectedGlobalFilters = selectedGlobalFilters.filter(
