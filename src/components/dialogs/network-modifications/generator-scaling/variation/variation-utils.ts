@@ -18,6 +18,7 @@ import {
 import { VARIATION_MODES } from 'components/network/constants';
 
 export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
+
 export const getVariationSchema = () =>
     yup
         .object()
@@ -47,11 +48,11 @@ export const getVariationSchema = () =>
                 }),
         });
 
-export const getVariationsSchema = (id) => ({
+export const getVariationsSchema = (id: string) => ({
     [id]: yup.array().nullable().min(1, 'EmptyList.variations').of(getVariationSchema()),
 });
 
-export const getVariationEmptyForm = (variationMode) => {
+export const getVariationEmptyForm = (variationMode: string) => {
     return {
         [VARIATION_MODE]: variationMode,
         [VARIATION_VALUE]: null,
