@@ -215,7 +215,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                                 {selectedGlobalFilters.map((element: GlobalFilter) => (
                                     <ListItem key={element.label} sx={{ height: '1.8em' }}>
                                         <OverflowableChip
-                                            label={getOptionLabel(element, translate)}
+                                            label={getOptionLabel(element, translate, intl)}
                                             sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                                             onDelete={() => {
                                                 const newSelectedGlobalFilters = selectedGlobalFilters.filter(
