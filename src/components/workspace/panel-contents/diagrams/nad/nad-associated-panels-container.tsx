@@ -6,10 +6,13 @@
  */
 
 import { memo, useCallback } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
 import type { UUID } from 'node:crypto';
+import type { RootState } from '../../../../../redux/store';
+import { selectVisibleAssociatedSldPanels } from '../../../../../redux/slices/workspace-selectors';
 import { AssociatedSldPanel } from './associated-sld-panel';
 import { AssociatedSldsChips } from './associated-slds-chips';
-import { useSldPanels } from './hooks/use-sld-panels';
+import { useAssociatedSlds } from './hooks/use-sld-panels';
 import { useSldLayout } from './hooks/use-sld-layout';
 
 interface NadAssociatedPanelsContainerProps {
@@ -21,14 +24,14 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
     nadPanelId,
     onDragStateChange,
 }: NadAssociatedPanelsContainerProps) {
-    const { associatedPanelIds, visibleSldPanels, focusedSldId, handleBringToFront, handleToggleSldVisibility } =
-        useSldPanels({ nadPanelId });
+    const { focusedSldId, handleBringToFront, handleToggleSldVisibility } = useAssociatedSlds({ nadPanelId });
 
-    const { handleReorganize, toggleHideAll } = useSldLayout({
-        nadPanelId,
-        visibleSldPanels,
-        associatedPanelIds,
-    });
+    const visibleSldPanelIds = useSelector(
+        (state: RootState) => selectVisibleAssociatedSldPanels(state, nadPanelId).map((p) => p.id),
+        shallowEqual
+    );
+
+    const { handleReorganize, toggleHideAll } = useSldLayout({ nadPanelId });
 
     const handleDragStart = useCallback(() => {
         onDragStateChange?.(true);
@@ -40,7 +43,7 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
 
     return (
         <>
-            {visibleSldPanels.map((sldPanelId) => (
+            {visibleSldPanelIds.map((sldPanelId) => (
                 <AssociatedSldPanel
                     key={sldPanelId}
                     sldPanelId={sldPanelId}
@@ -51,7 +54,6 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
                 />
             ))}
 
-            {/* Chips bar at bottom */}
             <AssociatedSldsChips
                 nadPanelId={nadPanelId}
                 onToggleVisibility={handleToggleSldVisibility}

@@ -6,23 +6,21 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../../../services/study';
+import { saveNadConfig, deleteNadConfig } from '../../../../services/study/workspace';
 import { mergePositions } from '../../../grid-layout/cards/diagrams/diagram-utils';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
-import type { NADPanelMetadata } from '../../types/workspace.types';
-import { updatePanelMetadata as updatePanelMetadataAction } from '../../../../redux/slices/workspace-slice';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
-import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
-import { NodeType } from '../../../graph/tree-node.type';
-import { useSavedNadConfig } from './use-saved-nad-config';
+import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
-import { selectPanelMetadata } from '../../../../redux/slices/workspace-selectors';
+import { selectNadDiagramFields, selectActiveWorkspaceId } from '../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../redux/store';
+import { useWorkspaceActions } from '../../hooks/use-workspace-actions';
 
 interface UseNadDiagramProps {
     panelId: UUID;
@@ -31,13 +29,19 @@ interface UseNadDiagramProps {
     currentRootNetworkUuid: UUID;
 }
 
+// Persistent fields that should sync to Redux
+const PERSISTENT_FIELDS = [
+    'voltageLevelToOmitIds',
+    'currentFilterUuid',
+    'savedWorkspaceConfigUuid',
+    'nadConfigUuid',
+    'filterUuid',
+] as const;
+
 export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNetworkUuid }: UseNadDiagramProps) => {
-    const dispatch = useDispatch();
-
-    const diagramMetadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
-        | NADPanelMetadata
-        | undefined;
-
+    const { updateNADFields } = useWorkspaceActions();
+    const initialFields = useSelector((state: RootState) => selectNadDiagramFields(state, panelId));
+    const workspaceId = useSelector((state: RootState) => selectActiveWorkspaceId(state));
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const { snackError } = useSnackMessage();
@@ -46,243 +50,219 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const [diagram, setDiagram] = useState<NetworkAreaDiagram>(() => ({
         type: DiagramType.NETWORK_AREA_DIAGRAM,
         svg: null,
-        nadConfigUuid: diagramMetadata?.nadConfigUuid,
-        filterUuid: diagramMetadata?.filterUuid,
-        currentFilterUuid: diagramMetadata?.currentFilterUuid,
-        voltageLevelIds: diagramMetadata?.initialVoltageLevelIds || [],
-        positions: [],
+        nadConfigUuid: initialFields?.nadConfigUuid,
+        filterUuid: initialFields?.filterUuid,
+        currentFilterUuid: initialFields?.currentFilterUuid,
+        savedWorkspaceConfigUuid: initialFields?.savedWorkspaceConfigUuid,
+        voltageLevelIds: initialFields?.initialVoltageLevelIds || [],
         voltageLevelToExpandIds: [],
-        voltageLevelToOmitIds: diagramMetadata?.voltageLevelToOmitIds || [],
+        voltageLevelToOmitIds: initialFields?.voltageLevelToOmitIds || [],
+        positions: [],
     }));
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
 
-    const { saveNadConfig, cleanupSavedNadConfig } = useSavedNadConfig(
-        studyUuid,
-        panelId,
-        diagramMetadata?.savedWorkspaceConfigUuid
-    );
+    // Refs for stable callbacks (React best practice)
+    // See: https://react.dev/reference/react/useCallback#updating-state-based-on-previous-state-from-a-callback
+    const diagramRef = useRef(diagram);
+    const initialVlIdsRef = useRef(initialFields?.initialVoltageLevelIds);
 
-    const updateMetadata = useCallback(
-        (updatedDiagram: NetworkAreaDiagram) => {
-            // Clear initialVoltageLevelIds after first fetch to prevent re-initialization
-            if ((diagramMetadata?.initialVoltageLevelIds?.length ?? 0) > 0) {
-                dispatch(
-                    updatePanelMetadataAction({
-                        panelId,
-                        metadata: {
-                            initialVoltageLevelIds: undefined,
-                        },
-                    })
-                );
-            }
+    useEffect(() => {
+        diagramRef.current = diagram;
+    }, [diagram]);
 
-            dispatch(
-                updatePanelMetadataAction({
-                    panelId,
-                    metadata: {
-                        voltageLevelToOmitIds: updatedDiagram.voltageLevelToOmitIds,
-                    },
-                })
-            );
-        },
-        [diagramMetadata?.initialVoltageLevelIds, dispatch, panelId]
-    );
-
-    // Helper to process SVG data - extracted to reduce nesting
-    const processSvgData = useCallback(
-        (svgData: any) => {
-            if (!svgData) return;
-
+    // State management with automatic sync
+    const setDiagramAndSync = useCallback(
+        (updater: React.SetStateAction<NetworkAreaDiagram>) => {
             setDiagram((prev) => {
+                const next = typeof updater === 'function' ? updater(prev) : updater;
+
+                const changes: Partial<NetworkAreaDiagram> = {};
+                PERSISTENT_FIELDS.forEach((field) => {
+                    if (prev[field] !== next[field]) {
+                        (changes as any)[field] = next[field];
+                    }
+                });
+
+                if (Object.keys(changes).length > 0) {
+                    updateNADFields({ panelId, fields: changes });
+                }
+
+                return next;
+            });
+        },
+        [updateNADFields, panelId]
+    );
+
+    const fetchDiagram = useCallback(() => {
+        if (!currentNode || !isNodeBuilt(currentNode)) {
+            setGlobalError('Node not built');
+            return Promise.resolve();
+        }
+
+        setLoading(true);
+        setGlobalError(undefined);
+
+        const currentDiagram = diagramRef.current;
+
+        const body: any = {
+            baseVoltagesConfigInfos: baseVoltagesConfig,
+            nadPositionsGenerationMode: networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+            voltageLevelIds: currentDiagram.voltageLevelIds,
+            voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
+            positions: currentDiagram.positions,
+            voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
+            nadConfigUuid: currentDiagram.savedWorkspaceConfigUuid || currentDiagram.nadConfigUuid,
+            filterUuid: currentDiagram.currentFilterUuid || currentDiagram.filterUuid,
+        };
+
+        const url = getNetworkAreaDiagramUrl(studyUuid, currentNodeId, currentRootNetworkUuid);
+
+        return fetchSvg(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        })
+            .then((svgData) => {
+                if (!svgData) return;
+
                 const vlIdsFromSvg =
                     (svgData.additionalMetadata as { voltageLevels?: { id: string }[] })?.voltageLevels?.map(
                         (vl) => vl.id
                     ) ?? [];
 
-                const updatedDiagram: NetworkAreaDiagram = {
+                const filteredOmitIds = currentDiagram.voltageLevelToOmitIds.filter((id) => !vlIdsFromSvg.includes(id));
+
+                setDiagramAndSync((prev) => ({
                     ...prev,
                     svg: svgData,
+                    voltageLevelIds: [...new Set([...prev.voltageLevelIds, ...vlIdsFromSvg])],
                     voltageLevelToExpandIds: [],
-                    voltageLevelIds: [...new Set([...(prev.voltageLevelIds || []), ...vlIdsFromSvg])],
-                    voltageLevelToOmitIds: (prev.voltageLevelToOmitIds || []).filter(
-                        (vlId: string) => !vlIdsFromSvg.includes(vlId)
-                    ),
-                    positions: mergePositions(prev.positions || [], svgData.metadata as DiagramMetadata),
-                };
-
-                // Auto-save NAD if no saved config exists
-                if (!diagramMetadata?.savedWorkspaceConfigUuid && updatedDiagram.voltageLevelIds.length > 0) {
-                    const scalingFactor = (svgData.additionalMetadata as { scalingFactor?: number })?.scalingFactor;
-                    saveNadConfig(updatedDiagram.voltageLevelIds, updatedDiagram.positions, scalingFactor);
+                    voltageLevelToOmitIds: filteredOmitIds,
+                    positions: mergePositions(prev.positions, svgData.metadata as DiagramMetadata),
+                }));
+            })
+            .catch((error) => {
+                console.error('Error fetching NAD diagram:', error);
+                let errorMessage: string;
+                if (error?.status === 400) {
+                    errorMessage = 'nadConfiguredPositionsModeFailed';
+                    snackError({ headerId: errorMessage });
+                } else if (error?.status === 404) {
+                    errorMessage = 'VoltageLevelNotFound';
+                } else if (error?.status === 403) {
+                    errorMessage = error.message || 'svgLoadingFail';
+                    snackError({ headerId: errorMessage });
+                } else {
+                    errorMessage = 'svgLoadingFail';
+                    snackError({ headerId: errorMessage });
                 }
-
-                updateMetadata(updatedDiagram);
-
-                return updatedDiagram;
+                setGlobalError(errorMessage);
+            })
+            .finally(() => {
+                setLoading(false);
             });
-        },
-        [diagramMetadata?.savedWorkspaceConfigUuid, saveNadConfig, updateMetadata]
-    );
-
-    const handleFetchError = useCallback(
-        (error: any) => {
-            console.error('Error fetching NAD diagram:', error);
-            let errorMessage: string;
-            if (error?.status === 400) {
-                errorMessage = 'nadConfiguredPositionsModeFailed';
-                snackError({ headerId: errorMessage });
-            } else if (error?.status === 404) {
-                errorMessage = 'VoltageLevelNotFound';
-            } else if (error?.status === 403) {
-                errorMessage = error.message || 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
-            } else {
-                errorMessage = 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
-            }
-            setGlobalError(errorMessage);
-        },
-        [snackError]
-    );
-
-    const handleFetchComplete = useCallback(() => {
-        setLoading(false);
-    }, []);
-
-    // Fetch NAD diagram SVG
-    const fetchDiagram = useCallback(() => {
-        if (!currentNode || !isNodeBuilt(currentNode)) return;
-
-        setLoading(true);
-        setGlobalError(undefined);
-
-        try {
-            const url = getNetworkAreaDiagramUrl(studyUuid, currentNodeId, currentRootNetworkUuid);
-
-            setDiagram((currentDiagram) => {
-                const hasVoltageLevels = currentDiagram.voltageLevelIds?.length > 0;
-                const hasExpandIds = (currentDiagram.voltageLevelToExpandIds?.length ?? 0) > 0;
-
-                // Use saved config only if we have no voltage levels AND no expand/omit operations
-                // Replace by the state isEditNadMode
-                const isEditMode = diagramMetadata?.savedWorkspaceConfigUuid && !hasVoltageLevels && !hasExpandIds;
-
-                const fetchOptions: RequestInit = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        nadConfigUuid: isEditMode
-                            ? diagramMetadata?.savedWorkspaceConfigUuid
-                            : currentDiagram.nadConfigUuid,
-                        filterUuid: currentDiagram.currentFilterUuid ?? currentDiagram.filterUuid,
-                        voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
-                        ...(isEditMode
-                            ? {}
-                            : {
-                                  voltageLevelIds: currentDiagram.voltageLevelIds,
-                                  voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
-                                  positions: currentDiagram.positions,
-                              }),
-                        nadPositionsGenerationMode:
-                            networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
-                        baseVoltagesConfigInfos: baseVoltagesConfig,
-                    }),
-                };
-
-                fetchSvg(url, fetchOptions).then(processSvgData).catch(handleFetchError).finally(handleFetchComplete);
-
-                return currentDiagram;
-            });
-        } catch (error) {
-            console.error('Error fetching NAD diagram:', error);
-            setLoading(false);
-        }
     }, [
         currentNode,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
         baseVoltagesConfig,
-        networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
-        diagramMetadata?.savedWorkspaceConfigUuid,
-        processSvgData,
-        handleFetchError,
-        handleFetchComplete,
+        networkVisuParams,
+        snackError,
+        setDiagramAndSync,
     ]);
 
     const updateDiagram = useCallback(
-        (updater: Partial<NetworkAreaDiagram> | ((prev: NetworkAreaDiagram) => NetworkAreaDiagram), fetch = true) => {
-            setDiagram((prev) => {
-                const updated = typeof updater === 'function' ? updater(prev) : { ...prev, ...updater };
-                return updated;
-            });
+        (updates: Partial<NetworkAreaDiagram>, shouldFetch: boolean) => {
+            setDiagramAndSync((prev) => ({ ...prev, ...updates }));
 
-            if (fetch) {
-                fetchDiagram();
+            if (shouldFetch) {
+                setTimeout(() => fetchDiagram(), 0);
             }
         },
-        [fetchDiagram]
+        [setDiagramAndSync, fetchDiagram]
     );
 
-    // Fetch when diagram data or node changes
-    useEffect(() => {
-        if (!currentNode?.id) return;
+    // Backend operations
+    const cleanupSavedNadConfig = useCallback(() => {
+        if (diagram.savedWorkspaceConfigUuid && workspaceId) {
+            deleteNadConfig(studyUuid, workspaceId, panelId).catch((error) =>
+                console.error('Failed to delete NAD config:', error)
+            );
+        }
+    }, [studyUuid, workspaceId, panelId, diagram.savedWorkspaceConfigUuid]);
 
-        if (currentNode.type !== NodeType.ROOT && !isStatusBuilt(currentNode?.data?.globalBuildStatus)) {
-            setGlobalError('InvalidNode');
+    const handleSaveNad = useCallback(async () => {
+        const current = diagramRef.current;
+        if (current.voltageLevelIds.length === 0 || !workspaceId) {
             return;
         }
 
-        setGlobalError(undefined);
+        const scalingFactor = (current.svg?.additionalMetadata as { scalingFactor?: number })?.scalingFactor;
 
-        // Update diagram from metadata
-        setDiagram((prev) => ({
-            ...prev,
-            type: DiagramType.NETWORK_AREA_DIAGRAM,
-            nadConfigUuid: diagramMetadata?.nadConfigUuid,
-            filterUuid: diagramMetadata?.filterUuid,
-            currentFilterUuid: diagramMetadata?.currentFilterUuid,
-            voltageLevelIds: diagramMetadata?.initialVoltageLevelIds || [],
-            voltageLevelToOmitIds: diagramMetadata?.voltageLevelToOmitIds || [],
-            positions: [],
-            voltageLevelToExpandIds: [],
-        }));
+        try {
+            const savedUuid = await saveNadConfig(studyUuid, workspaceId, panelId, {
+                id: current.savedWorkspaceConfigUuid || null,
+                scalingFactor,
+                voltageLevelIds: current.voltageLevelIds,
+                positions: current.positions,
+            });
 
-        fetchDiagram();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        currentNodeId,
-        currentNode?.id,
-        currentNode?.type,
-        currentNode?.data?.globalBuildStatus,
-        currentRootNetworkUuid,
-        diagramMetadata?.nadConfigUuid,
-        diagramMetadata?.filterUuid,
-        diagramMetadata?.currentFilterUuid,
-    ]);
+            setDiagramAndSync((prev) => ({ ...prev, savedWorkspaceConfigUuid: savedUuid }));
+        } catch (error) {
+            console.error('Failed to save NAD config:', error);
+        }
+    }, [studyUuid, workspaceId, panelId, setDiagramAndSync]);
 
-    // Listen for notifications and refetch
+    const loadConfig = useCallback(
+        (nadConfigUuid?: UUID, filterUuid?: UUID) => {
+            setDiagramAndSync((prev) => ({
+                ...prev,
+                nadConfigUuid,
+                filterUuid,
+                currentFilterUuid: undefined,
+                voltageLevelIds: [],
+                voltageLevelToExpandIds: [],
+                positions: [],
+                savedWorkspaceConfigUuid: undefined,
+                svg: null,
+            }));
+
+            cleanupSavedNadConfig();
+            setTimeout(() => fetchDiagram(), 0);
+        },
+        [cleanupSavedNadConfig, fetchDiagram, setDiagramAndSync]
+    );
+
+    useEffect(() => {
+        if (currentNode && isNodeBuilt(currentNode)) {
+            fetchDiagram();
+        }
+    }, [currentNode, fetchDiagram]);
+
+    useEffect(() => {
+        if (initialVlIdsRef.current?.length) {
+            updateNADFields({ panelId, fields: { initialVoltageLevelIds: undefined } });
+        }
+    }, [updateNADFields, panelId]);
+
     useDiagramNotifications({
         currentRootNetworkUuid,
-        onNotification: fetchDiagram,
+        onNotification: () => {
+            fetchDiagram();
+        },
+        savedNadConfigUuid: diagram.savedWorkspaceConfigUuid,
     });
-
-    const handleSaveNad = useCallback(() => {
-        const voltageLevelIds = diagram.voltageLevelIds || [];
-        const positions = diagram.positions || [];
-        if (voltageLevelIds.length === 0) return;
-
-        const scalingFactor = (diagram.svg?.additionalMetadata as { scalingFactor?: number })?.scalingFactor;
-        saveNadConfig(voltageLevelIds, positions, scalingFactor);
-    }, [diagram, saveNadConfig]);
 
     return {
         diagram,
         loading,
         globalError,
+        fetchDiagram,
         updateDiagram,
         handleSaveNad,
         cleanupSavedNadConfig,
+        loadConfig,
     };
 };

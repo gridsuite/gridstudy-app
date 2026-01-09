@@ -35,11 +35,12 @@ import { type MuiStyles, OverflowableText, PopupConfirmationDialog, CancelButton
 import { useIntl, FormattedMessage } from 'react-intl';
 import { WORKSPACE_MENU_VALUE } from '../constants/workspace.constants';
 import {
-    switchWorkspace,
+    setActiveWorkspace,
     renameWorkspace as renameWorkspaceAction,
     clearWorkspace as clearWorkspaceAction,
 } from '../../../redux/slices/workspace-slice';
 import { selectWorkspaces, selectActiveWorkspaceId } from '../../../redux/slices/workspace-selectors';
+import { getWorkspace } from '../../../services/study/workspace';
 import type { UUID } from 'node:crypto';
 
 const styles = {
@@ -80,23 +81,27 @@ export const WorkspaceSwitcher = memo(() => {
     const dispatch = useDispatch();
     const workspaces = useSelector(selectWorkspaces);
     const activeWorkspaceId = useSelector(selectActiveWorkspaceId);
+    const studyUuid = useSelector((state: any) => state.studyUuid);
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [renameDialog, setRenameDialog] = useState<{ workspaceId: UUID; name: string } | null>(null);
     const [resetWorkspaceId, setResetWorkspaceId] = useState<UUID | null>(null);
 
-    const handleWorkspaceChange = (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
+    const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
         if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE) {
             globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
 
-            dispatch(switchWorkspace(workspaceId as UUID));
+            const workspace = await getWorkspace(studyUuid, workspaceId as UUID);
+            dispatch(setActiveWorkspace(workspace));
         }
     };
 
-    const handleSwitchWorkspace = (workspaceId: UUID) => {
+    const handleSwitchWorkspace = async (workspaceId: UUID) => {
         globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
 
-        dispatch(switchWorkspace(workspaceId));
+        const workspace = await getWorkspace(studyUuid, workspaceId);
+        dispatch(setActiveWorkspace(workspace));
+
         setMenuAnchor(null);
     };
 
@@ -117,7 +122,7 @@ export const WorkspaceSwitcher = memo(() => {
 
     const handleConfirmReset = useCallback(() => {
         if (resetWorkspaceId) {
-            dispatch(clearWorkspaceAction(resetWorkspaceId));
+            dispatch(clearWorkspaceAction());
         }
         setResetWorkspaceId(null);
     }, [resetWorkspaceId, dispatch]);
@@ -163,7 +168,7 @@ export const WorkspaceSwitcher = memo(() => {
                 <List dense sx={{ width: 300, maxHeight: 400, overflow: 'auto', p: 0 }}>
                     {workspaces.map((workspace, index) => {
                         const isActive = workspace.id === activeWorkspaceId;
-                        const panelCount = Object.keys(workspace.panels).length;
+                        const panelCount = workspace.panelCount;
                         const workspaceName = workspace.name || `Workspace ${index + 1}`;
 
                         return (

@@ -12,6 +12,7 @@ import { Alert, Paper } from '@mui/material';
 import SpreadsheetTabs from './spreadsheet-tabs/spreadsheet-tabs';
 import { AppState } from '../../redux/reducer';
 import type { RootState } from '../../redux/store';
+import { selectPanelTargetEquipment } from '../../redux/slices/workspace-selectors';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './types/spreadsheet.type';
 import { CurrentTreeNode } from '../graph/tree-node.type';
 import type { UUID } from 'node:crypto';
@@ -23,8 +24,6 @@ import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from '
 import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
 import { type MuiStyles, PopupConfirmationDialog, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
-import { selectPanel } from '../../redux/slices/workspace-selectors';
-import { SpreadsheetPanelMetadata } from '../workspace/types/workspace.types';
 
 const styles = {
     invalidNode: {
@@ -51,11 +50,10 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panel
     const activeSpreadsheetTabUuid = useSelector((state: AppState) => state.tables.activeTabUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    // Read from panel metadata
-    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
-    const panelMetadata = panel?.metadata as SpreadsheetPanelMetadata | undefined;
-    const targetEquipmentId = panelMetadata?.targetEquipmentId;
-    const targetEquipmentType = panelMetadata?.targetEquipmentType;
+    // Get target equipment from panel
+    const targetEquipment = useSelector((state: RootState) => selectPanelTargetEquipment(state, panelId));
+    const targetEquipmentId = targetEquipment?.targetEquipmentId;
+    const targetEquipmentType = targetEquipment?.targetEquipmentType;
 
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
 
@@ -80,14 +78,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panel
         if (matchingTabs.length > 0 && (!activeTab || (activeTab.type as unknown) !== targetType)) {
             handleSwitchTab(matchingTabs[0].uuid);
         }
-    }, [
-        targetEquipmentId,
-        targetEquipmentType,
-        panelMetadata,
-        tablesDefinitions,
-        activeSpreadsheetTabUuid,
-        handleSwitchTab,
-    ]);
+    }, [targetEquipmentId, targetEquipmentType, tablesDefinitions, activeSpreadsheetTabUuid, handleSwitchTab]);
 
     const getStudySpreadsheetConfigCollection = useCallback(() => {
         if (!studyUuid) {
@@ -146,8 +137,6 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panel
                 nodeAliases &&
                 tablesDefinitions.map((tabDef) => {
                     const isActive = activeSpreadsheetTabUuid === tabDef.uuid;
-                    const equipmentIdToScrollTo =
-                        (tabDef.type as unknown) === targetEquipmentType && isActive ? targetEquipmentId : null;
                     return (
                         <TabPanelLazy key={tabDef.uuid} selected={isActive}>
                             <Paper
@@ -162,7 +151,6 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panel
                                     currentNode={currentNode}
                                     tableDefinition={tabDef}
                                     disabled={disabled}
-                                    equipmentId={equipmentIdToScrollTo ?? null}
                                     active={isActive}
                                 />
                             </Paper>
