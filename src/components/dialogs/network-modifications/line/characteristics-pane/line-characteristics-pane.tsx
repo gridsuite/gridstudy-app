@@ -41,7 +41,7 @@ const LineCharacteristicsPane = ({
     lineToModify,
     clearableFields = false,
     isModification = false,
-}) => {
+}: any) => {
     const currentNodeUuid = currentNode.id;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 

@@ -9,6 +9,7 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentType,
     FieldType,
     snackWithFallback,
     TextInput,
@@ -17,6 +18,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
+    ADDITIONAL_PROPERTIES,
     B1,
     B2,
     BUS_OR_BUSBAR_SECTION,
@@ -45,9 +47,8 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FieldErrors, useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { APPLICABILITY, FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
@@ -66,6 +67,7 @@ import {
     LineCreationDialogTab,
 } from './line-creation-dialog-utils';
 import {
+    formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
@@ -83,18 +85,114 @@ import {
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
+    Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
-import { LimitsPane } from '../../../limits/limits-pane.tsx';
+import { LimitsPane } from '../../../limits/limits-pane';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { LineCreationInfo, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
+import { LineModificationFormInfos } from '../modification/line-modification-type';
+import { CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
+import { CurrentLimitsData } from '../../../../../services/study/network-map.type';
+import { DeepNullable } from '../../../../utils/ts-utils';
+import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 
-const emptyFormData = {
+interface LineCreationFormData {
+    [TAB_HEADER]: {
+        equipmentId: string;
+        equipmentName?: string | null;
+    };
+    [CHARACTERISTICS]: {
+        r?: number | null;
+        x?: number | null;
+        b1?: number | null;
+        g1?: number | null;
+        b2?: number | null;
+        g2?: number | null;
+        [CONNECTIVITY_1]?: Connectivity;
+        [CONNECTIVITY_2]?: Connectivity;
+    };
+    [LIMITS]: {
+        [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroup[];
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
+    };
+    [ADDITIONAL_PROPERTIES]?: Property[];
+    [key: string]: any;
+}
+
+const emptyFormData: Partial<LineCreationFormData> = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(false),
     ...emptyProperties,
 };
+
+interface ConnectablePosition {
+    connectionName: string | null;
+    connectionDirection: string | null;
+    connectionPosition: number | null;
+}
+
+interface Limit {
+    id: string;
+    name: string;
+    applicability: string;
+    currentLimits: {
+        id: string;
+        permanentLimit: number;
+        temporaryLimits: {
+            name: string;
+            acceptableDuration: number;
+            value: number;
+        }[];
+    };
+}
+
+interface LineInfo {
+    id: string;
+    name: string | null;
+    voltageLevelId1: string;
+    voltageLevelId2: string;
+    terminal1Connected: boolean;
+    terminal2Connected: boolean;
+    p1: number;
+    q1: number;
+    p2: number;
+    q2: number;
+    i1: number;
+    i2: number;
+    r: number;
+    x: number;
+    g1?: number;
+    b1?: number;
+    g2?: number;
+    b2?: number;
+    busOrBusbarSectionId1: string;
+    busOrBusbarSectionId2: string;
+    selectedOperationalLimitsGroupId1: string;
+    selectedOperationalLimitsGroupId2: string;
+    connectablePosition1: ConnectablePosition;
+    connectablePosition2: ConnectablePosition;
+    currentLimits: CurrentLimitsData[];
+    properties: Record<string, string>;
+}
+
+interface LineCreationDialogProps {
+    // contains data when we try to edit an existing hypothesis from the current node's list
+    editData: LineCreationInfo | null | undefined;
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    onCreateLine: (line: LineCreationInfo) => Promise<string>;
+    displayConnectivity?: boolean;
+    isUpdate: boolean;
+    editDataFetchStatus?: string;
+    //...dialogProps
+}
 
 /**
  * Dialog to create a line in the network
@@ -118,12 +216,12 @@ const LineCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: LineCreationDialogProps) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
     const [tabIndex, setTabIndex] = useState(LineCreationDialogTab.CHARACTERISTICS_TAB);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
 
     const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
 
@@ -141,62 +239,67 @@ const LineCreationDialog = ({
         .concat(creationPropertiesSchema)
         .required();
 
-    const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
-    });
+    type LineCreationFormSchema = yup.InferType<typeof formSchema>;
 
+    const formMethods = useForm<
+        Omit<DeepNullable<LineCreationFormSchema>, typeof ADDITIONAL_PROPERTIES> & {
+            [ADDITIONAL_PROPERTIES]?: Property[];
+        }
+    >({
+        defaultValues: emptyFormData,
+        resolver: yupResolver<DeepNullable<LineCreationFormSchema>>(formSchema),
+    });
     const { reset, setValue } = formMethods;
 
-    const fromSearchCopyToFormValues = (line) => {
-        reset(
-            {
-                ...getHeaderFormData({
-                    equipmentId: line.id + '(1)',
-                    equipmentName: line.name ?? '',
-                }),
-                ...getCharacteristicsFormData({
-                    r: line.r,
-                    x: line.x,
-                    g1: convertInputValue(FieldType.G1, line.g1), // this form uses and displays microSiemens
-                    b1: convertInputValue(FieldType.B1, line.b1),
-                    g2: convertInputValue(FieldType.G2, line.g2),
-                    b2: convertInputValue(FieldType.B2, line.b2),
-                    ...(displayConnectivity &&
-                        getConnectivityFormData(
-                            {
-                                voltageLevelId: line.voltageLevelId1,
-                                busbarSectionId: line.busOrBusbarSectionId1,
-                                connectionDirection: line.connectablePosition1.connectionDirection,
-                                connectionName: line.connectablePosition1.connectionName,
-                            },
-                            CONNECTIVITY_1
-                        )),
-                    ...(displayConnectivity &&
-                        getConnectivityFormData(
-                            {
-                                voltageLevelId: line.voltageLevelId2,
-                                busbarSectionId: line.busOrBusbarSectionId2,
-                                connectionDirection: line.connectablePosition2.connectionDirection,
-                                connectionName: line.connectablePosition2.connectionName,
-                            },
-                            CONNECTIVITY_2
-                        )),
-                }),
-                ...getAllLimitsFormData(
-                    formatCompleteCurrentLimit(line.currentLimits),
-                    line.selectedOperationalLimitsGroupId1 ?? null,
-                    line.selectedOperationalLimitsGroupId2 ?? null
-                ),
-                ...copyEquipmentPropertiesForCreation(line),
-            },
-            { keepDefaultValues: true }
-        );
+    const fromSearchCopyToFormValues = (line: LineInfo) => {
+        const formData = {
+            ...getHeaderFormData({
+                equipmentId: line.id + '(1)',
+                equipmentName: line.name ?? '',
+            }),
+            ...getCharacteristicsFormData({
+                r: line.r,
+                x: line.x,
+                g1: convertInputValue(FieldType.G1, line.g1), // this form uses and displays microSiemens
+                b1: convertInputValue(FieldType.B1, line.b1),
+                g2: convertInputValue(FieldType.G2, line.g2),
+                b2: convertInputValue(FieldType.B2, line.b2),
+                ...(getConnectivityFormData(
+                    {
+                        voltageLevelId: line.voltageLevelId1,
+                        busbarSectionId: line.busOrBusbarSectionId1,
+                        connectionDirection: line.connectablePosition1.connectionDirection,
+                        connectionName: line.connectablePosition1.connectionName,
+                        connectionPosition: line.connectablePosition1.connectionPosition,
+                        terminalConnected: line.terminal1Connected,
+                    },
+                    CONNECTIVITY_1
+                ) as any),
+                ...(getConnectivityFormData(
+                    {
+                        voltageLevelId: line.voltageLevelId2,
+                        busbarSectionId: line.busOrBusbarSectionId2,
+                        connectionDirection: line.connectablePosition2.connectionDirection,
+                        connectionName: line.connectablePosition2.connectionName,
+                        connectionPosition: line.connectablePosition2.connectionPosition,
+                        terminalConnected: line.terminal2Connected,
+                    },
+                    CONNECTIVITY_2
+                ) as any),
+            }),
+            ...getAllLimitsFormData(
+                formatCompleteCurrentLimit(line.currentLimits),
+                line.selectedOperationalLimitsGroupId1 ?? null,
+                line.selectedOperationalLimitsGroupId2 ?? null
+            ),
+            ...copyEquipmentPropertiesForCreation(line),
+        };
+        reset(formData, { keepDefaultValues: true });
     };
 
     const fromEditDataToFormValues = useCallback(
-        (line) => {
-            reset({
+        (line: LineCreationInfo) => {
+            const formData = {
                 ...getHeaderFormData({
                     equipmentId: line.equipmentId,
                     equipmentName: line.equipmentName,
@@ -208,7 +311,7 @@ const LineCreationDialog = ({
                     b1: convertInputValue(FieldType.B1, line.b1),
                     g2: convertInputValue(FieldType.G2, line.g2),
                     b2: convertInputValue(FieldType.B2, line.b2),
-                    ...getConnectivityFormData(
+                    ...(getConnectivityFormData(
                         {
                             busbarSectionId: line.busOrBusbarSectionId1,
                             connectionDirection: line.connectionDirection1,
@@ -218,8 +321,8 @@ const LineCreationDialog = ({
                             terminalConnected: line.connected1,
                         },
                         CONNECTIVITY_1
-                    ),
-                    ...getConnectivityFormData(
+                    ) as any),
+                    ...(getConnectivityFormData(
                         {
                             busbarSectionId: line.busOrBusbarSectionId2,
                             connectionDirection: line.connectionDirection2,
@@ -229,19 +332,16 @@ const LineCreationDialog = ({
                             terminalConnected: line.connected2,
                         },
                         CONNECTIVITY_2
-                    ),
+                    ) as any),
                 }),
                 ...getAllLimitsFormData(
-                    line?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
-                        ...baseData,
-                        name: id,
-                        id: id + baseData.applicability,
-                    })),
+                    formatOpLimitGroupsToFormInfos(line.operationalLimitsGroups),
                     line?.selectedOperationalLimitsGroupId1 ?? null,
                     line?.selectedOperationalLimitsGroupId2 ?? null
                 ),
                 ...getPropertiesFromModification(line.properties),
-            });
+            };
+            reset(formData, { keepDefaultValues: true });
         },
         [reset]
     );
@@ -254,7 +354,7 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const handleLineSegmentsBuildSubmit = (data) => {
+    const handleLineSegmentsBuildSubmit = (data: any) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
@@ -267,8 +367,8 @@ const LineCreationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
-        const finalLimits = [];
-        data[FINAL_CURRENT_LIMITS].forEach((item) => {
+        const finalLimits: Limit[] = [];
+        data[FINAL_CURRENT_LIMITS].forEach((item: CurrentLimitsInfo) => {
             const temporaryLimitsList = [];
             if (item.temporaryLimitValue) {
                 temporaryLimitsList.push({
@@ -292,7 +392,7 @@ const LineCreationDialog = ({
     };
 
     const onSubmit = useCallback(
-        (line) => {
+        (line: any) => {
             const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
@@ -311,7 +411,9 @@ const LineCreationDialog = ({
                 busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                operationalLimitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
+                operationalLimitsGroups: sanitizeLimitsGroups(
+                    limits[OPERATIONAL_LIMITS_GROUPS]
+                ) as OperationalLimitsGroup[],
                 selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1],
                 selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2],
                 isUpdate: !!editData,
@@ -334,7 +436,7 @@ const LineCreationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
-    const onValidationError = (errors) => {
+    const onValidationError = (errors: FieldErrors<LineModificationFormInfos>) => {
         let tabsInError = [];
         if (errors?.[CHARACTERISTICS] !== undefined) {
             tabsInError.push(LineCreationDialogTab.CHARACTERISTICS_TAB);
@@ -429,7 +531,7 @@ const LineCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.LINE}
+                    equipmentType={EquipmentType.LINE}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
@@ -442,15 +544,6 @@ const LineCreationDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-LineCreationDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
 };
 
 export default LineCreationDialog;
