@@ -1,0 +1,135 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { v4 as uuidv4 } from 'uuid';
+import type { UUID } from 'node:crypto';
+import { PanelType } from '../types/workspace.types';
+import type { PanelState, NADPanel, SLDVoltageLevelPanel, SLDSubstationPanel } from '../types/workspace.types';
+import { NAD_SLD_CONSTANTS } from '../panel-contents/diagrams/nad/constants';
+import { getPanelConfig } from '../constants/workspace.constants';
+
+const SLD_MAX_NAVIGATION_HISTORY = 10;
+
+/**
+ * Get default position and size for associated SLD panels
+ */
+export const getDefaultAssociatedSldPositionAndSize = () => ({
+    position: {
+        x: NAD_SLD_CONSTANTS.CASCADE_START_X,
+        y: 1 - NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT,
+    },
+    size: {
+        width: NAD_SLD_CONSTANTS.PANEL_DEFAULT_WIDTH,
+        height: NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT,
+    },
+});
+
+/**
+ * Type guard to check if a panel is a NAD panel
+ */
+export const isNADPanel = (panel: PanelState): panel is NADPanel => panel.type === PanelType.NAD;
+
+/**
+ * Type guard to check if a panel is a SLD voltage level panel
+ */
+export const isSLDVoltageLevelPanel = (panel: PanelState): panel is SLDVoltageLevelPanel =>
+    panel.type === PanelType.SLD_VOLTAGE_LEVEL;
+
+/**
+ * Update navigation history for SLD voltage level panel
+ */
+export const updateNavigationHistory = (panel: SLDVoltageLevelPanel, newDiagramId: string, skipHistory: boolean) => {
+    const history = panel.navigationHistory || [];
+    const shouldAddToHistory = !skipHistory && panel.diagramId !== newDiagramId && history[0] !== panel.diagramId;
+    return shouldAddToHistory ? [panel.diagramId, ...history].slice(0, SLD_MAX_NAVIGATION_HISTORY) : history;
+};
+
+/**
+ * Create base panel properties with default values
+ */
+export const createPanelBase = (panelType: PanelType) => {
+    const config = getPanelConfig(panelType);
+    return {
+        id: uuidv4() as UUID,
+        position: config.defaultPosition,
+        size: config.defaultSize,
+        minimized: false,
+        maximized: false,
+        pinned: false,
+    };
+};
+
+/**
+ * Create a new SLD panel (voltage level or substation)
+ */
+export const createSLDPanel = ({
+    panelType,
+    diagramId,
+    parentNadPanelId,
+    position,
+    size,
+}: {
+    panelType: PanelType.SLD_VOLTAGE_LEVEL | PanelType.SLD_SUBSTATION;
+    diagramId: string;
+    parentNadPanelId?: UUID;
+    position?: { x: number; y: number };
+    size?: { width: number; height: number };
+}): SLDVoltageLevelPanel | SLDSubstationPanel => {
+    const base = {
+        ...createPanelBase(panelType),
+        title: diagramId,
+        diagramId,
+    };
+    if (panelType === PanelType.SLD_VOLTAGE_LEVEL) {
+        return {
+            ...base,
+            type: panelType,
+            parentNadPanelId,
+            navigationHistory: [],
+            ...(position && { position }),
+            ...(size && { size }),
+        };
+    }
+    return { ...base, type: panelType };
+};
+
+/**
+ * Create a new NAD panel
+ */
+export const createNADPanel = ({
+    title,
+    initialVoltageLevelIds,
+    navigationHistory,
+    nadConfigUuid,
+    filterUuid,
+    currentFilterUuid,
+    position,
+    size,
+}: {
+    title?: string;
+    initialVoltageLevelIds?: string[];
+    navigationHistory?: string[];
+    nadConfigUuid?: UUID;
+    filterUuid?: UUID;
+    currentFilterUuid?: UUID;
+    position?: { x: number; y: number };
+    size?: { width: number; height: number };
+}): NADPanel => {
+    const config = getPanelConfig(PanelType.NAD);
+    return {
+        ...createPanelBase(PanelType.NAD),
+        type: PanelType.NAD,
+        title: title || config.title,
+        initialVoltageLevelIds,
+        navigationHistory: navigationHistory || [],
+        ...(nadConfigUuid && { nadConfigUuid }),
+        ...(filterUuid && { filterUuid }),
+        ...(currentFilterUuid && { currentFilterUuid }),
+        ...(position && { position }),
+        ...(size && { size }),
+    };
+};

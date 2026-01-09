@@ -14,11 +14,10 @@ import type { UUID } from 'node:crypto';
 import { useNadDiagram } from '../../../diagrams/nad/use-nad-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import type { DiagramConfigPosition } from '../../../../../services/explore';
-import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 import { NadNavigationSidebar } from '../../../diagrams/nad/nad-navigation-sidebar';
 import { NadAssociatedPanelsContainer } from './nad-associated-panels-container';
-import { useNadSldAssociation } from './hooks/use-nad-sld-association';
 import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
+import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 
 interface NadPanelContentProps {
     panelId: UUID;
@@ -35,10 +34,9 @@ export const NadPanelContent = memo(function NadPanelContent({
 }: NadPanelContentProps) {
     const [isDraggingSld, setIsDraggingSld] = useState(false);
 
-    const { handleVoltageLevelClick } = useNadSldAssociation({ nadPanelId: panelId });
-    const { updateNADFields } = useWorkspaceActions();
+    const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspaceActions();
 
-    const { diagram, loading, globalError, updateDiagram, handleSaveNad, cleanupSavedNadConfig } = useNadDiagram({
+    const { diagram, loading, globalError, updateDiagram, handleSaveNad, loadConfig } = useNadDiagram({
         panelId,
         studyUuid,
         currentNodeId,
@@ -46,6 +44,15 @@ export const NadPanelContent = memo(function NadPanelContent({
     });
 
     const { handleShowInSpreadsheet } = useDiagramNavigation();
+
+    // Handle voltage level click in NAD: add to history + open/associate SLD
+    const handleVoltageLevelClick = useCallback(
+        (voltageLevelId: string) => {
+            addToNadNavigationHistory({ panelId, voltageLevelId });
+            associateVoltageLevelWithNad({ voltageLevelId, nadPanelId: panelId });
+        },
+        [panelId, addToNadNavigationHistory, associateVoltageLevelWithNad]
+    );
 
     // Update voltage levels in local state only - no Redux dispatch
     const handleUpdateVoltageLevels = useCallback(
@@ -58,9 +65,9 @@ export const NadPanelContent = memo(function NadPanelContent({
     // Update voltage levels from a filter in global state (redux)
     const handleUpdateVoltageLevelsFromFilter = useCallback(
         (filterUuid?: UUID) => {
-            updateNADFields({ panelId, fields: { currentFilterUuid: filterUuid } });
+            updateDiagram({ currentFilterUuid: filterUuid }, true);
         },
-        [panelId, updateNADFields]
+        [updateDiagram]
     );
 
     // Update positions in local state only - no Redux dispatch, no fetch
@@ -75,20 +82,10 @@ export const NadPanelContent = memo(function NadPanelContent({
     // The useEffect in use-nad-diagram will handle the fetch when panel data changes
     const handleReplaceNad = useCallback(
         (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
-            // Delete the old saved config before replacing
-            cleanupSavedNadConfig();
-
-            updateNADFields({
-                panelId,
-                fields: {
-                    title: name,
-                    nadConfigUuid,
-                    filterUuid,
-                    savedWorkspaceConfigUuid: undefined,
-                },
-            });
+            // loadConfig will handle cleanup of the old saved config
+            loadConfig(nadConfigUuid, filterUuid);
         },
-        [panelId, cleanupSavedNadConfig, updateNADFields]
+        [loadConfig]
     );
 
     return (

@@ -6,7 +6,10 @@
  */
 
 import { useCallback } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
 import type { UUID } from 'node:crypto';
+import type { RootState } from '../../../../../../redux/store';
+import { selectVisibleAssociatedSldPanels } from '../../../../../../redux/slices/workspace-selectors';
 import { useWorkspaceActions } from '../../../../../workspace/hooks/use-workspace-actions';
 import { NAD_SLD_CONSTANTS } from '../constants';
 
@@ -16,8 +19,7 @@ export enum LayoutMode {
 }
 
 export interface UseSldLayoutParams {
-    readonly visibleSldPanels: UUID[];
-    readonly associatedPanelIds: UUID[];
+    readonly nadPanelId: UUID;
 }
 
 export interface UseSldLayoutReturn {
@@ -29,19 +31,24 @@ export interface UseSldLayoutReturn {
  * Hook to manage layout and visibility of SLD panels
  * Handles reorganization (grid/cascade) and show/hide all operations
  */
-export const useSldLayout = ({ visibleSldPanels, associatedPanelIds }: UseSldLayoutParams): UseSldLayoutReturn => {
-    const { updatePanelGeometry, minimizePanels, openSLDPanels } = useWorkspaceActions();
+export const useSldLayout = ({ nadPanelId }: UseSldLayoutParams): UseSldLayoutReturn => {
+    const { updatePanelGeometry, hideAssociatedSlds, showAssociatedSlds } = useWorkspaceActions();
+
+    const visibleSldPanelIds = useSelector(
+        (state: RootState) => selectVisibleAssociatedSldPanels(state, nadPanelId).map((p) => p.id),
+        shallowEqual
+    );
 
     // Reorganize visible SLDs in grid or cascade layout
     const handleReorganize = useCallback(
         (mode: LayoutMode) => {
-            const count = visibleSldPanels.length;
+            const count = visibleSldPanelIds.length;
 
             if (count === 0) return;
 
             if (mode === LayoutMode.CASCADE) {
-                visibleSldPanels.forEach((sldPanelId, index) => {
-                    updatePanelGeometry(sldPanelId, {
+                visibleSldPanelIds.forEach((panelId, index) => {
+                    updatePanelGeometry(panelId, {
                         position: {
                             x: NAD_SLD_CONSTANTS.CASCADE_START_X + index * NAD_SLD_CONSTANTS.CASCADE_OFFSET_X,
                             y: NAD_SLD_CONSTANTS.CASCADE_START_Y,
@@ -66,11 +73,11 @@ export const useSldLayout = ({ visibleSldPanels, associatedPanelIds }: UseSldLay
                     NAD_SLD_CONSTANTS.GRID_VERTICAL_OFFSET - totalHeight
                 );
 
-                visibleSldPanels.forEach((sldPanelId, index) => {
+                visibleSldPanelIds.forEach((panelId, index) => {
                     const col = index % cols;
                     const row = Math.floor(index / cols);
 
-                    updatePanelGeometry(sldPanelId, {
+                    updatePanelGeometry(panelId, {
                         position: {
                             x: NAD_SLD_CONSTANTS.GRID_START_X + col * (panelWidth + NAD_SLD_CONSTANTS.GRID_GAP_X),
                             y: startY + row * (panelHeight + NAD_SLD_CONSTANTS.GRID_GAP_Y),
@@ -80,19 +87,17 @@ export const useSldLayout = ({ visibleSldPanels, associatedPanelIds }: UseSldLay
                 });
             }
         },
-        [updatePanelGeometry, visibleSldPanels]
+        [updatePanelGeometry, visibleSldPanelIds]
     );
 
     // Toggle between hide all and show all SLDs
     const toggleHideAll = useCallback(() => {
-        if (visibleSldPanels.length > 0) {
-            // Minimize all visible SLDs (keeps associations)
-            minimizePanels(visibleSldPanels);
+        if (visibleSldPanelIds.length > 0) {
+            hideAssociatedSlds(nadPanelId);
         } else {
-            // Un-minimize all associated SLDs (bulk operation)
-            openSLDPanels(associatedPanelIds);
+            showAssociatedSlds(nadPanelId);
         }
-    }, [visibleSldPanels, associatedPanelIds, minimizePanels, openSLDPanels]);
+    }, [visibleSldPanelIds.length, nadPanelId, hideAssociatedSlds, showAssociatedSlds]);
 
     return {
         handleReorganize,

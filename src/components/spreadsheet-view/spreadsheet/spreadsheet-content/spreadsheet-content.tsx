@@ -199,7 +199,7 @@ export const SpreadsheetContent = memo(
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? PanelType.SLD_SUBSTATION
                         : PanelType.SLD_VOLTAGE_LEVEL;
-                openSLD({ id: equipmentId, panelType });
+                openSLD({ diagramId: equipmentId, panelType });
             },
             [openSLD, tableDefinition?.type]
         );

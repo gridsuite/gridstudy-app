@@ -93,7 +93,7 @@ interface PanelHeaderProps {
 
 export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized, isFocused }: PanelHeaderProps) => {
     const intl = useIntl();
-    const { deletePanel, toggleMinimize, toggleMaximize, togglePin } = useWorkspaceActions();
+    const { deletePanel, toggleMinimized, toggleMaximized, togglePin } = useWorkspaceActions();
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
@@ -101,8 +101,6 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
         // If it's a parameters panel with unsaved changes, trigger confirmation dialog
         if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
             globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
-        } else if (panelType === PanelType.NAD) {
-            globalThis.dispatchEvent(new CustomEvent('nadPanel:requestClose', { detail: panelId }));
         } else {
             deletePanel(panelId);
         }
@@ -136,7 +134,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                         className="panel-header-close-button"
                         size="small"
                         sx={styles.iconButton}
-                        onClick={() => toggleMinimize(panelId)}
+                        onClick={() => toggleMinimized(panelId)}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         <Minimize fontSize="small" />
@@ -146,7 +144,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                     className="panel-header-close-button"
                     size="small"
                     sx={styles.iconButton}
-                    onClick={() => toggleMaximize(panelId)}
+                    onClick={() => toggleMaximized(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
                     {maximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}

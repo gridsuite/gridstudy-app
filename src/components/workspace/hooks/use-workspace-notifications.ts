@@ -16,17 +16,37 @@ import {
     isWorkspacePanelsUpdatedNotification,
     isWorkspacePanelsDeletedNotification,
 } from '../../../types/notification-types';
+import { getClientId } from '../../../hooks/use-client-id';
 
-/**
- * Hook that listens to workspace panel notifications from other tabs/clients.
- * When panels are updated or deleted by another client, this hook fetches the changes
- * and updates the local Redux store.
- *
- * Note: Actual sync to backend is handled manually in useWorkspaceActions.
- */
-export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
+export function useWorkspaceNotifications(studyUuid: UUID | undefined) {
     const dispatch = useDispatch();
     const workspaceId = useSelector(selectActiveWorkspaceId);
+
+    const handlePanelsUpdated = useCallback(
+        (eventData: any) => {
+            try {
+                const panelIds = JSON.parse(eventData.payload) as UUID[];
+                fetchPanels(studyUuid as UUID, workspaceId as UUID, panelIds)
+                    .then((updatedPanels) => dispatch(updatePanels(updatedPanels)))
+                    .catch((error) => console.error('Failed to fetch updated panels:', error));
+            } catch (error) {
+                console.error('Failed to parse panel IDs from notification:', error);
+            }
+        },
+        [studyUuid, workspaceId, dispatch]
+    );
+
+    const handlePanelsDeleted = useCallback(
+        (eventData: any) => {
+            try {
+                const panelIds = JSON.parse(eventData.payload) as UUID[];
+                dispatch(deletePanels(panelIds));
+            } catch (error) {
+                console.error('Failed to delete panels:', error);
+            }
+        },
+        [dispatch]
+    );
 
     const handleNotification = useCallback(
         (event: MessageEvent) => {
@@ -34,35 +54,18 @@ export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
 
             const eventData = JSON.parse(event.data);
 
+            if (eventData.headers?.clientId === getClientId()) return;
+
+            const notificationWorkspaceId = eventData.headers?.workspaceUuid;
+            if (notificationWorkspaceId !== workspaceId) return;
+
             if (isWorkspacePanelsUpdatedNotification(eventData)) {
-                const notificationWorkspaceId = eventData.headers?.workspaceUuid;
-
-                // Only process notifications for the active workspace
-                if (notificationWorkspaceId && notificationWorkspaceId === workspaceId) {
-                    fetchPanels(studyUuid, notificationWorkspaceId, JSON.parse(eventData.payload))
-                        .then((updatedPanels) => {
-                            dispatch(updatePanels(updatedPanels));
-                        })
-                        .catch((error) => {
-                            console.error('Failed to fetch updated panels:', error);
-                        });
-                }
+                handlePanelsUpdated(eventData);
             } else if (isWorkspacePanelsDeletedNotification(eventData)) {
-                const notificationWorkspaceId = eventData.headers?.workspaceUuid;
-
-                // Only process notifications for the active workspace
-                if (notificationWorkspaceId && notificationWorkspaceId === workspaceId) {
-                    try {
-                        const panelIds: UUID[] = JSON.parse(eventData.payload);
-
-                        dispatch(deletePanels(panelIds));
-                    } catch (error) {
-                        console.error('Failed to delete panels:', error);
-                    }
-                }
+                handlePanelsDeleted(eventData);
             }
         },
-        [studyUuid, workspaceId, dispatch]
+        [studyUuid, workspaceId, handlePanelsUpdated, handlePanelsDeleted]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

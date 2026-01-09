@@ -14,6 +14,7 @@ import {
     isStudyNotification,
     isWorkspaceNadConfigUpdatedNotification,
 } from '../../../../types/notification-types';
+import { getClientId } from '../../../../hooks/use-client-id';
 
 interface UseDiagramNotificationsProps {
     currentRootNetworkUuid: UUID;
@@ -41,10 +42,12 @@ export const useDiagramNotifications = ({
                 eventData.headers.rootNetworkUuid === currentRootNetworkUuid;
 
             // NAD config update: only trigger if this panel uses that saved config
+            // Ignore our own NAD config updates (local-first: we already have the latest state)
             const isMatchingNadConfigNotification =
                 savedNadConfigUuid &&
                 isWorkspaceNadConfigUpdatedNotification(eventData) &&
-                eventData.payload === savedNadConfigUuid.toString();
+                eventData.payload === savedNadConfigUuid.toString() &&
+                eventData.headers?.clientId !== getClientId();
 
             if (isRootNetworkNotification) {
                 onNotification(false);

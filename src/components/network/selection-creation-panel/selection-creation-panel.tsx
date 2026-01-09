@@ -108,7 +108,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 )
                 .filter((id): id is string => !!id);
 
-            openNAD({ name: formData.name, initialVoltageLevelIds: voltageLevelIds });
+            openNAD({ title: formData.name, initialVoltageLevelIds: voltageLevelIds });
             return;
         }
 

@@ -1012,7 +1012,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         (vlId: string) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode.value) {
-                openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+                openSLD({ diagramId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
             }
         },
         [openSLD, isInDrawingMode]
@@ -1203,7 +1203,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                 return;
             }
             const panelType = isSubstation ? PanelType.SLD_SUBSTATION : PanelType.SLD_VOLTAGE_LEVEL;
-            openSLD({ id, panelType });
+            openSLD({ diagramId: id, panelType });
         },
         [openSLD]
     );

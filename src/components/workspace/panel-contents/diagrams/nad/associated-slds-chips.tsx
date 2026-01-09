@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useState, useEffect, useRef } from 'react';
+import { memo, useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import { Box, Chip, Button, ButtonGroup, IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import {
@@ -17,11 +17,7 @@ import {
 import { useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
-import {
-    selectAssociatedPanelDetails,
-    selectVisibleAssociatedSldPanels,
-    selectAssociatedPanelIds,
-} from '../../../../../redux/slices/workspace-selectors';
+import { selectAssociatedPanels } from '../../../../../redux/slices/workspace-selectors';
 import { type MuiStyles, PopupConfirmationDialog } from '@gridsuite/commons-ui';
 import { LayoutMode } from './hooks/use-sld-layout';
 import { NAD_SLD_CONSTANTS } from './constants';
@@ -135,18 +131,20 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [showRemoveAllConfirmation, setShowRemoveAllConfirmation] = useState(false);
 
-    const panelDetails = useSelector(
-        (state: RootState) => selectAssociatedPanelDetails(state, nadPanelId),
-        shallowEqual
+    const associatedPanels = useSelector((state: RootState) => selectAssociatedPanels(state, nadPanelId), shallowEqual);
+
+    const panelDetails = useMemo(
+        () =>
+            associatedPanels.map((p) => ({
+                id: p.id,
+                title: p.title,
+                isVisible: !p.minimized,
+            })),
+        [associatedPanels]
     );
-    const visibleSldPanels = useSelector(
-        (state: RootState) => selectVisibleAssociatedSldPanels(state, nadPanelId),
-        shallowEqual
-    );
-    const associatedPanelIds = useSelector(
-        (state: RootState) => selectAssociatedPanelIds(state, nadPanelId),
-        shallowEqual
-    );
+
+    const visibleSldPanels = useMemo(() => associatedPanels.filter((p) => !p.minimized), [associatedPanels]);
+    const associatedPanelIds = useMemo(() => associatedPanels.map((p) => p.id), [associatedPanels]);
 
     const visibleCount = visibleSldPanels.length;
     const hasReorganizeButton = visibleCount > 1 && onReorganize;
