@@ -6,14 +6,15 @@
  */
 
 import {
+    DIRECTORY_ITEM,
     EXPORT_DESTINATION,
     EXPORT_FORMAT,
     EXPORT_PARAMETERS,
     FILE_NAME,
-    FOLDER_ID,
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import { DESCRIPTION, MAX_CHAR_DESCRIPTION, Parameter } from '@gridsuite/commons-ui';
+import { directoryItemSchema } from '../../utils/rhf-inputs/directory-item-input/directory-item-utils';
 
 export enum ExportDestinationType {
     GRID_EXPLORE = 'gridExplore',
@@ -30,9 +31,10 @@ export const schema = yup.object().shape({
     [FILE_NAME]: yup.string().required(),
     [EXPORT_DESTINATION]: yup.string().oneOf(Object.values(ExportDestinationType)).required(),
     [DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION).optional(),
-    [FOLDER_ID]: yup.string().when([EXPORT_DESTINATION], {
+    [DIRECTORY_ITEM]: directoryItemSchema.nullable().when([EXPORT_DESTINATION], {
         is: ExportDestinationType.GRID_EXPLORE,
         then: (schema) => schema.required(),
+        otherwise: (schema) => schema.notRequired(),
     }),
     [EXPORT_FORMAT]: yup.string().required('exportStudyErrorMsg'),
     [EXPORT_PARAMETERS]: yup.object(),
@@ -41,6 +43,7 @@ export const schema = yup.object().shape({
 export const emptyData = {
     [FILE_NAME]: '',
     [EXPORT_DESTINATION]: ExportDestinationType.GRID_EXPLORE,
+    [DIRECTORY_ITEM]: null,
     [DESCRIPTION]: '',
     [EXPORT_FORMAT]: '',
     [EXPORT_PARAMETERS]: emptyObj,

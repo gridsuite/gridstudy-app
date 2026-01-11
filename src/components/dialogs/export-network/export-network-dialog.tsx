@@ -12,11 +12,11 @@ import {
     DescriptionField,
     ElementType,
     fetchDirectoryElementPath,
-    Parameter,
     PARAM_DEVELOPER_MODE,
+    Parameter,
     SelectInput,
     snackWithFallback,
-    TextInput,
+    UniqueNameInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../../services/study';
@@ -27,11 +27,12 @@ import { AppState } from '../../../redux/reducer';
 
 import {
     DESCRIPTION,
+    DIRECTORY_ITEM,
+    DIRECTORY_ITEM_ID,
     EXPORT_DESTINATION,
     EXPORT_FORMAT,
     EXPORT_PARAMETERS,
     FILE_NAME,
-    FOLDER_ID,
 } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -45,8 +46,9 @@ import {
     schema,
 } from './export-network-utils';
 import { useIntl } from 'react-intl';
-import { DirectoryItemSelect } from './directory-item-select';
+import { DirectoryItemInput } from '../../utils/rhf-inputs/directory-item-input/directory-item-input';
 import { NetworkExportInfos } from '../../../services/study-types';
+import { DirectoryItemSchema } from '../../utils/rhf-inputs/directory-item-input/directory-item-utils';
 
 /**
  * Dialog to export the network case
@@ -84,8 +86,20 @@ export function ExportNetworkDialog({
         resolver: yupResolver(schema),
     });
 
-    const { reset, subscribe, setValue, getValues, watch } = methods;
+    const {
+        reset,
+        subscribe,
+        setValue,
+        getValues,
+        watch,
+        formState: { errors },
+    } = methods;
     const intl = useIntl();
+
+    // due to the use of UniqueNameInput, we need to disable the validate button while the name is being validated
+    const nameError = errors[FILE_NAME];
+    const isValidating = errors.root?.isValidating;
+    const disabledSave = Boolean(nameError || isValidating);
 
     // fetch study name to build the default file name
     useEffect(() => {
@@ -122,11 +136,12 @@ export function ExportNetworkDialog({
 
     const onSubmit = useCallback(
         (data: ExportNetworkFormData) => {
+            const exportToExplorer = data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER;
             onClick(nodeUuid, data[EXPORT_PARAMETERS], {
                 selectedFormat: data[EXPORT_FORMAT],
                 fileName: data[FILE_NAME],
-                exportToExplorer: data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER,
-                parentDirectoryUuid: data[FOLDER_ID],
+                exportToExplorer: exportToExplorer,
+                parentDirectoryUuid: exportToExplorer ? data[DIRECTORY_ITEM]?.[DIRECTORY_ITEM_ID] : undefined,
                 description: data[DESCRIPTION],
             });
         },
@@ -149,7 +164,8 @@ export function ExportNetworkDialog({
         return () => unsubscribe();
     }, [setValue, subscribe, getValues, formatsWithParameters]);
 
-    const destinationValue = watch(EXPORT_DESTINATION);
+    const exportDestination = watch(EXPORT_DESTINATION);
+    const folderItem = watch(DIRECTORY_ITEM) as DirectoryItemSchema;
 
     return (
         <CustomMuiDialog
@@ -157,6 +173,7 @@ export function ExportNetworkDialog({
             open={open}
             formSchema={schema}
             formMethods={methods}
+            disabledSave={disabledSave}
             onSave={onSubmit}
             titleId="exportNetwork"
             sx={{
@@ -166,7 +183,19 @@ export function ExportNetworkDialog({
             }}
         >
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1 }}>
-                <TextInput name={FILE_NAME} label="download.fileName" />
+                <UniqueNameInput
+                    name={FILE_NAME}
+                    label="download.fileName"
+                    elementType={ElementType.CASE}
+                    activeDirectory={
+                        exportDestination === ExportDestinationType.GRID_EXPLORE
+                            ? (folderItem?.[DIRECTORY_ITEM_ID] as UUID)
+                            : undefined
+                    }
+                    formProps={{
+                        size: 'small',
+                    }}
+                />
                 <SelectInput
                     name={EXPORT_DESTINATION}
                     options={Object.values(ExportDestinationType).map((item) => {
@@ -176,11 +205,11 @@ export function ExportNetworkDialog({
                     label="destination"
                 />
 
-                {destinationValue === ExportDestinationType.GRID_EXPLORE && (
+                {exportDestination === ExportDestinationType.GRID_EXPLORE && (
                     <Box>
                         <DescriptionField />
-                        <DirectoryItemSelect
-                            name={FOLDER_ID}
+                        <DirectoryItemInput
+                            name={DIRECTORY_ITEM}
                             types={[ElementType.DIRECTORY]}
                             multiSelect={false}
                             onlyLeaves={false}
