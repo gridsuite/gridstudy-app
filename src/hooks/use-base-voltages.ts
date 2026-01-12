@@ -29,7 +29,7 @@ export const useBaseVoltages = () => {
         return baseVoltages.map(({ name, minValue, maxValue }) => ({ name, minValue, maxValue }));
     }, [baseVoltages]);
 
-    const getBaseVoltage = useCallback(
+    const getBaseVoltageInterval = useCallback(
         (voltageValue: number): BaseVoltage | undefined => {
             for (let interval of baseVoltages) {
                 if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
@@ -40,5 +40,5 @@ export const useBaseVoltages = () => {
         [baseVoltages]
     );
 
-    return { baseVoltages, getBaseVoltage, baseVoltagesConfig };
+    return { baseVoltages, getBaseVoltageInterval, baseVoltagesConfig };
 };
