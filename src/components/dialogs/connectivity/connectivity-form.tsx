@@ -19,7 +19,7 @@ import {
     ID,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
@@ -101,6 +101,7 @@ export function ConnectivityForm({
 
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
 
+    const lastFetchedBusesVlIds = useRef<string | null>(null);
     const intl = useIntl();
 
     const { setValue, getValues } = useFormContext();
@@ -128,6 +129,7 @@ export function ConnectivityForm({
                     currentRootNetworkUuid,
                     watchVoltageLevelId
                 ).then((busesOrbusbarSections) => {
+                    lastFetchedBusesVlIds.current = watchVoltageLevelId;
                     setBusOrBusbarSectionOptions(
                         busesOrbusbarSections?.map((busesOrbusbarSection) => ({
                             id: busesOrbusbarSection.id,
@@ -135,7 +137,8 @@ export function ConnectivityForm({
                         })) || []
                     );
                 });
-            } else {
+            }
+            if (watchVoltageLevelId !== lastFetchedBusesVlIds.current) {
                 setBusOrBusbarSectionOptions([]);
             }
         }
@@ -149,7 +152,6 @@ export function ConnectivityForm({
 
     const handleChangeVoltageLevel = useCallback(() => {
         onVoltageLevelChangeCallback?.();
-        setBusOrBusbarSectionOptions([]);
         setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
     }, [id, onVoltageLevelChangeCallback, setValue]);
 
