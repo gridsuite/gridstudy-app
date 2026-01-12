@@ -35,8 +35,11 @@ import {
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
-import { RatioTapChangerData, RatioTapChangerPaneProps } from '../tap-changer-pane.types';
-import { TwoWindingsTransformerData } from '../../two-windings-transformer.types';
+import {
+    TwoWindingsTransformerData,
+    RatioTapChangerData,
+    RatioTapChangerPaneProps,
+} from '../../two-windings-transformer.types';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
@@ -267,7 +270,7 @@ const RatioTapChangerPane = ({
             <GridSection title="TapsSection" heading={4} />
             <RatioTapChangerPaneSteps
                 disabled={!ratioTapChangerEnabledWatcher}
-                previousValues={previousValues?.ratioTapChanger ?? undefined}
+                previousValues={previousValues?.ratioTapChanger}
                 editData={editData?.ratioTapChanger as Record<string, unknown> | undefined}
                 currentNode={currentNode}
                 isModification={isModification}

@@ -41,8 +41,7 @@ import {
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { TapChangerStep } from '../tap-changer-pane.types';
-import { TwoWindingsTransformerData } from '../../two-windings-transformer.types';
+import { TapChangerStep, TwoWindingsTransformerData } from '../../two-windings-transformer.types';
 import { TwtEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 
 const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({

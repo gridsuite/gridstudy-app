@@ -9,6 +9,8 @@ import {
     CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
     EQUIPMENT,
+    EQUIPMENT_ID,
+    EQUIPMENT_TYPE_FIELD,
     FLOW_SET_POINT_REGULATING_VALUE,
     HIGH_TAP_POSITION,
     ID,
@@ -34,6 +36,7 @@ import {
     TOPOLOGY_KIND,
     TYPE,
     VOLTAGE_LEVEL,
+    VOLTAGE_LEVEL_ID,
 } from 'components/utils/field-constants';
 import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
@@ -42,8 +45,7 @@ import {
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { PhaseTapChangerData, TapChangerStep } from '../tap-changer-pane.types';
-import { TwoWindingsTransformerData } from '../../two-windings-transformer.types';
+import { TwoWindingsTransformerData, PhaseTapChangerData, TapChangerStep } from '../../two-windings-transformer.types';
 
 const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -198,9 +200,9 @@ interface PhaseTapChangerFormDataInput {
     [HIGH_TAP_POSITION]?: number | null;
     [TAP_POSITION]?: number | null;
     [STEPS]?: TapChangerStep[];
-    voltageLevelId?: string;
-    equipmentId?: string;
-    equipmentType?: string;
+    [VOLTAGE_LEVEL_ID]?: string;
+    [EQUIPMENT_ID]?: string;
+    [EQUIPMENT_TYPE_FIELD]?: string;
 }
 
 export const getPhaseTapChangerFormData = (

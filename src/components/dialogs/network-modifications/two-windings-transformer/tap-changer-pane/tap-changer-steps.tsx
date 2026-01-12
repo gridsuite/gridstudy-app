@@ -11,7 +11,14 @@ import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import { DndColumn, DndTable, IntegerInput, LANG_FRENCH, MAX_ROWS_NUMBER, roundToDefaultPrecision } from '@gridsuite/commons-ui';
+import {
+    DndColumn,
+    DndTable,
+    IntegerInput,
+    LANG_FRENCH,
+    MAX_ROWS_NUMBER,
+    roundToDefaultPrecision,
+} from '@gridsuite/commons-ui';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -25,15 +32,14 @@ import {
 import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { transformIfFrenchNumber } from '../../tabular/tabular-common.js';
-import { TapChangerColumnDefinition, TapChangerData, TapChangerStep } from './tap-changer-pane.types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { RuleType } from '../two-windings-transformer.types';
+import { RuleType, TapChangerData, TapChangerStep } from '../two-windings-transformer.types';
 
 export interface TapChangerStepsProps {
     tapChanger: string;
     ruleType: RuleType;
     createTapRuleColumn: string;
-    columnsDefinition: TapChangerColumnDefinition[];
+    columnsDefinition: (DndColumn & { initialValue?: number })[];
     csvColumns: string[];
     createRuleMessageId: string;
     createRuleAllowNegativeValues: boolean;
@@ -287,7 +293,7 @@ const TapChangerSteps = ({
     const getTapPreviousValue = useCallback(
         (
             rowIndex: number,
-            column: TapChangerColumnDefinition,
+            column: DndColumn,
             arrayFormName: string,
             tapSteps: TapChangerStep[] | undefined
         ): number | undefined => {
@@ -317,7 +323,7 @@ const TapChangerSteps = ({
             <DndTable
                 arrayFormName={`${tapChanger}.${STEPS}`}
                 useFieldArrayOutput={useFieldArrayOutput}
-                columnsDefinition={completedColumnsDefinition as DndColumn[]}
+                columnsDefinition={completedColumnsDefinition}
                 tableHeight={400}
                 allowedToAddRows={allowedToAddTapRows}
                 createRows={createTapRows}

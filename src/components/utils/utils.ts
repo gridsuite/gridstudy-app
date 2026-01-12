@@ -26,7 +26,7 @@ import {
     TemporaryLimitFormSchema,
 } from '../dialogs/limits/operational-limits-groups-types';
 import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
-import { TapChangerStep } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/tap-changer-pane.types';
+import { TapChangerStep } from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 

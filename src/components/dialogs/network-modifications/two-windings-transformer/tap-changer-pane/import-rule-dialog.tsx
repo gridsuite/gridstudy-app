@@ -10,10 +10,9 @@ import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
-import { PHASE_TAP } from '../creation/two-windings-transformer-creation-dialog';
 import { CancelButton, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { RuleType } from '../two-windings-transformer.types';
+import { PHASE_TAP, RuleType } from '../two-windings-transformer.types';
 import { AppState } from 'redux/reducer';
 
 export interface ImportRuleDialogProps {
@@ -47,7 +46,7 @@ export const ImportRuleDialog = ({
 
     const handleSave = () => {
         if (!selectedFileError) {
-            handleImportTapRule(selectedFile as File, language, () => {});
+            handleImportTapRule(selectedFile!, language, () => {});
             handleCloseDialog();
         }
     };

@@ -29,7 +29,7 @@ import { useMemo } from 'react';
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
-import { PhaseTapChangerData, PhaseTapChangerPaneProps } from '../tap-changer-pane.types';
+import { PhaseTapChangerData, PhaseTapChangerPaneProps } from '../../two-windings-transformer.types';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -82,10 +82,7 @@ const PhaseTapChangerPane = ({
     }, [regulationTypeWatch, previousValues]);
 
     const regulationMode = useMemo(() => {
-        return (
-            regulationModeWatch ||
-            getComputedPhaseTapChangerRegulationMode(previousValues?.phaseTapChanger ?? undefined)?.id
-        );
+        return regulationModeWatch || getComputedPhaseTapChangerRegulationMode(previousValues?.phaseTapChanger)?.id;
     }, [regulationModeWatch, previousValues]);
 
     const regulationModeField = (
@@ -109,7 +106,7 @@ const PhaseTapChangerPane = ({
             adornment={AmpereAdornment}
             previousValue={getRegulatingPreviousValue(
                 CURRENT_LIMITER_REGULATING_VALUE,
-                previousValues?.phaseTapChanger ?? undefined
+                previousValues?.phaseTapChanger
             )}
         />
     );
@@ -122,10 +119,7 @@ const PhaseTapChangerPane = ({
             formProps={{
                 disabled: !phaseTapChangerEnabledWatch,
             }}
-            previousValue={getRegulatingPreviousValue(
-                FLOW_SET_POINT_REGULATING_VALUE,
-                previousValues?.phaseTapChanger ?? undefined
-            )}
+            previousValue={getRegulatingPreviousValue(FLOW_SET_POINT_REGULATING_VALUE, previousValues?.phaseTapChanger)}
         />
     );
 
@@ -179,7 +173,7 @@ const PhaseTapChangerPane = ({
             <GridSection title="TapsSection" heading={4} />
             <PhaseTapChangerPaneSteps
                 disabled={!phaseTapChangerEnabledWatch}
-                previousValues={previousValues?.phaseTapChanger ?? undefined}
+                previousValues={previousValues?.phaseTapChanger}
                 editData={editData}
                 currentNode={currentNode}
                 isModification={isModification}

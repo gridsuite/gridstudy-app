@@ -19,10 +19,9 @@ import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
-import { PHASE_TAP } from '../../creation/two-windings-transformer-creation-dialog';
-import { DndColumnType } from '@gridsuite/commons-ui';
-import { PhaseTapChangerData } from '../tap-changer-pane.types';
+import { DndColumn, DndColumnType } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { PHASE_TAP, PhaseTapChangerData } from '../../two-windings-transformer.types';
 
 export interface PhaseTapChangerPaneStepsProps {
     disabled?: boolean;
@@ -41,19 +40,19 @@ const PhaseTapChangerPaneSteps = ({
 }: PhaseTapChangerPaneStepsProps) => {
     const intl = useIntl();
 
-    const COLUMNS_DEFINITIONS = useMemo(() => {
+    const COLUMNS_DEFINITIONS = useMemo<DndColumn[]>(() => {
         return [
             {
                 label: 'Tap',
                 dataKey: STEPS_TAP,
-                type: DndColumnType.TEXT,
+                type: DndColumnType.TEXT as const,
             },
             {
                 label: 'DeltaResistance',
                 dataKey: STEPS_RESISTANCE,
                 initialValue: 0,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
             {
@@ -61,7 +60,7 @@ const PhaseTapChangerPaneSteps = ({
                 dataKey: STEPS_REACTANCE,
                 initialValue: 0,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
             {
@@ -69,7 +68,7 @@ const PhaseTapChangerPaneSteps = ({
                 dataKey: STEPS_CONDUCTANCE,
                 initialValue: 0,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
             {
@@ -77,7 +76,7 @@ const PhaseTapChangerPaneSteps = ({
                 dataKey: STEPS_SUSCEPTANCE,
                 initialValue: 0,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
             {
@@ -85,7 +84,7 @@ const PhaseTapChangerPaneSteps = ({
                 dataKey: STEPS_RATIO,
                 initialValue: 1,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
             {
@@ -93,7 +92,7 @@ const PhaseTapChangerPaneSteps = ({
                 dataKey: STEPS_ALPHA,
                 initialValue: 0,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
         ].map((column) => ({
@@ -150,29 +149,25 @@ const PhaseTapChangerPaneSteps = ({
                 ],
                 0
             ),
-            [STEPS_RATIO]: isNaN(parseFloat(String(val[intl.formatMessage({ id: 'Ratio' })])))
+            [STEPS_RATIO]: isNaN(parseFloat(val[intl.formatMessage({ id: 'Ratio' })]))
                 ? 1
-                : parseFloat(String(val[intl.formatMessage({ id: 'Ratio' })])),
+                : parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
             [STEPS_ALPHA]: isNaN(
                 parseFloat(
-                    String(
-                        val[
-                            intl.formatMessage({
-                                id: 'ImportFileAlpha',
-                            })
-                        ]
-                    )
+                    val[
+                        intl.formatMessage({
+                            id: 'ImportFileAlpha',
+                        })
+                    ]
                 )
             )
                 ? 1
                 : parseFloat(
-                      String(
-                          val[
-                              intl.formatMessage({
-                                  id: 'ImportFileAlpha',
-                              })
-                          ]
-                      )
+                      val[
+                          intl.formatMessage({
+                              id: 'ImportFileAlpha',
+                          })
+                      ]
                   ),
         };
     };
