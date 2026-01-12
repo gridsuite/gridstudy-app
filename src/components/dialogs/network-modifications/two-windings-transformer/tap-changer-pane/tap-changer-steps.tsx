@@ -11,7 +11,7 @@ import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import { DndColumn, DndTable, IntegerInput, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
+import { DndColumn, DndTable, IntegerInput, LANG_FRENCH, MAX_ROWS_NUMBER, roundToDefaultPrecision } from '@gridsuite/commons-ui';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -189,7 +189,7 @@ const TapChangerSteps = ({
             let current = lowTap;
 
             currentTapRows.forEach((_row: TapChangerStep, index: number) => {
-                currentTapRows[index][createTapRuleColumn] = current;
+                currentTapRows[index][createTapRuleColumn] = roundToDefaultPrecision(current);
                 current += interval;
             });
             replace(currentTapRows);
