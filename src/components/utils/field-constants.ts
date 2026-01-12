@@ -248,6 +248,7 @@ export const BUS_BAR_SECTIONS = 'busbarSections';
 export const BUS_BAR_SECTION_ID1 = 'busbarSectionId1';
 export const BUS_BAR_SECTION_ID2 = 'busbarSectionId2';
 export const SWITCH_KIND = 'switchKind';
+export const IDENTIFIABLE_SHORT_CIRCUIT = 'identifiableShortCircuit';
 export const HIGH_VOLTAGE_LIMIT = 'highVoltageLimit';
 export const LOW_VOLTAGE_LIMIT = 'lowVoltageLimit';
 export const LOW_SHORT_CIRCUIT_CURRENT_LIMIT = 'lowShortCircuitCurrentLimit';

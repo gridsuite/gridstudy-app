@@ -95,7 +95,7 @@ export function fetchEquipmentsIds(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[],
+    substationsIds: string[] | undefined,
     equipmentType: EquipmentType | ExtendedEquipmentType,
     inUpstreamBuiltParentNode: boolean,
     nominalVoltages?: number[]

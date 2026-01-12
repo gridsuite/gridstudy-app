@@ -23,9 +23,16 @@ import {
     SUBSTATION_ID,
     SUBSTATION_NAME,
 } from 'components/utils/field-constants';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
-import { AutocompleteInput, fetchDefaultCountry, FloatInput, IntegerInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    EquipmentType,
+    fetchDefaultCountry,
+    FloatInput,
+    IntegerInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import { Box, Grid, Paper, Tooltip } from '@mui/material';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
@@ -40,12 +47,22 @@ import { useIntl } from 'react-intl';
 import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selection-input';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
+import { UUID } from 'node:crypto';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
-    const currentNodeUuid = currentNode?.id;
+interface VoltageLevelCreationFormProps {
+    currentNodeUuid: UUID;
+    studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
+}
+
+const VoltageLevelCreationForm = ({
+    currentNodeUuid,
+    studyUuid,
+    currentRootNetworkUuid,
+}: VoltageLevelCreationFormProps) => {
     const intl = useIntl();
     const { setValue, getValues } = useFormContext();
-    const [substations, setSubstations] = useState([]);
+    const [substations, setSubstations] = useState<string[]>([]);
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
@@ -64,11 +81,16 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
-            fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, 'SUBSTATION', true).then(
-                (values) => {
-                    setSubstations(values.sort((a, b) => a.localeCompare(b)));
-                }
-            );
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                undefined,
+                EquipmentType.SUBSTATION,
+                true
+            ).then((values: string[]) => {
+                setSubstations(values.sort((a, b) => a.localeCompare(b)));
+            });
         }
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
@@ -76,7 +98,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
     );
 
-    function getCustomPaper(children) {
+    function getCustomPaper(children: React.ReactNode) {
         return (
             <Paper>
                 <Box>
@@ -84,8 +106,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
                     <LineSeparator />
                     <IconButton
                         color="primary"
-                        fullWidth
-                        sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
+                        sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%', width: '100%' }}
                         onMouseDown={handleAddButton}
                     >
                         {`${intl.formatMessage({ id: 'CreateSubstation' })} : ${getValues(SUBSTATION_ID)}`}
