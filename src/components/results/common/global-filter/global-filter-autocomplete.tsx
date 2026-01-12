@@ -115,6 +115,7 @@ function RenderOption({
                 </Tooltip>
             );
             break;
+        case FilterType.SUBSTATION_OR_VL:
         case FilterType.GENERIC_FILTER:
             content = (
                 <>
