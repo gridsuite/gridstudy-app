@@ -10,28 +10,43 @@ import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
-import { PHASE_TAP } from '../creation/two-windings-transformer-creation-dialog';
 import { CancelButton, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
+import { PHASE_TAP, RuleType } from '../two-windings-transformer.types';
+import { AppState } from 'redux/reducer';
 
-export const ImportRuleDialog = (props) => {
-    const language = useSelector((state) => state.computedLanguage);
+export interface ImportRuleDialogProps {
+    ruleType: RuleType;
+    openImportRuleDialog: boolean;
+    setOpenImportRuleDialog: (open: boolean) => void;
+    csvColumns: string[];
+    handleImportTapRule: (selectedFile: File, language: string, setFileParseError: (error: string) => void) => void;
+}
+
+export const ImportRuleDialog = ({
+    ruleType,
+    openImportRuleDialog,
+    setOpenImportRuleDialog,
+    csvColumns,
+    handleImportTapRule,
+}: ImportRuleDialogProps) => {
+    const language = useSelector((state: AppState) => state.computedLanguage);
 
     const handleCloseDialog = () => {
-        props.setOpenImportRuleDialog(false);
+        setOpenImportRuleDialog(false);
     };
 
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
-        label: props.ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule',
-        header: props.csvColumns,
-        resetTrigger: props.openImportRuleDialog,
+        label: ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule',
+        header: csvColumns,
+        resetTrigger: openImportRuleDialog,
         maxTapNumber: MAX_ROWS_NUMBER,
         language: language,
     });
 
     const handleSave = () => {
         if (!selectedFileError) {
-            props.handleImportTapRule(selectedFile, language);
+            handleImportTapRule(selectedFile!, language, () => {});
             handleCloseDialog();
         }
     };
@@ -41,18 +56,18 @@ export const ImportRuleDialog = (props) => {
     }, [selectedFile, selectedFileError]);
 
     return (
-        <Dialog open={props.openImportRuleDialog} fullWidth={true}>
+        <Dialog open={openImportRuleDialog} fullWidth={true}>
             <DialogTitle>
-                <FormattedMessage id={props.ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'} />
+                <FormattedMessage id={ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'} />
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2} direction={'column'}>
                     <Grid item>
                         <CsvDownloader
-                            columns={props.csvColumns}
+                            columns={csvColumns}
                             datas={[]}
                             separator={language === LANG_FRENCH ? ';' : ','}
-                            filename={props.ruleType === PHASE_TAP ? 'tap-dephasing-rule' : 'tap-regulating-rule'}
+                            filename={ruleType === PHASE_TAP ? 'tap-dephasing-rule' : 'tap-regulating-rule'}
                         >
                             <Button variant="contained">
                                 <FormattedMessage id="GenerateSkeleton" />
