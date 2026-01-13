@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Box } from '@mui/material';
-import { AutocompleteInput, TextInput } from '@gridsuite/commons-ui';
+import { Box, Grid } from '@mui/material';
+import { AutocompleteInput, EquipmentType, TextInput } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -22,17 +22,29 @@ import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { UUID } from 'node:crypto';
 
-const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
+interface LinesAttachToSplitLinesFormProps {
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
+}
+
+const LinesAttachToSplitLinesForm = ({
+    currentNode,
+    studyUuid,
+    currentRootNetworkUuid,
+}: Readonly<LinesAttachToSplitLinesFormProps>) => {
     const currentNodeUuid = currentNode?.id;
-    const [linesIds, setLinesIds] = useState([]);
+    const [linesIds, setLinesIds] = useState<string[]>([]);
 
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     useEffect(() => {
-        fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, 'LINE', true).then(
-            (values) => {
-                setLinesIds(values?.sort((a, b) => a.localeCompare(b)));
+        fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, [], EquipmentType.LINE, true).then(
+            (values: string[]) => {
+                setLinesIds(values?.toSorted((a, b) => a.localeCompare(b)));
             }
         );
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
@@ -72,12 +84,13 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid, currentRootNetwor
 
     const connectivityForm = (
         <ConnectivityForm
-            label={'AttachedVoltageLevelId'}
+            voltageLevelSelectLabel={'AttachedVoltageLevelId'}
             voltageLevelOptions={voltageLevelOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             withDirectionsInfos={false}
+            withPosition={false}
         />
     );
 
