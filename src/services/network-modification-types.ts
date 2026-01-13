@@ -549,8 +549,8 @@ export interface LineCreationInfo {
     voltageLevelId2: string;
     busOrBusbarSectionId2: string;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroupId1: string;
-    selectedOperationalLimitsGroupId2: string;
+    selectedOperationalLimitsGroupId1?: string;
+    selectedOperationalLimitsGroupId2?: string;
     isUpdate: boolean;
     modificationUuid?: string | null;
     connectionName1: string | null;
