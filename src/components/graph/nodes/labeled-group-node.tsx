@@ -51,32 +51,30 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
     const zoom = useStore((s: ReactFlowState) => s.transform?.[2] ?? 1);
 
     return (
-        <>
+        <Box
+            // react-flow needs a non-absolute, non-empty node with height and width to calculate
+            // the global size of the tree for its fitView function.
+            height="0"
+            width="0"
+            visibility="hidden"
+        >
+            &nbsp;
             <Box
-                // react-flow needs a non-absolute, non-empty node with height and width to calculate
-                // the global size of the tree for its fitView function.
-                height="0"
-                width="0"
-                visibility="hidden"
+                position={'absolute'}
+                visibility={'visible'} // react-flow sometimes hides nodes for obscure reasons
+                top={labeledGroupTopPosition}
+                left={labeledGroupLeftPosition}
+                height={labeledGroupHeight}
+                width={labeledGroupWidth}
+                sx={styles.border}
             >
-                &nbsp;
-                <Box
-                    position={'absolute'}
-                    visibility={'visible'} // react-flow sometimes hides nodes for obscure reasons
-                    top={labeledGroupTopPosition}
-                    left={labeledGroupLeftPosition}
-                    height={labeledGroupHeight}
-                    width={labeledGroupWidth}
-                    sx={styles.border}
-                >
-                    {zoom >= 0.5 && (
-                        <Box sx={styles.label}>
-                            <SecurityIcon sx={{ fontSize: '12px' }} />
-                            <FormattedMessage id="labeledGroupSecurity" />
-                        </Box>
-                    )}
-                </Box>
+                {zoom >= 0.5 && (
+                    <Box sx={styles.label}>
+                        <SecurityIcon sx={{ fontSize: '12px' }} />
+                        <FormattedMessage id="labeledGroupSecurity" />
+                    </Box>
+                )}
             </Box>
-        </>
+        </Box>
     );
 }
