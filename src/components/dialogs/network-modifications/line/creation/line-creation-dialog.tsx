@@ -307,6 +307,7 @@ const LineCreationDialog = ({
                 equipmentId: line.id + '(1)',
                 equipmentName: line.name ?? '',
             }),
+            // @ts-ignore
             ...getCharacteristicsFormData({
                 r: line.r,
                 x: line.x,
@@ -314,7 +315,7 @@ const LineCreationDialog = ({
                 b1: convertInputValue(FieldType.B1, line.b1),
                 g2: convertInputValue(FieldType.G2, line.g2),
                 b2: convertInputValue(FieldType.B2, line.b2),
-                ...(getConnectivityFormData(
+                ...getConnectivityFormData(
                     {
                         voltageLevelId: line.voltageLevelId1,
                         busbarSectionId: line.busOrBusbarSectionId1,
@@ -324,8 +325,8 @@ const LineCreationDialog = ({
                         terminalConnected: line.terminal1Connected,
                     },
                     CONNECTIVITY_1
-                ) as any),
-                ...(getConnectivityFormData(
+                ),
+                ...getConnectivityFormData(
                     {
                         voltageLevelId: line.voltageLevelId2,
                         busbarSectionId: line.busOrBusbarSectionId2,
@@ -335,7 +336,7 @@ const LineCreationDialog = ({
                         terminalConnected: line.terminal2Connected,
                     },
                     CONNECTIVITY_2
-                ) as any),
+                ),
             }),
             ...getAllLimitsFormData(
                 formatCompleteCurrentLimit(line.currentLimits),
@@ -354,6 +355,7 @@ const LineCreationDialog = ({
                     equipmentId: line.equipmentId,
                     equipmentName: line.equipmentName,
                 }),
+                // @ts-ignore
                 ...getCharacteristicsFormData({
                     r: line.r,
                     x: line.x,
@@ -361,7 +363,7 @@ const LineCreationDialog = ({
                     b1: convertInputValue(FieldType.B1, line.b1),
                     g2: convertInputValue(FieldType.G2, line.g2),
                     b2: convertInputValue(FieldType.B2, line.b2),
-                    ...(getConnectivityFormData(
+                    ...getConnectivityFormData(
                         {
                             busbarSectionId: line.busOrBusbarSectionId1,
                             connectionDirection: line.connectionDirection1,
@@ -371,8 +373,8 @@ const LineCreationDialog = ({
                             terminalConnected: line.connected1,
                         },
                         CONNECTIVITY_1
-                    ) as any),
-                    ...(getConnectivityFormData(
+                    ),
+                    ...getConnectivityFormData(
                         {
                             busbarSectionId: line.busOrBusbarSectionId2,
                             connectionDirection: line.connectionDirection2,
@@ -382,7 +384,7 @@ const LineCreationDialog = ({
                             terminalConnected: line.connected2,
                         },
                         CONNECTIVITY_2
-                    ) as any),
+                    ),
                 }),
                 ...getAllLimitsFormData(
                     line?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
