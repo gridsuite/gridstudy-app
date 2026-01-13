@@ -145,9 +145,6 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export const PHASE_TAP = 'dephasing';
-export const RATIO_TAP = 'ratio';
-
 const TwoWindingsTransformerCreationDialog = ({
     editData,
     studyUuid,
