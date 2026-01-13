@@ -67,7 +67,6 @@ import {
     LineCreationDialogTab,
 } from './line-creation-dialog-utils';
 import {
-    formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
@@ -99,6 +98,7 @@ import { CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type
 import { CurrentLimitsData } from '../../../../../services/study/network-map.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
+import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
 
 interface LineCreationFormData {
     [TAB_HEADER]: {
@@ -335,7 +335,11 @@ const LineCreationDialog = ({
                     ) as any),
                 }),
                 ...getAllLimitsFormData(
-                    formatOpLimitGroupsToFormInfos(line.operationalLimitsGroups),
+                    line?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
+                        ...baseData,
+                        name: id,
+                        id: id + baseData.applicability,
+                    })) as OperationalLimitsGroupFormSchema[],
                     line?.selectedOperationalLimitsGroupId1 ?? null,
                     line?.selectedOperationalLimitsGroupId2 ?? null
                 ),
