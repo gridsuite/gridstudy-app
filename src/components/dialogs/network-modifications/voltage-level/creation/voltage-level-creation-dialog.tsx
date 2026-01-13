@@ -64,6 +64,8 @@ import {
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
+    Properties,
+    Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { UUID } from 'node:crypto';
@@ -74,7 +76,34 @@ import {
 } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { SwitchKindFormData, VoltageLevelCreationFormData } from '../voltage-level.type';
+import { CreateCouplingDeviceDialogSchemaForm } from '../../coupling-device/coupling-device-dialog.type';
+
+export type SwitchKindFormData = { [SWITCH_KIND]: string };
+
+interface VoltageLevelCreationFormData {
+    [ADDITIONAL_PROPERTIES]?: Property[];
+    [ADD_SUBSTATION_CREATION]: boolean;
+    [BUS_BAR_COUNT]: number;
+    [COUNTRY]: string | null;
+    [COUPLING_OMNIBUS]: CreateCouplingDeviceDialogSchemaForm[];
+    [EQUIPMENT_ID]: string;
+    [EQUIPMENT_NAME]: string;
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
+    [HIGH_VOLTAGE_LIMIT]: number | null;
+    [IS_ATTACHMENT_POINT_CREATION]: boolean;
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
+    [LOW_VOLTAGE_LIMIT]: number | null;
+    [NOMINAL_V]: number | null;
+    [SECTION_COUNT]: number;
+    [SUBSTATION_CREATION]: Properties;
+    [SUBSTATION_CREATION_ID]: string | null;
+    [SUBSTATION_ID]: string | null;
+    [SUBSTATION_NAME]: string | null;
+    [SWITCHES_BETWEEN_SECTIONS]: string;
+    [SWITCH_KINDS]: SwitchKindFormData[];
+    [TOPOLOGY_KIND]: string | null;
+    uuid?: UUID;
+}
 
 interface VoltageLevelCreationDialogProps {
     editData?: VoltageLevelCreationFormData;
