@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box, Divider } from '@mui/material';
-import { DeviceHubIcon, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import { DeviceHub } from '@mui/icons-material';
 import { ModificationsSearchResult } from './root-network.types';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
@@ -57,7 +58,7 @@ export const RootNetworkModificationsSearchResults: React.FC<RootNetworkModifica
             {results.map((result) => (
                 <Box key={result.nodeUuid} sx={{ mb: 2 }}>
                     <Box sx={styles.rootNameTitle}>
-                        <DeviceHubIcon style={styles.iconMinSize} />
+                        <DeviceHub sx={styles.iconMinSize} />
                         <OverflowableText text={getName(result.nodeUuid)} sx={styles.text} maxLineCount={1} />
                     </Box>
                     <ModificationResults modifications={result.modifications} nodeUuid={result.nodeUuid} />

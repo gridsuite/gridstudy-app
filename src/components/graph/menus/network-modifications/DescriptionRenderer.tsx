@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ICellRendererParams } from 'ag-grid-community';
-import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { DescriptionModificationDialog, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
@@ -14,6 +14,7 @@ import { AppState } from '../../../../redux/reducer';
 import IconButton from '@mui/material/IconButton';
 import type { UUID } from 'node:crypto';
 import { setModificationMetadata } from '../../../../services/study/network-modifications';
+import { NoteAdd, StickyNote2Outlined } from '@mui/icons-material';
 
 export interface DescriptionRendererProps extends ICellRendererParams<NetworkModificationMetadata> {
     hoveredRowIndex: number;
@@ -55,6 +56,8 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
         setOpenDescModificationDialog(true);
     }, [setOpenDescModificationDialog]);
 
+    const visibility = hoveredRowIndex === node.rowIndex ? 'visible' : 'hidden';
+
     return (
         <>
             {openDescModificationDialog && modificationUuid && (
@@ -72,7 +75,8 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
                 >
-                    <EditNoteIcon empty={empty} hidden={node.rowIndex !== hoveredRowIndex} />
+                    (!description ? <NoteAdd visibility={visibility} /> :
+                    <StickyNote2Outlined visibility={visibility} />; )
                 </IconButton>
             </Tooltip>
         </>
