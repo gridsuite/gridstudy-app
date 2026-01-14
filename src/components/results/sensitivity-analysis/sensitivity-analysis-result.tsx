@@ -31,6 +31,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
+import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
@@ -47,7 +48,7 @@ type SensitivityAnalysisResultProps = CustomAGGridProps & {
     sensiKind: SensiKind;
     filtersDef: { field: string; options: string[] }[];
     isLoading: boolean;
-    onFilter: (fieldId: string, api: GridApi, filters: FilterConfig[]) => void;
+    goToFirstPage: () => void;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
 };
@@ -57,7 +58,7 @@ function SensitivityAnalysisResult({
     nOrNkIndex = 0,
     sensiKind = SENSITIVITY_IN_DELTA_MW,
     filtersDef,
-    onFilter,
+    goToFirstPage,
     isLoading,
     setCsvHeaders,
     setIsCsvButtonDisabled,
@@ -67,6 +68,12 @@ function SensitivityAnalysisResult({
     const intl = useIntl();
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
+
+    const filterContext = useAgGridFilterContext(
+        AgGridFilterType.SensitivityAnalysis,
+        mappingTabs(sensiKind, nOrNkIndex),
+        goToFirstPage
     );
 
     const messages = useIntlResultStatusMessages(intl, true);
@@ -105,9 +112,9 @@ function SensitivityAnalysisResult({
                                 : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             type: AgGridFilterType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
-                            updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                                if (!api || !filters) return;
-                                onFilter(field, api, filters);
+                            updateFilterCallback: (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
+                                if (!api || !filters || !colId) return;
+                                filterContext.onFilterChange?.({ api, filters, colId });
                             },
                         },
                     },
@@ -118,7 +125,7 @@ function SensitivityAnalysisResult({
                 pinned: pinned,
             });
         },
-        [intl, nOrNkIndex, onFilter, sensiKind]
+        [filterContext, intl, nOrNkIndex, sensiKind]
     );
 
     const columnsDefs = useMemo(() => {

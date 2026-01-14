@@ -8,7 +8,7 @@ import { FilterType } from '../types/custom-aggrid-types';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useGlobalFilterSelector } from './use-global-filter-selector';
 import { updateComputationResultFilters } from '../services/study/study-config';
 
@@ -27,11 +27,8 @@ export function useComputationGlobalFilters(filterType: FilterType) {
         [dispatchGlobalFilters, studyUuid, config?.id]
     );
 
-    return useMemo(
-        () => ({
-            globalFiltersFromState,
-            updateGlobalFilters,
-        }),
-        [globalFiltersFromState, updateGlobalFilters]
-    );
+    return {
+        globalFiltersFromState,
+        updateGlobalFilters,
+    };
 }

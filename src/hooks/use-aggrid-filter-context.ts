@@ -15,14 +15,19 @@ export type AgGridFilterContext = {
     onFilterChange?: (params: { api: GridApi; filters: FilterConfig[]; colId: string }) => void;
 };
 
-export function useAgGridFilterContext(filterType: FilterType, tab: string): AgGridFilterContext {
+export function useAgGridFilterContext(
+    filterType: FilterType,
+    tab: string,
+    onBeforePersist?: () => void
+): AgGridFilterContext {
     const { persistFilters } = useUpdateComputationColumnsFilters(filterType, tab);
 
     const onFilterChange = useCallback(
         ({ api, filters, colId }: { api: GridApi; filters: FilterConfig[]; colId: string }) => {
+            onBeforePersist?.();
             persistFilters(colId, api, filters);
         },
-        [persistFilters]
+        [onBeforePersist, persistFilters]
     );
 
     return useMemo(

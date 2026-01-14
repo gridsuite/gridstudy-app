@@ -10,9 +10,9 @@ import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
 import {
     FilterConfig,
+    FilterType as AgGridFilterType,
     numericFilterParams,
     textFilterParams,
-    FilterType as AgGridFilterType,
 } from 'types/custom-aggrid-types';
 import { ColumnContext } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -20,6 +20,7 @@ import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-so
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { GridApi, ICellRendererParams } from 'ag-grid-community';
+import { AgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
@@ -41,7 +42,7 @@ export type PagedPccMinResults = Page<SinglePccMinResultInfos>;
 export interface PccMinResultTableProps {
     result: SinglePccMinResultInfos[];
     isFetching: boolean;
-    memoizedSetPageCallback: () => void;
+    goToFirstPage: () => void;
     filters: FilterConfig[];
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
@@ -69,8 +70,8 @@ export const FROM_COLUMN_TO_FIELD_PCC_MIN: Record<string, string> = {
 };
 export const getPccMinColumns = (
     intl: IntlShape,
-    onFilter: (fieldId: string, api: GridApi, filters: FilterConfig[]) => void,
-    voltageLevelIdRenderer: (cellData: ICellRendererParams) => React.JSX.Element | undefined
+    voltageLevelIdRenderer: (cellData: ICellRendererParams) => React.JSX.Element | undefined,
+    filterContext: AgGridFilterContext
 ) => {
     const sortParams: ColumnContext['sortParams'] = {
         table: PCCMIN_ANALYSIS_RESULT_SORT_STORE,
@@ -80,11 +81,10 @@ export const getPccMinColumns = (
     const pccMinFilterParams = {
         type: AgGridFilterType.PccMin,
         tab: PCCMIN_RESULT,
-        updateFilterCallback: onFilter,
+        updateFilterCallback: createUpdateFilterCallback(filterContext),
     };
 
     const createFilterContext = (
-        colId: string,
         filterDefinition: Pick<
             Required<ColumnContext>['filterComponentParams']['filterParams'],
             'dataType' | 'comparators'
@@ -100,10 +100,6 @@ export const getPccMinColumns = (
             filterParams: {
                 ...filterDefinition,
                 ...pccMinFilterParams,
-                updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                    if (!api || !filters) return;
-                    onFilter(colId, api, filters);
-                },
             },
         },
     });
@@ -140,9 +136,16 @@ export const getPccMinColumns = (
             colId,
             field: FROM_COLUMN_TO_FIELD_PCC_MIN[colId],
             headerName: intl.formatMessage({ id: headerKey }),
-            context: createFilterContext(colId, filterDef, numeric, fractionDigits),
+            context: createFilterContext(filterDef, numeric, fractionDigits),
             minWidth: numeric ? undefined : 180,
             cellRenderer,
         })
     );
+};
+
+export const createUpdateFilterCallback = (filterContext: AgGridFilterContext) => {
+    return (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
+        if (!api || !filters || !colId) return;
+        filterContext.onFilterChange?.({ api, filters, colId });
+    };
 };

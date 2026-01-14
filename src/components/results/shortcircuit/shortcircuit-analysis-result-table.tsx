@@ -48,6 +48,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { PanelType } from '../../workspace/types/workspace.types';
+import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -56,7 +57,7 @@ interface ShortCircuitAnalysisResultProps {
     filterEnums: FilterEnumsType;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
-    onFilter: (fieldId: string, api: GridApi, filters: FilterConfig[]) => void;
+    goToFirstPage: () => void;
     filters: FilterConfig[];
 }
 
@@ -100,13 +101,17 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     filterEnums,
     onGridColumnsChanged,
     onRowDataUpdated,
-    onFilter,
+    goToFirstPage,
     filters,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
     const dispatch = useDispatch();
-
+    const filterContext = useAgGridFilterContext(
+        AgGridFilterType.ShortcircuitAnalysis,
+        mappingTabs(analysisType),
+        goToFirstPage
+    );
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value } = props || {};
@@ -150,7 +155,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         const filterParams = {
             type: AgGridFilterType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
-            updateFilterCallback: onFilter,
+            updateFilterCallback: (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
+                if (!api || !filters || !colId) return;
+                filterContext.onFilterChange?.({ api, filters, colId });
+            },
         };
 
         const inputFilterParams = (
@@ -166,9 +174,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         ...filterDefinition,
                         ...filterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter(field, api, filters);
+                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
+                            if (!api || !filters || !colId) return;
+                            filterContext.onFilterChange?.({ api, filters, colId });
                         },
                     },
                 },
@@ -182,9 +190,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                            if (!api || !filters) return;
-                            onFilter(colId, api, filters);
+                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
+                            if (!api || !filters || !colId) return;
+                            filterContext.onFilterChange?.({ api, filters, colId });
                         },
                     },
                     options: filterEnums[colId] ?? [],
@@ -334,7 +342,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 hide: true,
             },
         ];
-    }, [analysisType, onFilter, intl, voltageLevelIdRenderer, filterEnums, getEnumLabel]);
+    }, [analysisType, intl, voltageLevelIdRenderer, filterContext, filterEnums, getEnumLabel]);
 
     const shortCircuitAnalysisStatus = useSelector(
         (state: AppState) =>

@@ -27,8 +27,6 @@ import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import {
-    FilterConfig,
-    FilterType,
     FilterType as AgGridFilterType,
     PaginationType,
     SensitivityAnalysisTab,
@@ -41,8 +39,6 @@ import { SensitivityResult, SensitivityResultFilterOptions } from '../../../serv
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
-import { GridApi } from 'ag-grid-community';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -128,22 +124,9 @@ function PagedSensitivityAnalysisResult({
         [dispatchPagination]
     );
 
-    const memoizedSetPageCallback = useCallback(() => {
+    const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
-
-    const { persistFilters } = useUpdateComputationColumnsFilters(
-        FilterType.SecurityAnalysis,
-        mappingTabs(sensiKind, nOrNkIndex)
-    );
-
-    const onFilterChange = useCallback(
-        (colId: string, agGridApi: GridApi, filters: FilterConfig[]) => {
-            memoizedSetPageCallback();
-            persistFilters(colId, agGridApi, filters);
-        },
-        [memoizedSetPageCallback, persistFilters]
-    );
 
     const fetchFilterOptions = useCallback(() => {
         const selector = {
@@ -239,7 +222,7 @@ function PagedSensitivityAnalysisResult({
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
                 sensiKind={sensiKind}
-                onFilter={onFilterChange}
+                goToFirstPage={goToFirstPage}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
                 setCsvHeaders={setCsvHeaders}

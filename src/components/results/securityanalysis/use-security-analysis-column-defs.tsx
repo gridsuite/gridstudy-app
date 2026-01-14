@@ -8,7 +8,7 @@
 import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
-import { ColDef, GridApi, ICellRendererParams } from 'ag-grid-community';
+import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
@@ -25,9 +25,9 @@ import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { openSLD } from '../../../redux/slices/workspace-slice';
-import { FilterConfig, FilterType } from '../../../types/custom-aggrid-types';
-import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PanelType } from '../../workspace/types/workspace.types';
+import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -38,14 +38,14 @@ type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
     tabIndex: number,
-    memoizedSetPageCallback: () => void
+    goToFirstPage: () => void
 ) => ColDef[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
     tabIndex,
-    memoizedSetPageCallback
+    goToFirstPage
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -64,17 +64,10 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
         [intl]
     );
 
-    const { persistFilters } = useUpdateComputationColumnsFilters(
-        FilterType.SecurityAnalysis,
-        getStoreFields(tabIndex)
-    );
-
-    const onFilterChange = useCallback(
-        (colId: string, agGridApi: GridApi, filters: FilterConfig[]) => {
-            memoizedSetPageCallback();
-            persistFilters(colId, agGridApi, filters);
-        },
-        [memoizedSetPageCallback, persistFilters]
+    const filterContext = useAgGridFilterContext(
+        AgGridFilterType.SecurityAnalysis,
+        getStoreFields(tabIndex),
+        goToFirstPage
     );
 
     // for nmk views, click handler on subjectId cell
@@ -157,7 +150,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    onFilterChange
+                    filterContext
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -166,7 +159,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    onFilterChange
+                    filterContext
                 );
             case RESULT_TYPE.N:
                 return securityAnalysisTableNColumnsDefinition(
@@ -174,10 +167,10 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.n,
                     getEnumLabel,
                     tabIndex,
-                    onFilterChange
+                    filterContext
                 );
         }
-    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, onFilterChange]);
+    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, filterContext]);
 
     return columnDefs;
 };

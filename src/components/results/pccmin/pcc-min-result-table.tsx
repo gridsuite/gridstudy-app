@@ -18,14 +18,14 @@ import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { GridApi, GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
-import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
-import { FilterConfig, FilterType } from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
+import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -35,7 +35,7 @@ const styles = {
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     result,
     isFetching,
-    memoizedSetPageCallback,
+    goToFirstPage,
     filters,
     setCsvHeaders,
     setIsCsvButtonDisabled,
@@ -65,18 +65,10 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [dispatch]
     );
 
-    const { persistFilters } = useUpdateComputationColumnsFilters(FilterType.PccMin, PCCMIN_RESULT);
-
-    const onFilterChange = useCallback(
-        (colId: string, agGridApi: GridApi, filters: FilterConfig[]) => {
-            memoizedSetPageCallback();
-            persistFilters(colId, agGridApi, filters);
-        },
-        [memoizedSetPageCallback, persistFilters]
-    );
+    const filterContext = useAgGridFilterContext(AgGridFilterType.PccMin, PCCMIN_RESULT, goToFirstPage);
     const columns = useMemo(
-        () => getPccMinColumns(intl, onFilterChange, voltageLevelIdRenderer),
-        [intl, onFilterChange, voltageLevelIdRenderer]
+        () => getPccMinColumns(intl, voltageLevelIdRenderer, filterContext),
+        [filterContext, intl, voltageLevelIdRenderer]
     );
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);

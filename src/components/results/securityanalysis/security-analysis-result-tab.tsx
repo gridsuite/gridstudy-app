@@ -143,7 +143,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
 
-    const memoizedSetPageCallback = useCallback(() => {
+    const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
@@ -255,7 +255,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex, memoizedSetPageCallback);
+    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex, goToFirstPage);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
 

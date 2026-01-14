@@ -6,7 +6,7 @@
  */
 import { FilterConfig, FilterType } from '../types/custom-aggrid-types';
 import { useSelector } from 'react-redux';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { updateComputationResultFiltersColumn } from '../services/study/study-config';
 import { updateFilters } from '../components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { GridApi } from 'ag-grid-community';
@@ -36,10 +36,7 @@ export function useUpdateComputationColumnsFilters(filterType: FilterType, filte
         [studyUuid, computationResultFilterUuid, columnUuid]
     );
 
-    return useMemo(
-        () => ({
-            persistFilters: updateColumnFilters,
-        }),
-        [updateColumnFilters]
-    );
+    return {
+        persistFilters: updateColumnFilters,
+    };
 }

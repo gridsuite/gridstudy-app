@@ -95,7 +95,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         [dispatchPagination]
     );
 
-    const memoizedSetPageCallback = useCallback(() => {
+    const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
@@ -175,7 +175,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 isFetching={isFetching}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                memoizedSetPageCallback={memoizedSetPageCallback}
+                goToFirstPage={goToFirstPage}
                 filters={filters}
             />
             <CustomTablePagination

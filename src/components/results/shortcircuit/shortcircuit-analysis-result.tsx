@@ -30,12 +30,10 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { GridApi, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import {
-    FilterConfig,
-    FilterType,
     FilterType as AgGridFilterType,
     PaginationType,
     ShortcircuitAnalysisTab,
@@ -45,7 +43,6 @@ import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custo
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -111,22 +108,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         [dispatchPagination]
     );
 
-    const memoizedSetPageCallback = useCallback(() => {
+    const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
-
-    const { persistFilters } = useUpdateComputationColumnsFilters(
-        FilterType.ShortcircuitAnalysis,
-        mappingTabs(analysisType)
-    );
-
-    const onFilterChange = useCallback(
-        (colId: string, agGridApi: GridApi, filters: FilterConfig[]) => {
-            memoizedSetPageCallback();
-            persistFilters(colId, agGridApi, filters);
-        },
-        [memoizedSetPageCallback, persistFilters]
-    );
 
     // Effects
     useEffect(() => {
@@ -258,7 +242,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 analysisType={analysisType}
                 isFetching={isFetching}
                 filterEnums={filterEnums}
-                onFilter={onFilterChange}
+                goToFirstPage={goToFirstPage}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 filters={filters}
