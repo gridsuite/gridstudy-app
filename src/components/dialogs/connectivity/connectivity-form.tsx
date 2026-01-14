@@ -141,6 +141,8 @@ export function ConnectivityForm({
             if (watchVoltageLevelId !== lastFetchedBusesVlIds.current) {
                 setBusOrBusbarSectionOptions([]);
             }
+        } else {
+            setBusOrBusbarSectionOptions([]);
         }
     }, [watchVoltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelOptions, id]);
 
