@@ -89,7 +89,7 @@ const formSchema = yup
         [LINE2_ID]: yup.string().required(),
         [LINE2_NAME]: yup.string(),
         [CONNECTIVITY]: yup.object().shape({
-            ...getConnectivityPropertiesValidationSchema(false), // TODO DBR rollback ?
+            ...getConnectivityPropertiesValidationSchema(false),
         }),
         ...getLineToAttachOrSplitFormValidationSchema(),
         hackForValidation: yup.string(),
