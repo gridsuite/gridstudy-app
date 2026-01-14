@@ -385,7 +385,7 @@ const TwoWindingsTransformerCreationDialog = ({
         (twt: TwoWindingsTransformerData) => {
             reset(
                 {
-                    [EQUIPMENT_ID]: twt.id + '(1)',
+                    [EQUIPMENT_ID]: String(twt.id) + '(1)',
                     [EQUIPMENT_NAME]: twt.name ?? '',
                     ...getTwoWindingsTransformerFormData({
                         r: twt.r,
@@ -426,7 +426,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         regulationType: getRegulationTypeForCopy(twt, twt?.[RATIO_TAP_CHANGER]),
                         regulationSide: getTapSideForCopy(twt, twt?.[RATIO_TAP_CHANGER]),
                         targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
-                        targetDeadband: isNaN(twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND] ?? NaN)
+                        targetDeadband: Number.isNaN(twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND] ?? NaN)
                             ? null
                             : twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
                         lowTapPosition: twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION],
@@ -453,7 +453,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
                                 ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
                                 : null,
-                        targetDeadband: isNaN(twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND] ?? NaN)
+                        targetDeadband: Number.isNaN(twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND] ?? NaN)
                             ? null
                             : twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
                         lowTapPosition: twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
