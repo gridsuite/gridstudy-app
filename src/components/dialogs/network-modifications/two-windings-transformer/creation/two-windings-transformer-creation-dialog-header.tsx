@@ -14,8 +14,7 @@ import {
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
 import { filledTextField } from '../../../dialog-utils';
-import { TextInput } from '@gridsuite/commons-ui';
-import { SwitchInput } from '@gridsuite/commons-ui';
+import { TextInput, SwitchInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {

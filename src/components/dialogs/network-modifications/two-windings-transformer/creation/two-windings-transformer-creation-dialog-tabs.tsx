@@ -5,14 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Breakpoint, Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useWatch } from 'react-hook-form';
 import { ENABLED, PHASE_TAP_CHANGER, RATIO_TAP_CHANGER } from 'components/utils/field-constants';
 import { getTabIndicatorStyle, getTabStyle } from '../../../../utils/tab-utils';
 import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-utils';
+import { Dispatch, SetStateAction } from 'react';
 
-const TwoWindingsTransformerCreationDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex, setDialogWidth }) => {
+export interface TwoWindingsTransformerCreationDialogTabsProps {
+    tabIndex: number;
+    tabIndexesWithError: number[];
+    setTabIndex: Dispatch<SetStateAction<number>>;
+    setDialogWidth: Dispatch<SetStateAction<Breakpoint>>;
+}
+
+const TwoWindingsTransformerCreationDialogTabs = ({
+    tabIndex,
+    tabIndexesWithError,
+    setTabIndex,
+    setDialogWidth,
+}: TwoWindingsTransformerCreationDialogTabsProps) => {
     const ratioTapChangerEnabledWatch = useWatch({
         name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
     });

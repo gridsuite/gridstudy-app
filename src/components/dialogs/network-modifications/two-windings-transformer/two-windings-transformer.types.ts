@@ -4,18 +4,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
+import { CommonBranchEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { Identifiable } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import {
+    CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
+    EQUIPMENT,
+    FLOW_SET_POINT_REGULATING_VALUE,
     HIGH_TAP_POSITION,
+    LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
+    PHASE_TAP_CHANGER,
+    RATIO_TAP_CHANGER,
     REGULATING,
     REGULATING_TERMINAL_CONNECTABLE_ID,
     REGULATING_TERMINAL_CONNECTABLE_TYPE,
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
     REGULATION_MODE,
+    REGULATION_SIDE,
+    REGULATION_TYPE,
     REGULATION_VALUE,
     SELECTED,
     STEPS,
@@ -28,8 +36,14 @@ import {
     STEPS_TAP,
     TAP_POSITION,
     TARGET_DEADBAND,
+    TARGET_V,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { UUID } from 'node:crypto';
+import { ConnectablePositionFormInfos } from 'components/dialogs/connectivity/connectivity.type';
+import { CurrentLimitsData } from 'services/study/network-map.type';
+import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
+import { Property } from '../common/properties/property-utils';
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
@@ -58,17 +72,25 @@ export interface TapChangerData {
     [STEPS]?: TapChangerStep[];
     [TAP_POSITION]?: number;
     [TARGET_DEADBAND]?: number;
-}
-
-export interface RatioTapChangerData extends TapChangerData {
-    hasLoadTapChangingCapabilities?: boolean;
-    loadTapChangingCapabilities?: boolean;
-    targetV?: number | null;
-}
-
-export interface PhaseTapChangerData extends TapChangerData {
+    terminalRefConnectableId?: string;
+    terminalRefConnectableVlId?: string;
+    terminalRefConnectableType?: string;
     [REGULATION_MODE]?: string;
     [REGULATION_VALUE]?: number;
+    [REGULATION_TYPE]?: string;
+    [REGULATION_SIDE]?: string;
+    [LOAD_TAP_CHANGING_CAPABILITIES]?: boolean;
+    loadTapChangingCapabilities?: boolean;
+    [TARGET_V]?: number | null;
+    [EQUIPMENT]?: Record<string, unknown>;
+    [VOLTAGE_LEVEL]?: Identifiable | null;
+}
+
+export interface RatioTapChangerData extends TapChangerData {}
+
+export interface PhaseTapChangerData extends TapChangerData {
+    [FLOW_SET_POINT_REGULATING_VALUE]?: number;
+    [CURRENT_LIMITER_REGULATING_VALUE]?: number;
 }
 
 export interface TapChangerPaneProps {
@@ -85,12 +107,35 @@ export interface TapChangerPaneProps {
 export type PhaseTapChangerPaneProps = TapChangerPaneProps;
 export type RatioTapChangerPaneProps = TapChangerPaneProps;
 
-export interface TwoWindingsTransformerData {
-    id?: string;
-    name?: string;
+export interface TwoWindingsTransformerData extends CommonBranchEquipmentInfos {
+    uuid?: UUID;
+    equipmentId?: string;
+    equipmentName?: string;
+    g?: number;
+    b?: number;
+    ratedU1?: number;
+    ratedU2?: number;
+    ratedS?: number;
+    busOrBusbarSectionId1?: string;
+    busOrBusbarSectionId2?: string;
+    connectionDirection1?: string;
+    connectionDirection2?: string;
+    connectablePosition1?: ConnectablePositionFormInfos;
+    connectablePosition2?: ConnectablePositionFormInfos;
+    connectionName1?: string;
+    connectionName2?: string;
+    connectionPosition1?: number;
+    connectionPosition2?: number;
+    currentLimits?: CurrentLimitsData[] | null;
     voltageLevelId1?: string;
     voltageLevelId2?: string;
-    ratioTapChanger?: RatioTapChangerData;
-    phaseTapChanger?: PhaseTapChangerData;
+    connected1?: boolean;
+    connected2?: boolean;
+    operationalLimitsGroups?: OperationalLimitsGroupFormSchema[];
+    selectedOperationalLimitsGroupId1?: string;
+    selectedOperationalLimitsGroupId2?: string;
+    [RATIO_TAP_CHANGER]?: RatioTapChangerData;
+    [PHASE_TAP_CHANGER]?: PhaseTapChangerData;
+    properties?: Property[] | null;
     [key: string]: unknown;
 }

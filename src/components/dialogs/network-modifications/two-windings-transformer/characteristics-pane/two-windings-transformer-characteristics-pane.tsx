@@ -13,8 +13,19 @@ import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'compon
 import PropertiesForm from '../../common/properties/properties-form';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
+import { TwoWindingsTransformerData } from '../two-windings-transformer.types';
 
-const TwoWindingsTransformerCharacteristicsPane = ({ id = CHARACTERISTICS, twtToModify, isModification = false }) => {
+export interface TwoWindingsTransformerCharacteristicsPaneProps {
+    id?: string;
+    twtToModify?: TwoWindingsTransformerData | null;
+    isModification?: boolean;
+}
+
+const TwoWindingsTransformerCharacteristicsPane = ({
+    id = CHARACTERISTICS,
+    twtToModify,
+    isModification = false,
+}: TwoWindingsTransformerCharacteristicsPaneProps) => {
     const width = isModification ? 12 : 8;
 
     const seriesResistanceField = (
