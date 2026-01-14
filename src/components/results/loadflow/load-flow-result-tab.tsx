@@ -23,7 +23,7 @@ import {
     exchangesColumnsDefinition,
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
     loadFlowCurrentViolationsColumnsDefinition,
-    loadFlowResultColumnsDefinition,
+    componentColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
     makeData,
     mappingFields,
@@ -233,15 +233,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer, filterContext]);
 
     const componentColumns = useMemo(() => {
-        return loadFlowResultColumnsDefinition(
-            intl,
-            filterEnums,
-            getEnumLabel,
-            tabIndex,
-            StatusCellRender,
-            filterContext
-        );
-    }, [intl, filterEnums, getEnumLabel, tabIndex, filterContext]);
+        return componentColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex, StatusCellRender, filterContext);
+    }, [tabIndex, intl, filterEnums, getEnumLabel, filterContext]);
 
     const countryAdequaciesColumns = useMemo(() => {
         return countryAdequaciesColumnsDefinition(intl);

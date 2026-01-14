@@ -472,7 +472,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     ];
 };
 
-export const loadFlowResultColumnsDefinition = (
+export const componentColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
