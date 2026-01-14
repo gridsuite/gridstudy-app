@@ -11,37 +11,35 @@ import { updateComputationResultFiltersColumn } from '../services/study/study-co
 import { updateFilters } from '../components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { GridApi } from 'ag-grid-community';
 
-export function useComputationColumnsFilters(filterType: FilterType, filterTab: string) {
+export function useUpdateComputationColumnsFilters(filterType: FilterType, filterTab: string) {
     const studyUuid = useSelector((state: any) => state.studyUuid);
     const computationResultFilterUuid = useSelector((state: any) => state.computationFilters?.[filterType]?.id);
     const columnUuid = useSelector(
         (state: any) => state.computationFilters?.[filterType]?.columnsFilters?.[filterTab]?.id
     );
 
-    const persistFilters = useCallback(
-        (colId: string, api: GridApi, filters: FilterConfig[]) => {
-            const filter = filters.find((f) => f.column === colId);
+    const updateColumnFilters = useCallback(
+        (colId: string, agGridApi: GridApi, filters: FilterConfig[]) => {
             if (!studyUuid || !computationResultFilterUuid || !columnUuid) return;
-
-            const colDto = {
+            const filter = filters.find((f) => f.column === colId);
+            const columnDto = {
                 name: colId,
                 id: colId,
-                type: 'TEXT',
                 filterDataType: filter?.dataType,
                 filterType: filter?.type,
                 filterValue: filter?.value,
                 filterTolerance: filter?.tolerance,
             };
-            updateFilters(api, filters);
-            updateComputationResultFiltersColumn(studyUuid, computationResultFilterUuid, columnUuid, colDto).then();
+            updateFilters(agGridApi, filters);
+            updateComputationResultFiltersColumn(studyUuid, computationResultFilterUuid, columnUuid, columnDto).then();
         },
         [studyUuid, computationResultFilterUuid, columnUuid]
     );
 
     return useMemo(
         () => ({
-            persistFilters,
+            persistFilters: updateColumnFilters,
         }),
-        [persistFilters]
+        [updateColumnFilters]
     );
 }

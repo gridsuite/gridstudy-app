@@ -49,7 +49,7 @@ import { securityAnalysisResultInvalidations } from '../../computing-status/use-
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
@@ -135,7 +135,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
         AgGridFilterType.SecurityAnalysis
     );
-    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const globalFilterOptions = useMemo(
@@ -184,7 +184,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
 
-            if (isGlobalFilterParameter(globalFilters)) {
+            if (globalFilters) {
                 queryParams['globalFilters'] = globalFilters;
             }
 

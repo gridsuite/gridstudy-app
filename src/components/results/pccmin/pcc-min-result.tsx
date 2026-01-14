@@ -25,7 +25,6 @@ import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-so
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
 import { PccMinExportButton } from './pcc-min-export-button';
-import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 
 interface PccMinResultProps {
     studyUuid: UUID;
@@ -166,7 +165,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                     nodeUuid={nodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     csvHeaders={csvHeaders}
-                    globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
+                    globalFilters={globalFilters}
                     disabled={isCsvButtonDisabled}
                 />
             </Box>

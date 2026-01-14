@@ -12,7 +12,7 @@ import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import type { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { evaluateGlobalFilter } from '../../../../services/study/filter';
 import type { AppState } from '../../../../redux/reducer';
-import useGlobalFilters, { isGlobalFilterParameter } from './use-global-filters';
+import useGlobalFilters from './use-global-filters';
 import type { FilterEquipmentType } from '../../../../types/filter-lib/filter';
 import { isStatusBuilt } from '../../../graph/util/model-functions';
 
@@ -36,7 +36,7 @@ function useGlobalFiltersResults(
             currentRootNetworkUuid &&
             currentNode?.id &&
             isStatusBuilt(currentNode?.data?.globalBuildStatus) &&
-            isGlobalFilterParameter(globalFilters)
+            globalFilters
         ) {
             evaluateGlobalFilter(studyUuid, currentNode.id, currentRootNetworkUuid, equipmentTypes, globalFilters)
                 .then(setFilteredIds)

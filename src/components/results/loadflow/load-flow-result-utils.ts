@@ -49,6 +49,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
+import { AgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
@@ -221,7 +222,7 @@ const makeAgGridFloatColumn = (
         type: AgGridFilterType;
         tab: string;
     },
-    onFilter: (colId: string, api: GridApi, filters: FilterConfig[]) => void
+    filterContext: AgGridFilterContext
 ) => {
     return {
         headerName: intl.formatMessage({ id: intlId }),
@@ -236,10 +237,7 @@ const makeAgGridFloatColumn = (
                 filterParams: {
                     ...numericFilterParams,
                     ...filterParams,
-                    updateFilterCallback: (api?: GridApi, filters?: FilterConfig[]) => {
-                        if (!api || !filters) return;
-                        onFilter(fieldId, api, filters);
-                    },
+                    updateFilterCallback: createUpdateFilterCallback(filterContext, fieldId),
                 },
             },
         },
@@ -252,7 +250,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
     subjectIdRenderer: SubjectIdRendererType,
-    onFilter: (colId: string, api: GridApi, filters: FilterConfig[]) => void
+    filterContext: AgGridFilterContext
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
@@ -261,12 +259,8 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: onFilter,
     };
-    const createUpdateFilterCallback = (colId: string) => (api?: GridApi, filters?: FilterConfig[]) => {
-        if (!api || !filters) return;
-        onFilter(colId, api, filters);
-    };
+
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
@@ -281,7 +275,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     filterParams: {
                         ...filterParams,
                         ...textFilterParams,
-                        updateFilterCallback: createUpdateFilterCallback('subjectId'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'subjectId'),
                     },
                 },
             },
@@ -297,17 +291,16 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     filterParams: {
                         ...filterParams,
                         ...translatedFilterParams,
-                        updateFilterCallback: createUpdateFilterCallback('limitName'),
                     },
                 },
             },
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('LimitLoading', 'overload', intl, sortParams, filterParams, onFilter)
+            makeAgGridFloatColumn('LimitLoading', 'overload', intl, sortParams, filterParams, filterContext)
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLoading', 'patlOverload', intl, sortParams, filterParams, onFilter)
+            makeAgGridFloatColumn('PatlLoading', 'patlOverload', intl, sortParams, filterParams, filterContext)
         ),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'actualOverloadDuration' }),
@@ -320,7 +313,6 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     filterParams: {
                         ...filterParams,
                         ...numericFilterParams,
-                        updateFilterCallback: createUpdateFilterCallback('actualOverloadDuration'),
                     },
                 },
             },
@@ -337,7 +329,6 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     filterParams: {
                         ...filterParams,
                         ...numericFilterParams,
-                        updateFilterCallback: createUpdateFilterCallback('upComingOverloadDuration'),
                     },
                 },
             },
@@ -361,20 +352,19 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     filterParams: {
                         ...filterParams,
                         ...translatedFilterParams,
-                        updateFilterCallback: createUpdateFilterCallback('nextLimitName'),
                     },
                 },
             },
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('CurrentViolationLimit', 'limit', intl, sortParams, filterParams, onFilter)
+            makeAgGridFloatColumn('CurrentViolationLimit', 'limit', intl, sortParams, filterParams, filterContext)
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, sortParams, filterParams, onFilter)
+            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, sortParams, filterParams, filterContext)
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('CurrentViolationValue', 'value', intl, sortParams, filterParams, onFilter)
+            makeAgGridFloatColumn('CurrentViolationValue', 'value', intl, sortParams, filterParams, filterContext)
         ),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -387,7 +377,6 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('side'),
                     },
                     options: filterEnums['side'] ?? [],
                     getOptionLabel: getEnumLabel,
@@ -406,7 +395,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
     subjectIdRenderer: SubjectIdRendererType,
-    onFilter: (colId: string, api: GridApi, filters: FilterConfig[]) => void
+    filterContext: AgGridFilterContext
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
@@ -415,12 +404,8 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: onFilter,
     };
-    const createUpdateFilterCallback = (colId: string) => (api?: GridApi, filters?: FilterConfig[]) => {
-        if (!api || !filters) return;
-        onFilter(colId, api, filters);
-    };
+
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipmentBus' }),
@@ -433,7 +418,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                     filterParams: {
                         ...filterParams,
                         ...textFilterParams,
-                        updateFilterCallback: createUpdateFilterCallback('locationId'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'locationId'),
                     },
                 },
             },
@@ -450,7 +435,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                     filterParams: {
                         ...filterParams,
                         ...textFilterParams,
-                        updateFilterCallback: createUpdateFilterCallback('subjectId'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'subjectId'),
                     },
                 },
             },
@@ -466,7 +451,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('limitType'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'limitType'),
                     },
                     options: filterEnums['limitType'] ?? [],
                     getOptionLabel: getEnumLabel,
@@ -477,10 +462,10 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('VoltageViolationLimit', 'limit', intl, sortParams, filterParams, onFilter)
+            makeAgGridFloatColumn('VoltageViolationLimit', 'limit', intl, sortParams, filterParams, filterContext)
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('VoltageViolationValue', 'value', intl, sortParams, filterParams, onFilter)
+            makeAgGridFloatColumn('VoltageViolationValue', 'value', intl, sortParams, filterParams, filterContext)
         ),
     ];
 };
@@ -491,17 +476,13 @@ export const loadFlowResultColumnsDefinition = (
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
     statusCellRender: (cellData: ICellRendererParams) => JSX.Element,
-    onFilter: (colId: string, api: GridApi, filters: FilterConfig[]) => void
+    filterContext: AgGridFilterContext
 ): ColDef[] => {
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: onFilter,
     };
-    const createUpdateFilterCallback = (colId: string) => (api?: GridApi, filters?: FilterConfig[]) => {
-        if (!api || !filters) return;
-        onFilter(colId, api, filters);
-    };
+
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'connectedComponentNum' }),
@@ -513,7 +494,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...numericFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('connectedComponentNum'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'connectedComponentNum'),
                     },
                 },
             },
@@ -528,7 +509,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...numericFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('synchronousComponentNum'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'synchronousComponentNum'),
                     },
                 },
             },
@@ -543,7 +524,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('status'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'status'),
                     },
                     options: filterEnums['status'] ?? [],
                     getOptionLabel: getEnumLabel,
@@ -563,7 +544,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...numericFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('consumptions'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'consumptions'),
                     },
                 },
             },
@@ -580,7 +561,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...numericFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('generations'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'generations'),
                     },
                 },
             },
@@ -597,7 +578,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...numericFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('exchanges'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'exchanges'),
                     },
                 },
             },
@@ -614,7 +595,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...numericFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('losses'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'losses'),
                     },
                 },
             },
@@ -631,7 +612,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...textFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('distributedActivePower'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'distributedActivePower'),
                     },
                 },
             },
@@ -650,7 +631,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...numericFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('activePowerMismatch'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'activePowerMismatch'),
                     },
                 },
             },
@@ -665,7 +646,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...textFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('id'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'id'),
                     },
                 },
             },
@@ -680,7 +661,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterParams: {
                         ...numericFilterParams,
                         ...filterParams,
-                        updateFilterCallback: createUpdateFilterCallback('iterationCount'),
+                        updateFilterCallback: createUpdateFilterCallback(filterContext, 'iterationCount'),
                     },
                 },
             },
@@ -849,4 +830,11 @@ export const formatExchangesResult = (
             exchange: exchangePair.exchange,
         };
     });
+};
+
+export const createUpdateFilterCallback = (filterContext: AgGridFilterContext, colId: string) => {
+    return (api?: GridApi, filters?: FilterConfig[]) => {
+        if (!api || !filters) return;
+        filterContext.onFilterChange?.({ api, filters, colId });
+    };
 };

@@ -23,19 +23,19 @@ import {
     exchangesColumnsDefinition,
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
     loadFlowCurrentViolationsColumnsDefinition,
+    loadFlowResultColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
     makeData,
     mappingFields,
     mappingTabs,
     useFetchFiltersEnums,
-    loadFlowResultColumnsDefinition,
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
-import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
@@ -47,17 +47,17 @@ import {
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { Button, LinearProgress } from '@mui/material';
-import { GridApi, ICellRendererParams } from 'ag-grid-community';
+import { ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { GlobalFilter } from '../common/global-filter/global-filter-types';
-import { useComputationColumnsFilters } from 'hooks/use-computation-columns-filters';
+import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 const styles = {
     flexWrapper: {
@@ -94,7 +94,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
@@ -142,7 +142,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
                 })),
                 filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
-                ...(isGlobalFilterParameter(globalFilters)
+                ...(globalFilters
                     ? {
                           globalFilters: {
                               ...globalFilters,
@@ -186,14 +186,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         invalidations: loadflowResultInvalidations,
     });
 
-    const { persistFilters } = useComputationColumnsFilters(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
-
-    const onFilter = useCallback(
-        (colId: string, api: GridApi, filters: FilterConfig[]) => {
-            persistFilters(colId, api, filters);
-        },
-        [persistFilters]
-    );
+    const filterContext = useAgGridFilterContext(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const SubjectIdRenderer = useCallback(
         (props: ICellRendererParams) => {
@@ -222,7 +215,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     getEnumLabel,
                     tabIndex,
                     SubjectIdRenderer,
-                    onFilter
+                    filterContext
                 );
             case 1:
                 return loadFlowVoltageViolationsColumnsDefinition(
@@ -231,17 +224,24 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     getEnumLabel,
                     tabIndex,
                     SubjectIdRenderer,
-                    onFilter
+                    filterContext
                 );
 
             default:
                 return [];
         }
-    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer, onFilter]);
+    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer, filterContext]);
 
     const componentColumns = useMemo(() => {
-        return loadFlowResultColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex, StatusCellRender, onFilter);
-    }, [intl, filterEnums, getEnumLabel, tabIndex, onFilter]);
+        return loadFlowResultColumnsDefinition(
+            intl,
+            filterEnums,
+            getEnumLabel,
+            tabIndex,
+            StatusCellRender,
+            filterContext
+        );
+    }, [intl, filterEnums, getEnumLabel, tabIndex, filterContext]);
 
     const countryAdequaciesColumns = useMemo(() => {
         return countryAdequaciesColumnsDefinition(intl);

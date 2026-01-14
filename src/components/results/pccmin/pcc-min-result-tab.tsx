@@ -18,7 +18,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
@@ -55,6 +55,11 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
         return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
     }, []);
 
+    useEffect(() => {
+        // Clear the globalfilter when tab changes
+        handleGlobalFilterChange([]);
+    }, [handleGlobalFilterChange]);
+
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
             handleGlobalFilterChange(newFilters);
@@ -67,11 +72,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
-
-    useEffect(() => {
-        // Clear the globalfilter when tab changes
-        handleGlobalFilterChange([]);
-    }, [handleGlobalFilterChange]);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -100,7 +100,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             currentRootNetworkUuid={currentRootNetworkUuid}
-                            globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
+                            globalFilters={globalFilters}
                             customTablePaginationProps={{
                                 labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
                             }}

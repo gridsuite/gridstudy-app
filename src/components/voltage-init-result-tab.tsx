@@ -15,7 +15,7 @@ import { AppState } from '../redux/reducer';
 import { VoltageInitResult } from './voltage-init-result';
 import { useCallback, useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
-import useGlobalFilters, { isGlobalFilterParameter } from './results/common/global-filter/use-global-filters';
+import useGlobalFilters from './results/common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../types/custom-aggrid-types';
@@ -37,7 +37,7 @@ export function VoltageInitResultTab({
     );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.VoltageInit);
-    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
@@ -55,7 +55,7 @@ export function VoltageInitResultTab({
         () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) =>
             fetchVoltageInitResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 filters: null,
-                ...(isGlobalFilterParameter(globalFilters) ? { globalFilters: { ...globalFilters } } : {}),
+                ...(globalFilters ? { globalFilters: { ...globalFilters } } : {}),
             }),
         [globalFilters]
     );

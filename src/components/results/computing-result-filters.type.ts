@@ -51,7 +51,9 @@ const mapColumn = (c: any): FilterConfig => ({
     dataType: c.filterDataType,
     tolerance: c.filterTolerance ?? undefined,
 });
-export function setComputationResultFiltersState(filtersInfos: ComputationResultFiltersInfos): ComputationFiltersState {
+export function initComputationResultFiltersState(
+    filtersInfos: ComputationResultFiltersInfos
+): ComputationFiltersState {
     const state: ComputationFiltersState = {
         id: filtersInfos.id,
     };

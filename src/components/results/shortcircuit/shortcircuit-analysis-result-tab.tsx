@@ -29,7 +29,7 @@ import type { UUID } from 'node:crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -95,7 +95,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
         AgGridFilterType.ShortcircuitAnalysis
     );
-    const { handleGlobalFilterChange, globalFilters } = useGlobalFilters();
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSubTabChange = useCallback(
@@ -206,7 +206,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
-                        globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
+                        globalFilters={globalFilters}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult

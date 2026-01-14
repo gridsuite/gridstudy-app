@@ -72,7 +72,7 @@ import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
-import { setComputationResultFiltersState } from './results/computing-result-filters.type.ts';
+import { initComputationResultFiltersState } from './results/computing-result-filters.type.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -330,10 +330,10 @@ const App = () => {
                 resetTableDefinitions(collection);
             });
 
-            const fetchComputationResultFiltersPromise = getComputationResultFilters(studyUuid).then(
+            const fetchComputationResultFilters = getComputationResultFilters(studyUuid).then(
                 (computationResultFiltersInfos) => {
                     const computationResultFiltersState =
-                        setComputationResultFiltersState(computationResultFiltersInfos);
+                        initComputationResultFiltersState(computationResultFiltersInfos);
                     dispatch(initComputationResultFilters(computationResultFiltersState));
                 }
             );
@@ -356,7 +356,7 @@ const App = () => {
                 fetchAppConfigPromise,
                 fetchOptionalServices,
                 fetchSpreadsheetConfigPromise,
-                fetchComputationResultFiltersPromise,
+                fetchComputationResultFilters,
             ])
                 .then(() => {
                     dispatch(setParamsLoaded());

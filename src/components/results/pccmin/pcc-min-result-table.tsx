@@ -23,7 +23,7 @@ import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
-import { useComputationColumnsFilters } from '../../../hooks/use-computation-columns-filters';
+import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 import { FilterConfig, FilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 
@@ -65,18 +65,18 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [dispatch]
     );
 
-    const { persistFilters } = useComputationColumnsFilters(FilterType.PccMin, PCCMIN_RESULT);
+    const { persistFilters } = useUpdateComputationColumnsFilters(FilterType.PccMin, PCCMIN_RESULT);
 
-    const onFilter = useCallback(
-        (colId: string, api: GridApi, filters: FilterConfig[]) => {
+    const onFilterChange = useCallback(
+        (colId: string, agGridApi: GridApi, filters: FilterConfig[]) => {
             memoizedSetPageCallback();
-            persistFilters(colId, api, filters);
+            persistFilters(colId, agGridApi, filters);
         },
         [memoizedSetPageCallback, persistFilters]
     );
     const columns = useMemo(
-        () => getPccMinColumns(intl, onFilter, voltageLevelIdRenderer),
-        [intl, onFilter, voltageLevelIdRenderer]
+        () => getPccMinColumns(intl, onFilterChange, voltageLevelIdRenderer),
+        [intl, onFilterChange, voltageLevelIdRenderer]
     );
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);

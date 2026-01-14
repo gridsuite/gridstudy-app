@@ -45,7 +45,7 @@ import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custo
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { useComputationColumnsFilters } from '../../../hooks/use-computation-columns-filters';
+import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -115,12 +115,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
-    const { persistFilters } = useComputationColumnsFilters(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
+    const { persistFilters } = useUpdateComputationColumnsFilters(
+        FilterType.ShortcircuitAnalysis,
+        mappingTabs(analysisType)
+    );
 
-    const onFilter = useCallback(
-        (colId: string, api: GridApi, filters: FilterConfig[]) => {
+    const onFilterChange = useCallback(
+        (colId: string, agGridApi: GridApi, filters: FilterConfig[]) => {
             memoizedSetPageCallback();
-            persistFilters(colId, api, filters);
+            persistFilters(colId, agGridApi, filters);
         },
         [memoizedSetPageCallback, persistFilters]
     );
@@ -255,7 +258,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 analysisType={analysisType}
                 isFetching={isFetching}
                 filterEnums={filterEnums}
-                onFilter={onFilter}
+                onFilter={onFilterChange}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 filters={filters}

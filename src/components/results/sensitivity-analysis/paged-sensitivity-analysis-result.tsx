@@ -41,7 +41,7 @@ import { SensitivityResult, SensitivityResultFilterOptions } from '../../../serv
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { useComputationColumnsFilters } from '../../../hooks/use-computation-columns-filters';
+import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 import { GridApi } from 'ag-grid-community';
 
 export type PagedSensitivityAnalysisResultProps = {
@@ -132,15 +132,15 @@ function PagedSensitivityAnalysisResult({
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
-    const { persistFilters } = useComputationColumnsFilters(
+    const { persistFilters } = useUpdateComputationColumnsFilters(
         FilterType.SecurityAnalysis,
         mappingTabs(sensiKind, nOrNkIndex)
     );
 
-    const onFilter = useCallback(
-        (colId: string, api: GridApi, filters: FilterConfig[]) => {
+    const onFilterChange = useCallback(
+        (colId: string, agGridApi: GridApi, filters: FilterConfig[]) => {
             memoizedSetPageCallback();
-            persistFilters(colId, api, filters);
+            persistFilters(colId, agGridApi, filters);
         },
         [memoizedSetPageCallback, persistFilters]
     );
@@ -239,7 +239,7 @@ function PagedSensitivityAnalysisResult({
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
                 sensiKind={sensiKind}
-                onFilter={onFilter}
+                onFilter={onFilterChange}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
                 setCsvHeaders={setCsvHeaders}
