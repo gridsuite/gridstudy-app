@@ -22,7 +22,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { VoltageAdornment } from '../../../../dialog-utils';
-import { FloatInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { FloatInput, Identifiable, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import { RATIO_REGULATION_MODES } from 'components/network/constants';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
@@ -35,6 +35,11 @@ import {
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
+import {
+    TwoWindingsTransformerData,
+    RatioTapChangerData,
+    RatioTapChangerPaneProps,
+} from '../../two-windings-transformer.types';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
@@ -45,7 +50,7 @@ const RatioTapChangerPane = ({
     previousValues,
     editData,
     isModification = false,
-}) => {
+}: RatioTapChangerPaneProps) => {
     const { trigger, setValue, getValues } = useFormContext();
     const intl = useIntl();
 
@@ -56,12 +61,12 @@ const RatioTapChangerPane = ({
         if (previousValues?.ratioTapChanger?.hasLoadTapChangingCapabilities === false) {
             return intl.formatMessage({ id: 'Off' });
         }
-        return null;
+        return undefined;
     };
 
-    const getRatioTapChangerRegulationModeLabel = (ratioTapChangerFormValues) => {
+    const getRatioTapChangerRegulationModeLabel = (ratioTapChangerFormValues?: RatioTapChangerData | null) => {
         if (!ratioTapChangerFormValues) {
-            return null;
+            return undefined;
         }
         if (ratioTapChangerFormValues?.isRegulating) {
             return intl.formatMessage({
@@ -94,11 +99,13 @@ const RatioTapChangerPane = ({
     });
 
     const regulationType = useMemo(() => {
-        return regulationTypeWatch || getComputedPreviousRatioRegulationType(previousValues);
+        return (
+            regulationTypeWatch || (previousValues ? getComputedPreviousRatioRegulationType(previousValues) : undefined)
+        );
     }, [previousValues, regulationTypeWatch]);
 
     const findAndSetVoltageLevelFromPrevious = useCallback(
-        (previousValues, voltageLevelOptions) => {
+        (previousValues: TwoWindingsTransformerData | undefined, voltageLevelOptions: Identifiable[]) => {
             const prevVl = voltageLevelOptions.find(
                 (vl) => vl.id === previousValues?.ratioTapChanger?.regulatingTerminalVlId
             );
@@ -117,7 +124,7 @@ const RatioTapChangerPane = ({
     );
 
     const setEquipmentFromPrevious = useCallback(
-        (previousValues) => {
+        (previousValues: TwoWindingsTransformerData | undefined) => {
             const prevEquipmentId = previousValues?.ratioTapChanger?.regulatingTerminalConnectableId;
             if (prevEquipmentId) {
                 const prevEquipmentType = previousValues?.ratioTapChanger?.regulatingTerminalConnectableType;
@@ -132,41 +139,42 @@ const RatioTapChangerPane = ({
         [setValue, id]
     );
 
+    const setValueIfNull = useCallback(
+        (curRatioTapChanger: Record<string, unknown>, field: string, value: unknown) => {
+            if (curRatioTapChanger[field] === null) {
+                setValue(`${id}.${field}`, value);
+            }
+        },
+        [setValue, id]
+    );
+
     // we want to fill the empty fields with the previous values when 'on load' is enabled
     const fillRatioTapChangerRegulationAttributesWithPreviousValues = useCallback(
-        (newOnLoad) => {
-            if (newOnLoad === true) {
-                const curRatioTapChanger = getValues(id);
+        (newOnLoad: boolean | null) => {
+            if (newOnLoad !== true || !previousValues) {
+                return;
+            }
+            const curRatioTapChanger = getValues(id);
 
-                if (curRatioTapChanger[REGULATION_MODE] === null) {
-                    setValue(`${id}.${REGULATION_MODE}`, getComputedRegulationModeId(previousValues));
-                }
-                if (curRatioTapChanger[TARGET_V] === null) {
-                    setValue(`${id}.${TARGET_V}`, previousValues?.ratioTapChanger?.targetV);
-                }
-                if (curRatioTapChanger[TARGET_DEADBAND] === null) {
-                    setValue(`${id}.${TARGET_DEADBAND}`, previousValues?.ratioTapChanger?.targetDeadband);
-                }
-                if (curRatioTapChanger[REGULATION_TYPE] === null) {
-                    setValue(`${id}.${REGULATION_TYPE}`, getComputedRegulationTypeId(previousValues));
-                }
-                if (curRatioTapChanger[REGULATION_SIDE] === null) {
-                    setValue(`${id}.${REGULATION_SIDE}`, getComputedTapSideId(previousValues));
-                }
-                if (curRatioTapChanger[VOLTAGE_LEVEL] === null) {
-                    findAndSetVoltageLevelFromPrevious(previousValues, voltageLevelOptions);
-                }
-                if (curRatioTapChanger[EQUIPMENT] === null) {
-                    setEquipmentFromPrevious(previousValues);
-                }
+            setValueIfNull(curRatioTapChanger, REGULATION_MODE, getComputedRegulationModeId(previousValues));
+            setValueIfNull(curRatioTapChanger, TARGET_V, previousValues?.ratioTapChanger?.targetV);
+            setValueIfNull(curRatioTapChanger, TARGET_DEADBAND, previousValues?.ratioTapChanger?.targetDeadband);
+            setValueIfNull(curRatioTapChanger, REGULATION_TYPE, getComputedRegulationTypeId(previousValues));
+            setValueIfNull(curRatioTapChanger, REGULATION_SIDE, getComputedTapSideId(previousValues));
+
+            if (curRatioTapChanger[VOLTAGE_LEVEL] === null) {
+                findAndSetVoltageLevelFromPrevious(previousValues, voltageLevelOptions);
+            }
+            if (curRatioTapChanger[EQUIPMENT] === null) {
+                setEquipmentFromPrevious(previousValues);
             }
         },
         [
             id,
             voltageLevelOptions,
             previousValues,
-            setValue,
             getValues,
+            setValueIfNull,
             findAndSetVoltageLevelFromPrevious,
             setEquipmentFromPrevious,
         ]
@@ -220,7 +228,7 @@ const RatioTapChangerPane = ({
             formProps={{
                 disabled: isRatioTapLoadTapChangingCapabilitiesOff,
             }}
-            previousValue={previousValues?.ratioTapChanger?.targetV}
+            previousValue={previousValues?.ratioTapChanger?.targetV ?? undefined}
         />
     );
 
@@ -263,7 +271,7 @@ const RatioTapChangerPane = ({
             <RatioTapChangerPaneSteps
                 disabled={!ratioTapChangerEnabledWatcher}
                 previousValues={previousValues?.ratioTapChanger}
-                editData={editData?.ratioTapChanger}
+                editData={editData?.ratioTapChanger as Record<string, unknown> | undefined}
                 currentNode={currentNode}
                 isModification={isModification}
             />
