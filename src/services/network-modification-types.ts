@@ -708,12 +708,12 @@ export interface AttachLineInfo {
 export interface LinesAttachToSplitLinesInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    uuid?: UUID;
     lineToAttachTo1Id: string;
     lineToAttachTo2Id: string;
     attachedLineId: string;
-    voltageLevelId: string;
-    bbsBusId: string;
+    voltageLevelId: string | null;
+    bbsBusId: string | null;
     replacingLine1Id: string;
     replacingLine1Name: string | null;
     replacingLine2Id: string;

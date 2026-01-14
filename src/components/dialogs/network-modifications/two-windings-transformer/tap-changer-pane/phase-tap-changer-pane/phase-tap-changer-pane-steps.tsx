@@ -6,7 +6,8 @@
  */
 
 import {
-    RATIO_TAP_CHANGER,
+    PHASE_TAP_CHANGER,
+    STEPS_ALPHA,
     STEPS_CONDUCTANCE,
     STEPS_RATIO,
     STEPS_REACTANCE,
@@ -18,25 +19,40 @@ import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
-import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
-import { DndColumnType } from '@gridsuite/commons-ui';
+import { DndColumn, DndColumnType } from '@gridsuite/commons-ui';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { PHASE_TAP, PhaseTapChangerData } from '../../two-windings-transformer.types';
 
-const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
+export interface PhaseTapChangerPaneStepsProps {
+    disabled?: boolean;
+    previousValues?: PhaseTapChangerData;
+    editData?: Record<string, unknown>;
+    currentNode: CurrentTreeNode;
+    isModification?: boolean;
+}
+
+const PhaseTapChangerPaneSteps = ({
+    disabled,
+    previousValues,
+    editData,
+    currentNode,
+    isModification = false,
+}: PhaseTapChangerPaneStepsProps) => {
     const intl = useIntl();
 
-    const COLUMNS_DEFINITIONS = useMemo(() => {
+    const COLUMNS_DEFINITIONS = useMemo<DndColumn[]>(() => {
         return [
             {
                 label: 'Tap',
                 dataKey: STEPS_TAP,
-                type: DndColumnType.TEXT,
+                type: DndColumnType.TEXT as const,
             },
             {
                 label: 'DeltaResistance',
                 dataKey: STEPS_RESISTANCE,
                 initialValue: 0,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
             {
@@ -44,7 +60,7 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_REACTANCE,
                 initialValue: 0,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
             {
@@ -52,7 +68,7 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_CONDUCTANCE,
                 initialValue: 0,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
             {
@@ -60,7 +76,7 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_SUSCEPTANCE,
                 initialValue: 0,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
             {
@@ -68,7 +84,15 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_RATIO,
                 initialValue: 1,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
+                clearable: false,
+            },
+            {
+                label: 'Alpha',
+                dataKey: STEPS_ALPHA,
+                initialValue: 0,
+                editable: true,
+                type: DndColumnType.NUMERIC as const,
                 clearable: false,
             },
         ].map((column) => ({
@@ -87,10 +111,11 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
             intl.formatMessage({ id: 'ImportFileConductance' }),
             intl.formatMessage({ id: 'ImportFileSusceptance' }),
             intl.formatMessage({ id: 'Ratio' }),
+            intl.formatMessage({ id: 'ImportFileAlpha' }),
         ];
     }, [intl]);
 
-    const handleImportRow = (val) => {
+    const handleImportRow = (val: Record<string, string>): Record<string, string | number> => {
         return {
             [STEPS_RESISTANCE]: parseIntData(
                 val[
@@ -127,28 +152,45 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
             [STEPS_RATIO]: isNaN(parseFloat(val[intl.formatMessage({ id: 'Ratio' })]))
                 ? 1
                 : parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
+            [STEPS_ALPHA]: isNaN(
+                parseFloat(
+                    val[
+                        intl.formatMessage({
+                            id: 'ImportFileAlpha',
+                        })
+                    ]
+                )
+            )
+                ? 1
+                : parseFloat(
+                      val[
+                          intl.formatMessage({
+                              id: 'ImportFileAlpha',
+                          })
+                      ]
+                  ),
         };
     };
 
     return (
         <TapChangerSteps
-            tapChanger={RATIO_TAP_CHANGER}
-            ruleType={RATIO_TAP}
-            createTapRuleColumn={STEPS_RATIO}
+            tapChanger={PHASE_TAP_CHANGER}
+            ruleType={PHASE_TAP}
+            createTapRuleColumn={STEPS_ALPHA}
             columnsDefinition={COLUMNS_DEFINITIONS}
             csvColumns={csvColumns}
-            createRuleMessageId="CreateRegulationRule"
-            createRuleAllowNegativeValues={false}
-            importRuleMessageId="ImportRegulationRule"
+            createRuleMessageId="CreateDephasingRule"
+            createRuleAllowNegativeValues={true}
+            importRuleMessageId="ImportDephasingRule"
             resetButtonMessageId="ResetRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={previousValues}
-            editData={editData?.[RATIO_TAP_CHANGER]}
+            editData={editData?.[PHASE_TAP_CHANGER] as Record<string, unknown> | undefined}
             currentNode={currentNode}
             isModification={isModification}
         />
     );
 };
 
-export default RatioTapChangerPaneSteps;
+export default PhaseTapChangerPaneSteps;

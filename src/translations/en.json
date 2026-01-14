@@ -457,6 +457,7 @@
     "results.globalFilter.activeFilter": "{filtersCount} active filter",
     "results.globalFilter.fillerText": "Filtering",
     "results.globalFilter.recent": "Recent",
+    "results.globalFilter.substationProperty": "Regions",
     "results.globalFilter.genericFilter": "Elements",
     "results.globalFilter.substationOrVoltageLevelFilter": "Substations and voltage levels",
     "results.globalFilter.elementsHelp": "Those filters exclude other elements type",
