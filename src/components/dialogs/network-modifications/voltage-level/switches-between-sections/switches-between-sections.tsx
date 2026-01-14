@@ -94,7 +94,6 @@ export const SwitchesBetweenSections = (): ReactElement => {
             name={SWITCHES_BETWEEN_SECTIONS}
             label={'SwitchesBetweenSections'}
             formProps={{
-                disabled: true,
                 multiline: true,
             }}
             customAdornment={addIconAdornment(handleClickOpenSwitchesPane)}

@@ -20,22 +20,26 @@ import {
     ListItemButton,
     PaperProps,
     TextField,
+    Tooltip,
+    Typography,
 } from '@mui/material';
-import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
+import { Delete as DeleteIcon, FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { FilterType } from '../utils';
+import { FilterType, isCriteriaFilter } from '../utils';
 import { OverflowableText, OverflowableChip } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import GlobalFilterPaper from './global-filter-paper';
-import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import { GlobalFilterContext } from './global-filter-context';
+import { removeFromRecentGlobalFilters } from '../../../../redux/actions';
+import { AppDispatch } from '../../../../redux/store';
+import { UUID } from 'node:crypto';
 
 const TAG_LIMIT_NUMBER: number = 4;
 
@@ -73,6 +77,80 @@ function RenderInput({
                 ),
             }}
         />
+    );
+}
+
+function formatVoltageRange(option: GlobalFilter): string {
+    if (option.minValue != null && option.maxValue != null) {
+        return `[${option.minValue} kV, ${option.maxValue} kV[`;
+    }
+    return '';
+}
+
+function RenderOption({
+    props,
+    option,
+    state,
+}: {
+    props: React.HTMLAttributes<HTMLLIElement>;
+    option: GlobalFilter;
+    state: { selected: boolean };
+}) {
+    const { children, ...otherProps } = props;
+    const intl = useIntl();
+    const dispatch = useDispatch<AppDispatch>();
+    const { translate } = useLocalizedCountries();
+    const { selectedGlobalFilters, onChange } = useContext(GlobalFilterContext);
+
+    // recent selected options are not displayed in the recent tab :
+    const hideOption = state.selected && option.recent;
+    const label = getOptionLabel(option, translate, intl) ?? '';
+
+    let content: React.ReactNode;
+    switch (option.filterType) {
+        case FilterType.VOLTAGE_LEVEL:
+            content = (
+                <Tooltip title={formatVoltageRange(option)} placement="right" arrow>
+                    <Typography>{label}</Typography>
+                </Tooltip>
+            );
+            break;
+        case FilterType.SUBSTATION_OR_VL:
+        case FilterType.GENERIC_FILTER:
+            content = (
+                <>
+                    <OverflowableText text={label} width="100%" />
+                    <IconButton
+                        sx={{
+                            display: 'none',
+                            '.MuiListItemButton-root:hover &': {
+                                display: 'inline-flex',
+                            },
+                        }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (selectedGlobalFilters.find((f) => f.uuid === option.uuid)) {
+                                onChange(selectedGlobalFilters.filter((f) => f.uuid !== option.uuid));
+                            }
+                            dispatch(removeFromRecentGlobalFilters(option.uuid as UUID)); // generic filter so has uuid
+                        }}
+                    >
+                        <DeleteIcon fontSize="small" />
+                    </IconButton>
+                </>
+            );
+            break;
+        default:
+            content = <OverflowableText text={label} />;
+    }
+
+    return (
+        !hideOption && (
+            <ListItemButton selected={state.selected} component="li" {...otherProps}>
+                <Checkbox size="small" checked={state.selected} />
+                {content}
+            </ListItemButton>
+        )
     );
 }
 
@@ -125,7 +203,7 @@ function GlobalFilterAutocomplete({
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
-    const autocompleteRef = useRef<HTMLDivElement>(null);
+    const autocompleteRef = useRef<HTMLDivElement | null>(null);
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
@@ -196,7 +274,7 @@ function GlobalFilterAutocomplete({
                 }),
             // recent generic filters are displayed 2 times : once in the recent filters (see above) and also in the generic filters :
             ...recentGlobalFilters
-                .filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
+                .filter((filter) => isCriteriaFilter(filter))
                 .map((filter) => {
                     return { ...filter, recent: false };
                 }),
@@ -219,7 +297,7 @@ function GlobalFilterAutocomplete({
 
     const inputFieldChip = useCallback(
         (element: GlobalFilter, index: number, getTagsProps: AutocompleteRenderGetTagProps, filtersNumber: number) => {
-            const label = getOptionLabel(element, translate);
+            const label = getOptionLabel(element, translate, intl);
             const key: string = `inputFieldChip_${element.label}`;
             if (index < TAG_LIMIT_NUMBER) {
                 return (
@@ -239,11 +317,11 @@ function GlobalFilterAutocomplete({
 
             return undefined;
         },
-        [translate]
+        [translate, intl]
     );
 
     const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => {
-        if (option.filterType === FilterType.GENERIC_FILTER) {
+        if (isCriteriaFilter(option)) {
             return (
                 option.label === value.label &&
                 option.filterType === value.filterType &&
@@ -317,19 +395,9 @@ function GlobalFilterAutocomplete({
                         return <Box key={'keyBoxGroup_' + group}>{children}</Box>;
                     }}
                     // renderOption : the checkboxes visible when we focus on the AutoComplete
-                    renderOption={(props, option: GlobalFilter, { selected }) => {
-                        const { key, children, color, ...otherProps } = props;
-                        // recent selected options are not displayed in the recent tab :
-                        const hideOption = selected && option.recent;
-                        return (
-                            !hideOption && (
-                                <ListItemButton key={key} selected={selected} component="li" {...otherProps}>
-                                    <Checkbox size="small" checked={selected} />
-                                    <OverflowableText text={getOptionLabel(option, translate) ?? ''} />
-                                </ListItemButton>
-                            )
-                        );
-                    }}
+                    renderOption={(props, option, state) => (
+                        <RenderOption props={props} option={option} state={state} />
+                    )}
                     // Allows to find the corresponding chips without taking into account the recent status
                     isOptionEqualToValue={isOptionEqualToValue}
                     filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
@@ -341,6 +409,7 @@ function GlobalFilterAutocomplete({
                         sx: {
                             '& .MuiAutocomplete-option': {
                                 paddingLeft: 0,
+                                paddingRight: 0,
                             },
                             height: '100%',
                             maxHeight: '100%',

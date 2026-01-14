@@ -103,7 +103,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
             nodes.some(
                 (nodeId) =>
                     nodeId === nodeSelectionForCopyRef.current.nodeId ||
-                    nodeSelectionForCopyRef.current.allChildrenIds?.includes(nodeId)
+                    nodeSelectionForCopyRef.current.allChildren?.map((node) => node.id).includes(nodeId)
             ),
 
         []
