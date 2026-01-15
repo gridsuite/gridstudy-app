@@ -303,6 +303,7 @@ const LineAttachToVoltageLevelDialog = ({
                         shouldDirty: true,
                     }
                 );
+                setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`, null);
             });
         },
         [setValue, newVoltageLevel, voltageLevelOptions]
