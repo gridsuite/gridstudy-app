@@ -65,7 +65,6 @@ export const useSldDiagram = ({
 
     const handleFetchError = useCallback(
         (error: any) => {
-            console.log(error);
             console.error('Error fetching SLD diagram:', error);
             let errorMessage: string;
             if (error?.status === 404) {
