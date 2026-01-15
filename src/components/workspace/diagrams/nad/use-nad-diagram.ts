@@ -8,7 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../../../services/study';
@@ -131,15 +131,15 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
             let errorMessage: string;
             if (error?.status === 400) {
                 errorMessage = 'nadConfiguredPositionsModeFailed';
-                snackError({ headerId: errorMessage });
+                snackWithFallback(snackError, error, { headerId: errorMessage });
             } else if (error?.status === 404) {
                 errorMessage = 'VoltageLevelNotFound';
             } else if (error?.status === 403) {
                 errorMessage = error.message || 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
+                snackWithFallback(snackError, error, { headerId: errorMessage });
             } else {
                 errorMessage = 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
+                snackWithFallback(snackError, error, { headerId: errorMessage });
             }
             setGlobalError(errorMessage);
         },
