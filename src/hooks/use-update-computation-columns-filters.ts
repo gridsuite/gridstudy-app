@@ -36,7 +36,5 @@ export function useUpdateComputationColumnsFilters(filterType: FilterType, filte
         [studyUuid, computationResultFilterUuid, columnUuid]
     );
 
-    return {
-        persistFilters: updateColumnFilters,
-    };
+    return { updateColumnFilters };
 }

@@ -20,14 +20,14 @@ export function useAgGridFilterContext(
     tab: string,
     onBeforePersist?: () => void
 ): AgGridFilterContext {
-    const { persistFilters } = useUpdateComputationColumnsFilters(filterType, tab);
+    const { updateColumnFilters } = useUpdateComputationColumnsFilters(filterType, tab);
 
     const onFilterChange = useCallback(
         ({ api, filters, colId }: { api: GridApi; filters: FilterConfig[]; colId: string }) => {
             onBeforePersist?.();
-            persistFilters(colId, api, filters);
+            updateColumnFilters(colId, api, filters);
         },
-        [onBeforePersist, persistFilters]
+        [onBeforePersist, updateColumnFilters]
     );
 
     return useMemo(

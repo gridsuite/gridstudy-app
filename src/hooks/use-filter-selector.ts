@@ -35,29 +35,29 @@ const getFilterFromState = (state: AppState, storeField: string, filterTab: stri
 };
 
 export const useFilterSelector = (filterType: FilterType, filterTab: string) => {
-    const entry = FILTER_PARAMS[filterType];
+    const filterConfig = FILTER_PARAMS[filterType];
 
     const filters = useSelector<AppState, FilterConfig[]>((state: AppState) => {
-        if (!entry) {
+        if (!filterConfig) {
             const cf = state.computationFilters?.[filterType]?.columnsFilters?.[filterTab];
             if (!cf) return EMPTY_ARRAY;
             if (Array.isArray(cf)) return cf;
             return cf.columns ?? EMPTY_ARRAY;
         }
-        return getFilterFromState(state, entry.filterType, filterTab);
+        return getFilterFromState(state, filterConfig.filterType, filterTab);
     });
 
     const dispatch = useDispatch();
 
     const dispatchFilters = useCallback(
         (newFilters: FilterConfig[]) => {
-            if (!entry) {
+            if (!filterConfig) {
                 dispatch(updateColumnFiltersAction(filterType, filterTab, newFilters));
             } else {
-                dispatch(entry.filterStoreAction(filterTab, newFilters));
+                dispatch(filterConfig.filterStoreAction(filterTab, newFilters));
             }
         },
-        [entry, dispatch, filterType, filterTab]
+        [filterConfig, dispatch, filterType, filterTab]
     );
 
     return { filters, dispatchFilters };
