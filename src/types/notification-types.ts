@@ -515,7 +515,7 @@ interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.NETWORK_EXPORT_FINISHED;
     userId: string;
     exportUuid: UUID;
-    exportToExplorer?: boolean;
+    exportToExplorer: string;
     error: string | null;
 }
 

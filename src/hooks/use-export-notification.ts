@@ -36,7 +36,9 @@ export default function useExportNotification() {
                     if (error) {
                         snackWithFallback(snackError, error, { headerId: 'export.message.failed' });
                     } else {
-                        exportToExplorer
+                        const isExportToGridExplore: boolean =
+                            exportToExplorer !== undefined && exportToExplorer === 'true';
+                        isExportToGridExplore
                             ? snackSuccess({
                                   messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: '' }),
                                   persist: true,
