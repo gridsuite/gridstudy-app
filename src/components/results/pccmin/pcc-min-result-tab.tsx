@@ -18,13 +18,13 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { GlobalFilter } from '../common/global-filter/global-filter-types';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     studyUuid,
@@ -39,7 +39,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     const LOGS_TAB_INDEX = 1;
 
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.PccMin);
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSubTabChange = useCallback((event: SyntheticEvent, newIndex: number) => {
@@ -57,15 +56,19 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
 
     useEffect(() => {
         // Clear the globalfilter when tab changes
-        handleGlobalFilterChange([]);
-    }, [handleGlobalFilterChange]);
+        buildValidGlobalFilters([]);
+    }, [resultOrLogIndex]);
+
+    const globalFilters = useMemo(
+        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
+        [globalFiltersFromState]
+    );
 
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
-            handleGlobalFilterChange(newFilters);
             updateGlobalFilters(newFilters);
         },
-        [handleGlobalFilterChange, updateGlobalFilters]
+        [updateGlobalFilters]
     );
 
     const globalFilterOptions = useMemo(

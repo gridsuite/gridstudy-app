@@ -15,11 +15,11 @@ import { AppState } from '../redux/reducer';
 import { VoltageInitResult } from './voltage-init-result';
 import { useCallback, useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
-import useGlobalFilters from './results/common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../types/custom-aggrid-types';
 import { GlobalFilter } from './results/common/global-filter/global-filter-types';
+import { buildValidGlobalFilters } from './results/common/global-filter/build-valid-global-filters';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;
@@ -37,18 +37,19 @@ export function VoltageInitResultTab({
     );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.VoltageInit);
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
-
+    const globalFilters = useMemo(
+        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
+        [globalFiltersFromState]
+    );
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
-            handleGlobalFilterChange(newFilters);
             updateGlobalFilters(newFilters);
         },
-        [handleGlobalFilterChange, updateGlobalFilters]
+        [updateGlobalFilters]
     );
 
     const fetchVoltageInitResultWithGlobalFilters = useMemo(

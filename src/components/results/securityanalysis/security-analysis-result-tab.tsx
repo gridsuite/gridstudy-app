@@ -49,13 +49,13 @@ import { securityAnalysisResultInvalidations } from '../../computing-status/use-
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { GlobalFilter } from '../common/global-filter/global-filter-types';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -135,7 +135,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
         AgGridFilterType.SecurityAnalysis
     );
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const globalFilterOptions = useMemo(
@@ -147,12 +146,16 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
+    const globalFilters = useMemo(
+        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
+        [globalFiltersFromState]
+    );
+
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
-            handleGlobalFilterChange(newFilters);
             updateGlobalFilters(newFilters);
         },
-        [handleGlobalFilterChange, updateGlobalFilters]
+        [updateGlobalFilters]
     );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(

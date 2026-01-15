@@ -29,11 +29,11 @@ import type { UUID } from 'node:crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { GlobalFilter } from '../common/global-filter/global-filter-types';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -95,7 +95,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
         AgGridFilterType.ShortcircuitAnalysis
     );
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSubTabChange = useCallback(
@@ -104,13 +103,15 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         },
         [setResultOrLogIndex]
     );
-
+    const globalFilters = useMemo(
+        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
+        [globalFiltersFromState]
+    );
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
-            handleGlobalFilterChange(newFilters);
             updateGlobalFilters(newFilters);
         },
-        [handleGlobalFilterChange, updateGlobalFilters]
+        [updateGlobalFilters]
     );
 
     const shortCircuitTabResultStatusSucceedOrFailed = useMemo(() => {
@@ -153,8 +154,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     useEffect(() => {
         // Clear the globalfilter when tab changes
-        handleGlobalFilterChange([]);
-    }, [handleGlobalFilterChange, tabIndex]);
+        buildValidGlobalFilters([]);
+    }, [tabIndex]);
 
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],

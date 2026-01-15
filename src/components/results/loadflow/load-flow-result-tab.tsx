@@ -47,7 +47,7 @@ import {
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { Button, LinearProgress } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community';
@@ -94,7 +94,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
@@ -103,12 +102,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     });
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
+    const globalFilters = useMemo(
+        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
+        [globalFiltersFromState]
+    );
+
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
-            handleGlobalFilterChange(newFilters);
             updateGlobalFilters(newFilters);
         },
-        [handleGlobalFilterChange, updateGlobalFilters]
+        [updateGlobalFilters]
     );
     const getEnumLabel = useCallback(
         (value: string) =>

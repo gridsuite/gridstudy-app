@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
 import { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { FilterType } from '../utils';
 
@@ -66,15 +65,4 @@ export function buildValidGlobalFilters(filters: GlobalFilter[]): GlobalFilters 
             !!newGlobalFilter.substationProperty);
 
     return hasValidFilter ? newGlobalFilter : undefined;
-}
-
-export default function useGlobalFilters() {
-    const [selectedFilters, setSelectedFilters] = useState<GlobalFilter[]>([]);
-
-    const handleGlobalFilterChange = useCallback((value: GlobalFilter[]) => {
-        setSelectedFilters(value);
-    }, []);
-
-    const globalFilters = useMemo(() => buildValidGlobalFilters(selectedFilters), [selectedFilters]);
-    return { globalFilters, handleGlobalFilterChange };
 }
