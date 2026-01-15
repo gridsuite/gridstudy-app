@@ -45,10 +45,13 @@ function SelectedGlobalFilters() {
         }
         filtersByCategories.get(displayedCategoryTitle)?.push(filter);
     });
+    const entries = Array.from(filtersByCategories.entries());
+    entries.sort((a, b) => a[0].localeCompare(b[0]));
+    const filtersSortedByCategories = new Map(entries);
 
     return (
         <List sx={resultsGlobalFilterStyles.selectedFiltersPanel}>
-            {Array.from(filtersByCategories).map(([displayedCategoryTitle, filters], index) => (
+            {Array.from(filtersSortedByCategories).map(([displayedCategoryTitle, filters], index) => (
                 <ListItem key={displayedCategoryTitle} sx={resultsGlobalFilterStyles.selectedFiltersSubGroup}>
                     {index !== 0 && <Divider />}
                     <Typography sx={{ marginTop: 1 }}>
