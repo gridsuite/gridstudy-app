@@ -32,6 +32,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
@@ -47,6 +48,7 @@ type SensitivityAnalysisResultProps = CustomAGGridProps & {
     nOrNkIndex: number;
     sensiKind: SensiKind;
     filtersDef: { field: string; options: string[] }[];
+    filters: FilterConfig[];
     isLoading: boolean;
     goToFirstPage: () => void;
     setCsvHeaders: (newHeaders: string[]) => void;
@@ -58,6 +60,7 @@ function SensitivityAnalysisResult({
     nOrNkIndex = 0,
     sensiKind = SENSITIVITY_IN_DELTA_MW,
     filtersDef,
+    filters,
     goToFirstPage,
     isLoading,
     setCsvHeaders,
@@ -230,10 +233,11 @@ function SensitivityAnalysisResult({
         (event: GridReadyEvent) => {
             if (event.api) {
                 event.api.sizeColumnsToFit();
+                updateFilters(event.api, filters);
                 setCsvHeaders(getColumnHeaderDisplayNames(event.api));
             }
         },
-        [setCsvHeaders]
+        [filters, setCsvHeaders]
     );
 
     const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus, !isLoading);

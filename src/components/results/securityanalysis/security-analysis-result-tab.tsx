@@ -338,6 +338,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         result={result}
                         isLoadingResult={isLoadingResult}
                         columnDefs={columnDefs}
+                        filters={filters}
                     />
                 )}
                 {tabIndex === NMK_RESULTS_TAB_INDEX && (
@@ -353,6 +354,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             onRowsPerPageChange: handleChangeRowsPerPage,
                         }}
                         columnDefs={columnDefs}
+                        filters={filters}
                     />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&

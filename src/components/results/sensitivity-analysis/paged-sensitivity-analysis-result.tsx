@@ -224,6 +224,7 @@ function PagedSensitivityAnalysisResult({
                 sensiKind={sensiKind}
                 goToFirstPage={goToFirstPage}
                 filtersDef={filtersDef}
+                filters={filters}
                 isLoading={isLoading}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}

@@ -316,6 +316,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         tableName={intl.formatMessage({
                             id: 'LoadFlowResultsCurrentViolations',
                         })}
+                        filters={filters}
                     />
                 </GlassPane>
             )}
@@ -328,6 +329,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         tableName={intl.formatMessage({
                             id: 'LoadFlowResultsVoltageViolations',
                         })}
+                        filters={filters}
                     />
                 </GlassPane>
             )}
@@ -341,6 +343,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     tableName={intl.formatMessage({
                         id: 'LoadFlowResultsSummary',
                     })}
+                    filters={filters}
                 />
             )}
             {tabIndex === 3 && (

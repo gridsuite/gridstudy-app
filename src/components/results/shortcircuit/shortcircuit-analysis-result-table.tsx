@@ -49,6 +49,7 @@ import {
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { PanelType } from '../../workspace/types/workspace.types';
 import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -380,10 +381,11 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         (params: GridReadyEvent) => {
             if (params?.api) {
                 params.api.sizeColumnsToFit();
+                updateFilters(params.api, filters);
                 onGridColumnsChanged && onGridColumnsChanged(params);
             }
         },
-        [onGridColumnsChanged]
+        [filters, onGridColumnsChanged]
     );
 
     const handleRowDataUpdated = useCallback(

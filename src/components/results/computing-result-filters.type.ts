@@ -45,7 +45,7 @@ export type ComputationResultFiltersInfos = {
     >;
 };
 const mapColumn = (c: any): FilterConfig => ({
-    column: c.name,
+    column: c.id,
     type: c.filterType,
     value: c.filterValue,
     dataType: c.filterDataType,

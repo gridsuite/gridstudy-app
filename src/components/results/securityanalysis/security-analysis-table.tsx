@@ -14,12 +14,14 @@ import { ComputingType, CustomAGGrid, DefaultCellRenderer } from '@gridsuite/com
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
     rows,
     columnDefs,
     isLoadingResult,
     agGridProps,
+    filters,
 }) => {
     const intl: IntlShape = useIntl();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
@@ -34,9 +36,13 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
         !isLoadingResult
     );
 
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
+    const onGridReady = useCallback(
+        ({ api }: GridReadyEvent) => {
+            updateFilters(api, filters);
+            api?.sizeColumnsToFit();
+        },
+        [filters]
+    );
 
     const defaultColDef = useMemo(
         () => ({

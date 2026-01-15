@@ -26,6 +26,7 @@ import { PanelType } from 'components/workspace/types/workspace.types';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -104,10 +105,11 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         (event: GridReadyEvent) => {
             if (event.api) {
                 event.api.sizeColumnsToFit();
+                updateFilters(event.api, filters);
                 setCsvHeaders(getColumnHeaderDisplayNames(event.api));
             }
         },
-        [setCsvHeaders]
+        [filters, setCsvHeaders]
     );
 
     return (
