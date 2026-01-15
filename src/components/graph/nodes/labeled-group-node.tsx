@@ -61,7 +61,7 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
             &nbsp;
             <Box
                 position={'absolute'}
-                visibility={'visible'} // react-flow sometimes hides nodes for obscure reasons
+                visibility={'visible'}
                 top={labeledGroupTopPosition}
                 left={labeledGroupLeftPosition}
                 height={labeledGroupHeight}
