@@ -366,6 +366,20 @@
     "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
     "DynamicSecurityAnalysisTabStatus": "Status",
 
+    "startDynamicMarginCalculationError": "An error occurred while starting the dynamic margin calculation",
+    "DynamicMarginCalculation": "Dynamic margin calculation",
+    "DynamicMarginCalculationRunError": "An error occurred while executing the dynamic margin calculation",
+    "DynamicMarginCalculationStartTime": "Start time",
+    "DynamicMarginCalculationStopTime": "Stop time",
+    "DynamicMarginCalculationMarginCalculationStartTime": "Margin calculation start time",
+    "DynamicMarginCalculationLoadIncreaseStartTime": "Load increase start time",
+    "DynamicMarginCalculationLoadIncreaseStopTime": "Load increase stop time",
+    "DynamicMarginCalculationCalculationType": "Calculation type",
+    "DynamicMarginCalculationAccuracy": "Accuracy",
+    "DynamicMarginCalculationLoadModelsRule": "Load models rule",
+    "DynamicMarginCalculationLoadsVariations": "Load variations",
+    "DynamicMarginCalculationTabStatus": "Status",
+
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
 

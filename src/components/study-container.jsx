@@ -28,14 +28,14 @@ import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
+    convertToCustomError,
     hasElementPermission,
-    PermissionType,
     NotificationsUrlKeys,
+    PermissionType,
     snackWithFallback,
     useIntlRef,
     useNotificationsListener,
     useSnackMessage,
-    convertToCustomError,
 } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
@@ -205,6 +205,11 @@ export function StudyContainer() {
             if (updateTypeHeader === NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED) {
                 snackWithFallback(snackError, convertToCustomError(errorMessage), {
                     headerId: 'DynamicSecurityAnalysisRunError',
+                });
+            }
+            if (updateTypeHeader === NotificationType.DYNAMIC_MARGIN_CALCULATION_FAILED) {
+                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                    headerId: 'DynamicMarginCalculationRunError',
                 });
             }
             if (updateTypeHeader === NotificationType.VOLTAGE_INIT_FAILED) {
