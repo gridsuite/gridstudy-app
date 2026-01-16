@@ -45,12 +45,15 @@ function SelectedGlobalFilters() {
         }
         filtersByCategories.get(displayedCategoryTitle)?.push(filter);
     });
+    // the selected filters are sorted by their FilterType in order to match the category menu on the left
+    // (and to have a completely fixed order that prevent categories from jumping from one place to another)
     const entries = Array.from(filtersByCategories.entries());
     const sortOrder = Object.values(FilterType);
     entries.sort((a, b) => {
         const indexA = sortOrder.indexOf(a[1][0].filterType as FilterType);
         const indexB = sortOrder.indexOf(b[1][0].filterType as FilterType);
         if (indexA === indexB) {
+            // makes sure that the order is fixed, because some categories have the same filterType
             return a[0].localeCompare(b[0]);
         }
         return indexA - indexB;
