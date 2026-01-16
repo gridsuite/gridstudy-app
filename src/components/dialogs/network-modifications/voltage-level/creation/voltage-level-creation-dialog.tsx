@@ -71,18 +71,42 @@ import {
 import { UUID } from 'node:crypto';
 import {
     AttachedSubstationCreationInfo,
+    SwitchKind,
     VoltageLevelCreationInfo,
 } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
+import { CreateCouplingDeviceDialogSchemaForm } from '../../coupling-device/coupling-device-dialog.type';
 
-interface CouplingDevice {
-    [BUS_BAR_SECTION_ID1]: string | null;
-    [BUS_BAR_SECTION_ID2]: string | null;
+export type SwitchKindFormData = { [SWITCH_KIND]: string };
+
+interface VoltageLevelCreationFormData {
+    [ADDITIONAL_PROPERTIES]?: Property[];
+    [ADD_SUBSTATION_CREATION]: boolean;
+    [BUS_BAR_COUNT]: number;
+    [COUNTRY]: string | null;
+    [COUPLING_OMNIBUS]: CreateCouplingDeviceDialogSchemaForm[];
+    [EQUIPMENT_ID]: string;
+    [EQUIPMENT_NAME]: string;
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
+    [HIGH_VOLTAGE_LIMIT]: number | null;
+    [IS_ATTACHMENT_POINT_CREATION]: boolean;
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
+    [LOW_VOLTAGE_LIMIT]: number | null;
+    [NOMINAL_V]: number | null;
+    [SECTION_COUNT]: number;
+    [SUBSTATION_CREATION]: Properties;
+    [SUBSTATION_CREATION_ID]: string | null;
+    [SUBSTATION_ID]: string | null;
+    [SUBSTATION_NAME]: string | null;
+    [SWITCHES_BETWEEN_SECTIONS]: string;
+    [SWITCH_KINDS]: SwitchKindFormData[];
+    [TOPOLOGY_KIND]: string | null;
+    uuid?: UUID;
 }
 
 interface VoltageLevelCreationDialogProps {
-    editData?: VoltageLevelFormData;
+    editData?: VoltageLevelCreationFormData;
     currentNode: CurrentTreeNode;
     studyUuid: string;
     currentRootNetworkUuid: UUID;
@@ -93,33 +117,6 @@ interface VoltageLevelCreationDialogProps {
     titleId?: string;
     open?: boolean;
     onClose?: () => void;
-}
-
-type SwitchKinds = { [SWITCH_KIND]: string };
-
-interface VoltageLevelFormData {
-    [EQUIPMENT_ID]: string;
-    [EQUIPMENT_NAME]: string;
-    [SUBSTATION_ID]: string | null;
-    [NOMINAL_V]: number | null;
-    [LOW_VOLTAGE_LIMIT]: number | null;
-    [HIGH_VOLTAGE_LIMIT]: number | null;
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
-    [BUS_BAR_COUNT]: number;
-    [SECTION_COUNT]: number;
-    [SWITCHES_BETWEEN_SECTIONS]: string;
-    [COUPLING_OMNIBUS]: CouplingDevice[];
-    [SWITCH_KINDS]: SwitchKinds[];
-    [ADD_SUBSTATION_CREATION]: boolean;
-    [SUBSTATION_CREATION_ID]: string | null;
-    [SUBSTATION_NAME]: string | null;
-    [COUNTRY]: string | null;
-    [IS_ATTACHMENT_POINT_CREATION]: boolean;
-    [SUBSTATION_CREATION]: Properties;
-    [TOPOLOGY_KIND]: string | null;
-    [ADDITIONAL_PROPERTIES]?: Property[];
-    uuid?: UUID;
 }
 
 /**
@@ -133,7 +130,7 @@ interface VoltageLevelFormData {
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
 
-const emptyFormData: VoltageLevelFormData = {
+const emptyFormData: VoltageLevelCreationFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [SUBSTATION_ID]: null,
@@ -284,7 +281,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     const currentNodeUuid = currentNode.id;
     const { snackError, snackWarning } = useSnackMessage();
 
-    const defaultValues = useMemo((): VoltageLevelFormData => {
+    const defaultValues = useMemo((): VoltageLevelCreationFormData => {
         if (isAttachmentPointModification) {
             return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true, [IS_ATTACHMENT_POINT_CREATION]: true };
         } else {
@@ -314,7 +311,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
                 ),
             };
-            const switchKinds: SwitchKinds[] =
+            const switchKinds: SwitchKindFormData[] =
                 voltageLevel.switchKinds?.map((switchKind: string) => ({
                     [SWITCH_KIND]: switchKind,
                 })) || [];
@@ -436,7 +433,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     }, [fromExternalDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (voltageLevel: VoltageLevelFormData) => {
+        (voltageLevel: VoltageLevelCreationFormData) => {
             const substationCreation: AttachedSubstationCreationInfo | null = getValues(ADD_SUBSTATION_CREATION)
                 ? {
                       type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
@@ -449,8 +446,8 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
             onCreateVoltageLevel({
                 studyUuid: studyUuid as UUID,
                 nodeUuid: currentNodeUuid,
-                voltageLevelId: voltageLevel[EQUIPMENT_ID],
-                voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
+                equipmentId: voltageLevel[EQUIPMENT_ID],
+                equipmentName: sanitizeString(voltageLevel[EQUIPMENT_NAME]) ?? undefined,
                 substationId: substationCreation === null ? voltageLevel[SUBSTATION_ID] : null,
                 substationCreation: substationCreation,
                 nominalV: voltageLevel[NOMINAL_V],
@@ -467,7 +464,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 busbarCount: voltageLevel[BUS_BAR_COUNT],
                 sectionCount: voltageLevel[SECTION_COUNT],
                 switchKinds: voltageLevel[SWITCH_KINDS].map((e) => {
-                    return e.switchKind;
+                    return e.switchKind as SwitchKind;
                 }),
                 couplingDevices: voltageLevel[COUPLING_OMNIBUS],
                 isUpdate: !!editData,

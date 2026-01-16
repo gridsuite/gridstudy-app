@@ -14,7 +14,7 @@ import {
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
-import { ModificationType } from '@gridsuite/commons-ui';
+import { ModificationType, Option } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 
@@ -309,19 +309,25 @@ export interface SubstationModificationInfo {
     properties: Property[] | null;
 }
 
+export enum SwitchKind {
+    BREAKER = 'BREAKER',
+    DISCONNECTOR = 'DISCONNECTOR',
+    LOAD_BREAK_SWITCH = 'LOAD_BREAK_SWITCH',
+}
+
 export interface VoltageLeveInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    voltageLevelId: string;
-    voltageLevelName?: string | null;
+    equipmentId: string;
+    equipmentName?: string;
     substationId?: string | null;
     nominalV?: number | null;
     lowVoltageLimit?: number | null;
     highVoltageLimit?: number | null;
     busbarCount?: number;
     sectionCount?: number;
-    switchKinds?: any[];
-    couplingDevices?: any[];
+    switchKinds?: SwitchKind[];
+    couplingDevices?: CouplingDeviceInfos[];
     isUpdate?: boolean;
     modificationUuid?: UUID;
     properties: Property[] | null;
@@ -349,7 +355,10 @@ export interface AttachmentLine {
     b1: number;
     g2: number;
     b2: number;
-    currentLimits: CurrentLimits;
+    operationalLimitsGroups: OperationalLimitsGroup[];
+    selectedOperationalLimitsGroupId1: string;
+    selectedOperationalLimitsGroupId2: string;
+    properties: Property[] | null;
 }
 
 type VariationFilter = {
@@ -672,16 +681,21 @@ export interface DivideLineInfo {
     newLine2Name: string | null;
 }
 
+export interface ExtendedVoltageLevelCreationInfo extends VoltageLevelCreationInfo {
+    type: ModificationType.VOLTAGE_LEVEL_CREATION;
+    busbarSections?: Option[];
+}
+
 export interface AttachLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    uuid?: UUID;
     lineToAttachToId: string;
     percent: number;
     attachmentPointId: string;
     attachmentPointName: string | null;
-    attachmentPointDetailInformation: VoltageLevelCreationInfo;
-    mayNewVoltageLevelInfos: VoltageLevelCreationInfo;
+    attachmentPointDetailInformation: ExtendedVoltageLevelCreationInfo;
+    mayNewVoltageLevelInfos?: ExtendedVoltageLevelCreationInfo;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
     attachmentLine: AttachmentLine;

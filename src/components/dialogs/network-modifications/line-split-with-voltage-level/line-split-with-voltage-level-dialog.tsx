@@ -245,8 +245,8 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const onVoltageLevelCreationDo = useCallback(
         ({
-            voltageLevelId,
-            voltageLevelName,
+            equipmentId,
+            equipmentName,
             substationId,
             substationCreation,
             nominalV,
@@ -264,8 +264,8 @@ const LineSplitWithVoltageLevelDialog = ({
             return new Promise<string>(() => {
                 const preparedVoltageLevel = {
                     type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
-                    equipmentId: voltageLevelId,
-                    equipmentName: voltageLevelName,
+                    equipmentId,
+                    equipmentName,
                     substationId: substationId,
                     substationCreation: substationCreation,
                     nominalV: nominalV,
@@ -280,7 +280,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     topologyKind: topologyKind,
                     busbarSections:
                         sectionCount && busbarCount
-                            ? buildNewBusbarSections(voltageLevelId, sectionCount, busbarCount)
+                            ? buildNewBusbarSections(equipmentId, sectionCount, busbarCount)
                             : [],
                     properties: properties,
                 };
