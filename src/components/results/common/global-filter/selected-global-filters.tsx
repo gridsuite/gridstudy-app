@@ -46,7 +46,15 @@ function SelectedGlobalFilters() {
         filtersByCategories.get(displayedCategoryTitle)?.push(filter);
     });
     const entries = Array.from(filtersByCategories.entries());
-    entries.sort((a, b) => a[0].localeCompare(b[0]));
+    const sortOrder = Object.values(FilterType);
+    entries.sort((a, b) => {
+        const indexA = sortOrder.indexOf(a[1][0].filterType as FilterType);
+        const indexB = sortOrder.indexOf(b[1][0].filterType as FilterType);
+        if (indexA === indexB) {
+            return a[0].localeCompare(b[0]);
+        }
+        return indexA - indexB;
+    });
     const filtersSortedByCategories = new Map(entries);
 
     return (
