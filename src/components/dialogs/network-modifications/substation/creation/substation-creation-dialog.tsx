@@ -29,13 +29,13 @@ import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
-    emptyProperties,
     getPropertiesFromModification,
     Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { DeepNullable } from 'components/utils/ts-utils';
 
 interface SubstationInfos {
     id: string;
@@ -44,19 +44,6 @@ interface SubstationInfos {
     properties?: Record<string, string>;
 }
 
-interface SubstationCreationFormData {
-    [EQUIPMENT_ID]: string;
-    [EQUIPMENT_NAME]?: string;
-    [COUNTRY]: string | null;
-    [ADDITIONAL_PROPERTIES]?: Property[];
-}
-
-const emptyFormData: SubstationCreationFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
-    [COUNTRY]: null,
-    ...emptyProperties,
-};
 const formSchema = yup
     .object()
     .shape({
@@ -64,7 +51,16 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
     })
-    .concat(creationPropertiesSchema) as yup.ObjectSchema<SubstationCreationFormData>;
+    .concat(creationPropertiesSchema);
+
+export type SubstationCreationFormData = yup.InferType<typeof formSchema>;
+
+const emptyFormData: SubstationCreationFormData = {
+    [EQUIPMENT_ID]: '',
+    [EQUIPMENT_NAME]: '',
+    [COUNTRY]: null,
+    [ADDITIONAL_PROPERTIES]: [],
+};
 
 interface SubstationCreationEditData {
     uuid?: UUID;
@@ -105,9 +101,9 @@ const SubstationCreationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<SubstationCreationFormData>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<SubstationCreationFormData>>(formSchema),
     });
 
     const { reset, getValues } = formMethods;
@@ -162,7 +158,7 @@ const SubstationCreationDialog = ({
                 nodeUuid: currentNodeUuid,
                 substationId: substation[EQUIPMENT_ID],
                 substationName: sanitizeString(substation[EQUIPMENT_NAME]),
-                country: substation[COUNTRY],
+                country: substation[COUNTRY] ?? null,
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
                 properties: toModificationProperties(substation),

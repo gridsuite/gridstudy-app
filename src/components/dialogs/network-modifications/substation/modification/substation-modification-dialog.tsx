@@ -21,7 +21,6 @@ import { modifySubstation } from '../../../../../services/study/network-modifica
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
 import {
-    emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
     modificationPropertiesSchema,
@@ -29,22 +28,11 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { AttributeModification } from 'services/network-modification-types';
-
-interface SubstationModificationFormData {
-    [EQUIPMENT_NAME]?: string;
-    [COUNTRY]: string | null;
-    [ADDITIONAL_PROPERTIES]?: Property[];
-}
-
-const emptyFormData: SubstationModificationFormData = {
-    [EQUIPMENT_NAME]: '',
-    [COUNTRY]: null,
-    ...emptyProperties,
-};
+import { useForm } from 'react-hook-form';
+import { DeepNullable } from '../../../../utils/ts-utils';
 
 const formSchema = yup
     .object()
@@ -52,7 +40,15 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
     })
-    .concat(modificationPropertiesSchema) as yup.ObjectSchema<SubstationModificationFormData>;
+    .concat(modificationPropertiesSchema);
+
+export type SubstationModificationFormData = yup.InferType<typeof formSchema>;
+
+const emptyFormData: SubstationModificationFormData = {
+    [EQUIPMENT_NAME]: '',
+    [COUNTRY]: null,
+    [ADDITIONAL_PROPERTIES]: [],
+};
 
 interface SubstationModificationEditData {
     uuid?: UUID;
@@ -99,9 +95,9 @@ const SubstationModificationDialog = ({
     const [substationToModify, setSubstationToModify] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const formMethods = useFormWithDirtyTracking({
+    const formMethods = useForm<DeepNullable<SubstationModificationFormData>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<SubstationModificationFormData>>(formSchema),
     });
     const { reset, getValues } = formMethods;
 
@@ -176,7 +172,7 @@ const SubstationModificationDialog = ({
                 modificationUuid: editData?.uuid,
                 id: selectedId,
                 name: sanitizeString(substation[EQUIPMENT_NAME]),
-                country: substation[COUNTRY],
+                country: substation[COUNTRY] ?? null,
                 properties: toModificationProperties(substation),
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'SubstationModificationError' });
