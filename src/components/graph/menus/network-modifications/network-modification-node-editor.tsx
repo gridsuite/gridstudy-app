@@ -8,6 +8,7 @@
 import {
     ElementSaveDialog,
     ElementType,
+    EquipmentType,
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
@@ -113,7 +114,6 @@ import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications
 import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level/topology-creation/create-voltage-level-topology-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
@@ -229,21 +229,23 @@ const NetworkModificationNodeEditor = () => {
         );
     }
 
-    function equipmentDeletionDialogWithDefaultParams(equipmentType: EQUIPMENT_TYPES) {
-        return (
-            <EquipmentDeletionDialog
-                onClose={handleCloseDialog}
-                onValidated={handleValidatedDialog}
-                currentNode={currentNode}
-                studyUuid={studyUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                editData={editData}
-                isUpdate={isUpdate}
-                editDataFetchStatus={editDataFetchStatus}
-                equipmentType={equipmentType}
-                defaultIdValue={null}
-            />
-        );
+    function equipmentDeletionDialogWithDefaultParams(equipmentType: EquipmentType) {
+        if (currentNode && studyUuid && currentRootNetworkUuid && editData) {
+            return (
+                <EquipmentDeletionDialog
+                    onClose={handleCloseDialog}
+                    onValidated={handleValidatedDialog}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    editData={editData}
+                    isUpdate={isUpdate}
+                    editDataFetchStatus={editDataFetchStatus}
+                    equipmentType={equipmentType}
+                    defaultIdValue={null}
+                />
+            );
+        }
     }
 
     const menuDefinition: MenuSection[] = [
@@ -267,7 +269,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_SUBSTATION',
                             label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SUBSTATION),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EquipmentType.SUBSTATION),
                         },
                     ],
                 },
@@ -313,7 +315,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_VOLTAGE_LEVEL',
                             label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EquipmentType.VOLTAGE_LEVEL),
                         },
                     ],
                 },
@@ -339,7 +341,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_LINE',
                             label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LINE),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EquipmentType.LINE),
                         },
                     ],
                 },
@@ -403,7 +405,7 @@ const NetworkModificationNodeEditor = () => {
                             id: 'DELETE_TWO_WINDINGS_TRANSFORMER',
                             label: 'DeleteContingencyList',
                             action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
+                                equipmentDeletionDialogWithDefaultParams(EquipmentType.TWO_WINDINGS_TRANSFORMER),
                         },
                     ],
                 },
@@ -424,7 +426,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_VSC',
                             label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EquipmentType.HVDC_LINE),
                         },
                     ],
                 },
@@ -445,7 +447,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_LCC',
                             label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EquipmentType.HVDC_LINE),
                         },
                     ],
                 },
@@ -471,7 +473,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_GENERATOR',
                             label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.GENERATOR),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EquipmentType.GENERATOR),
                         },
                     ],
                 },
@@ -492,7 +494,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_BATTERY',
                             label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.BATTERY),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EquipmentType.BATTERY),
                         },
                     ],
                 },
@@ -513,7 +515,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_LOAD',
                             label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LOAD),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EquipmentType.LOAD),
                         },
                     ],
                 },
@@ -534,7 +536,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_SHUNT_COMPENSATOR',
                             label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EquipmentType.SHUNT_COMPENSATOR),
                         },
                     ],
                 },
@@ -551,7 +553,7 @@ const NetworkModificationNodeEditor = () => {
                             id: 'DELETE_STATIC_VAR_COMPENSATOR',
                             label: 'DeleteContingencyList',
                             action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
+                                equipmentDeletionDialogWithDefaultParams(EquipmentType.STATIC_VAR_COMPENSATOR),
                         },
                     ],
                 },
