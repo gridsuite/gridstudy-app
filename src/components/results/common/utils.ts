@@ -34,12 +34,16 @@ export const translateLimitNameFrontToBack = (limitName: string, intl: IntlShape
     }
 };
 
+/**
+ * Global filters types
+ * the order of those enum values is the default order for global filter displays : do not move them around
+ */
 export enum FilterType {
     VOLTAGE_LEVEL = 'voltageLevel',
     COUNTRY = 'country',
-    GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library (except voltage level and substation filters)
-    SUBSTATION_OR_VL = 'substationOrVoltageLevelFilter', // voltage levels and substation generic filters which uses the filter library
     SUBSTATION_PROPERTY = 'substationProperty',
+    SUBSTATION_OR_VL = 'substationOrVoltageLevelFilter', // voltage levels and substation generic filters which uses the filter library
+    GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library (except voltage level and substation filters)
 }
 
 export function isCriteriaFilter(filter: GlobalFilter): boolean {
