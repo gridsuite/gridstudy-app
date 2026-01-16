@@ -6,52 +6,23 @@
  */
 
 import { Grid } from '@mui/material';
-import { CheckboxInput } from '@gridsuite/commons-ui';
-import ReadOnlyInput from 'components/utils/rhf-inputs/read-only/read-only-input';
 import {
-    SHUNT_COMPENSATOR_SELECTED,
-    ID,
     DELETION_SPECIFIC_DATA,
     SHUNT_COMPENSATOR_SIDE_1,
     SHUNT_COMPENSATOR_SIDE_2,
 } from 'components/utils/field-constants';
-import { FormattedMessage } from 'react-intl';
 import { useFieldArray } from 'react-hook-form';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
+import ShuntCompensatorSelectionForm from './shunt-compensator-selection-form';
 
-const HvdcLccDeletionSpecificForm = () => {
+export default function HvdcLccDeletionSpecificForm() {
     const { fields: mcsRows1 } = useFieldArray({
         name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`,
     });
     const { fields: mcsRows2 } = useFieldArray({
         name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`,
     });
-
-    const ShuntCompensatorSelectionForm = ({ title, arrayFormName, mcsRows }) => {
-        return (
-            <Grid item container spacing={1} direction="column">
-                <Grid item>
-                    <h4>
-                        <FormattedMessage id={title} />
-                    </h4>
-                </Grid>
-                {mcsRows.map((field, index) => (
-                    <Grid container spacing={1} alignItems="center" key={field.id}>
-                        <Grid item xs={1} align={'start'}>
-                            <CheckboxInput
-                                key={field.id + 'SEL'}
-                                name={`${arrayFormName}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
-                            />
-                        </Grid>
-                        <Grid item xs={11} align={'start'}>
-                            <ReadOnlyInput key={field.id + 'ID'} name={`${arrayFormName}[${index}].${ID}`} />
-                        </Grid>
-                    </Grid>
-                ))}
-            </Grid>
-        );
-    };
 
     const mcsOnsideOne = (
         <ShuntCompensatorSelectionForm
@@ -78,6 +49,4 @@ const HvdcLccDeletionSpecificForm = () => {
             </Grid>
         </Grid>
     );
-};
-
-export default HvdcLccDeletionSpecificForm;
+}
