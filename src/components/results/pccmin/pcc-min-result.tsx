@@ -12,7 +12,7 @@ import { ComputingType, MuiStyles, useSnackMessage, snackWithFallback } from '@g
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
-import { useFilterSelector } from 'hooks/use-filter-selector';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import RunningStatus from 'components/utils/running-status';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
@@ -24,7 +24,6 @@ import { FilterType, PaginationType } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
-import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { PccMinExportButton } from './pcc-min-export-button';
 
 interface PccMinResultProps {
@@ -96,7 +95,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         [dispatchPagination]
     );
 
-    const memoizedSetPageCallback = useCallback(() => {
+    const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
@@ -166,7 +165,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                     nodeUuid={nodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     csvHeaders={csvHeaders}
-                    globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
+                    globalFilters={globalFilters}
                     disabled={isCsvButtonDisabled}
                 />
             </Box>
@@ -176,7 +175,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 isFetching={isFetching}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                onFilter={memoizedSetPageCallback}
+                goToFirstPage={goToFirstPage}
                 filters={filters}
             />
             <CustomTablePagination

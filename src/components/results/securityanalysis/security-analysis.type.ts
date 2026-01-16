@@ -108,6 +108,7 @@ export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
     columnDefs: ColDef<any>[];
+    filters: FilterConfig[];
 }
 
 export interface SecurityAnalysisResultNmkProps {
@@ -116,6 +117,7 @@ export interface SecurityAnalysisResultNmkProps {
     isLoadingResult: boolean;
     isFromContingency: boolean;
     paginationProps: TablePaginationProps;
+    filters: FilterConfig[];
 }
 
 export interface SecurityAnalysisNTableRow {
@@ -139,4 +141,5 @@ export interface SecurityAnalysisResultProps {
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
+    filters: FilterConfig[];
 }

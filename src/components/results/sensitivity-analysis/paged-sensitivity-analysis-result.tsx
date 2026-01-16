@@ -17,7 +17,7 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useSnackMessage, ComputingType, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
+import { ComputingType, snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -26,7 +26,6 @@ import {
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import {
     FilterType as AgGridFilterType,
     PaginationType,
@@ -39,6 +38,7 @@ import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -124,7 +124,7 @@ function PagedSensitivityAnalysisResult({
         [dispatchPagination]
     );
 
-    const onFilter = useCallback(() => {
+    const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
@@ -174,7 +174,7 @@ function PagedSensitivityAnalysisResult({
             nodeUuid,
             currentRootNetworkUuid,
             selector,
-            mappedFilters,
+            mappedFilters ?? [],
             globalFilters
         )
             .then((res) => {
@@ -222,8 +222,9 @@ function PagedSensitivityAnalysisResult({
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
                 sensiKind={sensiKind}
-                onFilter={onFilter}
+                goToFirstPage={goToFirstPage}
                 filtersDef={filtersDef}
+                filters={filters}
                 isLoading={isLoading}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}

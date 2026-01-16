@@ -11,7 +11,6 @@ import { downloadZipFile } from '../../../services/utils';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
-import { useFilterSelector } from 'hooks/use-filter-selector';
 import {
     DATA_KEY_TO_FILTER_KEY_N,
     DATA_KEY_TO_FILTER_KEY_NK,
@@ -27,6 +26,7 @@ import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-a
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 interface SensitivityExportButtonProps {
     studyUuid: UUID;

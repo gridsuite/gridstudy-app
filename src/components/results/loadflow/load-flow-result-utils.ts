@@ -15,11 +15,11 @@ import {
     OverloadedEquipmentFromBack,
 } from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
-import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import { ColDef, GridApi, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
     LOADFLOW_CURRENT_LIMIT_VIOLATION,
@@ -49,6 +49,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
+import { AgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
@@ -220,6 +221,7 @@ const makeAgGridFloatColumn = (
     filterParams: {
         type: AgGridFilterType;
         tab: string;
+        updateFilterCallback: any;
     }
 ) => {
     return {
@@ -231,17 +233,41 @@ const makeAgGridFloatColumn = (
             fractionDigits: 2,
             sortParams,
             filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+            filterComponentParams: {
+                filterParams: {
+                    ...numericFilterParams,
+                    ...filterParams,
+                },
+            },
         },
     };
 };
+
+const createColumnContext = (
+    sortParams: ColumnContext['sortParams'] | undefined,
+    filterParams: any,
+    filterComponent: any,
+    extraFilterParams = {},
+    extraComponentParams = {}
+) => ({
+    sortParams,
+    filterComponent,
+    filterComponentParams: {
+        filterParams: {
+            ...filterParams,
+            ...extraFilterParams,
+        },
+        ...extraComponentParams,
+    },
+});
 
 export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    subjectIdRenderer: SubjectIdRendererType
+    subjectIdRenderer: SubjectIdRendererType,
+    filterContext: AgGridFilterContext
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
@@ -250,29 +276,27 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
+        updateFilterCallback: createUpdateFilterCallback(filterContext),
     };
+
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
             colId: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-
-            context: {
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...filterParams, ...textFilterParams } },
-            },
+            context: createColumnContext(sortParams, filterParams, CustomAggridComparatorFilter, textFilterParams),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitNameCurrentViolation' }),
             colId: 'limitName',
             field: 'limitName',
-            context: {
+            context: createColumnContext(
                 sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...filterParams, ...translatedFilterParams } },
-            },
+                filterParams,
+                CustomAggridComparatorFilter,
+                translatedFilterParams
+            ),
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLoading', 'overload', intl, sortParams, filterParams)),
@@ -283,32 +307,14 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'actualOverloadDuration' }),
             colId: 'actualOverloadDuration',
             field: 'actualOverloadDuration',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridDurationFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...filterParams,
-                        ...numericFilterParams,
-                    },
-                },
-            },
+            context: createColumnContext(sortParams, filterParams, CustomAggridDurationFilter, numericFilterParams),
             valueGetter: (value: ValueGetterParams) => convertDuration(value.data.actualOverloadDuration),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'upComingOverloadDuration' }),
             colId: 'upComingOverloadDuration',
             field: 'upComingOverloadDuration',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridDurationFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...filterParams,
-                        ...numericFilterParams,
-                    },
-                },
-            },
+            context: createColumnContext(sortParams, filterParams, CustomAggridDurationFilter, numericFilterParams),
             valueGetter: (value: ValueGetterParams) => {
                 if (value.data.upComingOverloadDuration === null) {
                     return intl.formatMessage({ id: 'NoneUpcomingOverload' });
@@ -322,11 +328,12 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'NextLimitNameCurrentViolation' }),
             colId: 'nextLimitName',
             field: 'nextLimitName',
-            context: {
+            context: createColumnContext(
                 sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...filterParams, ...translatedFilterParams } },
-            },
+                filterParams,
+                CustomAggridComparatorFilter,
+                translatedFilterParams
+            ),
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
         makeAgGridCustomHeaderColumn(
@@ -342,18 +349,16 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             colId: 'side',
             field: 'side',
-            context: {
+            context: createColumnContext(
                 sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
+                filterParams,
+                CustomAggridAutocompleteFilter,
+                { dataType: FILTER_DATA_TYPES.TEXT },
+                {
                     options: filterEnums['side'] ?? [],
                     getOptionLabel: getEnumLabel,
-                },
-            },
+                }
+            ),
         }),
     ];
 };
@@ -366,7 +371,8 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    subjectIdRenderer: SubjectIdRendererType
+    subjectIdRenderer: SubjectIdRendererType,
+    filterContext: AgGridFilterContext
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
@@ -375,45 +381,37 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
+        updateFilterCallback: createUpdateFilterCallback(filterContext),
     };
+
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipmentBus' }),
             colId: 'locationId',
             field: 'locationId',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...filterParams, ...textFilterParams } },
-            },
+            context: createColumnContext(sortParams, filterParams, CustomAggridComparatorFilter, textFilterParams),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipmentVoltageLevel' }),
             colId: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            context: {
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...filterParams, ...textFilterParams } },
-            },
+            context: createColumnContext(sortParams, filterParams, CustomAggridComparatorFilter, textFilterParams),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             colId: 'limitType',
             field: 'limitType',
-            context: {
+            context: createColumnContext(
                 sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
+                filterParams,
+                CustomAggridAutocompleteFilter,
+                { dataType: FILTER_DATA_TYPES.TEXT },
+                {
                     options: filterEnums['limitType'] ?? [],
                     getOptionLabel: getEnumLabel,
-                },
-            },
+                }
+            ),
             valueGetter: (value: ValueGetterParams) => {
                 return formatLimitType(value.data.limitType, intl);
             },
@@ -432,46 +430,42 @@ export const componentColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element
+    statusCellRender: (cellData: ICellRendererParams) => JSX.Element,
+    filterContext: AgGridFilterContext
 ): ColDef[] => {
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
+        updateFilterCallback: createUpdateFilterCallback(filterContext),
     };
+
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'connectedComponentNum' }),
             colId: 'connectedComponentNum',
             field: 'connectedComponentNum',
-            context: {
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
+            context: createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'synchronousComponentNum' }),
             colId: 'synchronousComponentNum',
             field: 'synchronousComponentNum',
-            context: {
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
+            context: createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'status' }),
             colId: 'status',
             field: 'status',
-            context: {
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
+            context: createColumnContext(
+                undefined,
+                filterParams,
+                CustomAggridAutocompleteFilter,
+                { dataType: FILTER_DATA_TYPES.TEXT },
+                {
                     options: filterEnums['status'] ?? [],
                     getOptionLabel: getEnumLabel,
-                },
-            },
+                }
+            ),
             cellRenderer: statusCellRender,
         }),
         makeAgGridCustomHeaderColumn({
@@ -481,8 +475,7 @@ export const componentColumnsDefinition = (
             context: {
                 numeric: true,
                 fractionDigits: 2,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+                ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -492,8 +485,7 @@ export const componentColumnsDefinition = (
             context: {
                 numeric: true,
                 fractionDigits: 2,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+                ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -503,8 +495,7 @@ export const componentColumnsDefinition = (
             context: {
                 numeric: true,
                 fractionDigits: 2,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+                ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -514,8 +505,7 @@ export const componentColumnsDefinition = (
             context: {
                 numeric: true,
                 fractionDigits: 2,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+                ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -525,8 +515,7 @@ export const componentColumnsDefinition = (
             context: {
                 numeric: true,
                 fractionDigits: 2,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+                ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, textFilterParams),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -538,27 +527,20 @@ export const componentColumnsDefinition = (
             context: {
                 numeric: true,
                 fractionDigits: 2,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+                ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'slackBusId' }),
             colId: 'id',
             field: 'id',
-            context: {
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...textFilterParams, ...filterParams } },
-            },
+            context: createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, textFilterParams),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'iterationCount' }),
             colId: 'iterationCount',
             field: 'iterationCount',
-            context: {
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
+            context: createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
         }),
     ];
 };
@@ -724,4 +706,11 @@ export const formatExchangesResult = (
             exchange: exchangePair.exchange,
         };
     });
+};
+
+export const createUpdateFilterCallback = (filterContext: AgGridFilterContext) => {
+    return (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
+        if (!api || !filters || !colId) return;
+        filterContext.onFilterChange?.({ api, filters, colId });
+    };
 };

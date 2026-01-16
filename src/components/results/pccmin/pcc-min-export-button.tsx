@@ -12,7 +12,7 @@ import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
-import { useFilterSelector } from 'hooks/use-filter-selector';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';

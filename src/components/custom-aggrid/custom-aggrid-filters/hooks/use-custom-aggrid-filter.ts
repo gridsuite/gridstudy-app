@@ -70,7 +70,7 @@ export const useCustomAggridFilter = (
                 updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
             }
 
-            updateFilterCallback && updateFilterCallback(api, updatedFilters);
+            updateFilterCallback && updateFilterCallback(api, updatedFilters, colId);
             dispatchFilters(updatedFilters);
         },
         [updateFilterCallback, api, dispatchFilters, filters]

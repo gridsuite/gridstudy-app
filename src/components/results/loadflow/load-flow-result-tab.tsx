@@ -32,7 +32,7 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -47,14 +47,17 @@ import {
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
-import { ICellRendererParams } from 'ag-grid-community';
 import { Button, LinearProgress } from '@mui/material';
+import { ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
+import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 const styles = {
     flexWrapper: {
@@ -91,7 +94,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
@@ -99,6 +102,17 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     });
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
+    const globalFilters = useMemo(
+        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
+        [globalFiltersFromState]
+    );
+
+    const handleGlobalFilterChangeAndUpdate = useCallback(
+        (newFilters: GlobalFilter[]) => {
+            updateGlobalFilters(newFilters);
+        },
+        [updateGlobalFilters]
+    );
     const getEnumLabel = useCallback(
         (value: string) =>
             intl.formatMessage({
@@ -131,7 +145,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
                 })),
                 filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
-                ...(isGlobalFilterParameter(globalFilters)
+                ...(globalFilters
                     ? {
                           globalFilters: {
                               ...globalFilters,
@@ -175,6 +189,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         invalidations: loadflowResultInvalidations,
     });
 
+    const filterContext = useAgGridFilterContext(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
+
     const SubjectIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value, node, colDef } = props || {};
@@ -201,7 +217,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     filterEnums,
                     getEnumLabel,
                     tabIndex,
-                    SubjectIdRenderer
+                    SubjectIdRenderer,
+                    filterContext
                 );
             case 1:
                 return loadFlowVoltageViolationsColumnsDefinition(
@@ -209,17 +226,18 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     filterEnums,
                     getEnumLabel,
                     tabIndex,
-                    SubjectIdRenderer
+                    SubjectIdRenderer,
+                    filterContext
                 );
 
             default:
                 return [];
         }
-    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer]);
+    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer, filterContext]);
 
     const componentColumns = useMemo(() => {
-        return componentColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex, StatusCellRender);
-    }, [tabIndex, intl, filterEnums, getEnumLabel]);
+        return componentColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex, StatusCellRender, filterContext);
+    }, [tabIndex, intl, filterEnums, getEnumLabel, filterContext]);
 
     const countryAdequaciesColumns = useMemo(() => {
         return countryAdequaciesColumnsDefinition(intl);
@@ -279,9 +297,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <GlobalFilterSelector
-                        onChange={handleGlobalFilterChange}
+                        onChange={handleGlobalFilterChangeAndUpdate}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
+                        preloadedGlobalFilters={globalFiltersFromState}
                         genericFiltersStrictMode={true}
                     />
                 </Box>
@@ -297,6 +316,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         tableName={intl.formatMessage({
                             id: 'LoadFlowResultsCurrentViolations',
                         })}
+                        filters={filters}
                     />
                 </GlassPane>
             )}
@@ -309,6 +329,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         tableName={intl.formatMessage({
                             id: 'LoadFlowResultsVoltageViolations',
                         })}
+                        filters={filters}
                     />
                 </GlassPane>
             )}
@@ -322,6 +343,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     tableName={intl.formatMessage({
                         id: 'LoadFlowResultsSummary',
                     })}
+                    filters={filters}
                 />
             )}
             {tabIndex === 3 && (

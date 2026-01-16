@@ -12,9 +12,9 @@ import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import type { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { evaluateGlobalFilter } from '../../../../services/study/filter';
 import type { AppState } from '../../../../redux/reducer';
-import useGlobalFilters, { isGlobalFilterParameter } from './use-global-filters';
 import type { FilterEquipmentType } from '../../../../types/filter-lib/filter';
 import { isStatusBuilt } from '../../../graph/util/model-functions';
+import { buildValidGlobalFilters } from './build-valid-global-filters';
 
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */
@@ -36,7 +36,7 @@ function useGlobalFiltersResults(
             currentRootNetworkUuid &&
             currentNode?.id &&
             isStatusBuilt(currentNode?.data?.globalBuildStatus) &&
-            isGlobalFilterParameter(globalFilters)
+            globalFilters
         ) {
             evaluateGlobalFilter(studyUuid, currentNode.id, currentRootNetworkUuid, equipmentTypes, globalFilters)
                 .then(setFilteredIds)
@@ -58,7 +58,5 @@ function useGlobalFiltersResults(
 }
 
 export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
-    useEffect(() => handleGlobalFilterChange(filters), [filters, handleGlobalFilterChange]);
-    return useGlobalFiltersResults(globalFilters, equipmentTypes);
+    return useGlobalFiltersResults(buildValidGlobalFilters(filters), equipmentTypes);
 }

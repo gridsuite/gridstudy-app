@@ -227,3 +227,36 @@ export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModel
         },
     });
 }
+
+export function getComputationResultFilters(studyUuid: UUID): Promise<any> {
+    console.info('get computing result config collection');
+    const url = getStudyUrl(studyUuid) + '/computation-result-filters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function updateComputationResultFilters(studyUuid: UUID, id: string | undefined, filters: GlobalFilter[]) {
+    return backendFetchJson(getStudyUrl(studyUuid) + `/computation-result-filters/${id}/global-filters`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filters),
+    });
+}
+
+export function updateComputationResultFiltersColumn(
+    studyUuid: UUID,
+    computationResultFilterUuid: UUID,
+    columnUuid: UUID,
+    column: any
+) {
+    const url = `${getStudyUrl(studyUuid)}/computation-result-filters/${computationResultFilterUuid}/columns/${columnUuid}`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(column),
+    });
+}

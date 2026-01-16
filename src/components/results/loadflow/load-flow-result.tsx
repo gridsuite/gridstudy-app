@@ -45,6 +45,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     componentColumnDefs,
     countryAdequaciesColumnDefs,
     exchangesColumnDefs,
+    filters,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -120,6 +121,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={message}
                         skipColumnHeaders={false}
+                        filters={filters}
                     />
                 </div>
                 <GridSection
@@ -140,6 +142,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={message}
                         skipColumnHeaders={false}
+                        filters={filters}
                     />
                 </div>
                 <GridSection
@@ -160,6 +163,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={message}
                         skipColumnHeaders={false}
+                        filters={filters}
                     />
                 </div>
             </div>

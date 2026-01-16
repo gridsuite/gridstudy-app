@@ -38,6 +38,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
     isLoadingResult,
     isFromContingency,
     paginationProps,
+    filters,
 }) => {
     const { content } = result || {};
 
@@ -77,6 +78,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
                     agGridProps={agGridProps}
+                    filters={filters}
                 />
             </Box>
             <Box>

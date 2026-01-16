@@ -45,6 +45,7 @@ export enum FilterType {
     Logs = 'Logs',
     StateEstimation = 'StateEstimation',
     PccMin = 'PccMin',
+    VoltageInit = 'VoltageInit',
 }
 
 export type FilterData = {
@@ -65,7 +66,7 @@ export type FilterParams = {
     dataType?: string;
     comparators?: string[];
     debounceMs?: number;
-    updateFilterCallback?: (api?: GridApi, filters?: FilterConfig[]) => void;
+    updateFilterCallback?: (api?: GridApi, filters?: FilterConfig[], colId?: string) => void;
 };
 
 export type PaginationConfig = {

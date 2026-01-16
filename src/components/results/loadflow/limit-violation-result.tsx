@@ -28,6 +28,7 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
     isLoadingResult,
     columnDefs,
     tableName,
+    filters,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -87,6 +88,7 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}
+                    filters={filters}
                 />
             </>
         );

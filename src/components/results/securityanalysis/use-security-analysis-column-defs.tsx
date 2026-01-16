@@ -14,17 +14,20 @@ import { BranchSide } from 'components/utils/constants';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button } from '@mui/material';
 import {
+    getStoreFields,
     RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { openSLD } from '../../../redux/slices/workspace-slice';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PanelType } from '../../workspace/types/workspace.types';
+import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -35,14 +38,14 @@ type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
     tabIndex: number,
-    onFilter: () => void
+    goToFirstPage: () => void
 ) => ColDef[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
     tabIndex,
-    onFilter
+    goToFirstPage
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -59,6 +62,12 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                 defaultMessage: value,
             }),
         [intl]
+    );
+
+    const filterContext = useAgGridFilterContext(
+        AgGridFilterType.SecurityAnalysis,
+        getStoreFields(tabIndex),
+        goToFirstPage
     );
 
     // for nmk views, click handler on subjectId cell
@@ -141,7 +150,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    onFilter
+                    filterContext
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -150,12 +159,18 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    onFilter
+                    filterContext
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex, onFilter);
+                return securityAnalysisTableNColumnsDefinition(
+                    intl,
+                    filterEnums.n,
+                    getEnumLabel,
+                    tabIndex,
+                    filterContext
+                );
         }
-    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, onFilter]);
+    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, filterContext]);
 
     return columnDefs;
 };

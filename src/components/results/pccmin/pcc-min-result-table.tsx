@@ -23,6 +23,10 @@ import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
+import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -32,7 +36,7 @@ const styles = {
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     result,
     isFetching,
-    onFilter,
+    goToFirstPage,
     filters,
     setCsvHeaders,
     setIsCsvButtonDisabled,
@@ -62,9 +66,10 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [dispatch]
     );
 
+    const filterContext = useAgGridFilterContext(AgGridFilterType.PccMin, PCCMIN_RESULT, goToFirstPage);
     const columns = useMemo(
-        () => getPccMinColumns(intl, onFilter, voltageLevelIdRenderer),
-        [intl, onFilter, voltageLevelIdRenderer]
+        () => getPccMinColumns(intl, voltageLevelIdRenderer, filterContext),
+        [filterContext, intl, voltageLevelIdRenderer]
     );
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);
@@ -100,10 +105,11 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         (event: GridReadyEvent) => {
             if (event.api) {
                 event.api.sizeColumnsToFit();
+                updateFilters(event.api, filters);
                 setCsvHeaders(getColumnHeaderDisplayNames(event.api));
             }
         },
-        [setCsvHeaders]
+        [filters, setCsvHeaders]
     );
 
     return (
