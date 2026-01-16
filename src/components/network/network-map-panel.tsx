@@ -1169,6 +1169,7 @@ export const NetworkMapPanel = ({
                     nominalVoltages={nominalVoltagesFromMapEquipments ?? EMPTY_ARRAY}
                     filteredNominalVoltages={filteredNominalVoltages ?? EMPTY_ARRAY}
                     onChange={handleFilteredNominalVoltagesChange}
+                    disabled={!basicDataReady || mapDataLoading}
                 />
             </Box>
         );
