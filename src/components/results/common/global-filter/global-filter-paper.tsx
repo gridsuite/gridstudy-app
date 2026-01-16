@@ -174,7 +174,6 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
     return (
         <>
             <ClickAwayListener
-                mouseEvent="onClick"
                 onClickAway={(event) => {
                     const target = event.target as HTMLElement;
                     // The autocomplete is considered "outside" of the dropdown
