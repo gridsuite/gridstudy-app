@@ -25,10 +25,6 @@ const styles = {
         alignItems: 'center',
         mb: 1,
     },
-    iconMinSize: {
-        minHeight: '15px',
-        minWidth: '15px',
-    },
     text: {
         marginLeft: '5px',
     },
@@ -58,7 +54,7 @@ export const RootNetworkModificationsSearchResults: React.FC<RootNetworkModifica
             {results.map((result) => (
                 <Box key={result.nodeUuid} sx={{ mb: 2 }}>
                     <Box sx={styles.rootNameTitle}>
-                        <DeviceHub sx={styles.iconMinSize} />
+                        <DeviceHub fontSize="small" />
                         <OverflowableText text={getName(result.nodeUuid)} sx={styles.text} maxLineCount={1} />
                     </Box>
                     <ModificationResults modifications={result.modifications} nodeUuid={result.nodeUuid} />

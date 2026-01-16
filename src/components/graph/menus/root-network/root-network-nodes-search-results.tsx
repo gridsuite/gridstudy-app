@@ -37,10 +37,6 @@ const styles = {
             backgroundColor: theme.aggrid.highlightColor,
         },
     }),
-    iconMinSize: {
-        minHeight: '20px',
-        minWidth: '20px',
-    },
 } as const satisfies MuiStyles;
 
 export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResultsProps> = ({ results }) => {
@@ -64,7 +60,7 @@ export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResul
             {results.map((result) => (
                 <Box key={result + '_node'} sx={styles.itemHover}>
                     <Box sx={styles.rootNameTitle} onClick={() => handleClick(result)}>
-                        <DeviceHub sx={styles.iconMinSize} />
+                        <DeviceHub fontSize="small" />
                         <OverflowableText text={result} sx={{ marginLeft: '5px' }} maxLineCount={1} />
                     </Box>
                     <Divider />
