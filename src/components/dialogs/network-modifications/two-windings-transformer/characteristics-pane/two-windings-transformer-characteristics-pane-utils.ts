@@ -8,7 +8,20 @@
 import { CHARACTERISTICS, G, B, RATED_S, RATED_U1, RATED_U2, R, X } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
-const characteristicsValidationSchema = (isModification, additionalFields) => ({
+export interface CharacteristicsValues {
+    [R]?: number | null;
+    [X]?: number | null;
+    [G]?: number | null;
+    [B]?: number | null;
+    [RATED_S]?: number | null;
+    [RATED_U1]?: number | null;
+    [RATED_U2]?: number | null;
+}
+
+type AdditionalValidationFields = Record<string, yup.AnySchema>;
+type AdditionalDataFields = Record<string, unknown>;
+
+const characteristicsValidationSchema = (isModification: boolean, additionalFields: AdditionalValidationFields) => ({
     [CHARACTERISTICS]: yup.object().shape({
         [R]: isModification
             ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
@@ -33,7 +46,7 @@ export const getCharacteristicsValidationSchema = (isModification = false, addit
     return characteristicsValidationSchema(isModification, additionalFields);
 };
 
-const characteristicsEmptyFormData = (additionalFields) => ({
+const characteristicsEmptyFormData = (additionalFields: AdditionalDataFields) => ({
     [CHARACTERISTICS]: {
         [R]: null,
         [X]: null,
@@ -51,7 +64,7 @@ export const getCharacteristicsEmptyFormData = (additionalFields = {}) => {
 };
 
 export const getCharacteristicsFormData = (
-    { r = null, x = null, g = null, b = null, ratedS = null, ratedU1 = null, ratedU2 = null },
+    { r = null, x = null, g = null, b = null, ratedS = null, ratedU1 = null, ratedU2 = null }: CharacteristicsValues,
     additionalFields = {}
 ) => {
     return {

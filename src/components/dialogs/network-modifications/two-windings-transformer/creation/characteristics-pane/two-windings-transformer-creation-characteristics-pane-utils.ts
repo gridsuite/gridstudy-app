@@ -11,6 +11,7 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../../connectivity/connectivity-form-utils';
 import {
+    CharacteristicsValues,
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
@@ -46,6 +47,9 @@ export const getTwoWindingsTransformerFormData = ({
     ratedU2 = null,
     connectivity1 = null,
     connectivity2 = null,
+}: CharacteristicsValues & {
+    connectivity1?: Record<string, unknown> | null;
+    connectivity2?: Record<string, unknown> | null;
 }) =>
     getCharacteristicsFormData(
         {

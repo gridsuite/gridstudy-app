@@ -961,7 +961,8 @@ export function createTwoWindingsTransformer({
     connected1,
     connected2,
     properties,
-}: TwoWindingsTransformerCreationInfo) {
+}: Partial<TwoWindingsTransformerCreationInfo> &
+    Pick<TwoWindingsTransformerCreationInfo, 'modificationUuid' | 'nodeUuid'>) {
     let createTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
