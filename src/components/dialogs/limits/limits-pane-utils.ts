@@ -163,7 +163,7 @@ export const getLimitsEmptyFormData = (isModification = true, id = LIMITS) => {
 };
 
 export const formatOpLimitGroupsToFormInfos = (
-    limitGroups: OperationalLimitsGroup[]
+    limitGroups?: OperationalLimitsGroup[]
 ): OperationalLimitsGroupFormSchema[] => {
     if (!limitGroups) {
         return [];

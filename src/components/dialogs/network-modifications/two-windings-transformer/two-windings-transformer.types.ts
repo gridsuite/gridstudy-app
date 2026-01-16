@@ -8,13 +8,23 @@ import { CommonBranchEquipmentInfos } from 'components/tooltips/equipment-popove
 import { Identifiable } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import {
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY_1,
+    CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
+    ENABLE_OLG_MODIFICATION,
     ENABLED,
     EQUIPMENT,
     FLOW_SET_POINT_REGULATING_VALUE,
     HIGH_TAP_POSITION,
+    ID,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
+    OPERATIONAL_LIMITS_GROUPS,
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
     REGULATING,
@@ -26,6 +36,8 @@ import {
     REGULATION_TYPE,
     REGULATION_VALUE,
     SELECTED,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     STEPS,
     STEPS_ALPHA,
     STEPS_CONDUCTANCE,
@@ -44,6 +56,8 @@ import { ConnectablePositionFormInfos } from 'components/dialogs/connectivity/co
 import { CurrentLimitsData } from 'services/study/network-map.type';
 import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
 import { Property } from '../common/properties/property-utils';
+import { AttributeModification, OperationalLimitsGroup } from 'services/network-modification-types';
+import { CharacteristicsValues } from './characteristics-pane/two-windings-transformer-characteristics-pane-utils';
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
@@ -84,6 +98,8 @@ export interface TapChangerData {
     [TARGET_V]?: number | null;
     [EQUIPMENT]?: Record<string, unknown>;
     [VOLTAGE_LEVEL]?: Identifiable | null;
+    [CURRENT_LIMITER_REGULATING_VALUE]?: number;
+    [FLOW_SET_POINT_REGULATING_VALUE]?: number;
 }
 
 export interface RatioTapChangerData extends TapChangerData {}
@@ -100,7 +116,7 @@ export interface TapChangerPaneProps {
     currentRootNetworkUuid: UUID;
     voltageLevelOptions?: Identifiable[];
     previousValues?: TwoWindingsTransformerData;
-    editData?: Record<string, unknown>;
+    editData?: TwoWindingsTransformerEditData;
     isModification?: boolean;
 }
 
@@ -138,4 +154,77 @@ export interface TwoWindingsTransformerData extends CommonBranchEquipmentInfos {
     [PHASE_TAP_CHANGER]?: PhaseTapChangerData;
     properties?: Property[] | null;
     [key: string]: unknown;
+}
+
+export interface ConnectivityFormData {
+    [VOLTAGE_LEVEL]?: { [ID]?: string };
+    [BUS_OR_BUSBAR_SECTION]?: { [ID]?: string };
+    [CONNECTION_NAME]?: string;
+    [CONNECTION_DIRECTION]?: string;
+    [CONNECTION_POSITION]?: number | null;
+    [CONNECTED]?: boolean | null;
+}
+
+export interface CharacteristicsFormData extends CharacteristicsValues {
+    [CONNECTIVITY_1]?: ConnectivityFormData;
+    [CONNECTIVITY_2]?: ConnectivityFormData;
+}
+
+export interface LimitsFormData {
+    [ENABLE_OLG_MODIFICATION]?: boolean;
+    [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroupFormSchema[];
+    [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
+    [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
+}
+
+export interface TapChangerEditData {
+    [ENABLED]?: AttributeModification<boolean>;
+    [LOAD_TAP_CHANGING_CAPABILITIES]?: AttributeModification<boolean>;
+    [REGULATING]?: AttributeModification<boolean>;
+    [REGULATION_MODE]?: AttributeModification<string>;
+    [REGULATION_TYPE]?: AttributeModification<string>;
+    [REGULATION_SIDE]?: AttributeModification<string>;
+    [TARGET_V]?: AttributeModification<number>;
+    [TARGET_DEADBAND]?: AttributeModification<number>;
+    [LOW_TAP_POSITION]?: AttributeModification<number>;
+    [TAP_POSITION]?: AttributeModification<number>;
+    [STEPS]?: TapChangerStep[] | null;
+    regulationValue?: AttributeModification<number>;
+    terminalRefConnectableId?: AttributeModification<string>;
+    terminalRefConnectableType?: AttributeModification<string>;
+    terminalRefConnectableVlId?: AttributeModification<string>;
+}
+
+export interface TwoWindingsTransformerEditData {
+    uuid?: UUID;
+    equipmentId?: string;
+    equipmentName?: AttributeModification<string>;
+    r?: AttributeModification<number>;
+    x?: AttributeModification<number>;
+    g?: AttributeModification<number>;
+    b?: AttributeModification<number>;
+    ratedS?: AttributeModification<number>;
+    ratedU1?: AttributeModification<number>;
+    ratedU2?: AttributeModification<number>;
+    voltageLevelId1?: AttributeModification<string>;
+    voltageLevelId2?: AttributeModification<string>;
+    busOrBusbarSectionId1?: AttributeModification<string>;
+    busOrBusbarSectionId2?: AttributeModification<string>;
+    connectionName1?: AttributeModification<string>;
+    connectionName2?: AttributeModification<string>;
+    connectionDirection1?: AttributeModification<string>;
+    connectionDirection2?: AttributeModification<string>;
+    connectionPosition1?: AttributeModification<number>;
+    connectionPosition2?: AttributeModification<number>;
+    connected1?: AttributeModification<boolean>;
+    connected2?: AttributeModification<boolean>;
+    operationalLimitsGroups?: OperationalLimitsGroup[];
+    selectedOperationalLimitsGroupId1?: AttributeModification<string>;
+    selectedOperationalLimitsGroupId2?: AttributeModification<string>;
+    [ENABLE_OLG_MODIFICATION]?: boolean;
+    [RATIO_TAP_CHANGER]?: TapChangerEditData;
+    [PHASE_TAP_CHANGER]?: TapChangerEditData;
+    ratioTapChangerToBeEstimated?: AttributeModification<boolean>;
+    phaseTapChangerToBeEstimated?: AttributeModification<boolean>;
+    properties?: Property[] | null;
 }

@@ -238,8 +238,8 @@ export interface TwoWindingsTransformerModificationInfo {
     ratedU1: AttributeModification<number> | null;
     ratedU2: AttributeModification<number> | null;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedLimitsGroup1: string;
-    selectedLimitsGroup2: string;
+    selectedLimitsGroup1: AttributeModification<string> | null;
+    selectedLimitsGroup2: AttributeModification<string> | null;
     [ENABLE_OLG_MODIFICATION]: boolean;
     voltageLevelId1?: string;
     busOrBusbarSectionId1?: string;
@@ -255,17 +255,17 @@ export interface TwoWindingsTransformerModificationInfo {
     connectionPosition2?: string | null;
     connected1?: boolean;
     connected2?: boolean;
-    properties: Property[];
-    p1MeasurementValue: number | null;
-    p1MeasurementValidity: boolean | null;
-    q1MeasurementValue: number | null;
-    q1MeasurementValidity: boolean | null;
-    p2MeasurementValue: number | null;
-    p2MeasurementValidity: boolean | null;
-    q2MeasurementValue: number | null;
-    q2MeasurementValidity: boolean | null;
-    ratioTapChangerToBeEstimated: boolean | null;
-    phaseTapChangerToBeEstimated: boolean | null;
+    properties: Property[] | null;
+    p1MeasurementValue?: number | null;
+    p1MeasurementValidity?: boolean | null;
+    q1MeasurementValue?: number | null;
+    q1MeasurementValidity?: boolean | null;
+    p2MeasurementValue?: number | null;
+    p2MeasurementValidity?: boolean | null;
+    q2MeasurementValue?: number | null;
+    q2MeasurementValidity?: boolean | null;
+    ratioTapChangerToBeEstimated?: boolean | null;
+    phaseTapChangerToBeEstimated?: boolean | null;
 }
 
 export interface OperationalLimitsGroup {

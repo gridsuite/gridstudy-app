@@ -11,7 +11,15 @@ import { filledTextField } from '../../../dialog-utils';
 import { SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 
-const TwoWindingsTransformerModificationDialogHeader = ({ equipmentToModify, equipmentId }) => {
+interface TwoWindingsTransformerModificationDialogHeaderProps {
+    equipmentToModify?: string;
+    equipmentId: string | null;
+}
+
+const TwoWindingsTransformerModificationDialogHeader = ({
+    equipmentToModify,
+    equipmentId,
+}: TwoWindingsTransformerModificationDialogHeaderProps) => {
     const twoWindingsTransformerIdField = (
         <TextField
             size="small"
@@ -31,7 +39,7 @@ const TwoWindingsTransformerModificationDialogHeader = ({ equipmentToModify, equ
             name={EQUIPMENT_NAME}
             label="Name"
             formProps={filledTextField}
-            previousValue={equipmentToModify?.name}
+            previousValue={equipmentToModify}
             clearable
         />
     );

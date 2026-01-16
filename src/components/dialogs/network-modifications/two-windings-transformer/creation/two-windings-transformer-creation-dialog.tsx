@@ -114,14 +114,14 @@ import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FetchStatus } from 'services/utils.type';
 import {
+    CharacteristicsFormData,
+    ConnectivityFormData,
+    LimitsFormData,
     RatioTapChangerData,
     TapChangerData,
-    TapChangerStep,
     TwoWindingsTransformerData,
 } from '../two-windings-transformer.types';
 import { TwoWindingsTransformerCreationInfo } from 'services/network-modification-types';
-import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
-import { CharacteristicsValues } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
 /**
  * Dialog to create a two windings transformer in the network
  * @param studyUuid the study we are currently working on
@@ -149,72 +149,23 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
         ...getTwoWindingsTransformerValidationSchema(),
-        [LIMITS]: yup.object().shape(getLimitsValidationSchema()).required(),
-        [RATIO_TAP_CHANGER]: yup.object().shape(getRatioTapChangerValidationSchema()).required(),
-        [PHASE_TAP_CHANGER]: yup.object().shape(getPhaseTapChangerValidationSchema()).required(),
+        ...getLimitsValidationSchema(),
+        ...getRatioTapChangerValidationSchema(),
+        ...getPhaseTapChangerValidationSchema(),
     })
     .concat(creationPropertiesSchema)
     .required();
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
-interface ConnectivityData {
-    [VOLTAGE_LEVEL]?: { [ID]?: string };
-    [BUS_OR_BUSBAR_SECTION]?: { [ID]?: string };
-    [CONNECTION_NAME]?: string;
-    [CONNECTION_DIRECTION]?: string;
-    [CONNECTION_POSITION]?: number | null;
-    [CONNECTED]?: boolean | null;
-}
-
-interface CharacteristicsFormValues extends CharacteristicsValues {
-    [CONNECTIVITY_1]?: ConnectivityData;
-    [CONNECTIVITY_2]?: ConnectivityData;
-}
-
-interface LimitsFormValues {
-    [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroupFormSchema[];
-    [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
-    [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
-}
-
-interface RatioTapChangerFormValues {
-    [ENABLED]?: boolean;
-    [LOAD_TAP_CHANGING_CAPABILITIES]?: boolean;
-    [REGULATION_MODE]?: string | null;
-    [REGULATION_TYPE]?: string | null;
-    [REGULATION_SIDE]?: string | null;
-    [TARGET_V]?: number | null;
-    [TARGET_DEADBAND]?: number | null;
-    [LOW_TAP_POSITION]?: number | null;
-    [TAP_POSITION]?: number | null;
-    [STEPS]?: TapChangerStep[];
-    [EQUIPMENT]?: { id?: string; type?: string };
-    [VOLTAGE_LEVEL]?: { [ID]?: string };
-}
-
-interface PhaseTapChangerFormValues {
-    [ENABLED]?: boolean;
-    [REGULATION_MODE]?: string | null;
-    [REGULATION_TYPE]?: string | null;
-    [REGULATION_SIDE]?: string | null;
-    [CURRENT_LIMITER_REGULATING_VALUE]?: number | null;
-    [FLOW_SET_POINT_REGULATING_VALUE]?: number | null;
-    [TARGET_DEADBAND]?: number | null;
-    [LOW_TAP_POSITION]?: number | null;
-    [TAP_POSITION]?: number | null;
-    [STEPS]?: TapChangerStep[];
-    [EQUIPMENT]?: { id?: string; type?: string };
-    [VOLTAGE_LEVEL]?: { [ID]?: string };
-}
 
 export interface TwoWindingsTransformerCreationFormValues {
     [EQUIPMENT_ID]: string;
     [EQUIPMENT_NAME]?: string | null;
-    [CHARACTERISTICS]: CharacteristicsFormValues;
-    [LIMITS]: LimitsFormValues;
-    [RATIO_TAP_CHANGER]: RatioTapChangerFormValues;
-    [PHASE_TAP_CHANGER]: PhaseTapChangerFormValues;
+    [CHARACTERISTICS]: CharacteristicsFormData;
+    [LIMITS]: LimitsFormData;
+    [RATIO_TAP_CHANGER]: TapChangerData;
+    [PHASE_TAP_CHANGER]: TapChangerData;
 }
 
 export interface TwoWindingsTransformerCreationDialogProps {
@@ -492,18 +443,18 @@ const TwoWindingsTransformerCreationDialog = ({
         </Grid>
     );
 
-    const computeRatioTapChangerRegulating = (ratioTapChangerFormValues: RatioTapChangerFormValues) => {
+    const computeRatioTapChangerRegulating = (ratioTapChangerFormValues: TapChangerData) => {
         return ratioTapChangerFormValues?.[REGULATION_MODE] === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id;
     };
 
-    const computePhaseTapChangerRegulating = (phaseTapChangerFormValues: PhaseTapChangerFormValues) => {
+    const computePhaseTapChangerRegulating = (phaseTapChangerFormValues: TapChangerData) => {
         return (
             phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
             phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
         );
     };
 
-    const computeRegulationModeValue = (phaseTapChangerFormValues: PhaseTapChangerFormValues) => {
+    const computeRegulationModeValue = (phaseTapChangerFormValues: TapChangerData) => {
         if (phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.OFF.id) {
             return null;
         }
@@ -511,7 +462,7 @@ const TwoWindingsTransformerCreationDialog = ({
         return phaseTapChangerFormValues?.[REGULATION_MODE];
     };
 
-    const computePhaseTapChangerRegulationValue = (phaseTapChangerFormValues: PhaseTapChangerFormValues) => {
+    const computePhaseTapChangerRegulationValue = (phaseTapChangerFormValues: TapChangerData) => {
         switch (phaseTapChangerFormValues?.[REGULATION_MODE]) {
             case PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id:
                 return phaseTapChangerFormValues?.[FLOW_SET_POINT_REGULATING_VALUE] ?? undefined;
@@ -522,7 +473,7 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const computeRegulatingTerminalType = (tapChangerValue: RatioTapChangerFormValues | PhaseTapChangerFormValues) => {
+    const computeRegulatingTerminalType = (tapChangerValue: TapChangerData) => {
         if (tapChangerValue?.[EQUIPMENT]?.type) {
             return tapChangerValue?.[EQUIPMENT]?.type;
         }
@@ -535,9 +486,9 @@ const TwoWindingsTransformerCreationDialog = ({
     };
 
     const computeTapTerminalVlId = (
-        tapChangerValue: TapChangerData | RatioTapChangerFormValues | PhaseTapChangerFormValues,
-        connectivity1: ConnectivityData | undefined,
-        connectivity2: ConnectivityData | undefined
+        tapChangerValue: TapChangerData,
+        connectivity1: ConnectivityFormData | undefined,
+        connectivity2: ConnectivityFormData | undefined
     ) => {
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
             if (tapChangerValue?.[REGULATION_SIDE] === SIDE.SIDE1.id) {
@@ -550,10 +501,7 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const computeRegulatingTerminalId = (
-        tapChangerValue: TapChangerData | RatioTapChangerFormValues | PhaseTapChangerFormValues,
-        currentTwtId: string
-    ) => {
+    const computeRegulatingTerminalId = (tapChangerValue: TapChangerData, currentTwtId: string) => {
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
             return currentTwtId;
         } else {
@@ -576,9 +524,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
                 const hasLoadTapCapabilities = ratioTapChangerFormValues[LOAD_TAP_CHANGING_CAPABILITIES];
 
-                const getValueOrDefault = <K extends keyof RatioTapChangerFormValues>(
-                    key: K
-                ): RatioTapChangerFormValues[K] | null => {
+                const getValueOrDefault = <K extends keyof TapChangerData>(key: K): TapChangerData[K] | null => {
                     return hasLoadTapCapabilities ? ratioTapChangerFormValues[key] : null;
                 };
 
@@ -702,7 +648,7 @@ const TwoWindingsTransformerCreationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema as any} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
