@@ -36,13 +36,7 @@ import {
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { DeepNullable } from 'components/utils/ts-utils';
-
-interface SubstationInfos {
-    id: string;
-    name?: string;
-    country: string | null;
-    properties?: Record<string, string>;
-}
+import { SubstationInfos } from '../substation-dialog.type';
 
 const formSchema = yup
     .object()

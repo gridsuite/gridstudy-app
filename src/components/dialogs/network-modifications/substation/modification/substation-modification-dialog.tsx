@@ -33,6 +33,7 @@ import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { AttributeModification } from 'services/network-modification-types';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../utils/ts-utils';
+import { SubstationInfos } from '../substation-dialog.type';
 
 const formSchema = yup
     .object()
@@ -92,7 +93,7 @@ const SubstationModificationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-    const [substationToModify, setSubstationToModify] = useState(null);
+    const [substationToModify, setSubstationToModify] = useState<SubstationInfos>();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const formMethods = useForm<DeepNullable<SubstationModificationFormData>>({
@@ -131,7 +132,7 @@ const SubstationModificationDialog = ({
                     equipmentId,
                     true
                 )
-                    .then((substation) => {
+                    .then((substation: SubstationInfos) => {
                         if (substation) {
                             setSubstationToModify(substation);
                             reset(
@@ -147,11 +148,11 @@ const SubstationModificationDialog = ({
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
-                            setSubstationToModify(null);
+                            setSubstationToModify(undefined);
                         }
                     });
             } else {
-                setSubstationToModify(null);
+                setSubstationToModify(undefined);
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
