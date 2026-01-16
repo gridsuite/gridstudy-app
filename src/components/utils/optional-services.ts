@@ -10,6 +10,7 @@ export enum OptionalServicesNames {
     SensitivityAnalysis = 'SensitivityAnalysis',
     DynamicSimulation = 'DynamicSimulation',
     DynamicSecurityAnalysis = 'DynamicSecurityAnalysis',
+    DynamicMarginCalculation = 'DynamicMarginCalculation',
     ShortCircuit = 'ShortCircuit',
     VoltageInit = 'VoltageInit',
     StateEstimation = 'StateEstimation',

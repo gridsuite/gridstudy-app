@@ -80,6 +80,15 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             );
         }
 
+        if (selectedRunnable === ComputingType.DYNAMIC_MARGIN_CALCULATION) {
+            // Load flow button's status must be "SUCCEED"
+            return (
+                getRunningStatus() === RunningStatus.RUNNING ||
+                (getStatus('LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED &&
+                    getStatus('LOAD_FLOW_WITH_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED)
+            );
+        }
+
         // We can run only 1 computation at a time
         return getRunningStatus() === RunningStatus.RUNNING;
     }

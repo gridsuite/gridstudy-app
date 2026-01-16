@@ -364,6 +364,20 @@
     "DynamicSecurityAnalysisContingenciesStartTime": "Temps de début des aléas",
     "DynamicSecurityAnalysisTabStatus": "Statut",
 
+    "startDynamicMarginCalculationError": "Une erreur est survenue lors du lancement de la calculation de marge dynamique",
+    "DynamicMarginCalculation": "Calculation de marge dynamique",
+    "DynamicMarginCalculationRunError": "Une erreur est survenue lors de l'exécution de la calculation de marge dynamique",
+    "DynamicMarginCalculationStartTime": "Temps de début",
+    "DynamicMarginCalculationStopTime": "Temps d'arrêt",
+    "DynamicMarginCalculationMarginCalculationStartTime": "Temps de début de la calculation de marge",
+    "DynamicMarginCalculationLoadIncreaseStartTime": "Temps de début de l'augmentation de charge",
+    "DynamicMarginCalculationLoadIncreaseStopTime": "Temps d'arrêt de l'augmentation de charge",
+    "DynamicMarginCalculationCalculationType": "Type de calculation",
+    "DynamicMarginCalculationAccuracy": "Précision",
+    "DynamicMarginCalculationLoadModelsRule": "Règle des modèles de charge",
+    "DynamicMarginCalculationLoadsVariations": "Variations de charge",
+    "DynamicMarginCalculationTabStatus": "Status",
+
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
 
