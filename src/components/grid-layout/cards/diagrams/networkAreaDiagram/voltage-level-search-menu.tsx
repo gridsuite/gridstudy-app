@@ -10,6 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Menu, TextField, MenuItem, ListItemText, InputAdornment, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import type { MuiStyles } from '@gridsuite/commons-ui';
+import { VoltageLevelSearchMenuList } from './voltage-level-search-menu-list';
 
 const styles = {
     textField: {
@@ -17,10 +18,6 @@ const styles = {
         width: 250,
         position: 'sticky',
         top: 0,
-    },
-    menuList: {
-        maxHeight: 300,
-        overflow: 'auto',
     },
 } as const satisfies MuiStyles;
 
@@ -32,7 +29,10 @@ interface VoltageLevelSearchMenuProps {
     onSelect: (voltageLevelId: string) => void;
 }
 
-const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
+// tried to change this component with an Autocomplete from MUI
+// Menu being a Popover, and Autocomplete having a Popover as well
+// it does not work very well when we try to open them simultaneously
+export const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     open,
     anchorEl,
     onClose,
@@ -117,7 +117,7 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                     ),
                 }}
             />
-            <Box sx={styles.menuList}>
+            <Box>
                 {filteredVoltageLevels.length === 0 ? (
                     <MenuItem disabled>
                         <ListItemText>
@@ -125,15 +125,15 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                         </ListItemText>
                     </MenuItem>
                 ) : (
-                    filteredVoltageLevels.map((vlId) => (
-                        <MenuItem key={vlId} onClick={() => handleSelect(vlId)}>
-                            <ListItemText primary={highlightText(vlId, searchTerm)} />
-                        </MenuItem>
-                    ))
+                    <VoltageLevelSearchMenuList>
+                        {filteredVoltageLevels.map((vlId) => (
+                            <MenuItem key={vlId} onClick={() => handleSelect(vlId)}>
+                                <ListItemText primary={highlightText(vlId, searchTerm)} />
+                            </MenuItem>
+                        ))}
+                    </VoltageLevelSearchMenuList>
                 )}
             </Box>
         </Menu>
     );
 };
-
-export default VoltageLevelSearchMenu;
