@@ -8,7 +8,8 @@ import { Box, Divider, Theme } from '@mui/material';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { DeviceHubIcon, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import { DeviceHub } from '@mui/icons-material';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 
@@ -36,10 +37,6 @@ const styles = {
             backgroundColor: theme.aggrid.highlightColor,
         },
     }),
-    iconMinSize: {
-        minHeight: '20px',
-        minWidth: '20px',
-    },
 } as const satisfies MuiStyles;
 
 export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResultsProps> = ({ results }) => {
@@ -63,7 +60,7 @@ export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResul
             {results.map((result) => (
                 <Box key={result + '_node'} sx={styles.itemHover}>
                     <Box sx={styles.rootNameTitle} onClick={() => handleClick(result)}>
-                        <DeviceHubIcon style={styles.iconMinSize} />
+                        <DeviceHub fontSize="small" />
                         <OverflowableText text={result} sx={{ marginLeft: '5px' }} maxLineCount={1} />
                     </Box>
                     <Divider />

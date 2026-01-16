@@ -51,8 +51,6 @@ const styles = {
 
     deviceIcon: (theme) => ({
         fill: theme.node.root.icon.fill,
-        width: 18,
-        height: 18,
     }),
 
     labelContainer: (theme) => ({
@@ -105,7 +103,7 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
                 <Box sx={styles.mainBox}>
                     <Box sx={styles.iconContainer}>
                         <IconButton sx={styles.iconButton}>
-                            <DeviceHub sx={styles.deviceIcon} />
+                            <DeviceHub sx={styles.deviceIcon} fontSize="small" />
                         </IconButton>
                     </Box>
                     <Box sx={styles.labelContainer}>
