@@ -8,6 +8,7 @@
 import {
     ElementSaveDialog,
     ElementType,
+    EquipmentType,
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
@@ -114,7 +115,6 @@ import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications
 import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level/topology-creation/create-voltage-level-topology-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
@@ -230,21 +230,23 @@ const NetworkModificationNodeEditor = () => {
         );
     }
 
-    function equipmentDeletionDialogWithDefaultParams(equipmentType: EQUIPMENT_TYPES) {
-        return (
-            <EquipmentDeletionDialog
-                onClose={handleCloseDialog}
-                onValidated={handleValidatedDialog}
-                currentNode={currentNode}
-                studyUuid={studyUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                editData={editData}
-                isUpdate={isUpdate}
-                editDataFetchStatus={editDataFetchStatus}
-                equipmentType={equipmentType}
-                defaultIdValue={null}
-            />
-        );
+    function equipmentDeletionDialogWithDefaultParams(equipmentType: EquipmentType) {
+        if (currentNode && studyUuid && currentRootNetworkUuid && editData) {
+            return (
+                <EquipmentDeletionDialog
+                    onClose={handleCloseDialog}
+                    onValidated={handleValidatedDialog}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    editData={editData}
+                    isUpdate={isUpdate}
+                    editDataFetchStatus={editDataFetchStatus}
+                    equipmentType={equipmentType}
+                    defaultIdValue={null}
+                />
+            );
+        }
     }
 
     const equipmentDeletionSubItems = (equipmentType: EQUIPMENT_TYPES) => {
@@ -275,7 +277,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(SubstationModificationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.SUBSTATION),
+                        equipmentDeletionSubItems(EquipmentType.SUBSTATION),
                     ],
                 },
                 {
@@ -317,7 +319,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
                             action: () => withDefaultParams(MoveVoltageLevelFeederBaysDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
+                        equipmentDeletionSubItems(EquipmentType.VOLTAGE_LEVEL),
                     ],
                 },
             ],
@@ -339,7 +341,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LineModificationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.LINE),
+                        equipmentDeletionSubItems(EquipmentType.LINE),
                     ],
                 },
                 {
@@ -398,7 +400,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(TwoWindingsTransformerModificationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
+                        equipmentDeletionSubItems(EquipmentType.TWO_WINDINGS_TRANSFORMER),
                     ],
                 },
                 {
@@ -415,7 +417,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(VscModificationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.HVDC_LINE),
+                        equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
                     ],
                 },
                 {
@@ -432,7 +434,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LccModificationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.HVDC_LINE),
+                        equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
                     ],
                 },
             ],
@@ -454,7 +456,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(GeneratorModificationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.GENERATOR),
+                        equipmentDeletionSubItems(EquipmentType.GENERATOR),
                     ],
                 },
                 {
@@ -471,7 +473,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(BatteryModificationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.BATTERY),
+                        equipmentDeletionSubItems(EquipmentType.BATTERY),
                     ],
                 },
                 {
@@ -488,7 +490,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LoadModificationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.LOAD),
+                        equipmentDeletionSubItems(EquipmentType.LOAD),
                     ],
                 },
                 {
@@ -505,7 +507,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(ShuntCompensatorModificationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
+                        equipmentDeletionSubItems(EquipmentType.SHUNT_COMPENSATOR),
                     ],
                 },
                 {
@@ -517,7 +519,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'menu.create',
                             action: () => withDefaultParams(StaticVarCompensatorCreationDialog),
                         },
-                        equipmentDeletionSubItems(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
+                        equipmentDeletionSubItems(EquipmentType.STATIC_VAR_COMPENSATOR),
                     ],
                 },
             ],

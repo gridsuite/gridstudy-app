@@ -263,16 +263,24 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
-            if (
-                equipmentType === EquipmentType.HVDC_LINE &&
-                mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
-            ) {
-                // only hvdc line with LCC requires a Dialog (to select MCS)
-                handleOpenDeletionDialog(equipmentId, EQUIPMENT_TYPES.HVDC_LINE);
-            } else {
-                deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
-                });
+            // TODO DBR change type -= null / +UUID
+            if (equipmentType && currentNode?.id) {
+                if (
+                    equipmentType === EquipmentType.HVDC_LINE &&
+                    mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
+                ) {
+                    // only hvdc line with LCC requires a Dialog (to select MCS)
+                    handleOpenDeletionDialog(equipmentId, EQUIPMENT_TYPES.HVDC_LINE);
+                } else {
+                    deleteEquipment({
+                        studyUuid,
+                        nodeUuid: currentNode?.id,
+                        equipmentId: equipmentId as UUID,
+                        equipmentType,
+                    }).catch((error) => {
+                        snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
+                    });
+                }
             }
         },
         [studyUuid, currentNode?.id, snackError, handleOpenDeletionDialog, mapEquipments?.hvdcLinesById]

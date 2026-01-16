@@ -8,7 +8,7 @@
 import { Grid } from '@mui/material';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useSnackMessage, AutocompleteInput, snackWithFallback } from '@gridsuite/commons-ui';
+import { useSnackMessage, AutocompleteInput, snackWithFallback, EquipmentType } from '@gridsuite/commons-ui';
 import { filledTextField } from 'components/dialogs/dialog-utils';
 import {
     DELETION_SPECIFIC_DATA,
@@ -19,16 +19,33 @@ import {
 import { areIdsEqual, getObjectId, richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import HvdcLccDeletionSpecificForm from './hvdc-lcc-deletion/hvdc-lcc-deletion-specific-form';
-import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useGetLabelEquipmentTypes from '../../../../hooks/use-get-label-equipment-types';
 import GridItem from '../../commons/grid-item';
+import type { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { EquipmentDeletionInfos } from './equipement-deletion-dialog.type';
+import useHvdcLccDeletion from './hvdc-lcc-deletion/use-hvdc-lcc-deletion';
 
-const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, editData }) => {
+export interface DeleteEquipmentFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    editData?: EquipmentDeletionInfos;
+}
+
+const NULL_UUID: UUID = '00000000-0000-0000-0000-000000000000';
+
+export default function DeleteEquipmentForm({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+    editData,
+}: Readonly<DeleteEquipmentFormProps>) {
     const { snackError } = useSnackMessage();
-    const editedIdRef = useRef(null);
-    const currentTypeRef = useRef(null);
+    const editedIdRef = useRef<UUID | null>(null);
+    const currentTypeRef = useRef<EquipmentType>(null);
 
     const watchType = useWatch({
         name: TYPE,
@@ -71,6 +88,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
             fetchEquipmentsIds(studyUuid, currentNode?.id, currentRootNetworkUuid, undefined, watchType, true)
                 .then((vals) => {
                     // check race condition here
+                    console.log('DBG DBR fetchEquipmentsIds', vals);
                     if (!ignore) {
                         setEquipmentsOptions(vals.sort());
                     }
@@ -85,31 +103,32 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid, watchType, snackError]);
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            if (editData?.equipmentId) {
-                if (editedIdRef.current === null) {
-                    // The first time we render an edition, we want to merge the
-                    // dynamic data with the edition data coming from the database
-                    editedIdRef.current = editData.equipmentId;
-                } else if (watchEquipmentId !== editedIdRef.current && editedIdRef.current !== '') {
-                    // we have changed eqptId, leave the "first edit" mode (then if we circle back
-                    // to editData?.equipmentId, we wont make the merge anymore).
-                    editedIdRef.current = '';
-                }
+        if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
+            return;
+        }
+        if (editData?.equipmentId) {
+            if (editedIdRef.current === null) {
+                // The first time we render an edition, we want to merge the
+                // dynamic data with the edition data coming from the database
+                editedIdRef.current = editData.equipmentId;
+            } else if (watchEquipmentId !== editedIdRef.current && editedIdRef.current !== NULL_UUID) {
+                // we have changed eqptId, leave the "first edit" mode (then if we circle back
+                // to editData?.equipmentId, we won't make the merge anymore).
+                editedIdRef.current = NULL_UUID;
             }
+        }
 
-            if (watchEquipmentId && currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE) {
-                // need specific update related to HVDC LCC deletion (for MCS lists)
-                hvdcLccSpecificUpdate(
-                    studyUuid,
-                    currentNode?.id,
-                    currentRootNetworkUuid,
-                    watchEquipmentId,
-                    watchEquipmentId === editedIdRef.current ? editData : null
-                );
-            } else {
-                setValue(DELETION_SPECIFIC_DATA, null);
-            }
+        if (watchEquipmentId && currentTypeRef.current === EquipmentType.HVDC_LINE) {
+            // need specific update related to HVDC LCC deletion (for MCS lists)
+            hvdcLccSpecificUpdate(
+                studyUuid,
+                currentNode?.id,
+                currentRootNetworkUuid,
+                watchEquipmentId,
+                watchEquipmentId === editedIdRef.current ? editData : undefined
+            );
+        } else {
+            setValue(DELETION_SPECIFIC_DATA, null);
         }
     }, [
         studyUuid,
@@ -150,9 +169,9 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
             options={equipmentsOptions}
             getOptionLabel={getObjectId}
             //hack to work with freesolo autocomplete
-            //setting null programatically when freesolo is enable wont empty the field
+            //setting null programmatically when freesolo is enable won't empty the field
             inputTransform={(value) => value ?? ''}
-            outputTransform={(value) => (value === '' ? null : getObjectId(value))}
+            outputTransform={(value: any) => (value === '' ? null : getObjectId(value))}
             size={'small'}
             formProps={filledTextField}
         />
@@ -169,6 +188,4 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
             )}
         </>
     );
-};
-
-export default DeleteEquipmentForm;
+}
