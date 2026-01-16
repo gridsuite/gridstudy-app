@@ -791,7 +791,7 @@ export function createLine({
 }: LineCreationInfo) {
     let createLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
+    if (modificationUuid) {
         createLineUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating line creation');
     } else {
