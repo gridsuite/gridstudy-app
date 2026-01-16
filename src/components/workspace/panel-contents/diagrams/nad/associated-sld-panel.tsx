@@ -6,7 +6,7 @@
  */
 
 import { memo, useCallback, useState, useRef, useEffect, useMemo } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import { Box, IconButton, Paper, Typography, useTheme, alpha } from '@mui/material';
 import { Close, LinkOff, MinimizeOutlined } from '@mui/icons-material';
@@ -15,12 +15,7 @@ import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
 import type { AppState } from '../../../../../redux/reducer';
 import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
-import {
-    dissociateSldFromNad,
-    deleteAssociatedSld,
-    updatePanelPositionAndSize,
-    closePanel,
-} from '../../../../../redux/slices/workspace-slice';
+import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
 import { VoltageLevelPanelContent } from '../sld/voltage-level-panel-content';
 import { NAD_SLD_CONSTANTS } from './constants';
 
@@ -109,13 +104,14 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     onDragStart,
     onDragStop,
 }: AssociatedSldPanelProps) {
-    const dispatch = useDispatch();
+    const { updatePanelGeometry, dissociateSldFromNad, toggleMinimized, deletePanel } = useWorkspaceActions();
     const theme = useTheme();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeId = useSelector((state: AppState) => state.currentTreeNode?.id);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const sldPanel = useSelector((state: RootState) => selectPanel(state, sldPanelId), shallowEqual);
+    const zIndex = sldPanel?.zIndex ?? 1;
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
@@ -175,28 +171,29 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                 height: targetHeight,
             };
 
-            dispatch(
-                updatePanelPositionAndSize({
-                    panelId: sldPanelId,
+            updatePanelGeometry(
+                sldPanelId,
+                {
                     position: relativePosition,
                     size: newSize,
-                })
+                },
+                false // skip backend sync
             );
         },
-        [dispatch, sldPanelId, containerRect, relativeSize.height, relativePosition]
+        [updatePanelGeometry, sldPanelId, containerRect, relativeSize.height, relativePosition]
     );
 
     const handleDissociate = useCallback(() => {
-        dispatch(dissociateSldFromNad(sldPanelId));
-    }, [dispatch, sldPanelId]);
+        dissociateSldFromNad(sldPanelId);
+    }, [dissociateSldFromNad, sldPanelId]);
 
     const handleMinimize = useCallback(() => {
-        dispatch(closePanel(sldPanelId));
-    }, [dispatch, sldPanelId]);
+        toggleMinimized(sldPanelId);
+    }, [toggleMinimized, sldPanelId]);
 
     const handleClose = useCallback(() => {
-        dispatch(deleteAssociatedSld(sldPanelId));
-    }, [dispatch, sldPanelId]);
+        deletePanel(sldPanelId);
+    }, [deletePanel, sldPanelId]);
 
     const handleResizeStart = useCallback(() => {
         setIsDragging(true);
@@ -213,16 +210,13 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
             const height = Number.parseInt(ref.style.height, 10);
 
             hasManuallyResizedRef.current = true;
-            dispatch(
-                updatePanelPositionAndSize({
-                    panelId: sldPanelId,
-                    position: positionToRelative(position, containerRect),
-                    size: sizeToRelative({ width, height }, containerRect),
-                })
-            );
+            updatePanelGeometry(sldPanelId, {
+                position: positionToRelative(position, containerRect),
+                size: sizeToRelative({ width, height }, containerRect),
+            });
             setIsDragging(false);
         },
-        [dispatch, sldPanelId, containerRect]
+        [updatePanelGeometry, sldPanelId, containerRect]
     );
 
     const handleDragStart = useCallback(() => {
@@ -235,17 +229,14 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
             if (!containerRect) return;
 
             const newRelativePosition = positionToRelative({ x: data.x, y: data.y }, containerRect);
-            dispatch(
-                updatePanelPositionAndSize({
-                    panelId: sldPanelId,
-                    position: newRelativePosition,
-                    size: relativeSize,
-                })
-            );
+            updatePanelGeometry(sldPanelId, {
+                position: newRelativePosition,
+                size: relativeSize,
+            });
             setIsDragging(false);
             onDragStop?.();
         },
-        [dispatch, sldPanelId, containerRect, relativeSize, onDragStop]
+        [updatePanelGeometry, sldPanelId, containerRect, relativeSize, onDragStop]
     );
 
     const handlePointerDown = useCallback(() => {
@@ -297,7 +288,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
                 bounds="parent"
                 dragHandleClassName="draggable-header"
                 style={{
-                    zIndex: sldPanel.zIndex,
+                    zIndex,
                     pointerEvents: 'auto',
                 }}
             >
