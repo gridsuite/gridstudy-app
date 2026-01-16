@@ -99,7 +99,7 @@ export function LimitsPane({
     };
 
     return (
-        <>
+        <Grid container sx={{ minHeight: '100%', height: '100%', maxHeight: '100%' }}>
             {/* active limit sets */}
             <Grid container columns={6} item spacing={1} sx={{ maxWidth: '600px' }}>
                 <Grid item xs={3}>
@@ -149,8 +149,8 @@ export function LimitsPane({
             </Grid>
 
             {/* limits */}
-            <Grid container item xs={12} columns={10.25}>
-                <Grid item xs={4}>
+            <Grid container item xs={12} columns={10.25} sx={{ minHeight: '100%', height: '100%', maxHeight: '100%' }}>
+                <Grid item xs={4} sx={{ minHeight: '100%', height: '100%', maxHeight: '100%' }}>
                     <Box
                         sx={{
                             display: 'flex',
@@ -200,6 +200,6 @@ export function LimitsPane({
                         )}
                 </Grid>
             </Grid>
-        </>
+        </Grid>
     );
 }
