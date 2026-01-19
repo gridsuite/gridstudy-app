@@ -174,7 +174,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     const lineFullPathRef = useRef<boolean>(null);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
-    const { getBaseVoltage } = useBaseVoltages();
+    const { getBaseVoltageInterval } = useBaseVoltages();
 
     /*
         This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -1030,9 +1030,9 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
 
     const getNetworkMapColor = useCallback(
         (voltageValue: number): Color => {
-            return getBaseVoltageNetworkMapColor(getBaseVoltage(voltageValue)) as Color;
+            return getBaseVoltageNetworkMapColor(getBaseVoltageInterval(voltageValue)) as Color;
         },
-        [getBaseVoltage]
+        [getBaseVoltageInterval]
     );
 
     const renderMap = () => (

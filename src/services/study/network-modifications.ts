@@ -31,7 +31,7 @@ import {
     CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
-    GenerationDispatchInfo,
+    GenerationDispatchModificationInfos,
     GeneratorCreationInfos,
     GeneratorModificationInfos,
     LCCCreationInfo,
@@ -63,9 +63,9 @@ import { ExcludedNetworkModifications } from 'components/graph/menus/network-mod
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
-    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
-    OLGS_MODIFICATION_TYPE,
     ENABLE_OLG_MODIFICATION,
+    OLGS_MODIFICATION_TYPE,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
@@ -264,34 +264,34 @@ export function switchOnEquipment(
 export function generationDispatch({
     studyUuid,
     nodeUuid,
-    modificationUuid,
+    uuid,
     lossCoefficient,
     defaultOutageRate,
     generatorsWithoutOutage,
-    generatorsWithFixedActivePower,
+    generatorsWithFixedSupply,
     generatorsFrequencyReserve,
     substationsGeneratorsOrdering,
-}: GenerationDispatchInfo) {
+}: GenerationDispatchModificationInfos) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
         lossCoefficient: lossCoefficient,
         defaultOutageRate: defaultOutageRate,
         generatorsWithoutOutage: generatorsWithoutOutage,
-        generatorsWithFixedSupply: generatorsWithFixedActivePower,
+        generatorsWithFixedSupply: generatorsWithFixedSupply,
         generatorsFrequencyReserve: generatorsFrequencyReserve,
         substationsGeneratorsOrdering: substationsGeneratorsOrdering,
     });
 
     let generationDispatchUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    if (modificationUuid) {
+    if (uuid) {
         console.info('Updating generation dispatch ', body);
-        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
+        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(uuid);
     } else {
         console.info('Creating generation dispatch ', body);
     }
 
     return backendFetchText(generationDispatchUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -304,8 +304,8 @@ export function generatorScaling(
     studyUuid: UUID,
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
-    variationType: string,
-    variations: any[]
+    variationType: VariationType,
+    variations: Variations[]
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATOR_SCALING.type,
@@ -762,8 +762,8 @@ export function createStaticVarCompensator(staticVarCompensatorCreationParameter
 export function createLine({
     studyUuid,
     nodeUuid,
-    lineId,
-    lineName,
+    equipmentId,
+    equipmentName,
     r,
     x,
     g1,
@@ -774,9 +774,9 @@ export function createLine({
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
-    limitsGroups,
-    selectedLimitsGroup1,
-    selectedLimitsGroup2,
+    operationalLimitsGroups,
+    selectedOperationalLimitsGroupId1,
+    selectedOperationalLimitsGroupId2,
     isUpdate = false,
     modificationUuid,
     connectionName1,
@@ -806,8 +806,8 @@ export function createLine({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.LINE_CREATION.type,
-            equipmentId: lineId,
-            equipmentName: lineName,
+            equipmentId: equipmentId,
+            equipmentName: equipmentName,
             r: r,
             x: x,
             g1: g1,
@@ -818,9 +818,9 @@ export function createLine({
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            operationalLimitsGroups: limitsGroups,
-            selectedOperationalLimitsGroup1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroup2: selectedLimitsGroup2,
+            operationalLimitsGroups: operationalLimitsGroups,
+            selectedOperationalLimitsGroupId1: selectedOperationalLimitsGroupId1,
+            selectedOperationalLimitsGroupId2: selectedOperationalLimitsGroupId2,
             connectionName1: connectionName1,
             connectionDirection1: connectionDirection1,
             connectionName2: connectionName2,
@@ -847,8 +847,8 @@ export function modifyLine({
     g2,
     b2,
     operationalLimitsGroups,
-    selectedOperationalLimitsGroup1,
-    selectedOperationalLimitsGroup2,
+    selectedOperationalLimitsGroupId1,
+    selectedOperationalLimitsGroupId2,
     enableOLGModification,
     voltageLevelId1,
     busOrBusbarSectionId1,
@@ -898,8 +898,8 @@ export function modifyLine({
             g2: toModificationOperation(g2),
             b2: toModificationOperation(b2),
             operationalLimitsGroups: operationalLimitsGroups,
-            selectedOperationalLimitsGroup1: selectedOperationalLimitsGroup1,
-            selectedOperationalLimitsGroup2: selectedOperationalLimitsGroup2,
+            selectedOperationalLimitsGroupId1: selectedOperationalLimitsGroupId1,
+            selectedOperationalLimitsGroupId2: selectedOperationalLimitsGroupId2,
             [ENABLE_OLG_MODIFICATION]: enableOLGModification,
             [OLGS_MODIFICATION_TYPE]: enableOLGModification
                 ? OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE
@@ -989,8 +989,8 @@ export function createTwoWindingsTransformer({
             ratedU1: ratedU1,
             ratedU2: ratedU2,
             operationalLimitsGroups: limitsGroups,
-            selectedOperationalLimitsGroup1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroup2: selectedLimitsGroup2,
+            selectedOperationalLimitsGroupId1: selectedLimitsGroup1,
+            selectedOperationalLimitsGroupId2: selectedLimitsGroup2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
@@ -1081,8 +1081,8 @@ export function modifyTwoWindingsTransformer({
             ratedU1: ratedU1,
             ratedU2: ratedU2,
             operationalLimitsGroups: operationalLimitsGroups,
-            selectedOperationalLimitsGroup1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroup2: selectedLimitsGroup2,
+            selectedOperationalLimitsGroupId1: selectedLimitsGroup1,
+            selectedOperationalLimitsGroupId2: selectedLimitsGroup2,
             [ENABLE_OLG_MODIFICATION]: enableOLGModification,
             [OLGS_MODIFICATION_TYPE]: enableOLGModification
                 ? OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE
@@ -1185,7 +1185,7 @@ export function createSubstation({
         properties,
     });
 
-    if (isUpdate) {
+    if (modificationUuid) {
         url += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating substation creation', { url, body });
     } else {
@@ -1585,7 +1585,7 @@ export function loadScaling(
 export function linesAttachToSplitLines({
     studyUuid,
     nodeUuid,
-    modificationUuid,
+    uuid,
     lineToAttachTo1Id,
     lineToAttachTo2Id,
     attachedLineId,
@@ -1611,15 +1611,15 @@ export function linesAttachToSplitLines({
 
     let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (modificationUuid) {
-        lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        lineAttachUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating attaching lines to splitting lines');
     } else {
         console.info('Creating attaching lines to splitting lines');
     }
 
     return backendFetchText(lineAttachUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1631,7 +1631,7 @@ export function linesAttachToSplitLines({
 export function deleteVoltageLevelOnLine(
     studyUuid: string,
     nodeUuid: UUID,
-    modificationUuid: UUID,
+    modificationUuid: UUID | undefined,
     lineToAttachTo1Id: string,
     lineToAttachTo2Id: string,
     replacingLine1Id: string,

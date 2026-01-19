@@ -212,17 +212,18 @@ const LineAttachToVoltageLevelDialog = ({
             return new Promise(() => {
                 const preparedLine = {
                     type: MODIFICATION_TYPES.LINE_CREATION.type,
-                    equipmentId: lineCreationInfo.lineId,
-                    equipmentName: lineCreationInfo.lineName,
+                    equipmentId: lineCreationInfo.equipmentId,
+                    equipmentName: lineCreationInfo.equipmentName,
                     r: lineCreationInfo.r,
                     x: lineCreationInfo.x,
                     g1: lineCreationInfo.g1,
                     b1: lineCreationInfo.b1,
                     g2: lineCreationInfo.g2,
                     b2: lineCreationInfo.b2,
-                    limitsGroups: lineCreationInfo.limitsGroups,
-                    selectedLimitsGroup1: lineCreationInfo.selectedLimitsGroup1,
-                    selectedLimitsGroup2: lineCreationInfo.selectedLimitsGroup2,
+                    operationalLimitsGroups: lineCreationInfo.operationalLimitsGroups,
+                    selectedOperationalLimitsGroupId1: lineCreationInfo.selectedOperationalLimitsGroupId1,
+                    selectedOperationalLimitsGroupId2: lineCreationInfo.selectedOperationalLimitsGroupId2,
+                    properties: lineCreationInfo.properties,
                 };
                 setAttachmentLine(preparedLine);
                 setValue(`${ATTACHMENT_LINE_ID}`, preparedLine.equipmentId, {
@@ -302,6 +303,7 @@ const LineAttachToVoltageLevelDialog = ({
                         shouldDirty: true,
                     }
                 );
+                setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`, null);
             });
         },
         [setValue, newVoltageLevel, voltageLevelOptions]

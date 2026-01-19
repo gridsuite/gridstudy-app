@@ -13,7 +13,7 @@ import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../.
 import { type AppState } from '../../../../../redux/reducer';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
-import { FilterType } from '../../../../results/common/utils';
+import { isCriteriaFilter } from '../../../../results/common/utils';
 import GlobalFilterSelector, {
     type GlobalFilterSelectorProps,
 } from '../../../../results/common/global-filter/global-filter-selector';
@@ -67,24 +67,17 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     );
 
     const filterTypes = useMemo<GlobalFilterSelectorProps['filterableEquipmentTypes']>(() => {
-        let fTypes = [
+        return [
             ...(tableDefinition.type === SpreadsheetEquipmentType.BRANCH
                 ? [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]
                 : [tableDefinition.type as unknown as EQUIPMENT_TYPES]),
-            EQUIPMENT_TYPES.SUBSTATION,
         ];
-        if (tableDefinition.type !== SpreadsheetEquipmentType.SUBSTATION) {
-            fTypes.push(EQUIPMENT_TYPES.VOLTAGE_LEVEL);
-        }
-        return fTypes;
     }, [tableDefinition.type]);
 
     useEffect(() => {
         if (globalFilterSpreadsheetState) {
             dispatch(
-                addToRecentGlobalFilters(
-                    globalFilterSpreadsheetState?.filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
-                )
+                addToRecentGlobalFilters(globalFilterSpreadsheetState?.filter((filter) => isCriteriaFilter(filter)))
             );
         }
     }, [dispatch, globalFilterSpreadsheetState]);

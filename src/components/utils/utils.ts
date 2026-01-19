@@ -26,6 +26,7 @@ import {
     TemporaryLimitFormSchema,
 } from '../dialogs/limits/operational-limits-groups-types';
 import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
+import { TapChangerStep } from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -96,12 +97,12 @@ export const getObjectId = (object: string | { id: string }) => {
 };
 
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
-    const newBusbarSections = [];
+    const newBusbarSections: Option[] = [];
     for (let i = 0; i < busbarCount; i++) {
         for (let j = 0; j < sectionCount; j++) {
             newBusbarSections.push({
                 id: equipmentId + '_' + (i + 1) + '_' + (j + 1),
-                name: '',
+                label: '',
             });
         }
     }
@@ -174,15 +175,12 @@ export const formatCompleteCurrentLimit = (
 
 export const richTypeEquals = (a: unknown, b: unknown) => a === b;
 
-export const computeHighTapPosition = (steps: { index: number }[]) => {
-    const values = steps?.map((step) => step['index']);
+export const computeHighTapPosition = (steps: TapChangerStep[]) => {
+    const values = steps?.map((step) => step['index']).filter((v): v is number => v !== undefined);
     return values?.length > 0 ? Math.max(...values) : null;
 };
 
-export const compareStepsWithPreviousValues = (
-    tapSteps: Record<string, number>[],
-    previousValues: Record<string, number>[]
-) => {
+export const compareStepsWithPreviousValues = (tapSteps: TapChangerStep[], previousValues?: TapChangerStep[]) => {
     if (previousValues === undefined) {
         return false;
     }
@@ -191,7 +189,7 @@ export const compareStepsWithPreviousValues = (
     }
     return tapSteps.every((step, index) => {
         const previousStep = previousValues[index];
-        return Object.getOwnPropertyNames(previousStep).every((key) => {
+        return (Object.keys(previousStep) as (keyof TapChangerStep)[]).every((key) => {
             return step[key] === previousStep[key];
         });
     });
@@ -262,7 +260,7 @@ export function calculateSusceptance(distance: number, linearCapacity: number) {
 
 export function getNewVoltageLevelOptions(
     formattedVoltageLevel: VoltageLevel,
-    oldVoltageLevelId: string,
+    oldVoltageLevelId: string | undefined,
     voltageLevelOptions: VoltageLevel[]
 ) {
     const newVoltageLevelOptions =

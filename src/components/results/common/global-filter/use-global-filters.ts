@@ -13,8 +13,9 @@ export function isGlobalFilterParameter(globalFilters: GlobalFilters | undefined
     return (
         globalFilters !== undefined &&
         ((globalFilters.countryCode && globalFilters.countryCode.length > 0) ||
-            (globalFilters.nominalV && globalFilters.nominalV.length > 0) ||
+            (globalFilters.voltageRanges && globalFilters.voltageRanges.length > 0) ||
             (globalFilters.genericFilter && globalFilters.genericFilter.length > 0) ||
+            (globalFilters.substationOrVoltageLevelFilter && globalFilters.substationOrVoltageLevelFilter.length > 0) ||
             !!globalFilters.substationProperty)
     );
 }
@@ -26,15 +27,20 @@ export default function useGlobalFilters() {
     const handleGlobalFilterChange = useCallback((value: GlobalFilter[]) => {
         let newGlobalFilter: GlobalFilters = {};
 
-        const nominalVs = new Set(
-            value
-                .filter((filter: GlobalFilter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
-                .map((filter: GlobalFilter) => filter.label)
-        );
+        const voltageRanges = value
+            .filter((filter: GlobalFilter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
+            .map((filter: GlobalFilter) => [filter.minValue, filter.maxValue] as [number, number]);
 
         const genericFilters: Set<string> = new Set(
             value
                 .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
+                .map((filter: GlobalFilter) => filter.uuid ?? '')
+                .filter((uuid: string): boolean => uuid !== '')
+        );
+
+        const substationOrVoltageLevelFilter: Set<string> = new Set(
+            value
+                .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.SUBSTATION_OR_VL)
                 .map((filter: GlobalFilter) => filter.uuid ?? '')
                 .filter((uuid: string): boolean => uuid !== '')
         );
@@ -59,9 +65,10 @@ export default function useGlobalFilters() {
                 }
             });
 
-        newGlobalFilter.nominalV = [...nominalVs];
+        newGlobalFilter.voltageRanges = voltageRanges;
         newGlobalFilter.countryCode = [...countryCodes];
         newGlobalFilter.genericFilter = [...genericFilters];
+        newGlobalFilter.substationOrVoltageLevelFilter = Array.from(substationOrVoltageLevelFilter);
 
         if (substationProperties.size > 0) {
             newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
