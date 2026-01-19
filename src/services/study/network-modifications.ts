@@ -55,7 +55,7 @@ import {
     VariationType,
     VoltageLevelCreationInfo,
     VoltageLeveModificationInfo,
-    VSCCreationInfo,
+    VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
@@ -1888,61 +1888,32 @@ export function modifyLcc({
 }
 
 export function createVsc({
+    vscCreationInfos,
     studyUuid,
     nodeUuid,
-    id,
-    name,
-    nominalV,
-    r,
-    maxP,
-    operatorActivePowerLimitSide1,
-    operatorActivePowerLimitSide2,
-    convertersMode,
-    activePowerSetpoint,
-    angleDroopActivePowerControl,
-    p0,
-    droop,
-    converterStation1,
-    converterStation2,
-    properties,
-    isUpdate,
     modificationUuid,
-}: VSCCreationInfo) {
+    isUpdate,
+}: {
+    vscCreationInfos: VscCreationInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let createVscUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (isUpdate) {
+    if (modificationUuid) {
         createVscUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating vsc creation');
     } else {
         console.info('Creating vsc creation');
     }
-
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.VSC_CREATION.type,
-        equipmentId: id,
-        equipmentName: name,
-        nominalV: nominalV,
-        r: r,
-        maxP: maxP,
-        operatorActivePowerLimitFromSide1ToSide2: operatorActivePowerLimitSide1,
-        operatorActivePowerLimitFromSide2ToSide1: operatorActivePowerLimitSide2,
-        convertersMode: convertersMode,
-        activePowerSetpoint: activePowerSetpoint,
-        angleDroopActivePowerControl: angleDroopActivePowerControl,
-        p0: p0,
-        droop: droop,
-        converterStation1: converterStation1,
-        converterStation2: converterStation2,
-        properties: properties,
-    });
-
     return backendFetchText(createVscUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body,
+        body: JSON.stringify(vscCreationInfos),
     });
 }
 

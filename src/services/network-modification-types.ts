@@ -377,23 +377,23 @@ export interface Variations {
     filters: VariationFilter[];
 }
 
-export interface VSCCreationConverterStation {
-    type: string;
+export interface ConverterStationCreationInfos {
     equipmentId: string;
     equipmentName: string | null;
     lossFactor: number;
-    voltageSetpoint: number | null;
-    reactivePowerSetpoint: number | null;
+    reactivePowerSetpoint?: number;
+    voltageRegulationOn: boolean;
+    voltageSetpoint?: number | null;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    connectionName: string | null;
     connectionDirection: string | null;
-    connectionPosition: string | null;
-    voltageRegulationOn: boolean;
+    connectionName?: string | null;
+    connectionPosition?: number | null;
+    terminalConnected?: boolean | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
 }
 
 export interface LccShuntCompensatorInfos {
@@ -717,26 +717,24 @@ export interface DeleteAttachingLineInfo {
     replacingLine1Name: string | null;
 }
 
-export interface VSCCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name: string | null;
+export interface VscCreationInfos {
+    type: ModificationType;
+    uuid?: string;
+    equipmentId: string;
+    equipmentName: string | null;
     nominalV: number;
     r: number;
     maxP: number;
-    operatorActivePowerLimitSide1: any;
-    operatorActivePowerLimitSide2: any;
+    operatorActivePowerLimitFromSide1ToSide2: any;
+    operatorActivePowerLimitFromSide2ToSide1: any;
     convertersMode: string;
     activePowerSetpoint: number;
     angleDroopActivePowerControl: boolean;
     p0: number | null;
     droop: number | null;
-    converterStation1: VSCCreationConverterStation;
-    converterStation2: VSCCreationConverterStation;
+    converterStation1: ConverterStationCreationInfos;
+    converterStation2: ConverterStationCreationInfos;
     properties: Property[] | null;
-    isUpdate: boolean;
-    modificationUuid: UUID;
 }
 
 export interface LCCCreationInfo {

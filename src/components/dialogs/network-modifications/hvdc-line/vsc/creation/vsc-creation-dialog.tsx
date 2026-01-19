@@ -9,11 +9,12 @@ import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
     ExtendedEquipmentType,
+    MODIFICATION_TYPES,
     snackWithFallback,
     TextInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useForm } from 'react-hook-form';
+import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER_SETPOINT,
@@ -39,11 +40,6 @@ import yup from 'components/utils/yup-config';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
-import {
-    getVscHvdcLinePaneEmptyFormData,
-    getVscHvdcLinePaneSchema,
-    getVscHvdcLineTabFormData,
-} from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
 import { FetchStatus } from '../../../../../../services/utils';
 import {
     getConverterStationCreationData,
@@ -65,6 +61,16 @@ import {
 } from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
 import { VSC_CREATION_TABS } from '../vsc-utils';
+import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { VscCreationInfos } from '../../../../../../services/network-modification-types';
+import { DeepNullable } from '../../../../../utils/ts-utils';
+import { VscCreationDialogSchemaForm, VscFormInfos } from '../vsc-dialog.type';
+import {
+    getVscHvdcLinePaneEmptyFormData,
+    getVscHvdcLinePaneSchema,
+    getVscHvdcLineTabFormData,
+    getVscHvdcLineTabFormEditData,
+} from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
 
 const formSchema = yup
     .object()
@@ -86,7 +92,11 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-const VscCreationDialog = ({
+export type VscCreationDialogProps = NetworkModificationDialogProps & {
+    editData: VscCreationInfos;
+};
+
+export default function VscCreationDialog({
     editData,
     currentNode,
     studyUuid,
@@ -94,34 +104,23 @@ const VscCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: Readonly<VscCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState(VSC_CREATION_TABS.HVDC_LINE_TAB);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<VscCreationDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<VscCreationDialogSchemaForm>>(formSchema),
     });
 
-    const fromSearchCopyToFormValues = (hvdcLine) => {
+    const fromSearchCopyToFormValues = (hvdcLine: VscFormInfos) => {
         reset(
             {
                 [EQUIPMENT_ID]: hvdcLine.id + '(1)',
                 [EQUIPMENT_NAME]: hvdcLine.name ?? '',
-                ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, {
-                    nominalV: hvdcLine.nominalV,
-                    r: hvdcLine.r,
-                    maxP: hvdcLine.maxP,
-                    operatorActivePowerLimitFromSide1ToSide2: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
-                    operatorActivePowerLimitFromSide2ToSide1: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
-                    convertersMode: hvdcLine.convertersMode,
-                    activePowerSetpoint: hvdcLine.activePowerSetpoint,
-                    angleDroopActivePowerControl: hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
-                    p0: hvdcLine.hvdcAngleDroopActivePowerControl?.p0,
-                    droop: hvdcLine.hvdcAngleDroopActivePowerControl?.droop,
-                }),
+                ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, hvdcLine),
                 ...getConverterStationFromSearchCopy(CONVERTER_STATION_1, hvdcLine.converterStation1),
                 ...getConverterStationFromSearchCopy(CONVERTER_STATION_2, hvdcLine.converterStation2),
                 ...copyEquipmentPropertiesForCreation(hvdcLine),
@@ -167,7 +166,7 @@ const VscCreationDialog = ({
             reset({
                 [EQUIPMENT_ID]: editData.equipmentId,
                 [EQUIPMENT_NAME]: editData?.equipmentName ?? '',
-                ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, editData),
+                ...getVscHvdcLineTabFormEditData(HVDC_LINE_TAB, editData),
                 ...getConverterStationFormEditData(CONVERTER_STATION_1, editData.converterStation1),
                 ...getConverterStationFormEditData(CONVERTER_STATION_2, editData.converterStation2),
                 ...getPropertiesFromModification(editData.properties),
@@ -179,7 +178,7 @@ const VscCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
-    const onValidationError = (errors) => {
+    const onValidationError = (errors: FieldErrors) => {
         let tabsInError = [];
         if (errors?.[HVDC_LINE_TAB] !== undefined) {
             tabsInError.push(VSC_CREATION_TABS.HVDC_LINE_TAB);
@@ -200,30 +199,32 @@ const VscCreationDialog = ({
     };
 
     const onSubmit = useCallback(
-        (hvdcLine) => {
+        (hvdcLine: VscCreationDialogSchemaForm) => {
             const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
-            const converterStation1 = getConverterStationCreationData(hvdcLine[CONVERTER_STATION_1]);
-            const converterStation2 = getConverterStationCreationData(hvdcLine[CONVERTER_STATION_2]);
-            createVsc({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                id: hvdcLine[EQUIPMENT_ID],
-                name: sanitizeString(hvdcLine[EQUIPMENT_NAME]),
+            const vscCreationInfos = {
+                type: MODIFICATION_TYPES.VSC_CREATION.type,
+                equipmentId: hvdcLine[EQUIPMENT_ID],
+                equipmentName: sanitizeString(hvdcLine[EQUIPMENT_NAME]) ?? null,
                 nominalV: hvdcLineTab[NOMINAL_V],
                 r: hvdcLineTab[R],
                 maxP: hvdcLineTab[MAX_P],
-                operatorActivePowerLimitSide1: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
-                operatorActivePowerLimitSide2: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
+                operatorActivePowerLimitFromSide1ToSide2: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
+                operatorActivePowerLimitFromSide2ToSide1: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
                 convertersMode: hvdcLineTab[CONVERTERS_MODE],
                 activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
                 angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
                 p0: hvdcLineTab[P0],
                 droop: hvdcLineTab[DROOP],
-                converterStation1: converterStation1,
-                converterStation2: converterStation2,
+                converterStation1: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_1]),
+                converterStation2: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_2]),
                 properties: toModificationProperties(hvdcLine),
+            } satisfies VscCreationInfos;
+            createVsc({
+                vscCreationInfos: vscCreationInfos,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
-                modificationUuid: editData?.uuid ?? null,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'VscCreationError' });
             });
@@ -268,6 +269,4 @@ const VscCreationDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-export default VscCreationDialog;
+}

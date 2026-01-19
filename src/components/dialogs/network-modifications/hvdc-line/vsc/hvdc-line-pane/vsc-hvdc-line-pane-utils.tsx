@@ -18,6 +18,8 @@ import {
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
 } from '../../../../../utils/field-constants';
+import { VscFormInfos } from '../vsc-dialog.type';
+import { VscCreationInfos } from '../../../../../../services/network-modification-types';
 
 export function getVscHvdcLinePaneSchema(id: string) {
     return {
@@ -88,30 +90,35 @@ export function getVscHvdcLinePaneEmptyFormData(id: string, isModification: bool
         },
     };
 }
-export interface hvdcLineTabEditData {
-    nominalV: number;
-    r: number;
-    maxP: number;
-    operatorActivePowerLimitFromSide1ToSide2?: number | null;
-    operatorActivePowerLimitFromSide2ToSide1?: number | null;
-    convertersMode: string;
-    activePowerSetpoint: number;
-    angleDroopActivePowerControl: boolean;
-    p0?: number | null;
-    droop?: number | null;
-}
 
-export function getVscHvdcLineTabFormData(id: string, hvdcLine: hvdcLineTabEditData) {
+export function getVscHvdcLineTabFormData(id: string, hvdcLine: VscFormInfos) {
     return {
         [id]: {
             [NOMINAL_V]: hvdcLine.nominalV,
             [R]: hvdcLine.r,
             [MAX_P]: hvdcLine.maxP,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: hvdcLine?.operatorActivePowerLimitFromSide1ToSide2,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: hvdcLine?.operatorActivePowerLimitFromSide2ToSide1,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: hvdcLine?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: hvdcLine?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
             [CONVERTERS_MODE]: hvdcLine.convertersMode,
             [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
-            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine.angleDroopActivePowerControl,
+            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine?.hvdcAngleDroopActivePowerControl?.isEnabled,
+            [P0]: hvdcLine?.hvdcAngleDroopActivePowerControl?.p0,
+            [DROOP]: hvdcLine?.hvdcAngleDroopActivePowerControl?.droop,
+        },
+    };
+}
+
+export function getVscHvdcLineTabFormEditData(id: string, hvdcLine: VscCreationInfos) {
+    return {
+        [id]: {
+            [NOMINAL_V]: hvdcLine.nominalV,
+            [R]: hvdcLine.r,
+            [MAX_P]: hvdcLine.maxP,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: hvdcLine?.operatorActivePowerLimitFromSide2ToSide1,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: hvdcLine?.operatorActivePowerLimitFromSide1ToSide2,
+            [CONVERTERS_MODE]: hvdcLine.convertersMode,
+            [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
+            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine?.angleDroopActivePowerControl,
             [P0]: hvdcLine?.p0,
             [DROOP]: hvdcLine?.droop,
         },

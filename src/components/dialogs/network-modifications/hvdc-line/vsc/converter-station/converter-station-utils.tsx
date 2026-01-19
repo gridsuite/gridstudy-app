@@ -41,9 +41,12 @@ import {
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { sanitizeString } from '../../../../dialog-utils';
 import { toModificationOperation } from '../../../../../utils/utils';
-import { ConverterStationElementInfos, ConverterStationElementModificationInfos } from './converter-station-type';
+import { VscConverterStationFormInfos, ConverterStationElementModificationInfos } from './converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
-import { AttributeModification } from '../../../../../../services/network-modification-types';
+import {
+    AttributeModification,
+    ConverterStationCreationInfos,
+} from '../../../../../../services/network-modification-types';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -52,25 +55,6 @@ export type UpdateReactiveCapabilityCurveTableConverterStation = (
     index: number,
     converterStationName: 'converterStation1' | 'converterStation2'
 ) => void;
-
-export interface ConverterStationInterfaceEditData {
-    equipmentId: string;
-    equipmentName: string | null;
-    lossFactor: number;
-    reactivePowerSetpoint?: number;
-    voltageRegulationOn: boolean;
-    voltageSetpoint?: number | null;
-    voltageLevelId: string;
-    busOrBusbarSectionId: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
-    reactiveCapabilityCurve: boolean;
-    minQ: number | null;
-    maxQ: number | null;
-}
 
 export interface ConverterStationModificationInterfaceEditData {
     equipmentId: string;
@@ -205,7 +189,7 @@ export function getConverterStationModificationData(
     };
 }
 
-export function getConverterStationFormEditData(id: string, converterStation: ConverterStationInterfaceEditData) {
+export function getConverterStationFormEditData(id: string, converterStation: ConverterStationCreationInfos) {
     return {
         [id]: {
             [CONVERTER_STATION_ID]: converterStation?.equipmentId,
@@ -252,7 +236,7 @@ export function getConverterStationModificationFormEditData(
     };
 }
 
-function getConverterStationReactiveLimits(converterStation: ConverterStationInterfaceEditData) {
+function getConverterStationReactiveLimits(converterStation: ConverterStationCreationInfos) {
     return converterStation.reactiveCapabilityCurve
         ? getReactiveLimitsFormData({
               reactiveCapabilityCurveChoice: 'CURVE',
@@ -283,7 +267,7 @@ function getConverterStationModificationReactiveLimits(
     };
 }
 
-export function getConverterStationFromSearchCopy(id: string, converterStation: ConverterStationElementInfos) {
+export function getConverterStationFromSearchCopy(id: string, converterStation: VscConverterStationFormInfos) {
     return {
         [id]: {
             [CONVERTER_STATION_ID]: converterStation.id + '(1)',
