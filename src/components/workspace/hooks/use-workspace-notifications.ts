@@ -18,7 +18,7 @@ import {
 } from '../../../types/notification-types';
 import { getClientId } from '../../../hooks/use-client-id';
 
-export function useWorkspaceNotifications(studyUuid: UUID | undefined) {
+export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
     const dispatch = useDispatch();
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
@@ -26,7 +26,7 @@ export function useWorkspaceNotifications(studyUuid: UUID | undefined) {
         (eventData: any) => {
             try {
                 const panelIds = JSON.parse(eventData.payload) as UUID[];
-                fetchPanels(studyUuid as UUID, workspaceId as UUID, panelIds)
+                fetchPanels(studyUuid!, workspaceId!, panelIds)
                     .then((updatedPanels) => dispatch(updatePanels(updatedPanels)))
                     .catch((error) => console.error('Failed to fetch updated panels:', error));
             } catch (error) {

@@ -80,7 +80,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 const changes: Partial<NetworkAreaDiagram> = {};
                 PERSISTENT_FIELDS.forEach((field) => {
                     if (prev[field] !== next[field]) {
-                        Object.assign(changes, { [field]: next[field] });
+                        (changes as any)[field] = next[field];
                     }
                 });
 
