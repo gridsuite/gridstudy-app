@@ -330,16 +330,20 @@ interface WorkspaceRenamedEventDataHeaders extends CommonStudyEventDataHeaders {
 interface WorkspacePanelsUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.WORKSPACE_PANELS_UPDATED;
     workspaceUuid: UUID;
+    clientId?: UUID;
 }
 
 interface WorkspacePanelsDeletedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.WORKSPACE_PANELS_DELETED;
     workspaceUuid: UUID;
+    clientId?: UUID;
 }
 
 interface WorkspaceNadConfigUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.WORKSPACE_NAD_CONFIG_UPDATED;
-    clientId?: string;
+    workspaceUuid: UUID;
+    panelId: UUID;
+    clientId?: UUID;
 }
 
 interface ModificationsCreationInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {

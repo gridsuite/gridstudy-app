@@ -8,18 +8,17 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Box } from '@mui/material';
-import { EquipmentType } from '@gridsuite/commons-ui';
 import { DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import SingleLineDiagramContent from '../../../../grid-layout/cards/diagrams/singleLineDiagram/single-line-diagram-content';
 import { SLDMetadata } from '@powsybl/network-viewer';
 import type { UUID } from 'node:crypto';
 import { useSldDiagram } from '../../../diagrams/sld/use-sld-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
+import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 import { selectSldDiagramFields } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
 import { SldNavigationSidebar } from '../../../diagrams/sld/sld-navigation-sidebar';
 import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
-import { PanelType } from '../../../types/workspace.types';
 
 interface VoltageLevelPanelContentProps {
     panelId: UUID;
@@ -38,7 +37,7 @@ export const VoltageLevelPanelContent = ({
 }: VoltageLevelPanelContentProps) => {
     const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
 
-    const { associateVoltageLevelWithNad, navigateSLD, showInSpreadsheet, openSLD } = useWorkspaceActions();
+    const { associateVoltageLevelWithNad, navigateSLD } = useWorkspaceActions();
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.VOLTAGE_LEVEL,
@@ -48,14 +47,7 @@ export const VoltageLevelPanelContent = ({
         currentRootNetworkUuid,
     });
 
-    const handleShowInSpreadsheet = useCallback(
-        (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => {
-            if (equipment.equipmentId && equipment.equipmentType) {
-                showInSpreadsheet({ equipmentId: equipment.equipmentId, equipmentType: equipment.equipmentType });
-            }
-        },
-        [showInSpreadsheet]
-    );
+    const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
 
     // Handle Ctrl+click on voltage level arrows
     // If this SLD is associated with a NAD, associate the new SLD with the same NAD
@@ -66,10 +58,10 @@ export const VoltageLevelPanelContent = ({
             if (nadPanelId) {
                 associateVoltageLevelWithNad({ voltageLevelId, nadPanelId });
             } else {
-                openSLD({ diagramId: voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+                handleOpenVoltageLevelDiagram(voltageLevelId);
             }
         },
-        [sldFields?.parentNadPanelId, associateVoltageLevelWithNad, openSLD]
+        [sldFields?.parentNadPanelId, associateVoltageLevelWithNad, handleOpenVoltageLevelDiagram]
     );
 
     const handleNavigateDiagram = useCallback(

@@ -45,10 +45,10 @@ export function renameWorkspace(studyUuid: UUID, workspaceId: UUID, name: string
     return backendFetch(url, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'text/plain',
             clientId: getClientId(),
         },
-        body: JSON.stringify(name),
+        body: name,
     }).then(() => {});
 }
 
@@ -67,7 +67,7 @@ export function syncPanels(studyUuid: UUID, workspaceId: UUID, panels: PanelStat
     }).then(() => {});
 }
 
-export function deletePanels(studyUuid: UUID, workspaceId: UUID, panelIds: UUID[]): Promise<void> {
+export function deletePanels(studyUuid: UUID, workspaceId: UUID, panelIds?: UUID[]): Promise<void> {
     console.info('delete panels');
     const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels`;
     console.debug(url);
@@ -78,14 +78,14 @@ export function deletePanels(studyUuid: UUID, workspaceId: UUID, panelIds: UUID[
             'Content-Type': 'application/json',
             clientId: getClientId(),
         },
-        body: JSON.stringify(panelIds),
+        body: panelIds ? JSON.stringify(panelIds) : undefined,
     }).then(() => {});
 }
 
 export function fetchPanels(studyUuid: UUID, workspaceId: UUID, panelIds?: UUID[]): Promise<PanelState[]> {
     console.info('fetch panels');
     const urlSearchParams = new URLSearchParams();
-    panelIds?.forEach((id) => urlSearchParams.append('ids', id));
+    panelIds?.forEach((id) => urlSearchParams.append('panelIds', id));
     const queryString = urlSearchParams.toString();
     const baseUrl = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels`;
     const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;

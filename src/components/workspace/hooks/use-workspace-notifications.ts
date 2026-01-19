@@ -8,13 +8,17 @@
 import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectActiveWorkspaceId } from '../../../redux/slices/workspace-selectors';
-import { updatePanels, deletePanels } from '../../../redux/slices/workspace-slice';
-import { fetchPanels } from '../../../services/study/workspace';
+import { updatePanels, deletePanels, setWorkspacesMetadata } from '../../../redux/slices/workspace-slice';
+import { fetchPanels, getWorkspacesMetadata } from '../../../services/study/workspace';
 import { useNotificationsListener, NotificationsUrlKeys } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import {
     isWorkspacePanelsUpdatedNotification,
     isWorkspacePanelsDeletedNotification,
+    isWorkspaceRenamedNotification,
+    WorkspacePanelsUpdatedEventData,
+    WorkspacePanelsDeletedEventData,
+    WorkspaceRenamedEventData,
 } from '../../../types/notification-types';
 import { getClientId } from '../../../hooks/use-client-id';
 
@@ -23,10 +27,11 @@ export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
     const handlePanelsUpdated = useCallback(
-        (eventData: any) => {
+        (eventData: WorkspacePanelsUpdatedEventData) => {
+            if (!studyUuid || !workspaceId) return;
             try {
                 const panelIds = JSON.parse(eventData.payload) as UUID[];
-                fetchPanels(studyUuid!, workspaceId!, panelIds)
+                fetchPanels(studyUuid, workspaceId, panelIds)
                     .then((updatedPanels) => dispatch(updatePanels(updatedPanels)))
                     .catch((error) => console.error('Failed to fetch updated panels:', error));
             } catch (error) {
@@ -37,7 +42,7 @@ export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
     );
 
     const handlePanelsDeleted = useCallback(
-        (eventData: any) => {
+        (eventData: WorkspacePanelsDeletedEventData) => {
             try {
                 const panelIds = JSON.parse(eventData.payload) as UUID[];
                 dispatch(deletePanels(panelIds));
@@ -48,16 +53,33 @@ export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
         [dispatch]
     );
 
+    const handleWorkspaceRenamed = useCallback(
+        (_eventData: WorkspaceRenamedEventData) => {
+            if (!studyUuid) return;
+            getWorkspacesMetadata(studyUuid)
+                .then((metadata) => dispatch(setWorkspacesMetadata(metadata)))
+                .catch((error) => console.error('Failed to fetch workspaces metadata:', error));
+        },
+        [studyUuid, dispatch]
+    );
+
     const handleNotification = useCallback(
         (event: MessageEvent) => {
-            if (!studyUuid || !workspaceId) return;
-
             const eventData = JSON.parse(event.data);
 
-            if (eventData.headers?.clientId === getClientId()) return;
+            if (eventData.headers?.clientId === getClientId()) {
+                return;
+            }
+
+            if (isWorkspaceRenamedNotification(eventData)) {
+                handleWorkspaceRenamed(eventData);
+                return;
+            }
 
             const notificationWorkspaceId = eventData.headers?.workspaceUuid;
-            if (notificationWorkspaceId !== workspaceId) return;
+            if (notificationWorkspaceId !== workspaceId) {
+                return;
+            }
 
             if (isWorkspacePanelsUpdatedNotification(eventData)) {
                 handlePanelsUpdated(eventData);
@@ -65,7 +87,7 @@ export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
                 handlePanelsDeleted(eventData);
             }
         },
-        [studyUuid, workspaceId, handlePanelsUpdated, handlePanelsDeleted]
+        [workspaceId, handlePanelsUpdated, handlePanelsDeleted, handleWorkspaceRenamed]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

@@ -7,17 +7,11 @@
 
 import { useMemo } from 'react';
 
-const CLIENT_ID_STORAGE_KEY = 'ws-client-id';
+// Generate a new clientId once per tab lifetime
+const CLIENT_ID = crypto.randomUUID();
 
 export function getClientId(): string {
-    let clientId = sessionStorage.getItem(CLIENT_ID_STORAGE_KEY);
-
-    if (!clientId) {
-        clientId = crypto.randomUUID();
-        sessionStorage.setItem(CLIENT_ID_STORAGE_KEY, clientId);
-    }
-
-    return clientId;
+    return CLIENT_ID;
 }
 
 export function useClientId(): string {

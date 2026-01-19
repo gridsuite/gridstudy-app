@@ -153,7 +153,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
             minHeight={minHeight}
             resizeHandleStyles={styles.resizeHandles}
             style={{
-                display: panel.minimized ? 'none' : 'block',
+                visibility: panel.minimized ? 'hidden' : 'visible',
                 zIndex: panel.zIndex ?? 0,
             }}
         >

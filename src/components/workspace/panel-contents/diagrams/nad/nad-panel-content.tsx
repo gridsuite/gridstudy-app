@@ -36,7 +36,7 @@ export const NadPanelContent = memo(function NadPanelContent({
 
     const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspaceActions();
 
-    const { diagram, loading, globalError, updateDiagram, handleSaveNad, loadConfig } = useNadDiagram({
+    const { diagram, loading, globalError, updateDiagram, handleSaveNad, replaceNadConfig } = useNadDiagram({
         panelId,
         studyUuid,
         currentNodeId,
@@ -54,7 +54,6 @@ export const NadPanelContent = memo(function NadPanelContent({
         [panelId, addToNadNavigationHistory, associateVoltageLevelWithNad]
     );
 
-    // Update voltage levels in local state only - no Redux dispatch
     const handleUpdateVoltageLevels = useCallback(
         (params: { voltageLevelIds: string[]; voltageLevelToExpandIds: string[]; voltageLevelToOmitIds: string[] }) => {
             updateDiagram(params, true);
@@ -62,7 +61,6 @@ export const NadPanelContent = memo(function NadPanelContent({
         [updateDiagram]
     );
 
-    // Update voltage levels from a filter in global state (redux)
     const handleUpdateVoltageLevelsFromFilter = useCallback(
         (filterUuid?: UUID) => {
             updateDiagram({ currentFilterUuid: filterUuid }, true);
@@ -78,14 +76,11 @@ export const NadPanelContent = memo(function NadPanelContent({
         [updateDiagram]
     );
 
-    // Replace NAD config - updates Redux panel only
-    // The useEffect in use-nad-diagram will handle the fetch when panel data changes
     const handleReplaceNad = useCallback(
         (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
-            // loadConfig will handle cleanup of the old saved config
-            loadConfig(nadConfigUuid, filterUuid);
+            replaceNadConfig(name, nadConfigUuid, filterUuid);
         },
-        [loadConfig]
+        [replaceNadConfig]
     );
 
     return (

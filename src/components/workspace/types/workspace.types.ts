@@ -60,6 +60,19 @@ export interface NADPanel extends BasePanel {
     initialVoltageLevelIds?: string[]; // For initial diagram load
 }
 
+// Persistent NAD fields that sync to Redux and backend
+export const PERSISTENT_NAD_FIELDS = [
+    'title',
+    'voltageLevelToOmitIds',
+    'currentFilterUuid',
+    'savedWorkspaceConfigUuid',
+    'nadConfigUuid',
+    'filterUuid',
+    'initialVoltageLevelIds',
+] as const satisfies readonly (keyof NADPanel)[];
+
+export type PersistentNADFields = Pick<NADPanel, (typeof PERSISTENT_NAD_FIELDS)[number]>;
+
 export interface SLDVoltageLevelPanel extends BasePanel {
     type: PanelType.SLD_VOLTAGE_LEVEL;
     diagramId: string;

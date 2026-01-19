@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { selectPanels } from '../../../../../../redux/slices/workspace-selectors';
+import { selectPanel, selectVisibleAssociatedSldPanels } from '../../../../../../redux/slices/workspace-selectors';
 import { useWorkspaceActions } from '../../../../hooks/use-workspace-actions';
+import { store } from '../../../../../../redux/store';
+import type { RootState } from '../../../../../../redux/store';
 
 export interface UseAssociatedSldsParams {
     readonly nadPanelId: UUID;
@@ -23,17 +25,30 @@ export interface UseAssociatedSldsReturn {
 
 /**
  * Manages SLD panels associated with a NAD panel.
- * Tracks local focus state and handles visibility toggles.
+ * Derives focus state from zIndex in Redux and handles visibility toggles.
  */
-export const useAssociatedSlds = ({ nadPanelId: _nadPanelId }: UseAssociatedSldsParams): UseAssociatedSldsReturn => {
-    const panels = useSelector(selectPanels, shallowEqual);
+export const useAssociatedSlds = ({ nadPanelId }: UseAssociatedSldsParams): UseAssociatedSldsReturn => {
     const { toggleMinimized, bringToFront } = useWorkspaceActions();
 
-    const [focusedSldId, setFocusedSldId] = useState<UUID | null>(null);
+    const visibleSldPanels = useSelector((state: RootState) => selectVisibleAssociatedSldPanels(state, nadPanelId));
+
+    // Determine focused SLD based on highest z-index
+    const focusedSldId = useMemo(() => {
+        if (visibleSldPanels.length === 0) return null;
+        return visibleSldPanels.reduce(
+            (focused, panel) => {
+                if (!focused) return panel.id;
+                const currentZIndex = panel.zIndex ?? 0;
+                const focusedPanel = visibleSldPanels.find((p) => p.id === focused);
+                const focusedZIndex = focusedPanel?.zIndex ?? 0;
+                return currentZIndex > focusedZIndex ? panel.id : focused;
+            },
+            null as UUID | null
+        );
+    }, [visibleSldPanels]);
 
     const handleBringToFront = useCallback(
         (sldPanelId: UUID) => {
-            setFocusedSldId(sldPanelId);
             bringToFront(sldPanelId);
         },
         [bringToFront]
@@ -41,7 +56,7 @@ export const useAssociatedSlds = ({ nadPanelId: _nadPanelId }: UseAssociatedSlds
 
     const handleToggleSldVisibility = useCallback(
         (sldPanelId: UUID) => {
-            const panel = panels.find((p) => p.id === sldPanelId);
+            const panel = selectPanel(store.getState(), sldPanelId);
             if (!panel) return;
 
             const isVisible = !panel.minimized;
@@ -49,16 +64,14 @@ export const useAssociatedSlds = ({ nadPanelId: _nadPanelId }: UseAssociatedSlds
             if (isVisible) {
                 if (focusedSldId === sldPanelId) {
                     toggleMinimized(sldPanelId);
-                    setFocusedSldId(null);
                 } else {
-                    handleBringToFront(sldPanelId);
+                    bringToFront(sldPanelId);
                 }
             } else {
-                toggleMinimized(sldPanelId);
-                handleBringToFront(sldPanelId);
+                bringToFront(sldPanelId);
             }
         },
-        [panels, focusedSldId, handleBringToFront, toggleMinimized]
+        [bringToFront, focusedSldId, toggleMinimized]
     );
 
     return {

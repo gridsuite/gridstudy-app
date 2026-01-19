@@ -60,16 +60,16 @@ const workspacesSlice = createSlice({
                 const index = activeWorkspace.panels.findIndex((p) => p.id === updatedPanel.id);
                 if (index >= 0) {
                     activeWorkspace.panels[index] = {
-                        ...activeWorkspace.panels[index],
                         ...updatedPanel,
+                        zIndex: updatedPanel.zIndex ?? activeWorkspace.panels[index].zIndex,
                     };
                     // If zIndex was explicitly set and it's higher than nextZIndex, update counter
                     if (updatedPanel.zIndex !== undefined && updatedPanel.zIndex >= state.nextZIndex) {
                         state.nextZIndex = updatedPanel.zIndex + 1;
                     }
                 } else {
-                    // New panel - assign zIndex
-                    updatedPanel.zIndex ??= state.nextZIndex++;
+                    // New panel - assign baseline zIndex to not interfere with focused panel
+                    updatedPanel.zIndex ??= 1;
                     activeWorkspace.panels.push(updatedPanel);
                 }
             });
@@ -91,6 +91,11 @@ const workspacesSlice = createSlice({
         clearWorkspace: (state) => {
             if (state.activeWorkspace) {
                 state.activeWorkspace.panels = [];
+                // Update panel count in metadata
+                const metadata = state.workspacesMetadata.find((w) => w.id === state.activeWorkspace?.id);
+                if (metadata) {
+                    metadata.panelCount = 0;
+                }
             }
             state.focusedPanelId = null;
             state.nextZIndex = 1;

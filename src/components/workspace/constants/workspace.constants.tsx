@@ -26,13 +26,6 @@ export const WORKSPACE_MENU_VALUE = 'workspace-menu';
 
 export const DEFAULT_WINDOW_POSITION_OFFSET_MIN = 0.02; // 2%
 
-// Navigation history limits
-export const SLD_MAX_NAVIGATION_HISTORY = 10;
-
-// Default minimum panel sizes in pixels (used when panel config doesn't specify)
-export const DEFAULT_MIN_WIDTH = 300;
-export const DEFAULT_MIN_HEIGHT = 200;
-
 interface PanelConfig {
     defaultSize: PanelSize; // Relative (0-1)
     defaultPosition: PanelPosition; // Relative (0-1)

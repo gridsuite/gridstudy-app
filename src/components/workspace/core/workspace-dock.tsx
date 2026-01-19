@@ -61,7 +61,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const WorkspaceDock = memo(() => {
-    const { toggleMinimized, focusPanel } = useWorkspaceActions();
+    const { toggleMinimized, focusPanel, deletePanel } = useWorkspaceActions();
     const allPanels = useSelector(selectPanels);
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);
@@ -89,7 +89,6 @@ export const WorkspaceDock = memo(() => {
     }
 
     const handleMinimizedPanelClick = (panelId: UUID) => {
-        toggleMinimized(panelId);
         focusPanel(panelId);
     };
 
@@ -134,7 +133,7 @@ export const WorkspaceDock = memo(() => {
                                     }}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        toggleMinimized(panel.id);
+                                        deletePanel(panel.id);
                                     }}
                                 >
                                     <Close />

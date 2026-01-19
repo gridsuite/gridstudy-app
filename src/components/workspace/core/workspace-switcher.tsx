@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     ToggleButton,
@@ -38,10 +38,12 @@ import {
     setActiveWorkspace,
     renameWorkspace as renameWorkspaceAction,
     clearWorkspace as clearWorkspaceAction,
+    setWorkspacesMetadata,
 } from '../../../redux/slices/workspace-slice';
 import { selectWorkspaces, selectActiveWorkspaceId } from '../../../redux/slices/workspace-selectors';
-import { getWorkspace } from '../../../services/study/workspace';
+import { getWorkspace, renameWorkspace, deletePanels, getWorkspacesMetadata } from '../../../services/study/workspace';
 import type { UUID } from 'node:crypto';
+import { RootState } from 'redux/store';
 
 const styles = {
     container: {
@@ -81,14 +83,23 @@ export const WorkspaceSwitcher = memo(() => {
     const dispatch = useDispatch();
     const workspaces = useSelector(selectWorkspaces);
     const activeWorkspaceId = useSelector(selectActiveWorkspaceId);
-    const studyUuid = useSelector((state: any) => state.studyUuid);
+    const studyUuid = useSelector((state: RootState) => state.studyUuid);
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [renameDialog, setRenameDialog] = useState<{ workspaceId: UUID; name: string } | null>(null);
     const [resetWorkspaceId, setResetWorkspaceId] = useState<UUID | null>(null);
 
+    // Fetch fresh metadata when menu is opened
+    useEffect(() => {
+        if (menuAnchor && studyUuid) {
+            getWorkspacesMetadata(studyUuid)
+                .then((metadata) => dispatch(setWorkspacesMetadata(metadata)))
+                .catch((error) => console.error('Failed to fetch workspaces metadata:', error));
+        }
+    }, [menuAnchor, studyUuid, dispatch]);
+
     const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
-        if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE) {
+        if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE && studyUuid) {
             globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
 
             const workspace = await getWorkspace(studyUuid, workspaceId as UUID);
@@ -97,6 +108,8 @@ export const WorkspaceSwitcher = memo(() => {
     };
 
     const handleSwitchWorkspace = async (workspaceId: UUID) => {
+        if (!studyUuid) return;
+
         globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
 
         const workspace = await getWorkspace(studyUuid, workspaceId);
@@ -112,20 +125,29 @@ export const WorkspaceSwitcher = memo(() => {
     };
 
     const handleSubmitRename = () => {
-        if (renameDialog?.name.trim()) {
-            dispatch(
-                renameWorkspaceAction({ workspaceId: renameDialog.workspaceId, newName: renameDialog.name.trim() })
-            );
-            setRenameDialog(null);
+        if (renameDialog?.name.trim() && studyUuid) {
+            renameWorkspace(studyUuid, renameDialog.workspaceId, renameDialog.name.trim())
+                .then(() => {
+                    dispatch(
+                        renameWorkspaceAction({
+                            workspaceId: renameDialog.workspaceId,
+                            newName: renameDialog.name.trim(),
+                        })
+                    );
+                    setRenameDialog(null);
+                })
+                .catch((error) => console.error('Failed to rename workspace:', error));
         }
     };
 
     const handleConfirmReset = useCallback(() => {
-        if (resetWorkspaceId) {
-            dispatch(clearWorkspaceAction());
+        if (resetWorkspaceId && studyUuid) {
+            deletePanels(studyUuid, resetWorkspaceId)
+                .then(() => dispatch(clearWorkspaceAction()))
+                .catch((error) => console.error('Failed to reset workspace:', error));
         }
         setResetWorkspaceId(null);
-    }, [resetWorkspaceId, dispatch]);
+    }, [resetWorkspaceId, studyUuid, dispatch]);
 
     return (
         <Box sx={styles.container}>

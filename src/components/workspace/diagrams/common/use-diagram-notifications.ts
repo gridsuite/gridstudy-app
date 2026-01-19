@@ -7,6 +7,7 @@
 
 import type { UUID } from 'node:crypto';
 import { useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import {
     isLoadflowResultNotification,
@@ -15,11 +16,13 @@ import {
     isWorkspaceNadConfigUpdatedNotification,
 } from '../../../../types/notification-types';
 import { getClientId } from '../../../../hooks/use-client-id';
+import { selectActiveWorkspaceId } from '../../../../redux/slices/workspace-selectors';
 
 interface UseDiagramNotificationsProps {
     currentRootNetworkUuid: UUID;
-    onNotification: (forceSavedConfig: boolean) => void;
+    onNotification: (newConfigUuid?: UUID) => void;
     savedNadConfigUuid?: UUID;
+    panelId?: UUID;
 }
 
 /**
@@ -29,8 +32,10 @@ interface UseDiagramNotificationsProps {
 export const useDiagramNotifications = ({
     currentRootNetworkUuid,
     onNotification,
-    savedNadConfigUuid,
+    panelId,
 }: UseDiagramNotificationsProps) => {
+    const workspaceId = useSelector(selectActiveWorkspaceId);
+
     const handleNotification = useCallback(
         (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
@@ -41,21 +46,23 @@ export const useDiagramNotifications = ({
                     isStudyNotification(eventData)) &&
                 eventData.headers.rootNetworkUuid === currentRootNetworkUuid;
 
-            // NAD config update: only trigger if this panel uses that saved config
-            // Ignore our own NAD config updates (local-first: we already have the latest state)
+            // NAD config update: only trigger if notification is for this specific panel
             const isMatchingNadConfigNotification =
-                savedNadConfigUuid &&
+                workspaceId &&
+                panelId &&
                 isWorkspaceNadConfigUpdatedNotification(eventData) &&
-                eventData.payload === savedNadConfigUuid.toString() &&
+                eventData.headers?.workspaceUuid === workspaceId.toString() &&
+                eventData.headers?.panelId === panelId.toString() &&
                 eventData.headers?.clientId !== getClientId();
 
             if (isRootNetworkNotification) {
-                onNotification(false);
+                onNotification();
             } else if (isMatchingNadConfigNotification) {
-                onNotification(true);
+                const newConfigUuid = eventData.payload as UUID;
+                onNotification(newConfigUuid);
             }
         },
-        [currentRootNetworkUuid, onNotification, savedNadConfigUuid]
+        [currentRootNetworkUuid, onNotification, workspaceId, panelId]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleNotification });

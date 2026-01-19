@@ -101,8 +101,16 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
         // If it's a parameters panel with unsaved changes, trigger confirmation dialog
         if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
             globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
-        } else {
+        } else if (
+            panelType === PanelType.NAD ||
+            panelType === PanelType.SLD_VOLTAGE_LEVEL ||
+            panelType === PanelType.SLD_SUBSTATION
+        ) {
+            // Diagram panels are deleted
             deletePanel(panelId);
+        } else {
+            // Other panels are minimized
+            toggleMinimized(panelId);
         }
     };
 

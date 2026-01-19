@@ -36,7 +36,18 @@ export const selectOpenPanels = createSelector([selectPanels], (panels) => {
         }
     });
 
-    return panels.filter((p) => !p.minimized && !attachedSldIds.has(p.id));
+    return panels.filter((p) => {
+        // Filter out attached SLD panels
+        if (attachedSldIds.has(p.id)) return false;
+
+        // Keep diagram panels mounted even when minimized
+        if (p.type === PanelType.NAD || p.type === PanelType.SLD_VOLTAGE_LEVEL || p.type === PanelType.SLD_SUBSTATION) {
+            return true;
+        }
+
+        // Other panels are filtered out when minimized
+        return !p.minimized;
+    });
 });
 
 export const selectAssociatedPanels = createSelector(
@@ -106,31 +117,18 @@ export const selectSldDiagramFields = createSelector(
     }
 );
 
-export const selectNadDiagramFields = createSelector(
-    [selectPanel],
-    (
-        panel
-    ):
-        | {
-              nadConfigUuid?: UUID;
-              filterUuid?: UUID;
-              currentFilterUuid?: UUID;
-              initialVoltageLevelIds?: string[];
-              voltageLevelToOmitIds?: string[];
-              savedWorkspaceConfigUuid?: UUID;
-          }
-        | undefined => {
-        if (!panel || panel.type !== PanelType.NAD) return undefined;
-        return {
-            nadConfigUuid: panel.nadConfigUuid,
-            filterUuid: panel.filterUuid,
-            currentFilterUuid: panel.currentFilterUuid,
-            initialVoltageLevelIds: panel.initialVoltageLevelIds,
-            voltageLevelToOmitIds: panel.voltageLevelToOmitIds,
-            savedWorkspaceConfigUuid: panel.savedWorkspaceConfigUuid,
-        };
-    }
-);
+export const selectNadDiagramFields = createSelector([selectPanel], (panel) => {
+    if (!panel || panel.type !== PanelType.NAD) return undefined;
+    return {
+        title: panel.title,
+        nadConfigUuid: panel.nadConfigUuid,
+        filterUuid: panel.filterUuid,
+        currentFilterUuid: panel.currentFilterUuid,
+        initialVoltageLevelIds: panel.initialVoltageLevelIds,
+        voltageLevelToOmitIds: panel.voltageLevelToOmitIds,
+        savedWorkspaceConfigUuid: panel.savedWorkspaceConfigUuid,
+    };
+});
 
 export const selectNadNavigationHistory = createSelector([selectPanel], (panel): string[] | undefined => {
     if (!panel || panel.type !== PanelType.NAD) return undefined;
