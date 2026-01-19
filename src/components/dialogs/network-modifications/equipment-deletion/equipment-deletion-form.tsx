@@ -88,7 +88,6 @@ export default function DeleteEquipmentForm({
             fetchEquipmentsIds(studyUuid, currentNode?.id, currentRootNetworkUuid, undefined, watchType, true)
                 .then((vals) => {
                     // check race condition here
-                    console.log('DBG DBR fetchEquipmentsIds', vals);
                     if (!ignore) {
                         setEquipmentsOptions(vals.sort());
                     }

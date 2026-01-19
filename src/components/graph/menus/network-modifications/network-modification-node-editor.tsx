@@ -232,11 +232,11 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function equipmentDeletionDialogWithDefaultParams(equipmentType: EquipmentType) {
-        if (currentNode && studyUuid && currentRootNetworkUuid && editData) {
-            // TODO DBR onValidated={handleValidatedDialog}
+        if (currentNode && studyUuid && currentRootNetworkUuid) {
             return (
                 <EquipmentDeletionDialog
                     onClose={handleCloseDialog}
+                    onValidated={handleValidatedDialog}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}

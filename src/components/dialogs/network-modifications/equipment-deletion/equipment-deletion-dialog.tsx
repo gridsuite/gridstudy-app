@@ -49,6 +49,7 @@ interface EquipmentDeletionDialogProps {
     equipmentType: EquipmentType;
     editDataFetchStatus?: FetchStatus;
     onClose?: () => void;
+    onValidated?: () => void;
 }
 
 /**
@@ -61,7 +62,8 @@ interface EquipmentDeletionDialogProps {
  * @param defaultIdValue the default equipment id
  * @param equipmentType
  * @param editDataFetchStatus indicates the status of fetching EditData
- * @param onClose a callback when dialog has closed
+ * @param onClose a callback when dialog has been closed
+ * @param onValidated a callback when dialog has been validated
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const EquipmentDeletionDialog = ({
@@ -74,6 +76,7 @@ const EquipmentDeletionDialog = ({
     equipmentType,
     editDataFetchStatus,
     onClose,
+    onValidated,
     ...dialogProps
 }: EquipmentDeletionDialogProps) => {
     const currentNodeUuid = currentNode?.id;
@@ -169,6 +172,7 @@ const EquipmentDeletionDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onClose={onClose}
+                onValidated={onValidated}
                 onSave={onSubmit}
                 titleId="DeleteEquipment"
                 open={open}
