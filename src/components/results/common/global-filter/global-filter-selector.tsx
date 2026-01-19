@@ -14,7 +14,7 @@ import { FilterType } from '../utils';
 export type GlobalFilterSelectorProps = GlobalFilterAutocompleteProps & {
     onChange: (globalFilters: GlobalFilter[]) => void;
     preloadedGlobalFilters?: GlobalFilter[];
-    genericFiltersStrictMode?: boolean;
+    genericFiltersStrictMode: boolean;
     disableGenericFilters?: boolean;
 };
 export default function GlobalFilterSelector({
@@ -31,6 +31,9 @@ export default function GlobalFilterSelector({
         let categories: string[] = filters.map((filter) => filter.filterType);
         if (!categories.includes(FilterType.GENERIC_FILTER) && !disableGenericFilters) {
             categories.push(FilterType.GENERIC_FILTER);
+        }
+        if (!categories.includes(FilterType.SUBSTATION_OR_VL) && !disableGenericFilters) {
+            categories.push(FilterType.SUBSTATION_OR_VL);
         }
         return categories;
     }, [filters, disableGenericFilters]);

@@ -156,7 +156,6 @@ const styles = {
     },
     variableTree: {
         maxHeight: '440px',
-        maxWidth: '50px',
     },
 } as const satisfies MuiStyles;
 
@@ -277,12 +276,12 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
                 </Grid>
                 {/* Variables which found in models used in a mapping */}
                 <Grid item sx={styles.variable} container direction={'column'}>
-                    <Grid item>
+                    <Grid item width="100%">
                         <Typography sx={styles.modelTitle} variant="subtitle1">
                             <FormattedMessage id={'DynamicSimulationCurveVariable'}></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid item xs>
+                    <Grid item width="100%" xs>
                         <Box sx={styles.tree}>
                             <CheckboxTreeview
                                 ref={variablesRef}

@@ -9,7 +9,7 @@ import { NodeProps, Position } from '@xyflow/react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { LIGHT_THEME, type MuiStyles } from '@gridsuite/commons-ui';
+import { copyToClipboard, LIGHT_THEME, type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
 import { AppState } from 'redux/reducer';
@@ -23,9 +23,10 @@ import BuildStatusChip from './build-status-chip';
 import { BuildButton } from './build-button';
 import { Tooltip, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import ForwardRefBox from 'components/utils/forwardRefBox';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const styles = {
     networkModificationSelected: (theme) => ({
@@ -91,8 +92,17 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const selectionForCopy = useSelector((state: AppState) => state.nodeSelectionForCopy);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const { snackError, snackInfo } = useSnackMessage();
 
     const intl = useIntl();
+
+    const onClipboardCopy = useCallback(() => {
+        snackInfo({ headerId: 'uuidCopiedToClipboard' });
+    }, [snackInfo]);
+
+    const onClipboardError = useCallback(() => {
+        snackError({ headerId: 'uuidCopiedToClipboardError' });
+    }, [snackError]);
 
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
@@ -119,9 +129,22 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 <Box>
                     {intl.formatMessage({ id: 'nodeType' })} : {intl.formatMessage({ id: props.data.nodeType })}
                 </Box>
+                <Box
+                    sx={{
+                        cursor: 'pointer',
+                        height: '30px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                    }}
+                    onClick={() => copyToClipboard(props.id, onClipboardCopy, onClipboardError)}
+                >
+                    {intl.formatMessage({ id: 'uuid' })}
+                    <ContentCopyIcon fontSize="small" />
+                </Box>
             </Box>
         );
-    }, [props.data, intl]);
+    }, [props.data, props.id, intl, onClipboardCopy, onClipboardError]);
 
     const getNodeOpacity = () => {
         return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 'unset';

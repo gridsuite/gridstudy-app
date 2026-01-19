@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { cyan } from '@mui/material/colors';
+import { cyan, lime } from '@mui/material/colors';
 import { FilterType } from '../utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
@@ -21,6 +21,9 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
         case FilterType.GENERIC_FILTER:
             chipStyle = resultsGlobalFilterStyles.chipGenericFilter;
             break;
+        case FilterType.SUBSTATION_OR_VL:
+            chipStyle = resultsGlobalFilterStyles.chipSubstationOrVoltageLevel;
+            break;
         case FilterType.SUBSTATION_PROPERTY:
             chipStyle = resultsGlobalFilterStyles.chipSubstationProperty;
             break;
@@ -29,7 +32,7 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
 };
 
 const AUTOCOMPLETE_WIDTH: number = 520;
-const POPPER_EXTRA_WIDTH: number = 250;
+const POPPER_EXTRA_WIDTH: number = 300;
 export const GLOBAL_FILTERS_CELL_HEIGHT: number = 400;
 export const IMPORT_FILTER_HEIGHT: number = 40;
 
@@ -68,6 +71,9 @@ export const resultsGlobalFilterStyles = {
         border: '1px solid',
         borderColor: theme.palette.divider,
     }),
+    cellTooltip: (theme) => ({
+        paddingLeft: theme.spacing(1),
+    }),
     cell: (theme) => ({
         borderLeft: '1px solid',
         borderColor: theme.palette.divider,
@@ -79,6 +85,24 @@ export const resultsGlobalFilterStyles = {
         fontSize: '1em',
         width: '100%',
         maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+    }),
+    selectedFiltersPanel: () => ({
+        overflowY: 'auto',
+        padding: 0,
+        maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+    }),
+    selectedFiltersSubGroup: (theme) => ({
+        display: 'block',
+        paddingTop: 1,
+        paddingBottom: 0,
+        color: theme.palette.text.secondary,
+    }),
+    selectedFiltersChips: (theme) => ({
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        color: theme.palette.text.secondary,
+        fontSize: '1em',
     }),
     importFilterButton: (theme) => ({
         color: theme.palette.text.secondary,
@@ -103,7 +127,7 @@ export const resultsGlobalFilterStyles = {
     chip: {
         '&.MuiChip-root': {
             borderRadius: '100px solid',
-            margin: '4px 2px 4px 2px',
+            margin: '1px 2px 1px 2px',
             padding: '0',
             color: 'white',
         },
@@ -143,6 +167,14 @@ export const resultsGlobalFilterStyles = {
         },
         '&.MuiChip-root:hover, &.MuiChip-root:focus': {
             backgroundColor: `${cyan['700']}!important`,
+        },
+    },
+    chipSubstationOrVoltageLevel: {
+        '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
+            backgroundColor: `${lime['800']}!important`,
+        },
+        '&.MuiChip-root:hover, &.MuiChip-root:focus': {
+            backgroundColor: `${lime['900']}!important`,
         },
     },
     chipSubstationProperty: (theme) => ({

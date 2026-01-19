@@ -149,7 +149,7 @@ export const useFetchFiltersEnums = (): {
     loading: boolean;
     result: FilterEnumsType;
 } => {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [result, setResult] = useState<FilterEnumsType>({
         status: null,

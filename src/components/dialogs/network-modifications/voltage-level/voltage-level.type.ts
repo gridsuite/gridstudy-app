@@ -7,7 +7,7 @@
 
 export interface VoltageLevelFormInfos {
     equipmentId: string;
-    equipmentName: string | null;
+    equipmentName?: string | null;
     substationId?: string | null;
     topologyKind?: string | null;
 }
