@@ -19,7 +19,6 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
-    ADDITIONAL_PROPERTIES,
     B1,
     B2,
     BUS_OR_BUSBAR_SECTION,
@@ -85,7 +84,6 @@ import {
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
-    Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
@@ -94,35 +92,11 @@ import { LimitsPane } from '../../../limits/limits-pane';
 import { LineCreationInfos } from '../../../../../services/network-modification-types';
 import { LineModificationFormInfos } from '../modification/line-modification-type';
 import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
-import { CurrentLimitsData } from '../../../../../services/study/network-map.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
-import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { Limit, LineCreationFormData, LineCreationFormInfos, LineFormInfos } from './line-creation-type';
 import { ObjectSchema } from 'yup';
-
-interface LineCreationFormData {
-    [TAB_HEADER]: {
-        equipmentId: string;
-        equipmentName?: string | null;
-    };
-    [CHARACTERISTICS]: {
-        r?: number | null;
-        x?: number | null;
-        b1?: number | null;
-        g1?: number | null;
-        b2?: number | null;
-        g2?: number | null;
-        [CONNECTIVITY_1]?: Connectivity;
-        [CONNECTIVITY_2]?: Connectivity;
-    };
-    [LIMITS]: {
-        [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroupFormSchema[];
-        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
-        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
-    };
-    [ADDITIONAL_PROPERTIES]?: Property[];
-}
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData: Partial<LineCreationFormData> = {
     ...getHeaderEmptyFormData(),
@@ -130,63 +104,6 @@ const emptyFormData: Partial<LineCreationFormData> = {
     ...getLimitsEmptyFormData(false),
     ...emptyProperties,
 };
-
-interface ConnectablePosition {
-    connectionName: string | null;
-    connectionDirection: string | null;
-    connectionPosition: number | null;
-}
-
-interface Limit {
-    id: string;
-    name: string;
-    applicability: string;
-    currentLimits: {
-        id: string;
-        permanentLimit: number;
-        temporaryLimits: {
-            name: string;
-            acceptableDuration: number;
-            value: number;
-        }[];
-    };
-}
-
-interface LineFormInfos {
-    id: string;
-    name: string | null;
-    voltageLevelId1: string;
-    voltageLevelId2: string;
-    terminal1Connected: boolean;
-    terminal2Connected: boolean;
-    p1: number;
-    q1: number;
-    p2: number;
-    q2: number;
-    i1: number;
-    i2: number;
-    r: number;
-    x: number;
-    g1?: number;
-    b1?: number;
-    g2?: number;
-    b2?: number;
-    busOrBusbarSectionId1: string;
-    busOrBusbarSectionId2: string;
-    selectedOperationalLimitsGroupId1: string;
-    selectedOperationalLimitsGroupId2: string;
-    connectablePosition1: ConnectablePosition;
-    connectablePosition2: ConnectablePosition;
-    currentLimits: CurrentLimitsData[];
-    properties: Record<string, string>;
-}
-
-interface LineCreationFormInfos extends LineModificationFormInfos {
-    tabHeader: {
-        equipmentId: string;
-        equipmentName?: string;
-    };
-}
 
 type LineCreationDialogProps = NetworkModificationDialogProps & {
     editData?: LineCreationInfos; // contains data when we try to edit an existing hypothesis

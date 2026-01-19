@@ -304,9 +304,9 @@ export interface SubstationModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
     modificationUuid?: UUID;
-    id: string;
+    id: string | null;
     name: string | null;
-    country: string;
+    country: string | null;
     properties: Property[] | null;
 }
 
@@ -651,9 +651,9 @@ export interface SubstationCreationInfo {
     nodeUuid: UUID;
     substationId: string;
     substationName: string | null;
-    country: string;
+    country: string | null;
     isUpdate: boolean;
-    modificationUuid: UUID;
+    modificationUuid?: UUID;
     properties: Property[] | null;
 }
 
