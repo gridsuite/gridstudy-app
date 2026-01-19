@@ -259,7 +259,6 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 // NAD config updated from another tab
                 updateDiagram(
                     {
-                        ...BASE_RESET_STATE,
                         savedWorkspaceConfigUuid: newConfigUuid,
                         initialVoltageLevelIds: [],
                         voltageLevelIds: [],
@@ -282,29 +281,46 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         fetchDiagram();
     }, [currentNodeId, currentRootNetworkUuid, fetchDiagram]);
 
-    // Sync when nad is replaced (cross-tab update)
+    // Sync cross-tab updates
     useEffect(() => {
-        if (
-            initialFields?.nadConfigUuid === diagram.nadConfigUuid &&
-            initialFields?.filterUuid === diagram.filterUuid
-        ) {
-            return;
-        }
+        const nadConfigChanged = initialFields?.nadConfigUuid !== diagram.nadConfigUuid;
+        const filterChanged = initialFields?.filterUuid !== diagram.filterUuid;
+        const currentFilterChanged = initialFields?.currentFilterUuid !== diagram.currentFilterUuid;
+        const omitIdsChanged =
+            JSON.stringify(initialFields?.voltageLevelToOmitIds ?? []) !==
+            JSON.stringify(diagram.voltageLevelToOmitIds);
 
-        updateDiagram(
-            {
-                nadConfigUuid: initialFields?.nadConfigUuid,
-                filterUuid: initialFields?.filterUuid,
-                ...BASE_RESET_STATE,
-            },
-            true,
-            false // External change - don't sync back
-        );
+        if (nadConfigChanged || filterChanged) {
+            // Full reset when NAD is replaced
+            updateDiagram(
+                {
+                    nadConfigUuid: initialFields?.nadConfigUuid,
+                    filterUuid: initialFields?.filterUuid,
+                    ...BASE_RESET_STATE,
+                },
+                true,
+                false
+            );
+        } else if (currentFilterChanged || omitIdsChanged) {
+            // Incremental update for filter/omit changes
+            updateDiagram(
+                {
+                    currentFilterUuid: initialFields?.currentFilterUuid,
+                    voltageLevelToOmitIds: initialFields?.voltageLevelToOmitIds || [],
+                },
+                false,
+                false
+            );
+        }
     }, [
         diagram.nadConfigUuid,
         diagram.filterUuid,
+        diagram.currentFilterUuid,
+        diagram.voltageLevelToOmitIds,
         initialFields?.nadConfigUuid,
         initialFields?.filterUuid,
+        initialFields?.currentFilterUuid,
+        initialFields?.voltageLevelToOmitIds,
         updateDiagram,
     ]);
 
