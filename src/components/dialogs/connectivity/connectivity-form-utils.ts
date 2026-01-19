@@ -176,7 +176,7 @@ export const getConnectivityData = (
     };
 };
 
-export const getConnectivityFormData = (
+export const getConnectivityFormData = <T extends string = typeof CONNECTIVITY>(
     {
         voltageLevelId,
         busbarSectionId,
@@ -194,20 +194,21 @@ export const getConnectivityFormData = (
         terminalConnected?: boolean | null;
         isEquipmentModification?: boolean;
     },
-    id = CONNECTIVITY
+    id: T = CONNECTIVITY as T
 ) => {
-    return {
-        [id]: {
-            ...getConnectivityPropertiesData({
-                voltageLevelId,
-                busbarSectionId,
-            }),
-            [CONNECTION_DIRECTION]: connectionDirection ?? null,
-            [CONNECTION_NAME]: connectionName ?? '',
-            [CONNECTION_POSITION]: connectionPosition ?? null,
-            [CONNECTED]: terminalConnected ?? (isEquipmentModification ? null : true),
-        },
+    const connectivityData = {
+        ...getConnectivityPropertiesData({
+            voltageLevelId,
+            busbarSectionId,
+        }),
+        [CONNECTION_DIRECTION]: connectionDirection ?? null,
+        [CONNECTION_NAME]: connectionName ?? '',
+        [CONNECTION_POSITION]: connectionPosition ?? null,
+        [CONNECTED]: terminalConnected ?? (isEquipmentModification ? null : true),
     };
+    return {
+        [id]: connectivityData,
+    } as Record<T, typeof connectivityData>;
 };
 
 export const createConnectivityData = (equipmentToModify: any, index: number) => ({

@@ -17,6 +17,7 @@ import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-li
 import { ModificationType } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
+import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
 export enum OperationType {
     SET = 'SET',
@@ -532,10 +533,9 @@ export interface ShuntCompensatorCreationInfo {
     properties: Property[] | null;
 }
 
-export interface LineCreationInfo {
+export interface LineCreationInfos {
+    type: ModificationType;
     uuid?: string | null;
-    studyUuid: string;
-    nodeUuid: UUID;
     equipmentId: string;
     equipmentName: string | null;
     r: number;
@@ -548,10 +548,9 @@ export interface LineCreationInfo {
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
     busOrBusbarSectionId2: string;
-    operationalLimitsGroups: OperationalLimitsGroup[];
+    operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
     selectedOperationalLimitsGroupId1?: string;
     selectedOperationalLimitsGroupId2?: string;
-    isUpdate: boolean;
     modificationUuid?: string | null;
     connectionName1: string | null;
     connectionDirection1: string | null;

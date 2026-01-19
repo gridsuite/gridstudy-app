@@ -133,17 +133,21 @@ function hasDuplicateOperationalLimitsGroups(context: TestContext) {
     return !isDuplicate;
 }
 
-const limitsValidationSchemaCreation = (id: string) => {
-    const completeLimitsGroupSchema = {
+const limitsValidationSchemaCreation = <T extends string>(id: T) => {
+    const completeLimitsGroupSchemaShape = {
         [OPERATIONAL_LIMITS_GROUPS]: yup.array(yup.object().shape(limitsGroupValidationSchema())).required(),
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: yup.string().nullable(),
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: yup.string().nullable(),
         [ENABLE_OLG_MODIFICATION]: yup.boolean(),
     };
-    return { [id]: yup.object().shape(completeLimitsGroupSchema) };
+    const completeLimitsGroupsSchema = yup.object().shape(completeLimitsGroupSchemaShape);
+    return { [id]: completeLimitsGroupsSchema } as Record<
+        T,
+        yup.ObjectSchema<yup.InferType<typeof completeLimitsGroupsSchema>>
+    >;
 };
 
-export const getLimitsValidationSchema = (id: string = LIMITS) => {
+export const getLimitsValidationSchema = <T extends string = typeof LIMITS>(id: T = LIMITS as T) => {
     return limitsValidationSchemaCreation(id);
 };
 
@@ -190,21 +194,22 @@ export const formatOpLimitGroupsToFormInfos = (
         });
 };
 
-export const getAllLimitsFormData = (
+export const getAllLimitsFormData = <T extends string = typeof LIMITS>(
     operationalLimitsGroups: OperationalLimitsGroupFormSchema[] = [],
     selectedOperationalLimitsGroupId1: string | null = null,
     selectedOperationalLimitsGroupId2: string | null = null,
     enableOLGModification: boolean | null = true,
-    id = LIMITS
+    id: T = LIMITS as T
 ) => {
-    return {
-        [id]: {
-            [OPERATIONAL_LIMITS_GROUPS]: operationalLimitsGroups,
-            [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: selectedOperationalLimitsGroupId1,
-            [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: selectedOperationalLimitsGroupId2,
-            [ENABLE_OLG_MODIFICATION]: !!enableOLGModification,
-        },
+    const allLimitsFormData = {
+        [OPERATIONAL_LIMITS_GROUPS]: operationalLimitsGroups,
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: selectedOperationalLimitsGroupId1,
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: selectedOperationalLimitsGroupId2,
+        [ENABLE_OLG_MODIFICATION]: !!enableOLGModification,
     };
+    return {
+        [id]: allLimitsFormData,
+    } as Record<T, typeof allLimitsFormData>;
 };
 
 /**
@@ -236,7 +241,9 @@ export const sanitizeLimitsGroups = (
               },
     }));
 
-export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitFormSchema[]): TemporaryLimitFormSchema[] =>
+export const sanitizeLimitNames = (
+    temporaryLimitList: TemporaryLimitFormSchema[] | undefined
+): TemporaryLimitFormSchema[] =>
     temporaryLimitList
         ?.filter((limit: TemporaryLimitFormSchema) => limit?.name?.trim())
         .map(({ name, ...temporaryLimit }) => ({

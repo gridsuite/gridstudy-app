@@ -34,6 +34,7 @@ export type ComputedLineCharacteristics = {
     totalResistance: number;
     totalReactance: number;
     totalSusceptance: number;
+    finalCurrentLimits: CurrentLimitsInfo[];
 };
 
 export type CurrentLimitsInfo = {

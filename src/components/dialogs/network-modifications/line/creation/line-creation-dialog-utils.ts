@@ -7,15 +7,18 @@
 
 import { EQUIPMENT_ID, EQUIPMENT_NAME, TAB_HEADER } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
+import { ObjectSchema } from 'yup';
 
-const headerValidationSchema = (id: string) => ({
-    [id]: yup.object().shape({
+const headerValidationSchema = <T extends string>(id: T) => {
+    const headerSchema = yup.object().shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
-    }),
-});
-
-export const getHeaderValidationSchema = (id = TAB_HEADER) => {
+    });
+    return {
+        [id]: headerSchema,
+    } as Record<T, ObjectSchema<yup.InferType<typeof headerSchema>>>;
+};
+export const getHeaderValidationSchema = <T extends string = typeof TAB_HEADER>(id: T = TAB_HEADER as T) => {
     return headerValidationSchema(id);
 };
 
@@ -30,15 +33,18 @@ export const getHeaderEmptyFormData = (id = TAB_HEADER) => {
     return headerEmptyFormData(id);
 };
 
-export const getHeaderFormData = (
+export const getHeaderFormData = <T extends string = typeof TAB_HEADER>(
     { equipmentId, equipmentName = '' }: { equipmentId: string; equipmentName: string | null },
-    id = TAB_HEADER
-) => ({
-    [id]: {
+    id: T = TAB_HEADER as T
+) => {
+    const headerFormData = {
         [EQUIPMENT_ID]: equipmentId,
         [EQUIPMENT_NAME]: equipmentName,
-    },
-});
+    };
+    return {
+        [id]: headerFormData,
+    } as Record<T, typeof headerFormData>;
+};
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,

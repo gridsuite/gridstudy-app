@@ -208,22 +208,22 @@ const LineAttachToVoltageLevelDialog = ({
     }, [reset]);
 
     const onLineCreationDo = useCallback(
-        (lineCreationInfo) => {
+        ({ lineCreationInfos }) => {
             return new Promise(() => {
                 const preparedLine = {
                     type: MODIFICATION_TYPES.LINE_CREATION.type,
-                    equipmentId: lineCreationInfo.equipmentId,
-                    equipmentName: lineCreationInfo.equipmentName,
-                    r: lineCreationInfo.r,
-                    x: lineCreationInfo.x,
-                    g1: lineCreationInfo.g1,
-                    b1: lineCreationInfo.b1,
-                    g2: lineCreationInfo.g2,
-                    b2: lineCreationInfo.b2,
-                    operationalLimitsGroups: lineCreationInfo.operationalLimitsGroups,
-                    selectedOperationalLimitsGroupId1: lineCreationInfo.selectedOperationalLimitsGroupId1,
-                    selectedOperationalLimitsGroupId2: lineCreationInfo.selectedOperationalLimitsGroupId2,
-                    properties: lineCreationInfo.properties,
+                    equipmentId: lineCreationInfos.equipmentId,
+                    equipmentName: lineCreationInfos.equipmentName,
+                    r: lineCreationInfos.r,
+                    x: lineCreationInfos.x,
+                    g1: lineCreationInfos.g1,
+                    b1: lineCreationInfos.b1,
+                    g2: lineCreationInfos.g2,
+                    b2: lineCreationInfos.b2,
+                    operationalLimitsGroups: lineCreationInfos.operationalLimitsGroups,
+                    selectedOperationalLimitsGroupId1: lineCreationInfos.selectedOperationalLimitsGroupId1,
+                    selectedOperationalLimitsGroupId2: lineCreationInfos.selectedOperationalLimitsGroupId2,
+                    properties: lineCreationInfos.properties,
                 };
                 setAttachmentLine(preparedLine);
                 setValue(`${ATTACHMENT_LINE_ID}`, preparedLine.equipmentId, {
