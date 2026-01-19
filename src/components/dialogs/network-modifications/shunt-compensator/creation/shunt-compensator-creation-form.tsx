@@ -50,7 +50,7 @@ export default function ShuntCompensatorCreationForm({
         />
     );
 
-    const characteristicsForm = <CharacteristicsForm />;
+    const characteristicsForm = <CharacteristicsForm isModification={false} />;
 
     return (
         <>

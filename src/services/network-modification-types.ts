@@ -503,11 +503,11 @@ export interface ShuntCompensatorCreationInfos {
     uuid?: string;
     equipmentId: string;
     equipmentName: string | null;
-    maxSusceptance?: number | null;
-    maxQAtNominalV?: number | null;
-    shuntCompensatorType?: string | null;
-    sectionCount?: number | null;
-    maximumSectionCount?: number | null;
+    maxSusceptance: number | null;
+    maxQAtNominalV: number | null;
+    shuntCompensatorType: string | null;
+    sectionCount: number | null;
+    maximumSectionCount: number | null;
     voltageLevelId: string | null;
     busOrBusbarSectionId: string | null;
     connectionDirection: string | null;

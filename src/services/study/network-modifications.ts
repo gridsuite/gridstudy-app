@@ -573,7 +573,7 @@ export function createShuntCompensator({
     shuntCompensatorCreationInfos: ShuntCompensatorCreationInfos;
     studyUuid: UUID;
     nodeUuid: UUID;
-    modificationUuid?: string | null;
+    modificationUuid?: string;
     isUpdate: boolean;
 }) {
     let createShuntUrl = getNetworkModificationUrl(studyUuid, nodeUuid);

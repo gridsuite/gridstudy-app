@@ -28,7 +28,7 @@ import { ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
 
 export type CharacteristicsFormProps = {
     previousValues?: ShuntCompensatorFormInfos;
-    isModification?: boolean;
+    isModification: boolean;
 };
 // this component needs to be isolated to avoid too many rerenders
 export default function CharacteristicsForm({
@@ -43,13 +43,19 @@ export default function CharacteristicsForm({
     });
 
     const previousMaxQAtNominalV = useMemo(() => {
-        const prevValue = previousValues && previousValues?.qAtNominalV * previousValues?.maximumSectionCount;
-        return Number.isNaN(prevValue) ? null : prevValue;
+        const prevValue =
+            previousValues?.qAtNominalV && previousValues?.maximumSectionCount
+                ? previousValues?.qAtNominalV * previousValues.maximumSectionCount
+                : undefined;
+        return Number.isNaN(prevValue) ? undefined : prevValue;
     }, [previousValues]);
 
     const previousMaxSusceptance = useMemo(() => {
-        const prevValue = previousValues && previousValues?.bPerSection * previousValues?.maximumSectionCount;
-        return Number.isNaN(prevValue) ? null : prevValue;
+        const prevValue =
+            previousValues?.bPerSection && previousValues?.maximumSectionCount
+                ? previousValues.bPerSection * previousValues.maximumSectionCount
+                : undefined;
+        return Number.isNaN(prevValue) ? undefined : prevValue;
     }, [previousValues]);
     const currentSectionCount = useMemo(
         () => sectionCount ?? previousValues?.sectionCount,
@@ -75,7 +81,7 @@ export default function CharacteristicsForm({
         <IntegerInput
             name={MAXIMUM_SECTION_COUNT}
             label={'maximumSectionCount'}
-            previousValue={previousValues?.maximumSectionCount}
+            previousValue={previousValues?.maximumSectionCount ?? undefined}
             clearable={isModification}
         />
     );
@@ -84,7 +90,7 @@ export default function CharacteristicsForm({
         <IntegerInput
             name={SECTION_COUNT}
             label={'sectionCount'}
-            previousValue={previousValues?.sectionCount}
+            previousValue={previousValues?.sectionCount ?? undefined}
             clearable={isModification}
         />
     );
@@ -94,7 +100,7 @@ export default function CharacteristicsForm({
             name={MAX_Q_AT_NOMINAL_V}
             label={'maxQAtNominalV'}
             adornment={ReactivePowerAdornment}
-            previousValue={previousMaxQAtNominalV ?? undefined}
+            previousValue={previousMaxQAtNominalV}
             clearable={isModification}
         />
     );
@@ -104,7 +110,11 @@ export default function CharacteristicsForm({
             name={SWITCHED_ON_Q_AT_NOMINAL_V}
             label={'SwitchedOnMaxQAtNominalV'}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues && previousValues?.qAtNominalV * previousValues?.sectionCount}
+            previousValue={
+                previousValues?.qAtNominalV && previousValues?.sectionCount
+                    ? previousValues.qAtNominalV * previousValues.sectionCount
+                    : undefined
+            }
             formProps={{
                 disabled: true,
             }}
@@ -139,7 +149,7 @@ export default function CharacteristicsForm({
             name={MAX_SUSCEPTANCE}
             label={'maxSusceptance'}
             adornment={SusceptanceAdornment}
-            previousValue={previousMaxSusceptance ?? undefined}
+            previousValue={previousMaxSusceptance}
             clearable={isModification}
         />
     );
@@ -149,7 +159,11 @@ export default function CharacteristicsForm({
             name={SWITCHED_ON_SUSCEPTANCE}
             label={'SwitchedOnMaxSusceptance'}
             adornment={SusceptanceAdornment}
-            previousValue={previousValues && previousValues?.bPerSection * previousValues?.sectionCount}
+            previousValue={
+                previousValues?.bPerSection && previousValues.sectionCount
+                    ? previousValues?.bPerSection * previousValues.sectionCount
+                    : undefined
+            }
             formProps={{
                 disabled: true,
             }}

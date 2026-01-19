@@ -64,10 +64,10 @@ const getCharacteristicsCreateFormValidationSchema = () => {
 
 const getCharacteristicsModificationFormValidationSchema = () => {
     return {
-        [MAX_Q_AT_NOMINAL_V]: yup.number().nullable().min(0, 'ShuntCompensatorErrorQAtNominalVoltageLessThanZero'),
+        [MAX_Q_AT_NOMINAL_V]: yup.number().min(0, 'ShuntCompensatorErrorQAtNominalVoltageLessThanZero').nullable(),
         [MAX_SUSCEPTANCE]: yup.number().nullable(),
-        [MAXIMUM_SECTION_COUNT]: yup.number().nullable().min(1, 'MaximumSectionCountMustBeGreaterOrEqualToOne'),
-        [SECTION_COUNT]: yup.number().nullable().min(0, 'SectionCountMustBeBetweenZeroAndMaximumSectionCount'),
+        [MAXIMUM_SECTION_COUNT]: yup.number().min(1, 'MaximumSectionCountMustBeGreaterOrEqualToOne').nullable(),
+        [SECTION_COUNT]: yup.number().min(0, 'SectionCountMustBeBetweenZeroAndMaximumSectionCount').nullable(),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().nullable(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().nullable(),
     };
@@ -131,17 +131,17 @@ export const getCharacteristicsCreateFormDataFromSearchCopy = ({
     sectionCount,
     maximumSectionCount,
 }: {
-    bPerSection: number;
-    qAtNominalV: number;
-    sectionCount: number;
-    maximumSectionCount: number;
+    bPerSection: number | null;
+    qAtNominalV: number | null;
+    sectionCount: number | null;
+    maximumSectionCount: number | null;
 }) => {
     return {
         [CHARACTERISTICS_CHOICE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-        [MAX_SUSCEPTANCE]: bPerSection * maximumSectionCount,
+        [MAX_SUSCEPTANCE]: bPerSection && maximumSectionCount && bPerSection * maximumSectionCount,
         [SHUNT_COMPENSATOR_TYPE]:
-            bPerSection > 0 ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
-        [MAX_Q_AT_NOMINAL_V]: qAtNominalV * maximumSectionCount,
+            bPerSection && bPerSection > 0 ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
+        [MAX_Q_AT_NOMINAL_V]: qAtNominalV && maximumSectionCount && qAtNominalV * maximumSectionCount,
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,
     };

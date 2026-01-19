@@ -40,12 +40,12 @@ export type ShuntCompensatorDialogSchemaBaseForm = {
     };
     [CHARACTERISTICS_CHOICE]: string;
     [SHUNT_COMPENSATOR_TYPE]?: string;
-    [MAX_Q_AT_NOMINAL_V]?: number | null;
-    [MAX_SUSCEPTANCE]?: number | null;
-    [MAXIMUM_SECTION_COUNT]?: number | null;
-    [SECTION_COUNT]?: number | null;
-    [SWITCHED_ON_Q_AT_NOMINAL_V]?: number | null;
-    [SWITCHED_ON_SUSCEPTANCE]?: number | null;
+    [MAX_Q_AT_NOMINAL_V]?: number;
+    [MAX_SUSCEPTANCE]?: number;
+    [MAXIMUM_SECTION_COUNT]?: number;
+    [SECTION_COUNT]?: number;
+    [SWITCHED_ON_Q_AT_NOMINAL_V]?: number;
+    [SWITCHED_ON_SUSCEPTANCE]?: number;
     [ADDITIONAL_PROPERTIES]?: Property[];
 };
 export type ShuntCompensatorCreationDialogSchemaForm = {
@@ -58,16 +58,16 @@ export interface ShuntCompensatorFormInfos {
     id: string;
     name: string;
     voltageLevelId: string;
-    terminalConnected?: boolean | null;
-    busOrBusbarSectionId: string;
+    terminalConnected: boolean | null;
+    busOrBusbarSectionId?: string;
     connectablePosition: ConnectablePositionFormInfos;
-    q: number;
-    targetV: number;
-    targetDeadband: number;
-    sectionCount: number;
-    bPerSection: number;
-    qAtNominalV: number;
-    maximumSectionCount: number;
-    isLinear?: boolean | null;
+    q?: number;
+    targetV?: number;
+    targetDeadband?: number;
+    sectionCount: number | null;
+    bPerSection?: number;
+    qAtNominalV?: number;
+    maximumSectionCount: number | null;
+    isLinear?: boolean;
     properties: Record<string, string> | undefined;
 }

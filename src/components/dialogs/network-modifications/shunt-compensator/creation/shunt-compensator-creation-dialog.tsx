@@ -135,8 +135,8 @@ export default function ShuntCompensatorCreationDialog({
                         // terminalConnected is not copied on purpose: we use the default value (true) in all cases
                     }),
                     ...getCharacteristicsCreateFormDataFromSearchCopy({
-                        bPerSection: shuntCompensator.bPerSection,
-                        qAtNominalV: shuntCompensator.qAtNominalV,
+                        bPerSection: shuntCompensator.bPerSection ?? null,
+                        qAtNominalV: shuntCompensator.qAtNominalV ?? null,
                         sectionCount: shuntCompensator.sectionCount,
                         maximumSectionCount: shuntCompensator.maximumSectionCount,
                     }),
@@ -188,18 +188,18 @@ export default function ShuntCompensatorCreationDialog({
                 equipmentName: sanitizeString(shuntCompensator[EQUIPMENT_NAME]) ?? null,
                 maxSusceptance:
                     shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                        ? shuntCompensator[MAX_SUSCEPTANCE]
+                        ? (shuntCompensator[MAX_SUSCEPTANCE] ?? null)
                         : null,
                 maxQAtNominalV:
                     shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                        ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
+                        ? (shuntCompensator[MAX_Q_AT_NOMINAL_V] ?? null)
                         : null,
                 shuntCompensatorType:
                     shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                        ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
+                        ? (shuntCompensator[SHUNT_COMPENSATOR_TYPE] ?? null)
                         : null,
-                sectionCount: shuntCompensator[SECTION_COUNT],
-                maximumSectionCount: shuntCompensator[MAXIMUM_SECTION_COUNT],
+                sectionCount: shuntCompensator[SECTION_COUNT] ?? null,
+                maximumSectionCount: shuntCompensator[MAXIMUM_SECTION_COUNT] ?? null,
                 voltageLevelId: shuntCompensator[CONNECTIVITY][VOLTAGE_LEVEL][ID] ?? null,
                 busOrBusbarSectionId: shuntCompensator[CONNECTIVITY][BUS_OR_BUSBAR_SECTION][ID] ?? null,
                 connectionDirection:
