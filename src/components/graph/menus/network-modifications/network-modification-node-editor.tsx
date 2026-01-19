@@ -11,6 +11,7 @@ import {
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
+    ModificationType,
     NetworkModificationMetadata,
     snackWithFallback,
     usePrevious,
@@ -131,6 +132,8 @@ const isEditableModification = (modif: NetworkModificationMetadata) => {
     return !nonEditableModificationTypes.has(modif.type);
 };
 
+const DELETION_MENU_ITEM_POSTFIX = '_DELETION_MENU_ITEM';
+
 const NetworkModificationNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -246,6 +249,22 @@ const NetworkModificationNodeEditor = () => {
         );
     }
 
+    const getMenuItemId = useCallback((modificationType: ModificationType, equipmentType: EQUIPMENT_TYPES) => {
+        if (modificationType === ModificationType.EQUIPMENT_DELETION) {
+            // We have a single deletion modification type, but we have a deletion menu item for each kind of equipment type
+            return equipmentType + DELETION_MENU_ITEM_POSTFIX;
+        }
+        return modificationType;
+    }, []);
+
+    const equipmentDeletionSubItems = (equipmentType: EQUIPMENT_TYPES) => {
+        return {
+            id: getMenuItemId(ModificationType.EQUIPMENT_DELETION, equipmentType),
+            label: 'DeleteFromMenu',
+            action: () => equipmentDeletionDialogWithDefaultParams(equipmentType),
+        };
+    };
+
     const menuDefinition: MenuSection[] = [
         {
             id: 'SubstationVoltageLevelModifications',
@@ -264,11 +283,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(SubstationModificationDialog),
                         },
-                        {
-                            id: 'DELETE_SUBSTATION',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SUBSTATION),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.SUBSTATION),
                     ],
                 },
                 {
@@ -310,11 +325,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
                             action: () => withDefaultParams(MoveVoltageLevelFeederBaysDialog),
                         },
-                        {
-                            id: 'DELETE_VOLTAGE_LEVEL',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
                     ],
                 },
             ],
@@ -336,11 +347,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LineModificationDialog),
                         },
-                        {
-                            id: 'DELETE_LINE',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LINE),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.LINE),
                     ],
                 },
                 {
@@ -399,12 +406,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(TwoWindingsTransformerModificationDialog),
                         },
-                        {
-                            id: 'DELETE_TWO_WINDINGS_TRANSFORMER',
-                            label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
                     ],
                 },
                 {
@@ -421,11 +423,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(VscModificationDialog),
                         },
-                        {
-                            id: 'DELETE_VSC',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.HVDC_LINE),
                     ],
                 },
                 {
@@ -442,11 +440,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LccModificationDialog),
                         },
-                        {
-                            id: 'DELETE_LCC',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.HVDC_LINE),
                     ],
                 },
             ],
@@ -468,11 +462,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(GeneratorModificationDialog),
                         },
-                        {
-                            id: 'DELETE_GENERATOR',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.GENERATOR),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.GENERATOR),
                     ],
                 },
                 {
@@ -489,11 +479,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(BatteryModificationDialog),
                         },
-                        {
-                            id: 'DELETE_BATTERY',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.BATTERY),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.BATTERY),
                     ],
                 },
                 {
@@ -510,11 +496,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LoadModificationDialog),
                         },
-                        {
-                            id: 'DELETE_LOAD',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LOAD),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.LOAD),
                     ],
                 },
                 {
@@ -531,11 +513,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(ShuntCompensatorModificationDialog),
                         },
-                        {
-                            id: 'DELETE_SHUNT_COMPENSATOR',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
                     ],
                 },
                 {
@@ -547,12 +525,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'menu.create',
                             action: () => withDefaultParams(StaticVarCompensatorCreationDialog),
                         },
-                        {
-                            id: 'DELETE_STATIC_VAR_COMPENSATOR',
-                            label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
-                        },
+                        equipmentDeletionSubItems(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
                     ],
                 },
             ],
@@ -1064,9 +1037,8 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const doEditModification = useCallback(
-        (modificationUuid: UUID, type: string) => {
+        (modificationUuid: UUID, modificationType: ModificationType) => {
             setIsUpdate(true);
-            setEditDialogOpen(type);
             setEditDataFetchStatus(FetchStatus.RUNNING);
             const modification = fetchNetworkModification(modificationUuid);
             modification
@@ -1074,6 +1046,7 @@ const NetworkModificationNodeEditor = () => {
                     return res.json().then((data: NetworkModificationData) => {
                         //remove all null values to avoid showing a "null" in the forms
                         setEditData(removeNullFields(data));
+                        setEditDialogOpen(getMenuItemId(modificationType, data.equipmentType));
                         setEditDataFetchStatus(FetchStatus.SUCCEED);
                     });
                 })
@@ -1082,7 +1055,7 @@ const NetworkModificationNodeEditor = () => {
                     setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
-        [removeNullFields, snackError]
+        [getMenuItemId, removeNullFields, snackError]
     );
 
     const onItemClick = (id: string) => {
@@ -1099,7 +1072,14 @@ const NetworkModificationNodeEditor = () => {
         const menuItem = subMenuItemsList.find(
             (item: MenuDefinitionWithoutSubItem) => 'id' in item && item.id === editDialogOpen
         );
-        return menuItem && 'action' in menuItem ? menuItem.action?.() : undefined;
+        if (menuItem && 'action' in menuItem && menuItem.action) {
+            return menuItem.action();
+        } else if (editDialogOpen?.endsWith(DELETION_MENU_ITEM_POSTFIX)) {
+            // special case where we want to edit a deletion modification which is not defined in the menu items
+            return equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SUBSTATION); // passing any type
+        }
+        console.warn('No dialog action found in menu items for: ', editDialogOpen);
+        return undefined;
     };
 
     const isImpactedByNotification = useCallback(() => {
