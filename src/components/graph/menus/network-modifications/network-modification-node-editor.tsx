@@ -78,7 +78,6 @@ import {
     fetchNetworkModifications,
     stashModifications,
 } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
 import {
     ExcludedNetworkModifications,
     MenuDefinitionSubItem,
@@ -118,6 +117,8 @@ import { LimitSetsModificationDialog } from '../../../dialogs/network-modificati
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
+import { FetchStatus } from '../../../../services/utils.type';
+import { EquipmentDeletionInfos } from '../../../dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -160,7 +161,7 @@ const NetworkModificationNodeEditor = () => {
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
-    const [editDataFetchStatus, setEditDataFetchStatus] = useState(FetchStatus.IDLE);
+    const [editDataFetchStatus, setEditDataFetchStatus] = useState<FetchStatus>(FetchStatus.IDLE);
     const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
     const [importDialogOpen, setImportDialogOpen] = useState(false);
     const [createCompositeModificationDialogOpen, setCreateCompositeModificationDialogOpen] = useState(false);
@@ -232,20 +233,21 @@ const NetworkModificationNodeEditor = () => {
 
     function equipmentDeletionDialogWithDefaultParams(equipmentType: EquipmentType) {
         if (currentNode && studyUuid && currentRootNetworkUuid && editData) {
+            // TODO DBR onValidated={handleValidatedDialog}
             return (
                 <EquipmentDeletionDialog
                     onClose={handleCloseDialog}
-                    onValidated={handleValidatedDialog}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    editData={editData}
+                    editData={editData as EquipmentDeletionInfos}
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                     equipmentType={equipmentType}
-                    defaultIdValue={null}
                 />
             );
+        } else {
+            return <></>;
         }
     }
 
