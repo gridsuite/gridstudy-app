@@ -95,34 +95,9 @@ import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { LineCreationInfo, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
 import { LineModificationFormInfos } from '../modification/line-modification-type';
 import { CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
-import { CurrentLimitsData } from '../../../../../services/study/network-map.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
-
-interface LineCreationFormData {
-    [TAB_HEADER]: {
-        equipmentId: string;
-        equipmentName?: string | null;
-    };
-    [CHARACTERISTICS]: {
-        r?: number | null;
-        x?: number | null;
-        b1?: number | null;
-        g1?: number | null;
-        b2?: number | null;
-        g2?: number | null;
-        [CONNECTIVITY_1]?: Connectivity;
-        [CONNECTIVITY_2]?: Connectivity;
-    };
-    [LIMITS]: {
-        [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroup[];
-        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
-        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
-    };
-    [ADDITIONAL_PROPERTIES]?: Property[];
-    [key: string]: any;
-}
+import { Limit, LineCreationFormData, LineCreationFormInfos, LineInfo } from './line-creation-type';
 
 const emptyFormData: Partial<LineCreationFormData> = {
     ...getHeaderEmptyFormData(),
@@ -130,63 +105,6 @@ const emptyFormData: Partial<LineCreationFormData> = {
     ...getLimitsEmptyFormData(false),
     ...emptyProperties,
 };
-
-interface ConnectablePosition {
-    connectionName: string | null;
-    connectionDirection: string | null;
-    connectionPosition: number | null;
-}
-
-interface Limit {
-    id: string;
-    name: string;
-    applicability: string;
-    currentLimits: {
-        id: string;
-        permanentLimit: number;
-        temporaryLimits: {
-            name: string;
-            acceptableDuration: number;
-            value: number;
-        }[];
-    };
-}
-
-interface LineInfo {
-    id: string;
-    name: string | null;
-    voltageLevelId1: string;
-    voltageLevelId2: string;
-    terminal1Connected: boolean;
-    terminal2Connected: boolean;
-    p1: number;
-    q1: number;
-    p2: number;
-    q2: number;
-    i1: number;
-    i2: number;
-    r: number;
-    x: number;
-    g1?: number;
-    b1?: number;
-    g2?: number;
-    b2?: number;
-    busOrBusbarSectionId1: string;
-    busOrBusbarSectionId2: string;
-    selectedOperationalLimitsGroupId1: string;
-    selectedOperationalLimitsGroupId2: string;
-    connectablePosition1: ConnectablePosition;
-    connectablePosition2: ConnectablePosition;
-    currentLimits: CurrentLimitsData[];
-    properties: Record<string, string>;
-}
-
-interface LineCreationFormInfos extends LineModificationFormInfos {
-    tabHeader: {
-        equipmentId: string;
-        equipmentName?: string;
-    };
-}
 
 interface LineCreationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
