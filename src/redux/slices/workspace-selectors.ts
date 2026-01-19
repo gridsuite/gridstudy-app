@@ -50,6 +50,8 @@ export const selectOpenPanels = createSelector([selectPanels], (panels) => {
     });
 });
 
+export const selectOpenPanelIds = createSelector([selectOpenPanels], (panels) => panels.map((p) => p.id));
+
 export const selectAssociatedPanels = createSelector(
     [selectPanels, (_state: RootState, nadPanelId: UUID) => nadPanelId],
     (panels, nadPanelId): SLDVoltageLevelPanel[] => {
