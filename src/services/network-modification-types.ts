@@ -275,9 +275,9 @@ export interface OperationalLimitsGroup {
 }
 
 export interface Limit {
-    name: string;
-    acceptableDuration: number | null;
-    value: number | null;
+    name: AttributeModification<string> | null;
+    acceptableDuration: AttributeModification<number> | null;
+    value: AttributeModification<number> | null;
 }
 
 export interface TemporaryLimit extends Limit {
@@ -300,9 +300,9 @@ export interface SubstationModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
     modificationUuid?: UUID;
-    id: string;
+    id: string | null;
     name: string | null;
-    country: string;
+    country: string | null;
     properties: Property[] | null;
 }
 
@@ -310,11 +310,11 @@ export interface VoltageLeveInfo {
     studyUuid: string;
     nodeUuid: UUID;
     voltageLevelId: string;
-    voltageLevelName: string | null;
+    voltageLevelName?: string | null;
     substationId?: string | null;
-    nominalV: number | null;
-    lowVoltageLimit: number | null;
-    highVoltageLimit: number | null;
+    nominalV?: number | null;
+    lowVoltageLimit?: number | null;
+    highVoltageLimit?: number | null;
     busbarCount?: number;
     sectionCount?: number;
     switchKinds?: any[];
@@ -325,9 +325,10 @@ export interface VoltageLeveInfo {
 }
 
 export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
-    substationCreation?: SubstationCreationInfo | null;
+    substationCreation?: AttachedSubstationCreationInfo | null;
     ipMin: number | null;
     ipMax: number | null;
+    topologyKind?: string;
 }
 
 export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
@@ -355,6 +356,16 @@ type VariationFilter = {
 };
 
 export type VariationType = keyof typeof VARIATION_TYPES;
+
+export interface ItemFilterType {
+    type?: string;
+    specificMetadata?: {
+        type?: string;
+        filterEquipmentsAttributes?: {
+            distributionKey?: number;
+        }[];
+    };
+}
 
 export interface Variations {
     variationMode: string | null;
@@ -520,8 +531,8 @@ export interface ShuntCompensatorCreationInfos {
 export interface LineCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    lineId: string;
-    lineName: string | null;
+    equipmentId: string;
+    equipmentName: string | null;
     r: number;
     x: number;
     g1: number;
@@ -532,9 +543,9 @@ export interface LineCreationInfo {
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
     busOrBusbarSectionId2: string;
-    limitsGroups: OperationalLimitsGroup[];
-    selectedLimitsGroup1: string;
-    selectedLimitsGroup2: string;
+    operationalLimitsGroups: OperationalLimitsGroup[];
+    selectedOperationalLimitsGroupId1: string;
+    selectedOperationalLimitsGroupId2: string;
     isUpdate: boolean;
     modificationUuid: string;
     connectionName1: string | null;
@@ -563,8 +574,8 @@ export interface LineModificationInfos {
     g2: AttributeModification<number> | null;
     b2: AttributeModification<number> | null;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroup1: AttributeModification<string> | null;
-    selectedOperationalLimitsGroup2: AttributeModification<string> | null;
+    selectedOperationalLimitsGroupId1: AttributeModification<string> | null;
+    selectedOperationalLimitsGroupId2: AttributeModification<string> | null;
     [ENABLE_OLG_MODIFICATION]: boolean;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
@@ -623,21 +634,29 @@ export interface TwoWindingsTransformerCreationInfo {
     properties: Property[] | null;
 }
 
+export interface AttachedSubstationCreationInfo {
+    type: ModificationType;
+    equipmentId: string | null;
+    equipmentName: string | null;
+    country: string | null;
+    properties: Property[] | null;
+}
+
 export interface SubstationCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
     substationId: string;
     substationName: string | null;
-    country: string;
+    country: string | null;
     isUpdate: boolean;
-    modificationUuid: UUID;
+    modificationUuid?: UUID;
     properties: Property[] | null;
 }
 
 export interface DivideLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    modificationUuid?: UUID;
     lineToSplitId: string;
     percent: number;
     mayNewVoltageLevelInfos: any;
@@ -671,12 +690,12 @@ export interface AttachLineInfo {
 export interface LinesAttachToSplitLinesInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    uuid?: UUID;
     lineToAttachTo1Id: string;
     lineToAttachTo2Id: string;
     attachedLineId: string;
-    voltageLevelId: string;
-    bbsBusId: string;
+    voltageLevelId: string | null;
+    bbsBusId: string | null;
     replacingLine1Id: string;
     replacingLine1Name: string | null;
     replacingLine2Id: string;
@@ -686,7 +705,7 @@ export interface LinesAttachToSplitLinesInfo {
 export interface DeleteAttachingLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    modificationUuid?: UUID;
     lineToAttachTo1Id: string;
     lineToAttachTo2Id: string;
     attachedLineId: string;
@@ -787,17 +806,29 @@ export type EquipmentAttributeModificationInfos = {
     equipmentType: string;
 };
 
-export interface GenerationDispatchInfo {
+type GenerationDispatchInfos = {
+    lossCoefficient: number | null;
+    defaultOutageRate: number | null;
+    generatorsWithoutOutage: Filter[] | null;
+    generatorsWithFixedSupply: Filter[] | null;
+    generatorsFrequencyReserve:
+        | {
+              generatorsFilters: Filter[];
+              frequencyReserve: number;
+          }[]
+        | null;
+    substationsGeneratorsOrdering:
+        | {
+              substationIds: string[];
+          }[]
+        | null;
+};
+
+export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {
     studyUuid: UUID;
     nodeUuid: UUID;
-    modificationUuid?: UUID;
-    lossCoefficient: number;
-    defaultOutageRate: number;
-    generatorsWithoutOutage: any;
-    generatorsWithFixedActivePower: any;
-    generatorsFrequencyReserve: any;
-    substationsGeneratorsOrdering: any;
-}
+    uuid?: UUID;
+};
 
 export interface TopologyVoltageLevelModificationInfos {
     type: ModificationType;

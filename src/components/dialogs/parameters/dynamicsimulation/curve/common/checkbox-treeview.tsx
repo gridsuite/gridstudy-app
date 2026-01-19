@@ -37,6 +37,10 @@ const BorderedTreeItem = styled(TreeItem)(({ root }: { root: boolean }) => {
             paddingLeft: 18,
             borderLeft: border,
         },
+        [`& .${treeItemClasses.content}`]: {
+            paddingLeft: 8,
+            width: 'max-content',
+        },
         [`& .${treeItemClasses.label}`]: {
             whiteSpace: 'nowrap',
         },
