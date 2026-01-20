@@ -75,7 +75,7 @@ const emptyFormData = {
     [LINE2_NAME]: '',
     ...getConnectivityWithoutPositionEmptyFormData(),
     ...getLineToAttachOrSplitEmptyFormData(),
-    hackForValidation: '',
+    _dirtyTrigger: '',
 };
 
 const formSchema = yup
@@ -92,7 +92,7 @@ const formSchema = yup
             ...getConnectivityPropertiesValidationSchema(false),
         }),
         ...getLineToAttachOrSplitFormValidationSchema(),
-        hackForValidation: yup.string(),
+        _dirtyTrigger: yup.string(),
     })
     .required();
 
@@ -155,14 +155,14 @@ const LineAttachToVoltageLevelDialog = ({
     const fromEditDataToFormValues = useCallback(
         (lineAttach: AttachLineInfo) => {
             let formData: LineAttachToVoltageLevelFormInfos = {
-                hackForValidation: undefined,
+                _dirtyTrigger: '',
                 [LINE1_ID]: lineAttach.newLine1Id,
-                [LINE1_NAME]: lineAttach.newLine1Name ?? undefined,
+                [LINE1_NAME]: lineAttach.newLine1Name ?? '',
                 [LINE2_ID]: lineAttach.newLine2Id,
-                [LINE2_NAME]: lineAttach.newLine2Name ?? undefined,
+                [LINE2_NAME]: lineAttach.newLine2Name ?? '',
                 [ATTACHMENT_LINE_ID]: lineAttach?.attachmentLine?.equipmentId,
                 [ATTACHMENT_POINT_ID]: lineAttach?.attachmentPointId,
-                [ATTACHMENT_POINT_NAME]: lineAttach?.attachmentPointName,
+                [ATTACHMENT_POINT_NAME]: lineAttach?.attachmentPointName ?? '',
                 ...getLineToAttachOrSplitFormData({
                     lineToAttachOrSplitId: lineAttach?.lineToAttachToId,
                     percent: lineAttach.percent,
@@ -405,8 +405,7 @@ const LineAttachToVoltageLevelDialog = ({
                     shouldDirty: true,
                 });
                 // this is only used to validate schema if something was changed except ID or NAME and not used elsewhere
-                setValue('hackForValidation', JSON.stringify(attachmentPointData), {
-                    shouldValidate: true,
+                setValue('_dirtyTrigger', JSON.stringify(attachmentPointData), {
                     shouldDirty: true,
                 });
             });
