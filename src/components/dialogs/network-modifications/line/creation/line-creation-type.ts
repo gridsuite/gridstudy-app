@@ -24,6 +24,23 @@ import { Property } from '../../common/properties/property-utils';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
 import { LineCharacteristics } from '../modification/line-modification-type';
 
+export interface LineCreationFormSchema {
+    [TAB_HEADER]: {
+        [EQUIPMENT_ID]: string;
+        [EQUIPMENT_NAME]?: string | null;
+    };
+    [CHARACTERISTICS]: LineCharacteristics & {
+        [CONNECTIVITY_1]?: Connectivity;
+        [CONNECTIVITY_2]?: Connectivity;
+    };
+    [LIMITS]: {
+        [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroupFormSchema[];
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
+    };
+    [ADDITIONAL_PROPERTIES]?: Property[];
+}
+
 export interface LineFormInfos {
     id: string;
     name: string | null;
@@ -51,21 +68,4 @@ export interface LineFormInfos {
     connectablePosition2: ConnectablePositionInfos;
     currentLimits: CurrentLimitsData[];
     properties: Record<string, string>;
-}
-
-export interface LineCreationFormSchema {
-    [TAB_HEADER]: {
-        [EQUIPMENT_ID]: string;
-        [EQUIPMENT_NAME]?: string | null;
-    };
-    [CHARACTERISTICS]: LineCharacteristics & {
-        [CONNECTIVITY_1]?: Connectivity;
-        [CONNECTIVITY_2]?: Connectivity;
-    };
-    [LIMITS]: {
-        [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroupFormSchema[];
-        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
-        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
-    };
-    [ADDITIONAL_PROPERTIES]?: Property[];
 }
