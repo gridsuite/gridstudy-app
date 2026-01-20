@@ -39,14 +39,15 @@ const useHvdcLccDeletion = () => {
                 dynamicList: LccShuntCompensatorConnectionInfos[],
                 editList: LccShuntCompensatorConnectionInfos[]
             ) {
-                if (!dynamicList && !editList) {
+                if (!dynamicList?.length && !editList?.length) {
                     return [];
-                } else if (!dynamicList) {
+                } else if (!dynamicList?.length) {
                     // TODO: we should refactor modification-server to store only selected MCS
                     return editList.filter((item) => item.connectedToHvdc);
-                } else if (!editList) {
+                } else if (!editList?.length) {
                     return dynamicList;
                 }
+                // dynamicList and editList are not empty : let's merge them
                 const mergedList: LccShuntCompensatorConnectionInfos[] = dynamicList.map((obj) => {
                     return { ...obj, connectedToHvdc: false };
                 });
