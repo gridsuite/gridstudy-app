@@ -27,7 +27,7 @@ import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custo
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -64,7 +64,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
         [intl]
     );
 
-    const filterContext = useAgGridFilterContext(
+    const filterContext = useUpdateComputationColumnsFilters(
         AgGridFilterType.SecurityAnalysis,
         getStoreFields(tabIndex),
         goToFirstPage

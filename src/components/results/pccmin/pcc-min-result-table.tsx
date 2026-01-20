@@ -25,7 +25,7 @@ import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
-import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 const styles = {
@@ -66,7 +66,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [dispatch]
     );
 
-    const filterContext = useAgGridFilterContext(AgGridFilterType.PccMin, PCCMIN_RESULT, goToFirstPage);
+    const filterContext = useUpdateComputationColumnsFilters(AgGridFilterType.PccMin, PCCMIN_RESULT, goToFirstPage);
     const columns = useMemo(
         () => getPccMinColumns(intl, voltageLevelIdRenderer, filterContext),
         [filterContext, intl, voltageLevelIdRenderer]

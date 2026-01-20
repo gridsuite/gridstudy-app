@@ -23,7 +23,6 @@ import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
@@ -59,13 +58,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
         buildValidGlobalFilters([]);
     }, [resultOrLogIndex]);
 
-    const handleGlobalFilterChangeAndUpdate = useCallback(
-        (newFilters: GlobalFilter[]) => {
-            updateGlobalFilters(newFilters);
-        },
-        [updateGlobalFilters]
-    );
-
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
@@ -81,7 +73,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                 {resultOrLogIndex === RESULTS_TAB_INDEX && (
                     <Box sx={{ flex: 1 }}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChangeAndUpdate}
+                            onChange={updateGlobalFilters}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             preloadedGlobalFilters={globalFiltersFromState}

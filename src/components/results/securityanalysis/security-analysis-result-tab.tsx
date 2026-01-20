@@ -54,7 +54,6 @@ import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 const styles = {
@@ -145,13 +144,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
-
-    const handleGlobalFilterChangeAndUpdate = useCallback(
-        (newFilters: GlobalFilter[]) => {
-            updateGlobalFilters(newFilters);
-        },
-        [updateGlobalFilters]
-    );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
@@ -298,7 +290,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChangeAndUpdate}
+                            onChange={updateGlobalFilters}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}

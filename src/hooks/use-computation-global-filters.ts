@@ -5,26 +5,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FilterType } from '../types/custom-aggrid-types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import { useCallback } from 'react';
-import { useGlobalFilterSelector } from './use-global-filter-selector';
 import { updateComputationResultFilters } from '../services/study/study-config';
+import { updateGlobalFiltersAction } from '../redux/actions';
 
 export function useComputationGlobalFilters(filterType: FilterType) {
-    const { filters: globalFiltersFromState, dispatchFilters: dispatchGlobalFilters } =
-        useGlobalFilterSelector(filterType);
+    const dispatch = useDispatch();
+
+    const globalFiltersFromState = useSelector<AppState, GlobalFilter[]>(
+        (state) => state.computationFilters?.[filterType]?.globalFilters || []
+    );
     const studyUuid = useSelector((state: any) => state.studyUuid);
-    const config = useSelector((state: AppState) => state.computationFilters?.[filterType]);
+    const comuputationResultFiltersId = useSelector((state: AppState) => state.computationFilters?.[filterType]);
 
     const updateGlobalFilters = useCallback(
         (rawGlobalFilters: GlobalFilter[]) => {
-            if (!config?.id) return;
-            dispatchGlobalFilters(rawGlobalFilters);
-            updateComputationResultFilters(studyUuid, config.id, rawGlobalFilters).then();
+            if (!comuputationResultFiltersId?.id) return;
+
+            dispatch(updateGlobalFiltersAction(filterType, rawGlobalFilters));
+
+            updateComputationResultFilters(studyUuid, comuputationResultFiltersId.id, rawGlobalFilters).then();
         },
-        [dispatchGlobalFilters, studyUuid, config?.id]
+        [dispatch, filterType, studyUuid, comuputationResultFiltersId?.id]
     );
 
     return {

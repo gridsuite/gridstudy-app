@@ -43,7 +43,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
-import { AgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { AgGridFilterContext } from '../../../hooks/use-update-computation-columns-filters';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -257,7 +257,10 @@ export const securityAnalysisTableNColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.SecurityAnalysis,
         tab: getStoreFields(tabIndex),
-        updateFilterCallback: createUpdateFilterCallback(filterContext),
+        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+            if (!agGridApi || !filters || !colId) return;
+            filterContext.onFilterChange?.({ agGridApi, filters, colId });
+        },
     };
 
     return [
@@ -356,7 +359,10 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.SecurityAnalysis,
         tab: getStoreFields(tabIndex),
-        updateFilterCallback: createUpdateFilterCallback(filterContext),
+        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+            if (!agGridApi || !filters || !colId) return;
+            filterContext.onFilterChange?.({ agGridApi, filters, colId });
+        },
     };
 
     return [
@@ -531,7 +537,10 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.SecurityAnalysis,
         tab: getStoreFields(tabIndex),
-        updateFilterCallback: createUpdateFilterCallback(filterContext),
+        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+            if (!agGridApi || !filters || !colId) return;
+            filterContext.onFilterChange?.({ agGridApi, filters, colId });
+        },
     };
 
     return [
@@ -912,11 +921,4 @@ export const getStoreFields = (index: number): string => {
         default:
             return '';
     }
-};
-
-export const createUpdateFilterCallback = (filterContext: AgGridFilterContext) => {
-    return (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
-        if (!api || !filters || !colId) return;
-        filterContext.onFilterChange?.({ api, filters, colId });
-    };
 };

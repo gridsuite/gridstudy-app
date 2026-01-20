@@ -48,7 +48,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 interface ShortCircuitAnalysisResultProps {
@@ -108,7 +108,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     const intl = useIntl();
     const theme = useTheme();
     const dispatch = useDispatch();
-    const filterContext = useAgGridFilterContext(
+    const filterContext = useUpdateComputationColumnsFilters(
         AgGridFilterType.ShortcircuitAnalysis,
         mappingTabs(analysisType),
         goToFirstPage
@@ -156,9 +156,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         const filterParams = {
             type: AgGridFilterType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
-            updateFilterCallback: (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
-                if (!api || !filters || !colId) return;
-                filterContext.onFilterChange?.({ api, filters, colId });
+            updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+                if (!agGridApi || !filters || !colId) return;
+                filterContext.onFilterChange?.({ agGridApi, filters, colId });
             },
         };
 
@@ -175,9 +175,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         ...filterDefinition,
                         ...filterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
-                            if (!api || !filters || !colId) return;
-                            filterContext.onFilterChange?.({ api, filters, colId });
+                        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+                            if (!agGridApi || !filters || !colId) return;
+                            filterContext.onFilterChange?.({ agGridApi, filters, colId });
                         },
                     },
                 },
@@ -191,9 +191,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
-                        updateFilterCallback: (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
-                            if (!api || !filters || !colId) return;
-                            filterContext.onFilterChange?.({ api, filters, colId });
+                        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+                            if (!agGridApi || !filters || !colId) return;
+                            filterContext.onFilterChange?.({ agGridApi, filters, colId });
                         },
                     },
                     options: filterEnums[colId] ?? [],

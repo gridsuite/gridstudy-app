@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { SyntheticEvent, useMemo, useState } from 'react';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
@@ -30,7 +30,6 @@ import { SensitivityExportButton } from './sensitivity-analysis-export-button.js
 import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 export type SensitivityAnalysisResultTabProps = {
@@ -58,12 +57,6 @@ function SensitivityAnalysisResultTab({
         setNOrNkIndex(newNOrNKIndex);
     };
 
-    const handleGlobalFilterChangeAndUpdate = useCallback(
-        (newFilters: GlobalFilter[]) => {
-            updateGlobalFilters(newFilters);
-        },
-        [updateGlobalFilters]
-    );
     const openLoader = useOpenLoaderShortWait({
         isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
@@ -100,7 +93,7 @@ function SensitivityAnalysisResultTab({
                         </Tabs>
                         <Box sx={{ display: 'flex', flexGrow: 0 }}>
                             <GlobalFilterSelector
-                                onChange={handleGlobalFilterChangeAndUpdate}
+                                onChange={updateGlobalFilters}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
                                 preloadedGlobalFilters={globalFiltersFromState}

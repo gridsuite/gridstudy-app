@@ -56,8 +56,7 @@ import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-ac
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
-import { GlobalFilter } from '../common/global-filter/global-filter-types';
-import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 
 const styles = {
     flexWrapper: {
@@ -101,13 +100,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         currentRootNetworkUuid,
     });
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
-
-    const handleGlobalFilterChangeAndUpdate = useCallback(
-        (newFilters: GlobalFilter[]) => {
-            updateGlobalFilters(newFilters);
-        },
-        [updateGlobalFilters]
-    );
     const getEnumLabel = useCallback(
         (value: string) =>
             intl.formatMessage({
@@ -185,7 +177,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         invalidations: loadflowResultInvalidations,
     });
 
-    const filterContext = useAgGridFilterContext(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
+    const filterContext = useUpdateComputationColumnsFilters(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const SubjectIdRenderer = useCallback(
         (props: ICellRendererParams) => {
@@ -293,7 +285,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <GlobalFilterSelector
-                        onChange={handleGlobalFilterChangeAndUpdate}
+                        onChange={updateGlobalFilters}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
                         preloadedGlobalFilters={globalFiltersFromState}

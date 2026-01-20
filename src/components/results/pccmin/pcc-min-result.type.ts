@@ -20,7 +20,7 @@ import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-so
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { GridApi, ICellRendererParams } from 'ag-grid-community';
-import { AgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { AgGridFilterContext } from '../../../hooks/use-update-computation-columns-filters';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
@@ -81,7 +81,10 @@ export const getPccMinColumns = (
     const pccMinFilterParams = {
         type: AgGridFilterType.PccMin,
         tab: PCCMIN_RESULT,
-        updateFilterCallback: createUpdateFilterCallback(filterContext),
+        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+            if (!agGridApi || !filters || !colId) return;
+            filterContext.onFilterChange?.({ agGridApi, filters, colId });
+        },
     };
 
     const createFilterContext = (
@@ -141,11 +144,4 @@ export const getPccMinColumns = (
             cellRenderer,
         })
     );
-};
-
-export const createUpdateFilterCallback = (filterContext: AgGridFilterContext) => {
-    return (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
-        if (!api || !filters || !colId) return;
-        filterContext.onFilterChange?.({ api, filters, colId });
-    };
 };

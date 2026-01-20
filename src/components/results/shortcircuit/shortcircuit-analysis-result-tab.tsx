@@ -32,7 +32,6 @@ import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 interface ShortCircuitAnalysisResultTabProps {
@@ -104,13 +103,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         [setResultOrLogIndex]
     );
 
-    const handleGlobalFilterChangeAndUpdate = useCallback(
-        (newFilters: GlobalFilter[]) => {
-            updateGlobalFilters(newFilters);
-        },
-        [updateGlobalFilters]
-    );
-
     const shortCircuitTabResultStatusSucceedOrFailed = useMemo(() => {
         return (
             (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES &&
@@ -178,7 +170,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                 </Tabs>
                 {resultOrLogIndex === RESULTS_TAB_INDEX && tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
                     <GlobalFilterSelector
-                        onChange={handleGlobalFilterChangeAndUpdate}
+                        onChange={updateGlobalFilters}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
                         preloadedGlobalFilters={globalFiltersFromState}

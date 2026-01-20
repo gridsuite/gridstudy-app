@@ -31,7 +31,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
-import { useAgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 function makeRows(resultRecord: Sensitivity[]) {
@@ -73,7 +73,7 @@ function SensitivityAnalysisResult({
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const filterContext = useAgGridFilterContext(
+    const filterContext = useUpdateComputationColumnsFilters(
         AgGridFilterType.SensitivityAnalysis,
         mappingTabs(sensiKind, nOrNkIndex),
         goToFirstPage
@@ -115,9 +115,9 @@ function SensitivityAnalysisResult({
                                 : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             type: AgGridFilterType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
-                            updateFilterCallback: (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
-                                if (!api || !filters || !colId) return;
-                                filterContext.onFilterChange?.({ api, filters, colId });
+                            updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+                                if (!agGridApi || !filters || !colId) return;
+                                filterContext.onFilterChange?.({ agGridApi, filters, colId });
                             },
                         },
                     },

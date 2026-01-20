@@ -49,7 +49,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
-import { AgGridFilterContext } from '../../../hooks/use-aggrid-filter-context';
+import { AgGridFilterContext } from '../../../hooks/use-update-computation-columns-filters';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
@@ -276,7 +276,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: createUpdateFilterCallback(filterContext),
+        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+            if (!agGridApi || !filters || !colId) return;
+            filterContext.onFilterChange?.({ agGridApi, filters, colId });
+        },
     };
 
     return [
@@ -381,7 +384,10 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: createUpdateFilterCallback(filterContext),
+        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+            if (!agGridApi || !filters || !colId) return;
+            filterContext.onFilterChange?.({ agGridApi, filters, colId });
+        },
     };
 
     return [
@@ -436,7 +442,10 @@ export const componentColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: createUpdateFilterCallback(filterContext),
+        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
+            if (!agGridApi || !filters || !colId) return;
+            filterContext.onFilterChange?.({ agGridApi, filters, colId });
+        },
     };
 
     return [
@@ -706,11 +715,4 @@ export const formatExchangesResult = (
             exchange: exchangePair.exchange,
         };
     });
-};
-
-export const createUpdateFilterCallback = (filterContext: AgGridFilterContext) => {
-    return (api?: GridApi, filters?: FilterConfig[], colId?: string) => {
-        if (!api || !filters || !colId) return;
-        filterContext.onFilterChange?.({ api, filters, colId });
-    };
 };
