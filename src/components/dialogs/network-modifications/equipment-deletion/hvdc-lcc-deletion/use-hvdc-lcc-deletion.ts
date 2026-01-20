@@ -45,9 +45,9 @@ const useHvdcLccDeletion = () => {
                     return { ...obj, connectedToHvdc: false };
                 });
                 // now overwrite dynamic values with edited modification values
-                const dynamicIds = dynamicList.map((obj) => obj.id);
+                const dynamicIds = new Set(dynamicList.map((obj) => obj.id));
                 for (let editObj of editList.values()) {
-                    if (dynamicIds.includes(editObj.id)) {
+                    if (dynamicIds.has(editObj.id)) {
                         const mergedObj = mergedList.find((obj) => obj.id === editObj.id);
                         if (mergedObj) {
                             mergedObj.connectedToHvdc = editObj.connectedToHvdc;
