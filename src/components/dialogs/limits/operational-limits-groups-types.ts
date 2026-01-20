@@ -46,7 +46,7 @@ export interface OperationalLimitsGroupFormSchema {
 
 export interface CurrentLimitsFormSchema {
     [PERMANENT_LIMIT]: number | null;
-    [TEMPORARY_LIMITS]: TemporaryLimitFormSchema[];
+    [TEMPORARY_LIMITS]?: TemporaryLimitFormSchema[];
 }
 
 interface LimitsPropertyFormSchema {

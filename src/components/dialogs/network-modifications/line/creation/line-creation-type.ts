@@ -21,6 +21,7 @@ import {
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 import { CurrentLimitsData } from '../../../../../services/study/network-map.type';
 import { LineModificationFormInfos } from '../modification/line-modification-type';
+import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
 
 export interface LineCreationFormData {
     [TAB_HEADER]: {
@@ -38,7 +39,7 @@ export interface LineCreationFormData {
         [CONNECTIVITY_2]?: Connectivity;
     };
     [LIMITS]: {
-        [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroup[];
+        [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroupFormSchema[];
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
     };
@@ -67,7 +68,7 @@ export interface Limit {
     };
 }
 
-export interface LineInfo {
+export interface LineFormInfos {
     id: string;
     name: string | null;
     voltageLevelId1: string;

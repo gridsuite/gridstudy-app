@@ -6,14 +6,14 @@
  */
 
 import {
+    B1,
+    B2,
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    R,
     G1,
     G2,
-    B1,
-    B2,
+    R,
     X,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
@@ -23,9 +23,14 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import { LineCharacteristics } from '../modification/line-modification-type';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
+import { DeepNullable } from '../../../../utils/ts-utils';
 
-const characteristicsValidationSchema = (id: string, displayConnectivity: boolean, modification: boolean) => ({
-    [id]: yup.object().shape({
+const characteristicsValidationSchema = <T extends string>(
+    id: T,
+    displayConnectivity: boolean,
+    modification: boolean
+) => {
+    const characteristicsSchema = yup.object().shape({
         [R]: modification
             ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
             : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
@@ -36,11 +41,14 @@ const characteristicsValidationSchema = (id: string, displayConnectivity: boolea
         [G2]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_1)),
         ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_2)),
-    }),
-});
+    });
+    return {
+        [id]: characteristicsSchema,
+    } as Record<T, yup.ObjectSchema<yup.InferType<typeof characteristicsSchema>>>;
+};
 
-export const getCharacteristicsValidationSchema = (
-    id: string,
+export const getCharacteristicsValidationSchema = <T extends string>(
+    id: T,
     displayConnectivity: boolean,
     modification: boolean = false
 ) => {
@@ -64,7 +72,7 @@ export const getCharacteristicsEmptyFormData = (id: string = CHARACTERISTICS, di
     return characteristicsEmptyFormData(id, displayConnectivity);
 };
 
-export const getCharacteristicsFormData = (
+export const getCharacteristicsFormData = <T extends string = typeof CHARACTERISTICS>(
     {
         r,
         x,
@@ -81,12 +89,12 @@ export const getCharacteristicsFormData = (
         b1: number | null;
         g2: number | null;
         b2: number | null;
-        connectivity1: Connectivity | null;
-        connectivity2: Connectivity | null;
+        connectivity1: DeepNullable<Connectivity> | null;
+        connectivity2: DeepNullable<Connectivity> | null;
     },
-    id = CHARACTERISTICS
-) => ({
-    [id]: {
+    id: T = CHARACTERISTICS as T
+) => {
+    const characteristicsFormData = {
         [R]: r,
         [X]: x,
         [G1]: g1,
@@ -95,8 +103,11 @@ export const getCharacteristicsFormData = (
         [B2]: b2,
         [CONNECTIVITY_1]: connectivity1,
         [CONNECTIVITY_2]: connectivity2,
-    },
-});
+    };
+    return {
+        [id]: characteristicsFormData,
+    } as Record<T, typeof characteristicsFormData>;
+};
 
 export const getCharacteristicsWithOutConnectivityFormData = (
     { r, x, g1, b1, g2, b2 }: LineCharacteristics,
