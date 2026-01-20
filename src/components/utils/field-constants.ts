@@ -365,8 +365,6 @@ export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const SHUNT_COMPENSATOR_SELECTED = 'connectedToHvdc';
 export const PREVIOUS_SHUNT_COMPENSATOR_SELECTED = 'previousConnectedToHvdc';
 export const PROVIDER = 'provider';
-export const CONTINGENCIES = 'contingencies';
-export const MONITORED_BRANCHES = 'monitoredBranches';
 
 // VSC
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';

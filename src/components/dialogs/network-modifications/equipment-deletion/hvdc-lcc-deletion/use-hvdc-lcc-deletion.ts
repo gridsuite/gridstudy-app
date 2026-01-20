@@ -16,9 +16,12 @@ import { useCallback } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchHvdcLineWithShuntCompensators } from '../../../../../services/study/network-map';
-import { EquipmentDeletionInfos, HvdcLccDeletionInfos } from '../equipement-deletion-dialog.type';
+import {
+    EquipmentDeletionInfos,
+    HvdcLccDeletionInfos,
+    LccShuntCompensatorConnectionInfos,
+} from '../equipement-deletion-dialog.type';
 import { UUID } from 'node:crypto';
-import { LccShuntCompensatorInfos } from '../../../../../services/network-modification-types';
 
 const useHvdcLccDeletion = () => {
     const { replace: replaceMcsList1 } = useFieldArray({
@@ -32,7 +35,10 @@ const useHvdcLccDeletion = () => {
 
     const updateMcsLists = useCallback(
         (hvdcLineData: HvdcLccDeletionInfos, editData?: EquipmentDeletionInfos) => {
-            function mergeMcsLists(dynamicList: LccShuntCompensatorInfos[], editList: LccShuntCompensatorInfos[]) {
+            function mergeMcsLists(
+                dynamicList: LccShuntCompensatorConnectionInfos[],
+                editList: LccShuntCompensatorConnectionInfos[]
+            ) {
                 if (!dynamicList && !editList) {
                     return [];
                 } else if (!dynamicList) {
@@ -41,7 +47,7 @@ const useHvdcLccDeletion = () => {
                 } else if (!editList) {
                     return dynamicList;
                 }
-                const mergedList: LccShuntCompensatorInfos[] = dynamicList.map((obj) => {
+                const mergedList: LccShuntCompensatorConnectionInfos[] = dynamicList.map((obj) => {
                     return { ...obj, connectedToHvdc: false };
                 });
                 // now overwrite dynamic values with edited modification values

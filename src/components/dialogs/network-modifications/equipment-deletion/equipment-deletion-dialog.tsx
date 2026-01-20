@@ -17,17 +17,18 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipment } from '../../../../services/study/network-modifications';
 import { UUID } from 'node:crypto';
-import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FetchStatus } from 'services/utils.type';
 import { DeepNullable } from 'components/utils/ts-utils';
 import { EquipmentDeletionInfos } from './equipement-deletion-dialog.type';
+import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
+import { getHvdcLccDeletionSchema } from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().nullable().required(),
         [TYPE]: yup.mixed<EquipmentType>().oneOf(Object.values(EquipmentType)).nullable().required(),
-        [DELETION_SPECIFIC_DATA]: yup.string().nullable(),
+        [DELETION_SPECIFIC_DATA]: getHvdcLccDeletionSchema(),
     })
     .required();
 
@@ -39,18 +40,12 @@ const emptyFormData: EquipmentDeletionFormInfos = {
     [DELETION_SPECIFIC_DATA]: null,
 };
 
-interface EquipmentDeletionDialogProps {
-    studyUuid: UUID;
-    currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
+type EquipmentDeletionDialogProps = NetworkModificationDialogProps & {
     editData?: EquipmentDeletionInfos;
-    isUpdate: boolean;
     defaultIdValue?: UUID;
     equipmentType: EquipmentType;
     editDataFetchStatus?: FetchStatus;
-    onClose?: () => void;
-    onValidated?: () => void;
-}
+};
 
 /**
  * Dialog to delete equipment from its type and ID.
@@ -95,6 +90,7 @@ const EquipmentDeletionDialog = ({
             reset({
                 [TYPE]: editData.equipmentType,
                 [EQUIPMENT_ID]: editData.equipmentId,
+                [DELETION_SPECIFIC_DATA]: null,
             });
         },
         [reset]
@@ -139,18 +135,16 @@ const EquipmentDeletionDialog = ({
 
     const onSubmit = useCallback(
         (formData: EquipmentDeletionFormInfos) => {
-            if (formData[EQUIPMENT_ID]) {
-                deleteEquipment({
-                    studyUuid,
-                    nodeUuid: currentNodeUuid,
-                    uuid: editData?.uuid,
-                    equipmentId: formData[EQUIPMENT_ID] as UUID,
-                    equipmentType: formData[TYPE],
-                    equipmentSpecificInfos: formData[DELETION_SPECIFIC_DATA],
-                }).catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
-                });
-            }
+            deleteEquipment({
+                studyUuid,
+                nodeUuid: currentNodeUuid,
+                uuid: editData?.uuid,
+                equipmentId: formData[EQUIPMENT_ID] as UUID,
+                equipmentType: formData[TYPE],
+                equipmentSpecificInfos: formData[DELETION_SPECIFIC_DATA] ?? undefined,
+            }).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
+            });
         },
         [currentNodeUuid, editData, snackError, studyUuid]
     );

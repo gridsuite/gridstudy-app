@@ -67,6 +67,7 @@ import {
     OLGS_MODIFICATION_TYPE,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '../../components/utils/field-constants';
+import { EquipmentDeletionSpecificInfos } from '../../components/dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1657,12 +1658,12 @@ export function deleteAttachingLine({
 }
 
 export interface DeleteEquipmentInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     uuid?: UUID;
     equipmentId: UUID;
     equipmentType: EquipmentType;
-    equipmentSpecificInfos?: any;
+    equipmentSpecificInfos?: EquipmentDeletionSpecificInfos;
 }
 
 export function deleteEquipment({
