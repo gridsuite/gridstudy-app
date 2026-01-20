@@ -104,7 +104,7 @@ import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LineModificationFormInfos } from './line-modification-type';
+import { LineModificationFormSchema } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../utils/utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
@@ -228,7 +228,7 @@ const LineModificationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (line: LineModificationFormInfos) => {
+        (line: LineModificationFormSchema) => {
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
@@ -311,7 +311,7 @@ const LineModificationDialog = ({
                         if (line) {
                             setLineToModify(line);
                             reset(
-                                (formValues: LineModificationFormInfos) => ({
+                                (formValues: LineModificationFormSchema) => ({
                                     ...formValues,
                                     ...{
                                         [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
@@ -355,7 +355,7 @@ const LineModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const onValidationError = (errors: FieldErrors<LineModificationFormInfos>) => {
+    const onValidationError = (errors: FieldErrors<LineModificationFormSchema>) => {
         let tabsInError: number[] = [];
         if (errors?.[LIMITS] !== undefined) {
             tabsInError.push(LineModificationDialogTab.LIMITS_TAB);

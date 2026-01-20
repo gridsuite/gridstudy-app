@@ -5,69 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { OperationalLimitsGroup } from '../../../../../services/network-modification-types';
-import { Property } from '../../common/properties/property-utils';
+import { ConnectablePositionInfos, Connectivity } from '../../../connectivity/connectivity.type';
+import { CurrentLimitsData } from '../../../../../services/study/network-map.type';
 import {
     ADDITIONAL_PROPERTIES,
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     TAB_HEADER,
-} from 'components/utils/field-constants';
-import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
-import { CurrentLimitsData } from '../../../../../services/study/network-map.type';
-import { LineModificationFormInfos } from '../modification/line-modification-type';
+} from '../../../../utils/field-constants';
+import { Property } from '../../common/properties/property-utils';
+import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
+import { LineCharacteristics } from '../modification/line-modification-type';
 
-export interface LineCreationFormData {
-    [TAB_HEADER]: {
-        equipmentId: string;
-        equipmentName?: string | null;
-    };
-    [CHARACTERISTICS]: {
-        r?: number | null;
-        x?: number | null;
-        b1?: number | null;
-        g1?: number | null;
-        b2?: number | null;
-        g2?: number | null;
-        [CONNECTIVITY_1]?: Connectivity;
-        [CONNECTIVITY_2]?: Connectivity;
-    };
-    [LIMITS]: {
-        [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroup[];
-        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
-        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
-    };
-    [ADDITIONAL_PROPERTIES]?: Property[];
-    [key: string]: any;
-}
-
-export interface ConnectablePosition {
-    connectionName: string | null;
-    connectionDirection: string | null;
-    connectionPosition: number | null;
-}
-
-export interface Limit {
-    id: string;
-    name: string;
-    applicability: string;
-    currentLimits: {
-        id: string;
-        permanentLimit: number;
-        temporaryLimits: {
-            name: string;
-            acceptableDuration: number;
-            value: number;
-        }[];
-    };
-}
-
-export interface LineInfo {
+export interface LineFormInfos {
     id: string;
     name: string | null;
     voltageLevelId1: string;
@@ -90,15 +47,25 @@ export interface LineInfo {
     busOrBusbarSectionId2: string;
     selectedOperationalLimitsGroupId1: string;
     selectedOperationalLimitsGroupId2: string;
-    connectablePosition1: ConnectablePosition;
-    connectablePosition2: ConnectablePosition;
+    connectablePosition1: ConnectablePositionInfos;
+    connectablePosition2: ConnectablePositionInfos;
     currentLimits: CurrentLimitsData[];
     properties: Record<string, string>;
 }
 
-export interface LineCreationFormInfos extends LineModificationFormInfos {
-    tabHeader: {
-        equipmentId: string;
-        equipmentName?: string;
+export interface LineCreationFormSchema {
+    [TAB_HEADER]: {
+        [EQUIPMENT_ID]: string;
+        [EQUIPMENT_NAME]?: string | null;
     };
+    [CHARACTERISTICS]: LineCharacteristics & {
+        [CONNECTIVITY_1]?: Connectivity;
+        [CONNECTIVITY_2]?: Connectivity;
+    };
+    [LIMITS]: {
+        [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroupFormSchema[];
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
+    };
+    [ADDITIONAL_PROPERTIES]?: Property[];
 }

@@ -6,14 +6,14 @@
  */
 
 import {
+    B1,
+    B2,
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    R,
     G1,
     G2,
-    B1,
-    B2,
+    R,
     X,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
@@ -66,23 +66,17 @@ export const getCharacteristicsEmptyFormData = (id: string = CHARACTERISTICS, di
 
 export const getCharacteristicsFormData = (
     {
-        r,
-        x,
+        r = null,
+        x = null,
         g1 = null,
         b1 = null,
         g2 = null,
         b2 = null,
         connectivity1 = null,
         connectivity2 = null,
-    }: {
-        r: number;
-        x: number;
-        g1: number | null;
-        b1: number | null;
-        g2: number | null;
-        b2: number | null;
-        connectivity1: Connectivity | null;
-        connectivity2: Connectivity | null;
+    }: LineCharacteristics & {
+        connectivity1?: Connectivity | null;
+        connectivity2?: Connectivity | null;
     },
     id = CHARACTERISTICS
 ) => ({

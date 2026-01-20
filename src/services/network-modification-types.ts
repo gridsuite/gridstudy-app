@@ -17,6 +17,7 @@ import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-li
 import { ModificationType } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
+import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
 export enum OperationType {
     SET = 'SET',
@@ -538,19 +539,19 @@ export interface LineCreationInfo {
     nodeUuid: UUID;
     equipmentId: string;
     equipmentName: string | null;
-    r: number;
-    x: number;
-    g1: number;
-    b1: number;
-    g2: number;
-    b2: number;
-    voltageLevelId1: string;
-    busOrBusbarSectionId1: string;
-    voltageLevelId2: string;
-    busOrBusbarSectionId2: string;
-    operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroupId1?: string;
-    selectedOperationalLimitsGroupId2?: string;
+    r: number | null;
+    x: number | null;
+    g1: number | null;
+    b1: number | null;
+    g2: number | null;
+    b2: number | null;
+    voltageLevelId1: string | null;
+    busOrBusbarSectionId1: string | null;
+    voltageLevelId2: string | null;
+    busOrBusbarSectionId2: string | null;
+    operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
+    selectedOperationalLimitsGroupId1?: string | null;
+    selectedOperationalLimitsGroupId2?: string | null;
     isUpdate: boolean;
     modificationUuid?: string | null;
     connectionName1: string | null;
@@ -559,8 +560,8 @@ export interface LineCreationInfo {
     connectionDirection2: string | null;
     connectionPosition1: number | null;
     connectionPosition2: number | null;
-    connected1: boolean;
-    connected2: boolean;
+    connected1: boolean | null;
+    connected2: boolean | null;
     properties: Property[] | null;
 }
 

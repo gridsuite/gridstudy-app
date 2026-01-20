@@ -18,7 +18,6 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
-    ADDITIONAL_PROPERTIES,
     B1,
     B2,
     BUS_OR_BUSBAR_SECTION,
@@ -84,7 +83,6 @@ import {
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
-    Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
@@ -92,14 +90,13 @@ import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 import { LimitsPane } from '../../../limits/limits-pane';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { LineCreationInfo, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
-import { LineModificationFormInfos } from '../modification/line-modification-type';
+import { LineCreationInfo } from '../../../../../services/network-modification-types';
+import { LineModificationFormSchema } from '../modification/line-modification-type';
 import { CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
+import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
-import { Limit, LineCreationFormData, LineCreationFormInfos, LineInfo } from './line-creation-type';
 
-const emptyFormData: Partial<LineCreationFormData> = {
+const emptyFormData: any = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(false),
@@ -164,25 +161,18 @@ const LineCreationDialog = ({
         .concat(creationPropertiesSchema)
         .required();
 
-    type LineCreationFormSchema = yup.InferType<typeof formSchema>;
-
-    const formMethods = useForm<
-        Omit<DeepNullable<LineCreationFormSchema>, typeof ADDITIONAL_PROPERTIES> & {
-            [ADDITIONAL_PROPERTIES]?: Property[];
-        }
-    >({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<LineCreationFormSchema>>(formSchema),
+        resolver: yupResolver(formSchema),
     });
     const { reset, setValue } = formMethods;
 
-    const fromSearchCopyToFormValues = (line: LineInfo) => {
+    const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
             ...getHeaderFormData({
                 equipmentId: line.id + '(1)',
                 equipmentName: line.name ?? '',
             }),
-            // @ts-ignore
             ...getCharacteristicsFormData({
                 r: line.r,
                 x: line.x,
@@ -230,7 +220,6 @@ const LineCreationDialog = ({
                     equipmentId: line.equipmentId,
                     equipmentName: line.equipmentName,
                 }),
-                // @ts-ignore
                 ...getCharacteristicsFormData({
                     r: line.r,
                     x: line.x,
@@ -266,7 +255,7 @@ const LineCreationDialog = ({
                         ...baseData,
                         name: id,
                         id: id + baseData.applicability,
-                    })) as OperationalLimitsGroupFormSchema[],
+                    })),
                     line?.selectedOperationalLimitsGroupId1 ?? null,
                     line?.selectedOperationalLimitsGroupId2 ?? null
                 ),
@@ -298,7 +287,7 @@ const LineCreationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
-        const finalLimits: Limit[] = [];
+        const finalLimits: OperationalLimitsGroupFormSchema[] = [];
         data[FINAL_CURRENT_LIMITS].forEach((item: CurrentLimitsInfo) => {
             const temporaryLimitsList = [];
             if (item.temporaryLimitValue) {
@@ -323,7 +312,7 @@ const LineCreationDialog = ({
     };
 
     const onSubmit = useCallback(
-        (line: LineCreationFormInfos) => {
+        (line: LineCreationFormSchema) => {
             const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
@@ -332,21 +321,19 @@ const LineCreationDialog = ({
                 nodeUuid: currentNodeUuid,
                 equipmentId: header[EQUIPMENT_ID],
                 equipmentName: sanitizeString(header[EQUIPMENT_NAME]),
-                r: characteristics[R],
-                x: characteristics[X],
+                r: characteristics[R] ?? null,
+                x: characteristics[X] ?? null,
                 g1: convertOutputValue(FieldType.G1, characteristics[G1]),
                 b1: convertOutputValue(FieldType.B1, characteristics[B1]),
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
-                voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id,
-                busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
-                busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                operationalLimitsGroups: sanitizeLimitsGroups(
-                    limits[OPERATIONAL_LIMITS_GROUPS]
-                ) as OperationalLimitsGroup[],
-                selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1],
-                selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2],
+                voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id ?? null,
+                busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id ?? null,
+                voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id ?? null,
+                busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id ?? null,
+                operationalLimitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS] ?? []),
+                selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1] ?? null,
+                selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2] ?? null,
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
                 connectionName1: sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),
@@ -367,7 +354,7 @@ const LineCreationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
-    const onValidationError = (errors: FieldErrors<LineModificationFormInfos>) => {
+    const onValidationError = (errors: FieldErrors<LineModificationFormSchema>) => {
         let tabsInError = [];
         if (errors?.[CHARACTERISTICS] !== undefined) {
             tabsInError.push(LineCreationDialogTab.CHARACTERISTICS_TAB);
