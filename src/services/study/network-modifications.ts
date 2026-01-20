@@ -1185,7 +1185,7 @@ export function createSubstation({
         properties,
     });
 
-    if (isUpdate) {
+    if (modificationUuid) {
         url += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating substation creation', { url, body });
     } else {
@@ -1292,8 +1292,8 @@ export function modifySubstation({
 export function createVoltageLevel({
     studyUuid,
     nodeUuid,
-    voltageLevelId,
-    voltageLevelName,
+    equipmentId,
+    equipmentName,
     substationId,
     substationCreation,
     nominalV,
@@ -1320,8 +1320,8 @@ export function createVoltageLevel({
 
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
-        equipmentId: voltageLevelId,
-        equipmentName: voltageLevelName,
+        equipmentId,
+        equipmentName,
         substationId: substationId,
         substationCreation: substationCreation,
         nominalV: nominalV,
@@ -1350,8 +1350,8 @@ export function modifyVoltageLevel({
     studyUuid,
     nodeUuid,
     modificationUuid = undefined,
-    voltageLevelId,
-    voltageLevelName,
+    equipmentId,
+    equipmentName,
     nominalV,
     lowVoltageLimit,
     highVoltageLimit,
@@ -1377,8 +1377,8 @@ export function modifyVoltageLevel({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
-            equipmentId: voltageLevelId,
-            equipmentName: toModificationOperation(voltageLevelName),
+            equipmentId,
+            equipmentName: toModificationOperation(equipmentName),
             nominalV: toModificationOperation(nominalV),
             lowVoltageLimit: toModificationOperation(lowVoltageLimit),
             highVoltageLimit: toModificationOperation(highVoltageLimit),
@@ -1468,7 +1468,7 @@ export function divideLine({
 export function attachLine({
     studyUuid,
     nodeUuid,
-    modificationUuid,
+    uuid,
     lineToAttachToId,
     percent,
     attachmentPointId,
@@ -1501,16 +1501,15 @@ export function attachLine({
     });
 
     let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (modificationUuid) {
-        lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        lineAttachUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating line attach to voltage level');
     } else {
         console.info('Creating line attach to voltage level');
     }
 
     return backendFetchText(lineAttachUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
