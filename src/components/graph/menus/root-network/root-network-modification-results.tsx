@@ -16,7 +16,7 @@ import { setHighlightModification } from 'redux/actions';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 import { PanelType } from 'components/workspace/types/workspace.types';
-import { useWorkspaceActions } from 'components/workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 
 interface ModificationResultsProps {
     modifications: Modification[];
@@ -51,7 +51,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
     const triggerTreeNodeFocus = useTreeNodeFocus();
     const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
     const dispatch = useDispatch();
-    const { toggleToolPanel } = useWorkspaceActions();
+    const { toggleToolPanel } = useWorkspacePanelActions();
 
     const getModificationLabel = useCallback(
         (modification?: Modification): React.ReactNode => {

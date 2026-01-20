@@ -22,7 +22,7 @@ import { GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-gri
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { PanelType } from 'components/workspace/types/workspace.types';
-import { useWorkspaceActions } from 'components/workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -40,7 +40,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const gridRef = useRef<AgGridReact>(null);
-    const { openSLD } = useWorkspaceActions();
+    const { openSLD } = useWorkspacePanelActions();
 
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {

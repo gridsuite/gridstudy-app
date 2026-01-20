@@ -14,9 +14,6 @@ import { getPanelConfig } from '../constants/workspace.constants';
 
 const SLD_MAX_NAVIGATION_HISTORY = 10;
 
-/**
- * Get default position and size for associated SLD panels
- */
 export const getDefaultAssociatedSldPositionAndSize = () => ({
     position: {
         x: NAD_SLD_CONSTANTS.CASCADE_START_X,
@@ -28,29 +25,17 @@ export const getDefaultAssociatedSldPositionAndSize = () => ({
     },
 });
 
-/**
- * Type guard to check if a panel is a NAD panel
- */
 export const isNADPanel = (panel: PanelState): panel is NADPanel => panel.type === PanelType.NAD;
 
-/**
- * Type guard to check if a panel is a SLD voltage level panel
- */
 export const isSLDVoltageLevelPanel = (panel: PanelState): panel is SLDVoltageLevelPanel =>
     panel.type === PanelType.SLD_VOLTAGE_LEVEL;
 
-/**
- * Update navigation history for SLD voltage level panel
- */
 export const updateNavigationHistory = (panel: SLDVoltageLevelPanel, newEquipmentId: string, skipHistory: boolean) => {
     const history = panel.navigationHistory || [];
     const shouldAddToHistory = !skipHistory && panel.equipmentId !== newEquipmentId && history[0] !== panel.equipmentId;
     return shouldAddToHistory ? [panel.equipmentId, ...history].slice(0, SLD_MAX_NAVIGATION_HISTORY) : history;
 };
 
-/**
- * Create base panel properties with default values
- */
 export const createPanelBase = (panelType: PanelType) => {
     const config = getPanelConfig(panelType);
     return {
@@ -63,9 +48,6 @@ export const createPanelBase = (panelType: PanelType) => {
     };
 };
 
-/**
- * Create a new SLD panel (voltage level or substation)
- */
 export const createSLDPanel = ({
     panelType,
     equipmentId,
@@ -97,9 +79,6 @@ export const createSLDPanel = ({
     return { ...base, type: panelType };
 };
 
-/**
- * Create a new NAD panel
- */
 export const createNADPanel = ({
     title,
     initialVoltageLevelIds,

@@ -9,7 +9,7 @@ import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { getStudyUrl } from './index';
 import type { PanelState } from '../../components/workspace/types/workspace.types';
-import { getClientId } from '../../hooks/use-client-id';
+import { getClientId } from '../../utils/client-id';
 import type { DiagramConfigPosition } from '../explore';
 
 interface WorkspaceDTO {

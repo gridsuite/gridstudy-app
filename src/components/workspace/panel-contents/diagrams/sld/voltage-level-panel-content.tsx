@@ -18,7 +18,7 @@ import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navig
 import { selectSldDiagramFields } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
 import { SldNavigationSidebar } from '../../../diagrams/sld/sld-navigation-sidebar';
-import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 
 interface VoltageLevelPanelContentProps {
     panelId: UUID;
@@ -37,7 +37,7 @@ export const VoltageLevelPanelContent = ({
 }: VoltageLevelPanelContentProps) => {
     const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
 
-    const { associateVoltageLevelWithNad, navigateSLD } = useWorkspaceActions();
+    const { associateVoltageLevelWithNad, navigateSLD } = useWorkspacePanelActions();
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.VOLTAGE_LEVEL,

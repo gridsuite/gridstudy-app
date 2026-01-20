@@ -38,7 +38,7 @@ import {
     getSelectionCreationSchema,
 } from './selection-creation-schema';
 import { VoltageLevel } from '../../utils/equipment-types';
-import { useWorkspaceActions } from '../../workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
 
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
@@ -67,7 +67,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const { pendingState, onSaveSelection } = useSaveMap();
-    const { openNAD } = useWorkspaceActions();
+    const { openNAD } = useWorkspacePanelActions();
     const formMethods = useForm<Nullable<SelectionCreationPanelFormSchema>>({
         defaultValues: emptyFormData,
         // "Nullable" to allow null values as default values for required values

@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../../redux/store';
 import { selectVisibleAssociatedSldPanelIds } from '../../../../../../redux/slices/workspace-selectors';
-import { useWorkspaceActions } from '../../../../../workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../../../../workspace/hooks/use-workspace-panel-actions';
 import { NAD_SLD_CONSTANTS } from '../constants';
 
 export enum LayoutMode {
@@ -32,7 +32,7 @@ export interface UseSldLayoutReturn {
  * Handles reorganization (grid/cascade) and show/hide all operations
  */
 export const useSldLayout = ({ nadPanelId }: UseSldLayoutParams): UseSldLayoutReturn => {
-    const { updatePanelGeometry, hideAssociatedSlds, showAssociatedSlds } = useWorkspaceActions();
+    const { updatePanelGeometry, hideAssociatedSlds, showAssociatedSlds } = useWorkspacePanelActions();
 
     const visibleSldPanelIds = useSelector((state: RootState) => selectVisibleAssociatedSldPanelIds(state, nadPanelId));
 

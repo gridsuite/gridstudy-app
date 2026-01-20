@@ -20,7 +20,7 @@ import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 import { selectNadDiagramFields, selectActiveWorkspaceId } from '../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../redux/store';
-import { useWorkspaceActions } from '../../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
 import { PERSISTENT_NAD_FIELDS } from '../../types/workspace.types';
 
 interface UseNadDiagramProps {
@@ -62,7 +62,7 @@ const BASE_RESET_STATE = {
 };
 
 export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNetworkUuid }: UseNadDiagramProps) => {
-    const { updateNADFields } = useWorkspaceActions();
+    const { updateNADFields } = useWorkspacePanelActions();
     const initialFields = useSelector((state: RootState) => selectNadDiagramFields(state, panelId));
     const workspaceId = useSelector((state: RootState) => selectActiveWorkspaceId(state));
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);

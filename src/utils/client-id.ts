@@ -5,15 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo } from 'react';
-
 // Generate a new clientId once per tab lifetime
 const CLIENT_ID = crypto.randomUUID();
 
 export function getClientId(): string {
     return CLIENT_ID;
-}
-
-export function useClientId(): string {
-    return useMemo(() => getClientId(), []);
 }

@@ -15,7 +15,7 @@ import {
     selectPanel,
     selectVisibleAssociatedSldPanelIds,
 } from '../../../../../redux/slices/workspace-selectors';
-import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { AssociatedSldPanel } from './associated-sld-panel';
 import { AssociatedSldsChips } from './associated-slds-chips';
 import { useSldLayout } from './hooks/use-sld-layout';
@@ -29,7 +29,7 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
     nadPanelId,
     onDragStateChange,
 }: NadAssociatedPanelsContainerProps) {
-    const { toggleMinimized, focusPanel } = useWorkspaceActions();
+    const { toggleMinimized, focusPanel } = useWorkspacePanelActions();
 
     const focusedSldId = useSelector((state: RootState) => selectFocusedAssociatedSldId(state, nadPanelId));
     const visibleSldPanelIds = useSelector((state: RootState) => selectVisibleAssociatedSldPanelIds(state, nadPanelId));

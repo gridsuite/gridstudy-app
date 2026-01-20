@@ -14,7 +14,7 @@ import type { UUID } from 'node:crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { useWorkspaceActions } from 'components/workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 
 type UseLoadFlowResultColumnActionsProps = {
     studyUuid: UUID;
@@ -29,7 +29,7 @@ export const useLoadFlowResultColumnActions = ({
 }: UseLoadFlowResultColumnActionsProps) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const { openSLD } = useWorkspaceActions();
+    const { openSLD } = useWorkspacePanelActions();
 
     const getBranchSide = useCallback(
         (side: string | undefined) => {

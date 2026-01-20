@@ -13,7 +13,7 @@ import { OverflowableText } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
-import { useWorkspaceActions } from '../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
@@ -93,7 +93,7 @@ interface PanelHeaderProps {
 
 export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized, isFocused }: PanelHeaderProps) => {
     const intl = useIntl();
-    const { deletePanel, toggleMinimized, toggleMaximized, togglePin } = useWorkspaceActions();
+    const { deletePanel, toggleMinimized, toggleMaximized, togglePin } = useWorkspacePanelActions();
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 

@@ -104,23 +104,22 @@ export const WorkspaceSwitcher = memo(() => {
     const [renameDialog, setRenameDialog] = useState<{ workspaceId: UUID; name: string } | null>(null);
     const [resetWorkspaceId, setResetWorkspaceId] = useState<UUID | null>(null);
 
-    const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
-        if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE && studyUuid) {
-            globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
+    const switchToWorkspace = async (workspaceId: UUID) => {
+        if (!studyUuid) return;
 
-            const workspace = await getWorkspace(studyUuid, workspaceId as UUID);
-            dispatch(setActiveWorkspace(workspace));
+        globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
+        const workspace = await getWorkspace(studyUuid, workspaceId);
+        dispatch(setActiveWorkspace(workspace));
+    };
+
+    const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
+        if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE) {
+            await switchToWorkspace(workspaceId as UUID);
         }
     };
 
     const handleSwitchWorkspace = async (workspaceId: UUID) => {
-        if (!studyUuid) return;
-
-        globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
-
-        const workspace = await getWorkspace(studyUuid, workspaceId);
-        dispatch(setActiveWorkspace(workspace));
-
+        await switchToWorkspace(workspaceId);
         setMenuAnchor(null);
     };
 

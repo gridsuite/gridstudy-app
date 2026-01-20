@@ -30,7 +30,7 @@ import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
 import type { RootState } from '../../../../redux/store';
 import { selectPanelTargetEquipment } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
-import { useWorkspaceActions } from '../../../workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../../workspace/hooks/use-workspace-panel-actions';
 
 const styles = {
     table: (theme) => ({
@@ -74,7 +74,7 @@ export const SpreadsheetContent = memo(
         const [isGridReady, setIsGridReady] = useState(false);
         const targetEquipment = useSelector((state: RootState) => selectPanelTargetEquipment(state, panelId));
         const { nodeAliases } = useNodeAliases();
-        const { openSLD, clearTargetEquipment } = useWorkspaceActions();
+        const { openSLD, clearTargetEquipment } = useWorkspacePanelActions();
         const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
         const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
         const { fetchNodesEquipmentData } = useFetchEquipment();

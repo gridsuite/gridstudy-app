@@ -14,7 +14,7 @@ import { centerOnSubstation } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
-import { useWorkspaceActions } from '../workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
@@ -28,7 +28,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
     ...tagRendererProps
 }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const { openNAD } = useWorkspaceActions();
+    const { openNAD } = useWorkspacePanelActions();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);

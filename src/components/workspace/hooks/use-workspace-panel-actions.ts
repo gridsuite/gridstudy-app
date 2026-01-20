@@ -40,7 +40,7 @@ const getNextZIndex = (panels: PanelState[]): number => {
     return Math.max(0, ...panels.map((p) => p.zIndex ?? 0)) + 1;
 };
 
-export const useWorkspaceActions = () => {
+export const useWorkspacePanelActions = () => {
     const dispatch = useDispatch<AppDispatch>();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const workspaceId = useSelector(selectActiveWorkspaceId);

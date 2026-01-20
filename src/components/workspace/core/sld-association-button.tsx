@@ -10,7 +10,7 @@ import { IconButton, type SxProps, type Theme } from '@mui/material';
 import { Link as LinkIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { useWorkspaceActions } from '../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { selectSldDiagramFields } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
 import { AssociateNadMenu } from './associate-nad-menu';
@@ -26,7 +26,7 @@ interface SldAssociationButtonProps {
  * Renders the associate button + menu for voltage level SLD panels.
  */
 export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAssociationButtonProps) => {
-    const { associateSldToNad, createNadAndAssociateSld } = useWorkspaceActions();
+    const { associateSldToNad, createNadAndAssociateSld } = useWorkspacePanelActions();
     const [associateMenuAnchor, setAssociateMenuAnchor] = useState<HTMLElement | null>(null);
     const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
 

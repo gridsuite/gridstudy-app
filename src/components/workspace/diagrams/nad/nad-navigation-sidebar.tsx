@@ -16,7 +16,7 @@ import {
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';
 import { NavigationSidebar } from '../common/navigation-sidebar';
-import { useWorkspaceActions } from '../../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
 
 interface NadNavigationSidebarProps {
     readonly nadPanelId: UUID;
@@ -41,7 +41,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         shallowEqual
     );
 
-    const { associateVoltageLevelWithNad } = useWorkspaceActions();
+    const { associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
     const handleNavigationSidebarClick = useCallback(
         (voltageLevelId: string) => {

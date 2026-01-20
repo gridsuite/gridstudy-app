@@ -15,7 +15,7 @@ import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
 import type { AppState } from '../../../../../redux/reducer';
 import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
-import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { VoltageLevelPanelContent } from '../sld/voltage-level-panel-content';
 import { NAD_SLD_CONSTANTS } from './constants';
 
@@ -103,7 +103,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     onDragStop,
 }: AssociatedSldPanelProps) {
     const { updatePanelGeometry, dissociateSldFromNad, toggleMinimized, deletePanel, focusPanel } =
-        useWorkspaceActions();
+        useWorkspacePanelActions();
     const theme = useTheme();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

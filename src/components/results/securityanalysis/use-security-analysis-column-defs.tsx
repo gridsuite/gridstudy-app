@@ -23,7 +23,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { useWorkspaceActions } from '../../workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from '../../workspace/types/workspace.types';
 
 export interface SecurityAnalysisFilterEnumsType {
@@ -46,7 +46,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-    const { openSLD } = useWorkspaceActions();
+    const { openSLD } = useWorkspacePanelActions();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);

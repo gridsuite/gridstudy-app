@@ -10,7 +10,7 @@ import { Box, Theme } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import { useSelector } from 'react-redux';
 import { selectPanel } from '../../../redux/slices/workspace-selectors';
-import { useWorkspaceActions } from '../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import type { RootState } from '../../../redux/store';
 import { PANEL_CONTENT_REGISTRY } from '../panel-contents/panel-content-registry';
 import { PanelHeader } from './panel-header';
@@ -72,7 +72,7 @@ interface PanelProps {
     isFocused: boolean;
 }
 export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
-    const { updatePanelGeometry, focusPanel } = useWorkspaceActions();
+    const { updatePanelGeometry, focusPanel } = useWorkspacePanelActions();
     const panel = useSelector((state: RootState) => selectPanel(state, panelId));
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);

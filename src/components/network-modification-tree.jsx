@@ -12,7 +12,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { reorderNetworkModificationTreeNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
-import { useWorkspaceActions } from './workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
@@ -61,7 +61,7 @@ const styles = {
 
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const dispatch = useDispatch();
-    const { toggleToolPanel } = useWorkspaceActions();
+    const { toggleToolPanel } = useWorkspacePanelActions();
     const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state) => state.currentTreeNode);

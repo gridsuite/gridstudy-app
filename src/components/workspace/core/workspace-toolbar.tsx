@@ -34,7 +34,7 @@ import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useParameterState } from '../../dialogs/parameters/use-parameters-state';
 import { useSelector } from 'react-redux';
 import { PanelType } from '../types/workspace.types';
-import { useWorkspaceActions } from '../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { selectOpenPanels } from '../../../redux/slices/workspace-selectors';
 
 const styles = {
@@ -66,7 +66,7 @@ const styles = {
 
 export const WorkspaceToolbar = () => {
     const intl = useIntl();
-    const { toggleToolPanel, openSLD, openNAD, deletePanel } = useWorkspaceActions();
+    const { toggleToolPanel, openSLD, openNAD, deletePanel } = useWorkspacePanelActions();
 
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);

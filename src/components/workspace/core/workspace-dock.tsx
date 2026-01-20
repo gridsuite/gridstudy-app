@@ -15,7 +15,7 @@ import { selectFocusedPanelId, selectPanels } from '../../../redux/slices/worksp
 import { PanelType } from '../types/workspace.types';
 import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
-import { useWorkspaceActions } from '../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 
 const styles = {
     dock: (theme: Theme) => ({
@@ -61,7 +61,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const WorkspaceDock = memo(() => {
-    const { toggleMinimized, focusPanel, deletePanel } = useWorkspaceActions();
+    const { toggleMinimized, focusPanel, deletePanel } = useWorkspacePanelActions();
     const allPanels = useSelector(selectPanels);
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);

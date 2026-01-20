@@ -15,7 +15,7 @@ import {
     isStudyNotification,
     isWorkspaceNadConfigUpdatedNotification,
 } from '../../../../types/notification-types';
-import { getClientId } from '../../../../hooks/use-client-id';
+import { getClientId } from '../../../../utils/client-id';
 import { selectActiveWorkspaceId } from '../../../../redux/slices/workspace-selectors';
 
 interface UseDiagramNotificationsProps {

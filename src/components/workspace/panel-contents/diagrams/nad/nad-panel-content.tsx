@@ -16,7 +16,7 @@ import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import type { DiagramConfigPosition } from '../../../../../services/explore';
 import { NadNavigationSidebar } from '../../../diagrams/nad/nad-navigation-sidebar';
 import { NadAssociatedPanelsContainer } from './nad-associated-panels-container';
-import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 
 interface NadPanelContentProps {
@@ -34,7 +34,7 @@ export const NadPanelContent = memo(function NadPanelContent({
 }: NadPanelContentProps) {
     const [isDraggingSld, setIsDraggingSld] = useState(false);
 
-    const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspaceActions();
+    const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
     const { diagram, loading, globalError, updateDiagram, handleSaveNad, replaceNadConfig } = useNadDiagram({
         panelId,

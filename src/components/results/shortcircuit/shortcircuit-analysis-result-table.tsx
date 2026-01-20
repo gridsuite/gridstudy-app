@@ -46,7 +46,7 @@ import {
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
-import { useWorkspaceActions } from 'components/workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -104,7 +104,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 }) => {
     const intl = useIntl();
     const theme = useTheme();
-    const { openSLD } = useWorkspaceActions();
+    const { openSLD } = useWorkspacePanelActions();
 
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {

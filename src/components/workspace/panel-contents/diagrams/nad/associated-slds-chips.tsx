@@ -21,7 +21,7 @@ import { selectAssociatedPanels } from '../../../../../redux/slices/workspace-se
 import { type MuiStyles, PopupConfirmationDialog } from '@gridsuite/commons-ui';
 import { LayoutMode } from './hooks/use-sld-layout';
 import { NAD_SLD_CONSTANTS } from './constants';
-import { useWorkspaceActions } from '../../../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 
 interface AssociatedSldsChipsProps {
     readonly nadPanelId: UUID;
@@ -125,7 +125,7 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     onHideAll,
 }: AssociatedSldsChipsProps) {
     const intl = useIntl();
-    const { deletePanel, deletePanels } = useWorkspaceActions();
+    const { deletePanel, deletePanels } = useWorkspacePanelActions();
     const containerRef = useRef<HTMLDivElement>(null);
     const [chipLimit, setChipLimit] = useState(5);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);

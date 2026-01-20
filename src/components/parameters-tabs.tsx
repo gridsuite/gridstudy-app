@@ -68,7 +68,7 @@ import {
     setShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
-import { useWorkspaceActions } from './workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -85,7 +85,7 @@ enum TAB_VALUES {
 
 const ParametersTabs: FunctionComponent = () => {
     const dispatch = useDispatch();
-    const { toggleMinimized } = useWorkspaceActions();
+    const { toggleMinimized } = useWorkspacePanelActions();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

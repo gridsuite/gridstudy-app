@@ -8,10 +8,10 @@
 import { useCallback } from 'react';
 import { PanelType } from '../../../workspace/types/workspace.types';
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { useWorkspaceActions } from '../../hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
 
 export const useDiagramNavigation = () => {
-    const { showInSpreadsheet, openSLD } = useWorkspaceActions();
+    const { showInSpreadsheet, openSLD } = useWorkspacePanelActions();
 
     const handleShowInSpreadsheet = useCallback(
         (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => {

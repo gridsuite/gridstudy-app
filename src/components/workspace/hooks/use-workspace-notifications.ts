@@ -25,7 +25,7 @@ import {
     WorkspacePanelsDeletedEventData,
     WorkspaceRenamedEventData,
 } from '../../../types/notification-types';
-import { getClientId } from '../../../hooks/use-client-id';
+import { getClientId } from '../../../utils/client-id';
 
 export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
     const dispatch = useDispatch();

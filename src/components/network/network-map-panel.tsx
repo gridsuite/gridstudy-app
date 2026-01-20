@@ -48,7 +48,7 @@ import {
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
 import { PanelType } from '../workspace/types/workspace.types';
-import { useWorkspaceActions } from '../workspace/hooks/use-workspace-actions';
+import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -157,7 +157,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     }, [treeModel]);
 
     const dispatch = useDispatch();
-    const { showInSpreadsheet, openSLD } = useWorkspaceActions();
+    const { showInSpreadsheet, openSLD } = useWorkspacePanelActions();
 
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] = useState(false);
     const [isInitialized, setInitialized] = useState(false);
