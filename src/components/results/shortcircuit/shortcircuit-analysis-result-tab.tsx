@@ -103,10 +103,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         },
         [setResultOrLogIndex]
     );
-    const globalFilters = useMemo(
-        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
-        [globalFiltersFromState]
-    );
+
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
             updateGlobalFilters(newFilters);
@@ -207,7 +204,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
-                        globalFilters={globalFilters}
+                        globalFilters={buildValidGlobalFilters(globalFiltersFromState)}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult

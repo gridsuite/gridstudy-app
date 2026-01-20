@@ -102,11 +102,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     });
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
-    const globalFilters = useMemo(
-        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
-        [globalFiltersFromState]
-    );
-
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
             updateGlobalFilters(newFilters);
@@ -139,6 +134,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     value: limitTypeValues,
                 });
             }
+            const globalFilters = buildValidGlobalFilters(globalFiltersFromState ?? []);
             return fetchLimitViolations(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 sort: sortConfig.map((sort) => ({
                     ...sort,
@@ -158,7 +154,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     : {}),
             });
         },
-        [tabIndex, filters, intl, sortConfig, globalFilters]
+        [tabIndex, filters, intl, sortConfig, globalFiltersFromState]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {

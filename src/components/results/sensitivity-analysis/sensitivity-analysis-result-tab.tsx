@@ -57,10 +57,7 @@ function SensitivityAnalysisResultTab({
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
         setNOrNkIndex(newNOrNKIndex);
     };
-    const globalFilters = useMemo(
-        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
-        [globalFiltersFromState]
-    );
+
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
             updateGlobalFilters(newFilters);
@@ -118,7 +115,7 @@ function SensitivityAnalysisResultTab({
                             csvHeaders={csvHeaders}
                             nOrNkIndex={nOrNkIndex}
                             sensiKind={sensiTab}
-                            globalFilters={globalFilters}
+                            globalFilters={buildValidGlobalFilters(globalFiltersFromState)}
                             disabled={isCsvButtonDisabled}
                         />
                     </Box>
@@ -130,7 +127,7 @@ function SensitivityAnalysisResultTab({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                        globalFilters={globalFilters}
+                        globalFilters={buildValidGlobalFilters(globalFiltersFromState)}
                     />
                 </>
             )}

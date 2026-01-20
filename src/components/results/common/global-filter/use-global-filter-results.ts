@@ -9,7 +9,7 @@ import type { NonEmptyTuple } from 'type-fest';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import type { GlobalFilter, GlobalFilters } from './global-filter-types';
+import type { GlobalFilter } from './global-filter-types';
 import { evaluateGlobalFilter } from '../../../../services/study/filter';
 import type { AppState } from '../../../../redux/reducer';
 import type { FilterEquipmentType } from '../../../../types/filter-lib/filter';
@@ -18,16 +18,14 @@ import { buildValidGlobalFilters } from './build-valid-global-filters';
 
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */
-function useGlobalFiltersResults(
-    globalFilters: GlobalFilters | undefined,
-    equipmentTypes: NonEmptyTuple<FilterEquipmentType>
-) {
+export function useGlobalFiltersResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [filteredIds, setFilteredIds] = useState<string[]>();
     const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
+    const globalFilters = buildValidGlobalFilters(filters);
 
     useEffect(() => {
         if (
@@ -55,8 +53,4 @@ function useGlobalFiltersResults(
         studyUuid,
     ]);
     return filteredIds;
-}
-
-export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
-    return useGlobalFiltersResults(buildValidGlobalFilters(filters), equipmentTypes);
 }

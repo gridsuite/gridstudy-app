@@ -146,11 +146,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
-    const globalFilters = useMemo(
-        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
-        [globalFiltersFromState]
-    );
-
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
             updateGlobalFilters(newFilters);
@@ -186,7 +181,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 const columnToFieldMapping = mappingColumnToField(resultType);
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
-
+            const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
             if (globalFilters) {
                 queryParams['globalFilters'] = globalFilters;
             }
@@ -194,7 +189,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
 
-        [tabIndex, resultType, sortConfig, filters, globalFilters, currentRootNetworkUuid, page, rowsPerPage, intl]
+        [
+            tabIndex,
+            resultType,
+            sortConfig,
+            filters,
+            globalFiltersFromState,
+            currentRootNetworkUuid,
+            page,
+            rowsPerPage,
+            intl,
+        ]
     );
 
     const {

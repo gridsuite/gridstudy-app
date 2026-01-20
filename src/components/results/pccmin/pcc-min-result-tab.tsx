@@ -59,11 +59,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
         buildValidGlobalFilters([]);
     }, [resultOrLogIndex]);
 
-    const globalFilters = useMemo(
-        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
-        [globalFiltersFromState]
-    );
-
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
             updateGlobalFilters(newFilters);
@@ -103,7 +98,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             currentRootNetworkUuid={currentRootNetworkUuid}
-                            globalFilters={globalFilters}
+                            globalFilters={buildValidGlobalFilters(globalFiltersFromState)}
                             customTablePaginationProps={{
                                 labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
                             }}

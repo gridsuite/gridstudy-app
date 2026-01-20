@@ -41,10 +41,7 @@ export function VoltageInitResultTab({
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
-    const globalFilters = useMemo(
-        () => buildValidGlobalFilters(globalFiltersFromState ?? []),
-        [globalFiltersFromState]
-    );
+
     const handleGlobalFilterChangeAndUpdate = useCallback(
         (newFilters: GlobalFilter[]) => {
             updateGlobalFilters(newFilters);
@@ -53,12 +50,14 @@ export function VoltageInitResultTab({
     );
 
     const fetchVoltageInitResultWithGlobalFilters = useMemo(
-        () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) =>
-            fetchVoltageInitResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
+        () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => {
+            const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
+            return fetchVoltageInitResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 filters: null,
                 ...(globalFilters ? { globalFilters: { ...globalFilters } } : {}),
-            }),
-        [globalFilters]
+            });
+        },
+        [globalFiltersFromState]
     );
 
     const { result: voltageInitResult } = useNodeData({
