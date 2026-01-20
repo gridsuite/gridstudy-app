@@ -266,7 +266,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             if (equipmentType && currentNode?.id) {
                 if (
                     equipmentType === EquipmentType.HVDC_LINE &&
-                    mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
+                    mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === HvdcType.LCC
                 ) {
                     // only hvdc line with LCC requires a Dialog (to select MCS)
                     handleOpenDeletionDialog(equipmentId, EquipmentType.HVDC_LINE);
