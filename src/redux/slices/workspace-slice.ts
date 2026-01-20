@@ -60,8 +60,9 @@ const workspacesSlice = createSlice({
                         zIndex: updatedPanel.zIndex ?? activeWorkspace.panels[index].zIndex,
                     };
                 } else {
-                    // New panel - assign baseline zIndex to not interfere with focused panel
-                    updatedPanel.zIndex = 1;
+                    // if zIndex is not defined (new panel coming from backend sync)
+                    // assign baseline zIndex to not interfere with focused panel
+                    updatedPanel.zIndex ??= 1;
                     activeWorkspace.panels.push(updatedPanel);
                 }
             });

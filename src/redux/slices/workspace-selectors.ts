@@ -32,7 +32,10 @@ export const selectFocusedPanelId = createSelector([selectPanels], (panels): UUI
     );
     if (nonMinimized.length === 0) return null;
 
-    const focused = nonMinimized.reduce((max, p) => ((p.zIndex ?? 0) > (max.zIndex ?? 0) ? p : max), nonMinimized[0]);
+    const focused = nonMinimized.reduce(
+        (max, p) => ((p.zIndex ?? 0) > (max.zIndex ?? 0) ? p : max),
+        nonMinimized.at(-1)!
+    );
     return focused.id;
 });
 
