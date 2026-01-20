@@ -21,38 +21,36 @@ import {
 import { VscFormInfos } from '../vsc-dialog.type';
 import { VscCreationInfos } from '../../../../../../services/network-modification-types';
 
-export function getVscHvdcLinePaneSchema(id: string) {
-    return {
-        [id]: yup.object().shape(
-            {
-                [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-                [R]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-                [MAX_P]: yup.number().nullable().required(),
-                [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
-                [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
-                [CONVERTERS_MODE]: yup.string().required(),
-                [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: yup.boolean(),
-                [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
-                [P0]: yup
-                    .number()
-                    .nullable()
-                    .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, DROOP], {
-                        is: (angleDroopActivePowerControl: boolean, droop: number) =>
-                            angleDroopActivePowerControl || (droop !== null && droop !== undefined),
-                        then: (schema) => schema.required(),
-                    }),
-                [DROOP]: yup
-                    .number()
-                    .nullable()
-                    .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, P0], {
-                        is: (angleDroopActivePowerControl: boolean, p0: number) =>
-                            angleDroopActivePowerControl || (p0 !== null && p0 !== undefined),
-                        then: (schema) => schema.required(),
-                    }),
-            },
-            [[P0, DROOP]]
-        ),
-    };
+export function getVscHvdcLinePaneSchema() {
+    return yup.object().shape(
+        {
+            [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+            [R]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+            [MAX_P]: yup.number().nullable().required(),
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
+            [CONVERTERS_MODE]: yup.string().required(),
+            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: yup.boolean(),
+            [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
+            [P0]: yup
+                .number()
+                .nullable()
+                .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, DROOP], {
+                    is: (angleDroopActivePowerControl: boolean, droop: number) =>
+                        angleDroopActivePowerControl || (droop !== null && droop !== undefined),
+                    then: (schema) => schema.required(),
+                }),
+            [DROOP]: yup
+                .number()
+                .nullable()
+                .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, P0], {
+                    is: (angleDroopActivePowerControl: boolean, p0: number) =>
+                        angleDroopActivePowerControl || (p0 !== null && p0 !== undefined),
+                    then: (schema) => schema.required(),
+                }),
+        },
+        [[P0, DROOP]]
+    );
 }
 
 export function getVscHvdcLineModificationPaneSchema(id: string) {
@@ -74,37 +72,33 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
         ),
     };
 }
-export function getVscHvdcLinePaneEmptyFormData(id: string, isModification: boolean) {
+export function getVscHvdcLinePaneEmptyFormData(isModification: boolean) {
     return {
-        [id]: {
-            [NOMINAL_V]: null,
-            [R]: null,
-            [MAX_P]: null,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: null,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: null,
-            [CONVERTERS_MODE]: null,
-            [ACTIVE_POWER_SETPOINT]: null,
-            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: isModification ? null : false,
-            [P0]: null,
-            [DROOP]: null,
-        },
+        [NOMINAL_V]: null,
+        [R]: null,
+        [MAX_P]: null,
+        [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: null,
+        [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: null,
+        [CONVERTERS_MODE]: null,
+        [ACTIVE_POWER_SETPOINT]: null,
+        [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: isModification ? null : false,
+        [P0]: null,
+        [DROOP]: null,
     };
 }
 
-export function getVscHvdcLineTabFormData(id: string, hvdcLine: VscFormInfos) {
+export function getVscHvdcLineTabFormData(hvdcLine: VscFormInfos) {
     return {
-        [id]: {
-            [NOMINAL_V]: hvdcLine.nominalV,
-            [R]: hvdcLine.r,
-            [MAX_P]: hvdcLine.maxP,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: hvdcLine?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: hvdcLine?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
-            [CONVERTERS_MODE]: hvdcLine.convertersMode,
-            [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
-            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine?.hvdcAngleDroopActivePowerControl?.isEnabled,
-            [P0]: hvdcLine?.hvdcAngleDroopActivePowerControl?.p0,
-            [DROOP]: hvdcLine?.hvdcAngleDroopActivePowerControl?.droop,
-        },
+        [NOMINAL_V]: hvdcLine.nominalV,
+        [R]: hvdcLine.r,
+        [MAX_P]: hvdcLine.maxP,
+        [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: hvdcLine?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
+        [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: hvdcLine?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
+        [CONVERTERS_MODE]: hvdcLine.convertersMode,
+        [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
+        [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine?.hvdcAngleDroopActivePowerControl?.isEnabled,
+        [P0]: hvdcLine?.hvdcAngleDroopActivePowerControl?.p0,
+        [DROOP]: hvdcLine?.hvdcAngleDroopActivePowerControl?.droop,
     };
 }
 

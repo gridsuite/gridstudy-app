@@ -41,13 +41,6 @@ import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { FetchStatus } from '../../../../../../services/utils';
-import {
-    getConverterStationCreationData,
-    getConverterStationFormEditData,
-    getConverterStationFromSearchCopy,
-    getVscConverterStationEmptyFormData,
-    getVscConverterStationSchema,
-} from '../converter-station/converter-station-utils';
 import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
@@ -71,24 +64,31 @@ import {
     getVscHvdcLineTabFormData,
     getVscHvdcLineTabFormEditData,
 } from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
+import {
+    getConverterStationCreationData,
+    getConverterStationFormEditData,
+    getConverterStationFromSearchCopy,
+    getVscConverterStationEmptyFormData,
+    getVscConverterStationSchema,
+} from '../converter-station/converter-station-utils';
 
 const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
-        ...getVscHvdcLinePaneSchema(HVDC_LINE_TAB),
-        ...getVscConverterStationSchema(CONVERTER_STATION_1),
-        ...getVscConverterStationSchema(CONVERTER_STATION_2),
+        [HVDC_LINE_TAB]: getVscHvdcLinePaneSchema(),
+        [CONVERTER_STATION_1]: getVscConverterStationSchema(),
+        [CONVERTER_STATION_2]: getVscConverterStationSchema(),
     })
     .concat(creationPropertiesSchema)
     .required();
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, false),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2),
+    [HVDC_LINE_TAB]: getVscHvdcLinePaneEmptyFormData(false),
+    [CONVERTER_STATION_1]: getVscConverterStationEmptyFormData(false),
+    [CONVERTER_STATION_2]: getVscConverterStationEmptyFormData(false),
     ...emptyProperties,
 };
 
@@ -120,9 +120,9 @@ export default function VscCreationDialog({
             {
                 [EQUIPMENT_ID]: hvdcLine.id + '(1)',
                 [EQUIPMENT_NAME]: hvdcLine.name ?? '',
-                ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, hvdcLine),
-                ...getConverterStationFromSearchCopy(CONVERTER_STATION_1, hvdcLine.converterStation1),
-                ...getConverterStationFromSearchCopy(CONVERTER_STATION_2, hvdcLine.converterStation2),
+                [HVDC_LINE_TAB]: getVscHvdcLineTabFormData(hvdcLine),
+                [CONVERTER_STATION_1]: getConverterStationFromSearchCopy(hvdcLine.converterStation1),
+                [CONVERTER_STATION_2]: getConverterStationFromSearchCopy(hvdcLine.converterStation2),
                 ...copyEquipmentPropertiesForCreation(hvdcLine),
             },
             { keepDefaultValues: true }
@@ -212,9 +212,9 @@ export default function VscCreationDialog({
                 operatorActivePowerLimitFromSide2ToSide1: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
                 convertersMode: hvdcLineTab[CONVERTERS_MODE],
                 activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
-                angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
-                p0: hvdcLineTab[P0],
-                droop: hvdcLineTab[DROOP],
+                angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL] ?? null,
+                p0: hvdcLineTab[P0] ?? null,
+                droop: hvdcLineTab[DROOP] ?? null,
                 converterStation1: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_1]),
                 converterStation2: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_2]),
                 properties: toModificationProperties(hvdcLine),

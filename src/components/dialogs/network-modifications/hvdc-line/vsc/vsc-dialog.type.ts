@@ -51,22 +51,22 @@ export type VscDialogSchemaBaseForm = {
         [NOMINAL_V]: number;
         [R]: number;
         [MAX_P]: number;
-        [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: number;
-        [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: number;
+        [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]?: number;
+        [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]?: number;
         [CONVERTERS_MODE]: string;
-        [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: boolean;
+        [ANGLE_DROOP_ACTIVE_POWER_CONTROL]?: boolean;
         [ACTIVE_POWER_SETPOINT]: number;
-        [P0]: number;
-        [DROOP]: number;
+        [P0]?: number;
+        [DROOP]?: number;
     };
     [CONVERTER_STATION_1]: {
         [CONVERTER_STATION_ID]: string;
-        [CONVERTER_STATION_NAME]: string;
+        [CONVERTER_STATION_NAME]?: string;
         [LOSS_FACTOR]: number;
-        [VOLTAGE_REGULATION_ON]: boolean;
-        [REACTIVE_POWER]: number;
-        [VOLTAGE]: number;
-        [CONNECTIVITY]: {
+        [VOLTAGE_REGULATION_ON]?: boolean;
+        [REACTIVE_POWER]?: number;
+        [VOLTAGE]?: number;
+        [CONNECTIVITY]?: {
             [VOLTAGE_LEVEL]: { [ID]?: string };
             [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
             [CONNECTION_DIRECTION]?: string;
@@ -74,7 +74,7 @@ export type VscDialogSchemaBaseForm = {
             [CONNECTION_POSITION]?: number;
             [CONNECTED]?: boolean;
         };
-        [REACTIVE_LIMITS]: {
+        [REACTIVE_LIMITS]?: {
             [MINIMUM_REACTIVE_POWER]?: number | null;
             [MAXIMUM_REACTIVE_POWER]?: number | null;
             [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
@@ -83,12 +83,12 @@ export type VscDialogSchemaBaseForm = {
     };
     [CONVERTER_STATION_2]: {
         [CONVERTER_STATION_ID]: string;
-        [CONVERTER_STATION_NAME]: string;
+        [CONVERTER_STATION_NAME]?: string;
         [LOSS_FACTOR]: number;
-        [VOLTAGE_REGULATION_ON]: boolean;
-        [REACTIVE_POWER]: number;
-        [VOLTAGE]: number;
-        [CONNECTIVITY]: {
+        [VOLTAGE_REGULATION_ON]?: boolean;
+        [REACTIVE_POWER]?: number;
+        [VOLTAGE]?: number;
+        [CONNECTIVITY]?: {
             [VOLTAGE_LEVEL]: { [ID]?: string };
             [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
             [CONNECTION_DIRECTION]?: string;
@@ -96,7 +96,7 @@ export type VscDialogSchemaBaseForm = {
             [CONNECTION_POSITION]?: number;
             [CONNECTED]?: boolean;
         };
-        [REACTIVE_LIMITS]: {
+        [REACTIVE_LIMITS]?: {
             [MINIMUM_REACTIVE_POWER]?: number | null;
             [MAXIMUM_REACTIVE_POWER]?: number | null;
             [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
@@ -112,7 +112,7 @@ export type VscCreationDialogSchemaForm = { [EQUIPMENT_ID]: string } & VscDialog
 export interface VscFormInfos {
     id: string;
     name: string;
-    nominalV: boolean;
+    nominalV: number;
     r: number;
     activePowerSetpoint: number;
     maxP: number | null;

@@ -729,7 +729,7 @@ export interface VscCreationInfos {
     operatorActivePowerLimitFromSide2ToSide1: any;
     convertersMode: string;
     activePowerSetpoint: number;
-    angleDroopActivePowerControl: boolean;
+    angleDroopActivePowerControl: boolean | null;
     p0: number | null;
     droop: number | null;
     converterStation1: ConverterStationCreationInfos;
