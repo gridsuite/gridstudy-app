@@ -1170,6 +1170,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     nominalVoltages={nominalVoltagesFromMapEquipments ?? EMPTY_ARRAY}
                     filteredNominalVoltages={filteredNominalVoltages ?? EMPTY_ARRAY}
                     onChange={handleFilteredNominalVoltagesChange}
+                    disabled={!basicDataReady || mapDataLoading}
                 />
             </Box>
         );
