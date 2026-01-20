@@ -58,15 +58,15 @@ export const useLoadFlowResultColumnActions = ({
                         getBranchSide(side) ?? BranchSide.ONE
                     )
                         .then((voltageLevelId) => {
-                            if (!voltageLevelId) {
-                                vlId = subjectId;
-                            } else {
+                            if (voltageLevelId) {
                                 vlId = voltageLevelId;
+                            } else {
+                                vlId = subjectId;
                             }
                         })
                         .finally(() => {
                             if (vlId) {
-                                openSLD({ diagramId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+                                openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
                                 return;
                             }
                             snackError({

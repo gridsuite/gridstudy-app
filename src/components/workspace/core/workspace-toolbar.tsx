@@ -124,9 +124,9 @@ export const WorkspaceToolbar = () => {
     const handleSearchEquipment = (equipment: EquipmentInfos) => {
         if (equipment.type === EquipmentType.VOLTAGE_LEVEL || equipment.voltageLevelId) {
             const vlId = equipment.voltageLevelId || equipment.id;
-            openSLD({ diagramId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+            openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
         } else if (equipment.type === EquipmentType.SUBSTATION) {
-            openSLD({ diagramId: equipment.id, panelType: PanelType.SLD_SUBSTATION });
+            openSLD({ equipmentId: equipment.id, panelType: PanelType.SLD_SUBSTATION });
         }
     };
 

@@ -41,7 +41,7 @@ export const VoltageLevelPanelContent = ({
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.VOLTAGE_LEVEL,
-        diagramId: sldFields?.diagramId ?? '',
+        equipmentId: sldFields?.equipmentId ?? '',
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
@@ -86,7 +86,7 @@ export const VoltageLevelPanelContent = ({
         <Box sx={{ display: 'flex', height: '100%', width: '100%', position: 'relative' }}>
             <SldNavigationSidebar
                 navigationHistory={sldFields.navigationHistory || []}
-                currentVoltageLevelId={sldFields.diagramId}
+                currentVoltageLevelId={sldFields.equipmentId}
                 onNavigate={handleNavigateFromHistory}
             />
             <Box sx={{ flex: 1, overflow: 'hidden' }}>
@@ -94,7 +94,7 @@ export const VoltageLevelPanelContent = ({
                     <SingleLineDiagramContent
                         diagramParams={{
                             type: DiagramType.VOLTAGE_LEVEL,
-                            voltageLevelId: sldFields.diagramId,
+                            voltageLevelId: sldFields.equipmentId,
                         }}
                         showInSpreadsheet={handleShowInSpreadsheet}
                         studyUuid={studyUuid}

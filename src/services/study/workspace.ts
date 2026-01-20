@@ -21,7 +21,6 @@ interface WorkspaceDTO {
 export interface WorkspaceMetadata {
     id: UUID;
     name: string;
-    panelCount: number;
 }
 
 export function getWorkspace(studyUuid: UUID, workspaceId: UUID): Promise<WorkspaceDTO> {
@@ -105,7 +104,7 @@ export function saveNadConfig(
     }
 ): Promise<UUID> {
     console.info('save NAD config');
-    const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels/${panelId}/saved-nad-config`;
+    const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels/${panelId}/current-nad-config`;
     console.debug(url);
     return backendFetchJson(url, {
         method: 'POST',
@@ -119,7 +118,7 @@ export function saveNadConfig(
 
 export function deleteNadConfig(studyUuid: UUID, workspaceId: UUID, panelId: UUID): Promise<void> {
     console.info('delete NAD config');
-    const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels/${panelId}/saved-nad-config`;
+    const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels/${panelId}/current-nad-config`;
     console.debug(url);
     return backendFetch(url, {
         method: 'DELETE',

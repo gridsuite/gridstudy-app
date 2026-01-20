@@ -55,7 +55,7 @@ export interface NADPanel extends BasePanel {
     filterUuid?: UUID;
     currentFilterUuid?: UUID;
     voltageLevelToOmitIds?: string[];
-    savedWorkspaceConfigUuid?: UUID;
+    currentNadConfigUuid?: UUID;
     navigationHistory?: string[];
     initialVoltageLevelIds?: string[]; // For initial diagram load
 }
@@ -65,7 +65,7 @@ export const PERSISTENT_NAD_FIELDS = [
     'title',
     'voltageLevelToOmitIds',
     'currentFilterUuid',
-    'savedWorkspaceConfigUuid',
+    'currentNadConfigUuid',
     'nadConfigUuid',
     'filterUuid',
     'initialVoltageLevelIds',
@@ -75,14 +75,14 @@ export type PersistentNADFields = Pick<NADPanel, (typeof PERSISTENT_NAD_FIELDS)[
 
 export interface SLDVoltageLevelPanel extends BasePanel {
     type: PanelType.SLD_VOLTAGE_LEVEL;
-    diagramId: string;
+    equipmentId: string;
     parentNadPanelId?: UUID; // Reference to parent NAD panel if associated
     navigationHistory?: string[];
 }
 
 export interface SLDSubstationPanel extends BasePanel {
     type: PanelType.SLD_SUBSTATION;
-    diagramId: string;
+    equipmentId: string;
 }
 
 export interface SpreadsheetPanel extends BasePanel {
@@ -107,7 +107,6 @@ export type PanelState = NADPanel | SLDVoltageLevelPanel | SLDSubstationPanel | 
 export interface WorkspaceMetadata {
     id: UUID;
     name: string;
-    panelCount: number;
 }
 
 export interface Workspace {
@@ -119,6 +118,4 @@ export interface Workspace {
 export interface WorkspacesState {
     workspacesMetadata: WorkspaceMetadata[];
     activeWorkspace: Workspace | null;
-    focusedPanelId: UUID | null;
-    nextZIndex: number;
 }

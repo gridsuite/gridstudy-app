@@ -8,11 +8,7 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import {
-    updatePanels,
-    deletePanels as deletePanelsRedux,
-    setFocusedPanelId,
-} from '../../../redux/slices/workspace-slice';
+import { updatePanels, deletePanels as deletePanelsRedux } from '../../../redux/slices/workspace-slice';
 import {
     selectFocusedPanelId,
     selectActiveWorkspaceId,
@@ -20,7 +16,7 @@ import {
     selectPanelByType,
     selectExistingSLD,
     selectAssociatedPanels,
-    selectVisibleAssociatedSldPanels,
+    selectPanels,
 } from '../../../redux/slices/workspace-selectors';
 import { PanelType } from '../types/workspace.types';
 import type { PanelState, SpreadsheetPanel, PersistentNADFields } from '../types/workspace.types';
@@ -38,6 +34,11 @@ import {
 } from './workspace-panel-utils';
 import { getPanelConfig } from '../constants/workspace.constants';
 import { panelSyncManager } from '../utils/panel-sync-manager';
+
+// compute the next available zIndex value
+const getNextZIndex = (panels: PanelState[]): number => {
+    return Math.max(0, ...panels.map((p) => p.zIndex ?? 0)) + 1;
+};
 
 export const useWorkspaceActions = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -70,28 +71,10 @@ export const useWorkspaceActions = () => {
             const state = store.getState();
             const panel = selectPanel(state, panelId);
             if (panel) {
-                const nextZ = state.workspace.nextZIndex;
+                const allPanels = selectPanels(state);
+                const nextZ = getNextZIndex(allPanels);
                 const syncToBackend = panel.minimized === true;
-                dispatch(updatePanels([{ ...panel, minimized: false, zIndex: nextZ }]));
-                dispatch(setFocusedPanelId(panelId));
-
-                if (syncToBackend && workspaceId) {
-                    panelSyncManager.queueSync(studyUuid as UUID, workspaceId, [
-                        { ...panel, minimized: false, zIndex: nextZ },
-                    ]);
-                }
-            }
-        },
-        [dispatch, studyUuid, workspaceId]
-    );
-
-    const bringToFront = useCallback(
-        (panelId: UUID) => {
-            const state = store.getState();
-            const panel = selectPanel(state, panelId);
-            if (panel) {
-                const syncToBackend = panel.minimized === true;
-                savePanels([{ ...panel, minimized: false, zIndex: state.workspace.nextZIndex }], syncToBackend);
+                savePanels([{ ...panel, minimized: false, zIndex: nextZ }], syncToBackend);
             }
         },
         [savePanels]
@@ -99,18 +82,9 @@ export const useWorkspaceActions = () => {
 
     const saveAndFocus = useCallback(
         (panel: PanelState, syncToBackend = true) => {
-            savePanels([panel], syncToBackend);
-            focusPanel(panel.id);
-        },
-        [savePanels, focusPanel]
-    );
-
-    const savePanel = useCallback(
-        (panelId: UUID, transform: (panel: PanelState) => PanelState, syncToBackend = true) => {
-            const panel = selectPanel(store.getState(), panelId);
-            if (panel) {
-                savePanels([transform(panel)], syncToBackend);
-            }
+            const allPanels = selectPanels(store.getState());
+            const nextZ = getNextZIndex(allPanels);
+            savePanels([{ ...panel, minimized: false, zIndex: nextZ }], syncToBackend);
         },
         [savePanels]
     );
@@ -132,35 +106,47 @@ export const useWorkspaceActions = () => {
 
     // Simple panel property toggles
     const toggleMinimized = useCallback(
-        (panelId: UUID) => savePanel(panelId, (p) => ({ ...p, minimized: !p.minimized })),
-        [savePanel]
+        (panelId: UUID) => {
+            const panel = selectPanel(store.getState(), panelId);
+            if (!panel) return;
+            savePanels([{ ...panel, minimized: !panel.minimized }]);
+        },
+        [savePanels]
     );
 
     const togglePin = useCallback(
-        (panelId: UUID) => savePanel(panelId, (p) => ({ ...p, pinned: !p.pinned })),
-        [savePanel]
+        (panelId: UUID) => {
+            const panel = selectPanel(store.getState(), panelId);
+            if (!panel) return;
+            savePanels([{ ...panel, pinned: !panel.pinned }]);
+        },
+        [savePanels]
     );
 
     const toggleMaximized = useCallback(
-        (panelId: UUID) =>
-            savePanel(panelId, (p) =>
-                p.maximized
-                    ? {
-                          ...p,
-                          maximized: false,
-                          position: p.restorePosition || p.position,
-                          size: p.restoreSize || p.size,
-                          restorePosition: undefined,
-                          restoreSize: undefined,
-                      }
-                    : {
-                          ...p,
-                          maximized: true,
-                          restorePosition: p.position,
-                          restoreSize: p.size,
-                      }
-            ),
-        [savePanel]
+        (panelId: UUID) => {
+            const panel = selectPanel(store.getState(), panelId);
+            if (!panel) return;
+
+            const updated = panel.maximized
+                ? {
+                      ...panel,
+                      maximized: false,
+                      position: panel.restorePosition || panel.position,
+                      size: panel.restoreSize || panel.size,
+                      restorePosition: undefined,
+                      restoreSize: undefined,
+                  }
+                : {
+                      ...panel,
+                      maximized: true,
+                      restorePosition: panel.position,
+                      restoreSize: panel.size,
+                  };
+
+            savePanels([updated]);
+        },
+        [savePanels]
     );
 
     const updatePanelGeometry = useCallback(
@@ -197,7 +183,7 @@ export const useWorkspaceActions = () => {
 
             if (existing) {
                 if (focusedPanelId === existing.id && !existing.minimized) {
-                    savePanels([{ ...existing, minimized: true }]);
+                    toggleMinimized(existing.id);
                 } else {
                     focusPanel(existing.id);
                 }
@@ -210,23 +196,23 @@ export const useWorkspaceActions = () => {
                 } as PanelState);
             }
         },
-        [saveAndFocus, savePanels, focusPanel]
+        [saveAndFocus, toggleMinimized, focusPanel]
     );
 
     // SLD operations
     const openSLD = useCallback(
         ({
-            diagramId,
+            equipmentId,
             panelType,
         }: {
-            diagramId: string;
+            equipmentId: string;
             panelType: PanelType.SLD_VOLTAGE_LEVEL | PanelType.SLD_SUBSTATION;
         }) => {
-            const existing = selectExistingSLD(store.getState(), diagramId);
+            const existing = selectExistingSLD(store.getState(), equipmentId);
             if (existing) {
                 focusPanel(existing.id);
             } else {
-                saveAndFocus(createSLDPanel({ panelType, diagramId }));
+                saveAndFocus(createSLDPanel({ panelType, equipmentId }));
             }
         },
         [focusPanel, saveAndFocus]
@@ -244,10 +230,11 @@ export const useWorkspaceActions = () => {
         }) => {
             const panel = selectPanel(store.getState(), panelId);
             if (!panel || !isSLDVoltageLevelPanel(panel)) return;
+
             savePanels([
                 {
                     ...panel,
-                    diagramId: voltageLevelId,
+                    equipmentId: voltageLevelId,
                     title: voltageLevelId,
                     navigationHistory: updateNavigationHistory(panel, voltageLevelId, skipHistory),
                 },
@@ -260,30 +247,30 @@ export const useWorkspaceActions = () => {
         ({ voltageLevelId, nadPanelId }: { voltageLevelId: string; nadPanelId: UUID }) => {
             const state = store.getState();
             const associatedPanels = selectAssociatedPanels(state, nadPanelId);
-            const existingPanel = associatedPanels.find((p) => p.diagramId === voltageLevelId);
+            const existingPanel = associatedPanels.find((p) => p.equipmentId === voltageLevelId);
 
             if (existingPanel) {
-                bringToFront(existingPanel.id);
+                focusPanel(existingPanel.id);
             } else {
                 const defaults = getDefaultAssociatedSldPositionAndSize();
                 const newPanel = createSLDPanel({
                     panelType: PanelType.SLD_VOLTAGE_LEVEL,
-                    diagramId: voltageLevelId,
+                    equipmentId: voltageLevelId,
                     parentNadPanelId: nadPanelId,
                     position: defaults.position,
                     size: defaults.size,
                 });
-                // Give it nextZIndex so it appears on top
-                savePanels([{ ...newPanel, zIndex: state.workspace.nextZIndex }]);
+                saveAndFocus(newPanel);
             }
         },
-        [bringToFront, savePanels]
+        [focusPanel, saveAndFocus]
     );
 
     const associateSldToNad = useCallback(
         ({ sldPanelId, nadPanelId }: { sldPanelId: UUID; nadPanelId: UUID }) => {
             const panel = selectPanel(store.getState(), sldPanelId);
             if (!panel || !isSLDVoltageLevelPanel(panel)) return;
+
             const posAndSize = getDefaultAssociatedSldPositionAndSize();
             savePanels([{ ...panel, ...posAndSize, parentNadPanelId: nadPanelId }]);
             focusPanel(nadPanelId);
@@ -295,6 +282,7 @@ export const useWorkspaceActions = () => {
         (sldPanelId: UUID) => {
             const panel = selectPanel(store.getState(), sldPanelId);
             if (!panel || !isSLDVoltageLevelPanel(panel)) return;
+
             savePanels([{ ...panel, parentNadPanelId: undefined }]);
             focusPanel(sldPanelId);
         },
@@ -338,6 +326,7 @@ export const useWorkspaceActions = () => {
         }) => {
             const panel = selectPanel(store.getState(), panelId);
             if (!panel || !isNADPanel(panel)) return;
+
             savePanels([{ ...panel, ...fields }], syncToBackend);
         },
         [savePanels]
@@ -347,6 +336,7 @@ export const useWorkspaceActions = () => {
         ({ panelId, voltageLevelId }: { panelId: UUID; voltageLevelId: string }) => {
             const panel = selectPanel(store.getState(), panelId);
             if (!panel || !isNADPanel(panel)) return;
+
             const currentHistory = panel.navigationHistory || [];
             savePanels([{ ...panel, navigationHistory: [...currentHistory, voltageLevelId] }]);
         },
@@ -363,8 +353,7 @@ export const useWorkspaceActions = () => {
             voltageLevelId: string;
             voltageLevelName?: string;
         }) => {
-            const state = store.getState();
-            const sldPanel = selectPanel(state, sldPanelId);
+            const sldPanel = selectPanel(store.getState(), sldPanelId);
             if (!sldPanel || !isSLDVoltageLevelPanel(sldPanel)) return;
 
             const newNadPanel = createNADPanel({
@@ -380,16 +369,16 @@ export const useWorkspaceActions = () => {
                 parentNadPanelId: newNadPanel.id,
             };
 
-            savePanels([newNadPanel, updatedSld]);
-            focusPanel(newNadPanel.id);
+            savePanels([updatedSld]);
+            saveAndFocus(newNadPanel);
         },
-        [savePanels, focusPanel]
+        [savePanels, saveAndFocus]
     );
 
     // Associated SLD operations
     const hideAssociatedSlds = useCallback(
         (nadPanelId: UUID) => {
-            const panels = selectVisibleAssociatedSldPanels(store.getState(), nadPanelId);
+            const panels = selectAssociatedPanels(store.getState(), nadPanelId).filter((p) => !p.minimized);
             if (panels.length > 0) {
                 savePanels(panels.map((p) => ({ ...p, minimized: true })));
             }
@@ -400,11 +389,15 @@ export const useWorkspaceActions = () => {
     const showAssociatedSlds = useCallback(
         (nadPanelId: UUID) => {
             const state = store.getState();
-            const minimizedPanels = selectAssociatedPanels(store.getState(), nadPanelId).filter((p) => p.minimized);
+            const minimizedPanels = selectAssociatedPanels(state, nadPanelId).filter((p) => p.minimized);
             if (minimizedPanels.length > 0) {
-                // increase zIndex so they appear on top
-                let zIndex = state.workspace.nextZIndex;
-                const panelsWithZIndex = minimizedPanels.map((p) => ({ ...p, minimized: false, zIndex: zIndex++ }));
+                const allPanels = selectPanels(state);
+                let nextZ = getNextZIndex(allPanels);
+                const panelsWithZIndex = minimizedPanels.map((p) => ({
+                    ...p,
+                    minimized: false,
+                    zIndex: nextZ++,
+                }));
                 savePanels(panelsWithZIndex);
             }
         },
@@ -440,10 +433,10 @@ export const useWorkspaceActions = () => {
     const clearTargetEquipment = useCallback(
         (panelId: UUID) => {
             const panel = selectPanel(store.getState(), panelId);
-            if (panel && panel.type === PanelType.SPREADSHEET) {
-                // Transient UI state - don't sync to backend
-                savePanels([{ ...panel, targetEquipmentId: undefined, targetEquipmentType: undefined }], false);
-            }
+            if (!panel || panel.type !== PanelType.SPREADSHEET) return;
+
+            // Transient UI state - don't sync to backend
+            savePanels([{ ...panel, targetEquipmentId: undefined, targetEquipmentType: undefined }], false);
         },
         [savePanels]
     );
@@ -468,7 +461,6 @@ export const useWorkspaceActions = () => {
         toggleToolPanel,
         openNAD,
         focusPanel,
-        bringToFront,
         showInSpreadsheet,
         clearTargetEquipment,
     };

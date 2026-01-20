@@ -8,7 +8,12 @@
 import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectActiveWorkspaceId } from '../../../redux/slices/workspace-selectors';
-import { updatePanels, deletePanels, setWorkspacesMetadata } from '../../../redux/slices/workspace-slice';
+import {
+    updatePanels,
+    deletePanels,
+    setWorkspacesMetadata,
+    clearWorkspace,
+} from '../../../redux/slices/workspace-slice';
 import { fetchPanels, getWorkspacesMetadata } from '../../../services/study/workspace';
 import { useNotificationsListener, NotificationsUrlKeys } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
@@ -45,6 +50,9 @@ export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
         (eventData: WorkspacePanelsDeletedEventData) => {
             try {
                 const panelIds = JSON.parse(eventData.payload) as UUID[];
+                if (panelIds.length === 0) {
+                    dispatch(clearWorkspace());
+                }
                 dispatch(deletePanels(panelIds));
             } catch (error) {
                 console.error('Failed to delete panels:', error);

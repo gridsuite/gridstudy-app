@@ -43,10 +43,10 @@ export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAs
     };
 
     const handleCreateNad = () => {
-        if (sldFields?.diagramId) {
+        if (sldFields?.equipmentId) {
             createNadAndAssociateSld({
                 sldPanelId: panelId,
-                voltageLevelId: sldFields.diagramId,
+                voltageLevelId: sldFields.equipmentId,
                 voltageLevelName: title,
             });
         }
@@ -69,7 +69,7 @@ export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAs
                 onClose={handleAssociateMenuClose}
                 onSelectNad={handleSelectNad}
                 onCreateNad={handleCreateNad}
-                voltageLevelId={sldFields?.diagramId}
+                voltageLevelId={sldFields?.equipmentId}
             />
         </>
     );

@@ -95,7 +95,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                         })
                         .finally(() => {
                             if (vlId) {
-                                openSLD({ diagramId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+                                openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
                                 return;
                             }
                             console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);

@@ -6,10 +6,10 @@
  */
 
 import { useCallback } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../../redux/store';
-import { selectVisibleAssociatedSldPanels } from '../../../../../../redux/slices/workspace-selectors';
+import { selectVisibleAssociatedSldPanelIds } from '../../../../../../redux/slices/workspace-selectors';
 import { useWorkspaceActions } from '../../../../../workspace/hooks/use-workspace-actions';
 import { NAD_SLD_CONSTANTS } from '../constants';
 
@@ -34,10 +34,7 @@ export interface UseSldLayoutReturn {
 export const useSldLayout = ({ nadPanelId }: UseSldLayoutParams): UseSldLayoutReturn => {
     const { updatePanelGeometry, hideAssociatedSlds, showAssociatedSlds } = useWorkspaceActions();
 
-    const visibleSldPanelIds = useSelector(
-        (state: RootState) => selectVisibleAssociatedSldPanels(state, nadPanelId).map((p) => p.id),
-        shallowEqual
-    );
+    const visibleSldPanelIds = useSelector((state: RootState) => selectVisibleAssociatedSldPanelIds(state, nadPanelId));
 
     // Reorganize visible SLDs in grid or cascade layout
     const handleReorganize = useCallback(

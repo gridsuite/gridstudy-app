@@ -34,7 +34,7 @@ export const SubstationPanelContent = ({
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.SUBSTATION,
-        diagramId: sldFields?.diagramId ?? '',
+        equipmentId: sldFields?.equipmentId ?? '',
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
@@ -52,7 +52,7 @@ export const SubstationPanelContent = ({
                 <SingleLineDiagramContent
                     diagramParams={{
                         type: DiagramType.SUBSTATION,
-                        substationId: sldFields.diagramId,
+                        substationId: sldFields.equipmentId,
                     }}
                     showInSpreadsheet={handleShowInSpreadsheet}
                     studyUuid={studyUuid}

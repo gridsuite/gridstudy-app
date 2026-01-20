@@ -92,7 +92,6 @@ const getContentContainerStyle = (theme: any, isDragging: boolean) => ({
 interface AssociatedSldPanelProps {
     readonly sldPanelId: UUID;
     readonly isFocused: boolean;
-    readonly onBringToFront?: (sldPanelId: UUID) => void;
     readonly onDragStart?: () => void;
     readonly onDragStop?: () => void;
 }
@@ -100,11 +99,11 @@ interface AssociatedSldPanelProps {
 export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     sldPanelId,
     isFocused,
-    onBringToFront,
     onDragStart,
     onDragStop,
 }: AssociatedSldPanelProps) {
-    const { updatePanelGeometry, dissociateSldFromNad, toggleMinimized, deletePanel } = useWorkspaceActions();
+    const { updatePanelGeometry, dissociateSldFromNad, toggleMinimized, deletePanel, focusPanel } =
+        useWorkspaceActions();
     const theme = useTheme();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -198,9 +197,9 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     const handleResizeStart = useCallback(() => {
         setIsDragging(true);
         if (!isFocused) {
-            onBringToFront?.(sldPanelId);
+            focusPanel(sldPanelId);
         }
-    }, [isFocused, onBringToFront, sldPanelId]);
+    }, [isFocused, focusPanel, sldPanelId]);
 
     const handleResizeStop: RndResizeCallback = useCallback(
         (_e, _direction, ref, _delta, position) => {
@@ -241,9 +240,9 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
 
     const handlePointerDown = useCallback(() => {
         if (!isFocused) {
-            onBringToFront?.(sldPanelId);
+            focusPanel(sldPanelId);
         }
-    }, [onBringToFront, sldPanelId, isFocused]);
+    }, [focusPanel, sldPanelId, isFocused]);
 
     // Calculate pixel dimensions from relative values
     const dimensions = useMemo(() => {

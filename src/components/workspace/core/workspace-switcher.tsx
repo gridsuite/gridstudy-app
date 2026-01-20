@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useState, useEffect } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     ToggleButton,
@@ -38,10 +38,9 @@ import {
     setActiveWorkspace,
     renameWorkspace as renameWorkspaceAction,
     clearWorkspace as clearWorkspaceAction,
-    setWorkspacesMetadata,
 } from '../../../redux/slices/workspace-slice';
 import { selectWorkspaces, selectActiveWorkspaceId } from '../../../redux/slices/workspace-selectors';
-import { getWorkspace, renameWorkspace, deletePanels, getWorkspacesMetadata } from '../../../services/study/workspace';
+import { getWorkspace, renameWorkspace, deletePanels } from '../../../services/study/workspace';
 import type { UUID } from 'node:crypto';
 import { RootState } from 'redux/store';
 
@@ -76,6 +75,22 @@ const styles = {
         borderLeft: 3,
         borderColor: theme.palette.primary.main,
     }),
+    workspaceMenu: {
+        width: 300,
+        maxHeight: 400,
+        overflow: 'auto',
+        p: 0,
+    },
+    workspaceNameBox: {
+        width: 180,
+        mr: 1,
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+    },
+    actionButton: {
+        flexShrink: 0,
+    },
 } as const satisfies MuiStyles;
 
 export const WorkspaceSwitcher = memo(() => {
@@ -88,15 +103,6 @@ export const WorkspaceSwitcher = memo(() => {
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [renameDialog, setRenameDialog] = useState<{ workspaceId: UUID; name: string } | null>(null);
     const [resetWorkspaceId, setResetWorkspaceId] = useState<UUID | null>(null);
-
-    // Fetch fresh metadata when menu is opened
-    useEffect(() => {
-        if (menuAnchor && studyUuid) {
-            getWorkspacesMetadata(studyUuid)
-                .then((metadata) => dispatch(setWorkspacesMetadata(metadata)))
-                .catch((error) => console.error('Failed to fetch workspaces metadata:', error));
-        }
-    }, [menuAnchor, studyUuid, dispatch]);
 
     const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
         if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE && studyUuid) {
@@ -187,10 +193,9 @@ export const WorkspaceSwitcher = memo(() => {
 
             {/* Menu for workspace management */}
             <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
-                <List dense sx={{ width: 300, maxHeight: 400, overflow: 'auto', p: 0 }}>
+                <List dense sx={styles.workspaceMenu}>
                     {workspaces.map((workspace, index) => {
                         const isActive = workspace.id === activeWorkspaceId;
-                        const panelCount = workspace.panelCount;
                         const workspaceName = workspace.name || `Workspace ${index + 1}`;
 
                         return (
@@ -203,20 +208,12 @@ export const WorkspaceSwitcher = memo(() => {
                                     onClick={() => handleSwitchWorkspace(workspace.id)}
                                     sx={styles.workspaceItem}
                                 >
-                                    <Box sx={{ width: 180, mr: 1, overflow: 'hidden' }}>
+                                    <Box sx={styles.workspaceNameBox}>
                                         <OverflowableText
                                             text={workspaceName}
                                             sx={{ fontWeight: isActive ? 'bold' : 'normal', width: '100%' }}
                                             maxLineCount={1}
                                         />
-                                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                                            <FormattedMessage
-                                                id="panelsCount"
-                                                values={{
-                                                    count: panelCount,
-                                                }}
-                                            />
-                                        </Typography>
                                     </Box>
                                     <Tooltip title={intl.formatMessage({ id: 'Rename' })}>
                                         <IconButton
@@ -225,7 +222,7 @@ export const WorkspaceSwitcher = memo(() => {
                                                 e.stopPropagation();
                                                 handleOpenRenameDialog(workspace.id);
                                             }}
-                                            sx={{ flexShrink: 0 }}
+                                            sx={styles.actionButton}
                                         >
                                             <EditIcon fontSize="small" />
                                         </IconButton>
@@ -237,7 +234,7 @@ export const WorkspaceSwitcher = memo(() => {
                                                 e.stopPropagation();
                                                 setResetWorkspaceId(workspace.id);
                                             }}
-                                            sx={{ flexShrink: 0 }}
+                                            sx={styles.actionButton}
                                         >
                                             <RestartAltIcon fontSize="small" />
                                         </IconButton>

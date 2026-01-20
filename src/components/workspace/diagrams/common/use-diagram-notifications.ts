@@ -21,7 +21,7 @@ import { selectActiveWorkspaceId } from '../../../../redux/slices/workspace-sele
 interface UseDiagramNotificationsProps {
     currentRootNetworkUuid: UUID;
     onNotification: (newConfigUuid?: UUID) => void;
-    savedNadConfigUuid?: UUID;
+    currentNadConfigUuid?: UUID;
     panelId?: UUID;
 }
 

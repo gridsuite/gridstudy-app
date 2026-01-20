@@ -55,7 +55,7 @@ const BASE_RESET_STATE = {
     voltageLevelIds: [],
     voltageLevelToExpandIds: [],
     positions: [],
-    savedWorkspaceConfigUuid: undefined,
+    currentNadConfigUuid: undefined,
     initialVoltageLevelIds: [],
     voltageLevelToOmitIds: [],
     svg: null,
@@ -77,7 +77,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         nadConfigUuid: initialFields?.nadConfigUuid,
         filterUuid: initialFields?.filterUuid,
         currentFilterUuid: initialFields?.currentFilterUuid,
-        savedWorkspaceConfigUuid: initialFields?.savedWorkspaceConfigUuid,
+        currentNadConfigUuid: initialFields?.currentNadConfigUuid,
         initialVoltageLevelIds: initialFields?.initialVoltageLevelIds || [],
         voltageLevelIds: initialFields?.initialVoltageLevelIds || [],
         voltageLevelToExpandIds: [],
@@ -168,7 +168,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
                 positions: currentDiagram.positions,
                 voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
-                nadConfigUuid: currentDiagram.savedWorkspaceConfigUuid || currentDiagram.nadConfigUuid,
+                nadConfigUuid: currentDiagram.currentNadConfigUuid || currentDiagram.nadConfigUuid,
                 filterUuid: currentDiagram.currentFilterUuid || currentDiagram.filterUuid,
             };
 
@@ -216,14 +216,14 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
         try {
             const savedUuid = await saveNadConfig(studyUuid, workspaceId, panelId, {
-                id: diagram.savedWorkspaceConfigUuid || null,
+                id: diagram.currentNadConfigUuid || null,
                 scalingFactor,
                 voltageLevelIds: diagram.voltageLevelIds,
                 positions: diagram.positions,
             });
 
             setDiagramAndSync(
-                (prev) => ({ ...prev, savedWorkspaceConfigUuid: savedUuid, initialVoltageLevelIds: [] }),
+                (prev) => ({ ...prev, currentNadConfigUuid: savedUuid, initialVoltageLevelIds: [] }),
                 false
             );
         } catch (error) {
@@ -234,7 +234,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const replaceNadConfig = useCallback(
         (title: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
             // Cleanup saved config if exists
-            if (diagram.savedWorkspaceConfigUuid && workspaceId) {
+            if (diagram.currentNadConfigUuid && workspaceId) {
                 deleteNadConfig(studyUuid, workspaceId, panelId).catch((error) =>
                     console.error('Failed to delete NAD config:', error)
                 );
@@ -250,7 +250,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 true
             );
         },
-        [diagram.savedWorkspaceConfigUuid, workspaceId, studyUuid, panelId, updateDiagram]
+        [diagram.currentNadConfigUuid, workspaceId, studyUuid, panelId, updateDiagram]
     );
 
     const handleNotification = useCallback(
@@ -259,7 +259,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 // NAD config updated from another tab
                 updateDiagram(
                     {
-                        savedWorkspaceConfigUuid: newConfigUuid,
+                        currentNadConfigUuid: newConfigUuid,
                         initialVoltageLevelIds: [],
                         voltageLevelIds: [],
                         positions: [],
@@ -327,7 +327,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     useDiagramNotifications({
         currentRootNetworkUuid,
         onNotification: handleNotification,
-        savedNadConfigUuid: diagram.savedWorkspaceConfigUuid,
+        currentNadConfigUuid: diagram.currentNadConfigUuid,
         panelId,
     });
 

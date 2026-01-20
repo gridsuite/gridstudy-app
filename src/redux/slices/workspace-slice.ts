@@ -17,8 +17,6 @@ import {
 const initialState: WorkspacesState = {
     workspacesMetadata: [],
     activeWorkspace: null,
-    focusedPanelId: null,
-    nextZIndex: 1,
 };
 
 const workspacesSlice = createSlice({
@@ -34,11 +32,9 @@ const workspacesSlice = createSlice({
             // Initialize zIndex on panels if not present
             if (state.activeWorkspace) {
                 state.activeWorkspace.panels.forEach((panel, index) => {
-                    panel.zIndex ??= index + 1;
+                    panel.zIndex = index + 1;
                 });
-                state.nextZIndex = state.activeWorkspace.panels.length + 1;
             }
-            state.focusedPanelId = null;
         },
 
         renameWorkspace: (state, action: PayloadAction<{ workspaceId: UUID; newName: string }>) => {
@@ -63,13 +59,9 @@ const workspacesSlice = createSlice({
                         ...updatedPanel,
                         zIndex: updatedPanel.zIndex ?? activeWorkspace.panels[index].zIndex,
                     };
-                    // If zIndex was explicitly set and it's higher than nextZIndex, update counter
-                    if (updatedPanel.zIndex !== undefined && updatedPanel.zIndex >= state.nextZIndex) {
-                        state.nextZIndex = updatedPanel.zIndex + 1;
-                    }
                 } else {
                     // New panel - assign baseline zIndex to not interfere with focused panel
-                    updatedPanel.zIndex ??= 1;
+                    updatedPanel.zIndex = 1;
                     activeWorkspace.panels.push(updatedPanel);
                 }
             });
@@ -81,28 +73,12 @@ const workspacesSlice = createSlice({
             state.activeWorkspace.panels = state.activeWorkspace.panels.filter(
                 (panel) => !action.payload.includes(panel.id)
             );
-
-            // Clear focus if focused panel was deleted
-            if (state.focusedPanelId && action.payload.includes(state.focusedPanelId)) {
-                state.focusedPanelId = null;
-            }
         },
 
         clearWorkspace: (state) => {
             if (state.activeWorkspace) {
                 state.activeWorkspace.panels = [];
-                // Update panel count in metadata
-                const metadata = state.workspacesMetadata.find((w) => w.id === state.activeWorkspace?.id);
-                if (metadata) {
-                    metadata.panelCount = 0;
-                }
             }
-            state.focusedPanelId = null;
-            state.nextZIndex = 1;
-        },
-
-        setFocusedPanelId: (state, action: PayloadAction<UUID | null>) => {
-            state.focusedPanelId = action.payload;
         },
     },
 });
@@ -114,7 +90,6 @@ export const {
     updatePanels,
     deletePanels,
     clearWorkspace,
-    setFocusedPanelId,
 } = workspacesSlice.actions;
 
 export default workspacesSlice.reducer;

@@ -42,10 +42,10 @@ export const isSLDVoltageLevelPanel = (panel: PanelState): panel is SLDVoltageLe
 /**
  * Update navigation history for SLD voltage level panel
  */
-export const updateNavigationHistory = (panel: SLDVoltageLevelPanel, newDiagramId: string, skipHistory: boolean) => {
+export const updateNavigationHistory = (panel: SLDVoltageLevelPanel, newEquipmentId: string, skipHistory: boolean) => {
     const history = panel.navigationHistory || [];
-    const shouldAddToHistory = !skipHistory && panel.diagramId !== newDiagramId && history[0] !== panel.diagramId;
-    return shouldAddToHistory ? [panel.diagramId, ...history].slice(0, SLD_MAX_NAVIGATION_HISTORY) : history;
+    const shouldAddToHistory = !skipHistory && panel.equipmentId !== newEquipmentId && history[0] !== panel.equipmentId;
+    return shouldAddToHistory ? [panel.equipmentId, ...history].slice(0, SLD_MAX_NAVIGATION_HISTORY) : history;
 };
 
 /**
@@ -68,21 +68,21 @@ export const createPanelBase = (panelType: PanelType) => {
  */
 export const createSLDPanel = ({
     panelType,
-    diagramId,
+    equipmentId,
     parentNadPanelId,
     position,
     size,
 }: {
     panelType: PanelType.SLD_VOLTAGE_LEVEL | PanelType.SLD_SUBSTATION;
-    diagramId: string;
+    equipmentId: string;
     parentNadPanelId?: UUID;
     position?: { x: number; y: number };
     size?: { width: number; height: number };
 }): SLDVoltageLevelPanel | SLDSubstationPanel => {
     const base = {
         ...createPanelBase(panelType),
-        title: diagramId,
-        diagramId,
+        title: equipmentId,
+        equipmentId,
     };
     if (panelType === PanelType.SLD_VOLTAGE_LEVEL) {
         return {

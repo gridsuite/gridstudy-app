@@ -26,7 +26,15 @@ export const selectWorkspaces = (state: RootState) => state.workspace.workspaces
 
 export const selectActiveWorkspaceId = (state: RootState) => state.workspace.activeWorkspace?.id ?? null;
 
-export const selectFocusedPanelId = (state: RootState) => state.workspace.focusedPanelId;
+export const selectFocusedPanelId = createSelector([selectPanels], (panels): UUID | null => {
+    const nonMinimized = panels.filter(
+        (p) => !p.minimized && !(p.type === PanelType.SLD_VOLTAGE_LEVEL && p.parentNadPanelId)
+    );
+    if (nonMinimized.length === 0) return null;
+
+    const focused = nonMinimized.reduce((max, p) => ((p.zIndex ?? 0) > (max.zIndex ?? 0) ? p : max), nonMinimized[0]);
+    return focused.id;
+});
 
 export const selectOpenPanels = createSelector([selectPanels], (panels) => {
     const attachedSldIds = new Set<UUID>();
@@ -68,12 +76,12 @@ export const selectPanelByType = createSelector(
 );
 
 export const selectExistingSLD = createSelector(
-    [selectPanels, (_state: RootState, diagramId: string) => diagramId],
-    (panels, diagramId) => {
+    [selectPanels, (_state: RootState, equipmentId: string) => equipmentId],
+    (panels, equipmentId) => {
         return panels.find(
             (p) =>
                 (p.type === PanelType.SLD_VOLTAGE_LEVEL || p.type === PanelType.SLD_SUBSTATION) &&
-                p.diagramId === diagramId &&
+                p.equipmentId === equipmentId &&
                 (p.type === PanelType.SLD_SUBSTATION || !p.parentNadPanelId)
         );
     }
@@ -84,14 +92,20 @@ export const selectAssociatedVoltageLevelIds = createSelector(
     (panels, nadPanelId): string[] => {
         return panels
             .filter((p) => p.type === PanelType.SLD_VOLTAGE_LEVEL && p.parentNadPanelId === nadPanelId)
-            .map((p) => (p as SLDVoltageLevelPanel).diagramId);
+            .map((p) => (p as SLDVoltageLevelPanel).equipmentId);
     }
 );
 
-export const selectVisibleAssociatedSldPanels = createSelector(
-    [selectAssociatedPanels],
-    (panels): SLDVoltageLevelPanel[] => panels.filter((p) => !p.minimized)
+export const selectVisibleAssociatedSldPanelIds = createSelector([selectAssociatedPanels], (panels): UUID[] =>
+    panels.filter((p) => !p.minimized).map((p) => p.id)
 );
+
+export const selectFocusedAssociatedSldId = createSelector([selectAssociatedPanels], (panels): UUID | null => {
+    const visible = panels.filter((p) => !p.minimized);
+    if (visible.length === 0) return null;
+    const focused = visible.reduce((max, p) => ((p.zIndex ?? 0) > (max.zIndex ?? 0) ? p : max), visible[0]);
+    return focused.id;
+});
 
 // Field-specific selectors to prevent unnecessary re-renders
 export const selectPanelTargetEquipment = createSelector(
@@ -107,12 +121,12 @@ export const selectPanelTargetEquipment = createSelector(
 
 export const selectSldDiagramFields = createSelector(
     [selectPanel],
-    (panel): { diagramId: string; navigationHistory: string[]; parentNadPanelId: UUID | undefined } | undefined => {
+    (panel): { equipmentId: string; navigationHistory: string[]; parentNadPanelId: UUID | undefined } | undefined => {
         if (!panel || (panel.type !== PanelType.SLD_VOLTAGE_LEVEL && panel.type !== PanelType.SLD_SUBSTATION)) {
             return undefined;
         }
         return {
-            diagramId: panel.diagramId,
+            equipmentId: panel.equipmentId,
             navigationHistory: panel.type === PanelType.SLD_VOLTAGE_LEVEL ? panel.navigationHistory || [] : [],
             parentNadPanelId: panel.type === PanelType.SLD_VOLTAGE_LEVEL ? panel.parentNadPanelId : undefined,
         };
@@ -128,7 +142,7 @@ export const selectNadDiagramFields = createSelector([selectPanel], (panel) => {
         currentFilterUuid: panel.currentFilterUuid,
         initialVoltageLevelIds: panel.initialVoltageLevelIds,
         voltageLevelToOmitIds: panel.voltageLevelToOmitIds,
-        savedWorkspaceConfigUuid: panel.savedWorkspaceConfigUuid,
+        currentNadConfigUuid: panel.currentNadConfigUuid,
     };
 });
 

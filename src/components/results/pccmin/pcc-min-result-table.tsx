@@ -48,7 +48,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
             const onClick = () => {
                 const vlId = node?.data?.voltageLevelId;
                 if (vlId) {
-                    openSLD({ diagramId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+                    openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
                 }
             };
             if (value) {
