@@ -113,6 +113,7 @@ interface LineCreationDialogProps {
     displayConnectivity?: boolean;
     isUpdate: boolean;
     editDataFetchStatus?: string;
+    onClose: () => void;
     //...dialogProps
 }
 

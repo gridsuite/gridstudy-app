@@ -274,14 +274,13 @@ const LineAttachToVoltageLevelForm = ({
             )}
             {lineDialogOpen && (
                 <LineCreationDialog
-                    open={true}
                     onClose={onLineDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     displayConnectivity={false}
                     onCreateLine={onLineCreationDo}
-                    editData={lineToEdit}
+                    editData={lineToEdit as unknown as LineCreationInfo}
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                 />

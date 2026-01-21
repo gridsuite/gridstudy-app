@@ -350,15 +350,15 @@ export interface AttachmentLine {
     type: string;
     equipmentId: string;
     equipmentName: string | null;
-    r: number;
-    x: number;
-    g1: number;
-    b1: number;
-    g2: number;
-    b2: number;
-    operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroupId1: string;
-    selectedOperationalLimitsGroupId2: string;
+    r: number | null;
+    x: number | null;
+    g1: number | null;
+    b1: number | null;
+    g2: number | null;
+    b2: number | null;
+    operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
+    selectedOperationalLimitsGroupId1?: string | null;
+    selectedOperationalLimitsGroupId2?: string | null;
     properties: Property[] | null;
 }
 
