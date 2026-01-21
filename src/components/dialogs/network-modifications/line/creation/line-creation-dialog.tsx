@@ -89,7 +89,7 @@ import {
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 import { LimitsPane } from '../../../limits/limits-pane';
-import { LineCreationInfo } from '../../../../../services/network-modification-types';
+import { LineCreationInfos } from '../../../../../services/network-modification-types';
 import { LineModificationFormSchema } from '../modification/line-modification-type';
 import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
@@ -104,7 +104,7 @@ const emptyFormData: any = {
 };
 
 type LineCreationDialogProps = NetworkModificationDialogProps & {
-    editData?: LineCreationInfo; // contains data when we try to edit an existing hypothesis
+    editData?: LineCreationInfos; // contains data when we try to edit an existing hypothesis
     onCreateLine: typeof createLine;
     displayConnectivity?: boolean;
 };
@@ -207,7 +207,7 @@ const LineCreationDialog = ({
     };
 
     const fromEditDataToFormValues = useCallback(
-        (line: LineCreationInfo) => {
+        (line: LineCreationInfos) => {
             const formData = {
                 ...getHeaderFormData({
                     equipmentId: line.equipmentId,
@@ -309,7 +309,7 @@ const LineCreationDialog = ({
             const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
-            const lineCreationInfos: LineCreationInfo = {
+            const lineCreationInfos: LineCreationInfos = {
                 type: ModificationType.LINE_CREATION,
                 equipmentId: header[EQUIPMENT_ID],
                 equipmentName: sanitizeString(header[EQUIPMENT_NAME]),
@@ -337,7 +337,7 @@ const LineCreationDialog = ({
                 connected1: characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
                 connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
                 properties: toModificationProperties(line),
-            } satisfies LineCreationInfo;
+            } satisfies LineCreationInfos;
             onCreateLine({
                 lineCreationInfos,
                 studyUuid: studyUuid,

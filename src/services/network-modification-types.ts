@@ -526,7 +526,7 @@ export interface ShuntCompensatorCreationInfo {
     properties: Property[] | null;
 }
 
-export interface LineCreationInfo {
+export interface LineCreationInfos {
     type: ModificationType;
     uuid?: string | null;
     equipmentId: string;
@@ -544,7 +544,6 @@ export interface LineCreationInfo {
     operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
     selectedOperationalLimitsGroupId1?: string | null;
     selectedOperationalLimitsGroupId2?: string | null;
-    modificationUuid?: string | null;
     connectionName1: string | null;
     connectionDirection1: string | null;
     connectionName2: string | null;
@@ -682,7 +681,7 @@ export interface AttachLineInfo {
     mayNewVoltageLevelInfos?: ExtendedVoltageLevelCreationInfo;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
-    attachmentLine: LineCreationInfo;
+    attachmentLine: LineCreationInfos;
     newLine1Id: string;
     newLine1Name: string | null;
     newLine2Id: string;

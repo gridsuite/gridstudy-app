@@ -54,7 +54,7 @@ import { FetchStatus } from '../../../../services/utils.type';
 import {
     AttachLineInfo,
     ExtendedVoltageLevelCreationInfo,
-    LineCreationInfo,
+    LineCreationInfos,
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
 
@@ -122,7 +122,7 @@ const LineAttachToVoltageLevelDialog = ({
 }: LineAttachToVoltageLevelDialogProps) => {
     const currentNodeUuid = currentNode?.id;
 
-    const [attachmentLine, setAttachmentLine] = useState<LineCreationInfo>();
+    const [attachmentLine, setAttachmentLine] = useState<LineCreationInfos>();
     const [newVoltageLevel, setNewVoltageLevel] = useState<ExtendedVoltageLevelCreationInfo>();
     const [attachmentPoint, setAttachmentPoint] = useState<ExtendedVoltageLevelCreationInfo>({
         type: ModificationType.VOLTAGE_LEVEL_CREATION,
@@ -248,10 +248,43 @@ const LineAttachToVoltageLevelDialog = ({
     }, [reset]);
 
     const onLineCreationDo = useCallback(
-        ({ lineCreationInfos }: { lineCreationInfos: LineCreationInfo }) => {
+        ({ lineCreationInfos }: { lineCreationInfos: LineCreationInfos }) => {
             return new Promise<string>(() => {
-                setAttachmentLine(lineCreationInfos);
-                setValue(`${ATTACHMENT_LINE_ID}`, lineCreationInfos.equipmentId, {
+                // clean unused (required) fields by a simple copy with casting
+                const {
+                    type,
+                    equipmentId,
+                    equipmentName,
+                    r,
+                    x,
+                    g1,
+                    b1,
+                    g2,
+                    b2,
+                    operationalLimitsGroups,
+                    selectedOperationalLimitsGroupId1,
+                    selectedOperationalLimitsGroupId2,
+                    properties,
+                } = lineCreationInfos;
+
+                const preparedLine: LineCreationInfos = {
+                    type,
+                    equipmentId,
+                    equipmentName,
+                    r,
+                    x,
+                    g1,
+                    b1,
+                    g2,
+                    b2,
+                    operationalLimitsGroups,
+                    selectedOperationalLimitsGroupId1,
+                    selectedOperationalLimitsGroupId2,
+                    properties,
+                } as LineCreationInfos;
+
+                setAttachmentLine(preparedLine);
+                setValue(`${ATTACHMENT_LINE_ID}`, preparedLine.equipmentId, {
                     shouldValidate: true,
                     shouldDirty: true,
                 });

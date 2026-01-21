@@ -36,7 +36,7 @@ import {
     GeneratorModificationInfos,
     LCCCreationInfo,
     LccModificationInfos,
-    LineCreationInfo,
+    LineCreationInfos,
     LineModificationInfos,
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
@@ -766,7 +766,7 @@ export function createLine({
     isUpdate = false,
     modificationUuid,
 }: {
-    lineCreationInfos: LineCreationInfo;
+    lineCreationInfos: LineCreationInfos;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
