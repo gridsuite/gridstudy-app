@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FieldType,
+    ModificationType,
     snackWithFallback,
     TextInput,
     useSnackMessage,
@@ -88,13 +89,12 @@ import {
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 import { LimitsPane } from '../../../limits/limits-pane';
-import { UUID } from 'node:crypto';
-import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { LineCreationInfo } from '../../../../../services/network-modification-types';
 import { LineModificationFormSchema } from '../modification/line-modification-type';
 import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData: any = {
     ...getHeaderEmptyFormData(),
@@ -103,19 +103,11 @@ const emptyFormData: any = {
     ...emptyProperties,
 };
 
-interface LineCreationDialogProps {
-    // contains data when we try to edit an existing hypothesis from the current node's list
-    editData: LineCreationInfo | null | undefined;
-    studyUuid: UUID;
-    currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
-    onCreateLine: (line: LineCreationInfo) => Promise<string>;
+type LineCreationDialogProps = NetworkModificationDialogProps & {
+    editData?: LineCreationInfo; // contains data when we try to edit an existing hypothesis
+    onCreateLine: typeof createLine;
     displayConnectivity?: boolean;
-    isUpdate: boolean;
-    editDataFetchStatus?: string;
-    onClose: () => void;
-    //...dialogProps
-}
+};
 
 /**
  * Dialog to create a line in the network
@@ -139,7 +131,7 @@ const LineCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}: LineCreationDialogProps) => {
+}: Readonly<LineCreationDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
@@ -317,9 +309,8 @@ const LineCreationDialog = ({
             const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
-            onCreateLine({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
+            const lineCreationInfos: LineCreationInfo = {
+                type: ModificationType.LINE_CREATION,
                 equipmentId: header[EQUIPMENT_ID],
                 equipmentName: sanitizeString(header[EQUIPMENT_NAME]),
                 r: characteristics[R] ?? null,
@@ -335,8 +326,6 @@ const LineCreationDialog = ({
                 operationalLimitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS] ?? []),
                 selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1] ?? null,
                 selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2] ?? null,
-                isUpdate: !!editData,
-                modificationUuid: editData ? editData.uuid : undefined,
                 connectionName1: sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),
                 connectionDirection1:
                     characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
@@ -348,6 +337,13 @@ const LineCreationDialog = ({
                 connected1: characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
                 connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
                 properties: toModificationProperties(line),
+            } satisfies LineCreationInfo;
+            onCreateLine({
+                lineCreationInfos,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData ? editData.uuid : undefined,
+                isUpdate: !!editData,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LineCreationError' });
             });

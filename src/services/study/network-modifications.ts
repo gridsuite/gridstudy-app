@@ -760,35 +760,18 @@ export function createStaticVarCompensator(staticVarCompensatorCreationParameter
 }
 
 export function createLine({
+    lineCreationInfos,
     studyUuid,
     nodeUuid,
-    equipmentId,
-    equipmentName,
-    r,
-    x,
-    g1,
-    b1,
-    g2,
-    b2,
-    voltageLevelId1,
-    busOrBusbarSectionId1,
-    voltageLevelId2,
-    busOrBusbarSectionId2,
-    operationalLimitsGroups,
-    selectedOperationalLimitsGroupId1,
-    selectedOperationalLimitsGroupId2,
     isUpdate = false,
     modificationUuid,
-    connectionName1,
-    connectionDirection1,
-    connectionName2,
-    connectionDirection2,
-    connectionPosition1,
-    connectionPosition2,
-    connected1,
-    connected2,
-    properties,
-}: LineCreationInfo) {
+}: {
+    lineCreationInfos: LineCreationInfo;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let createLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
@@ -804,33 +787,7 @@ export function createLine({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LINE_CREATION.type,
-            equipmentId: equipmentId,
-            equipmentName: equipmentName,
-            r: r,
-            x: x,
-            g1: g1,
-            b1: b1,
-            g2: g2,
-            b2: b2,
-            voltageLevelId1: voltageLevelId1,
-            busOrBusbarSectionId1: busOrBusbarSectionId1,
-            voltageLevelId2: voltageLevelId2,
-            busOrBusbarSectionId2: busOrBusbarSectionId2,
-            operationalLimitsGroups: operationalLimitsGroups,
-            selectedOperationalLimitsGroupId1: selectedOperationalLimitsGroupId1,
-            selectedOperationalLimitsGroupId2: selectedOperationalLimitsGroupId2,
-            connectionName1: connectionName1,
-            connectionDirection1: connectionDirection1,
-            connectionName2: connectionName2,
-            connectionDirection2: connectionDirection2,
-            connectionPosition1: connectionPosition1,
-            connectionPosition2: connectionPosition2,
-            connected1: connected1,
-            connected2: connected2,
-            properties,
-        }),
+        body: JSON.stringify(lineCreationInfos),
     });
 }
 

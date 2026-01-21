@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomFormProvider,
-    MODIFICATION_TYPES,
-    ModificationType,
-    snackWithFallback,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
@@ -59,7 +53,6 @@ import { DeepNullable } from '../../../utils/ts-utils';
 import { FetchStatus } from '../../../../services/utils.type';
 import {
     AttachLineInfo,
-    AttachmentLine,
     ExtendedVoltageLevelCreationInfo,
     LineCreationInfo,
     VoltageLevelCreationInfo,
@@ -129,7 +122,7 @@ const LineAttachToVoltageLevelDialog = ({
 }: LineAttachToVoltageLevelDialogProps) => {
     const currentNodeUuid = currentNode?.id;
 
-    const [attachmentLine, setAttachmentLine] = useState<AttachmentLine>();
+    const [attachmentLine, setAttachmentLine] = useState<LineCreationInfo>();
     const [newVoltageLevel, setNewVoltageLevel] = useState<ExtendedVoltageLevelCreationInfo>();
     const [attachmentPoint, setAttachmentPoint] = useState<ExtendedVoltageLevelCreationInfo>({
         type: ModificationType.VOLTAGE_LEVEL_CREATION,
@@ -255,25 +248,10 @@ const LineAttachToVoltageLevelDialog = ({
     }, [reset]);
 
     const onLineCreationDo = useCallback(
-        (lineCreationInfo: LineCreationInfo) => {
+        ({ lineCreationInfos }: { lineCreationInfos: LineCreationInfo }) => {
             return new Promise<string>(() => {
-                const preparedLine: AttachmentLine = {
-                    type: MODIFICATION_TYPES.LINE_CREATION.type,
-                    equipmentId: lineCreationInfo.equipmentId,
-                    equipmentName: lineCreationInfo.equipmentName,
-                    r: lineCreationInfo.r,
-                    x: lineCreationInfo.x,
-                    g1: lineCreationInfo.g1,
-                    b1: lineCreationInfo.b1,
-                    g2: lineCreationInfo.g2,
-                    b2: lineCreationInfo.b2,
-                    operationalLimitsGroups: lineCreationInfo.operationalLimitsGroups,
-                    selectedOperationalLimitsGroupId1: lineCreationInfo.selectedOperationalLimitsGroupId1,
-                    selectedOperationalLimitsGroupId2: lineCreationInfo.selectedOperationalLimitsGroupId2,
-                    properties: lineCreationInfo.properties,
-                };
-                setAttachmentLine(preparedLine);
-                setValue(`${ATTACHMENT_LINE_ID}`, preparedLine.equipmentId, {
+                setAttachmentLine(lineCreationInfos);
+                setValue(`${ATTACHMENT_LINE_ID}`, lineCreationInfos.equipmentId, {
                     shouldValidate: true,
                     shouldDirty: true,
                 });

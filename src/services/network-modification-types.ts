@@ -346,22 +346,6 @@ export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
     highShortCircuitCurrentLimit: number | null;
 }
 
-export interface AttachmentLine {
-    type: string;
-    equipmentId: string;
-    equipmentName: string | null;
-    r: number | null;
-    x: number | null;
-    g1: number | null;
-    b1: number | null;
-    g2: number | null;
-    b2: number | null;
-    operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
-    selectedOperationalLimitsGroupId1?: string | null;
-    selectedOperationalLimitsGroupId2?: string | null;
-    properties: Property[] | null;
-}
-
 type VariationFilter = {
     id: string;
     name: string;
@@ -543,9 +527,8 @@ export interface ShuntCompensatorCreationInfo {
 }
 
 export interface LineCreationInfo {
+    type: ModificationType;
     uuid?: string | null;
-    studyUuid: string;
-    nodeUuid: UUID;
     equipmentId: string;
     equipmentName: string | null;
     r: number | null;
@@ -561,7 +544,6 @@ export interface LineCreationInfo {
     operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
     selectedOperationalLimitsGroupId1?: string | null;
     selectedOperationalLimitsGroupId2?: string | null;
-    isUpdate: boolean;
     modificationUuid?: string | null;
     connectionName1: string | null;
     connectionDirection1: string | null;
@@ -700,7 +682,7 @@ export interface AttachLineInfo {
     mayNewVoltageLevelInfos?: ExtendedVoltageLevelCreationInfo;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
-    attachmentLine: AttachmentLine;
+    attachmentLine: LineCreationInfo;
     newLine1Id: string;
     newLine1Name: string | null;
     newLine2Id: string;
