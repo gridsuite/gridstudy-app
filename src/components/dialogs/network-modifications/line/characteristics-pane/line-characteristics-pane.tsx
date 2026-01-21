@@ -26,6 +26,7 @@ import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { BranchInfos } from '../../../../../services/study/network-map.type';
 
 const styles = {
     h3: {
@@ -40,7 +41,7 @@ interface LineCharacteristicsPaneProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     displayConnectivity: boolean;
-    lineToModify?: any;
+    lineToModify?: BranchInfos | null;
     clearableFields?: boolean;
     isModification?: boolean;
 }
