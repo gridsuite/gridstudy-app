@@ -18,14 +18,13 @@ import { buildValidGlobalFilters } from './build-valid-global-filters';
 
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */
-export function useGlobalFiltersResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
+export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [filteredIds, setFilteredIds] = useState<string[]>();
     const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
-    const globalFilters = buildValidGlobalFilters(filters);
 
     useEffect(() => {
         if (
@@ -33,21 +32,22 @@ export function useGlobalFiltersResults(filters: GlobalFilter[], equipmentTypes:
             studyUuid &&
             currentRootNetworkUuid &&
             currentNode?.id &&
-            isStatusBuilt(currentNode?.data?.globalBuildStatus) &&
-            globalFilters
+            isStatusBuilt(currentNode?.data?.globalBuildStatus)
         ) {
-            evaluateGlobalFilter(studyUuid, currentNode.id, currentRootNetworkUuid, equipmentTypes, globalFilters)
-                .then(setFilteredIds)
-                .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'FilterEvaluationError' });
-                });
+            const globalFilters = buildValidGlobalFilters(filters);
+            globalFilters &&
+                evaluateGlobalFilter(studyUuid, currentNode.id, currentRootNetworkUuid, equipmentTypes, globalFilters)
+                    .then(setFilteredIds)
+                    .catch((error) => {
+                        snackWithFallback(snackError, error, { headerId: 'FilterEvaluationError' });
+                    });
         }
     }, [
         currentNode?.data?.globalBuildStatus,
         currentNode?.id,
         currentRootNetworkUuid,
         equipmentTypes,
-        globalFilters,
+        filters,
         isTreeModelUpToDate,
         snackError,
         studyUuid,

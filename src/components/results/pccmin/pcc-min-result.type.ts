@@ -19,8 +19,8 @@ import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-ag
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
-import { GridApi, ICellRendererParams } from 'ag-grid-community';
-import { AgGridFilterContext } from '../../../hooks/use-update-computation-columns-filters';
+import { ICellRendererParams } from 'ag-grid-community';
+import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
@@ -71,7 +71,7 @@ export const FROM_COLUMN_TO_FIELD_PCC_MIN: Record<string, string> = {
 export const getPccMinColumns = (
     intl: IntlShape,
     voltageLevelIdRenderer: (cellData: ICellRendererParams) => React.JSX.Element | undefined,
-    filterContext: AgGridFilterContext
+    goToFirstPage: () => void
 ) => {
     const sortParams: ColumnContext['sortParams'] = {
         table: PCCMIN_ANALYSIS_RESULT_SORT_STORE,
@@ -81,10 +81,8 @@ export const getPccMinColumns = (
     const pccMinFilterParams = {
         type: AgGridFilterType.PccMin,
         tab: PCCMIN_RESULT,
-        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-            if (!agGridApi || !filters || !colId) return;
-            filterContext.onFilterChange?.({ agGridApi, filters, colId });
-        },
+        onBeforePersist: goToFirstPage,
+        updateFilterCallback: UpdateComputationColumnsFilters,
     };
 
     const createFilterContext = (

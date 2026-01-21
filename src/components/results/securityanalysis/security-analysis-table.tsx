@@ -14,7 +14,7 @@ import { ComputingType, CustomAGGrid, DefaultCellRenderer } from '@gridsuite/com
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
-import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
     rows,
@@ -38,7 +38,8 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
 
     const onGridReady = useCallback(
         ({ api }: GridReadyEvent) => {
-            updateFilters(api, filters);
+            if (!api || !filters) return;
+            updateAgGridFilters(api, filters);
             api?.sizeColumnsToFit();
         },
         [filters]

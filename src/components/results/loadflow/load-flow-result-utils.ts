@@ -15,7 +15,7 @@ import {
     OverloadedEquipmentFromBack,
 } from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
-import { ColDef, GridApi, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
@@ -37,8 +37,8 @@ import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filter
 import {
     FilterConfig,
     FilterType as AgGridFilterType,
-    textFilterParams,
     numericFilterParams,
+    textFilterParams,
 } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
@@ -49,7 +49,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
-import { AgGridFilterContext } from '../../../hooks/use-update-computation-columns-filters';
+import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
@@ -266,8 +266,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    subjectIdRenderer: SubjectIdRendererType,
-    filterContext: AgGridFilterContext
+    subjectIdRenderer: SubjectIdRendererType
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
@@ -276,10 +275,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-            if (!agGridApi || !filters || !colId) return;
-            filterContext.onFilterChange?.({ agGridApi, filters, colId });
-        },
+        updateFilterCallback: UpdateComputationColumnsFilters,
     };
 
     return [
@@ -374,8 +370,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    subjectIdRenderer: SubjectIdRendererType,
-    filterContext: AgGridFilterContext
+    subjectIdRenderer: SubjectIdRendererType
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
@@ -384,10 +379,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-            if (!agGridApi || !filters || !colId) return;
-            filterContext.onFilterChange?.({ agGridApi, filters, colId });
-        },
+        updateFilterCallback: UpdateComputationColumnsFilters,
     };
 
     return [
@@ -436,16 +428,12 @@ export const componentColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    statusCellRender: (cellData: ICellRendererParams) => JSX.Element,
-    filterContext: AgGridFilterContext
+    statusCellRender: (cellData: ICellRendererParams) => JSX.Element
 ): ColDef[] => {
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-            if (!agGridApi || !filters || !colId) return;
-            filterContext.onFilterChange?.({ agGridApi, filters, colId });
-        },
+        updateFilterCallback: UpdateComputationColumnsFilters,
     };
 
     return [

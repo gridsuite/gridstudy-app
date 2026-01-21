@@ -13,7 +13,7 @@ import { type AppState } from '../../../../../redux/reducer';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
-import { useGlobalFiltersResults } from '../../../../results/common/global-filter/use-global-filter-results';
+import { useGlobalFilterResults } from '../../../../results/common/global-filter/use-global-filter-results';
 import { FilterEquipmentType } from '../../../../../types/filter-lib/filter';
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
@@ -34,7 +34,7 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
                 : ([equipmentType as unknown as FilterEquipmentType] as const),
         [equipmentType]
     );
-    const filteredEquipmentIds = useGlobalFiltersResults(globalFilterSpreadsheetState, equipmentTypes);
+    const filteredEquipmentIds = useGlobalFilterResults(globalFilterSpreadsheetState, equipmentTypes);
     useEffect(() => {
         gridRef.current?.api?.onFilterChanged();
     }, [filteredEquipmentIds, gridRef]);

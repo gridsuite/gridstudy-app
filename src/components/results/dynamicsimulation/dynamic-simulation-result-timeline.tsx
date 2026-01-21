@@ -13,7 +13,7 @@ import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
@@ -90,7 +90,7 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: FilterType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateFilters,
+                                updateFilterCallback: updateAgGridFilters,
                                 dataType: FILTER_DATA_TYPES.NUMBER,
                                 comparators: Object.values(FILTER_NUMBER_COMPARATORS),
                             },
@@ -115,7 +115,7 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: FilterType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateFilters,
+                                updateFilterCallback: updateAgGridFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
@@ -139,7 +139,7 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: FilterType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateFilters,
+                                updateFilterCallback: updateAgGridFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },

@@ -13,7 +13,7 @@ import { Box, LinearProgress } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
-import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { FilterConfig } from '../../types/custom-aggrid-types';
 
 const styles = {
@@ -66,7 +66,8 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     }, []);
     const onGridReady = useCallback(
         ({ api }: GridReadyEvent) => {
-            updateFilters(api, filters);
+            if (!api || !filters) return;
+            updateAgGridFilters(api, filters);
             api?.sizeColumnsToFit();
         },
         [filters]

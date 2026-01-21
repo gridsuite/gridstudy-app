@@ -10,7 +10,6 @@ import { useIntl } from 'react-intl';
 import { Box, Button, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import {
-    GridApi,
     GridReadyEvent,
     ICellRendererParams,
     RowClassParams,
@@ -48,8 +47,8 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
-import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -108,11 +107,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     const intl = useIntl();
     const theme = useTheme();
     const dispatch = useDispatch();
-    const filterContext = useUpdateComputationColumnsFilters(
-        AgGridFilterType.ShortcircuitAnalysis,
-        mappingTabs(analysisType),
-        goToFirstPage
-    );
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value } = props || {};
@@ -156,10 +150,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         const filterParams = {
             type: AgGridFilterType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
-            updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-                if (!agGridApi || !filters || !colId) return;
-                filterContext.onFilterChange?.({ agGridApi, filters, colId });
-            },
+            onBeforePersist: goToFirstPage,
+            updateFilterCallback: UpdateComputationColumnsFilters,
         };
 
         const inputFilterParams = (
@@ -175,10 +167,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         ...filterDefinition,
                         ...filterParams,
-                        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-                            if (!agGridApi || !filters || !colId) return;
-                            filterContext.onFilterChange?.({ agGridApi, filters, colId });
-                        },
+                        updateFilterCallback: UpdateComputationColumnsFilters,
                     },
                 },
             };
@@ -191,10 +180,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
-                        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-                            if (!agGridApi || !filters || !colId) return;
-                            filterContext.onFilterChange?.({ agGridApi, filters, colId });
-                        },
+                        updateFilterCallback: UpdateComputationColumnsFilters,
                     },
                     options: filterEnums[colId] ?? [],
                     getOptionLabel: getEnumLabel,
@@ -343,7 +329,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 hide: true,
             },
         ];
-    }, [analysisType, intl, voltageLevelIdRenderer, filterContext, filterEnums, getEnumLabel]);
+    }, [analysisType, goToFirstPage, intl, voltageLevelIdRenderer, filterEnums, getEnumLabel]);
 
     const shortCircuitAnalysisStatus = useSelector(
         (state: AppState) =>
@@ -379,11 +365,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 
     const onGridReady = useCallback(
         (params: GridReadyEvent) => {
-            if (params?.api) {
-                params.api.sizeColumnsToFit();
-                updateFilters(params.api, filters);
-                onGridColumnsChanged && onGridColumnsChanged(params);
-            }
+            if (!params || !filters) return;
+            params.api.sizeColumnsToFit();
+            updateAgGridFilters(params.api, filters);
+            onGridColumnsChanged && onGridColumnsChanged(params);
         },
         [filters, onGridColumnsChanged]
     );

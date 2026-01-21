@@ -15,7 +15,7 @@ import {
     SubjectIdRendererType,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
-import { ColDef, GridApi, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { ComputingType, ContingencyCellRenderer } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
@@ -43,7 +43,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
-import { AgGridFilterContext } from '../../../hooks/use-update-computation-columns-filters';
+import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -247,8 +247,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
-    filterContext: AgGridFilterContext
+    tabIndex: number
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
@@ -257,10 +256,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.SecurityAnalysis,
         tab: getStoreFields(tabIndex),
-        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-            if (!agGridApi || !filters || !colId) return;
-            filterContext.onFilterChange?.({ agGridApi, filters, colId });
-        },
+        updateFilterCallback: UpdateComputationColumnsFilters,
     };
 
     return [
@@ -350,7 +346,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    filterContext: AgGridFilterContext
+    goToFirstPage: () => void
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
@@ -359,10 +355,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.SecurityAnalysis,
         tab: getStoreFields(tabIndex),
-        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-            if (!agGridApi || !filters || !colId) return;
-            filterContext.onFilterChange?.({ agGridApi, filters, colId });
-        },
+        onBeforePersist: goToFirstPage,
+        updateFilterCallback: UpdateComputationColumnsFilters,
     };
 
     return [
@@ -528,7 +522,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    filterContext: AgGridFilterContext
+    goToFirstPage: () => void
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
@@ -537,10 +531,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.SecurityAnalysis,
         tab: getStoreFields(tabIndex),
-        updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-            if (!agGridApi || !filters || !colId) return;
-            filterContext.onFilterChange?.({ agGridApi, filters, colId });
-        },
+        onBeforePersist: goToFirstPage,
+        updateFilterCallback: UpdateComputationColumnsFilters,
     };
 
     return [

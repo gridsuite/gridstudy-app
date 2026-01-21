@@ -56,7 +56,6 @@ import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-ac
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
-import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 
 const styles = {
     flexWrapper: {
@@ -177,8 +176,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         invalidations: loadflowResultInvalidations,
     });
 
-    const filterContext = useUpdateComputationColumnsFilters(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
-
     const SubjectIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value, node, colDef } = props || {};
@@ -205,8 +202,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     filterEnums,
                     getEnumLabel,
                     tabIndex,
-                    SubjectIdRenderer,
-                    filterContext
+                    SubjectIdRenderer
                 );
             case 1:
                 return loadFlowVoltageViolationsColumnsDefinition(
@@ -214,18 +210,17 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     filterEnums,
                     getEnumLabel,
                     tabIndex,
-                    SubjectIdRenderer,
-                    filterContext
+                    SubjectIdRenderer
                 );
 
             default:
                 return [];
         }
-    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer, filterContext]);
+    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer]);
 
     const componentColumns = useMemo(() => {
-        return componentColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex, StatusCellRender, filterContext);
-    }, [tabIndex, intl, filterEnums, getEnumLabel, filterContext]);
+        return componentColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex, StatusCellRender);
+    }, [tabIndex, intl, filterEnums, getEnumLabel]);
 
     const countryAdequaciesColumns = useMemo(() => {
         return countryAdequaciesColumnsDefinition(intl);

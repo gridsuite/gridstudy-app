@@ -21,7 +21,7 @@ import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/cus
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
-import { GridApi, GridColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GridColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -31,8 +31,8 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
-import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
-import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
@@ -73,12 +73,6 @@ function SensitivityAnalysisResult({
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const filterContext = useUpdateComputationColumnsFilters(
-        AgGridFilterType.SensitivityAnalysis,
-        mappingTabs(sensiKind, nOrNkIndex),
-        goToFirstPage
-    );
-
     const messages = useIntlResultStatusMessages(intl, true);
 
     const makeColumn = useCallback(
@@ -115,10 +109,7 @@ function SensitivityAnalysisResult({
                                 : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             type: AgGridFilterType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
-                            updateFilterCallback: (agGridApi?: GridApi, filters?: FilterConfig[], colId?: string) => {
-                                if (!agGridApi || !filters || !colId) return;
-                                filterContext.onFilterChange?.({ agGridApi, filters, colId });
-                            },
+                            updateFilterCallback: UpdateComputationColumnsFilters,
                         },
                     },
                 },
@@ -128,7 +119,7 @@ function SensitivityAnalysisResult({
                 pinned: pinned,
             });
         },
-        [filterContext, intl, nOrNkIndex, sensiKind]
+        [intl, nOrNkIndex, sensiKind]
     );
 
     const columnsDefs = useMemo(() => {
@@ -231,11 +222,10 @@ function SensitivityAnalysisResult({
 
     const handleGridReady = useCallback(
         (event: GridReadyEvent) => {
-            if (event.api) {
-                event.api.sizeColumnsToFit();
-                updateFilters(event.api, filters);
-                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
-            }
+            if (!event.api || !filters) return;
+            event.api.sizeColumnsToFit();
+            updateAgGridFilters(event.api, filters);
+            setCsvHeaders(getColumnHeaderDisplayNames(event.api));
         },
         [filters, setCsvHeaders]
     );

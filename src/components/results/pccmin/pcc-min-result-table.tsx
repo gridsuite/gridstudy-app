@@ -23,10 +23,7 @@ import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
-import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
-import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -66,10 +63,9 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [dispatch]
     );
 
-    const filterContext = useUpdateComputationColumnsFilters(AgGridFilterType.PccMin, PCCMIN_RESULT, goToFirstPage);
     const columns = useMemo(
-        () => getPccMinColumns(intl, voltageLevelIdRenderer, filterContext),
-        [filterContext, intl, voltageLevelIdRenderer]
+        () => getPccMinColumns(intl, voltageLevelIdRenderer, goToFirstPage),
+        [goToFirstPage, intl, voltageLevelIdRenderer]
     );
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);
@@ -103,11 +99,10 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
 
     const handleGridReady = useCallback(
         (event: GridReadyEvent) => {
-            if (event.api) {
-                event.api.sizeColumnsToFit();
-                updateFilters(event.api, filters);
-                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
-            }
+            if (!event.api || !filters) return;
+            event.api.sizeColumnsToFit();
+            updateAgGridFilters(event.api, filters);
+            setCsvHeaders(getColumnHeaderDisplayNames(event.api));
         },
         [filters, setCsvHeaders]
     );

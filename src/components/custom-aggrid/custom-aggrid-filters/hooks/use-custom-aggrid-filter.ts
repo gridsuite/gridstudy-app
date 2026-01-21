@@ -11,6 +11,8 @@ import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-filter.type';
+import { updateAgGridFilters } from '../utils/aggrid-filters-utils';
+import { useSelector } from 'react-redux';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -34,7 +36,7 @@ const changeValueFromArrayWithFieldValue = (
 export const useCustomAggridFilter = (
     api: GridApi,
     colId: string,
-    { type, tab, dataType, comparators = [], debounceMs = 1000, updateFilterCallback }: FilterParams
+    { type, tab, dataType, comparators = [], debounceMs = 1000, onBeforePersist, updateFilterCallback }: FilterParams
 ) => {
     const [selectedFilterComparator, setSelectedFilterComparator] = useState<string>('');
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
@@ -45,6 +47,7 @@ export const useCustomAggridFilter = (
     const editingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const { filters, dispatchFilters } = useFilterSelector(type, tab);
+    const studyUuid = useSelector((state: any) => state.studyUuid);
 
     const updateFilter = useCallback(
         (colId: string, data: FilterData): void => {
@@ -69,11 +72,12 @@ export const useCustomAggridFilter = (
             } else {
                 updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
             }
-
-            updateFilterCallback && updateFilterCallback(api, updatedFilters, colId);
+            onBeforePersist?.();
+            updateAgGridFilters(api, filters);
+            updateFilterCallback && updateFilterCallback(api, updatedFilters, colId, studyUuid, type, tab);
             dispatchFilters(updatedFilters);
         },
-        [updateFilterCallback, api, dispatchFilters, filters]
+        [onBeforePersist, api, filters, updateFilterCallback, studyUuid, type, tab, dispatchFilters]
     );
 
     // We intentionally exclude `updateFilter` from dependencies.

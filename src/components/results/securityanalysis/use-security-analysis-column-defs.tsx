@@ -14,7 +14,6 @@ import { BranchSide } from 'components/utils/constants';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button } from '@mui/material';
 import {
-    getStoreFields,
     RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
@@ -25,9 +24,7 @@ import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { openSLD } from '../../../redux/slices/workspace-slice';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { useUpdateComputationColumnsFilters } from '../../../hooks/use-update-computation-columns-filters';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -62,12 +59,6 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                 defaultMessage: value,
             }),
         [intl]
-    );
-
-    const filterContext = useUpdateComputationColumnsFilters(
-        AgGridFilterType.SecurityAnalysis,
-        getStoreFields(tabIndex),
-        goToFirstPage
     );
 
     // for nmk views, click handler on subjectId cell
@@ -150,7 +141,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    filterContext
+                    goToFirstPage
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -159,18 +150,12 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    filterContext
+                    goToFirstPage
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(
-                    intl,
-                    filterEnums.n,
-                    getEnumLabel,
-                    tabIndex,
-                    filterContext
-                );
+                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex);
         }
-    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, filterContext]);
+    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, goToFirstPage]);
 
     return columnDefs;
 };
