@@ -92,7 +92,7 @@ import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { LineCreationInfo } from '../../../../../services/network-modification-types';
 import { LineModificationFormSchema } from '../modification/line-modification-type';
-import { CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
+import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
 
@@ -274,7 +274,7 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const handleLineSegmentsBuildSubmit = (data: any) => {
+    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });

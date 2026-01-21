@@ -109,6 +109,7 @@ import { LineModificationInfos } from '../../../../../services/network-modificat
 import { toModificationOperation } from '../../../../utils/utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
+import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -392,7 +393,7 @@ const LineModificationDialog = ({
         setIsOpenLineTypesCatalogDialog(false);
     };
 
-    const handleLineSegmentsBuildSubmit = (data: any) => {
+    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
