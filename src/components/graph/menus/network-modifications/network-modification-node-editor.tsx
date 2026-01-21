@@ -1039,6 +1039,7 @@ const NetworkModificationNodeEditor = () => {
     const doEditModification = useCallback(
         (modificationUuid: UUID, modificationType: ModificationType) => {
             setIsUpdate(true);
+            setEditDialogOpen(getMenuItemId(modificationType, data.equipmentType));
             setEditDataFetchStatus(FetchStatus.RUNNING);
             const modification = fetchNetworkModification(modificationUuid);
             modification
@@ -1046,7 +1047,6 @@ const NetworkModificationNodeEditor = () => {
                     return res.json().then((data: NetworkModificationData) => {
                         //remove all null values to avoid showing a "null" in the forms
                         setEditData(removeNullFields(data));
-                        setEditDialogOpen(getMenuItemId(modificationType, data.equipmentType));
                         setEditDataFetchStatus(FetchStatus.SUCCEED);
                     });
                 })
