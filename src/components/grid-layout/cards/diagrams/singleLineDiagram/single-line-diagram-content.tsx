@@ -148,7 +148,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     );
 
     const toggleBreakerDomClasses = useCallback((elementId?: string | null) => {
-        const breakerToSwitchDom: HTMLElement | null = document.getElementById(elementId ?? '');
+        const breakerToSwitchDom = svgRef.current?.querySelector<HTMLElement>(`#${CSS.escape(elementId ?? '')}`);
         if (breakerToSwitchDom?.classList.value.includes('sld-closed')) {
             breakerToSwitchDom.classList.replace('sld-closed', 'sld-open');
         } else if (breakerToSwitchDom?.classList.value.includes('sld-open')) {
