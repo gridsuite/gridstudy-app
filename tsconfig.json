@@ -1,18 +1,27 @@
 {
     "compilerOptions": {
+        /* Language and Environment */
         "target": "es6",
         "lib": ["dom", "dom.iterable", "esnext"],
         "jsx": "react-jsx",
+
+        /* Modules and Resolution */
         "baseUrl": "src",
         "module": "esnext",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
+
+        /* JavaScript Support */
         "allowJs": true,
+
+        /* Type Checking */
         "strict": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
+
+        /* Output */
         "noEmit": true
     },
     "include": [
