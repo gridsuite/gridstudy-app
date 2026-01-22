@@ -51,8 +51,8 @@ export function renameWorkspace(studyUuid: UUID, workspaceId: UUID, name: string
     }).then(() => {});
 }
 
-export function syncPanels(studyUuid: UUID, workspaceId: UUID, panels: PanelState[]): Promise<void> {
-    console.info('sync panels');
+export function updatePanels(studyUuid: UUID, workspaceId: UUID, panels: PanelState[]): Promise<void> {
+    console.info('update panels');
     const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels`;
     console.debug(url);
 
@@ -81,7 +81,7 @@ export function deletePanels(studyUuid: UUID, workspaceId: UUID, panelIds?: UUID
     }).then(() => {});
 }
 
-export function fetchPanels(studyUuid: UUID, workspaceId: UUID, panelIds?: UUID[]): Promise<PanelState[]> {
+export function getPanels(studyUuid: UUID, workspaceId: UUID, panelIds?: UUID[]): Promise<PanelState[]> {
     console.info('fetch panels');
     const urlSearchParams = new URLSearchParams();
     panelIds?.forEach((id) => urlSearchParams.append('panelIds', id));

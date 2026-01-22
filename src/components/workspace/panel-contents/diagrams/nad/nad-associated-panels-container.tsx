@@ -29,7 +29,7 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
     nadPanelId,
     onDragStateChange,
 }: NadAssociatedPanelsContainerProps) {
-    const { toggleMinimized, focusPanel } = useWorkspacePanelActions();
+    const { minimizePanel, focusPanel } = useWorkspacePanelActions();
 
     const focusedSldId = useSelector((state: RootState) => selectFocusedAssociatedSldId(state, nadPanelId));
     const visibleSldPanelIds = useSelector((state: RootState) => selectVisibleAssociatedSldPanelIds(state, nadPanelId));
@@ -43,7 +43,7 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
 
             if (isVisible) {
                 if (focusedSldId === sldPanelId) {
-                    toggleMinimized(sldPanelId);
+                    minimizePanel(sldPanelId);
                 } else {
                     focusPanel(sldPanelId);
                 }
@@ -51,7 +51,7 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
                 focusPanel(sldPanelId);
             }
         },
-        [focusPanel, focusedSldId, toggleMinimized]
+        [focusPanel, focusedSldId, minimizePanel]
     );
 
     const { handleReorganize, toggleHideAll } = useSldLayout({ nadPanelId });

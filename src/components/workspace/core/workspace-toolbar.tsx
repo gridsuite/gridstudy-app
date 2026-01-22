@@ -66,7 +66,7 @@ const styles = {
 
 export const WorkspaceToolbar = () => {
     const intl = useIntl();
-    const { toggleToolPanel, openSLD, openNAD, deletePanel } = useWorkspacePanelActions();
+    const { openToolPanel, openSLD, openNAD, deletePanel } = useWorkspacePanelActions();
 
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
@@ -140,7 +140,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="tree"
                         selected={isTreeOpen}
-                        onClick={() => toggleToolPanel(PanelType.TREE)}
+                        onClick={() => openToolPanel(PanelType.TREE)}
                         sx={styles.toggleButton}
                     >
                         <AccountTree fontSize="small" sx={{ transform: 'scaleY(-1) rotate(-90deg)' }} />
@@ -150,7 +150,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="node-editor"
                         selected={isNodeEditorOpen}
-                        onClick={() => toggleToolPanel(PanelType.MODIFICATIONS)}
+                        onClick={() => openToolPanel(PanelType.MODIFICATIONS)}
                         sx={styles.toggleButton}
                     >
                         <Tune fontSize="small" />
@@ -161,7 +161,7 @@ export const WorkspaceToolbar = () => {
                         <ToggleButton
                             value="event-scenario"
                             selected={isEventScenarioOpen}
-                            onClick={() => toggleToolPanel(PanelType.EVENT_SCENARIO)}
+                            onClick={() => openToolPanel(PanelType.EVENT_SCENARIO)}
                             sx={styles.toggleButton}
                         >
                             <OfflineBoltOutlined fontSize="small" />
@@ -172,7 +172,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="spreadsheet"
                         selected={isSpreadsheetOpen}
-                        onClick={() => toggleToolPanel(PanelType.SPREADSHEET)}
+                        onClick={() => openToolPanel(PanelType.SPREADSHEET)}
                         sx={styles.toggleButton}
                     >
                         <TableChart fontSize="small" />
@@ -182,7 +182,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="results"
                         selected={isResultsOpen}
-                        onClick={() => toggleToolPanel(PanelType.RESULTS)}
+                        onClick={() => openToolPanel(PanelType.RESULTS)}
                         sx={styles.toggleButton}
                     >
                         <Assessment fontSize="small" />
@@ -192,7 +192,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="logs"
                         selected={isLogsOpen}
-                        onClick={() => toggleToolPanel(PanelType.LOGS)}
+                        onClick={() => openToolPanel(PanelType.LOGS)}
                         sx={styles.toggleButton}
                     >
                         <TextSnippet fontSize="small" />
@@ -202,7 +202,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="parameters"
                         selected={isParametersOpen}
-                        onClick={() => toggleToolPanel(PanelType.PARAMETERS)}
+                        onClick={() => openToolPanel(PanelType.PARAMETERS)}
                         sx={styles.toggleButton}
                     >
                         <Settings fontSize="small" />
@@ -237,7 +237,7 @@ export const WorkspaceToolbar = () => {
                     <ToggleButton
                         value="map"
                         selected={isMapOpen}
-                        onClick={() => toggleToolPanel(PanelType.MAP)}
+                        onClick={() => openToolPanel(PanelType.MAP)}
                         sx={styles.toggleButton}
                     >
                         <Public fontSize="small" />

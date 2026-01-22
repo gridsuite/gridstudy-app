@@ -33,7 +33,7 @@ import {
     createNADPanel,
 } from './workspace-panel-utils';
 import { getPanelConfig } from '../constants/workspace.constants';
-import { panelSyncManager } from '../utils/panel-sync-manager';
+import { panelBackendManager } from '../utils/panel-backend-manager';
 
 // compute the next available zIndex value
 const getNextZIndex = (panels: PanelState[]): number => {
@@ -50,7 +50,7 @@ export const useWorkspacePanelActions = () => {
         (panels: PanelState[], syncToBackend = true) => {
             dispatch(updatePanels(panels));
             if (syncToBackend && workspaceId) {
-                panelSyncManager.queueSync(studyUuid as UUID, workspaceId, panels);
+                panelBackendManager.debounceUpdate(studyUuid as UUID, workspaceId, panels);
             }
         },
         [dispatch, studyUuid, workspaceId]
@@ -60,7 +60,7 @@ export const useWorkspacePanelActions = () => {
         (panelIds: UUID[]) => {
             dispatch(deletePanelsRedux(panelIds));
             if (workspaceId) {
-                panelSyncManager.queueDelete(studyUuid as UUID, workspaceId, panelIds);
+                panelBackendManager.debounceDelete(studyUuid as UUID, workspaceId, panelIds);
             }
         },
         [dispatch, studyUuid, workspaceId]
@@ -80,7 +80,7 @@ export const useWorkspacePanelActions = () => {
         [savePanels]
     );
 
-    const saveAndFocus = useCallback(
+    const saveAndFocusPanel = useCallback(
         (panel: PanelState, syncToBackend = true) => {
             const allPanels = selectPanels(store.getState());
             const nextZ = getNextZIndex(allPanels);
@@ -105,7 +105,7 @@ export const useWorkspacePanelActions = () => {
     );
 
     // Simple panel property toggles
-    const toggleMinimized = useCallback(
+    const minimizePanel = useCallback(
         (panelId: UUID) => {
             const panel = selectPanel(store.getState(), panelId);
             if (!panel) return;
@@ -114,7 +114,7 @@ export const useWorkspacePanelActions = () => {
         [savePanels]
     );
 
-    const togglePin = useCallback(
+    const pinPanel = useCallback(
         (panelId: UUID) => {
             const panel = selectPanel(store.getState(), panelId);
             if (!panel) return;
@@ -123,7 +123,7 @@ export const useWorkspacePanelActions = () => {
         [savePanels]
     );
 
-    const toggleMaximized = useCallback(
+    const maximizePanel = useCallback(
         (panelId: UUID) => {
             const panel = selectPanel(store.getState(), panelId);
             if (!panel) return;
@@ -175,7 +175,7 @@ export const useWorkspacePanelActions = () => {
         [savePanels]
     );
 
-    const toggleToolPanel = useCallback(
+    const openToolPanel = useCallback(
         (panelType: PanelType) => {
             const state = store.getState();
             const focusedPanelId = selectFocusedPanelId(state);
@@ -183,20 +183,20 @@ export const useWorkspacePanelActions = () => {
 
             if (existing) {
                 if (focusedPanelId === existing.id && !existing.minimized) {
-                    toggleMinimized(existing.id);
+                    minimizePanel(existing.id);
                 } else {
                     focusPanel(existing.id);
                 }
             } else {
                 const config = getPanelConfig(panelType);
-                saveAndFocus({
+                saveAndFocusPanel({
                     ...createPanelBase(panelType),
                     type: panelType,
                     title: config.title,
                 } as PanelState);
             }
         },
-        [saveAndFocus, toggleMinimized, focusPanel]
+        [saveAndFocusPanel, minimizePanel, focusPanel]
     );
 
     // SLD operations
@@ -212,10 +212,10 @@ export const useWorkspacePanelActions = () => {
             if (existing) {
                 focusPanel(existing.id);
             } else {
-                saveAndFocus(createSLDPanel({ panelType, equipmentId }));
+                saveAndFocusPanel(createSLDPanel({ panelType, equipmentId }));
             }
         },
-        [focusPanel, saveAndFocus]
+        [focusPanel, saveAndFocusPanel]
     );
 
     const navigateSLD = useCallback(
@@ -260,10 +260,10 @@ export const useWorkspacePanelActions = () => {
                     position: defaults.position,
                     size: defaults.size,
                 });
-                saveAndFocus(newPanel);
+                saveAndFocusPanel(newPanel);
             }
         },
-        [focusPanel, saveAndFocus]
+        [focusPanel, saveAndFocusPanel]
     );
 
     const associateSldToNad = useCallback(
@@ -309,9 +309,9 @@ export const useWorkspacePanelActions = () => {
                 filterUuid,
                 currentFilterUuid: filterUuid,
             });
-            saveAndFocus(newPanel);
+            saveAndFocusPanel(newPanel);
         },
-        [saveAndFocus]
+        [saveAndFocusPanel]
     );
 
     const updateNADFields = useCallback(
@@ -370,9 +370,9 @@ export const useWorkspacePanelActions = () => {
             };
 
             savePanels([updatedSld]);
-            saveAndFocus(newNadPanel);
+            saveAndFocusPanel(newNadPanel);
         },
-        [savePanels, saveAndFocus]
+        [savePanels, saveAndFocusPanel]
     );
 
     // Associated SLD operations
@@ -409,7 +409,7 @@ export const useWorkspacePanelActions = () => {
         ({ equipmentId, equipmentType }: { equipmentId: string; equipmentType: EquipmentType }) => {
             const existing = selectPanelByType(store.getState(), PanelType.SPREADSHEET) as SpreadsheetPanel | undefined;
             // Transient UI state - don't sync to backend
-            saveAndFocus(
+            saveAndFocusPanel(
                 existing
                     ? {
                           ...existing,
@@ -427,7 +427,7 @@ export const useWorkspacePanelActions = () => {
                 false
             );
         },
-        [saveAndFocus]
+        [saveAndFocusPanel]
     );
 
     const clearTargetEquipment = useCallback(
@@ -442,9 +442,9 @@ export const useWorkspacePanelActions = () => {
     );
 
     return {
-        toggleMinimized,
-        togglePin,
-        toggleMaximized,
+        minimizePanel,
+        pinPanel,
+        maximizePanel,
         updatePanelGeometry,
         hideAssociatedSlds,
         showAssociatedSlds,
@@ -458,7 +458,7 @@ export const useWorkspacePanelActions = () => {
         updateNADFields,
         addToNadNavigationHistory,
         createNadAndAssociateSld,
-        toggleToolPanel,
+        openToolPanel,
         openNAD,
         focusPanel,
         showInSpreadsheet,

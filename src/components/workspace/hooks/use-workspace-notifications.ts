@@ -14,7 +14,7 @@ import {
     setWorkspacesMetadata,
     clearWorkspace,
 } from '../../../redux/slices/workspace-slice';
-import { fetchPanels, getWorkspacesMetadata } from '../../../services/study/workspace';
+import { getPanels, getWorkspacesMetadata } from '../../../services/study/workspace';
 import { useNotificationsListener, NotificationsUrlKeys } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import {
@@ -36,7 +36,7 @@ export function useWorkspaceNotifications(studyUuid: UUID | null | undefined) {
             if (!studyUuid || !workspaceId) return;
             try {
                 const panelIds = JSON.parse(eventData.payload) as UUID[];
-                fetchPanels(studyUuid, workspaceId, panelIds)
+                getPanels(studyUuid, workspaceId, panelIds)
                     .then((updatedPanels) => dispatch(updatePanels(updatedPanels)))
                     .catch((error) => console.error('Failed to fetch updated panels:', error));
             } catch (error) {

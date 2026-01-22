@@ -102,7 +102,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     onDragStart,
     onDragStop,
 }: AssociatedSldPanelProps) {
-    const { updatePanelGeometry, dissociateSldFromNad, toggleMinimized, deletePanel, focusPanel } =
+    const { updatePanelGeometry, dissociateSldFromNad, minimizePanel, deletePanel, focusPanel } =
         useWorkspacePanelActions();
     const theme = useTheme();
 
@@ -187,8 +187,8 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({
     }, [dissociateSldFromNad, sldPanelId]);
 
     const handleMinimize = useCallback(() => {
-        toggleMinimized(sldPanelId);
-    }, [toggleMinimized, sldPanelId]);
+        minimizePanel(sldPanelId);
+    }, [minimizePanel, sldPanelId]);
 
     const handleClose = useCallback(() => {
         deletePanel(sldPanelId);

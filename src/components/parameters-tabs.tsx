@@ -85,7 +85,7 @@ enum TAB_VALUES {
 
 const ParametersTabs: FunctionComponent = () => {
     const dispatch = useDispatch();
-    const { toggleMinimized } = useWorkspacePanelActions();
+    const { minimizePanel } = useWorkspacePanelActions();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -244,12 +244,12 @@ const ParametersTabs: FunctionComponent = () => {
             dispatch(confirmLeaveParametersTab());
         } else if (pendingClosePanelId !== null) {
             // User confirmed close - actually close the panel
-            toggleMinimized(pendingClosePanelId);
+            minimizePanel(pendingClosePanelId);
             setPendingClosePanelId(null);
         }
         dispatch(setDirtyComputationParameters(false));
         setIsLeavingPopupOpen(false);
-    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch, toggleMinimized]);
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch, minimizePanel]);
 
     const handleLeavingPopupClose = useCallback(() => {
         setIsLeavingPopupOpen(false);
