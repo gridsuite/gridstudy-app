@@ -132,8 +132,6 @@ const isEditableModification = (modif: NetworkModificationMetadata) => {
     return !nonEditableModificationTypes.has(modif.type);
 };
 
-const DELETION_MENU_ITEM_POSTFIX = '_DELETION_MENU_ITEM';
-
 const NetworkModificationNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -249,17 +247,11 @@ const NetworkModificationNodeEditor = () => {
         );
     }
 
-    const getMenuItemId = useCallback((modificationType: ModificationType, equipmentType: EQUIPMENT_TYPES) => {
-        if (modificationType === ModificationType.EQUIPMENT_DELETION) {
-            // We have a single deletion modification type, but we have a deletion menu item for each kind of equipment type
-            return equipmentType + DELETION_MENU_ITEM_POSTFIX;
-        }
-        return modificationType;
-    }, []);
-
     const equipmentDeletionSubItems = (equipmentType: EQUIPMENT_TYPES) => {
         return {
-            id: getMenuItemId(ModificationType.EQUIPMENT_DELETION, equipmentType),
+            // We have a single deletion modification type, but we have a deletion menu item ID per equipment type
+            // (because we want to preset the equipment type in creation case)
+            id: equipmentType + '_DELETION_MENU_ITEM',
             label: 'DeleteFromMenu',
             action: () => equipmentDeletionDialogWithDefaultParams(equipmentType),
         };
@@ -1039,8 +1031,11 @@ const NetworkModificationNodeEditor = () => {
     const doEditModification = useCallback(
         (modificationUuid: UUID, modificationType: ModificationType) => {
             setIsUpdate(true);
-            setEditDialogOpen(getMenuItemId(modificationType, data.equipmentType));
+            // setting this state will trigger dialog rendering
+            setEditDialogOpen(modificationType);
+            // with fetching status, waiting for the edit data to be fetched
             setEditDataFetchStatus(FetchStatus.RUNNING);
+
             const modification = fetchNetworkModification(modificationUuid);
             modification
                 .then((res) => {
@@ -1055,7 +1050,7 @@ const NetworkModificationNodeEditor = () => {
                     setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
-        [getMenuItemId, removeNullFields, snackError]
+        [removeNullFields, snackError]
     );
 
     const onItemClick = (id: string) => {
@@ -1074,9 +1069,9 @@ const NetworkModificationNodeEditor = () => {
         );
         if (menuItem && 'action' in menuItem && menuItem.action) {
             return menuItem.action();
-        } else if (editDialogOpen?.endsWith(DELETION_MENU_ITEM_POSTFIX)) {
-            // special case where we want to edit a deletion modification which is not defined in the menu items
-            return equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SUBSTATION); // passing any type
+        } else if (editDialogOpen === ModificationType.EQUIPMENT_DELETION) {
+            // deletion modification edition is generic and is not associated to a menu item
+            return withDefaultParams(EquipmentDeletionDialog);
         }
         console.warn('No dialog action found in menu items for: ', editDialogOpen);
         return undefined;
