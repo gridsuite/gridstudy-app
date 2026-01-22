@@ -448,6 +448,7 @@ export interface ComputingStatus {
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
+    [ComputingType.DYNAMIC_MARGIN_CALCULATION]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
     [ComputingType.PCC_MIN]: RunningStatus;
@@ -779,6 +780,7 @@ const initialState: AppState = {
         [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
         [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
         [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
+        [ComputingType.DYNAMIC_MARGIN_CALCULATION]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
         [ComputingType.PCC_MIN]: RunningStatus.IDLE,
