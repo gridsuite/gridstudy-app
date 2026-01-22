@@ -24,6 +24,9 @@ import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { BranchInfos } from '../../../../../services/study/network-map.type';
 
 const styles = {
     h3: {
@@ -32,6 +35,16 @@ const styles = {
     },
 };
 
+interface LineCharacteristicsPaneProps {
+    id?: string;
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    displayConnectivity: boolean;
+    lineToModify?: BranchInfos | null;
+    clearableFields?: boolean;
+    isModification?: boolean;
+}
 const LineCharacteristicsPane = ({
     id = CHARACTERISTICS,
     studyUuid,
@@ -41,7 +54,7 @@ const LineCharacteristicsPane = ({
     lineToModify,
     clearableFields = false,
     isModification = false,
-}) => {
+}: LineCharacteristicsPaneProps) => {
     const currentNodeUuid = currentNode.id;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 

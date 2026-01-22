@@ -35,9 +35,8 @@ import GridItem from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import {
-    AttachmentLine,
     ExtendedVoltageLevelCreationInfo,
-    LineCreationInfo,
+    LineCreationInfos,
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
@@ -46,8 +45,8 @@ interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    onLineCreationDo: (line: LineCreationInfo) => Promise<string>;
-    lineToEdit?: AttachmentLine;
+    onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationInfos }) => Promise<string>;
+    lineToEdit?: LineCreationInfos;
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
@@ -274,7 +273,6 @@ const LineAttachToVoltageLevelForm = ({
             )}
             {lineDialogOpen && (
                 <LineCreationDialog
-                    open={true}
                     onClose={onLineDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
