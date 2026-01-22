@@ -9,7 +9,7 @@ import { updateComputationResultFiltersColumn } from '../../../services/study/st
 import { GridApi } from 'ag-grid-community';
 import { UUID } from 'node:crypto';
 
-export const UpdateComputationColumnsFilters = (
+export const updateComputationColumnsFilters = (
     agGridApi?: GridApi,
     filters?: FilterConfig[],
     colId?: string,

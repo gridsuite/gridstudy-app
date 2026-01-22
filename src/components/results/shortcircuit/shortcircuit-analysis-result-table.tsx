@@ -47,7 +47,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 interface ShortCircuitAnalysisResultProps {
@@ -151,7 +151,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             type: AgGridFilterType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
             onBeforePersist: goToFirstPage,
-            updateFilterCallback: UpdateComputationColumnsFilters,
+            updateFilterCallback: updateComputationColumnsFilters,
         };
 
         const inputFilterParams = (
@@ -167,7 +167,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         ...filterDefinition,
                         ...filterParams,
-                        updateFilterCallback: UpdateComputationColumnsFilters,
                     },
                 },
             };
@@ -180,7 +179,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
-                        updateFilterCallback: UpdateComputationColumnsFilters,
                     },
                     options: filterEnums[colId] ?? [],
                     getOptionLabel: getEnumLabel,

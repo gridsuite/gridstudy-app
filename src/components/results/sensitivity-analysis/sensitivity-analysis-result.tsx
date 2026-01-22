@@ -32,7 +32,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
@@ -109,7 +109,8 @@ function SensitivityAnalysisResult({
                                 : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             type: AgGridFilterType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
-                            updateFilterCallback: UpdateComputationColumnsFilters,
+                            onBeforePersist: goToFirstPage,
+                            updateFilterCallback: updateComputationColumnsFilters,
                         },
                     },
                 },
@@ -119,7 +120,7 @@ function SensitivityAnalysisResult({
                 pinned: pinned,
             });
         },
-        [intl, nOrNkIndex, sensiKind]
+        [intl, nOrNkIndex, sensiKind, goToFirstPage]
     );
 
     const columnsDefs = useMemo(() => {

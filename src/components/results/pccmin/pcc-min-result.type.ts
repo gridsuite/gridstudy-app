@@ -20,7 +20,7 @@ import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-so
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { ICellRendererParams } from 'ag-grid-community';
-import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
@@ -82,7 +82,7 @@ export const getPccMinColumns = (
         type: AgGridFilterType.PccMin,
         tab: PCCMIN_RESULT,
         onBeforePersist: goToFirstPage,
-        updateFilterCallback: UpdateComputationColumnsFilters,
+        updateFilterCallback: updateComputationColumnsFilters,
     };
 
     const createFilterContext = (

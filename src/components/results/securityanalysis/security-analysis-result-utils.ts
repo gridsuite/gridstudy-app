@@ -43,7 +43,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
-import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -247,7 +247,8 @@ export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number
+    tabIndex: number,
+    goToFirstPage: () => void
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
@@ -256,7 +257,8 @@ export const securityAnalysisTableNColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.SecurityAnalysis,
         tab: getStoreFields(tabIndex),
-        updateFilterCallback: UpdateComputationColumnsFilters,
+        onBeforePersist: goToFirstPage,
+        updateFilterCallback: updateComputationColumnsFilters,
     };
 
     return [
@@ -356,7 +358,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         type: AgGridFilterType.SecurityAnalysis,
         tab: getStoreFields(tabIndex),
         onBeforePersist: goToFirstPage,
-        updateFilterCallback: UpdateComputationColumnsFilters,
+        updateFilterCallback: updateComputationColumnsFilters,
     };
 
     return [
@@ -532,7 +534,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         type: AgGridFilterType.SecurityAnalysis,
         tab: getStoreFields(tabIndex),
         onBeforePersist: goToFirstPage,
-        updateFilterCallback: UpdateComputationColumnsFilters,
+        updateFilterCallback: updateComputationColumnsFilters,
     };
 
     return [

@@ -174,7 +174,7 @@ function PagedSensitivityAnalysisResult({
             nodeUuid,
             currentRootNetworkUuid,
             selector,
-            mappedFilters ?? [],
+            mappedFilters,
             globalFilters
         )
             .then((res) => {

@@ -8,6 +8,12 @@
 import { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { FilterType } from '../utils';
 
+/**
+ * Transforms global filters stored by the frontend into the format expected by the filter server.
+ * This function iterates through the list of `GlobalFilter` objects coming from the front,
+ * categorizes them based on their `filterType`, and constructs a `GlobalFilters` object
+ * suitable for the backend filter service. Returns `undefined` if no valid filters are found.
+ */
 export function buildValidGlobalFilters(filters: GlobalFilter[]): GlobalFilters | undefined {
     const newGlobalFilter: GlobalFilters = {};
     const voltageRanges: [number, number][] = [];

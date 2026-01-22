@@ -49,7 +49,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
-import { UpdateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
@@ -274,7 +274,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: UpdateComputationColumnsFilters,
+        updateFilterCallback: updateComputationColumnsFilters,
     };
 
     return [
@@ -378,7 +378,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: UpdateComputationColumnsFilters,
+        updateFilterCallback: updateComputationColumnsFilters,
     };
 
     return [
@@ -432,7 +432,7 @@ export const componentColumnsDefinition = (
     const filterParams = {
         type: AgGridFilterType.Loadflow,
         tab: mappingTabs(tabIndex),
-        updateFilterCallback: UpdateComputationColumnsFilters,
+        updateFilterCallback: updateComputationColumnsFilters,
     };
 
     return [

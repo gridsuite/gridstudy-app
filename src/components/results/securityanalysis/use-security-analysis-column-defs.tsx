@@ -153,7 +153,13 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     goToFirstPage
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex);
+                return securityAnalysisTableNColumnsDefinition(
+                    intl,
+                    filterEnums.n,
+                    getEnumLabel,
+                    tabIndex,
+                    goToFirstPage
+                );
         }
     }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, goToFirstPage]);
 

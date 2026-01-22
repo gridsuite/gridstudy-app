@@ -71,7 +71,7 @@ export function VoltageInitResultTab({
             status={voltageInitStatus}
             handleGlobalFilterChange={updateGlobalFilters}
             globalFilterOptions={globalFilterOptions}
-            globalFilterSpreadsheetState={globalFiltersFromState}
+            globalFiltersFromState={globalFiltersFromState}
         />
     );
 }
