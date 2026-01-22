@@ -28,9 +28,9 @@ import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
-    convertToCustomError,
     hasElementPermission,
     NotificationsUrlKeys,
+    parseError,
     PermissionType,
     snackWithFallback,
     useIntlRef,
@@ -169,7 +169,7 @@ export function StudyContainer() {
             }
 
             if (updateTypeHeader === NotificationType.LOADFLOW_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'LoadFlowError',
                 });
             }
@@ -180,12 +180,12 @@ export function StudyContainer() {
                 });
             }
             if (updateTypeHeader === NotificationType.SECURITY_ANALYSIS_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'securityAnalysisError',
                 });
             }
             if (updateTypeHeader === NotificationType.SENSITIVITY_ANALYSIS_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'sensitivityAnalysisError',
                 });
             }
@@ -193,27 +193,27 @@ export function StudyContainer() {
                 updateTypeHeader === NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED ||
                 updateTypeHeader === NotificationType.ONE_BUS_SC_ANALYSIS_FAILED
             ) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'ShortCircuitAnalysisError',
                 });
             }
             if (updateTypeHeader === NotificationType.DYNAMIC_SIMULATION_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'DynamicSimulationRunError',
                 });
             }
             if (updateTypeHeader === NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'DynamicSecurityAnalysisRunError',
                 });
             }
             if (updateTypeHeader === NotificationType.DYNAMIC_MARGIN_CALCULATION_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'DynamicMarginCalculationRunError',
                 });
             }
             if (updateTypeHeader === NotificationType.VOLTAGE_INIT_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'voltageInitError',
                 });
             }
@@ -223,12 +223,12 @@ export function StudyContainer() {
                 });
             }
             if (updateTypeHeader === NotificationType.STATE_ESTIMATION_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'stateEstimationError',
                 });
             }
             if (updateTypeHeader === NotificationType.PCC_MIN_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'pccMinError',
                 });
             }
