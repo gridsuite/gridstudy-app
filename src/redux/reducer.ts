@@ -56,6 +56,8 @@ import {
     CLOSE_STUDY,
     type CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
+    COPIED_NETWORK_MODIFICATIONS,
+    type CopiedNetworkModificationsAction,
     CURRENT_ROOT_NETWORK_UUID,
     CURRENT_TREE_NODE,
     type CurrentRootNetworkUuidAction,
@@ -101,9 +103,7 @@ import {
     type NetworkModificationTreeNodesReorderAction,
     type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
-    COPIED_NETWORK_MODIFICATIONS,
     type NodeSelectionForCopyAction,
-    type CopiedNetworkModificationsAction,
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
@@ -217,6 +217,8 @@ import {
     type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
     type StateEstimationResultFilterAction,
+    STORE_NAD_VIEW_BOX,
+    StoreNadViewBoxAction,
     STUDY_UPDATED,
     type StudyUpdatedAction,
     TABLE_SORT,
@@ -237,8 +239,6 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
-    STORE_NAD_VIEW_BOX,
-    StoreNadViewBoxAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -448,6 +448,7 @@ export interface ComputingStatus {
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
+    [ComputingType.DYNAMIC_MARGIN_CALCULATION]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
     [ComputingType.PCC_MIN]: RunningStatus;
@@ -779,6 +780,7 @@ const initialState: AppState = {
         [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
         [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
         [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
+        [ComputingType.DYNAMIC_MARGIN_CALCULATION]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
         [ComputingType.PCC_MIN]: RunningStatus.IDLE,
