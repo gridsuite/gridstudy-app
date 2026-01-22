@@ -72,7 +72,7 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
                 >
-                    <EditNoteIcon empty={empty} hidden={node.rowIndex !== hoveredRowIndex} />
+                    <EditNoteIcon empty={empty} visibility={hoveredRowIndex === node.rowIndex ? 'visible' : 'hidden'} />
                 </IconButton>
             </Tooltip>
         </>
