@@ -6,7 +6,14 @@
  */
 
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { CheckBoxList, snackWithFallback, useSnackMessage, type MuiStyles } from '@gridsuite/commons-ui';
+import {
+    CheckBoxList,
+    type MuiStyles,
+    NotificationsUrlKeys,
+    snackWithFallback,
+    useNotificationsListener,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -31,6 +38,7 @@ import {
     isEventCrudFinishedNotification,
     isEventNotification,
     NotificationType,
+    parseEventData, StudyUpdateEventData,
 } from 'types/notification-types';
 import {
     deleteDynamicSimulationEvents,
@@ -69,7 +77,6 @@ const EventModificationScenarioEditor = memo(() => {
     >();
 
     const dispatch = useDispatch<AppDispatch>();
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
@@ -158,33 +165,33 @@ const EventModificationScenarioEditor = memo(() => {
         }
     }, [currentNode, doFetchEvents]);
 
-    useEffect(() => {
-        if (isEventNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce?.eventData;
+    const handleEvent = useCallback(
+        (event: MessageEvent) => {
+            const eventData = parseEventData<StudyUpdateEventData>(event);
+            if (isEventNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
 
-            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
-                return;
+                dispatch(setModificationsInProgress(true));
+                setPendingState(true);
+                manageNotification(eventData);
+            } else if (isEventCrudFinishedNotification(eventData)) {
+                // notify  finished action (success or error => we remove the loader)
+                // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
+                // fetch events because it must have changed
+                // Do not clear the events list, because currentNode is the concerned one
+                // this allows to append new events to the existing list.
+                doFetchEvents();
+                dispatch(removeNotificationByNode([eventData.headers.parentNode, ...(eventData.headers.nodes ?? [])]));
             }
+        },
+        [dispatch, doFetchEvents, manageNotification]
+    );
 
-            dispatch(setModificationsInProgress(true));
-            setPendingState(true);
-            manageNotification(studyUpdatedEventData);
-        } else if (isEventCrudFinishedNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce?.eventData;
-            // notify  finished action (success or error => we remove the loader)
-            // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-            // fetch events because it must have changed
-            // Do not clear the events list, because currentNode is the concerned one
-            // this allows to append new events to the existing list.
-            doFetchEvents();
-            dispatch(
-                removeNotificationByNode([
-                    studyUpdatedEventData.headers.parentNode,
-                    ...(studyUpdatedEventData.headers.nodes ?? []),
-                ])
-            );
-        }
-    }, [dispatch, doFetchEvents, manageNotification, studyUpdatedForce]);
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleEvent,
+    });
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 

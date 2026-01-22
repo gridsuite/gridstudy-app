@@ -5,17 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ReactElement, useCallback, useEffect, useMemo } from 'react';
+import { ReactElement, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { Chip, darken, lighten } from '@mui/material';
-import { type MuiStyles } from '@gridsuite/commons-ui';
+import { type MuiStyles, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { resetOneBusShortcircuitAnalysisDiagram, setOneBusShortcircuitAnalysisDiagram } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import {
     isOneBusShortCircuitFailedNotification,
     isOneBusShortCircuitResultNotification,
+    parseEventData, StudyUpdateEventData,
 } from 'types/notification-types';
 
 const styles = {
@@ -48,8 +49,6 @@ export function useOneBusShortcircuitAnalysisLoader(diagramId: string): oneBusSh
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const rootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const oneBusShortCircuitAnalysisDiagram = useSelector((state: AppState) => state.oneBusShortCircuitAnalysisDiagram);
 
     const dispatch = useDispatch<AppDispatch>();
@@ -104,20 +103,28 @@ export function useOneBusShortcircuitAnalysisLoader(diagramId: string): oneBusSh
         );
     }, [intl, isDiagramRunningOneBusShortcircuitAnalysis]);
 
-    useEffect(() => {
-        if (!studyUuid || !currentNode?.id || !rootNetworkUuid) {
-            return;
-        }
-        if (
-            (studyUpdatedForce && isOneBusShortCircuitResultNotification(studyUpdatedForce.eventData)) ||
-            isOneBusShortCircuitFailedNotification(studyUpdatedForce.eventData)
-        ) {
-            if (studyUpdatedForce.eventData.headers.rootNetworkUuid !== rootNetworkUuid) {
+    const handleEvent = useCallback(
+        (event: MessageEvent) => {
+            if (!studyUuid || !currentNode?.id || !rootNetworkUuid) {
                 return;
             }
-            resetOneBusShortcircuitAnalysisLoader();
-        }
-    }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce, rootNetworkUuid, studyUuid, currentNode?.id]);
+            const eventData = parseEventData<StudyUpdateEventData>(event);
+            if (
+                (eventData && isOneBusShortCircuitResultNotification(eventData)) ||
+                isOneBusShortCircuitFailedNotification(eventData)
+            ) {
+                if (eventData.headers.rootNetworkUuid !== rootNetworkUuid) {
+                    return;
+                }
+                resetOneBusShortcircuitAnalysisLoader();
+            }
+        },
+        [resetOneBusShortcircuitAnalysisLoader, rootNetworkUuid, studyUuid, currentNode?.id]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleEvent,
+    });
 
     return [
         oneBusShortcircuitAnalysisLoaderMessage,
