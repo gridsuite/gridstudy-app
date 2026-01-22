@@ -8,16 +8,18 @@
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 import { fetchStudyMetadata } from '@gridsuite/commons-ui';
+import { IntlShape } from 'react-intl';
 
 export const RECENT_FILTER: string = 'recent';
 
-export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) => string): string => {
+export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) => string, intl: IntlShape): string => {
     switch (option.filterType) {
         case FilterType.COUNTRY:
             return translate(option.label);
         case FilterType.VOLTAGE_LEVEL:
-            return option.label + ' kV';
+            return intl.formatMessage({ id: option.label });
         case FilterType.GENERIC_FILTER:
+        case FilterType.SUBSTATION_OR_VL:
         case FilterType.SUBSTATION_PROPERTY:
             return option.label;
     }
