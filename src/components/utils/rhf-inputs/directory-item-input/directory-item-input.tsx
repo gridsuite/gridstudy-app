@@ -13,12 +13,7 @@ import { useController } from 'react-hook-form';
 import { UUID } from 'node:crypto';
 import { FolderOutlined } from '@mui/icons-material';
 import { DIRECTORY_ITEM_FULL_PATH, DIRECTORY_ITEM_ID } from '../../field-constants';
-import {
-    DirectoryItemSchema,
-    getAbsenceLabelKeyFromType,
-    getBreadcrumbFromFullPath,
-    getFullPathFromTreeNode,
-} from './directory-item-utils';
+import { DirectoryItemSchema, getAbsenceLabelKeyFromType } from './directory-item-utils';
 
 export interface DirectoryItemSelectorInputProps extends Omit<DirectoryItemSelectorProps, 'onClose' | 'open'> {
     name: string;
@@ -36,15 +31,13 @@ export function DirectoryItemInput({ name, types, ...props }: Readonly<Directory
     const intl = useIntl();
 
     const breadcrumb = useMemo(() => {
-        return nodeInfos?.[DIRECTORY_ITEM_FULL_PATH]
-            ? getBreadcrumbFromFullPath(nodeInfos[DIRECTORY_ITEM_FULL_PATH], 48)
-            : undefined;
+        return nodeInfos?.[DIRECTORY_ITEM_FULL_PATH] ? nodeInfos[DIRECTORY_ITEM_FULL_PATH] : undefined;
     }, [nodeInfos]);
 
     const onNodeChanged = useCallback(
         (nodes: TreeViewFinderNodeProps[]) => {
             if (nodes.length > 0) {
-                const fullPath = getFullPathFromTreeNode(nodes[0]);
+                const fullPath = nodes[0]?.name;
                 const nodeId: UUID | null = nodes[0]?.id;
                 if (nodeId) {
                     const nodeInfos = {
