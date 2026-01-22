@@ -28,7 +28,7 @@ import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
 import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
-import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 

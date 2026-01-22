@@ -235,8 +235,12 @@ export function getComputationResultFilters(studyUuid: UUID): Promise<any> {
     return backendFetchJson(url);
 }
 
-export function updateComputationResultFilters(studyUuid: UUID, id: string | undefined, filters: GlobalFilter[]) {
-    return backendFetchJson(getStudyUrl(studyUuid) + `/computation-result-filters/${id}/global-filters`, {
+export function updateComputationResultFilters(
+    studyUuid: UUID,
+    filterType: string | undefined,
+    filters: GlobalFilter[]
+) {
+    return backendFetchJson(getStudyUrl(studyUuid) + `/computation-result-filters/${filterType}/global-filters`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -251,7 +255,7 @@ export function updateComputationResultFiltersColumn(
     filterSubType: string,
     column: any
 ) {
-    const url = `${getStudyUrl(studyUuid)}/computation-result-filters/${filterType}/columns/${filterSubType}`;
+    const url = `${getStudyUrl(studyUuid)}/computation-result-filters/${filterType}/${filterSubType}/columns`;
     return backendFetchJson(url, {
         method: 'PUT',
         headers: {

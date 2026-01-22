@@ -52,7 +52,7 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 

@@ -55,7 +55,7 @@ import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 
 const styles = {
     flexWrapper: {

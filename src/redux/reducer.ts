@@ -56,6 +56,8 @@ import {
     CLOSE_STUDY,
     type CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
+    COPIED_NETWORK_MODIFICATIONS,
+    type CopiedNetworkModificationsAction,
     CURRENT_ROOT_NETWORK_UUID,
     CURRENT_TREE_NODE,
     type CurrentRootNetworkUuidAction,
@@ -99,9 +101,7 @@ import {
     type NetworkModificationTreeNodesReorderAction,
     type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
-    COPIED_NETWORK_MODIFICATIONS,
     type NodeSelectionForCopyAction,
-    type CopiedNetworkModificationsAction,
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
@@ -203,6 +203,8 @@ import {
     ShortcircuitAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
+    STORE_NAD_VIEW_BOX,
+    StoreNadViewBoxAction,
     STUDY_UPDATED,
     type StudyUpdatedAction,
     TABLE_SORT,
@@ -227,8 +229,6 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
-    STORE_NAD_VIEW_BOX,
-    StoreNadViewBoxAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -310,7 +310,6 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
-    FilterType,
     LogsPaginationConfig,
     PaginationConfig,
     PCCMIN_ANALYSIS_TABS,
@@ -507,22 +506,15 @@ export interface AppConfigState {
 }
 
 export type ColumnFilterEntry = {
-    id: string;
     columns: FilterConfig[];
 };
 
 export type ComputationFiltersState = {
-    id?: string;
-} & Partial<
-    Record<
-        FilterType,
-        {
-            id: string;
-            columnsFilters: Record<string, ColumnFilterEntry>;
-            globalFilters: GlobalFilter[];
-        }
-    >
->;
+    [computationType: string]: {
+        columnsFilters: Record<string, ColumnFilterEntry>;
+        globalFilters: GlobalFilter[];
+    };
+};
 
 export type LogsPaginationState = Record<string, LogsPaginationConfig>;
 export interface AppState extends CommonStoreState, AppConfigState {
@@ -1828,23 +1820,19 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(INIT_COMPUTATION_RESULT_FILTERS, (state, action: InitComputationResultFiltersAction) => {
         const filtersState = action.filters;
-        state.computationFilters.id = filtersState.id;
-
         Object.entries(filtersState)
             .filter(([key]) => key !== 'id')
-            .forEach(([filterTypeKey, filterData]) => {
-                if (!filterData || typeof filterData === 'string') return;
+            .forEach(([computationTypeKey, filterData]) => {
+                if (!filterData) return;
                 const normalizedColumnsFilters: Record<string, ColumnFilterEntry> = {};
-
-                Object.entries(filterData.columnsFilters ?? {}).forEach(([tab, entry]: any) => {
-                    normalizedColumnsFilters[tab] = {
-                        id: entry.id ?? tab,
-                        columns: entry.columns ?? [],
-                    };
-                });
-
-                state.computationFilters[filterTypeKey as FilterType] = {
-                    id: filterData.id,
+                Object.entries(filterData.columnsFilters ?? {}).forEach(
+                    ([subTypeKey, entry]: [string, ColumnFilterEntry]) => {
+                        normalizedColumnsFilters[subTypeKey] = {
+                            columns: entry.columns ?? [],
+                        };
+                    }
+                );
+                state.computationFilters[computationTypeKey] = {
                     columnsFilters: normalizedColumnsFilters,
                     globalFilters: filterData.globalFilters ?? [],
                 };
@@ -1852,12 +1840,23 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
         const { filterType, filterSubType, filters } = action;
-        state.computationFilters[filterType]!.columnsFilters[filterSubType].columns = filters;
+        state.computationFilters[filterType] ??= {
+            columnsFilters: {},
+            globalFilters: [],
+        };
+        state.computationFilters[filterType].columnsFilters[filterSubType] ??= {
+            columns: [],
+        };
+        state.computationFilters[filterType].columnsFilters[filterSubType].columns = filters;
     });
 
     builder.addCase(UPDATE_GLOBAL_FILTERS, (state, action: UpdateGlobalFiltersAction) => {
         const { filterType, globalFilters } = action;
-        state.computationFilters[filterType]!.globalFilters = globalFilters;
+        state.computationFilters[filterType] ??= {
+            columnsFilters: {},
+            globalFilters: [],
+        };
+        state.computationFilters[filterType].globalFilters = globalFilters;
     });
 });
 

@@ -9,30 +9,26 @@ import { updateComputationResultFiltersColumn } from '../../../services/study/st
 import { GridApi } from 'ag-grid-community';
 import { UUID } from 'node:crypto';
 
-export function UpdateComputationColumnsFilters() {
-    return (
-        agGridApi?: GridApi,
-        filters?: FilterConfig[],
-        colId?: string,
-        studyUuid?: UUID,
-        filterType?: FilterType,
-        filterSubType?: string
-    ) => {
-        if (!agGridApi || !studyUuid || !filters || !colId || !filterSubType || !filterType) {
-            return;
-        }
-        const filter = filters.find((f) => f.column === colId);
-        if (!filter) {
-            return;
-        }
-        const columnDto = {
-            id: colId,
-            name: colId,
-            filterDataType: filter.dataType,
-            filterType: filter.type,
-            filterValue: filter.value,
-            filterTolerance: filter.tolerance,
-        };
-        updateComputationResultFiltersColumn(studyUuid, filterType, filterSubType, columnDto).then();
+export const UpdateComputationColumnsFilters = (
+    agGridApi?: GridApi,
+    filters?: FilterConfig[],
+    colId?: string,
+    studyUuid?: UUID,
+    filterType?: FilterType,
+    filterSubType?: string
+) => {
+    if (!agGridApi || !studyUuid || !filters || !colId || !filterSubType || !filterType) {
+        return;
+    }
+    const filter = filters.find((f) => f.column === colId);
+    if (!filter) return;
+    const columnDto = {
+        id: colId,
+        name: colId,
+        filterDataType: filter.dataType,
+        filterType: filter.type,
+        filterValue: filter.value,
+        filterTolerance: filter.tolerance,
     };
-}
+    updateComputationResultFiltersColumn(studyUuid, filterType, filterSubType, columnDto).then();
+};

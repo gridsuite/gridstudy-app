@@ -30,7 +30,7 @@ import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
-import { useComputationGlobalFilters } from '../../../hooks/use-computation-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 

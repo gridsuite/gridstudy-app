@@ -221,7 +221,6 @@ const makeAgGridFloatColumn = (
     filterParams: {
         type: AgGridFilterType;
         tab: string;
-        updateFilterCallback: any;
     }
 ) => {
     return {
