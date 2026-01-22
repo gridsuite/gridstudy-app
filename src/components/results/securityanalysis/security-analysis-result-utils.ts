@@ -44,6 +44,33 @@ import {
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
+
+interface TableParams {
+    sortParams: SortParams;
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+        onBeforePersist: () => void;
+        updateFilterCallback: typeof updateComputationColumnsFilters;
+    };
+}
+
+const createTableParams = (tabIndex: number, goToFirstPage: () => void): TableParams => {
+    const tab = getStoreFields(tabIndex);
+    return {
+        sortParams: {
+            table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
+            tab,
+        },
+        filterParams: {
+            type: AgGridFilterType.SecurityAnalysis,
+            tab,
+            onBeforePersist: goToFirstPage,
+            updateFilterCallback: updateComputationColumnsFilters,
+        },
+    };
+};
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -250,16 +277,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     tabIndex: number,
     goToFirstPage: () => void
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
-        tab: getStoreFields(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.SecurityAnalysis,
-        tab: getStoreFields(tabIndex),
-        onBeforePersist: goToFirstPage,
-        updateFilterCallback: updateComputationColumnsFilters,
-    };
+    const { sortParams, filterParams } = createTableParams(tabIndex, goToFirstPage);
 
     return [
         makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, sortParams)),
@@ -350,16 +368,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     tabIndex: number,
     goToFirstPage: () => void
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
-        tab: getStoreFields(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.SecurityAnalysis,
-        tab: getStoreFields(tabIndex),
-        onBeforePersist: goToFirstPage,
-        updateFilterCallback: updateComputationColumnsFilters,
-    };
+    const { sortParams, filterParams } = createTableParams(tabIndex, goToFirstPage);
 
     return [
         makeAgGridCustomHeaderColumn({
@@ -526,16 +535,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     tabIndex: number,
     goToFirstPage: () => void
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
-        tab: getStoreFields(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.SecurityAnalysis,
-        tab: getStoreFields(tabIndex),
-        onBeforePersist: goToFirstPage,
-        updateFilterCallback: updateComputationColumnsFilters,
-    };
+    const { sortParams, filterParams } = createTableParams(tabIndex, goToFirstPage);
 
     return [
         makeAgGridCustomHeaderColumn({

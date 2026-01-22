@@ -50,6 +50,8 @@ import {
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
+import { getStoreFields } from '../securityanalysis/security-analysis-result-utils';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
@@ -212,6 +214,29 @@ export const convertFilterValues = (filterSelector: FilterConfig[], intl: IntlSh
         }
     });
 };
+interface TableParams {
+    sortParams: SortParams;
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+        updateFilterCallback: typeof updateComputationColumnsFilters;
+    };
+}
+
+const createTableParams = (tabIndex: number): TableParams => {
+    const tab = getStoreFields(tabIndex);
+    return {
+        sortParams: {
+            table: LOADFLOW_RESULT_SORT_STORE,
+            tab,
+        },
+        filterParams: {
+            type: AgGridFilterType.Loadflow,
+            tab,
+            updateFilterCallback: updateComputationColumnsFilters,
+        },
+    };
+};
 
 const makeAgGridFloatColumn = (
     intlId: string,
@@ -267,15 +292,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     tabIndex: number,
     subjectIdRenderer: SubjectIdRendererType
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: LOADFLOW_RESULT_SORT_STORE,
-        tab: mappingTabs(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.Loadflow,
-        tab: mappingTabs(tabIndex),
-        updateFilterCallback: updateComputationColumnsFilters,
-    };
+    const { sortParams, filterParams } = createTableParams(tabIndex);
 
     return [
         makeAgGridCustomHeaderColumn({
@@ -371,15 +388,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     tabIndex: number,
     subjectIdRenderer: SubjectIdRendererType
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: LOADFLOW_RESULT_SORT_STORE,
-        tab: mappingTabs(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.Loadflow,
-        tab: mappingTabs(tabIndex),
-        updateFilterCallback: updateComputationColumnsFilters,
-    };
+    const { sortParams, filterParams } = createTableParams(tabIndex);
 
     return [
         makeAgGridCustomHeaderColumn({
@@ -429,11 +438,7 @@ export const componentColumnsDefinition = (
     tabIndex: number,
     statusCellRender: (cellData: ICellRendererParams) => JSX.Element
 ): ColDef[] => {
-    const filterParams = {
-        type: AgGridFilterType.Loadflow,
-        tab: mappingTabs(tabIndex),
-        updateFilterCallback: updateComputationColumnsFilters,
-    };
+    const { filterParams } = createTableParams(tabIndex);
 
     return [
         makeAgGridCustomHeaderColumn({
