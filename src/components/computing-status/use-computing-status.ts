@@ -18,9 +18,9 @@ import {
     parseEventData,
     StudyUpdatedEventData,
     StudyUpdatedEventDataHeader,
-    StudyUpdateEventData
+    StudyUpdateEventData,
 } from '../../types/notification-types';
-import {StudyUpdated} from "../../redux/reducer";
+import { StudyUpdated } from '../../redux/reducer';
 
 interface UseComputingStatusProps {
     (

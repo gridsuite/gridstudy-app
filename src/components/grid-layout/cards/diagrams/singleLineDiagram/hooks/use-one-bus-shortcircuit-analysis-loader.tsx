@@ -16,7 +16,8 @@ import { AppDispatch } from 'redux/store';
 import {
     isOneBusShortCircuitFailedNotification,
     isOneBusShortCircuitResultNotification,
-    parseEventData, StudyUpdateEventData,
+    parseEventData,
+    StudyUpdateEventData,
 } from 'types/notification-types';
 
 const styles = {

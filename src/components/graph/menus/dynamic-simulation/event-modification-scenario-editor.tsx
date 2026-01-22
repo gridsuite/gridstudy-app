@@ -38,7 +38,8 @@ import {
     isEventCrudFinishedNotification,
     isEventNotification,
     NotificationType,
-    parseEventData, StudyUpdateEventData,
+    parseEventData,
+    StudyUpdateEventData,
 } from 'types/notification-types';
 import {
     deleteDynamicSimulationEvents,
