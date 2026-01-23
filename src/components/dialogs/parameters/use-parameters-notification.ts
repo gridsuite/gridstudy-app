@@ -14,7 +14,7 @@ import {
     UseParametersBackendReturnProps,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import {
     ComputationParametersUpdatedEventData,
