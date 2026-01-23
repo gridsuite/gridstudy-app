@@ -146,9 +146,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionSide: bay.connectionSide || null,
                     connectionName: bay.connectablePositionInfos.connectionName || null,
                     connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
-                    connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
-                        ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
-                        : null,
+                    connectionPosition: bay.connectablePositionInfos.connectionPosition ?? null,
                     isRemoved: false,
                     rowId: bay.rowId,
                 }));
@@ -163,9 +161,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             connectionSide: bay.connectionSide,
                             connectionName: bay.connectablePositionInfos.connectionName || null,
                             connectionDirection: bay.connectablePositionInfos.connectionDirection,
-                            connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
-                                ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
-                                : null,
+                            connectionPosition: bay.connectablePositionInfos.connectionPosition ?? null,
                             isRemoved: false,
                             rowId: bay.rowId,
                         });
