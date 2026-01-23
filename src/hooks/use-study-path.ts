@@ -15,12 +15,9 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../utils/compute-title';
-import { studyUpdated } from '../redux/actions';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { useDispatch, useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { AppState } from '../redux/reducer';
-import { isMetadataUpdatedNotification } from 'types/notification-types';
+import { isMetadataUpdatedNotification, parseEventData, StudyUpdateEventData } from 'types/notification-types';
 
 export default function useStudyPath(studyUuid: UUID | null) {
     const [studyName, setStudyName] = useState<string>();
@@ -31,8 +28,6 @@ export default function useStudyPath(studyUuid: UUID | null) {
 
     const { snackError, snackInfo } = useSnackMessage();
     const [initialTitle] = useState(document.title);
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const dispatch = useDispatch();
 
     // using a ref because this is not used for rendering, it is used in the websocket onMessage()
     const studyParentDirectoriesUuidsRef = useRef<UUID[]>([]);
@@ -65,7 +60,6 @@ export default function useStudyPath(studyUuid: UUID | null) {
     const onStudyUpdated = useCallback(
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
-            dispatch(studyUpdated(eventData));
             if (eventData.headers) {
                 if (eventData.headers['notificationType'] === directoriesNotificationType.UPDATE_DIRECTORY) {
                     // TODO: this receives notifications for all the public directories and all the user's private directories
@@ -79,7 +73,7 @@ export default function useStudyPath(studyUuid: UUID | null) {
                 }
             }
         },
-        [dispatch, fetchStudyPath]
+        [fetchStudyPath]
     );
 
     useNotificationsListener(NotificationsUrlKeys.DIRECTORY, {
@@ -116,12 +110,21 @@ export default function useStudyPath(studyUuid: UUID | null) {
         fetchStudyPath();
     }, [studyUuid, initialTitle, fetchStudyPath]);
 
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (isMetadataUpdatedNotification(studyUpdatedForce.eventData)) {
-                fetchStudyPath();
+    const handleEvent = useCallback(
+        (event: MessageEvent) => {
+            const eventData = parseEventData<StudyUpdateEventData>(event);
+            if (eventData?.headers) {
+                if (isMetadataUpdatedNotification(eventData)) {
+                    fetchStudyPath();
+                }
             }
-        }
-    }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
+        },
+        [fetchStudyPath]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleEvent,
+    });
+
     return { studyName: studyName, parentDirectoriesNames: parentDirectoriesNames };
 }

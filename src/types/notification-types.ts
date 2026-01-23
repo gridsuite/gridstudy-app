@@ -1099,6 +1099,15 @@ export function isSpreadsheetParametersUpdatedNotification(
     return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
 }
 
+export function parseEventData<T>(event: MessageEvent | null): T | null {
+    if (!event?.data) return null;
+    try {
+        return JSON.parse(event.data);
+    } catch {
+        return null;
+    }
+}
+
 // Notification types
 export type StudyUpdateEventData =
     | StudyEventData
@@ -1164,10 +1173,6 @@ export type StudyUpdateEventData =
     | PccMinFailedEventData
     | PccMinStatusEventData
     | ExportNetworkEventData;
-
-export type StudyUpdateNotification = {
-    eventData: StudyUpdateEventData;
-};
 
 /******************* TO REMOVE LATER ****************/
 // Headers
