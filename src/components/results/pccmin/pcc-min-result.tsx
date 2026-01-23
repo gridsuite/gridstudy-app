@@ -25,6 +25,7 @@ import { UUID } from 'node:crypto';
 import { PccMinExportButton } from './pcc-min-export-button';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { GlobalFilter } from '../common/global-filter/global-filter-types';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 interface PccMinResultProps {
     studyUuid: UUID;
@@ -74,9 +75,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
 
-    const filters = useSelector(
-        (state: AppState) => state.computationFilters?.[FilterType.PccMin]?.columnsFilters?.[PCCMIN_RESULT].columns
-    );
+    const { filters } = useFilterSelector(FilterType.PccMin, PCCMIN_RESULT);
     const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { page, rowsPerPage } = pagination;
     const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
