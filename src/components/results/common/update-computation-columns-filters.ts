@@ -21,9 +21,9 @@ export const updateComputationColumnsFilters = (
     if (!agGridApi || !studyUuid || !filters || !colId || !filterSubType || !filterType) {
         return;
     }
-    onBeforePersist?.();
     const filter = filters.find((f) => f.column === colId);
     if (!filter) return;
+    onBeforePersist?.();
     const columnDto = {
         id: colId,
         name: colId,

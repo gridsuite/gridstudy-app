@@ -34,6 +34,7 @@ import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
@@ -49,11 +50,11 @@ type SensitivityAnalysisResultProps = CustomAGGridProps & {
     nOrNkIndex: number;
     sensiKind: SensiKind;
     filtersDef: { field: string; options: string[] }[];
-    filters: FilterConfig[];
     isLoading: boolean;
     goToFirstPage: () => void;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
+    computationSubType: string;
 };
 
 function SensitivityAnalysisResult({
@@ -61,11 +62,11 @@ function SensitivityAnalysisResult({
     nOrNkIndex = 0,
     sensiKind = SENSITIVITY_IN_DELTA_MW,
     filtersDef,
-    filters,
     goToFirstPage,
     isLoading,
     setCsvHeaders,
     setIsCsvButtonDisabled,
+    computationSubType,
     ...props
 }: Readonly<SensitivityAnalysisResultProps>) {
     const gridRef = useRef(null);
@@ -73,7 +74,7 @@ function SensitivityAnalysisResult({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-
+    const { filters } = useFilterSelector(FilterType.SensitivityAnalysis, computationSubType);
     const messages = useIntlResultStatusMessages(intl, true);
 
     const makeColumn = useCallback(

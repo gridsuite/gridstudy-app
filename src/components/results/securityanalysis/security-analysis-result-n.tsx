@@ -21,7 +21,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
     result,
     isLoadingResult,
     columnDefs,
-    filters,
+    computationSubType,
 }) => {
     const intl: IntlShape = useIntl();
 
@@ -60,7 +60,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
             rows={rows}
             columnDefs={columnDefs}
             isLoadingResult={isLoadingResult}
-            filters={filters}
+            computationSubType={computationSubType}
         />
     );
 };

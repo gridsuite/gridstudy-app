@@ -52,6 +52,7 @@ import { PanelType } from '../../workspace/types/workspace.types';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import type { UUID } from 'node:crypto';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -61,7 +62,7 @@ interface ShortCircuitAnalysisResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     goToFirstPage: () => void;
-    filters: FilterConfig[];
+    computationSubType: string;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -105,11 +106,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     onGridColumnsChanged,
     onRowDataUpdated,
     goToFirstPage,
-    filters,
+    computationSubType,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
     const dispatch = useDispatch();
+    const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, computationSubType);
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const { value } = props || {};

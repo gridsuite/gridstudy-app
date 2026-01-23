@@ -39,6 +39,7 @@ import RunningStatus from './utils/running-status';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import { FilterType } from 'types/custom-aggrid-types';
 
 const styles = {
     container: {
@@ -280,6 +281,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
+                    computationType={FilterType.VoltageInit}
+                    computationSubType="Indicators"
                 />
             </>
         );
@@ -319,6 +322,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
+                    computationType={FilterType.VoltageInit}
+                    computationSubType="ReactiveSlacks"
                 />
             </>
         );
@@ -368,6 +373,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     return undefined;
                 }}
                 overlayNoRowsTemplate={undefined}
+                computationType={FilterType.VoltageInit}
+                computationSubType="BusVoltages"
             />
         );
     }

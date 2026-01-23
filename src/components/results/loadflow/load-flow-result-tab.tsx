@@ -35,7 +35,7 @@ import { StatusCellRender } from '../common/result-cell-renderers';
 import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
@@ -89,7 +89,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
+    const { filters } = useFilterSelector(FilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
@@ -299,7 +299,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         tableName={intl.formatMessage({
                             id: 'LoadFlowResultsCurrentViolations',
                         })}
-                        filters={filters}
+                        computationSubType={mappingTabs(tabIndex)}
                     />
                 </GlassPane>
             )}
@@ -312,7 +312,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         tableName={intl.formatMessage({
                             id: 'LoadFlowResultsVoltageViolations',
                         })}
-                        filters={filters}
+                        computationSubType={mappingTabs(tabIndex)}
                     />
                 </GlassPane>
             )}
@@ -326,7 +326,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     tableName={intl.formatMessage({
                         id: 'LoadFlowResultsSummary',
                     })}
-                    filters={filters}
+                    computationSubType={mappingTabs(tabIndex)}
                 />
             )}
             {tabIndex === 3 && (

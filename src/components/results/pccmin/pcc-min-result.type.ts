@@ -44,7 +44,6 @@ export interface PccMinResultTableProps {
     result: SinglePccMinResultInfos[];
     isFetching: boolean;
     goToFirstPage: () => void;
-    filters: FilterConfig[];
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
 }

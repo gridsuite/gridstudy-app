@@ -76,7 +76,7 @@ export const useCustomAggridFilter = (
             updateFilterCallback?.(api, updatedFilters, colId, studyUuid, type, tab);
             dispatchFilters(updatedFilters);
         },
-        [api, filters, updateFilterCallback, studyUuid, type, tab, dispatchFilters]
+        [updateFilterCallback, api, dispatchFilters, filters, studyUuid, type, tab]
     );
 
     // We intentionally exclude `updateFilter` from dependencies.

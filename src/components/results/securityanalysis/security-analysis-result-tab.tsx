@@ -37,6 +37,7 @@ import {
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import {
+    FilterType,
     FilterType as AgGridFilterType,
     PaginationType,
     SecurityAnalysisTab,
@@ -130,7 +131,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     );
     const { page, rowsPerPage } = pagination;
 
-    const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
+    const { filters } = useFilterSelector(FilterType.SecurityAnalysis, getStoreFields(tabIndex));
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
         AgGridFilterType.SecurityAnalysis
     );
@@ -335,7 +336,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         result={result}
                         isLoadingResult={isLoadingResult}
                         columnDefs={columnDefs}
-                        filters={filters}
+                        computationSubType={getStoreFields(tabIndex)}
                     />
                 )}
                 {tabIndex === NMK_RESULTS_TAB_INDEX && (
@@ -351,7 +352,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             onRowsPerPageChange: handleChangeRowsPerPage,
                         }}
                         columnDefs={columnDefs}
-                        filters={filters}
+                        computationSubType={getStoreFields(tabIndex)}
                     />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&

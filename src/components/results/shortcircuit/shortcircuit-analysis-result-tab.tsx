@@ -190,11 +190,13 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
+                        globalFilter={globalFiltersFromState}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
+                        globalFilter={globalFiltersFromState}
                     />
                 ))}
             {resultOrLogIndex === LOGS_TAB_INDEX && (

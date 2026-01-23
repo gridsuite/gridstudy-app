@@ -84,6 +84,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             currentRootNetworkUuid={currentRootNetworkUuid}
+                            globalFilter={globalFiltersFromState}
                             customTablePaginationProps={{
                                 labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
                             }}

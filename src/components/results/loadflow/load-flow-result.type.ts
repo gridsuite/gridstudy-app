@@ -8,7 +8,6 @@
 import { ColDef } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { BranchSide } from '../../utils/constants';
-import { FilterConfig } from '../../../types/custom-aggrid-types';
 
 export interface ComponentResult {
     componentResultUuid: UUID;
@@ -81,13 +80,13 @@ export interface LoadflowResultProps extends LoadflowResultTap {
     componentColumnDefs: ColDef<any>[];
     countryAdequaciesColumnDefs: ColDef<any>[];
     exchangesColumnDefs: ColDef<any>[];
-    filters: FilterConfig[];
+    computationSubType: string;
 }
 
 export interface LimitViolationResultProps extends LoadflowResultTap {
     result: OverloadedEquipment[];
     columnDefs: ColDef<any>[];
-    filters: FilterConfig[];
+    computationSubType: string;
 }
 
 export interface OverloadedEquipment {

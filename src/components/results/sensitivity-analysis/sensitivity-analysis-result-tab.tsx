@@ -107,6 +107,7 @@ function SensitivityAnalysisResultTab({
                             csvHeaders={csvHeaders}
                             nOrNkIndex={nOrNkIndex}
                             sensiKind={sensiTab}
+                            globalFilter={globalFiltersFromState}
                             disabled={isCsvButtonDisabled}
                         />
                     </Box>

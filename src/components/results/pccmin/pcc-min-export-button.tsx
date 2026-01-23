@@ -12,7 +12,7 @@ import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
@@ -36,7 +36,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
-    const { filters } = useFilterSelector(AgGridFilterType.PccMin, PCCMIN_RESULT);
+    const { filters } = useFilterSelector(FilterType.PccMin, PCCMIN_RESULT);
     const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.PccMin);
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]

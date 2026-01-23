@@ -26,12 +26,7 @@ import {
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import {
-    FilterType as AgGridFilterType,
-    PaginationType,
-    SensitivityAnalysisTab,
-    SortWay,
-} from '../../../types/custom-aggrid-types';
+import { FilterType, PaginationType, SensitivityAnalysisTab, SortWay } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
@@ -73,7 +68,7 @@ function PagedSensitivityAnalysisResult({
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { filters } = useFilterSelector(FilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SensitivityAnalysis,
         mappingTabs(sensiKind, nOrNkIndex) as SensitivityAnalysisTab
@@ -224,10 +219,10 @@ function PagedSensitivityAnalysisResult({
                 sensiKind={sensiKind}
                 goToFirstPage={goToFirstPage}
                 filtersDef={filtersDef}
-                filters={filters}
                 isLoading={isLoading}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}
+                computationSubType={mappingTabs(sensiKind, nOrNkIndex)}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
