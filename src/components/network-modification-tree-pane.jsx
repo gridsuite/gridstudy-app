@@ -57,7 +57,7 @@ import { useCopiedNodes } from 'hooks/copy-paste/use-copied-nodes';
 
 export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
-    const { snackError, snackWarning, snackInfo } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
     const [nodesToRestore, setNodesToRestore] = useState([]);
 
     const { selectionForCopy, copyNode, cutNode, cleanClipboard } = useCopiedNodes();
