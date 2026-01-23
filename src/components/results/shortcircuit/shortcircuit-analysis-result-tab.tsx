@@ -6,7 +6,7 @@
  */
 
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
-import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
     computingTypeToShortcircuitTabRedirection,
@@ -32,7 +32,6 @@ import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -140,11 +139,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
         return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
     }, []);
-
-    useEffect(() => {
-        // Clear the globalfilter when tab changes
-        buildValidGlobalFilters([]);
-    }, [tabIndex]);
 
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
