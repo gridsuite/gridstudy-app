@@ -25,7 +25,7 @@ import {
     NotificationsUrlKeys,
     snackWithFallback,
     useNotificationsListener,
-    useSnackMessage
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog';
 import { BUILD_STATUS } from './network/constants';
