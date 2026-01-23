@@ -205,6 +205,7 @@
     "VoltageinitNodeName": "Noeud : {nodeName}",
     "VoltageinitDate": "Date du calcul : {computationDate}",
 
+    "Select": "Choisir",
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
 
@@ -1458,6 +1459,7 @@
     "pccMinError": "Une erreur est survenue lors de l'exécution de pcc min N-1",
     "PccMinResultsError": "Une erreur s'est produite lors de la récupération du résultat de pcc min N-1",
     "NoFilter": "Aucun filtre",
+    "NoFolder": "Aucun dossier",
     "searchPlaceholder": "Recherche",
     "searchPlaceholderLog": "Rechercher dans les Logs",
     "searchPlaceholderLogsTreeStructure": "Rechercher dans l'arborescence",
@@ -1723,6 +1725,11 @@
     "reset": "Réinitialiser",
     "history": "Historique",
     "activePowerControlTooltip": "Clé de distribution de la puissance au nœud bilan : maxP/Statisme, statisme par défaut = 4 (valable pour le mode compensation proportionnel à la puissance maximale des groupes)",
+
+    "gridExplore": "GridExplore",
+    "myComputer": "Mon ordinateur",
+    "destination": "Destination",
+
     "ActivePower": "P (MW)",
     "reactivePowerTooltip": "Q (Mvar)",
     "tooltip.u": "U (kV)",
