@@ -53,6 +53,7 @@ import {
     isStateEstimationResultNotification,
     isStudyNetworkRecreationNotification,
     NotificationType,
+    parseEventData,
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
@@ -147,8 +148,6 @@ export function StudyContainer() {
     const currentRootNetworkUuidRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
-
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
@@ -458,46 +457,51 @@ export function StudyContainer() {
     }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid, isFirstStudyNetworkFound]);
 
     // checking another time if we can find network, if we do, we display a snackbar info
-    useEffect(() => {
-        if (isIndexationStatusNotification(studyUpdatedForce.eventData)) {
-            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
-            if (currentRootNetworkUuidRef.current && rootNetworkUuidFromNotif !== currentRootNetworkUuidRef.current) {
-                return;
+    const handleEvent = useCallback(
+        (event) => {
+            const eventData = parseEventData(event);
+            if (isIndexationStatusNotification(eventData)) {
+                const rootNetworkUuidFromNotif = eventData.headers.rootNetworkUuid;
+                if (
+                    currentRootNetworkUuidRef.current &&
+                    rootNetworkUuidFromNotif !== currentRootNetworkUuidRef.current
+                ) {
+                    return;
+                }
+                dispatch(setRootNetworkIndexationStatus(eventData.headers.indexation_status));
+                if (eventData.headers.indexation_status === RootNetworkIndexationStatus.INDEXED) {
+                    snackInfo({
+                        headerId: 'rootNetworkIndexationDone',
+                    });
+                }
+                // notification that the study is not indexed anymore then ask to refresh
+                if (eventData.headers.indexation_status === RootNetworkIndexationStatus.NOT_INDEXED) {
+                    snackWarning({
+                        headerId: 'rootNetworkIndexationNotIndexed',
+                    });
+                }
             }
-            dispatch(setRootNetworkIndexationStatus(studyUpdatedForce.eventData.headers.indexation_status));
-            if (studyUpdatedForce.eventData.headers.indexation_status === RootNetworkIndexationStatus.INDEXED) {
-                snackInfo({
-                    headerId: 'rootNetworkIndexationDone',
-                });
-            }
-            // notification that the study is not indexed anymore then ask to refresh
-            if (studyUpdatedForce.eventData.headers.indexation_status === RootNetworkIndexationStatus.NOT_INDEXED) {
-                snackWarning({
-                    headerId: 'rootNetworkIndexationNotIndexed',
-                });
-            }
-        }
-        if (isStudyNetworkRecreationNotification(studyUpdatedForce.eventData)) {
-            const successCallback = () =>
-                snackInfo({
-                    headerId: 'studyNetworkRecovered',
-                });
+            if (isStudyNetworkRecreationNotification(eventData)) {
+                const successCallback = () =>
+                    snackInfo({
+                        headerId: 'studyNetworkRecovered',
+                    });
 
-            checkNetworkExistenceAndRecreateIfNotFound(successCallback);
-        }
-    }, [studyUpdatedForce, checkNetworkExistenceAndRecreateIfNotFound, snackInfo, snackWarning, dispatch]);
-
-    useEffect(() => {
-        if (
-            isLoadflowResultNotification(studyUpdatedForce.eventData) ||
-            isStateEstimationResultNotification(studyUpdatedForce.eventData)
-        ) {
-            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
-            if (rootNetworkUuidFromNotif === currentRootNetworkUuidRef.current) {
-                dispatch(resetEquipmentsPostComputation());
+                checkNetworkExistenceAndRecreateIfNotFound(successCallback);
             }
-        }
-    }, [studyUpdatedForce, dispatch]);
+            if (isLoadflowResultNotification(eventData) || isStateEstimationResultNotification(eventData)) {
+                const rootNetworkUuidFromNotif = eventData.headers.rootNetworkUuid;
+                if (rootNetworkUuidFromNotif === currentRootNetworkUuidRef.current) {
+                    dispatch(resetEquipmentsPostComputation());
+                }
+            }
+        },
+        [checkNetworkExistenceAndRecreateIfNotFound, snackInfo, snackWarning, dispatch]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleEvent,
+    });
 
     useEffect(() => {
         if (studyUuid) {
