@@ -21,7 +21,6 @@ import {
     setMonoRootStudy,
     setRootNetworkIndexationStatus,
     setRootNetworks,
-    studyUpdated,
 } from '../redux/actions';
 import { initializeWorkspaces } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
@@ -266,7 +265,6 @@ export function StudyContainer() {
                 return; // here, we do not want to update the redux state
             }
             displayErrorNotifications(eventData);
-            dispatch(studyUpdated(eventData));
 
             // Handle build status updates globally so all workspaces open in other browser tabs update currentTreeNode
             // This fixes the issue where tabs without tree panel don't get updates
