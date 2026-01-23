@@ -575,7 +575,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     syncEnabled: boolean;
 
-    baseVoltages: BaseVoltage[];
+    baseVoltages: BaseVoltage[] | null;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
         [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
@@ -703,7 +703,7 @@ const initialTablesState: TablesState = {
 
 const initialState: AppState = {
     syncEnabled: false,
-    baseVoltages: [],
+    baseVoltages: null,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
     isDirtyComputationParameters: false,
