@@ -565,7 +565,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     spreadsheetNetwork: SpreadsheetNetworkState;
     globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
     spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
-    networkVisualizationsParameters: NetworkVisualizationParameters;
+    networkVisualizationsParameters: NetworkVisualizationParameters | null;
 
     syncEnabled: boolean;
 
@@ -697,7 +697,7 @@ const initialTablesState: TablesState = {
 
 const initialState: AppState = {
     syncEnabled: false,
-    baseVolatges: null,
+    baseVoltages: [],
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
     isDirtyComputationParameters: false,
@@ -731,7 +731,6 @@ const initialState: AppState = {
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
     mapDataLoading: false,
-    setMapOpen: false,
     isExplorerDrawerOpen: true,
     centerOnSubstation: undefined,
     notificationIdList: [],
@@ -763,6 +762,7 @@ const initialState: AppState = {
             networkComponents: false,
         },
     },
+    networkVisualizationsParameters: null,
     highlightedModificationUuid: null,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
