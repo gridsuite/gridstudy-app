@@ -422,7 +422,7 @@ export function exportNetworkFile(
         urlSearchParams.append('fileName', exportInfos.fileName);
     }
 
-    urlSearchParams.append('exportToExplorer', String(exportInfos.exportToExplorer));
+    urlSearchParams.append('exportToGridExplore', String(exportInfos.exportToGridExplore));
     if (exportInfos?.parentDirectoryUuid && !isBlankOrEmpty(exportInfos.parentDirectoryUuid)) {
         urlSearchParams.append('parentDirectoryUuid', exportInfos.parentDirectoryUuid);
     }

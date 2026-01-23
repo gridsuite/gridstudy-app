@@ -8,7 +8,7 @@
 export interface NetworkExportInfos {
     selectedFormat: string;
     fileName: string;
-    exportToExplorer: boolean;
+    exportToGridExplore: boolean;
     parentDirectoryUuid?: string;
     description?: string;
 }

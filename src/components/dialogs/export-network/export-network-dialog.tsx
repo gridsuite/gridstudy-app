@@ -136,12 +136,12 @@ export function ExportNetworkDialog({
 
     const onSubmit = useCallback(
         (data: ExportNetworkFormData) => {
-            const exportToExplorer = data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER;
+            const exportToGridExplore = data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER;
             onClick(nodeUuid, data[EXPORT_PARAMETERS], {
                 selectedFormat: data[EXPORT_FORMAT],
                 fileName: data[FILE_NAME],
-                exportToExplorer: exportToExplorer,
-                parentDirectoryUuid: exportToExplorer ? data[DIRECTORY_ITEM]?.[DIRECTORY_ITEM_ID] : undefined,
+                exportToGridExplore: exportToGridExplore,
+                parentDirectoryUuid: exportToGridExplore ? data[DIRECTORY_ITEM]?.[DIRECTORY_ITEM_ID] : undefined,
                 description: data[DESCRIPTION],
             });
         },
