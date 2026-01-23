@@ -11,7 +11,6 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { ComputingType, MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import RunningStatus from 'components/utils/running-status';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
@@ -75,7 +74,9 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
 
-    const { filters } = useFilterSelector(FilterType.PccMin, PCCMIN_RESULT);
+    const filters = useSelector(
+        (state: AppState) => state.computationFilters?.[FilterType.PccMin]?.columnsFilters?.[PCCMIN_RESULT].columns
+    );
     const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { page, rowsPerPage } = pagination;
     const [csvHeaders, setCsvHeaders] = useState<string[]>([]);

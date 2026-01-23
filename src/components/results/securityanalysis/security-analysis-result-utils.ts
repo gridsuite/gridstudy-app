@@ -194,6 +194,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
 interface AgGridFilterParams {
     type: AgGridFilterType;
     tab: string;
+    updateFilterCallback: () => void;
 }
 
 const makeAgGridStringColumn = (

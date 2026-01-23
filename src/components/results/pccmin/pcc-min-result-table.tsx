@@ -24,7 +24,6 @@ import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 
@@ -42,7 +41,9 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
 }) => {
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
-    const { filters } = useFilterSelector(FilterType.PccMin, PCCMIN_RESULT);
+    const filters = useSelector(
+        (state: AppState) => state.computationFilters?.[FilterType.PccMin]?.columnsFilters?.[PCCMIN_RESULT].columns
+    );
     const gridRef = useRef<AgGridReact>(null);
     const dispatch = useDispatch();
 

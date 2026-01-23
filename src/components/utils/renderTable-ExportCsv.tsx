@@ -14,7 +14,6 @@ import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
 import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterType as AgGridFilterType } from '../../types/custom-aggrid-types';
 
 const styles = {
@@ -62,7 +61,9 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
 }) => {
     const isRowsEmpty = !rows || rows.length === 0;
     const language = useSelector((state: AppState) => state.computedLanguage);
-    const { filters } = useFilterSelector(computationType, computationSubType);
+    const filters = useSelector(
+        (state: AppState) => state.computationFilters?.[computationType]?.columnsFilters?.[computationSubType].columns
+    );
     const onRowDataUpdated = useCallback((params: any) => {
         if (params.api) {
             params.api.sizeColumnsToFit();

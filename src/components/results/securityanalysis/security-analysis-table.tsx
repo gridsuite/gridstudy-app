@@ -15,7 +15,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType } from '../../../types/custom-aggrid-types';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
@@ -30,7 +29,10 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
     const securityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
-    const { filters } = useFilterSelector(FilterType.SecurityAnalysis, computationSubType);
+    const filters = useSelector(
+        (state: AppState) =>
+            state.computationFilters?.[FilterType.SecurityAnalysis]?.columnsFilters?.[computationSubType].columns
+    );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
     const overlayNoRowsTemplate = getNoRowsMessage(
         resultStatusMessages,
