@@ -514,8 +514,8 @@ export interface ShuntCompensatorCreationInfos {
     maxSusceptance: number | null;
     maxQAtNominalV: number | null;
     shuntCompensatorType: string | null;
-    sectionCount: number | null;
-    maximumSectionCount: number | null;
+    sectionCount: number;
+    maximumSectionCount: number;
     voltageLevelId: string | null;
     busOrBusbarSectionId: string | null;
     connectionDirection: string | null;

@@ -81,7 +81,7 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(),
-        ...getCharacteristicsFormValidationSchema(),
+        ...getCharacteristicsFormValidationSchema(false),
     })
     .concat(creationPropertiesSchema)
     .required();

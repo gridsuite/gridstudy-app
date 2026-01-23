@@ -20,25 +20,35 @@ import { computeSwitchedOnValue } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
 
-const characteristicsValidationSchema = (isModification = false) => ({
-    [CHARACTERISTICS_CHOICE]: yup.string().required(),
-    [SHUNT_COMPENSATOR_TYPE]: yup.string().when([CHARACTERISTICS_CHOICE], {
-        is: (characteristicsChoice: string) =>
-            characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && !isModification,
-        then: (schema) =>
-            schema.oneOf([SHUNT_COMPENSATOR_TYPES.CAPACITOR.id, SHUNT_COMPENSATOR_TYPES.REACTOR.id]).required(),
-        otherwise: (schema) => schema.nullable(),
-    }),
-    ...(isModification
+export const getCharacteristicsFormValidationSchema = (isModification: boolean) => {
+    const baseSchema = {
+        [CHARACTERISTICS_CHOICE]: yup.string().required(),
+        [SHUNT_COMPENSATOR_TYPE]: yup
+            .string()
+            .nullable()
+            .default(null)
+            .when([CHARACTERISTICS_CHOICE], {
+                is: (choice: string) => choice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && !isModification,
+                then: (schema) =>
+                    schema.oneOf([SHUNT_COMPENSATOR_TYPES.CAPACITOR.id, SHUNT_COMPENSATOR_TYPES.REACTOR.id]).required(),
+            }),
+    };
+    const additionalSchema = isModification
         ? getCharacteristicsModificationFormValidationSchema()
-        : getCharacteristicsCreateFormValidationSchema()),
-});
+        : getCharacteristicsCreateFormValidationSchema();
+
+    return {
+        ...baseSchema,
+        ...additionalSchema,
+    };
+};
 
 const getCharacteristicsCreateFormValidationSchema = () => {
     return {
         [MAX_Q_AT_NOMINAL_V]: yup
             .number()
             .nullable()
+            .default(null)
             .when([CHARACTERISTICS_CHOICE], {
                 is: (characteristicsChoice: string) =>
                     characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
@@ -47,6 +57,7 @@ const getCharacteristicsCreateFormValidationSchema = () => {
         [MAX_SUSCEPTANCE]: yup
             .number()
             .nullable()
+            .default(null)
             .when([CHARACTERISTICS_CHOICE], {
                 is: (characteristicsChoice: string) => characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
                 then: (schema) => schema.required(),
@@ -64,17 +75,25 @@ const getCharacteristicsCreateFormValidationSchema = () => {
 
 const getCharacteristicsModificationFormValidationSchema = () => {
     return {
-        [MAX_Q_AT_NOMINAL_V]: yup.number().min(0, 'ShuntCompensatorErrorQAtNominalVoltageLessThanZero').nullable(),
-        [MAX_SUSCEPTANCE]: yup.number().nullable(),
-        [MAXIMUM_SECTION_COUNT]: yup.number().min(1, 'MaximumSectionCountMustBeGreaterOrEqualToOne').nullable(),
-        [SECTION_COUNT]: yup.number().min(0, 'SectionCountMustBeBetweenZeroAndMaximumSectionCount').nullable(),
+        [MAX_Q_AT_NOMINAL_V]: yup
+            .number()
+            .min(0, 'ShuntCompensatorErrorQAtNominalVoltageLessThanZero')
+            .nullable()
+            .default(null),
+        [MAX_SUSCEPTANCE]: yup.number().nullable().default(null),
+        [MAXIMUM_SECTION_COUNT]: yup
+            .number()
+            .min(1, 'MaximumSectionCountMustBeGreaterOrEqualToOne')
+            .nullable()
+            .default(null),
+        [SECTION_COUNT]: yup
+            .number()
+            .min(0, 'SectionCountMustBeBetweenZeroAndMaximumSectionCount')
+            .nullable()
+            .default(null),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().nullable(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().nullable(),
     };
-};
-
-export const getCharacteristicsFormValidationSchema = (isModification = false) => {
-    return characteristicsValidationSchema(isModification);
 };
 
 const characteristicsEmptyFormData = () => ({

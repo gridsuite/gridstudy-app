@@ -39,11 +39,11 @@ export type ShuntCompensatorDialogSchemaBaseForm = {
         [CONNECTED]?: boolean;
     };
     [CHARACTERISTICS_CHOICE]: string;
-    [SHUNT_COMPENSATOR_TYPE]?: string;
-    [MAX_Q_AT_NOMINAL_V]?: number;
-    [MAX_SUSCEPTANCE]?: number;
-    [MAXIMUM_SECTION_COUNT]?: number;
-    [SECTION_COUNT]?: number;
+    [SHUNT_COMPENSATOR_TYPE]: string | null;
+    [MAX_Q_AT_NOMINAL_V]: number | null;
+    [MAX_SUSCEPTANCE]: number | null;
+    [MAXIMUM_SECTION_COUNT]: number;
+    [SECTION_COUNT]: number;
     [SWITCHED_ON_Q_AT_NOMINAL_V]?: number;
     [SWITCHED_ON_SUSCEPTANCE]?: number;
     [ADDITIONAL_PROPERTIES]?: Property[];
@@ -64,10 +64,10 @@ export interface ShuntCompensatorFormInfos {
     q?: number;
     targetV?: number;
     targetDeadband?: number;
-    sectionCount: number | null;
+    sectionCount: number;
     bPerSection?: number;
     qAtNominalV?: number;
-    maximumSectionCount: number | null;
+    maximumSectionCount: number;
     isLinear?: boolean;
     properties: Record<string, string> | undefined;
 }
