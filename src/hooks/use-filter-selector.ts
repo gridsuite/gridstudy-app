@@ -12,7 +12,7 @@ import { AppState } from '../redux/reducer';
 import { FilterConfig, FilterType } from '../types/custom-aggrid-types';
 import { useCallback } from 'react';
 
-const FILTER_PARAMS: Partial<
+const FILTER_ACTIONS: Partial<
     Record<
         FilterType,
         { filterType: string; filterStoreAction: (filterTab: any, filter: FilterConfig[]) => UnknownAction }
@@ -35,29 +35,29 @@ const getFilterFromState = (state: AppState, storeField: string, filterTab: stri
 };
 
 export const useFilterSelector = (filterType: FilterType, filterTab: string) => {
-    const filterConfig = FILTER_PARAMS[filterType];
+    const filterAction = FILTER_ACTIONS[filterType];
 
-    const filters = useSelector<AppState, FilterConfig[]>((state: AppState) => {
-        if (!filterConfig) {
-            const cf = state.computationFilters?.[filterType]?.columnsFilters?.[filterTab];
-            if (!cf) return EMPTY_ARRAY;
-            if (Array.isArray(cf)) return cf;
-            return cf.columns ?? EMPTY_ARRAY;
-        }
-        return getFilterFromState(state, filterConfig.filterType, filterTab);
-    });
-
+    const selectFilters = useCallback(
+        (state: AppState): FilterConfig[] => {
+            if (filterAction) {
+                return getFilterFromState(state, filterAction.filterType, filterTab);
+            }
+            const columnsFilter = state.computationFilters?.[filterType]?.columnsFilters?.[filterTab];
+            if (Array.isArray(columnsFilter)) return columnsFilter;
+            return columnsFilter?.columns ?? EMPTY_ARRAY;
+        },
+        [filterAction, filterType, filterTab]
+    );
+    const filters = useSelector<AppState, FilterConfig[]>(selectFilters);
     const dispatch = useDispatch();
-
     const dispatchFilters = useCallback(
         (newFilters: FilterConfig[]) => {
-            if (!filterConfig) {
-                dispatch(updateColumnFiltersAction(filterType, filterTab, newFilters));
-            } else {
-                dispatch(filterConfig.filterStoreAction(filterTab, newFilters));
-            }
+            const action =
+                filterAction?.filterStoreAction ??
+                ((tab: string, filters: FilterConfig[]) => updateColumnFiltersAction(filterType, tab, filters));
+            dispatch(action(filterTab, newFilters));
         },
-        [filterConfig, dispatch, filterType, filterTab]
+        [dispatch, filterAction, filterType, filterTab]
     );
 
     return { filters, dispatchFilters };

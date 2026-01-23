@@ -30,7 +30,6 @@ import { SensitivityExportButton } from './sensitivity-analysis-export-button.js
 import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -108,7 +107,6 @@ function SensitivityAnalysisResultTab({
                             csvHeaders={csvHeaders}
                             nOrNkIndex={nOrNkIndex}
                             sensiKind={sensiTab}
-                            globalFilters={buildValidGlobalFilters(globalFiltersFromState)}
                             disabled={isCsvButtonDisabled}
                         />
                     </Box>
@@ -120,7 +118,6 @@ function SensitivityAnalysisResultTab({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                        globalFilters={buildValidGlobalFilters(globalFiltersFromState)}
                     />
                 </>
             )}

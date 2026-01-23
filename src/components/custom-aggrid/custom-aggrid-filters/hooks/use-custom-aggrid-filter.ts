@@ -36,7 +36,7 @@ const changeValueFromArrayWithFieldValue = (
 export const useCustomAggridFilter = (
     api: GridApi,
     colId: string,
-    { type, tab, dataType, comparators = [], debounceMs = 1000, onBeforePersist, updateFilterCallback }: FilterParams
+    { type, tab, dataType, comparators = [], debounceMs = 1000, updateFilterCallback }: FilterParams
 ) => {
     const [selectedFilterComparator, setSelectedFilterComparator] = useState<string>('');
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
@@ -72,12 +72,11 @@ export const useCustomAggridFilter = (
             } else {
                 updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
             }
-            onBeforePersist?.();
             updateAgGridFilters(api, filters);
-            updateFilterCallback && updateFilterCallback(api, updatedFilters, colId, studyUuid, type, tab);
+            updateFilterCallback?.(api, updatedFilters, colId, studyUuid, type, tab);
             dispatchFilters(updatedFilters);
         },
-        [onBeforePersist, api, filters, updateFilterCallback, studyUuid, type, tab, dispatchFilters]
+        [api, filters, updateFilterCallback, studyUuid, type, tab, dispatchFilters]
     );
 
     // We intentionally exclude `updateFilter` from dependencies.

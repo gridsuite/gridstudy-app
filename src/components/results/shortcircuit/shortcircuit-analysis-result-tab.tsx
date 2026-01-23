@@ -196,7 +196,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
-                        globalFilters={buildValidGlobalFilters(globalFiltersFromState)}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult

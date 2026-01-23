@@ -15,11 +15,13 @@ export const updateComputationColumnsFilters = (
     colId?: string,
     studyUuid?: UUID,
     filterType?: FilterType,
-    filterSubType?: string
+    filterSubType?: string,
+    onBeforePersist?: () => void
 ) => {
     if (!agGridApi || !studyUuid || !filters || !colId || !filterSubType || !filterType) {
         return;
     }
+    onBeforePersist?.();
     const filter = filters.find((f) => f.column === colId);
     if (!filter) return;
     const columnDto = {

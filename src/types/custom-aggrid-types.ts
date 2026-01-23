@@ -67,14 +67,14 @@ export type FilterParams = {
     dataType?: string;
     comparators?: string[];
     debounceMs?: number;
-    onBeforePersist?: () => void;
     updateFilterCallback?: (
         agGridApi?: GridApi,
         filters?: FilterConfig[],
         colId?: string,
         studyUuid?: UUID,
         filterType?: FilterType,
-        filterSubType?: string
+        filterSubType?: string,
+        onBeforePersist?: () => void
     ) => void;
 };
 

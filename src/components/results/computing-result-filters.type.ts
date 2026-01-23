@@ -6,7 +6,7 @@
  */
 import { FilterConfig } from '../../types/custom-aggrid-types';
 import { GlobalFilter } from './common/global-filter/global-filter-types';
-import { ColumnFilterEntry, ComputationFiltersState } from '../../redux/reducer';
+import { ComputationResultColumnFilter, ComputationFiltersState } from '../../redux/reducer';
 
 export type ComputationResultFiltersInfos = {
     computationTypeFiltersInfos: {
@@ -34,7 +34,7 @@ export function initComputationResultFiltersState(
     roots.forEach((root) => {
         (root.computationTypeFiltersInfos ?? []).forEach((typeInfo) => {
             const computationTypeKey = typeInfo.computationType;
-            const columnsFilters: Record<string, ColumnFilterEntry> = {};
+            const columnsFilters: Record<string, ComputationResultColumnFilter> = {};
 
             (typeInfo.computationSubTypeFilterInfos ?? []).forEach((subTypeInfo) => {
                 const subTypeKey = subTypeInfo.computationSubType;

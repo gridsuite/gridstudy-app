@@ -10,6 +10,7 @@ import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
 import {
     FilterConfig,
+    FilterType,
     FilterType as AgGridFilterType,
     numericFilterParams,
     textFilterParams,
@@ -19,7 +20,7 @@ import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-ag
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
-import { ICellRendererParams } from 'ag-grid-community';
+import { GridApi, ICellRendererParams } from 'ag-grid-community';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 
 export interface SinglePccMinResultInfos {
@@ -81,8 +82,23 @@ export const getPccMinColumns = (
     const pccMinFilterParams = {
         type: AgGridFilterType.PccMin,
         tab: PCCMIN_RESULT,
-        onBeforePersist: goToFirstPage,
-        updateFilterCallback: updateComputationColumnsFilters,
+        updateFilterCallback: (
+            agGridApi?: GridApi,
+            filters?: FilterConfig[],
+            colId?: string,
+            studyUuid?: UUID,
+            filterType?: FilterType,
+            filterSubType?: string
+        ) =>
+            updateComputationColumnsFilters(
+                agGridApi,
+                filters,
+                colId,
+                studyUuid,
+                filterType,
+                filterSubType,
+                goToFirstPage
+            ),
     };
 
     const createFilterContext = (

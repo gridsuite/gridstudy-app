@@ -505,13 +505,13 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
-export type ColumnFilterEntry = {
+export type ComputationResultColumnFilter = {
     columns: FilterConfig[];
 };
 
 export type ComputationFiltersState = {
     [computationType: string]: {
-        columnsFilters: Record<string, ColumnFilterEntry>;
+        columnsFilters: Record<string, ComputationResultColumnFilter>;
         globalFilters: GlobalFilter[];
     };
 };
@@ -1824,9 +1824,9 @@ export const reducer = createReducer(initialState, (builder) => {
             .filter(([key]) => key !== 'id')
             .forEach(([computationTypeKey, filterData]) => {
                 if (!filterData) return;
-                const normalizedColumnsFilters: Record<string, ColumnFilterEntry> = {};
+                const normalizedColumnsFilters: Record<string, ComputationResultColumnFilter> = {};
                 Object.entries(filterData.columnsFilters ?? {}).forEach(
-                    ([subTypeKey, entry]: [string, ColumnFilterEntry]) => {
+                    ([subTypeKey, entry]: [string, ComputationResultColumnFilter]) => {
                         normalizedColumnsFilters[subTypeKey] = {
                             columns: entry.columns ?? [],
                         };

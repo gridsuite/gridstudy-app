@@ -17,11 +17,11 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
 import { mappingTabs, SUFFIX_TYPES } from './sensitivity-analysis-result-utils.js';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterConfig, FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
-import { GridColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GridApi, GridColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -33,6 +33,7 @@ import {
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import type { UUID } from 'node:crypto';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
@@ -109,8 +110,23 @@ function SensitivityAnalysisResult({
                                 : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             type: AgGridFilterType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
-                            onBeforePersist: goToFirstPage,
-                            updateFilterCallback: updateComputationColumnsFilters,
+                            updateFilterCallback: (
+                                agGridApi?: GridApi,
+                                filters?: FilterConfig[],
+                                colId?: string,
+                                studyUuid?: UUID,
+                                filterType?: FilterType,
+                                filterSubType?: string
+                            ) =>
+                                updateComputationColumnsFilters(
+                                    agGridApi,
+                                    filters,
+                                    colId,
+                                    studyUuid,
+                                    filterType,
+                                    filterSubType,
+                                    goToFirstPage
+                                ),
                         },
                     },
                 },

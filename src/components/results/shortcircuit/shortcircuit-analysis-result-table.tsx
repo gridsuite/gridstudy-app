@@ -10,6 +10,7 @@ import { useIntl } from 'react-intl';
 import { Box, Button, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import {
+    GridApi,
     GridReadyEvent,
     ICellRendererParams,
     RowClassParams,
@@ -34,6 +35,7 @@ import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggri
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import {
     FilterConfig,
+    FilterType,
     FilterType as AgGridFilterType,
     numericFilterParams,
     textFilterParams,
@@ -49,6 +51,7 @@ import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { PanelType } from '../../workspace/types/workspace.types';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import type { UUID } from 'node:crypto';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -150,8 +153,23 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         const filterParams = {
             type: AgGridFilterType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
-            onBeforePersist: goToFirstPage,
-            updateFilterCallback: updateComputationColumnsFilters,
+            updateFilterCallback: (
+                agGridApi?: GridApi,
+                filters?: FilterConfig[],
+                colId?: string,
+                studyUuid?: UUID,
+                filterType?: FilterType,
+                filterSubType?: string
+            ) =>
+                updateComputationColumnsFilters(
+                    agGridApi,
+                    filters,
+                    colId,
+                    studyUuid,
+                    filterType,
+                    filterSubType,
+                    goToFirstPage
+                ),
         };
 
         const inputFilterParams = (

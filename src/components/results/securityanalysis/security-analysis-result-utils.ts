@@ -15,7 +15,7 @@ import {
     SubjectIdRendererType,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
-import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import { ColDef, GridApi, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { ComputingType, ContingencyCellRenderer } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
@@ -33,7 +33,7 @@ import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-co
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
-import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterConfig, FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
@@ -45,13 +45,13 @@ import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format
 import { MAX_INT32 } from 'services/utils';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
+import type { UUID } from 'node:crypto';
 
 interface TableParams {
     sortParams: SortParams;
     filterParams: {
         type: AgGridFilterType;
         tab: string;
-        onBeforePersist: () => void;
         updateFilterCallback: typeof updateComputationColumnsFilters;
     };
 }
@@ -66,8 +66,23 @@ const createTableParams = (tabIndex: number, goToFirstPage: () => void): TablePa
         filterParams: {
             type: AgGridFilterType.SecurityAnalysis,
             tab,
-            onBeforePersist: goToFirstPage,
-            updateFilterCallback: updateComputationColumnsFilters,
+            updateFilterCallback: (
+                agGridApi?: GridApi,
+                filters?: FilterConfig[],
+                colId?: string,
+                studyUuid?: UUID,
+                filterType?: FilterType,
+                filterSubType?: string
+            ) =>
+                updateComputationColumnsFilters(
+                    agGridApi,
+                    filters,
+                    colId,
+                    studyUuid,
+                    filterType,
+                    filterSubType,
+                    goToFirstPage
+                ),
         },
     };
 };
