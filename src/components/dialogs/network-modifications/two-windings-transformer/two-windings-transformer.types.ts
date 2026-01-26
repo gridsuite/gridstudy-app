@@ -78,7 +78,7 @@ export interface TapChangerPaneProps {
     isModification?: boolean;
 }
 
-// Creation form types
+// Creation/Modification form types
 export interface EntityIdReference {
     [ID]: string;
 }
@@ -123,8 +123,6 @@ export interface StateEstimationFormSchema {
     [MEASUREMENT_Q2]: MeasurementFormSchema;
     [TO_BE_ESTIMATED]: ToBeEstimatedFormSchema;
 }
-
-// modification form types
 
 // Types from network map server response
 
