@@ -13,6 +13,8 @@ import { Box, LinearProgress } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
+import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { FilterType as AgGridFilterType } from '../../types/custom-aggrid-types';
 
 const styles = {
     gridContainer: {
@@ -40,6 +42,8 @@ interface RenderTableAndExportCsvProps {
     getRowStyle?: (params: RowClassParams) => RowStyle | undefined;
     overlayNoRowsTemplate: string | undefined;
     skipColumnHeaders: boolean;
+    computationType: AgGridFilterType;
+    computationSubType: string;
 }
 
 export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvProps> = ({
@@ -50,19 +54,29 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     rows,
     getRowStyle,
     overlayNoRowsTemplate,
+    computationType,
+    computationSubType,
     skipColumnHeaders = false,
     showLinearProgress = false,
 }) => {
     const isRowsEmpty = !rows || rows.length === 0;
     const language = useSelector((state: AppState) => state.computedLanguage);
+    const filters = useSelector(
+        (state: AppState) => state.computationFilters?.[computationType]?.columnsFilters?.[computationSubType].columns
+    );
     const onRowDataUpdated = useCallback((params: any) => {
         if (params.api) {
             params.api.sizeColumnsToFit();
         }
     }, []);
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
+    const onGridReady = useCallback(
+        ({ api }: GridReadyEvent) => {
+            if (!api || !filters) return;
+            updateAgGridFilters(api, filters);
+            api?.sizeColumnsToFit();
+        },
+        [filters]
+    );
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>

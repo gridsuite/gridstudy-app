@@ -15,7 +15,7 @@ import {
     SubjectIdRendererType,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
-import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import { ColDef, GridApi, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { ComputingType, ContingencyCellRenderer } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
@@ -33,7 +33,7 @@ import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-co
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
-import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterConfig, FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
@@ -43,6 +43,49 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
+import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
+import type { UUID } from 'node:crypto';
+
+interface TableParams {
+    sortParams: SortParams;
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+        updateFilterCallback: typeof updateComputationColumnsFilters;
+    };
+}
+
+const createTableParams = (tabIndex: number, goToFirstPage: () => void): TableParams => {
+    const tab = getStoreFields(tabIndex);
+    return {
+        sortParams: {
+            table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
+            tab,
+        },
+        filterParams: {
+            type: AgGridFilterType.SecurityAnalysis,
+            tab,
+            updateFilterCallback: (
+                agGridApi?: GridApi,
+                filters?: FilterConfig[],
+                colId?: string,
+                studyUuid?: UUID,
+                filterType?: FilterType,
+                filterSubType?: string
+            ) =>
+                updateComputationColumnsFilters(
+                    agGridApi,
+                    filters,
+                    colId,
+                    studyUuid,
+                    filterType,
+                    filterSubType,
+                    goToFirstPage
+                ),
+        },
+    };
+};
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -248,17 +291,10 @@ export const securityAnalysisTableNColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    onFilter: () => void
+    goToFirstPage: () => void
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
-        tab: getStoreFields(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.SecurityAnalysis,
-        tab: getStoreFields(tabIndex),
-        updateFilterCallback: onFilter,
-    };
+    const { sortParams, filterParams } = createTableParams(tabIndex, goToFirstPage);
+
     return [
         makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn({
@@ -346,17 +382,10 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    onFilter: () => void
+    goToFirstPage: () => void
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
-        tab: getStoreFields(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.SecurityAnalysis,
-        tab: getStoreFields(tabIndex),
-        updateFilterCallback: onFilter,
-    };
+    const { sortParams, filterParams } = createTableParams(tabIndex, goToFirstPage);
+
     return [
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn('Contingency', 'contingencyId', intl, filterParams, sortParams),
@@ -405,7 +434,10 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn(
-            makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, { ...sortParams, isChildren: true })
+            makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, {
+                ...sortParams,
+                isChildren: true,
+            })
         ),
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn(
@@ -517,17 +549,10 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number,
-    onFilter: () => void
+    goToFirstPage: () => void
 ): ColDef[] => {
-    const sortParams: ColumnContext['sortParams'] = {
-        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
-        tab: getStoreFields(tabIndex),
-    };
-    const filterParams = {
-        type: AgGridFilterType.SecurityAnalysis,
-        tab: getStoreFields(tabIndex),
-        updateFilterCallback: onFilter,
-    };
+    const { sortParams, filterParams } = createTableParams(tabIndex, goToFirstPage);
+
     return [
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, sortParams),
@@ -576,7 +601,10 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn(
-            makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, { ...sortParams, isChildren: true })
+            makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, {
+                ...sortParams,
+                isChildren: true,
+            })
         ),
 
         makeAgGridCustomHeaderColumn({

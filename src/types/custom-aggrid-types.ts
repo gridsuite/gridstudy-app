@@ -23,6 +23,7 @@ import {
     SENSITIVITY_IN_DELTA_MW_N,
     SENSITIVITY_IN_DELTA_MW_N_K,
 } from 'utils/store-sort-filter-fields';
+import { UUID } from 'node:crypto';
 
 export type SortConfig = {
     colId: string;
@@ -45,6 +46,7 @@ export enum FilterType {
     Logs = 'Logs',
     StateEstimation = 'StateEstimation',
     PccMin = 'PccMin',
+    VoltageInit = 'VoltageInit',
 }
 
 export type FilterData = {
@@ -65,7 +67,15 @@ export type FilterParams = {
     dataType?: string;
     comparators?: string[];
     debounceMs?: number;
-    updateFilterCallback?: (api?: GridApi, filters?: FilterConfig[]) => void;
+    updateFilterCallback?: (
+        agGridApi?: GridApi,
+        filters?: FilterConfig[],
+        colId?: string,
+        studyUuid?: UUID,
+        filterType?: FilterType,
+        filterSubType?: string,
+        onBeforePersist?: () => void
+    ) => void;
 };
 
 export type PaginationConfig = {

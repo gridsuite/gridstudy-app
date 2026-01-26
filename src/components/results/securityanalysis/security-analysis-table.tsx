@@ -14,17 +14,24 @@ import { ComputingType, CustomAGGrid, DefaultCellRenderer } from '@gridsuite/com
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { FilterType } from '../../../types/custom-aggrid-types';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
     rows,
     columnDefs,
     isLoadingResult,
     agGridProps,
+    computationSubType,
 }) => {
     const intl: IntlShape = useIntl();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+    );
+    const filters = useSelector(
+        (state: AppState) =>
+            state.computationFilters?.[FilterType.SecurityAnalysis]?.columnsFilters?.[computationSubType].columns
     );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
     const overlayNoRowsTemplate = getNoRowsMessage(
@@ -34,9 +41,14 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
         !isLoadingResult
     );
 
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
+    const onGridReady = useCallback(
+        ({ api }: GridReadyEvent) => {
+            if (!api || !filters) return;
+            updateAgGridFilters(api, filters);
+            api?.sizeColumnsToFit();
+        },
+        [filters]
+    );
 
     const defaultColDef = useMemo(
         () => ({

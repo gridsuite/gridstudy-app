@@ -84,7 +84,7 @@ const formatCustomFiltersForAgGrid = (filters: FilterConfig[]): FilterModel => {
     return agGridFilterModel;
 };
 
-export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] | undefined) => {
+export const updateAgGridFilters = (api: GridApi | undefined, filters: FilterConfig[] | undefined) => {
     // Check if filters are provided and if the AG Grid API is accessible
     if (!filters || !api) {
         return; // Exit if no filters are provided or if the grid API is not accessible

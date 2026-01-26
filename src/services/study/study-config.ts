@@ -14,7 +14,7 @@ import {
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
-import { SortConfig } from '../../types/custom-aggrid-types';
+import { FilterType, SortConfig } from '../../types/custom-aggrid-types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');
@@ -225,5 +225,42 @@ export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModel
         headers: {
             'Content-Type': 'application/json',
         },
+    });
+}
+
+export function getComputationResultFilters(studyUuid: UUID): Promise<any> {
+    console.info('get computing result config collection');
+    const url = getStudyUrl(studyUuid) + '/computation-result-filters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function updateComputationResultFilters(
+    studyUuid: UUID,
+    filterType: string | undefined,
+    filters: GlobalFilter[]
+) {
+    return backendFetchJson(getStudyUrl(studyUuid) + `/computation-result-filters/${filterType}/global-filters`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filters),
+    });
+}
+
+export function updateComputationResultFiltersColumn(
+    studyUuid: UUID,
+    filterType: FilterType,
+    filterSubType: string,
+    column: any
+) {
+    const url = `${getStudyUrl(studyUuid)}/computation-result-filters/${filterType}/${filterSubType}/columns`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(column),
     });
 }

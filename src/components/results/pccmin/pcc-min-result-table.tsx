@@ -23,6 +23,9 @@ import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
+import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { FilterType } from '../../../types/custom-aggrid-types';
+import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -32,13 +35,15 @@ const styles = {
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     result,
     isFetching,
-    onFilter,
-    filters,
+    goToFirstPage,
     setCsvHeaders,
     setIsCsvButtonDisabled,
 }) => {
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
+    const filters = useSelector(
+        (state: AppState) => state.computationFilters?.[FilterType.PccMin]?.columnsFilters?.[PCCMIN_RESULT].columns
+    );
     const gridRef = useRef<AgGridReact>(null);
     const dispatch = useDispatch();
 
@@ -63,8 +68,8 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     );
 
     const columns = useMemo(
-        () => getPccMinColumns(intl, onFilter, voltageLevelIdRenderer),
-        [intl, onFilter, voltageLevelIdRenderer]
+        () => getPccMinColumns(intl, voltageLevelIdRenderer, goToFirstPage),
+        [goToFirstPage, intl, voltageLevelIdRenderer]
     );
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);
@@ -98,12 +103,12 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
 
     const handleGridReady = useCallback(
         (event: GridReadyEvent) => {
-            if (event.api) {
-                event.api.sizeColumnsToFit();
-                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
-            }
+            if (!event.api || !filters) return;
+            event.api.sizeColumnsToFit();
+            updateAgGridFilters(event.api, filters);
+            setCsvHeaders(getColumnHeaderDisplayNames(event.api));
         },
-        [setCsvHeaders]
+        [filters, setCsvHeaders]
     );
 
     return (
