@@ -9,7 +9,9 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentType,
     FieldType,
+    ModificationType,
     snackWithFallback,
     TextInput,
     useSnackMessage,
@@ -45,9 +47,8 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FieldErrors, useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { APPLICABILITY, FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
@@ -87,13 +88,25 @@ import {
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
-import { LimitsPane } from '../../../limits/limits-pane.tsx';
+import { LimitsPane } from '../../../limits/limits-pane';
+import { LineCreationInfos } from '../../../../../services/network-modification-types';
+import { LineModificationFormSchema } from '../modification/line-modification-type';
+import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
+import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
+import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
-const emptyFormData = {
+const emptyFormData: any = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(false),
     ...emptyProperties,
+};
+
+type LineCreationDialogProps = NetworkModificationDialogProps & {
+    editData?: LineCreationInfos; // contains data when we try to edit an existing hypothesis
+    onCreateLine: typeof createLine;
+    displayConnectivity?: boolean;
 };
 
 /**
@@ -118,12 +131,12 @@ const LineCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: Readonly<LineCreationDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
     const [tabIndex, setTabIndex] = useState(LineCreationDialogTab.CHARACTERISTICS_TAB);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
 
     const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
 
@@ -145,58 +158,57 @@ const LineCreationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-
     const { reset, setValue } = formMethods;
 
-    const fromSearchCopyToFormValues = (line) => {
-        reset(
-            {
-                ...getHeaderFormData({
-                    equipmentId: line.id + '(1)',
-                    equipmentName: line.name ?? '',
-                }),
-                ...getCharacteristicsFormData({
-                    r: line.r,
-                    x: line.x,
-                    g1: convertInputValue(FieldType.G1, line.g1), // this form uses and displays microSiemens
-                    b1: convertInputValue(FieldType.B1, line.b1),
-                    g2: convertInputValue(FieldType.G2, line.g2),
-                    b2: convertInputValue(FieldType.B2, line.b2),
-                    ...(displayConnectivity &&
-                        getConnectivityFormData(
-                            {
-                                voltageLevelId: line.voltageLevelId1,
-                                busbarSectionId: line.busOrBusbarSectionId1,
-                                connectionDirection: line.connectablePosition1.connectionDirection,
-                                connectionName: line.connectablePosition1.connectionName,
-                            },
-                            CONNECTIVITY_1
-                        )),
-                    ...(displayConnectivity &&
-                        getConnectivityFormData(
-                            {
-                                voltageLevelId: line.voltageLevelId2,
-                                busbarSectionId: line.busOrBusbarSectionId2,
-                                connectionDirection: line.connectablePosition2.connectionDirection,
-                                connectionName: line.connectablePosition2.connectionName,
-                            },
-                            CONNECTIVITY_2
-                        )),
-                }),
-                ...getAllLimitsFormData(
-                    formatCompleteCurrentLimit(line.currentLimits),
-                    line.selectedOperationalLimitsGroupId1 ?? null,
-                    line.selectedOperationalLimitsGroupId2 ?? null
+    const fromSearchCopyToFormValues = (line: LineFormInfos) => {
+        const formData = {
+            ...getHeaderFormData({
+                equipmentId: line.id + '(1)',
+                equipmentName: line.name ?? '',
+            }),
+            ...getCharacteristicsFormData({
+                r: line.r,
+                x: line.x,
+                g1: convertInputValue(FieldType.G1, line.g1), // this form uses and displays microSiemens
+                b1: convertInputValue(FieldType.B1, line.b1),
+                g2: convertInputValue(FieldType.G2, line.g2),
+                b2: convertInputValue(FieldType.B2, line.b2),
+                ...getConnectivityFormData(
+                    {
+                        voltageLevelId: line.voltageLevelId1,
+                        busbarSectionId: line.busOrBusbarSectionId1,
+                        connectionDirection: line.connectablePosition1.connectionDirection,
+                        connectionName: line.connectablePosition1.connectionName,
+                        connectionPosition: line.connectablePosition1.connectionPosition,
+                        terminalConnected: line.terminal1Connected,
+                    },
+                    CONNECTIVITY_1
                 ),
-                ...copyEquipmentPropertiesForCreation(line),
-            },
-            { keepDefaultValues: true }
-        );
+                ...getConnectivityFormData(
+                    {
+                        voltageLevelId: line.voltageLevelId2,
+                        busbarSectionId: line.busOrBusbarSectionId2,
+                        connectionDirection: line.connectablePosition2.connectionDirection,
+                        connectionName: line.connectablePosition2.connectionName,
+                        connectionPosition: line.connectablePosition2.connectionPosition,
+                        terminalConnected: line.terminal2Connected,
+                    },
+                    CONNECTIVITY_2
+                ),
+            }),
+            ...getAllLimitsFormData(
+                formatCompleteCurrentLimit(line.currentLimits),
+                line.selectedOperationalLimitsGroupId1 ?? null,
+                line.selectedOperationalLimitsGroupId2 ?? null
+            ),
+            ...copyEquipmentPropertiesForCreation(line),
+        };
+        reset(formData, { keepDefaultValues: true });
     };
 
     const fromEditDataToFormValues = useCallback(
-        (line) => {
-            reset({
+        (line: LineCreationInfos) => {
+            const formData = {
                 ...getHeaderFormData({
                     equipmentId: line.equipmentId,
                     equipmentName: line.equipmentName,
@@ -241,7 +253,8 @@ const LineCreationDialog = ({
                     line?.selectedOperationalLimitsGroupId2 ?? null
                 ),
                 ...getPropertiesFromModification(line.properties),
-            });
+            };
+            reset(formData, { keepDefaultValues: true });
         },
         [reset]
     );
@@ -254,7 +267,7 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const handleLineSegmentsBuildSubmit = (data) => {
+    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
@@ -267,8 +280,8 @@ const LineCreationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
-        const finalLimits = [];
-        data[FINAL_CURRENT_LIMITS].forEach((item) => {
+        const finalLimits: OperationalLimitsGroupFormSchema[] = [];
+        data[FINAL_CURRENT_LIMITS].forEach((item: CurrentLimitsInfo) => {
             const temporaryLimitsList = [];
             if (item.temporaryLimitValue) {
                 temporaryLimitsList.push({
@@ -292,30 +305,27 @@ const LineCreationDialog = ({
     };
 
     const onSubmit = useCallback(
-        (line) => {
+        (line: LineCreationFormSchema) => {
             const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
-            onCreateLine({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
+            const lineCreationInfos: LineCreationInfos = {
+                type: ModificationType.LINE_CREATION,
                 equipmentId: header[EQUIPMENT_ID],
                 equipmentName: sanitizeString(header[EQUIPMENT_NAME]),
-                r: characteristics[R],
-                x: characteristics[X],
+                r: characteristics[R] ?? null,
+                x: characteristics[X] ?? null,
                 g1: convertOutputValue(FieldType.G1, characteristics[G1]),
                 b1: convertOutputValue(FieldType.B1, characteristics[B1]),
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
-                voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id,
-                busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
-                busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                operationalLimitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
-                selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1],
-                selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2],
-                isUpdate: !!editData,
-                modificationUuid: editData ? editData.uuid : undefined,
+                voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id ?? null,
+                busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id ?? null,
+                voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id ?? null,
+                busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id ?? null,
+                operationalLimitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS] ?? []),
+                selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1] ?? null,
+                selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2] ?? null,
                 connectionName1: sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),
                 connectionDirection1:
                     characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
@@ -327,6 +337,13 @@ const LineCreationDialog = ({
                 connected1: characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
                 connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
                 properties: toModificationProperties(line),
+            } satisfies LineCreationInfos;
+            onCreateLine({
+                lineCreationInfos,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData ? editData.uuid : undefined,
+                isUpdate: !!editData,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LineCreationError' });
             });
@@ -334,7 +351,7 @@ const LineCreationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
-    const onValidationError = (errors) => {
+    const onValidationError = (errors: FieldErrors<LineModificationFormSchema>) => {
         let tabsInError = [];
         if (errors?.[CHARACTERISTICS] !== undefined) {
             tabsInError.push(LineCreationDialogTab.CHARACTERISTICS_TAB);
@@ -429,7 +446,7 @@ const LineCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.LINE}
+                    equipmentType={EquipmentType.LINE}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
@@ -442,15 +459,6 @@ const LineCreationDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-LineCreationDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
 };
 
 export default LineCreationDialog;
