@@ -13,6 +13,8 @@ import {
     MODIFICATION_TYPES,
     NetworkModificationMetadata,
     snackWithFallback,
+    StudyContext,
+    SubstationCreationDialog,
     usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -44,7 +46,6 @@ import { LoadCreationDialog } from '../../../dialogs/network-modifications/load/
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
-import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import { TabularModificationType } from 'components/dialogs/network-modifications/tabular/tabular-common';
 import { TabularDialog } from 'components/dialogs/network-modifications/tabular/tabular-dialog';
@@ -176,6 +177,16 @@ const NetworkModificationNodeEditor = () => {
     const copyInfosRef = useRef<NetworkModificationCopyInfos | null>(null);
     copyInfosRef.current = copyInfos;
 
+    const studyContext: StudyContext | undefined = useMemo(() => {
+        if (studyUuid && currentNode?.id) {
+            return {
+                studyId: studyUuid,
+                nodeId: currentNode.id,
+                rootNetworkId: currentRootNetworkUuid ?? undefined,
+            };
+        }
+    }, [currentNode?.id, currentRootNetworkUuid, studyUuid]);
+
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', () => {
@@ -209,6 +220,19 @@ const NetworkModificationNodeEditor = () => {
                 editData={editData}
                 isUpdate={isUpdate}
                 editDataFetchStatus={editDataFetchStatus}
+            />
+        );
+    }
+
+    function modificationWithStudyContext(Dialog: React.FC<any>) {
+        return (
+            <Dialog
+                onClose={handleCloseDialog}
+                onValidated={handleValidatedDialog}
+                editData={editData}
+                isUpdate={isUpdate}
+                editDataFetchStatus={editDataFetchStatus}
+                studyContext={studyContext}
             />
         );
     }
@@ -257,7 +281,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
                             label: 'menu.create',
-                            action: () => withDefaultParams(SubstationCreationDialog),
+                            action: () => modificationWithStudyContext(SubstationCreationDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
