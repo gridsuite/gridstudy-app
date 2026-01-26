@@ -111,7 +111,7 @@ export const selectFocusedAssociatedSldId = createSelector([selectAssociatedPane
 export const selectPanelTargetEquipment = createSelector(
     [selectPanel],
     (panel): { targetEquipmentId?: string; targetEquipmentType?: string } | undefined => {
-        if (!panel || panel.type !== PanelType.SPREADSHEET) return undefined;
+        if (panel?.type !== PanelType.SPREADSHEET) return undefined;
         return {
             targetEquipmentId: panel.targetEquipmentId,
             targetEquipmentType: panel.targetEquipmentType,
@@ -122,7 +122,7 @@ export const selectPanelTargetEquipment = createSelector(
 export const selectSldDiagramFields = createSelector(
     [selectPanel],
     (panel): { equipmentId: string; navigationHistory: string[]; parentNadPanelId: UUID | undefined } | undefined => {
-        if (!panel || (panel.type !== PanelType.SLD_VOLTAGE_LEVEL && panel.type !== PanelType.SLD_SUBSTATION)) {
+        if (panel?.type !== PanelType.SLD_VOLTAGE_LEVEL && panel?.type !== PanelType.SLD_SUBSTATION) {
             return undefined;
         }
         return {
@@ -134,7 +134,7 @@ export const selectSldDiagramFields = createSelector(
 );
 
 export const selectNadDiagramFields = createSelector([selectPanel], (panel) => {
-    if (!panel || panel.type !== PanelType.NAD) return undefined;
+    if (panel?.type !== PanelType.NAD) return undefined;
     return {
         title: panel.title,
         nadConfigUuid: panel.nadConfigUuid,
@@ -147,6 +147,6 @@ export const selectNadDiagramFields = createSelector([selectPanel], (panel) => {
 });
 
 export const selectNadNavigationHistory = createSelector([selectPanel], (panel): string[] | undefined => {
-    if (!panel || panel.type !== PanelType.NAD) return undefined;
+    if (panel?.type !== PanelType.NAD) return undefined;
     return panel.navigationHistory;
 });

@@ -433,7 +433,7 @@ export const useWorkspacePanelActions = () => {
     const clearTargetEquipment = useCallback(
         (panelId: UUID) => {
             const panel = selectPanel(store.getState(), panelId);
-            if (!panel || panel.type !== PanelType.SPREADSHEET) return;
+            if (panel?.type !== PanelType.SPREADSHEET) return;
 
             // Transient UI state - don't sync to backend
             savePanels([{ ...panel, targetEquipmentId: undefined, targetEquipmentType: undefined }], false);
