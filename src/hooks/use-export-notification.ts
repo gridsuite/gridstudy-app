@@ -28,7 +28,7 @@ export default function useExportNotification() {
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             if (isExportNetworkNotification(eventData)) {
-                const { userId: userIdNotif, exportUuid, exportToGridExplore, error } = eventData.headers;
+                const { userId: userIdNotif, exportUuid, exportToGridExplore, fileName, error } = eventData.headers;
                 const exportIdentifierNotif = buildExportIdentifier(exportUuid);
                 const isSubscribed = isExportSubscribed(exportIdentifierNotif);
                 if (isSubscribed && userIdNotif === userId) {
@@ -38,7 +38,10 @@ export default function useExportNotification() {
                     } else {
                         exportToGridExplore
                             ? snackSuccess({
-                                  messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: '' }),
+                                  messageTxt: intl.formatMessage(
+                                      { id: 'export.message.succeeded' },
+                                      { fileName: fileName }
+                                  ),
                                   persist: true,
                               })
                             : downloadExportNetworkFile(exportUuid);
