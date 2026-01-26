@@ -43,7 +43,7 @@ import {
     TemporaryLimit,
 } from '../../../services/network-modification-types';
 import { CurrentLimitsData } from '../../../services/study/network-map.type';
-import { LineModificationFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { LineModificationFormSchema } from '../network-modifications/line/modification/line-modification-type';
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
 import { TestContext } from 'yup';
 import { APPLICABILITY } from 'components/network/constants';
@@ -291,7 +291,7 @@ export const convertToOperationalLimitsGroupFormSchema = (
 };
 
 export const getOpLimitsGroupInfosFromBranchModification = (
-    formBranchModification: LineModificationFormInfos
+    formBranchModification: LineModificationFormSchema
 ): OperationalLimitsGroupFormSchema[] => {
     return formBranchModification?.limits?.operationalLimitsGroups ?? [];
 };

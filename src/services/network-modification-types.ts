@@ -17,6 +17,7 @@ import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-li
 import { ModificationType, Option } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
+import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
 export enum OperationType {
     SET = 'SET',
@@ -394,22 +395,6 @@ export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
     highShortCircuitCurrentLimit: number | null;
 }
 
-export interface AttachmentLine {
-    type: string;
-    equipmentId: string;
-    equipmentName: string | null;
-    r: number;
-    x: number;
-    g1: number;
-    b1: number;
-    g2: number;
-    b2: number;
-    operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroupId1: string;
-    selectedOperationalLimitsGroupId2: string;
-    properties: Property[] | null;
-}
-
 type VariationFilter = {
     id: string;
     name: string;
@@ -590,34 +575,32 @@ export interface ShuntCompensatorCreationInfo {
     properties: Property[] | null;
 }
 
-export interface LineCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
+export interface LineCreationInfos {
+    type: ModificationType;
+    uuid?: string | null;
     equipmentId: string;
     equipmentName: string | null;
-    r: number;
-    x: number;
-    g1: number;
-    b1: number;
-    g2: number;
-    b2: number;
-    voltageLevelId1: string;
-    busOrBusbarSectionId1: string;
-    voltageLevelId2: string;
-    busOrBusbarSectionId2: string;
-    operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroupId1: string;
-    selectedOperationalLimitsGroupId2: string;
-    isUpdate: boolean;
-    modificationUuid: string;
+    r: number | null;
+    x: number | null;
+    g1: number | null;
+    b1: number | null;
+    g2: number | null;
+    b2: number | null;
+    voltageLevelId1: string | null;
+    busOrBusbarSectionId1: string | null;
+    voltageLevelId2: string | null;
+    busOrBusbarSectionId2: string | null;
+    operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
+    selectedOperationalLimitsGroupId1?: string | null;
+    selectedOperationalLimitsGroupId2?: string | null;
     connectionName1: string | null;
     connectionDirection1: string | null;
     connectionName2: string | null;
     connectionDirection2: string | null;
-    connectionPosition1: string | null;
-    connectionPosition2: string | null;
-    connected1: boolean;
-    connected2: boolean;
+    connectionPosition1: number | null;
+    connectionPosition2: number | null;
+    connected1: boolean | null;
+    connected2: boolean | null;
     properties: Property[] | null;
 }
 
@@ -802,7 +785,7 @@ export interface AttachLineInfo {
     mayNewVoltageLevelInfos?: ExtendedVoltageLevelCreationInfo;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
-    attachmentLine: AttachmentLine;
+    attachmentLine: LineCreationInfos;
     newLine1Id: string;
     newLine1Name: string | null;
     newLine2Id: string;

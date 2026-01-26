@@ -11,8 +11,19 @@ import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { LineCreationDialogTab } from './creation/line-creation-dialog-utils';
 import { LineModificationDialogTab } from './line-utils';
 
-const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex, isModification = false }) => {
-    const LineDialogTab = isModification ? LineModificationDialogTab : LineCreationDialogTab;
+interface LineDialogTabsProps {
+    tabIndex: number;
+    tabIndexesWithError: number[];
+    setTabIndex: (index: number) => void;
+    isModification?: boolean;
+}
+
+const LineDialogTabs = ({
+    tabIndex,
+    tabIndexesWithError,
+    setTabIndex,
+    isModification = false,
+}: LineDialogTabsProps) => {
     return (
         <Grid container>
             <Tabs
@@ -26,21 +37,29 @@ const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex, isModifica
                 {isModification && (
                     <Tab
                         label={<FormattedMessage id="ConnectivityTab" />}
-                        sx={getTabStyle(tabIndexesWithError, LineDialogTab.CONNECTIVITY_TAB)}
+                        sx={getTabStyle(tabIndexesWithError, LineModificationDialogTab.CONNECTIVITY_TAB)}
                     />
                 )}
                 <Tab
                     label={<FormattedMessage id="LineCharacteristicsTab" />}
-                    sx={getTabStyle(tabIndexesWithError, LineDialogTab.CHARACTERISTICS_TAB)}
+                    sx={getTabStyle(
+                        tabIndexesWithError,
+                        isModification
+                            ? LineModificationDialogTab.CHARACTERISTICS_TAB
+                            : LineCreationDialogTab.CHARACTERISTICS_TAB
+                    )}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
-                    sx={getTabStyle(tabIndexesWithError, LineDialogTab.LIMITS_TAB)}
+                    sx={getTabStyle(
+                        tabIndexesWithError,
+                        isModification ? LineModificationDialogTab.LIMITS_TAB : LineCreationDialogTab.LIMITS_TAB
+                    )}
                 />
                 {isModification && (
                     <Tab
                         label={<FormattedMessage id="StateEstimationTab" />}
-                        sx={getTabStyle(tabIndexesWithError, LineDialogTab.STATE_ESTIMATION_TAB)}
+                        sx={getTabStyle(tabIndexesWithError, LineModificationDialogTab.STATE_ESTIMATION_TAB)}
                     />
                 )}
             </Tabs>
