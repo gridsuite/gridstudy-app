@@ -52,9 +52,9 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     }, [voltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
     const sldRequestInfos = {
         useName: useName,
-        centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-        diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-        componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+        centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,
+        diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
+        componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
         sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
         topologicalColoring: true,
         language: language,

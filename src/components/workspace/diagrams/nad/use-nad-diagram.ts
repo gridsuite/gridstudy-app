@@ -185,7 +185,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                                   positions: currentDiagram.positions,
                               }),
                         nadPositionsGenerationMode:
-                            networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+                            networkVisuParams?.networkAreaDiagramParameters.nadPositionsGenerationMode,
                         baseVoltagesConfigInfos: baseVoltagesConfig,
                     }),
                 };
@@ -204,7 +204,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         currentNodeId,
         currentRootNetworkUuid,
         baseVoltagesConfig,
-        networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+        networkVisuParams?.networkAreaDiagramParameters.nadPositionsGenerationMode,
         diagramMetadata?.savedWorkspaceConfigUuid,
         processSvgData,
         handleFetchError,

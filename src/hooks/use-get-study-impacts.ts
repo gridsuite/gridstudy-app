@@ -25,7 +25,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const mapManualRefresh = useSelector(
-        (state: AppState) => state.networkVisualizationsParameters.mapParameters.mapManualRefresh
+        (state: AppState) => state.networkVisualizationsParameters?.mapParameters.mapManualRefresh
     );
     const dispatch = useDispatch();
 
