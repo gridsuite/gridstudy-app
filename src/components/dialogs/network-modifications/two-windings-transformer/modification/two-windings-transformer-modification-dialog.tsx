@@ -167,7 +167,6 @@ import {
     StateEstimationFormSchema,
     TwoWindingsTransformerMapInfos,
 } from '../two-windings-transformer.types';
-import { LineModificationFormInfos } from '../../line/modification/line-modification-type';
 import { BranchInfos, CurrentLimitsData } from 'services/study/network-map.type';
 import { ToBeEstimatedInfo } from './2wt-to-be-estimated/to-be-estimated.type';
 import {
@@ -177,6 +176,7 @@ import {
     TwoWindingsTransformerModificationInfo,
 } from 'services/network-modification-types';
 import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
+import { LineModificationFormSchema } from '../../line/modification/line-modification-type';
 
 export interface TwoWindingsTransformerModificationDialogProps {
     studyUuid: UUID;
@@ -744,7 +744,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                                   [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                                   [OPERATIONAL_LIMITS_GROUPS]:
                                                       getOpLimitsGroupInfosFromBranchModification(
-                                                          formValues as unknown as LineModificationFormInfos
+                                                          formValues as LineModificationFormSchema
                                                       ),
                                               }
                                             : {
