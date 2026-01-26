@@ -932,8 +932,8 @@ export function modifyLine({
 export function createTwoWindingsTransformer({
     studyUuid,
     nodeUuid,
-    twoWindingsTransformerId,
-    twoWindingsTransformerName,
+    equipmentId,
+    equipmentName,
     r,
     x,
     g,
@@ -941,9 +941,9 @@ export function createTwoWindingsTransformer({
     ratedS,
     ratedU1,
     ratedU2,
-    limitsGroups,
-    selectedLimitsGroup1,
-    selectedLimitsGroup2,
+    operationalLimitsGroups,
+    selectedOperationalLimitsGroupId1,
+    selectedOperationalLimitsGroupId2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -951,7 +951,7 @@ export function createTwoWindingsTransformer({
     ratioTapChanger,
     phaseTapChanger,
     isUpdate,
-    modificationUuid,
+    uuid,
     connectionName1,
     connectionDirection1,
     connectionName2,
@@ -961,12 +961,11 @@ export function createTwoWindingsTransformer({
     connected1,
     connected2,
     properties,
-}: Partial<TwoWindingsTransformerCreationInfo> &
-    Pick<TwoWindingsTransformerCreationInfo, 'modificationUuid' | 'nodeUuid'>) {
+}: TwoWindingsTransformerCreationInfo) {
     let createTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
-        createTwoWindingsTransformerUrl += '/' + encodeURIComponent(modificationUuid);
+        createTwoWindingsTransformerUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating two windings transformer creation');
     } else {
         console.info('Creating two windings transformer creation');
@@ -980,8 +979,8 @@ export function createTwoWindingsTransformer({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION.type,
-            equipmentId: twoWindingsTransformerId,
-            equipmentName: twoWindingsTransformerName,
+            equipmentId,
+            equipmentName,
             r: r,
             x: x,
             g: g,
@@ -989,9 +988,9 @@ export function createTwoWindingsTransformer({
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            operationalLimitsGroups: limitsGroups,
-            selectedOperationalLimitsGroupId1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroupId2: selectedLimitsGroup2,
+            operationalLimitsGroups,
+            selectedOperationalLimitsGroupId1,
+            selectedOperationalLimitsGroupId2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
@@ -1015,8 +1014,8 @@ export function modifyTwoWindingsTransformer({
     studyUuid,
     nodeUuid,
     modificationUuid = undefined,
-    twoWindingsTransformerId,
-    twoWindingsTransformerName,
+    equipmentId,
+    equipmentName,
     r,
     x,
     g,
@@ -1025,8 +1024,8 @@ export function modifyTwoWindingsTransformer({
     ratedU1,
     ratedU2,
     operationalLimitsGroups,
-    selectedLimitsGroup1,
-    selectedLimitsGroup2,
+    selectedOperationalLimitsGroupId1,
+    selectedOperationalLimitsGroupId2,
     enableOLGModification,
     ratioTapChanger,
     phaseTapChanger,
@@ -1040,8 +1039,8 @@ export function modifyTwoWindingsTransformer({
     connectionDirection2 = undefined,
     connectionPosition1 = undefined,
     connectionPosition2 = undefined,
-    connected1 = undefined,
-    connected2 = undefined,
+    terminal1Connected = undefined,
+    terminal2Connected = undefined,
     properties: propertiesForBackend,
     p1MeasurementValue,
     p1MeasurementValidity,
@@ -1072,8 +1071,8 @@ export function modifyTwoWindingsTransformer({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
-            equipmentId: twoWindingsTransformerId,
-            equipmentName: twoWindingsTransformerName,
+            equipmentId,
+            equipmentName,
             r: r,
             x: x,
             g: g,
@@ -1082,8 +1081,8 @@ export function modifyTwoWindingsTransformer({
             ratedU1: ratedU1,
             ratedU2: ratedU2,
             operationalLimitsGroups: operationalLimitsGroups,
-            selectedOperationalLimitsGroupId1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroupId2: selectedLimitsGroup2,
+            selectedOperationalLimitsGroupId1,
+            selectedOperationalLimitsGroupId2,
             [ENABLE_OLG_MODIFICATION]: enableOLGModification,
             [OLGS_MODIFICATION_TYPE]: enableOLGModification
                 ? OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE
@@ -1100,8 +1099,8 @@ export function modifyTwoWindingsTransformer({
             connectionDirection2: toModificationOperation(connectionDirection2),
             connectionPosition1: toModificationOperation(connectionPosition1),
             connectionPosition2: toModificationOperation(connectionPosition2),
-            terminal1Connected: toModificationOperation(connected1),
-            terminal2Connected: toModificationOperation(connected2),
+            terminal1Connected: toModificationOperation(terminal1Connected),
+            terminal2Connected: toModificationOperation(terminal2Connected),
             properties: propertiesForBackend,
             p1MeasurementValue: toModificationOperation(p1MeasurementValue),
             p1MeasurementValidity: toModificationOperation(p1MeasurementValidity),

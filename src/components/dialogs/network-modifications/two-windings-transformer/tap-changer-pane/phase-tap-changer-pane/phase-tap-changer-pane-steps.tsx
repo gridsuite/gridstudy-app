@@ -21,12 +21,13 @@ import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
 import { DndColumn, DndColumnType } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { PHASE_TAP, PhaseTapChangerData, TwoWindingsTransformerEditData } from '../../two-windings-transformer.types';
+import { PHASE_TAP, TapChangerMapInfos } from '../../two-windings-transformer.types';
+import { TwoWindingsTransformerModificationInfo } from 'services/network-modification-types';
 
 export interface PhaseTapChangerPaneStepsProps {
     disabled?: boolean;
-    previousValues?: PhaseTapChangerData;
-    editData?: TwoWindingsTransformerEditData;
+    previousValues?: TapChangerMapInfos;
+    editData?: TwoWindingsTransformerModificationInfo;
     currentNode: CurrentTreeNode;
     isModification?: boolean;
 }

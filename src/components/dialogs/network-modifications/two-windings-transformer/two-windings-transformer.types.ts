@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CommonBranchEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { Identifiable } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import {
+    B,
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -15,29 +15,28 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    CURRENT_LIMITER_REGULATING_VALUE,
-    ENABLE_OLG_MODIFICATION,
-    ENABLED,
-    EQUIPMENT,
-    FLOW_SET_POINT_REGULATING_VALUE,
+    G,
     HIGH_TAP_POSITION,
     ID,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
-    OPERATIONAL_LIMITS_GROUPS,
-    PHASE_TAP_CHANGER,
-    RATIO_TAP_CHANGER,
+    MEASUREMENT_P1,
+    MEASUREMENT_P2,
+    MEASUREMENT_Q1,
+    MEASUREMENT_Q2,
+    PHASE_TAP_CHANGER_STATUS,
+    R,
+    RATED_S,
+    RATED_U1,
+    RATED_U2,
+    RATIO_TAP_CHANGER_STATUS,
     REGULATING,
     REGULATING_TERMINAL_CONNECTABLE_ID,
     REGULATING_TERMINAL_CONNECTABLE_TYPE,
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
     REGULATION_MODE,
-    REGULATION_SIDE,
-    REGULATION_TYPE,
     REGULATION_VALUE,
     SELECTED,
-    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
-    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     STEPS,
     STEPS_ALPHA,
     STEPS_CONDUCTANCE,
@@ -49,64 +48,23 @@ import {
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
+    TO_BE_ESTIMATED,
+    VALIDITY,
+    VALUE,
     VOLTAGE_LEVEL,
+    X,
 } from 'components/utils/field-constants';
 import { UUID } from 'node:crypto';
 import { ConnectablePositionFormInfos } from 'components/dialogs/connectivity/connectivity.type';
-import { CurrentLimitsData } from 'services/study/network-map.type';
-import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
-import { Property } from '../common/properties/property-utils';
-import { AttributeModification, OperationalLimitsGroup } from 'services/network-modification-types';
-import { CharacteristicsValues } from './characteristics-pane/two-windings-transformer-characteristics-pane-utils';
+import { LimitsProperty, TwoWindingsTransformerModificationInfo } from 'services/network-modification-types';
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
 
 export type RuleType = typeof PHASE_TAP | typeof RATIO_TAP;
 
-export interface TapChangerStep {
-    [STEPS_RESISTANCE]: number;
-    [STEPS_REACTANCE]: number;
-    [STEPS_CONDUCTANCE]: number;
-    [STEPS_SUSCEPTANCE]: number;
-    [STEPS_RATIO]: number;
-    [STEPS_ALPHA]?: number;
-    [STEPS_TAP]?: number;
+export interface TapChangerStep extends TapChangerStepMapInfos {
     [SELECTED]?: boolean;
-}
-
-export interface TapChangerData {
-    [ENABLED]?: boolean;
-    [HIGH_TAP_POSITION]?: number;
-    [REGULATING]?: boolean;
-    [LOW_TAP_POSITION]?: number;
-    [REGULATING_TERMINAL_CONNECTABLE_ID]?: string;
-    [REGULATING_TERMINAL_CONNECTABLE_TYPE]?: string;
-    [REGULATING_TERMINAL_VOLTAGE_LEVEL_ID]?: string;
-    [STEPS]?: TapChangerStep[];
-    [TAP_POSITION]?: number;
-    [TARGET_DEADBAND]?: number;
-    terminalRefConnectableId?: string;
-    terminalRefConnectableVlId?: string;
-    terminalRefConnectableType?: string;
-    [REGULATION_MODE]?: string;
-    [REGULATION_VALUE]?: number;
-    [REGULATION_TYPE]?: string;
-    [REGULATION_SIDE]?: string;
-    [LOAD_TAP_CHANGING_CAPABILITIES]?: boolean;
-    loadTapChangingCapabilities?: boolean;
-    [TARGET_V]?: number | null;
-    [EQUIPMENT]?: Record<string, unknown>;
-    [VOLTAGE_LEVEL]?: Identifiable | null;
-    [CURRENT_LIMITER_REGULATING_VALUE]?: number;
-    [FLOW_SET_POINT_REGULATING_VALUE]?: number;
-}
-
-export interface RatioTapChangerData extends TapChangerData {}
-
-export interface PhaseTapChangerData extends TapChangerData {
-    [FLOW_SET_POINT_REGULATING_VALUE]?: number;
-    [CURRENT_LIMITER_REGULATING_VALUE]?: number;
 }
 
 export interface TapChangerPaneProps {
@@ -115,116 +73,146 @@ export interface TapChangerPaneProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     voltageLevelOptions?: Identifiable[];
-    previousValues?: TwoWindingsTransformerData;
-    editData?: TwoWindingsTransformerEditData;
+    previousValues?: TwoWindingsTransformerMapInfos;
+    editData?: TwoWindingsTransformerModificationInfo;
     isModification?: boolean;
 }
 
-export type PhaseTapChangerPaneProps = TapChangerPaneProps;
-export type RatioTapChangerPaneProps = TapChangerPaneProps;
+// Creation form types
+export interface EntityIdReference {
+    [ID]: string;
+}
 
-export interface TwoWindingsTransformerData extends CommonBranchEquipmentInfos {
-    uuid?: UUID;
-    equipmentId?: string;
-    equipmentName?: string;
-    g?: number;
-    b?: number;
-    ratedU1?: number;
-    ratedU2?: number;
-    ratedS?: number;
-    busOrBusbarSectionId1?: string;
-    busOrBusbarSectionId2?: string;
-    connectionDirection1?: string;
-    connectionDirection2?: string;
-    connectablePosition1?: ConnectablePositionFormInfos;
-    connectablePosition2?: ConnectablePositionFormInfos;
-    connectionName1?: string;
-    connectionName2?: string;
-    connectionPosition1?: number;
-    connectionPosition2?: number;
-    currentLimits?: CurrentLimitsData[] | null;
-    voltageLevelId1?: string;
-    voltageLevelId2?: string;
-    connected1?: boolean;
-    connected2?: boolean;
-    operationalLimitsGroups?: OperationalLimitsGroupFormSchema[];
+export type ConnectivityFormSchema = {
+    [VOLTAGE_LEVEL]: EntityIdReference | null;
+    [BUS_OR_BUSBAR_SECTION]: EntityIdReference | null;
+    [CONNECTION_DIRECTION]: string | null;
+    [CONNECTION_NAME]: string;
+    [CONNECTION_POSITION]: number | null;
+    [CONNECTED]: boolean | null;
+};
+
+export type CharacteristicsFormSchema = {
+    [R]: number | null;
+    [X]: number | null;
+    [G]: number | null;
+    [B]: number | null;
+    [RATED_S]: number | null;
+    [RATED_U1]: number | null;
+    [RATED_U2]: number | null;
+};
+export type CharacteristicsCreationFormSchema = CharacteristicsFormSchema & {
+    [CONNECTIVITY_1]: ConnectivityFormSchema;
+    [CONNECTIVITY_2]: ConnectivityFormSchema;
+};
+
+export interface MeasurementFormSchema {
+    [VALUE]: number | null;
+    [VALIDITY]: boolean | null;
+}
+
+export interface ToBeEstimatedFormSchema {
+    [RATIO_TAP_CHANGER_STATUS]: boolean | null;
+    [PHASE_TAP_CHANGER_STATUS]: boolean | null;
+}
+
+export interface StateEstimationFormSchema {
+    [MEASUREMENT_P1]: MeasurementFormSchema;
+    [MEASUREMENT_Q1]: MeasurementFormSchema;
+    [MEASUREMENT_P2]: MeasurementFormSchema;
+    [MEASUREMENT_Q2]: MeasurementFormSchema;
+    [TO_BE_ESTIMATED]: ToBeEstimatedFormSchema;
+}
+
+// modification form types
+
+// Types from network map server response
+
+interface TwoWindingsTransformerToBeEstimatedInfos {
+    ratioTapChangerStatus?: boolean;
+    phaseTapChangerStatus?: boolean;
+}
+
+interface MeasurementsInfos {
+    value?: number;
+    validity: boolean;
+}
+
+export interface TemporaryLimitMapInfos {
+    name: string;
+    value?: number;
+    acceptableDuration?: number;
+}
+
+export interface CurrentLimitsMapInfos {
+    id?: string;
+    permanentLimit?: number;
+    temporaryLimits?: TemporaryLimitMapInfos[];
+    temporaryLimitsByName?: Record<string, TemporaryLimitMapInfos>;
+    applicability: string;
+    limitsProperties?: LimitsProperty[];
+}
+
+export interface TapChangerStepMapInfos {
+    [STEPS_RESISTANCE]: number;
+    [STEPS_REACTANCE]: number;
+    [STEPS_CONDUCTANCE]: number;
+    [STEPS_SUSCEPTANCE]: number;
+    [STEPS_RATIO]: number;
+    [STEPS_ALPHA]?: number;
+    [STEPS_TAP]?: number;
+}
+
+export interface TapChangerMapInfos {
+    [LOW_TAP_POSITION]: number;
+    [TAP_POSITION]: number;
+    [HIGH_TAP_POSITION]: number;
+    [REGULATING]?: boolean;
+    [LOAD_TAP_CHANGING_CAPABILITIES]?: boolean;
+    [TARGET_V]?: number;
+    [TARGET_DEADBAND]?: number;
+    [REGULATION_MODE]?: string;
+    [REGULATION_VALUE]?: number;
+    [REGULATING_TERMINAL_CONNECTABLE_ID]?: string;
+    [REGULATING_TERMINAL_CONNECTABLE_TYPE]?: string;
+    [REGULATING_TERMINAL_VOLTAGE_LEVEL_ID]?: string;
+    [STEPS]?: TapChangerStepMapInfos[];
+}
+
+export interface TwoWindingsTransformerMapInfos extends Identifiable {
+    properties?: Record<string, string>;
+    voltageLevelId1: string;
+    voltageLevelName1: string;
+    voltageLevelId2: string;
+    voltageLevelName2: string;
+    terminal1Connected: boolean;
+    terminal2Connected: boolean;
+    p1?: number;
+    q1?: number;
+    p2?: number;
+    q2?: number;
+    i1?: number;
+    i2?: number;
+    currentLimits?: CurrentLimitsMapInfos[];
     selectedOperationalLimitsGroupId1?: string;
     selectedOperationalLimitsGroupId2?: string;
-    [RATIO_TAP_CHANGER]?: RatioTapChangerData;
-    [PHASE_TAP_CHANGER]?: PhaseTapChangerData;
-    properties?: Property[] | null;
-    [key: string]: unknown;
-}
-
-export interface ConnectivityFormData {
-    [VOLTAGE_LEVEL]?: { [ID]?: string };
-    [BUS_OR_BUSBAR_SECTION]?: { [ID]?: string };
-    [CONNECTION_NAME]?: string;
-    [CONNECTION_DIRECTION]?: string;
-    [CONNECTION_POSITION]?: number | null;
-    [CONNECTED]?: boolean | null;
-}
-
-export interface CharacteristicsFormData extends CharacteristicsValues {
-    [CONNECTIVITY_1]?: ConnectivityFormData;
-    [CONNECTIVITY_2]?: ConnectivityFormData;
-}
-
-export interface LimitsFormData {
-    [ENABLE_OLG_MODIFICATION]?: boolean;
-    [OPERATIONAL_LIMITS_GROUPS]?: OperationalLimitsGroupFormSchema[];
-    [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
-    [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
-}
-
-export interface TapChangerEditData {
-    [ENABLED]?: AttributeModification<boolean>;
-    [LOAD_TAP_CHANGING_CAPABILITIES]?: AttributeModification<boolean>;
-    [REGULATING]?: AttributeModification<boolean>;
-    [REGULATION_MODE]?: AttributeModification<string>;
-    [REGULATION_TYPE]?: AttributeModification<string>;
-    [REGULATION_SIDE]?: AttributeModification<string>;
-    [TARGET_V]?: AttributeModification<number>;
-    [TARGET_DEADBAND]?: AttributeModification<number>;
-    [LOW_TAP_POSITION]?: AttributeModification<number>;
-    [TAP_POSITION]?: AttributeModification<number>;
-    [STEPS]?: TapChangerStep[] | null;
-    regulationValue?: AttributeModification<number>;
-    terminalRefConnectableId?: AttributeModification<string>;
-    terminalRefConnectableType?: AttributeModification<string>;
-    terminalRefConnectableVlId?: AttributeModification<string>;
-}
-
-export interface TwoWindingsTransformerEditData {
-    uuid?: UUID;
-    equipmentId?: string;
-    equipmentName?: AttributeModification<string>;
-    r?: AttributeModification<number>;
-    x?: AttributeModification<number>;
-    g?: AttributeModification<number>;
-    b?: AttributeModification<number>;
-    ratedS?: AttributeModification<number>;
-    ratedU1?: AttributeModification<number>;
-    ratedU2?: AttributeModification<number>;
-    voltageLevelId1?: AttributeModification<string>;
-    voltageLevelId2?: AttributeModification<string>;
-    busOrBusbarSectionId1?: AttributeModification<string>;
-    busOrBusbarSectionId2?: AttributeModification<string>;
-    connectionName1?: AttributeModification<string>;
-    connectionName2?: AttributeModification<string>;
-    connectionDirection1?: AttributeModification<string>;
-    connectionDirection2?: AttributeModification<string>;
-    connectionPosition1?: AttributeModification<number>;
-    connectionPosition2?: AttributeModification<number>;
-    connected1?: AttributeModification<boolean>;
-    connected2?: AttributeModification<boolean>;
-    operationalLimitsGroups?: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroupId1?: AttributeModification<string>;
-    selectedOperationalLimitsGroupId2?: AttributeModification<string>;
-    [ENABLE_OLG_MODIFICATION]?: boolean;
-    [RATIO_TAP_CHANGER]?: TapChangerEditData;
-    [PHASE_TAP_CHANGER]?: TapChangerEditData;
-    ratioTapChangerToBeEstimated?: AttributeModification<boolean>;
-    phaseTapChangerToBeEstimated?: AttributeModification<boolean>;
-    properties?: Property[] | null;
+    phaseTapChanger?: TapChangerMapInfos;
+    ratioTapChanger?: TapChangerMapInfos;
+    g: number;
+    b: number;
+    r: number;
+    x: number;
+    ratedU1: number;
+    ratedU2: number;
+    ratedS?: number;
+    connectablePosition1: ConnectablePositionFormInfos;
+    connectablePosition2: ConnectablePositionFormInfos;
+    busOrBusbarSectionId1?: string;
+    busOrBusbarSectionId2?: string;
+    operatingStatus?: string;
+    measurementP1?: MeasurementsInfos;
+    measurementQ1?: MeasurementsInfos;
+    measurementP2?: MeasurementsInfos;
+    measurementQ2?: MeasurementsInfos;
+    toBeEstimated?: TwoWindingsTransformerToBeEstimatedInfos;
 }
