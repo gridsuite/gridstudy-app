@@ -381,7 +381,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         b: convertInputValue(FieldType.B, twt.b),
                         ratedU1: twt.ratedU1,
                         ratedU2: twt.ratedU2,
-                        ratedS: twt.ratedS,
+                        ratedS: twt.ratedS ?? null,
                         ...getConnectivityFormData(
                             {
                                 busbarSectionId: twt.busOrBusbarSectionId1,

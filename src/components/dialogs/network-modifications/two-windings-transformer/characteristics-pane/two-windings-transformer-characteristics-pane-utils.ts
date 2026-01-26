@@ -7,16 +7,7 @@
 
 import { CHARACTERISTICS, G, B, RATED_S, RATED_U1, RATED_U2, R, X } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
-
-export interface CharacteristicsValues {
-    [R]?: number | null;
-    [X]?: number | null;
-    [G]?: number | null;
-    [B]?: number | null;
-    [RATED_S]?: number | null;
-    [RATED_U1]?: number | null;
-    [RATED_U2]?: number | null;
-}
+import { CharacteristicsFormSchema } from '../two-windings-transformer.types';
 
 type AdditionalValidationFields = Record<string, yup.AnySchema>;
 type AdditionalDataFields = Record<string, unknown>;
@@ -64,7 +55,15 @@ export const getCharacteristicsEmptyFormData = (additionalFields = {}) => {
 };
 
 export const getCharacteristicsFormData = (
-    { r = null, x = null, g = null, b = null, ratedS = null, ratedU1 = null, ratedU2 = null }: CharacteristicsValues,
+    {
+        r = null,
+        x = null,
+        g = null,
+        b = null,
+        ratedS = null,
+        ratedU1 = null,
+        ratedU2 = null,
+    }: CharacteristicsFormSchema,
     additionalFields = {}
 ) => {
     return {

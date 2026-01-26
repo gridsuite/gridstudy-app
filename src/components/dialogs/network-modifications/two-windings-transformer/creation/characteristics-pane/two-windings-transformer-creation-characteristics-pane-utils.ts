@@ -11,11 +11,11 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../../connectivity/connectivity-form-utils';
 import {
-    CharacteristicsValues,
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
 } from '../../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
+import { CharacteristicsFormSchema } from '../../two-windings-transformer.types';
 
 const twoWindingsTransformerValidationSchema = () =>
     getCharacteristicsValidationSchema(false, {
@@ -47,7 +47,7 @@ export const getTwoWindingsTransformerFormData = ({
     ratedU2 = null,
     connectivity1 = null,
     connectivity2 = null,
-}: CharacteristicsValues & {
+}: CharacteristicsFormSchema & {
     connectivity1?: Record<string, unknown> | null;
     connectivity2?: Record<string, unknown> | null;
 }) =>

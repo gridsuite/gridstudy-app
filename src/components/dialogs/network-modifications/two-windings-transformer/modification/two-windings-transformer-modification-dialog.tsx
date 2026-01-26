@@ -294,13 +294,13 @@ const TwoWindingsTransformerModificationDialog = ({
                     ...getConnectivityFormData(createConnectivityData(twtModification, 2), CONNECTIVITY_2),
                 },
                 ...getCharacteristicsFormData({
-                    r: twtModification.r?.value,
-                    x: twtModification.x?.value,
+                    r: twtModification.r?.value ?? null,
+                    x: twtModification.x?.value ?? null,
                     g: convertInputValue(FieldType.G, twtModification.g?.value),
                     b: convertInputValue(FieldType.B, twtModification.b?.value),
-                    ratedU1: twtModification.ratedU1?.value,
-                    ratedU2: twtModification.ratedU2?.value,
-                    ratedS: twtModification.ratedS?.value,
+                    ratedU1: twtModification.ratedU1?.value ?? null,
+                    ratedU2: twtModification.ratedU2?.value ?? null,
+                    ratedS: twtModification.ratedS?.value ?? null,
                 }),
                 ...getStateEstimationEditData(STATE_ESTIMATION, twtModification),
                 ...getAllLimitsFormData(
