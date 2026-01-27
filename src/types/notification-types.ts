@@ -92,6 +92,12 @@ export enum NotificationType {
     SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
     SPREADSHEET_PARAMETERS_UPDATED = 'spreadsheetParametersUpdated',
+
+    // workspaces
+    WORKSPACE_RENAMED = 'workspaceRenamed',
+    WORKSPACE_PANELS_UPDATED = 'workspacePanelsUpdated',
+    WORKSPACE_PANELS_DELETED = 'workspacePanelsDeleted',
+    WORKSPACE_NAD_CONFIG_UPDATED = 'workspaceNadConfigUpdated',
 }
 
 export const PENDING_MODIFICATION_NOTIFICATION_TYPES = [
@@ -318,6 +324,29 @@ interface ModificationProgressionEventDataHeaders extends CommonStudyEventDataHe
 
 interface SpreadsheetParametersUpdatedDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
+}
+
+interface WorkspaceRenamedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_RENAMED;
+}
+
+interface WorkspacePanelsUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_PANELS_UPDATED;
+    workspaceUuid: UUID;
+    clientId?: UUID;
+}
+
+interface WorkspacePanelsDeletedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_PANELS_DELETED;
+    workspaceUuid: UUID;
+    clientId?: UUID;
+}
+
+interface WorkspaceNadConfigUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_NAD_CONFIG_UPDATED;
+    workspaceUuid: UUID;
+    panelId: UUID;
+    clientId?: UUID;
 }
 
 interface ModificationsCreationInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
@@ -874,6 +903,26 @@ export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyE
     payload: string;
 }
 
+export interface WorkspaceRenamedEventData {
+    headers: WorkspaceRenamedEventDataHeaders;
+    payload: string; // workspace ID
+}
+
+export interface WorkspacePanelsUpdatedEventData {
+    headers: WorkspacePanelsUpdatedEventDataHeaders;
+    payload: string; // panel IDs (JSON array)
+}
+
+export interface WorkspacePanelsDeletedEventData {
+    headers: WorkspacePanelsDeletedEventDataHeaders;
+    payload: string; // panel IDs (JSON array)
+}
+
+export interface WorkspaceNadConfigUpdatedEventData {
+    headers: WorkspaceNadConfigUpdatedEventDataHeaders;
+    payload: string; // config UUID
+}
+
 export function isComputationParametersUpdatedNotification(
     notif: unknown
 ): notif is ComputationParametersUpdatedEventData {
@@ -1101,6 +1150,25 @@ export function isSpreadsheetParametersUpdatedNotification(
     notif: unknown
 ): notif is SpreadsheetParametersUpdatedEventData {
     return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
+}
+
+export function isWorkspaceRenamedNotification(notif: unknown): notif is WorkspaceRenamedEventData {
+    return (notif as WorkspaceRenamedEventData).headers?.updateType === NotificationType.WORKSPACE_RENAMED;
+}
+
+export function isWorkspacePanelsUpdatedNotification(notif: unknown): notif is WorkspacePanelsUpdatedEventData {
+    return (notif as WorkspacePanelsUpdatedEventData).headers?.updateType === NotificationType.WORKSPACE_PANELS_UPDATED;
+}
+
+export function isWorkspacePanelsDeletedNotification(notif: unknown): notif is WorkspacePanelsDeletedEventData {
+    return (notif as WorkspacePanelsDeletedEventData).headers?.updateType === NotificationType.WORKSPACE_PANELS_DELETED;
+}
+
+export function isWorkspaceNadConfigUpdatedNotification(notif: unknown): notif is WorkspaceNadConfigUpdatedEventData {
+    return (
+        (notif as WorkspaceNadConfigUpdatedEventData).headers?.updateType ===
+        NotificationType.WORKSPACE_NAD_CONFIG_UPDATED
+    );
 }
 
 // Notification types
