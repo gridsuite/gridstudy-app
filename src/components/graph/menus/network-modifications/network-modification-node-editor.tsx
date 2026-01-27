@@ -8,6 +8,7 @@
 import {
     ElementSaveDialog,
     ElementType,
+    FetchStatus,
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
@@ -77,7 +78,6 @@ import {
     fetchNetworkModifications,
     stashModifications,
 } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
 import {
     ExcludedNetworkModifications,
     MenuDefinitionSubItem,

@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FetchStatus,
+    ModificationType,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
@@ -50,7 +56,6 @@ import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { VoltageLevel } from '../../../utils/equipment-types';
 import { DeepNullable } from '../../../utils/ts-utils';
-import { FetchStatus } from '../../../../services/utils.type';
 import {
     AttachLineInfo,
     ExtendedVoltageLevelCreationInfo,

@@ -36,7 +36,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
 } from '../../../../../utils/field-constants';
-import { FetchStatus } from '../../../../../../services/utils';
 import {
     getVscHvdcLineModificationPaneSchema,
     getVscHvdcLineModificationTabFormData,
@@ -59,7 +58,13 @@ import {
     setCurrentReactiveCapabilityCurveTable,
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { CustomFormProvider, ExtendedEquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    ExtendedEquipmentType,
+    FetchStatus,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     emptyProperties,
     getConcatenatedProperties,

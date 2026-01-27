@@ -23,6 +23,7 @@ import yup from '../../../../../utils/yup-config';
 import {
     CustomFormProvider,
     ExtendedEquipmentType,
+    FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
@@ -31,7 +32,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccFormInfos, LccModificationSchemaForm } from '../common/lcc-type';
 import { useCallback, useEffect, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
-import { FetchStatus } from 'services/utils.type';
 import {
     getConcatenatedShuntCompensatorOnSideInfos,
     getLccConverterStationModificationData,

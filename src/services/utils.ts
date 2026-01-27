@@ -7,13 +7,6 @@
 import { catchErrorHandler, fetchStudyMetadata, StudyMetadata } from '@gridsuite/commons-ui';
 import { getUserToken } from '../redux/user-store';
 
-export const FetchStatus = {
-    SUCCEED: 'SUCCEED',
-    FAILED: 'FAILED',
-    IDLE: 'IDLE',
-    RUNNING: 'RUNNING',
-};
-
 export const MAX_INT32: number = 2147483647;
 
 type DefaultParameters = StudyMetadata['defaultParametersValues'];

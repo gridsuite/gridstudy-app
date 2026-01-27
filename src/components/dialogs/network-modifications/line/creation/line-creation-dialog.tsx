@@ -10,6 +10,7 @@ import {
     convertOutputValue,
     CustomFormProvider,
     EquipmentType,
+    FetchStatus,
     FieldType,
     ModificationType,
     snackWithFallback,
@@ -49,7 +50,6 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
-import { FetchStatus } from '../../../../../services/utils';
 import { APPLICABILITY, FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';

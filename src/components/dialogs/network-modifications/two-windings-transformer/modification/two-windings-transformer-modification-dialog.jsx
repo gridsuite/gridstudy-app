@@ -10,6 +10,7 @@ import {
     convertOutputValue,
     CustomFormProvider,
     EquipmentType,
+    FetchStatus,
     FieldType,
     snackWithFallback,
     useSnackMessage,
@@ -127,7 +128,6 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
     getConcatenatedProperties,

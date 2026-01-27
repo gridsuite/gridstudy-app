@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
     EquipmentType,
+    FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
@@ -70,7 +71,6 @@ import {
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { FetchStatus } from '../../../../../services/utils.type';
 import { toModificationOperation } from '../../../../utils/utils';
 import {
     getActivePowerControlEmptyFormData,

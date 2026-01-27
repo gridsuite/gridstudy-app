@@ -10,6 +10,7 @@ import {
     convertOutputValue,
     CustomFormProvider,
     EquipmentType,
+    FetchStatus,
     FieldType,
     MODIFICATION_TYPES,
     snackWithFallback,
@@ -58,7 +59,6 @@ import { useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,

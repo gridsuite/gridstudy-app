@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, FetchStatus, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -31,7 +31,6 @@ import { generationDispatch } from '../../../../services/study/network-modificat
 import { addSelectedFieldToRows } from 'components/utils/utils';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
-import { FetchStatus } from 'services/utils.type';
 import { DeepNullable } from '../../../utils/ts-utils';
 import { GenerationDispatchModificationInfos } from '../../../../services/network-modification-types';
 
