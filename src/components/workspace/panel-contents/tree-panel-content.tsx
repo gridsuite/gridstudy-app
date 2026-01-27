@@ -12,7 +12,7 @@ import { Box } from '@mui/material';
 import type { UUID } from 'node:crypto';
 import { selectPanel } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
-import NetworkModificationTreePane from '../../network-modification-tree-pane';
+import NetworkModificationTreePane from 'components/network-modification-tree-pane';
 
 interface TreePanelContentProps {
     panelId: UUID;
@@ -53,7 +53,7 @@ export const TreePanelContent = ({ panelId, studyUuid, currentRootNetworkUuid }:
         if (actualWidth && actualHeight) {
             prevSizeRef.current = { width: actualWidth, height: actualHeight };
         }
-    }, [panelState?.size, panelState?.isMaximized, getViewport, setViewport]);
+    }, [panelState?.size, panelState?.maximized, getViewport, setViewport]);
 
     return (
         <Box ref={containerRef} sx={{ width: '100%', height: '100%' }}>
