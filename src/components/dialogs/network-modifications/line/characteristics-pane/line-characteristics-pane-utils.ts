@@ -6,14 +6,14 @@
  */
 
 import {
+    B1,
+    B2,
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    R,
     G1,
     G2,
-    B1,
-    B2,
+    R,
     X,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
@@ -21,8 +21,10 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
+import { LineCharacteristics } from '../modification/line-modification-type';
+import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 
-const characteristicsValidationSchema = (id, displayConnectivity, modification) => ({
+const characteristicsValidationSchema = (id: string, displayConnectivity: boolean, modification: boolean) => ({
     [id]: yup.object().shape({
         [R]: modification
             ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
@@ -37,11 +39,15 @@ const characteristicsValidationSchema = (id, displayConnectivity, modification) 
     }),
 });
 
-export const getCharacteristicsValidationSchema = (id, displayConnectivity, modification = false) => {
+export const getCharacteristicsValidationSchema = (
+    id: string,
+    displayConnectivity: boolean,
+    modification: boolean = false
+) => {
     return characteristicsValidationSchema(id, displayConnectivity, modification);
 };
 
-const characteristicsEmptyFormData = (id, displayConnectivity = true) => ({
+const characteristicsEmptyFormData = (id: string, displayConnectivity: boolean = true) => ({
     [id]: {
         [R]: null,
         [X]: null,
@@ -54,12 +60,24 @@ const characteristicsEmptyFormData = (id, displayConnectivity = true) => ({
     },
 });
 
-export const getCharacteristicsEmptyFormData = (id = CHARACTERISTICS, displayConnectivity = true) => {
+export const getCharacteristicsEmptyFormData = (id: string = CHARACTERISTICS, displayConnectivity: boolean = true) => {
     return characteristicsEmptyFormData(id, displayConnectivity);
 };
 
 export const getCharacteristicsFormData = (
-    { r = null, x = null, g1 = null, b1 = null, g2 = null, b2 = null, connectivity1 = null, connectivity2 = null },
+    {
+        r = null,
+        x = null,
+        g1 = null,
+        b1 = null,
+        g2 = null,
+        b2 = null,
+        connectivity1 = null,
+        connectivity2 = null,
+    }: LineCharacteristics & {
+        connectivity1?: Connectivity | null;
+        connectivity2?: Connectivity | null;
+    },
     id = CHARACTERISTICS
 ) => ({
     [id]: {
@@ -74,7 +92,10 @@ export const getCharacteristicsFormData = (
     },
 });
 
-export const getCharacteristicsWithOutConnectivityFormData = ({ r, x, g1, b1, g2, b2 }, id = CHARACTERISTICS) => ({
+export const getCharacteristicsWithOutConnectivityFormData = (
+    { r, x, g1, b1, g2, b2 }: LineCharacteristics,
+    id = CHARACTERISTICS
+) => ({
     [id]: {
         [R]: r,
         [X]: x,

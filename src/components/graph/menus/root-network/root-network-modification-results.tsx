@@ -16,7 +16,7 @@ import { setHighlightModification } from 'redux/actions';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 import { PanelType } from 'components/workspace/types/workspace.types';
-import { openOrFocusPanel } from 'redux/slices/workspace-slice';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 
 interface ModificationResultsProps {
     modifications: Modification[];
@@ -51,6 +51,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
     const triggerTreeNodeFocus = useTreeNodeFocus();
     const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
     const dispatch = useDispatch();
+    const { openToolPanel } = useWorkspacePanelActions();
 
     const getModificationLabel = useCallback(
         (modification?: Modification): React.ReactNode => {
@@ -76,10 +77,10 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
                 setCurrentTreeNodeWithSync({ ...node });
                 triggerTreeNodeFocus();
             }
-            dispatch(openOrFocusPanel({ panelType: PanelType.NODE_EDITOR }));
+            openToolPanel(PanelType.MODIFICATIONS);
             dispatch(setHighlightModification(modification.modificationUuid));
         },
-        [dispatch, nodeUuid, setCurrentTreeNodeWithSync, treeNodes, triggerTreeNodeFocus]
+        [dispatch, nodeUuid, setCurrentTreeNodeWithSync, treeNodes, triggerTreeNodeFocus, openToolPanel]
     );
 
     return (
