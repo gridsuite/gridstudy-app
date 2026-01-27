@@ -8,13 +8,13 @@
 export interface ConnectablePositionFormInfos {
     connectionDirection: string | null;
     connectionName?: string | null;
-    connectionPosition?: string | null;
+    connectionPosition?: number | null;
 }
 
 export interface ConnectablePositionInfos {
     connectionDirection: string | null;
     connectionName?: string | null;
-    connectionPosition?: string | null;
+    connectionPosition?: number | null;
 }
 
 export interface Connectivity {

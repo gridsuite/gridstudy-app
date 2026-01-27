@@ -8,7 +8,7 @@
 import { EQUIPMENT_ID, EQUIPMENT_NAME, TAB_HEADER } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
-const headerValidationSchema = (id) => ({
+const headerValidationSchema = (id: string) => ({
     [id]: yup.object().shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
@@ -19,7 +19,7 @@ export const getHeaderValidationSchema = (id = TAB_HEADER) => {
     return headerValidationSchema(id);
 };
 
-const headerEmptyFormData = (id) => ({
+const headerEmptyFormData = (id: string) => ({
     [id]: {
         [EQUIPMENT_ID]: '',
         [EQUIPMENT_NAME]: '',
@@ -30,7 +30,10 @@ export const getHeaderEmptyFormData = (id = TAB_HEADER) => {
     return headerEmptyFormData(id);
 };
 
-export const getHeaderFormData = ({ equipmentId, equipmentName = '' }, id = TAB_HEADER) => ({
+export const getHeaderFormData = (
+    { equipmentId, equipmentName = '' }: { equipmentId: string; equipmentName: string | null },
+    id = TAB_HEADER
+) => ({
     [id]: {
         [EQUIPMENT_ID]: equipmentId,
         [EQUIPMENT_NAME]: equipmentName,
