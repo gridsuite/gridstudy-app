@@ -12,6 +12,7 @@ import {
     IElementUpdateDialog,
     MODIFICATION_TYPES,
     NetworkModificationMetadata,
+    PARAM_LANGUAGE,
     snackWithFallback,
     SubstationCreationDialog,
     usePrevious,
@@ -115,6 +116,7 @@ import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modificat
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
@@ -149,6 +151,7 @@ const NetworkModificationNodeEditor = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -225,6 +228,7 @@ const NetworkModificationNodeEditor = () => {
                 isUpdate={isUpdate}
                 editDataFetchStatus={editDataFetchStatus}
                 studyContext={studyContext}
+                language={languageLocal}
             />
         );
     }
