@@ -7,10 +7,15 @@
 
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useRef } from 'react';
-import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { ComputingType, CustomAGGrid, CustomAGGridProps, DefaultCellRenderer } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    CustomAGGrid,
+    CustomAGGridProps,
+    DefaultCellRenderer,
+    TOOLTIP_DELAY,
+} from '@gridsuite/commons-ui';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';

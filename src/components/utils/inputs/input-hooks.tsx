@@ -11,9 +11,8 @@ import { TextField, Tooltip, Button, Grid, TextFieldProps } from '@mui/material'
 import IconButton from '@mui/material/IconButton';
 
 import { styles } from '../../dialogs/dialog-utils';
-import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useCSVReader } from 'react-papaparse';
-import { LANG_FRENCH } from '@gridsuite/commons-ui';
+import { LANG_FRENCH, TOOLTIP_DELAY } from '@gridsuite/commons-ui';
 
 interface UseButtonWithTooltipProps {
     handleClick: React.MouseEventHandler<HTMLButtonElement>;
