@@ -21,7 +21,7 @@ import { FilterConfig, FilterType, FilterType as AgGridFilterType } from '../../
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
-import { GridApi, GridColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GridApi, GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -31,9 +31,9 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
-import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
+import { useAgGridInitialFilters } from '../common/use-ag-grid-initial-filters';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
@@ -72,10 +72,6 @@ function SensitivityAnalysisResult({
     const intl = useIntl();
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
-    );
-    const filters = useSelector(
-        (state: AppState) =>
-            state.computationFilters?.[FilterType.SensitivityAnalysis]?.columnsFilters?.[computationSubType].columns
     );
     const messages = useIntlResultStatusMessages(intl, true);
 
@@ -240,14 +236,8 @@ function SensitivityAnalysisResult({
         [setIsCsvButtonDisabled]
     );
 
-    const handleGridReady = useCallback(
-        (event: GridReadyEvent) => {
-            if (!event.api || !filters) return;
-            event.api.sizeColumnsToFit();
-            updateAgGridFilters(event.api, filters);
-            setCsvHeaders(getColumnHeaderDisplayNames(event.api));
-        },
-        [filters, setCsvHeaders]
+    const onGridReady = useAgGridInitialFilters(FilterType.SensitivityAnalysis, computationSubType, ({ api }) =>
+        setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 
     const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus, !isLoading);
@@ -266,7 +256,7 @@ function SensitivityAnalysisResult({
                 rowData={rowsToShow}
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
-                onGridReady={handleGridReady}
+                onGridReady={onGridReady}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
                 onGridColumnsChanged={handleGridColumnsChanged}

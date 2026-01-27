@@ -18,14 +18,14 @@ import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
+import { ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
-import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
+import { useAgGridInitialFilters } from '../common/use-ag-grid-initial-filters';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -101,14 +101,8 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [setIsCsvButtonDisabled]
     );
 
-    const handleGridReady = useCallback(
-        (event: GridReadyEvent) => {
-            if (!event.api || !filters) return;
-            event.api.sizeColumnsToFit();
-            updateAgGridFilters(event.api, filters);
-            setCsvHeaders(getColumnHeaderDisplayNames(event.api));
-        },
-        [filters, setCsvHeaders]
+    const onGridReady = useAgGridInitialFilters(FilterType.PccMin, PCCMIN_RESULT, ({ api }) =>
+        setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 
     return (
@@ -122,7 +116,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
                     defaultColDef={defaultColDef}
                     columnDefs={columns}
                     onRowDataUpdated={handleRowDataUpdated}
-                    onGridReady={handleGridReady}
+                    onGridReady={onGridReady}
                     overlayNoRowsTemplate={noRowMessage}
                     overrideLocales={AGGRID_LOCALES}
                     onModelUpdated={({ api }) => {

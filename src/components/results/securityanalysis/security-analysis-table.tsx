@@ -5,17 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { SecurityAnalysisResultProps } from './security-analysis.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { GridReadyEvent } from 'ag-grid-community';
 import { IntlShape, useIntl } from 'react-intl';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
-import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { FilterType } from '../../../types/custom-aggrid-types';
+import { useAgGridInitialFilters } from '../common/use-ag-grid-initial-filters';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
     rows,
@@ -29,10 +28,6 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
     const securityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
-    const filters = useSelector(
-        (state: AppState) =>
-            state.computationFilters?.[FilterType.SecurityAnalysis]?.columnsFilters?.[computationSubType].columns
-    );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
     const overlayNoRowsTemplate = getNoRowsMessage(
         resultStatusMessages,
@@ -40,15 +35,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
         securityAnalysisStatus,
         !isLoadingResult
     );
-
-    const onGridReady = useCallback(
-        ({ api }: GridReadyEvent) => {
-            if (!api || !filters) return;
-            updateAgGridFilters(api, filters);
-            api?.sizeColumnsToFit();
-        },
-        [filters]
-    );
+    const onGridReady = useAgGridInitialFilters(FilterType.SecurityAnalysis, computationSubType);
 
     const defaultColDef = useMemo(
         () => ({
