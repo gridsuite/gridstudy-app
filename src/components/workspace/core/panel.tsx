@@ -8,14 +8,9 @@
 import { useCallback, memo } from 'react';
 import { Box, Theme } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-    focusPanel,
-    updatePanelPosition,
-    updatePanelPositionAndSize,
-    snapPanel,
-} from '../../../redux/slices/workspace-slice';
+import { useSelector } from 'react-redux';
 import { selectPanel } from '../../../redux/slices/workspace-selectors';
+import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import type { RootState } from '../../../redux/store';
 import { PANEL_CONTENT_REGISTRY } from '../panel-contents/panel-content-registry';
 import { PanelHeader } from './panel-header';
@@ -27,11 +22,11 @@ import { positionToRelative, sizeToRelative, calculatePanelDimensions } from './
 
 const RESIZE_HANDLE_SIZE = 12;
 
-const getBorder = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
+const getBorder = (theme: Theme, isFocused: boolean, maximized: boolean) => {
     if (theme.palette.mode === 'light') {
         return `1px solid ${theme.palette.grey[500]}`;
     }
-    if (isFocused && !isMaximized) {
+    if (isFocused && !maximized) {
         return `1px solid ${theme.palette.grey[100]}`;
     }
     return `1px solid ${theme.palette.grey[800]}`;
@@ -77,7 +72,7 @@ interface PanelProps {
     isFocused: boolean;
 }
 export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
-    const dispatch = useDispatch();
+    const { updatePanelGeometry, focusPanel } = useWorkspacePanelActions();
     const panel = useSelector((state: RootState) => selectPanel(state, panelId));
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -93,15 +88,18 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
     const handleDragStop: RndDragCallback = useCallback(
         (_e, data) => {
             if (snapPreview) {
-                dispatch(snapPanel({ panelId, rect: snapPreview }));
+                updatePanelGeometry(panelId, {
+                    position: { x: snapPreview.x, y: snapPreview.y },
+                    size: { width: snapPreview.width, height: snapPreview.height },
+                });
             } else {
                 // Convert pixel position back to relative values
                 const relativePosition = positionToRelative({ x: data.x, y: data.y }, containerRect);
-                dispatch(updatePanelPosition({ panelId, position: relativePosition }));
+                updatePanelGeometry(panelId, { position: relativePosition });
             }
             onSnapPreview(panelId, null);
         },
-        [dispatch, panelId, snapPreview, onSnapPreview, containerRect]
+        [updatePanelGeometry, panelId, snapPreview, onSnapPreview, containerRect]
     );
 
     const handleResizeStop: RndResizeCallback = useCallback(
@@ -115,16 +113,16 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
                 },
                 containerRect
             );
-            dispatch(updatePanelPositionAndSize({ panelId, position: relativePosition, size: relativeSize }));
+            updatePanelGeometry(panelId, { position: relativePosition, size: relativeSize });
         },
-        [dispatch, panelId, containerRect]
+        [updatePanelGeometry, panelId, containerRect]
     );
 
     const handleFocus = useCallback(() => {
         if (!isFocused) {
-            dispatch(focusPanel(panelId));
+            focusPanel(panelId);
         }
-    }, [dispatch, panelId, isFocused]);
+    }, [focusPanel, panelId, isFocused]);
 
     if (!panel) {
         return null;
@@ -135,7 +133,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
     const minHeight = config.minSize?.height || 200;
 
     // Calculate panel dimensions and position
-    const dimensions = panel.isMaximized
+    const dimensions = panel.maximized
         ? { x: 0, y: 0, width: containerRect.width, height: containerRect.height }
         : calculatePanelDimensions(panel.position, panel.size, containerRect, { width: minWidth, height: minHeight });
 
@@ -148,15 +146,15 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
             onResizeStart={handleFocus}
             onResizeStop={handleResizeStop}
             dragHandleClassName="panel-header"
-            disableDragging={panel.isMaximized || panel.isPinned}
-            enableResizing={!panel.isMaximized && !panel.isPinned}
+            disableDragging={panel.maximized || panel.pinned}
+            enableResizing={!panel.maximized && !panel.pinned}
             bounds="parent"
             minWidth={minWidth}
             minHeight={minHeight}
             resizeHandleStyles={styles.resizeHandles}
             style={{
-                display: panel.isMinimized ? 'none' : 'block',
-                zIndex: panel.zIndex,
+                visibility: panel.minimized ? 'hidden' : 'visible',
+                zIndex: panel.zIndex ?? 0,
             }}
         >
             <Box
@@ -167,22 +165,22 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
                     panelId={panelId}
                     title={panel.title}
                     panelType={panel.type}
-                    isPinned={panel.isPinned}
-                    isMaximized={panel.isMaximized}
+                    pinned={panel.pinned}
+                    maximized={panel.maximized}
                     isFocused={isFocused}
                 />
                 <Box
                     className="panel-content"
                     sx={(theme) => ({
                         ...styles.content(theme),
-                        border: getBorder(theme, isFocused, panel.isMaximized),
+                        border: getBorder(theme, isFocused, panel.maximized),
                     })}
                 >
                     {studyUuid && currentRootNetworkUuid && currentNode
                         ? PANEL_CONTENT_REGISTRY[panel.type]({
                               panelId,
-                              studyUuid: studyUuid as UUID,
-                              currentRootNetworkUuid: currentRootNetworkUuid as UUID,
+                              studyUuid,
+                              currentRootNetworkUuid,
                               currentNode,
                           })
                         : null}

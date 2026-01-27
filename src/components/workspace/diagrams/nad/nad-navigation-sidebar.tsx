@@ -5,16 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, memo, useMemo } from 'react';
+import { useState, memo, useMemo, useCallback } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { selectPanelMetadata, selectAssociatedVoltageLevelIds } from '../../../../redux/slices/workspace-selectors';
+import {
+    selectNadNavigationHistory,
+    selectAssociatedVoltageLevelIds,
+} from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';
-import type { NADPanelMetadata } from '../../types/workspace.types';
 import { NavigationSidebar } from '../common/navigation-sidebar';
-import { useNadSldAssociation } from '../../panel-contents/diagrams/nad/hooks/use-nad-sld-association';
+import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
 
 interface NadNavigationSidebarProps {
     readonly nadPanelId: UUID;
@@ -34,17 +36,21 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         shallowEqual
     );
 
-    const metadata = useSelector(
-        (state: RootState) => selectPanelMetadata(state, nadPanelId) as NADPanelMetadata | undefined,
+    const navigationHistory = useSelector(
+        (state: RootState) => selectNadNavigationHistory(state, nadPanelId),
         shallowEqual
     );
 
-    const { handleNavigationSidebarClick } = useNadSldAssociation({ nadPanelId });
+    const { associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
-    const reversedHistory = useMemo(
-        () => [...(metadata?.navigationHistory || [])].reverse(),
-        [metadata?.navigationHistory]
+    const handleNavigationSidebarClick = useCallback(
+        (voltageLevelId: string) => {
+            associateVoltageLevelWithNad({ voltageLevelId, nadPanelId });
+        },
+        [nadPanelId, associateVoltageLevelWithNad]
     );
+
+    const reversedHistory = useMemo(() => [...(navigationHistory || [])].reverse(), [navigationHistory]);
 
     const hasHistory = reversedHistory.length > 0;
     const shouldBeCollapsed = !isExpanded || !hasHistory;
