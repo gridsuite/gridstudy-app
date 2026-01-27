@@ -13,7 +13,6 @@ import {
     MODIFICATION_TYPES,
     NetworkModificationMetadata,
     snackWithFallback,
-    StudyContext,
     SubstationCreationDialog,
     usePrevious,
     useSnackMessage,
@@ -95,6 +94,7 @@ import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-l
 import { styles } from './network-modification-node-editor-utils';
 import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
+import { useStudyContext } from '../../../../hooks/use-study-context';
 import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
@@ -118,7 +118,6 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
-import { PARAM_USE_NAME } from '../../../../utils/config-params';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -150,7 +149,6 @@ const NetworkModificationNodeEditor = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
 
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -179,16 +177,7 @@ const NetworkModificationNodeEditor = () => {
     const copyInfosRef = useRef<NetworkModificationCopyInfos | null>(null);
     copyInfosRef.current = copyInfos;
 
-    const studyContext: StudyContext | undefined = useMemo(() => {
-        if (studyUuid && currentNode?.id) {
-            return {
-                studyId: studyUuid,
-                nodeId: currentNode.id,
-                rootNetworkId: currentRootNetworkUuid ?? undefined,
-                useNameParam: useName,
-            };
-        }
-    }, [currentNode?.id, currentRootNetworkUuid, studyUuid, useName]);
+    const studyContext = useStudyContext();
 
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
