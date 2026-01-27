@@ -35,12 +35,14 @@ import { type MuiStyles, OverflowableText, PopupConfirmationDialog, CancelButton
 import { useIntl, FormattedMessage } from 'react-intl';
 import { WORKSPACE_MENU_VALUE } from '../constants/workspace.constants';
 import {
-    switchWorkspace,
+    setActiveWorkspace,
     renameWorkspace as renameWorkspaceAction,
     clearWorkspace as clearWorkspaceAction,
 } from '../../../redux/slices/workspace-slice';
 import { selectWorkspaces, selectActiveWorkspaceId } from '../../../redux/slices/workspace-selectors';
+import { getWorkspace, renameWorkspace, deletePanels } from '../../../services/study/workspace';
 import type { UUID } from 'node:crypto';
+import { RootState } from 'redux/store';
 
 const styles = {
     container: {
@@ -73,6 +75,22 @@ const styles = {
         borderLeft: 3,
         borderColor: theme.palette.primary.main,
     }),
+    workspaceMenu: {
+        width: 300,
+        maxHeight: 400,
+        overflow: 'auto',
+        p: 0,
+    },
+    workspaceNameBox: {
+        width: 180,
+        mr: 1,
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+    },
+    actionButton: {
+        flexShrink: 0,
+    },
 } as const satisfies MuiStyles;
 
 export const WorkspaceSwitcher = memo(() => {
@@ -80,23 +98,28 @@ export const WorkspaceSwitcher = memo(() => {
     const dispatch = useDispatch();
     const workspaces = useSelector(selectWorkspaces);
     const activeWorkspaceId = useSelector(selectActiveWorkspaceId);
+    const studyUuid = useSelector((state: RootState) => state.studyUuid);
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [renameDialog, setRenameDialog] = useState<{ workspaceId: UUID; name: string } | null>(null);
     const [resetWorkspaceId, setResetWorkspaceId] = useState<UUID | null>(null);
 
-    const handleWorkspaceChange = (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
-        if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE) {
-            globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
+    const switchToWorkspace = async (workspaceId: UUID) => {
+        if (!studyUuid) return;
 
-            dispatch(switchWorkspace(workspaceId as UUID));
+        globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
+        const workspace = await getWorkspace(studyUuid, workspaceId);
+        dispatch(setActiveWorkspace(workspace));
+    };
+
+    const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
+        if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE) {
+            await switchToWorkspace(workspaceId as UUID);
         }
     };
 
-    const handleSwitchWorkspace = (workspaceId: UUID) => {
-        globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
-
-        dispatch(switchWorkspace(workspaceId));
+    const handleSwitchWorkspace = async (workspaceId: UUID) => {
+        await switchToWorkspace(workspaceId);
         setMenuAnchor(null);
     };
 
@@ -107,20 +130,29 @@ export const WorkspaceSwitcher = memo(() => {
     };
 
     const handleSubmitRename = () => {
-        if (renameDialog?.name.trim()) {
-            dispatch(
-                renameWorkspaceAction({ workspaceId: renameDialog.workspaceId, newName: renameDialog.name.trim() })
-            );
-            setRenameDialog(null);
+        if (renameDialog?.name.trim() && studyUuid) {
+            renameWorkspace(studyUuid, renameDialog.workspaceId, renameDialog.name.trim())
+                .then(() => {
+                    dispatch(
+                        renameWorkspaceAction({
+                            workspaceId: renameDialog.workspaceId,
+                            newName: renameDialog.name.trim(),
+                        })
+                    );
+                    setRenameDialog(null);
+                })
+                .catch((error) => console.error('Failed to rename workspace:', error));
         }
     };
 
     const handleConfirmReset = useCallback(() => {
-        if (resetWorkspaceId) {
-            dispatch(clearWorkspaceAction(resetWorkspaceId));
+        if (resetWorkspaceId && studyUuid) {
+            deletePanels(studyUuid, resetWorkspaceId)
+                .then(() => dispatch(clearWorkspaceAction()))
+                .catch((error) => console.error('Failed to reset workspace:', error));
         }
         setResetWorkspaceId(null);
-    }, [resetWorkspaceId, dispatch]);
+    }, [resetWorkspaceId, studyUuid, dispatch]);
 
     return (
         <Box sx={styles.container}>
@@ -160,10 +192,9 @@ export const WorkspaceSwitcher = memo(() => {
 
             {/* Menu for workspace management */}
             <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
-                <List dense sx={{ width: 300, maxHeight: 400, overflow: 'auto', p: 0 }}>
+                <List dense sx={styles.workspaceMenu}>
                     {workspaces.map((workspace, index) => {
                         const isActive = workspace.id === activeWorkspaceId;
-                        const panelCount = Object.keys(workspace.panels).length;
                         const workspaceName = workspace.name || `Workspace ${index + 1}`;
 
                         return (
@@ -176,20 +207,12 @@ export const WorkspaceSwitcher = memo(() => {
                                     onClick={() => handleSwitchWorkspace(workspace.id)}
                                     sx={styles.workspaceItem}
                                 >
-                                    <Box sx={{ width: 180, mr: 1, overflow: 'hidden' }}>
+                                    <Box sx={styles.workspaceNameBox}>
                                         <OverflowableText
                                             text={workspaceName}
                                             sx={{ fontWeight: isActive ? 'bold' : 'normal', width: '100%' }}
                                             maxLineCount={1}
                                         />
-                                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                                            <FormattedMessage
-                                                id="panelsCount"
-                                                values={{
-                                                    count: panelCount,
-                                                }}
-                                            />
-                                        </Typography>
                                     </Box>
                                     <Tooltip title={intl.formatMessage({ id: 'Rename' })}>
                                         <IconButton
@@ -198,7 +221,7 @@ export const WorkspaceSwitcher = memo(() => {
                                                 e.stopPropagation();
                                                 handleOpenRenameDialog(workspace.id);
                                             }}
-                                            sx={{ flexShrink: 0 }}
+                                            sx={styles.actionButton}
                                         >
                                             <EditIcon fontSize="small" />
                                         </IconButton>
@@ -210,7 +233,7 @@ export const WorkspaceSwitcher = memo(() => {
                                                 e.stopPropagation();
                                                 setResetWorkspaceId(workspace.id);
                                             }}
-                                            sx={{ flexShrink: 0 }}
+                                            sx={styles.actionButton}
                                         >
                                             <RestartAltIcon fontSize="small" />
                                         </IconButton>

@@ -13,8 +13,14 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
+import { SubstationInfos } from '../substation-dialog.type';
 
-const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
+interface SubstationModificationFormProps {
+    substationToModify?: SubstationInfos | null;
+    equipmentId: string;
+}
+
+const SubstationModificationForm = ({ substationToModify, equipmentId }: Readonly<SubstationModificationFormProps>) => {
     const { translate } = useLocalizedCountries();
 
     const substationIdField = (
@@ -47,7 +53,7 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
             label={'Country'}
             formProps={filledTextField}
             size={'small'}
-            previousValue={translate(substationToModify?.country)}
+            previousValue={substationToModify?.country ? translate(substationToModify.country) : ''}
         />
     );
 

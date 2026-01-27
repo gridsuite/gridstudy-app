@@ -23,8 +23,9 @@ import {
     setRootNetworks,
     studyUpdated,
 } from '../redux/actions';
-import { initializeWorkspaces } from '../redux/slices/workspace-slice';
+import { setWorkspacesMetadata, setActiveWorkspace } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
+import { getWorkspacesMetadata, getWorkspace } from '../services/study/workspace';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
@@ -35,7 +36,7 @@ import {
     useIntlRef,
     useNotificationsListener,
     useSnackMessage,
-    convertToCustomError,
+    parseError,
 } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
@@ -56,7 +57,7 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
-import { loadWorkspacesFromStorage } from 'redux/slices/workspace-storage';
+import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -169,7 +170,7 @@ export function StudyContainer() {
             }
 
             if (updateTypeHeader === NotificationType.LOADFLOW_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'LoadFlowError',
                 });
             }
@@ -180,12 +181,12 @@ export function StudyContainer() {
                 });
             }
             if (updateTypeHeader === NotificationType.SECURITY_ANALYSIS_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'securityAnalysisError',
                 });
             }
             if (updateTypeHeader === NotificationType.SENSITIVITY_ANALYSIS_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'sensitivityAnalysisError',
                 });
             }
@@ -193,22 +194,22 @@ export function StudyContainer() {
                 updateTypeHeader === NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED ||
                 updateTypeHeader === NotificationType.ONE_BUS_SC_ANALYSIS_FAILED
             ) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'ShortCircuitAnalysisError',
                 });
             }
             if (updateTypeHeader === NotificationType.DYNAMIC_SIMULATION_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'DynamicSimulationRunError',
                 });
             }
             if (updateTypeHeader === NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'DynamicSecurityAnalysisRunError',
                 });
             }
             if (updateTypeHeader === NotificationType.VOLTAGE_INIT_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'voltageInitError',
                 });
             }
@@ -218,12 +219,12 @@ export function StudyContainer() {
                 });
             }
             if (updateTypeHeader === NotificationType.STATE_ESTIMATION_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'stateEstimationError',
                 });
             }
             if (updateTypeHeader === NotificationType.PCC_MIN_FAILED) {
-                snackWithFallback(snackError, convertToCustomError(errorMessage), {
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'pccMinError',
                 });
             }
@@ -504,11 +505,21 @@ export function StudyContainer() {
             websocketExpectedCloseRef.current = false;
             dispatch(openStudy(studyUuid));
 
-            const savedWorkspaces = loadWorkspacesFromStorage(studyUuid);
-            if (savedWorkspaces) {
-                dispatch(initializeWorkspaces(savedWorkspaces));
-            }
+            // Load workspaces metadata from backend
+            getWorkspacesMetadata(studyUuid)
+                .then((workspacesMetadata) => {
+                    dispatch(setWorkspacesMetadata(workspacesMetadata));
 
+                    // Load the first workspace for now (maybe remember last active workspace per study and load it instead later)
+                    if (workspacesMetadata.length > 0) {
+                        return getWorkspace(studyUuid, workspacesMetadata[0].id);
+                    }
+                })
+                .then((workspace) => {
+                    if (workspace) {
+                        dispatch(setActiveWorkspace(workspace));
+                    }
+                });
             return function () {
                 websocketExpectedCloseRef.current = true;
                 dispatch(closeStudy());
@@ -525,6 +536,8 @@ export function StudyContainer() {
         currentNodeRef.current = currentNode;
         currentRootNetworkUuidRef.current = currentRootNetworkUuid;
     }, [currentNode, currentRootNetworkUuid]);
+
+    useWorkspaceNotifications(studyUuid);
 
     return (
         <WaitingLoader

@@ -26,7 +26,7 @@ import {
     type NetworkMapRef,
 } from '@powsybl/network-viewer';
 import { type Color } from '@deck.gl/core';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapEquipment as BaseEquipment } from '../menus/base-equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-voltage-filter';
@@ -47,8 +47,8 @@ import {
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
-import { openSLD, showInSpreadsheet } from '../../redux/slices/workspace-slice';
 import { PanelType } from '../workspace/types/workspace.types';
+import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -127,12 +127,12 @@ type NetworkMapPanelProps = {
     triggerMapResizeOnChange?: any[];
 };
 
-export const NetworkMapPanel = ({
+export const NetworkMapPanel = memo(function NetworkMapPanel({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
     triggerMapResizeOnChange,
-}: NetworkMapPanelProps) => {
+}: NetworkMapPanelProps) {
     const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
 
     const mapEquipments = useSelector((state: AppState) => state.mapEquipments);
@@ -157,6 +157,7 @@ export const NetworkMapPanel = ({
     }, [treeModel]);
 
     const dispatch = useDispatch();
+    const { showInSpreadsheet, openSLD } = useWorkspacePanelActions();
 
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] = useState(false);
     const [isInitialized, setInitialized] = useState(false);
@@ -292,7 +293,7 @@ export const NetworkMapPanel = ({
         studyUuid,
         disabled,
         onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => {
-            dispatch(showInSpreadsheet({ equipmentId, equipmentType }));
+            showInSpreadsheet({ equipmentId, equipmentType });
         },
         onDeleteEquipment: handleDeleteEquipment,
         onOpenModificationDialog: handleOpenModificationDialog,
@@ -1011,10 +1012,10 @@ export const NetworkMapPanel = ({
         (vlId: string) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode.value) {
-                dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
             }
         },
-        [dispatch, isInDrawingMode]
+        [openSLD, isInDrawingMode]
     );
 
     const getHvdcExtendedEquipmentType = (hvdcType: string): ExtendedEquipmentType | null => {
@@ -1169,6 +1170,7 @@ export const NetworkMapPanel = ({
                     nominalVoltages={nominalVoltagesFromMapEquipments ?? EMPTY_ARRAY}
                     filteredNominalVoltages={filteredNominalVoltages ?? EMPTY_ARRAY}
                     onChange={handleFilteredNominalVoltagesChange}
+                    disabled={!basicDataReady || mapDataLoading}
                 />
             </Box>
         );
@@ -1202,9 +1204,9 @@ export const NetworkMapPanel = ({
                 return;
             }
             const panelType = isSubstation ? PanelType.SLD_SUBSTATION : PanelType.SLD_VOLTAGE_LEVEL;
-            dispatch(openSLD({ id, panelType }));
+            openSLD({ equipmentId: id, panelType });
         },
-        [dispatch]
+        [openSLD]
     );
 
     return (
@@ -1230,6 +1232,6 @@ export const NetworkMapPanel = ({
             )}
         </>
     );
-};
+});
 
 export default NetworkMapPanel;

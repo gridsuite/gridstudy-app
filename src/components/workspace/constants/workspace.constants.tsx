@@ -98,7 +98,7 @@ export const DEFAULT_PANEL_CONFIGS: Record<PanelType, PanelConfig> = {
         defaultPosition: { x: 0.15, y: 0 },
         icon: <Assessment fontSize="inherit" />,
     },
-    [PanelType.NODE_EDITOR]: {
+    [PanelType.MODIFICATIONS]: {
         title: 'modifications',
         defaultSize: { width: 0.2, height: 0.6 },
         minSize: { width: 340, height: 300 },
