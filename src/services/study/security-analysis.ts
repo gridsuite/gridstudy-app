@@ -55,7 +55,7 @@ export function fetchSecurityAnalysisResult(
         currentNodeUuid,
         currentRootNetworkUuid
     )}/security-analysis/result`;
-    const params = getSecurityAnalysisQueryParamsUnpaged(queryParams);
+    const params = getSecurityAnalysisQueryParams(queryParams);
 
     const { page, size } = queryParams || {};
     if (typeof page === 'number' && typeof size === 'number') {
@@ -85,7 +85,7 @@ export function downloadSecurityAnalysisResultZippedCsv(
         currentNodeUuid,
         currentRootNetworkUuid
     )}/security-analysis/result/csv`;
-    const params = getSecurityAnalysisQueryParamsUnpaged(queryParams);
+    const params = getSecurityAnalysisQueryParams(queryParams);
 
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
@@ -156,11 +156,11 @@ export function setSecurityAnalysisParameters(studyUuid: UUID, newParams: any) {
     });
 }
 
-function getSecurityAnalysisQueryParamsUnpaged(queryParams: SecurityAnalysisQueryParams) {
+function getSecurityAnalysisQueryParams(queryParams: SecurityAnalysisQueryParams) {
     const { resultType, globalFilters, filters, sort } = queryParams;
     const params = new URLSearchParams({ resultType });
 
-    sort?.map((value: any) => params.append('sort', `${value.colId},${value.sort}`));
+    sort?.forEach((value: any) => params.append('sort', `${value.colId},${value.sort}`));
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
     }

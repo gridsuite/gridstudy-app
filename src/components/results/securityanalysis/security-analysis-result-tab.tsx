@@ -246,8 +246,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             rootNetworkUuid: UUID,
             enumValueTranslations: Record<string, string>,
             language: GsLangUser
-        ) => {
-            return downloadSecurityAnalysisResultZippedCsv(
+        ) =>
+            downloadSecurityAnalysisResultZippedCsv(
                 studyUuid,
                 nodeUuid,
                 rootNetworkUuid,
@@ -255,8 +255,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 csvHeaders,
                 enumValueTranslations,
                 language
-            );
-        },
+            ),
         [csvHeaders, queryParams]
     );
 
