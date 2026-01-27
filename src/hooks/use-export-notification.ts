@@ -6,6 +6,7 @@
  */
 import {
     NotificationsUrlKeys,
+    parseError,
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
@@ -34,7 +35,7 @@ export default function useExportNotification() {
                 if (isSubscribed && userIdNotif === userId) {
                     unsetExportSubscription(exportIdentifierNotif);
                     if (error) {
-                        snackWithFallback(snackError, error, { headerId: 'export.message.failed' });
+                        snackWithFallback(snackError, parseError(error), { headerId: 'export.message.failed' });
                     } else {
                         exportToGridExplore
                             ? snackSuccess({
