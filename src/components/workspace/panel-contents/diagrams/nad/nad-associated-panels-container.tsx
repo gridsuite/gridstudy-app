@@ -6,10 +6,18 @@
  */
 
 import { memo, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
+import type { RootState } from '../../../../../redux/store';
+import { store } from '../../../../../redux/store';
+import {
+    selectFocusedAssociatedSldId,
+    selectPanel,
+    selectVisibleAssociatedSldPanelIds,
+} from '../../../../../redux/slices/workspace-selectors';
+import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { AssociatedSldPanel } from './associated-sld-panel';
 import { AssociatedSldsChips } from './associated-slds-chips';
-import { useSldPanels } from './hooks/use-sld-panels';
 import { useSldLayout } from './hooks/use-sld-layout';
 
 interface NadAssociatedPanelsContainerProps {
@@ -21,14 +29,32 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
     nadPanelId,
     onDragStateChange,
 }: NadAssociatedPanelsContainerProps) {
-    const { associatedPanelIds, visibleSldPanels, focusedSldId, handleBringToFront, handleToggleSldVisibility } =
-        useSldPanels({ nadPanelId });
+    const { minimizePanel, focusPanel } = useWorkspacePanelActions();
 
-    const { handleReorganize, toggleHideAll } = useSldLayout({
-        nadPanelId,
-        visibleSldPanels,
-        associatedPanelIds,
-    });
+    const focusedSldId = useSelector((state: RootState) => selectFocusedAssociatedSldId(state, nadPanelId));
+    const visibleSldPanelIds = useSelector((state: RootState) => selectVisibleAssociatedSldPanelIds(state, nadPanelId));
+
+    const handleToggleSldVisibility = useCallback(
+        (sldPanelId: UUID) => {
+            const panel = selectPanel(store.getState(), sldPanelId);
+            if (!panel) return;
+
+            const isVisible = !panel.minimized;
+
+            if (isVisible) {
+                if (focusedSldId === sldPanelId) {
+                    minimizePanel(sldPanelId);
+                } else {
+                    focusPanel(sldPanelId);
+                }
+            } else {
+                focusPanel(sldPanelId);
+            }
+        },
+        [focusPanel, focusedSldId, minimizePanel]
+    );
+
+    const { handleReorganize, toggleHideAll } = useSldLayout({ nadPanelId });
 
     const handleDragStart = useCallback(() => {
         onDragStateChange?.(true);
@@ -40,18 +66,16 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
 
     return (
         <>
-            {visibleSldPanels.map((sldPanelId) => (
+            {visibleSldPanelIds.map((sldPanelId) => (
                 <AssociatedSldPanel
                     key={sldPanelId}
                     sldPanelId={sldPanelId}
                     isFocused={focusedSldId === sldPanelId}
-                    onBringToFront={handleBringToFront}
                     onDragStart={handleDragStart}
                     onDragStop={handleDragStop}
                 />
             ))}
 
-            {/* Chips bar at bottom */}
             <AssociatedSldsChips
                 nadPanelId={nadPanelId}
                 onToggleVisibility={handleToggleSldVisibility}

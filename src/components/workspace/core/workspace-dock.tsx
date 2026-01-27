@@ -6,16 +6,16 @@
  */
 
 import { useState, useMemo, memo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Box, Tabs, Tab, Theme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { selectOpenPanels, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
-import { closePanel, focusPanel, toggleMinimize } from '../../../redux/slices/workspace-slice';
+import { selectFocusedPanelId, selectPanels } from '../../../redux/slices/workspace-selectors';
 import { PanelType } from '../types/workspace.types';
 import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
+import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 
 const styles = {
     dock: (theme: Theme) => ({
@@ -61,8 +61,8 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const WorkspaceDock = memo(() => {
-    const dispatch = useDispatch();
-    const allPanels = useSelector(selectOpenPanels);
+    const { minimizePanel, focusPanel, deletePanel } = useWorkspacePanelActions();
+    const allPanels = useSelector(selectPanels);
     const focusedPanelId = useSelector(selectFocusedPanelId);
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);
 
@@ -70,7 +70,7 @@ export const WorkspaceDock = memo(() => {
         () =>
             allPanels.filter(
                 (panel) =>
-                    panel.type === PanelType.SLD_VOLTAGE_LEVEL ||
+                    (panel.type === PanelType.SLD_VOLTAGE_LEVEL && !panel.parentNadPanelId) ||
                     panel.type === PanelType.SLD_SUBSTATION ||
                     panel.type === PanelType.NAD
             ),
@@ -80,7 +80,7 @@ export const WorkspaceDock = memo(() => {
     // Find the index of the focused panel in the filtered panels array
     const selectedTabIndex = useMemo(() => {
         if (!focusedPanelId) return false;
-        const index = panels.findIndex((p) => p.id === focusedPanelId && !p.isMinimized);
+        const index = panels.findIndex((p) => p.id === focusedPanelId && !p.minimized);
         return index >= 0 ? index : false;
     }, [focusedPanelId, panels]);
 
@@ -89,15 +89,14 @@ export const WorkspaceDock = memo(() => {
     }
 
     const handleMinimizedPanelClick = (panelId: UUID) => {
-        dispatch(toggleMinimize(panelId));
-        dispatch(focusPanel(panelId));
+        focusPanel(panelId);
     };
 
     const handleActivePanelClick = (panelId: UUID) => {
         if (panelId === focusedPanelId) {
-            dispatch(toggleMinimize(panelId));
+            minimizePanel(panelId);
         } else {
-            dispatch(focusPanel(panelId));
+            focusPanel(panelId);
         }
     };
 
@@ -130,11 +129,11 @@ export const WorkspaceDock = memo(() => {
                                     component="span"
                                     sx={{
                                         ...styles.closeButton,
-                                        visibility: hoveredTab === panel.id && !panel.isPinned ? 'visible' : 'hidden',
+                                        visibility: hoveredTab === panel.id && !panel.pinned ? 'visible' : 'hidden',
                                     }}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        dispatch(closePanel(panel.id));
+                                        deletePanel(panel.id);
                                     }}
                                 >
                                     <Close />
@@ -142,7 +141,7 @@ export const WorkspaceDock = memo(() => {
                             </Box>
                         }
                         onClick={() =>
-                            panel.isMinimized ? handleMinimizedPanelClick(panel.id) : handleActivePanelClick(panel.id)
+                            panel.minimized ? handleMinimizedPanelClick(panel.id) : handleActivePanelClick(panel.id)
                         }
                         sx={{
                             minHeight: 36,
