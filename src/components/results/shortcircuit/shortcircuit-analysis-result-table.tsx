@@ -360,7 +360,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             ]
     );
 
-    const messages = useIntlResultStatusMessages(intl, true, filters.length > 0);
+    const messages = useIntlResultStatusMessages(intl, true, filters?.length > 0);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {

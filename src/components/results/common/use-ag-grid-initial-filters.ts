@@ -32,7 +32,7 @@ export const useAgGridInitialFilters = (
             const { computationFilters } = store.getState();
             const filters = computationFilters?.[filterType]?.columnsFilters?.[computationSubType]?.columns;
             if (!api) return;
-            filters.length > 0 && updateAgGridFilters(api, filters);
+            updateAgGridFilters(api, filters);
             api?.sizeColumnsToFit();
             if (onGridReady) {
                 onGridReady(params);

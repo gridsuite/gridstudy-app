@@ -72,7 +72,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [goToFirstPage, intl, voltageLevelIdRenderer]
     );
 
-    const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);
+    const statusMessage = useIntlResultStatusMessages(intl, true, filters?.length > 0);
 
     const defaultColDef = useMemo(
         () => ({
