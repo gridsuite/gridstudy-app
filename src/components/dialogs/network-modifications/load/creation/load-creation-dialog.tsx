@@ -36,7 +36,6 @@ import {
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,
@@ -155,7 +154,7 @@ export function LoadCreationDialog({
 
     const searchCopy = useFormSearchCopy((data) => {
         reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
-    }, EQUIPMENT_TYPES.LOAD);
+    }, EquipmentType.LOAD);
 
     useEffect(() => {
         if (editData) {

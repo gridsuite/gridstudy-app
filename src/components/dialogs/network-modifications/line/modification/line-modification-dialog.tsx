@@ -10,7 +10,9 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
     snackWithFallback,
@@ -76,10 +78,8 @@ import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLine } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -304,8 +304,8 @@ const LineModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.LINE,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM.type,
+                    equipmentId as UUID,
                     true
                 )
                     .then((line: BranchInfos) => {

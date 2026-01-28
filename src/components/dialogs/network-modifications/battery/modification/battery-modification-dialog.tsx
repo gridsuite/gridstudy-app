@@ -8,7 +8,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
     FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
@@ -52,10 +54,8 @@ import {
 } from '../../../reactive-limits/reactive-limits-utils';
 import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -87,6 +87,7 @@ import {
     getShortCircuitFormData,
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
+import { UUID } from 'node:crypto';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -231,8 +232,8 @@ export default function BatteryModificationDialog({
                     currentNode.id,
                     currentRootNetworkUuid,
                     EquipmentType.BATTERY,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM.type,
+                    equipmentId as UUID,
                     true
                 )
                     .then((value: BatteryFormInfos) => {

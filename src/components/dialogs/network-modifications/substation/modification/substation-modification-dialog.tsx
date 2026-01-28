@@ -9,7 +9,9 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
     FetchStatus,
     snackWithFallback,
     useSnackMessage,
@@ -21,10 +23,8 @@ import SubstationModificationForm from './substation-modification-form';
 import { sanitizeString } from '../../../dialog-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifySubstation } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
     getConcatenatedProperties,
     getPropertiesFromModification,
@@ -132,9 +132,9 @@ const SubstationModificationDialog = ({
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.SUBSTATION,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentType.SUBSTATION,
+                    EquipmentInfosTypes.FORM.type,
+                    equipmentId as UUID,
                     true
                 )
                     .then((substation: SubstationInfos) => {

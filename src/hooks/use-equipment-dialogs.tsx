@@ -6,10 +6,16 @@
  */
 
 import { useCallback, useState } from 'react';
-import { EquipmentType, ExtendedEquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../components/utils/equipment-types';
+import {
+    EquipmentInfosTypes,
+    EquipmentType,
+    ExtendedEquipmentType,
+    fetchNetworkElementInfos,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 import { deleteEquipment } from '../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../services/study/network';
 import { CurrentTreeNode } from '../components/graph/tree-node.type';
 import type { UUID } from 'node:crypto';
 
@@ -113,9 +119,9 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                     studyUuid,
                     currentNode?.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.HVDC_LINE,
-                    EQUIPMENT_INFOS_TYPES.MAP.type,
-                    equipmentId,
+                    EquipmentType.HVDC_LINE,
+                    EquipmentInfosTypes.MAP.type,
+                    equipmentId as UUID,
                     false
                 )
                     .then((hvdcInfos) => {

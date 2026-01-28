@@ -24,7 +24,9 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
     snackWithFallback,
@@ -32,10 +34,8 @@ import {
 } from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
     emptyProperties,
     Equipment,
@@ -195,8 +195,8 @@ const VoltageLevelModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.VOLTAGE_LEVEL,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM.type,
+                    equipmentId as UUID,
                     true
                 )
                     .then((voltageLevel: VoltageLevelFormData) => {

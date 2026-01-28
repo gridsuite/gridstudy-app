@@ -9,7 +9,9 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
     snackWithFallback,
@@ -108,7 +110,6 @@ import {
     computeHighTapPosition,
     toModificationOperation,
 } from '../../../../utils/utils';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import {
     getComputedPhaseTapChangerRegulationMode,
@@ -127,7 +128,6 @@ import {
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -648,7 +648,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.TWO_WINDINGS_TRANSFORMER,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    EquipmentInfosTypes.FORM.type,
                     equipmentId,
                     true
                 )

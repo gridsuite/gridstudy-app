@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, FetchStatus, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentInfosTypes,
+    EquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
@@ -38,10 +46,10 @@ import ShuntCompensatorModificationForm from './shunt-compensator-modification-f
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialog-utils';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -165,8 +173,8 @@ const ShuntCompensatorModificationDialog = ({
                     studyUuid,
                     currentNode?.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    EquipmentType.SHUNT_COMPENSATOR,
+                    EquipmentInfosTypes.FORM.type,
                     equipmentId,
                     true
                 )

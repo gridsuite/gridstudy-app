@@ -22,7 +22,9 @@ import {
 import yup from '../../../../../utils/yup-config';
 import {
     CustomFormProvider,
+    EquipmentInfosTypes,
     ExtendedEquipmentType,
+    fetchNetworkElementInfos,
     FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
@@ -48,8 +50,6 @@ import { getConcatenatedProperties, toModificationProperties } from '../../../co
 import { EquipmentModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
-import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
-import { EQUIPMENT_INFOS_TYPES } from '../../../../../utils/equipment-types';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { LccModificationForm } from './lcc-modification-form';
@@ -57,6 +57,7 @@ import { toModificationOperation } from '../../../../../utils/utils';
 import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { UUID } from 'node:crypto';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -198,8 +199,8 @@ export const LccModificationDialog = ({
                     currentNode.id,
                     currentRootNetworkUuid,
                     ExtendedEquipmentType.HVDC_LINE_LCC,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM.type,
+                    equipmentId as UUID,
                     true
                 )
                     .then((value: LccFormInfos | null) => {
