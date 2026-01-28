@@ -42,6 +42,10 @@ export const useComputationResultsCount = () => {
         (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SECURITY_ANALYSIS]
     );
 
+    const dynamicMarginComputationStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_MARGIN_CALCULATION]
+    );
+
     const voltageInitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
@@ -75,6 +79,10 @@ export const useComputationResultsCount = () => {
         dynamicSecurityAnalysisStatus === RunningStatus.SUCCEED ||
         dynamicSecurityAnalysisStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
+    const dynamicMarginComputationResultPresent =
+        dynamicMarginComputationStatus === RunningStatus.SUCCEED ||
+        dynamicMarginComputationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+
     const stateEstimationResultPresent =
         isDeveloperMode &&
         (stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
@@ -90,6 +98,7 @@ export const useComputationResultsCount = () => {
         voltageInitResultPresent,
         dynamicSimulationResultPresent,
         dynamicSecurityAnalysisResultPresent,
+        dynamicMarginComputationResultPresent,
         stateEstimationResultPresent,
         pccMinResultPresent,
     ].filter(Boolean).length;
