@@ -6,9 +6,8 @@
  */
 
 import { filledTextField } from '../../../dialog-utils';
-import { TextInput } from '@gridsuite/commons-ui';
+import { CountrySelectionInput, TextInput } from '@gridsuite/commons-ui';
 import { COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
