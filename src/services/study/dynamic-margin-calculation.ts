@@ -4,14 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    cleanLoadFilterNames,
     DynamicMarginCalculationParametersFetchReturn,
     DynamicMarginCalculationParametersInfos,
-} from './dynamic-margin-calculation.type';
-import { fetchContingencyAndFiltersLists } from '../directory';
+    enrichLoadFilterNames,
+} from '@gridsuite/commons-ui';
 
 export function startDynamicMarginCalculation(
     studyUuid: UUID,
@@ -72,34 +75,6 @@ export function fetchDynamicMarginCalculationStatus(
     return backendFetchText(url);
 }
 
-export function fetchDynamicMarginCalculationProvider(studyUuid: UUID) {
-    console.info(`Fetching dynamic margin calculation provider on study '${studyUuid}' ...`);
-    const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/provider';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
-export function fetchDefaultDynamicMarginCalculationProvider() {
-    console.info('Fetching default dynamic margin calculation provider');
-    const url = PREFIX_STUDY_QUERIES + '/v1/dynamic-margin-calculation-default-provider';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
-export function updateDynamicMarginCalculationProvider(studyUuid: UUID, newProvider: string) {
-    console.info(`Updating dynamic margin calculation provider on study '${studyUuid}' ...`);
-    const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/provider';
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newProvider,
-    });
-}
-
 export function fetchDynamicMarginCalculationParameters(
     studyUuid: UUID
 ): Promise<DynamicMarginCalculationParametersFetchReturn> {
@@ -107,39 +82,14 @@ export function fetchDynamicMarginCalculationParameters(
     const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/parameters';
     console.debug(url);
     const parametersPromise: Promise<DynamicMarginCalculationParametersInfos> = backendFetchJson(url);
+    return parametersPromise.then(enrichLoadFilterNames);
+}
 
-    // enrich LoadsVariationInfos by LoadsVariationFetchReturn with id and name infos
-    return parametersPromise.then((parameters) => {
-        if (parameters?.loadsVariations) {
-            const loadsVariations = parameters?.loadsVariations;
-            const allLoadFilterUuids = loadsVariations.flatMap((loadVariation) => loadVariation.loadFilterUuids ?? []);
-            return fetchContingencyAndFiltersLists(allLoadFilterUuids).then((loadFilterInfos) => {
-                delete parameters.loadsVariations;
-                const loadFilterInfosMap = Object.fromEntries(
-                    loadFilterInfos.map((info) => [info.elementUuid, info.elementName])
-                );
-                return {
-                    ...parameters,
-                    loadsVariationsInfos: loadsVariations?.map((infos) => {
-                        const newLoadVariationInfos = {
-                            ...infos,
-                            loadFiltersInfos: infos.loadFilterUuids?.map((loadFilterUuid) => ({
-                                id: loadFilterUuid,
-                                name: loadFilterInfosMap[loadFilterUuid],
-                            })),
-                        };
-                        delete newLoadVariationInfos.loadFilterUuids;
-                        return newLoadVariationInfos;
-                    }),
-                };
-            });
-        }
-        delete parameters.loadsVariations;
-        return {
-            ...parameters,
-            loadsVariationsInfos: [],
-        };
-    });
+export function fetchDynamicMarginCalculationProvider(studyUuid: UUID) {
+    console.info(`Fetching dynamic margin calculation provider on study '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/provider';
+    console.debug(url);
+    return backendFetchText(url);
 }
 
 export function updateDynamicMarginCalculationParameters(
@@ -149,23 +99,7 @@ export function updateDynamicMarginCalculationParameters(
     console.info(`Setting dynamic margin calculation parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/parameters';
     console.debug(url);
-
-    // send to back raw LoadsVariations instead of LoadsVariationsInfos
-    const newParameters =
-        newParams != null
-            ? {
-                  ...newParams,
-                  loadsVariations: newParams?.loadsVariationsInfos?.map((infos) => {
-                      const newLoadsVariationInfos = {
-                          ...infos,
-                          loadFilterUuids: infos.loadFiltersInfos?.map((loadFilterInfos) => loadFilterInfos.id),
-                      };
-                      delete newLoadsVariationInfos.loadFiltersInfos;
-                      return newLoadsVariationInfos;
-                  }),
-              }
-            : newParams;
-    delete newParameters?.loadsVariationsInfos;
+    const newParameters = newParams !== null ? cleanLoadFilterNames(newParams) : newParams;
     return backendFetch(url, {
         method: 'POST',
         headers: {

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
+import { backendFetch } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 
 const PREFIX_DYNAMIC_MARGIN_CALCULATION_SERVER_QUERIES =
@@ -12,13 +12,6 @@ const PREFIX_DYNAMIC_MARGIN_CALCULATION_SERVER_QUERIES =
 
 function getDynamicMarginCalculationUrl() {
     return `${PREFIX_DYNAMIC_MARGIN_CALCULATION_SERVER_QUERIES}/v1/`;
-}
-
-export function fetchDynamicMarginCalculationProviders() {
-    console.info('fetch dynamic margin calculation providers');
-    const url = getDynamicMarginCalculationUrl() + 'providers';
-    console.debug(url);
-    return backendFetchJson(url);
 }
 
 export function downloadDebugFileDynamicMarginCalculation(resultUuid: UUID): Promise<Response> {
