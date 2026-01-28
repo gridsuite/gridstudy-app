@@ -20,11 +20,11 @@ import { parseIntData } from '../../../../dialog-utils';
 import { DndColumn, DndColumnType } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import TapChangerSteps from '../tap-changer-steps';
-import { RATIO_TAP, RatioTapChangerData } from '../../two-windings-transformer.types';
+import { RATIO_TAP, TapChangerMapInfos } from '../../two-windings-transformer.types';
 
 export interface RatioTapChangerPaneStepsProps {
     disabled?: boolean;
-    previousValues?: RatioTapChangerData;
+    previousValues?: TapChangerMapInfos;
     editData?: Record<string, unknown>;
     currentNode: CurrentTreeNode;
     isModification?: boolean;
