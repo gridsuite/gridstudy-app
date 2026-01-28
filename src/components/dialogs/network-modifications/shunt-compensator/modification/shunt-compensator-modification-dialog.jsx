@@ -12,6 +12,7 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import {
@@ -43,7 +44,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useState } from 'react';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialog-utils';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';

@@ -16,6 +16,7 @@ import {
     FetchStatus,
     FieldType,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -75,7 +76,6 @@ import {
 } from '../characteristics-pane/line-characteristics-pane-utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';

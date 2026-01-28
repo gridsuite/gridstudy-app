@@ -18,12 +18,12 @@ import {
     FetchStatus,
     ModificationType,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import type { UUID } from 'node:crypto';

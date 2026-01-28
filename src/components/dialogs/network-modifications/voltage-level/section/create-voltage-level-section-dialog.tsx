@@ -10,12 +10,12 @@ import {
     FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY, POSITION_NEW_SECTION_SIDE } from 'components/network/constants';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { isNodeBuilt } from 'components/graph/util/model-functions';

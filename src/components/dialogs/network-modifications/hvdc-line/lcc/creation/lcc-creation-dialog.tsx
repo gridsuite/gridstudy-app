@@ -35,6 +35,7 @@ import {
     ExtendedEquipmentType,
     FetchStatus,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
@@ -43,7 +44,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { createLcc } from '../../../../../../services/study/network-modifications';
 import { sanitizeString } from '../../../../dialog-utils';
-import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { Grid } from '@mui/material';
 import LccCreationDialogHeader from './lcc-creation-dialog-header';
 import LccTabs from '../common/lcc-tabs';

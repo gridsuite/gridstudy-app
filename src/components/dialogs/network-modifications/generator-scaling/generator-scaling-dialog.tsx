@@ -11,11 +11,16 @@ import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
-import { CustomFormProvider, FetchStatus, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FetchStatus,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { generatorScaling } from '../../../../services/study/network-modifications';
 import { Variations, VariationType } from '../../../../services/network-modification-types';
 import { UUID } from 'node:crypto';

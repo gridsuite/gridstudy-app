@@ -14,6 +14,7 @@ import {
     FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -53,7 +54,6 @@ import {
     getReactiveLimitsValidationSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import {

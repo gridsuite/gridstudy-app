@@ -16,6 +16,7 @@ import {
     FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -67,7 +68,6 @@ import {
     getReactiveLimitsFormData,
     getReactiveLimitsValidationSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createGenerator } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,

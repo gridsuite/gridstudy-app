@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, FetchStatus, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FetchStatus,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -24,7 +30,6 @@ import {
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import yup from 'components/utils/yup-config';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 import { generationDispatch } from '../../../../services/study/network-modifications';

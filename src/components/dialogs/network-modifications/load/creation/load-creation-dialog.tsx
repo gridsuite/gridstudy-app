@@ -10,6 +10,7 @@ import {
     EquipmentType,
     FetchStatus,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -35,7 +36,6 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLoad } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,

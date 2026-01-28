@@ -15,6 +15,7 @@ import {
     ModificationType,
     snackWithFallback,
     TextInput,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -76,7 +77,6 @@ import { filledTextField, sanitizeString } from 'components/dialogs/dialog-utils
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLine } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,

@@ -14,6 +14,7 @@ import {
     FieldType,
     MODIFICATION_TYPES,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -56,7 +57,6 @@ import { ModificationDialog } from 'components/dialogs/commons/modificationDialo
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,

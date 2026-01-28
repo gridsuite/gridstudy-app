@@ -15,6 +15,7 @@ import {
     FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
@@ -26,7 +27,6 @@ import { DeepNullable } from '../../../../utils/ts-utils';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevelTopology } from '../../../../../services/study/network-modifications';
 import { CreateVoltageLevelTopologyInfos } from '../../../../../services/network-modification-types';
 import { useIntl } from 'react-intl';

@@ -47,7 +47,6 @@ import {
     getVscConverterStationModificationSchema,
 } from '../converter-station/converter-station-utils';
 import { VscModificationForm } from './vsc-modification-from';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { modifyVsc } from 'services/study/network-modifications';
 import { VscModificationInfo } from 'services/network-modification-types';
@@ -63,6 +62,7 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import {

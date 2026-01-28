@@ -10,10 +10,10 @@ import {
     EquipmentType,
     FetchStatus,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
     ADD_STAND_BY_AUTOMATON,
     ADDITIONAL_PROPERTIES,

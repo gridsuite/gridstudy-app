@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { DynamicSimulationEventForm } from './dynamic-simulation-event-form';
@@ -17,7 +16,13 @@ import { Event, EventProperty, EventPropertyName, PrimitiveTypes } from './types
 import yup from 'components/utils/yup-config';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
-import { CustomFormProvider, FetchStatus, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FetchStatus,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';

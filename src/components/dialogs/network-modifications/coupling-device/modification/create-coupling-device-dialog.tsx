@@ -11,7 +11,6 @@ import { useForm } from 'react-hook-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createCouplingDevice } from '../../../../../services/study/network-modifications';
 import {
@@ -21,6 +20,7 @@ import {
     MODIFICATION_TYPES,
     Option,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';

@@ -12,6 +12,7 @@ import {
     FetchStatus,
     snackWithFallback,
     TextInput,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -39,7 +40,6 @@ import VscTabs from '../vsc-tabs';
 import yup from 'components/utils/yup-config';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
-import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import {
     getVscHvdcLinePaneEmptyFormData,
     getVscHvdcLinePaneSchema,

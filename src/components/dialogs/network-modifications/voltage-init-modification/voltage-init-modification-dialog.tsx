@@ -14,10 +14,10 @@ import {
     DefaultCellRenderer,
     FetchStatus,
     type MuiStyles,
+    useOpenShortWaitFetching,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs, Typography } from '@mui/material';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import {
     ANGLE,
