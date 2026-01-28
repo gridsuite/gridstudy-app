@@ -10,7 +10,7 @@ import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/fie
 import { useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
-import { Identifiable, Option, TextInput } from '@gridsuite/commons-ui';
+import { FetchStatus, Identifiable, Option, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
@@ -23,7 +23,6 @@ import GridItem from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { FetchStatus } from '../../../../services/utils.type';
 import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
 
 export interface ExtendedVoltageLevelFormInfos extends VoltageLevelFormInfos {

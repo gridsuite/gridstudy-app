@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    FetchStatus,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER_SETPOINT,
@@ -30,7 +36,6 @@ import {
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,
@@ -41,7 +46,6 @@ import {
 } from '../../common/properties/property-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { LoadCreationInfos, LoadCreationSchemaForm } from './load-creation.type';
-import { FetchStatus } from '../../../../../services/utils.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import LoadDialogHeader from '../common/load-dialog-header';
 import { LoadDialogTab } from '../common/load-utils';
@@ -150,7 +154,7 @@ export function LoadCreationDialog({
 
     const searchCopy = useFormSearchCopy((data) => {
         reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
-    }, EQUIPMENT_TYPES.LOAD);
+    }, EquipmentType.LOAD);
 
     useEffect(() => {
         if (editData) {

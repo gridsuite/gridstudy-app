@@ -11,7 +11,14 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { ComputingType, mergeSx, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    FetchStatus,
+    mergeSx,
+    type MuiStyles,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
@@ -21,7 +28,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import VoltageInitModificationDialog, {
     EditData,
 } from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
-import { FetchStatus } from '../services/utils';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from './network/constants';
@@ -185,12 +191,9 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
         if (voltageInitModification) {
             return (
                 <VoltageInitModificationDialog
-                    currentNode={currentNode?.id}
-                    studyUuid={studyUuid}
                     editData={voltageInitModification}
                     onClose={() => setPreviewModificationsDialogOpen(false)}
                     onPreviewModeSubmit={applyModifications}
-                    // @ts-ignore
                     editDataFetchStatus={FetchStatus.IDLE}
                     disabledSave={autoApplyModifications}
                 />
@@ -324,7 +327,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     }
 
     const formatValue = (value: number, precision: number, intl: IntlShape) => {
-        return isNaN(value) ? intl.formatMessage({ id: 'Undefined' }) : value.toFixed(precision);
+        return Number.isNaN(value) ? intl.formatMessage({ id: 'Undefined' }) : value.toFixed(precision);
     };
 
     const busVoltagesColumnDefs = useMemo(() => {

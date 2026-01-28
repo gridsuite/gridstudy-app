@@ -7,6 +7,7 @@
 import {
     CustomFormProvider,
     EquipmentType,
+    FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
@@ -32,7 +33,6 @@ import {
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
 import yup from '../../../../utils/yup-config';
-import { FetchStatus } from 'services/utils';
 import { EquipmentIdSelector } from 'components/dialogs/equipment-id/equipment-id-selector';
 import { CreateVoltageLevelSectionForm } from './create-voltage-level-section-form';
 import { BusBarSections, CreateVoltageLevelSectionDialogSchemaForm } from './voltage-level-section.type';

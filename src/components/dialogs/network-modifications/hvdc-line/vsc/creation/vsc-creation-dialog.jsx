@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
     ExtendedEquipmentType,
+    FetchStatus,
     snackWithFallback,
     TextInput,
     useSnackMessage,
@@ -44,7 +45,6 @@ import {
     getVscHvdcLinePaneSchema,
     getVscHvdcLineTabFormData,
 } from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
-import { FetchStatus } from '../../../../../../services/utils';
 import {
     getConverterStationCreationData,
     getConverterStationFormEditData,

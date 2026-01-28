@@ -15,7 +15,9 @@ import {
     ElementSaveDialog,
     ElementType,
     type EquipmentInfos,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
     type IElementCreationDialog,
     type IElementUpdateDialog,
     type MuiStyles,
@@ -36,8 +38,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
-import { fetchNetworkElementInfos } from 'services/study/network';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import VoltageLevelSearchMenu from './voltage-level-search-menu';
 
 const styles = {
@@ -227,8 +228,8 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                 currentNodeUuid,
                 currentRootNetworkUuid,
                 equipment.type,
-                EQUIPMENT_INFOS_TYPES.LIST.type,
-                equipment.id,
+                EquipmentInfosTypes.LIST.type,
+                equipment.id as UUID,
                 false
             )
                 .then(() => {

@@ -18,6 +18,7 @@ import {
     IntegerInput,
     LANG_FRENCH,
     type MuiStyles,
+    useCSVPicker,
 } from '@gridsuite/commons-ui';
 import {
     AMOUNT_TEMPORARY_LIMITS,
@@ -32,7 +33,6 @@ import { Alert, Button, Grid } from '@mui/material';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
-import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';

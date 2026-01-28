@@ -11,12 +11,12 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    FetchStatus,
     FieldType,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FC, useCallback, useEffect, useMemo } from 'react';
-import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';

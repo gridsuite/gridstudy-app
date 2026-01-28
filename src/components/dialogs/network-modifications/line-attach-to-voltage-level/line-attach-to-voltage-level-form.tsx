@@ -20,7 +20,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
-import { Identifiable, TextInput } from '@gridsuite/commons-ui';
+import { FetchStatus, Identifiable, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
@@ -39,7 +39,6 @@ import {
     LineCreationInfos,
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
-import { FetchStatus } from '../../../../services/utils.type';
 
 interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;

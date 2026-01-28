@@ -12,6 +12,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CustomFormProvider,
     EquipmentType,
+    FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
@@ -28,7 +29,6 @@ import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevelTopology } from '../../../../../services/study/network-modifications';
 import { CreateVoltageLevelTopologyInfos } from '../../../../../services/network-modification-types';
-import { FetchStatus } from '../../../../../services/utils';
 import { useIntl } from 'react-intl';
 
 const emptyFormData = {

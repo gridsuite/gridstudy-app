@@ -8,13 +8,13 @@
 import {
     CustomFormProvider,
     EquipmentType,
+    FetchStatus,
     Identifiable,
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';

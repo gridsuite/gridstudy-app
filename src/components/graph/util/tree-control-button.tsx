@@ -9,7 +9,7 @@ import { Tooltip } from '@mui/material';
 import React from 'react';
 import { ControlButton } from '@xyflow/react';
 import { useIntl } from 'react-intl';
-import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
+import { TOOLTIP_DELAY } from '@gridsuite/commons-ui';
 
 const TreeControlButton = ({
     onClick,

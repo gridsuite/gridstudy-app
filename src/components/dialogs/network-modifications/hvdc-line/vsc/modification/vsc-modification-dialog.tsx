@@ -8,7 +8,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { sanitizeString } from '../../../../dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -36,7 +35,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
 } from '../../../../../utils/field-constants';
-import { FetchStatus } from '../../../../../../services/utils';
 import {
     getVscHvdcLineModificationPaneSchema,
     getVscHvdcLineModificationTabFormData,
@@ -52,14 +50,21 @@ import { VscModificationForm } from './vsc-modification-from';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { modifyVsc } from 'services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
 import { VscModificationInfo } from 'services/network-modification-types';
 import {
     REMOVE,
     setCurrentReactiveCapabilityCurveTable,
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { CustomFormProvider, ExtendedEquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentInfosTypes,
+    ExtendedEquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -70,6 +75,7 @@ import {
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { UUID } from 'node:crypto';
 
 const formSchema = yup
     .object()
@@ -166,8 +172,8 @@ const VscModificationDialog: React.FC<any> = ({
                     currentNode.id,
                     currentRootNetworkUuid,
                     ExtendedEquipmentType.HVDC_LINE_VSC,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM.type,
+                    equipmentId as UUID,
                     true
                 )
                     .then((value: any) => {

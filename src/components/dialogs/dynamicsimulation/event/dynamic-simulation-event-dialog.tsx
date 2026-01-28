@@ -17,8 +17,7 @@ import { Event, EventProperty, EventPropertyName, PrimitiveTypes } from './types
 import yup from 'components/utils/yup-config';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { FetchStatus } from '../../../../services/utils';
+import { CustomFormProvider, FetchStatus, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';

@@ -13,6 +13,7 @@ import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
     CustomFormProvider,
     EquipmentType,
+    FetchStatus,
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
@@ -58,7 +59,6 @@ import {
 } from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createBattery } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils.type';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,

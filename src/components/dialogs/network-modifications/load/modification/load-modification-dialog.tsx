@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentInfosTypes,
+    EquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -35,9 +43,7 @@ import { sanitizeString } from '../../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -45,7 +51,6 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -67,6 +72,7 @@ import { DeepNullable } from 'components/utils/ts-utils';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { UUID } from 'node:crypto';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -163,8 +169,8 @@ export default function LoadModificationDialog({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.LOAD,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM.type,
+                    equipmentId as UUID,
                     true
                 )
                     .then((load: LoadFormInfos) => {

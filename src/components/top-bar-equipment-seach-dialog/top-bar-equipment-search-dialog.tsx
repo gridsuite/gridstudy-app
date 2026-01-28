@@ -9,10 +9,12 @@ import { AppState } from 'redux/reducer';
 import {
     ElementSearchDialog,
     EquipmentInfos,
+    EquipmentInfosTypes,
     EquipmentItem,
     equipmentStyles,
     EquipmentType,
     ExtendedEquipmentType,
+    fetchNetworkElementInfos,
     TagRendererProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -26,9 +28,8 @@ import {
     addToLocalStorageSearchEquipmentHistory,
     excludeElementFromCurrentSearchHistory,
 } from 'redux/session-storage/search-equipment-history';
-import { fetchNetworkElementInfos } from 'services/study/network';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
+import { UUID } from 'node:crypto';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: EquipmentInfos) => void;
@@ -89,8 +90,8 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
                 currentNode?.id,
                 currentRootNetworkUuid,
                 equipment.type,
-                EQUIPMENT_INFOS_TYPES.LIST.type,
-                equipment.id,
+                EquipmentInfosTypes.LIST.type,
+                equipment.id as UUID,
                 false
             )
                 .then(() => {

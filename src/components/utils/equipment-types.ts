@@ -7,20 +7,6 @@
 
 import { EquipmentType, Identifiable } from '@gridsuite/commons-ui';
 
-type EquipmentInfosTypesStruct<T extends string = string> = { type: T };
-//TODO: rename to PascalCase
-export const EQUIPMENT_INFOS_TYPES: Record<string, EquipmentInfosTypesStruct> = {
-    LIST: { type: 'LIST' },
-    MAP: { type: 'MAP' },
-    FORM: { type: 'FORM' },
-    TAB: { type: 'TAB' },
-    TOOLTIP: { type: 'TOOLTIP' },
-    OPERATING_STATUS: { type: 'OPERATING_STATUS' },
-};
-export type EquipmentInfosTypes = EquipmentInfosTypesStruct<
-    'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP' | 'OPERATING_STATUS'
->;
-
 //TODO: Compare with commons-ui's EquipmentType enum (not same order)
 //TODO: rename to PascalCase
 export enum EQUIPMENT_TYPES {

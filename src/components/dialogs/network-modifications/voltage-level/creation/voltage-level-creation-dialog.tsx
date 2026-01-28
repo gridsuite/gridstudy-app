@@ -10,6 +10,7 @@ import {
     convertOutputValue,
     CustomFormProvider,
     EquipmentType,
+    FetchStatus,
     FieldType,
     MODIFICATION_TYPES,
     snackWithFallback,
@@ -53,12 +54,10 @@ import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
@@ -424,7 +423,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         };
     }, [subscribe, trigger, getValues]);
 
-    const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
+    const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EquipmentType.VOLTAGE_LEVEL);
 
     useEffect(() => {
         if (editData) {
