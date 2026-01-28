@@ -12,6 +12,8 @@ import type { PanelState } from '../../components/workspace/types/workspace.type
 import { getClientId } from '../../utils/client-id';
 import type { DiagramConfigPosition } from '../explore';
 
+const PREFIX_STUDY_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study-config';
+
 interface WorkspaceDTO {
     id: UUID;
     name: string;
@@ -48,6 +50,21 @@ export function renameWorkspace(studyUuid: UUID, workspaceId: UUID, name: string
             clientId: getClientId(),
         },
         body: name,
+    }).then(() => {});
+}
+
+export function replaceWorkspace(workspaceId: UUID, sourceWorkspaceConfigId: UUID): Promise<void> {
+    console.info('replace workspace from GridExplore config');
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', sourceWorkspaceConfigId);
+    const url = `${PREFIX_STUDY_CONFIG_QUERIES}/v1/workspaces/${workspaceId}/replace?${urlSearchParams.toString()}`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            clientId: getClientId(),
+        },
     }).then(() => {});
 }
 
