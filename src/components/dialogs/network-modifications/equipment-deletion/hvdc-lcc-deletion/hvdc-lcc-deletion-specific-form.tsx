@@ -8,13 +8,22 @@
 import { Grid } from '@mui/material';
 import {
     DELETION_SPECIFIC_DATA,
+    SHUNT_COMPENSATOR_SELECTED,
     SHUNT_COMPENSATOR_SIDE_1,
     SHUNT_COMPENSATOR_SIDE_2,
 } from 'components/utils/field-constants';
 import { useFieldArray } from 'react-hook-form';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
-import ShuntCompensatorSelectionForm from './shunt-compensator-selection-form';
+import { CheckboxInput, ID } from '@gridsuite/commons-ui';
+import ReadOnlyInput from '../../../../utils/rhf-inputs/read-only/read-only-input';
+import { FormattedMessage } from 'react-intl';
+
+interface ShuntCompensatorSelectionFormProps {
+    title: string;
+    arrayFormName: string;
+    mcsRows: Record<'id', string>[];
+}
 
 export default function HvdcLccDeletionSpecificForm() {
     const { fields: mcsRows1 } = useFieldArray({
@@ -23,6 +32,31 @@ export default function HvdcLccDeletionSpecificForm() {
     const { fields: mcsRows2 } = useFieldArray({
         name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`,
     });
+
+    const ShuntCompensatorSelectionForm = ({ title, arrayFormName, mcsRows }: ShuntCompensatorSelectionFormProps) => {
+        return (
+            <Grid item container spacing={1} direction="column">
+                <Grid item>
+                    <h4>
+                        <FormattedMessage id={title} />
+                    </h4>
+                </Grid>
+                {mcsRows.map((field, index) => (
+                    <Grid container spacing={1} alignItems="center" key={field.id}>
+                        <Grid item xs={1} alignItems={'start'}>
+                            <CheckboxInput
+                                key={field.id + 'SEL'}
+                                name={`${arrayFormName}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
+                            />
+                        </Grid>
+                        <Grid item xs={11} alignItems={'start'}>
+                            <ReadOnlyInput key={field.id + 'ID'} name={`${arrayFormName}[${index}].${ID}`} />
+                        </Grid>
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    };
 
     const mcsOnsideOne = (
         <ShuntCompensatorSelectionForm
