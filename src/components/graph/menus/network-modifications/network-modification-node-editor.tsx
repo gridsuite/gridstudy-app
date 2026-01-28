@@ -12,8 +12,10 @@ import {
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
+    NetworkModificationData,
     NetworkModificationMetadata,
     PARAM_LANGUAGE,
+    removeNullFields,
     snackWithFallback,
     SubstationCreationDialog,
     usePrevious,
@@ -85,7 +87,6 @@ import {
     MenuSection,
     NetworkModificationCopyInfos,
     NetworkModificationCopyType,
-    NetworkModificationData,
 } from './network-modification-menu.type';
 import StaticVarCompensatorCreationDialog from '../../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
 import ModificationByAssignmentDialog from '../../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
@@ -1067,22 +1068,6 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackError]);
 
-    const removeNullFields = useCallback((data: NetworkModificationData) => {
-        let dataTemp = data;
-        if (dataTemp) {
-            Object.keys(dataTemp).forEach((key) => {
-                if (dataTemp[key] && dataTemp[key] !== null && typeof dataTemp[key] === 'object') {
-                    dataTemp[key] = removeNullFields(dataTemp[key]);
-                }
-
-                if (dataTemp[key] === null) {
-                    delete dataTemp[key];
-                }
-            });
-        }
-        return dataTemp;
-    }, []);
-
     const doEditModification = useCallback(
         (modificationUuid: UUID, type: string) => {
             setIsUpdate(true);
@@ -1102,7 +1087,7 @@ const NetworkModificationNodeEditor = () => {
                     setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
-        [removeNullFields, snackError]
+        [snackError]
     );
 
     const onItemClick = (id: string) => {

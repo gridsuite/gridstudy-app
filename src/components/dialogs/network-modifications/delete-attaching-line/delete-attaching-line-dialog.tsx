@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, FetchStatus, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FetchStatus,
+    NetworkModificationData,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -26,7 +32,6 @@ import { deleteAttachingLine } from '../../../../services/study/network-modifica
 import DeleteAttachingLineIllustration from './delete-attaching-line-illustration';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { UUID } from 'node:crypto';
-import { NetworkModificationData } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 interface DeleteAttachingLineFormData {
     [ATTACHED_LINE_ID]: string;

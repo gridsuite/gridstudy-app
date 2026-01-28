@@ -73,12 +73,6 @@ export interface MenuDefinitionWithoutSubItem extends MenuDefinitionBase {
 
 export type MenuDefinition = MenuDefinitionWithSubItem | MenuDefinitionWithoutSubItem;
 
-export interface NetworkModificationData {
-    uuid: UUID;
-    type: string;
-    [key: string]: any;
-}
-
 export interface MenuSection {
     id: string;
     label?: string;
