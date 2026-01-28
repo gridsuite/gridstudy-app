@@ -8,42 +8,22 @@ import {
     ACTIVE_POWER_SETPOINT,
     ADDITIONAL_PROPERTIES,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
-    CONVERTER_STATION_ID,
-    CONVERTER_STATION_NAME,
     CONVERTERS_MODE,
     DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
-    ID,
-    LOSS_FACTOR,
     MAX_P,
-    MAXIMUM_REACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER,
     NOMINAL_V,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
     R,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_LIMITS,
-    REACTIVE_POWER,
-    VOLTAGE,
-    VOLTAGE_LEVEL,
-    VOLTAGE_REGULATION_ON,
 } from '../../../../utils/field-constants';
 import { Property } from '../../common/properties/property-utils';
 import { VscConverterStation, VscConverterStationFormInfos } from './converter-station/converter-station-type';
-import { ReactiveCapabilityCurvePoints } from '../../../reactive-limits/reactive-limits.type';
 
 export type VscDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
