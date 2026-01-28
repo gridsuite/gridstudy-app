@@ -367,7 +367,6 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         parametersBackend={dynamicMarginCalculationParametersBackend}
-                        isDeveloperMode={isDeveloperMode}
                     />
                 );
 
