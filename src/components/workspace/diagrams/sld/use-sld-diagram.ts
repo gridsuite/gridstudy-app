@@ -25,7 +25,7 @@ import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 
 interface UseSldDiagramProps {
     diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
-    diagramId: string;
+    equipmentId: string;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
@@ -33,7 +33,7 @@ interface UseSldDiagramProps {
 
 export const useSldDiagram = ({
     diagramType,
-    diagramId,
+    equipmentId,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
@@ -50,7 +50,7 @@ export const useSldDiagram = ({
             ({
                 type: diagramType,
                 svg: null,
-                diagramId,
+                equipmentId,
             }) as Diagram
     );
     const [loading, setLoading] = useState(false);
@@ -107,7 +107,7 @@ export const useSldDiagram = ({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        voltageLevelId: currentDiagram.diagramId,
+                        voltageLevelId: currentDiagram.equipmentId,
                     });
                     fetchOptions = {
                         method: 'POST',
@@ -128,7 +128,7 @@ export const useSldDiagram = ({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        substationId: currentDiagram.diagramId,
+                        substationId: currentDiagram.equipmentId,
                     });
                     fetchOptions = {
                         method: 'POST',
@@ -186,13 +186,13 @@ export const useSldDiagram = ({
 
         setGlobalError(undefined);
 
-        // Update diagram from diagramId
+        // Update diagram from equipmentId
         setDiagram(
             (prev) =>
                 ({
                     ...prev,
                     type: diagramType,
-                    diagramId,
+                    equipmentId,
                 }) as Diagram
         );
 
@@ -205,7 +205,7 @@ export const useSldDiagram = ({
         currentNode?.type,
         currentNode?.data?.globalBuildStatus,
         currentRootNetworkUuid,
-        diagramId,
+        equipmentId,
     ]);
 
     // Listen for notifications and refetch

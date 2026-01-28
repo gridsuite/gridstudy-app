@@ -82,7 +82,7 @@ function RenderInput({
 
 function formatVoltageRange(option: GlobalFilter): string {
     if (option.minValue != null && option.maxValue != null) {
-        return `[${option.minValue} kV, ${option.maxValue} kV[`;
+        return `[${option.minValue} kV, ${option.maxValue} kV]`;
     }
     return '';
 }

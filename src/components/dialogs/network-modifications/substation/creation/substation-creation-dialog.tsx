@@ -8,13 +8,18 @@
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect } from 'react';
-import { CustomFormProvider, fetchDefaultCountry, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    fetchDefaultCountry,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
+import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import SubstationCreationForm from './substation-creation-form';
 import { sanitizeString } from '../../../dialog-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -24,17 +29,15 @@ import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
-    emptyProperties,
     getPropertiesFromModification,
+    Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { DeepNullable } from 'components/utils/ts-utils';
+import { SubstationInfos } from '../substation-dialog.type';
 
-const emptyFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
-    [COUNTRY]: null,
-    ...emptyProperties,
-};
 const formSchema = yup
     .object()
     .shape({
@@ -44,6 +47,42 @@ const formSchema = yup
     })
     .concat(creationPropertiesSchema);
 
+export type SubstationCreationFormData = yup.InferType<typeof formSchema>;
+
+const emptyFormData: SubstationCreationFormData = {
+    [EQUIPMENT_ID]: '',
+    [EQUIPMENT_NAME]: '',
+    [COUNTRY]: null,
+    [ADDITIONAL_PROPERTIES]: [],
+};
+
+interface SubstationCreationEditData {
+    uuid?: UUID;
+    equipmentId: string;
+    equipmentName?: string;
+    country: string | null;
+    properties?: Property[] | null;
+}
+
+interface SubstationCreationDialogProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus?: string;
+    editData?: SubstationCreationEditData;
+}
+
+/**
+ * Dialog to create a substation in the network
+ * @param editData the data to edit
+ * @param currentNode The node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentRootNetworkUuid The root network we are currently working on
+ * @param isUpdate check if edition form
+ * @param editDataFetchStatus indicates the status of fetching EditData
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ */
 const SubstationCreationDialog = ({
     editData,
     currentNode,
@@ -52,18 +91,18 @@ const SubstationCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: SubstationCreationDialogProps) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<SubstationCreationFormData>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<SubstationCreationFormData>>(formSchema),
     });
 
     const { reset, getValues } = formMethods;
 
-    const fromSearchCopyToFormValues = (substation) => {
+    const fromSearchCopyToFormValues = (substation: SubstationInfos) => {
         reset(
             {
                 [EQUIPMENT_ID]: substation.id + '(1)',
@@ -75,7 +114,7 @@ const SubstationCreationDialog = ({
         );
     };
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.SUBSTATION);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.SUBSTATION);
 
     useEffect(() => {
         if (editData) {
@@ -107,13 +146,13 @@ const SubstationCreationDialog = ({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (substation) => {
+        (substation: SubstationCreationFormData) => {
             createSubstation({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 substationId: substation[EQUIPMENT_ID],
                 substationName: sanitizeString(substation[EQUIPMENT_NAME]),
-                country: substation[COUNTRY],
+                country: substation[COUNTRY] ?? null,
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
                 properties: toModificationProperties(substation),
@@ -147,7 +186,7 @@ const SubstationCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.SUBSTATION}
+                    equipmentType={EquipmentType.SUBSTATION}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
