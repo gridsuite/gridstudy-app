@@ -188,7 +188,7 @@ export const getConnectivityFormData = (
     }: {
         voltageLevelId?: string | null;
         busbarSectionId?: string | null;
-        connectionDirection: string | null;
+        connectionDirection?: string | null;
         connectionName?: string | null;
         connectionPosition?: number | null;
         terminalConnected?: boolean | null;
