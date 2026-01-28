@@ -32,6 +32,17 @@ interface ShortCircuitAnalysisPagedResults extends ShortCircuitAnalysisResult {
     selector: Partial<Selector>;
 }
 
+// Matches CsvExportParams in short-circuit-server
+export type ShortCircuitCsvExportParams = {
+    csvHeader: string[] | undefined;
+    enumValueTranslations: Record<string, string>;
+    language: GsLangUser;
+    oneBusCase: boolean;
+};
+interface ShortCircuitAnalysisResultCsv extends ShortCircuitAnalysisPagedResults {
+    csvParams: ShortCircuitCsvExportParams;
+}
+
 export function startShortCircuitAnalysis(
     studyUuid: string,
     currentNodeUuid: UUID | undefined,
@@ -140,36 +151,18 @@ export function fetchShortCircuitAnalysisPagedResults({
     type = ShortCircuitAnalysisType.ALL_BUSES,
     globalFilters,
 }: ShortCircuitAnalysisPagedResults) {
+    const { page = 0, size } = selector;
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
+    const urlSearchParams = getShortCircuitResultUrlParams(analysisType, selector, globalFilters);
 
     console.info(
         `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
     );
 
-    const urlSearchParams = new URLSearchParams();
-
     urlSearchParams.append('paged', 'true');
-
-    if (analysisType) {
-        urlSearchParams.append('type', analysisType);
-    }
-
-    const { page = 0, sort, size, filter } = selector;
-
     urlSearchParams.append('page', String(page));
-
-    sort?.map((value) => urlSearchParams.append('sort', `${value.colId},${value.sort}`));
-
     if (size) {
         urlSearchParams.append('size', String(size));
-    }
-
-    if (filter?.length) {
-        urlSearchParams.append('filters', JSON.stringify(filter));
-    }
-
-    if (globalFilters && Object.keys(globalFilters).length > 0) {
-        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     const url =
@@ -180,35 +173,29 @@ export function fetchShortCircuitAnalysisPagedResults({
     return backendFetchJson(url);
 }
 
-// Matches CsvExportParams in short-circuit-server
-export type ShortCircuitCsvExportParams = {
-    csvHeader: string[] | undefined;
-    enumValueTranslations: Record<string, string>;
-    language: GsLangUser;
-    oneBusCase: boolean;
-};
+export function downloadShortCircuitResultZippedCsv({
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    type,
+    globalFilters,
+    selector,
+    csvParams,
+}: ShortCircuitAnalysisResultCsv) {
+    const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
+    const urlSearchParams = getShortCircuitResultUrlParams(analysisType, selector, globalFilters);
 
-export function downloadShortCircuitResultZippedCsv(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    analysisType: number,
-    csvParams: ShortCircuitCsvExportParams
-) {
     console.info(
         `Fetching short-circuit analysis export csv on ${studyUuid} , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
     );
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid
-    )}/shortcircuit/result/csv`;
-    const type = getShortCircuitAnalysisTypeFromEnum(analysisType);
-    const param = new URLSearchParams();
-    if (type) {
-        param.append('type', type);
-    }
-    const urlWithParam = `${url}?${param.toString()}`;
+
+    const urlWithParam =
+        `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid
+        )}/shortcircuit/result/csv?` + urlSearchParams.toString();
+
     console.debug(urlWithParam);
     return backendFetch(urlWithParam, {
         method: 'POST',
@@ -218,6 +205,30 @@ export function downloadShortCircuitResultZippedCsv(
         },
         body: JSON.stringify(csvParams),
     });
+}
+
+function getShortCircuitResultUrlParams(
+    analysisType: string | null,
+    selector: Partial<Selector>,
+    globalFilters: GlobalFilters | undefined
+) {
+    const urlSearchParams = new URLSearchParams();
+    const { sort, filter } = selector;
+
+    if (analysisType) {
+        urlSearchParams.append('type', analysisType);
+    }
+
+    sort?.map((value) => urlSearchParams.append('sort', `${value.colId},${value.sort}`));
+
+    if (filter?.length) {
+        urlSearchParams.append('filters', JSON.stringify(filter));
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
+    }
+
+    return urlSearchParams;
 }
 
 export function setShortCircuitParameters(studyUuid: UUID, newParams: any) {
