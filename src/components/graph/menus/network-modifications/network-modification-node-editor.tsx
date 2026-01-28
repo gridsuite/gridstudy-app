@@ -251,7 +251,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }
 
-    const equipmentDeletionSubItems = (equipmentType: EQUIPMENT_TYPES) => {
+    const equipmentDeletionSubItems = (equipmentType: EquipmentType) => {
         return {
             // We have a single deletion modification type, but we have a deletion menu item ID per equipment type
             // (because we want to preset the equipment type in creation case)
