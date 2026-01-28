@@ -51,7 +51,6 @@ import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/f
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
-import { getStoreFields } from '../securityanalysis/security-analysis-result-utils';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
@@ -224,7 +223,7 @@ interface TableParams {
 }
 
 const createTableParams = (tabIndex: number): TableParams => {
-    const tab = getStoreFields(tabIndex);
+    const tab = mappingTabs(tabIndex);
     return {
         sortParams: {
             table: LOADFLOW_RESULT_SORT_STORE,
