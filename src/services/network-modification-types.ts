@@ -374,10 +374,10 @@ export interface Variations {
 export interface ConverterStationCreationInfos {
     equipmentId: string;
     equipmentName: string | null;
-    lossFactor: number;
-    reactivePowerSetpoint?: number;
-    voltageRegulationOn: boolean;
-    voltageSetpoint?: number | null;
+    lossFactor: number | null;
+    reactivePowerSetpoint: number | null;
+    voltageRegulationOn?: boolean;
+    voltageSetpoint: number | null;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
     connectionDirection: string | null;
@@ -719,13 +719,13 @@ export interface VscCreationInfos {
     uuid?: string;
     equipmentId: string;
     equipmentName: string | null;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    operatorActivePowerLimitFromSide1ToSide2: any;
-    operatorActivePowerLimitFromSide2ToSide1: any;
+    nominalV: number | null;
+    r: number | null;
+    maxP: number | null;
+    operatorActivePowerLimitFromSide1ToSide2: number | null;
+    operatorActivePowerLimitFromSide2ToSide1: number | null;
     convertersMode: string;
-    activePowerSetpoint: number;
+    activePowerSetpoint: number | null;
     angleDroopActivePowerControl: boolean | null;
     p0: number | null;
     droop: number | null;

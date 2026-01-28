@@ -35,6 +35,7 @@ export function getVscHvdcLinePaneSchema() {
             [P0]: yup
                 .number()
                 .nullable()
+                .default(null)
                 .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, DROOP], {
                     is: (angleDroopActivePowerControl: boolean, droop: number) =>
                         angleDroopActivePowerControl || (droop !== null && droop !== undefined),
@@ -43,6 +44,7 @@ export function getVscHvdcLinePaneSchema() {
             [DROOP]: yup
                 .number()
                 .nullable()
+                .default(null)
                 .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, P0], {
                     is: (angleDroopActivePowerControl: boolean, p0: number) =>
                         angleDroopActivePowerControl || (p0 !== null && p0 !== undefined),
@@ -89,13 +91,13 @@ export function getVscHvdcLinePaneEmptyFormData(isModification: boolean) {
 
 export function getVscHvdcLineTabFormData(hvdcLine: VscFormInfos) {
     return {
-        [NOMINAL_V]: hvdcLine.nominalV,
-        [R]: hvdcLine.r,
-        [MAX_P]: hvdcLine.maxP,
+        [NOMINAL_V]: hvdcLine?.nominalV,
+        [R]: hvdcLine?.r,
+        [MAX_P]: hvdcLine?.maxP,
         [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: hvdcLine?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
         [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: hvdcLine?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
-        [CONVERTERS_MODE]: hvdcLine.convertersMode,
-        [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
+        [CONVERTERS_MODE]: hvdcLine?.convertersMode,
+        [ACTIVE_POWER_SETPOINT]: hvdcLine?.activePowerSetpoint,
         [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine?.hvdcAngleDroopActivePowerControl?.isEnabled,
         [P0]: hvdcLine?.hvdcAngleDroopActivePowerControl?.p0,
         [DROOP]: hvdcLine?.hvdcAngleDroopActivePowerControl?.droop,

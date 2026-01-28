@@ -42,67 +42,25 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../utils/field-constants';
 import { Property } from '../../common/properties/property-utils';
-import { VscConverterStationFormInfos } from './converter-station/converter-station-type';
+import { VscConverterStation, VscConverterStationFormInfos } from './converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../../../reactive-limits/reactive-limits.type';
 
 export type VscDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
     [HVDC_LINE_TAB]: {
-        [NOMINAL_V]: number;
-        [R]: number;
-        [MAX_P]: number;
+        [NOMINAL_V]: number | null;
+        [R]: number | null;
+        [MAX_P]: number | null;
         [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]?: number;
         [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]?: number;
         [CONVERTERS_MODE]: string;
         [ANGLE_DROOP_ACTIVE_POWER_CONTROL]?: boolean;
-        [ACTIVE_POWER_SETPOINT]: number;
-        [P0]?: number;
-        [DROOP]?: number;
+        [ACTIVE_POWER_SETPOINT]: number | null;
+        [P0]: number | null;
+        [DROOP]: number | null;
     };
-    [CONVERTER_STATION_1]: {
-        [CONVERTER_STATION_ID]: string;
-        [CONVERTER_STATION_NAME]?: string;
-        [LOSS_FACTOR]: number;
-        [VOLTAGE_REGULATION_ON]?: boolean;
-        [REACTIVE_POWER]?: number;
-        [VOLTAGE]?: number;
-        [CONNECTIVITY]?: {
-            [VOLTAGE_LEVEL]: { [ID]?: string };
-            [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
-            [CONNECTION_DIRECTION]?: string;
-            [CONNECTION_NAME]?: string;
-            [CONNECTION_POSITION]?: number;
-            [CONNECTED]?: boolean;
-        };
-        [REACTIVE_LIMITS]?: {
-            [MINIMUM_REACTIVE_POWER]?: number | null;
-            [MAXIMUM_REACTIVE_POWER]?: number | null;
-            [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
-            [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
-        };
-    };
-    [CONVERTER_STATION_2]: {
-        [CONVERTER_STATION_ID]: string;
-        [CONVERTER_STATION_NAME]?: string;
-        [LOSS_FACTOR]: number;
-        [VOLTAGE_REGULATION_ON]?: boolean;
-        [REACTIVE_POWER]?: number;
-        [VOLTAGE]?: number;
-        [CONNECTIVITY]?: {
-            [VOLTAGE_LEVEL]: { [ID]?: string };
-            [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
-            [CONNECTION_DIRECTION]?: string;
-            [CONNECTION_NAME]?: string;
-            [CONNECTION_POSITION]?: number;
-            [CONNECTED]?: boolean;
-        };
-        [REACTIVE_LIMITS]?: {
-            [MINIMUM_REACTIVE_POWER]?: number | null;
-            [MAXIMUM_REACTIVE_POWER]?: number | null;
-            [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
-            [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
-        };
-    };
+    [CONVERTER_STATION_1]: VscConverterStation;
+    [CONVERTER_STATION_2]: VscConverterStation;
     // Properties
     [ADDITIONAL_PROPERTIES]?: Property[];
 };
@@ -112,17 +70,17 @@ export type VscCreationDialogSchemaForm = { [EQUIPMENT_ID]: string } & VscDialog
 export interface VscFormInfos {
     id: string;
     name: string;
-    nominalV: number;
-    r: number;
-    activePowerSetpoint: number;
-    maxP: number | null;
-    convertersMode: string;
-    operatingStatus: string;
-    converterStation1: VscConverterStationFormInfos;
-    converterStation2: VscConverterStationFormInfos;
+    nominalV?: number;
+    r?: number;
+    activePowerSetpoint?: number;
+    maxP?: number;
+    convertersMode?: string;
+    operatingStatus?: string;
+    converterStation1?: VscConverterStationFormInfos;
+    converterStation2?: VscConverterStationFormInfos;
     hvdcAngleDroopActivePowerControl?: HvdcAngleDroopActivePowerControlInfos;
     hvdcOperatorActivePowerRange?: HvdcOperatorActivePowerRangeInfos;
-    properties: Record<string, string> | undefined;
+    properties?: Record<string, string>;
 }
 
 export interface HvdcAngleDroopActivePowerControlInfos {

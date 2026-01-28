@@ -89,6 +89,7 @@ export function getVscConverterStationSchema() {
         [REACTIVE_POWER]: yup
             .number()
             .nullable()
+            .default(null)
             .when([VOLTAGE_REGULATION_ON], {
                 is: false,
                 then: (schema) => schema.required(),
@@ -96,6 +97,7 @@ export function getVscConverterStationSchema() {
         [VOLTAGE]: yup
             .number()
             .nullable()
+            .default(null)
             .min(0, 'mustBeGreaterOrEqualToZero')
             .when([VOLTAGE_REGULATION_ON], {
                 is: true,
@@ -263,13 +265,13 @@ function getConverterStationModificationReactiveLimits(
     };
 }
 
-export function getConverterStationFromSearchCopy(converterStation: VscConverterStationFormInfos) {
+export function getConverterStationFromSearchCopy(converterStation?: VscConverterStationFormInfos) {
     return {
-        [CONVERTER_STATION_ID]: converterStation.id + '(1)',
+        [CONVERTER_STATION_ID]: converterStation?.id + '(1)',
         [CONVERTER_STATION_NAME]: converterStation?.name ?? '',
-        [LOSS_FACTOR]: converterStation.lossFactor,
+        [LOSS_FACTOR]: converterStation?.lossFactor,
         [REACTIVE_POWER]: converterStation?.reactivePowerSetpoint,
-        [VOLTAGE_REGULATION_ON]: converterStation.voltageRegulatorOn,
+        [VOLTAGE_REGULATION_ON]: converterStation?.voltageRegulatorOn,
         [VOLTAGE]: converterStation?.voltageSetpoint,
         ...getConnectivityFormData({
             voltageLevelId: converterStation?.voltageLevelId,
@@ -283,7 +285,7 @@ export function getConverterStationFromSearchCopy(converterStation: VscConverter
             reactiveCapabilityCurveChoice: converterStation?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
             minimumReactivePower: converterStation?.minMaxReactiveLimits?.minQ,
             maximumReactivePower: converterStation?.minMaxReactiveLimits?.maxQ,
-            reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints ?? null,
+            reactiveCapabilityCurvePoints: converterStation?.reactiveCapabilityCurvePoints ?? null,
         }),
     };
 }
