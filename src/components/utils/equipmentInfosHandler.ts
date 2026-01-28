@@ -9,23 +9,19 @@ import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { AppState } from 'redux/reducer';
-import { Identifiable } from '@gridsuite/commons-ui';
+import { getIdentifiableNameOrId, getUseNameKey, Identifiable } from '@gridsuite/commons-ui';
 
 export const useNameOrId = () => {
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const getNameOrId = useCallback(
         (infos?: Identifiable | null) => {
-            if (infos) {
-                const name = infos.name;
-                return useName && name != null && name.trim() !== '' ? name : infos?.id;
-            }
-            return '';
+            return getIdentifiableNameOrId(useName, infos);
         },
         [useName]
     );
 
     const getUseNameParameterKey = useCallback(() => {
-        return useName ? 'name' : 'id';
+        return getUseNameKey(useName);
     }, [useName]);
 
     return { getNameOrId, getUseNameParameterKey };
