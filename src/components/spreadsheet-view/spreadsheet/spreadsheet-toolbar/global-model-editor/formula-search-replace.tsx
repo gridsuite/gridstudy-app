@@ -10,10 +10,10 @@ import FindReplaceIcon from '@mui/icons-material/FindReplace';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { useIntl } from 'react-intl';
 import { useFormContext } from 'react-hook-form';
-import { useButtonWithTooltip } from '../../../../utils/inputs/input-hooks';
 import { COLUMNS_MODEL, COLUMN_FORMULA } from './spreadsheet-model-global-editor.utils';
 import { QuickSearch } from 'components/report-viewer/QuickSearch';
 import { useFormulaSearch } from './formula-search-context';
+import { useButtonWithTooltip } from '@gridsuite/commons-ui';
 
 export default function FormulaSearchReplace() {
     const intl = useIntl();

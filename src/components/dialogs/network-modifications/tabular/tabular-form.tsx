@@ -21,6 +21,7 @@ import {
     LANG_FRENCH,
     type MuiStyles,
     type TreeViewFinderNodeProps,
+    useCSVPicker,
     useSnackMessage,
     useStateBoolean,
 } from '@gridsuite/commons-ui';
@@ -36,7 +37,6 @@ import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import Papa from 'papaparse';
 import GridItem from '../../commons/grid-item';
-import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
