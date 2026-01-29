@@ -11,8 +11,10 @@ import {
     EquipmentSearchDialog,
     ExtendedEquipmentType,
     FetchStatus,
+    filledTextField,
     FORM_LOADING_DELAY,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     TextInput,
     useFormSearchCopy,
@@ -39,7 +41,6 @@ import {
     R,
 } from '../../../../../utils/field-constants';
 import { Box, Grid } from '@mui/material';
-import { filledTextField, sanitizeString } from '../../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
 import yup from 'components/utils/yup-config';
 import {

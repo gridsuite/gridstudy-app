@@ -6,7 +6,14 @@
  */
 
 import { FunctionComponent, useEffect } from 'react';
-import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    FloatInput,
+    percentageTextField,
+    ReactivePowerAdornment,
+    SwitchInput,
+    TextInput,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
 import {
     CONNECTIVITY,
     CONVERTER_STATION_ID,
@@ -17,7 +24,6 @@ import {
     VOLTAGE,
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
-import { percentageTextField, ReactivePowerAdornment, VoltageAdornment } from '../../../../dialog-utils';
 import type { UUID } from 'node:crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid, TextField } from '@mui/material';

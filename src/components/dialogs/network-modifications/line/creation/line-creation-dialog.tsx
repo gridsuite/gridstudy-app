@@ -13,9 +13,11 @@ import {
     EquipmentType,
     FetchStatus,
     FieldType,
+    filledTextField,
     FORM_LOADING_DELAY,
     ModificationDialog,
     ModificationType,
+    sanitizeString,
     snackWithFallback,
     TextInput,
     useFormSearchCopy,
@@ -76,7 +78,6 @@ import {
     sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import LineDialogTabs from '../line-dialog-tabs';
-import { filledTextField, sanitizeString } from 'components/dialogs/dialog-utils';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { createLine } from '../../../../../services/study/network-modifications';
 import {

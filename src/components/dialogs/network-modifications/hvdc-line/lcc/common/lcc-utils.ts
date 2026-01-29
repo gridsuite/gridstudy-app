@@ -49,9 +49,8 @@ import {
     getPropertiesFromModification,
     modificationPropertiesSchema,
 } from '../../../common/properties/property-utils';
-import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { MODIFICATION_TYPES, sanitizeString } from '@gridsuite/commons-ui';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
-import { sanitizeString } from '../../../../dialog-utils';
 import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 import {

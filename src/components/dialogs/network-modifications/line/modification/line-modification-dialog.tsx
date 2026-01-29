@@ -17,6 +17,7 @@ import {
     FieldType,
     FORM_LOADING_DELAY,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -58,7 +59,6 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { FieldErrors } from 'react-hook-form';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
 import {
     addModificationTypeToOpLimitsGroups,

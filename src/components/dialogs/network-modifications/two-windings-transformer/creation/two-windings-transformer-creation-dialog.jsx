@@ -14,6 +14,7 @@ import {
     FieldType,
     FORM_LOADING_DELAY,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useFormSearchCopy,
     useOpenShortWaitFetching,
@@ -66,7 +67,6 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
 import {
     PHASE_REGULATION_MODES,
     RATIO_REGULATION_MODES,

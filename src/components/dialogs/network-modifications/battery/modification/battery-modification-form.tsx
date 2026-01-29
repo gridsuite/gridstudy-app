@@ -12,9 +12,14 @@ import {
     MINIMUM_ACTIVE_POWER,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { Grid, TextField } from '@mui/material';
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    filledTextField,
+    FloatInput,
+    ReactivePowerAdornment,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';

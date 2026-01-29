@@ -29,6 +29,7 @@ import {
     FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -47,7 +48,6 @@ import {
     getLccHvdcLineModificationSchema,
 } from '../common/lcc-utils';
 import { modifyLcc } from 'services/study/network-modifications';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { getConcatenatedProperties, toModificationProperties } from '../../../common/properties/property-utils';
 import { EquipmentModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';

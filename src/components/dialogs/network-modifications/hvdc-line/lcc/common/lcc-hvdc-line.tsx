@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
+import { ActivePowerAdornment, FloatInput, OhmAdornment, SelectInput, VoltageAdornment } from '@gridsuite/commons-ui';
 import { ACTIVE_POWER_SETPOINT, CONVERTERS_MODE, MAX_P, NOMINAL_V, R } from '../../../../../utils/field-constants';
-import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../../dialog-utils';
 import { VSC_CONVERTER_MODE, VscConverterMode } from 'components/network/constants';
 import { Grid } from '@mui/material';
 import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';

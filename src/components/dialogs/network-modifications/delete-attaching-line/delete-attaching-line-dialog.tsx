@@ -11,6 +11,7 @@ import {
     FORM_LOADING_DELAY,
     ModificationDialog,
     NetworkModificationData,
+    sanitizeString,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -25,7 +26,6 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
 import { deleteAttachingLine } from '../../../../services/study/network-modifications';

@@ -24,7 +24,6 @@ import {
     SUBSTATION_NAME,
 } from 'components/utils/field-constants';
 import React, { useCallback, useEffect, useState } from 'react';
-import { KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
 import {
     AutocompleteInput,
     CountrySelectionInput,
@@ -32,7 +31,9 @@ import {
     fetchDefaultCountry,
     FloatInput,
     IntegerInput,
+    KiloAmpereAdornment,
     TextInput,
+    VoltageAdornment,
 } from '@gridsuite/commons-ui';
 import { Box, Grid, Paper, Tooltip } from '@mui/material';
 

@@ -16,13 +16,13 @@ import {
     FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
 import {
     ADD_SUBSTATION_CREATION,
     ADDITIONAL_PROPERTIES,

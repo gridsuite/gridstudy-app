@@ -7,7 +7,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
-import { sanitizeString } from '../../../../dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -61,6 +60,7 @@ import {
     FetchStatus,
     FORM_LOADING_DELAY,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,

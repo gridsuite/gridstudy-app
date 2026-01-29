@@ -8,13 +8,7 @@
 import { getRequestParamFromList } from '../utils';
 import type { UUID } from 'node:crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-    ComputingType,
-    Parameter,
-} from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, backendFetchText, ComputingType, Parameter } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 

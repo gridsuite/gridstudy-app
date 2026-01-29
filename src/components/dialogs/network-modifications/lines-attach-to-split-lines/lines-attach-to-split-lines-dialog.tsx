@@ -10,12 +10,12 @@ import {
     FetchStatus,
     FORM_LOADING_DELAY,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
 import {
     ATTACHED_LINE_ID,
     BUS_BAR_SECTION_ID,

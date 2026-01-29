@@ -14,6 +14,7 @@ import {
     FetchStatus,
     MODIFICATION_TYPES,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -59,7 +60,6 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { sanitizeString } from '../../../dialog-utils';
 import GeneratorModificationForm from './generator-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import {

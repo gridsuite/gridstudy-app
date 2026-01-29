@@ -15,6 +15,7 @@ import {
     FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useFormSearchCopy,
     useOpenShortWaitFetching,
@@ -62,7 +63,6 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { sanitizeString } from '../../../dialog-utils';
 import { REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,

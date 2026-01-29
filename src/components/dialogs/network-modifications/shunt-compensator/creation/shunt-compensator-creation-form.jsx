@@ -8,10 +8,7 @@
 import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { useEffect, useState } from 'react';
-
-import { filledTextField } from '../../../dialog-utils';
-
-import { TextInput } from '@gridsuite/commons-ui';
+import { filledTextField, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';

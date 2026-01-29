@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import { ActivePowerAdornment, filledTextField, FloatInput, TextInput } from '@gridsuite/commons-ui';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField } from '../../../dialog-utils';
 import { Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';

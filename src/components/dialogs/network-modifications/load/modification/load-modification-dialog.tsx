@@ -13,6 +13,7 @@ import {
     FetchStatus,
     FORM_LOADING_DELAY,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -40,7 +41,6 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLoad } from '../../../../../services/study/network-modifications';

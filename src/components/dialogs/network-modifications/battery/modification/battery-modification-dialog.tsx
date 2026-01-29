@@ -14,6 +14,7 @@ import {
     FetchStatus,
     MODIFICATION_TYPES,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -48,7 +49,6 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { sanitizeString } from '../../../dialog-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,

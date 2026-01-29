@@ -16,6 +16,7 @@ import {
     FieldType,
     FORM_LOADING_DELAY,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -79,7 +80,6 @@ import {
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { sanitizeString } from '../../../dialog-utils';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import TwoWindingsTransformerModificationDialogTabs from './two-windings-transformer-modification-dialog-tabs';

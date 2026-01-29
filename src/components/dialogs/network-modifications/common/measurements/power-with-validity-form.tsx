@@ -8,12 +8,17 @@
 import Grid from '@mui/material/Grid';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { convertInputValue, FieldType, FloatInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    convertInputValue,
+    FieldType,
+    FloatInput,
+    ReactivePowerAdornment,
+} from '@gridsuite/commons-ui';
 import { MeasurementProps } from './measurement.type';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import GridItem from '../../../commons/grid-item';
 import { VALIDITY, VALUE } from '../../../../utils/field-constants';
-import { ActivePowerAdornment, ReactivePowerAdornment } from '../../../dialog-utils';
 
 export const PowerWithValidityForm: FunctionComponent<MeasurementProps> = ({ id, field, measurement }) => {
     const intl = useIntl();

@@ -36,6 +36,7 @@ import {
     FetchStatus,
     FORM_LOADING_DELAY,
     ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     useFormSearchCopy,
     useOpenShortWaitFetching,
@@ -43,7 +44,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { createLcc } from '../../../../../../services/study/network-modifications';
-import { sanitizeString } from '../../../../dialog-utils';
 import { Grid } from '@mui/material';
 import LccCreationDialogHeader from './lcc-creation-dialog-header';
 import LccTabs from '../common/lcc-tabs';
