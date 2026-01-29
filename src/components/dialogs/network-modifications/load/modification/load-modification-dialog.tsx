@@ -11,13 +11,13 @@ import {
     EquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ACTIVE_POWER_SETPOINT,
     ADDITIONAL_PROPERTIES,

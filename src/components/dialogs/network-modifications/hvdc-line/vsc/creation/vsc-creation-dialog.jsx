@@ -11,6 +11,7 @@ import {
     EquipmentSearchDialog,
     ExtendedEquipmentType,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     TextInput,
@@ -41,7 +42,6 @@ import { Box, Grid } from '@mui/material';
 import { filledTextField, sanitizeString } from '../../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
 import yup from 'components/utils/yup-config';
-import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import {
     getVscHvdcLinePaneEmptyFormData,
     getVscHvdcLinePaneSchema,

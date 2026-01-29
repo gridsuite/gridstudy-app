@@ -46,7 +46,6 @@ import {
     getVscConverterStationModificationSchema,
 } from '../converter-station/converter-station-utils';
 import { VscModificationForm } from './vsc-modification-from';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { modifyVsc } from 'services/study/network-modifications';
 import { VscModificationInfo } from 'services/network-modification-types';
 import {
@@ -60,6 +59,7 @@ import {
     ExtendedEquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,

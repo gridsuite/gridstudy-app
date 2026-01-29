@@ -9,6 +9,7 @@ import {
     CustomFormProvider,
     EquipmentSearchDialog,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useFormSearchCopy,
@@ -37,7 +38,7 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import {
     getConnectivityFormData,

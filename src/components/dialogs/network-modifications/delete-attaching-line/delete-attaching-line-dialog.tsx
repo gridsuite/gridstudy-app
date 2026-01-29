@@ -8,6 +8,7 @@
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     NetworkModificationData,
     snackWithFallback,
@@ -15,7 +16,6 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,

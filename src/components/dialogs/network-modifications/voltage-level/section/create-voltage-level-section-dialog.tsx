@@ -8,6 +8,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
     snackWithFallback,
@@ -17,7 +18,7 @@ import {
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FORM_LOADING_DELAY, POSITION_NEW_SECTION_SIDE } from 'components/network/constants';
+import { POSITION_NEW_SECTION_SIDE } from 'components/network/constants';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {

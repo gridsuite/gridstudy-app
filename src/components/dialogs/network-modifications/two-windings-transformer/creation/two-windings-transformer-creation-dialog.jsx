@@ -12,6 +12,7 @@ import {
     EquipmentSearchDialog,
     FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useFormSearchCopy,
@@ -67,7 +68,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import {
-    FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,

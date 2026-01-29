@@ -12,6 +12,7 @@ import {
     EquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     SubstationInfos,
@@ -23,7 +24,6 @@ import yup from 'components/utils/yup-config';
 import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
 import { sanitizeString } from '../../../dialog-utils';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifySubstation } from '../../../../../services/study/network-modifications';
 import {

@@ -10,12 +10,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createCouplingDevice } from '../../../../../services/study/network-modifications';
 import {
     CustomFormProvider,
     EquipmentType,
     FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
     Option,

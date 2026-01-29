@@ -15,6 +15,7 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -76,7 +77,6 @@ import {
 } from '../characteristics-pane/line-characteristics-pane-utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLine } from '../../../../../services/study/network-modifications';

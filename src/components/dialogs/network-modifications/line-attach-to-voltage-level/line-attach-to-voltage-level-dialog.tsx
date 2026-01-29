@@ -8,6 +8,7 @@
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     ModificationType,
     snackWithFallback,
@@ -47,7 +48,6 @@ import {
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { buildNewBusbarSections } from 'components/utils/utils';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { attachLine } from '../../../../services/study/network-modifications';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import LineAttachToVoltageLevelIllustration from './line-attach-to-voltage-level-illustration';

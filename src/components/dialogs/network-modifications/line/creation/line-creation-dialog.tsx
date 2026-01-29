@@ -13,6 +13,7 @@ import {
     EquipmentType,
     FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     ModificationType,
     snackWithFallback,
@@ -53,7 +54,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
-import { APPLICABILITY, FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { APPLICABILITY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';

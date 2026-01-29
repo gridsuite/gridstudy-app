@@ -12,6 +12,7 @@ import {
     EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
     snackWithFallback,
@@ -62,7 +63,7 @@ import {
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import { sanitizeString } from '../../../dialog-utils';
-import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,

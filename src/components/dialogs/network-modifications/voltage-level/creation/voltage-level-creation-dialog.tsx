@@ -13,6 +13,7 @@ import {
     EquipmentType,
     FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
     snackWithFallback,
@@ -56,7 +57,6 @@ import { useForm } from 'react-hook-form';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { useIntl } from 'react-intl';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,

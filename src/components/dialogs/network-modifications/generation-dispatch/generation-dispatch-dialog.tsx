@@ -8,13 +8,13 @@
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     DEFAULT_OUTAGE_RATE,
     FREQUENCY_RESERVE,

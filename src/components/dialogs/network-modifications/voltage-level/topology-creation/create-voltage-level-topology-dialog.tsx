@@ -13,6 +13,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
     snackWithFallback,
@@ -26,7 +27,6 @@ import { CreateVoltageLevelTopologyDialogSchemaForm } from './create-voltage-lev
 import CreateVoltageLevelTopologyForm from './create-voltage-level-topology-form';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createVoltageLevelTopology } from '../../../../../services/study/network-modifications';
 import { CreateVoltageLevelTopologyInfos } from '../../../../../services/network-modification-types';
 import { useIntl } from 'react-intl';

@@ -34,6 +34,7 @@ import {
     EquipmentSearchDialog,
     ExtendedEquipmentType,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useFormSearchCopy,
@@ -41,7 +42,6 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
-import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { createLcc } from '../../../../../../services/study/network-modifications';
 import { sanitizeString } from '../../../../dialog-utils';
 import { Grid } from '@mui/material';

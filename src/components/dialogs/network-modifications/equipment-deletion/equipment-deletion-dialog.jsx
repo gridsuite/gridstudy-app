@@ -11,6 +11,7 @@ import { DELETION_SPECIFIC_DATA, EQUIPMENT_ID, TYPE } from '../../../utils/field
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -21,7 +22,6 @@ import { useCallback, useEffect } from 'react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipment } from '../../../../services/study/network-modifications';
 
 const formSchema = yup

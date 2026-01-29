@@ -12,6 +12,7 @@ import {
     EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
     snackWithFallback,
@@ -52,7 +53,7 @@ import {
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { sanitizeString } from '../../../dialog-utils';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,

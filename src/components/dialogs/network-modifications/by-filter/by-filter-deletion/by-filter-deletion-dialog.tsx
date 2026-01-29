@@ -11,6 +11,7 @@ import { FILTERS, ID, NAME, TYPE } from '../../../../utils/field-constants';
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -19,7 +20,6 @@ import {
 import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipmentByFilter } from '../../../../../services/study/network-modifications';
 import ByFilterDeletionForm from './by-filter-deletion-form';
 import {

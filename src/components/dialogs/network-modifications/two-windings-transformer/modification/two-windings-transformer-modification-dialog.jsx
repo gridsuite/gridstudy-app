@@ -14,6 +14,7 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -79,12 +80,7 @@ import {
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { sanitizeString } from '../../../dialog-utils';
-import {
-    FORM_LOADING_DELAY,
-    PHASE_REGULATION_MODES,
-    RATIO_REGULATION_MODES,
-    REGULATION_TYPES,
-} from 'components/network/constants';
+import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import TwoWindingsTransformerModificationDialogTabs from './two-windings-transformer-modification-dialog-tabs';
 import TwoWindingsTransformerCharacteristicsPane from '../characteristics-pane/two-windings-transformer-characteristics-pane';

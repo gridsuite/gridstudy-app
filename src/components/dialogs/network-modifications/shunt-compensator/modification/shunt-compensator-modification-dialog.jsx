@@ -11,6 +11,7 @@ import {
     EquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -44,7 +45,6 @@ import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useState } from 'react';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialog-utils';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';

@@ -9,6 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     ModificationType,
     snackWithFallback,
@@ -17,7 +18,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
-import { FORM_LOADING_DELAY } from 'components/network/constants.js';
 import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, CSV_FILENAME, TYPE } from 'components/utils/field-constants.js';
 import { createTabularModification } from 'services/study/network-modifications.js';
 import {

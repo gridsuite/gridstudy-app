@@ -10,6 +10,7 @@ import {
     EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useFormSearchCopy,
@@ -29,7 +30,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
+import { UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import {
     getConnectivityFormData,

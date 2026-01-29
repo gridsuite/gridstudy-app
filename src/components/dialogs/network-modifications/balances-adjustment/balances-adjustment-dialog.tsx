@@ -9,6 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -34,7 +35,6 @@ import {
     BALANCES_ADJUSTMENT_ZONES,
     SELECTED,
 } from '../../../utils/field-constants';
-import { FORM_LOADING_DELAY } from '../../../network/constants';
 import yup from 'components/utils/yup-config';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import {

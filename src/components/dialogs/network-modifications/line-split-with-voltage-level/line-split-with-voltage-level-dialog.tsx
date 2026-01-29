@@ -8,6 +8,7 @@
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
     snackWithFallback,
@@ -48,7 +49,6 @@ import {
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { buildNewBusbarSections } from 'components/utils/utils';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { divideLine } from '../../../../services/study/network-modifications';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import { getNewVoltageLevelOptions } from '../../../utils/utils';

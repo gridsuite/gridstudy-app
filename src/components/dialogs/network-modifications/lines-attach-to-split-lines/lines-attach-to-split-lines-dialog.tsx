@@ -8,6 +8,7 @@
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -39,7 +40,6 @@ import {
     getConnectivityPropertiesValidationSchema,
     getConnectivityWithoutPositionEmptyFormData,
 } from '../../connectivity/connectivity-form-utils';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';
 import LineAttachToSplitLinesIllustration from './lines-attach-to-split-lines-illustration';
 import type { CurrentTreeNode } from '../../../graph/tree-node.type';

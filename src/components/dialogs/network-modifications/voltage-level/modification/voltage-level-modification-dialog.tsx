@@ -28,12 +28,12 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
 import {

@@ -13,6 +13,7 @@ import {
     CustomFormProvider,
     FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -20,7 +21,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { FC, useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import ModificationByAssignmentForm from './modification-by-assignment-form';
 import { ASSIGNMENTS, EDITED_FIELD, EQUIPMENT_TYPE_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
 import { modifyByAssignment } from '../../../../../services/study/network-modifications';

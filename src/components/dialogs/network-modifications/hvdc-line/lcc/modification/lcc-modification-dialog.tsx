@@ -26,6 +26,7 @@ import {
     ExtendedEquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
     ModificationDialog,
     snackWithFallback,
@@ -51,7 +52,6 @@ import { getConcatenatedProperties, toModificationProperties } from '../../../co
 import { EquipmentModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
-import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { LccModificationForm } from './lcc-modification-form';
 import { toModificationOperation } from '../../../../../utils/utils';
 import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';

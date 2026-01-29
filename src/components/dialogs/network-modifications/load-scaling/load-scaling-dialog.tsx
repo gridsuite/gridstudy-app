@@ -13,6 +13,7 @@ import { useCallback, useEffect } from 'react';
 import {
     CustomFormProvider,
     FetchStatus,
+    FORM_LOADING_DELAY,
     ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -20,7 +21,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
-import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
+import { VARIATION_TYPES } from 'components/network/constants';
 import { loadScaling } from '../../../../services/study/network-modifications';
 import { UUID } from 'node:crypto';
 import { Variations, VariationType } from '../../../../services/network-modification-types';

@@ -9,6 +9,7 @@ import {
     CustomFormProvider,
     EquipmentType,
     FetchStatus,
+    FORM_LOADING_DELAY,
     Identifiable,
     MODIFICATION_TYPES,
     ModificationDialog,
@@ -19,7 +20,6 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import yup from '../../../../utils/yup-config';
