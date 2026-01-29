@@ -545,6 +545,7 @@ interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
     userId: string;
     exportUuid: UUID;
     exportToGridExplore?: boolean;
+    fileName: string;
     error: string | null;
 }
 
