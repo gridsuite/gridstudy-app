@@ -71,12 +71,14 @@ const styles = {
         p: 0.5,
         pointerEvents: 'auto',
     },
+    iconButton: {
+        p: 0.5,
+    },
     headerExpanded: (theme: Theme, hasHistory: boolean) => ({
         display: 'flex',
         alignItems: 'center',
-        p: 1,
+        p: 0.5,
         cursor: hasHistory ? 'pointer' : 'default',
-        borderRadius: 1,
         '&:hover': {
             backgroundColor: hasHistory ? theme.palette.action.hover : 'transparent',
         },
@@ -109,15 +111,20 @@ export const NavigationSidebar = memo(function NavigationSidebar({
             {/* Header */}
             <Box sx={styles.headerContainer}>
                 {isCollapsed ? (
-                    <IconButton onClick={hasHistory ? onToggleCollapse : undefined} disabled={!hasHistory} size="small">
-                        <HistoryIcon sx={styles.icon(theme, hasHistory)} />
+                    <IconButton
+                        onClick={hasHistory ? onToggleCollapse : undefined}
+                        disabled={!hasHistory}
+                        size="small"
+                        sx={styles.iconButton}
+                    >
+                        <HistoryIcon sx={styles.icon(theme, hasHistory)} fontSize="small" />
                     </IconButton>
                 ) : (
                     <Box
                         onClick={hasHistory ? onToggleCollapse : undefined}
                         sx={styles.headerExpanded(theme, hasHistory)}
                     >
-                        <HistoryIcon sx={styles.icon(theme, hasHistory)} />
+                        <HistoryIcon sx={styles.icon(theme, hasHistory)} fontSize="small" />
                         <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
                             {intl.formatMessage({ id: 'history' })}
                         </Typography>

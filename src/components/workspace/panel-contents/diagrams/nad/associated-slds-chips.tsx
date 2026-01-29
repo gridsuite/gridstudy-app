@@ -17,7 +17,7 @@ import {
     UnfoldMore as UnfoldMoreIcon,
     UnfoldLess as UnfoldLessIcon,
 } from '@mui/icons-material';
-import { useIntl } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
 import { selectAssociatedPanels } from '../../../../../redux/slices/workspace-selectors';
@@ -220,7 +220,7 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     return (
         <Box sx={styles.container}>
             {onHideAll && (
-                <Tooltip title={intl.formatMessage({ id: visibleCount > 0 ? 'hideAll' : 'showAll' })}>
+                <Tooltip title={<FormattedMessage id={visibleCount > 0 ? 'hideAll' : 'showAll'} />}>
                     <IconButton size="small" onClick={onHideAll}>
                         {visibleCount > 0 ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
                     </IconButton>
@@ -278,7 +278,7 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
             )}
 
             {panelDetails.length > 0 && (
-                <Tooltip title={intl.formatMessage({ id: 'removeAll' })}>
+                <Tooltip title={<FormattedMessage id="removeAll" />}>
                     <IconButton color="error" size="small" onClick={handleRemoveAll}>
                         <DeleteSweepIcon fontSize="small" />
                     </IconButton>
