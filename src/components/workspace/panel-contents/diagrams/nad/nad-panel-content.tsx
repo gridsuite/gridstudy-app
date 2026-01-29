@@ -118,7 +118,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                 </DiagramWrapper>
                 <NadAssociatedPanelsContainer nadPanelId={panelId} onDragStateChange={setIsDraggingSld} />
             </Box>
-            <NadNavigationSidebar nadPanelId={panelId} />
+            {!globalError && <NadNavigationSidebar nadPanelId={panelId} />}
         </Box>
     );
 });

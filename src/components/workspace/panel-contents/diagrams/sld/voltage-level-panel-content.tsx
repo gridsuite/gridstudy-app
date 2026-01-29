@@ -84,11 +84,13 @@ export const VoltageLevelPanelContent = ({
 
     return (
         <Box sx={{ display: 'flex', height: '100%', width: '100%', position: 'relative' }}>
-            <SldNavigationSidebar
-                navigationHistory={sldFields.navigationHistory || []}
-                currentVoltageLevelId={sldFields.equipmentId}
-                onNavigate={handleNavigateFromHistory}
-            />
+            {!globalError && (
+                <SldNavigationSidebar
+                    navigationHistory={sldFields.navigationHistory || []}
+                    currentVoltageLevelId={sldFields.equipmentId}
+                    onNavigate={handleNavigateFromHistory}
+                />
+            )}
             <Box sx={{ flex: 1, overflow: 'hidden' }}>
                 <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
                     <SingleLineDiagramContent
