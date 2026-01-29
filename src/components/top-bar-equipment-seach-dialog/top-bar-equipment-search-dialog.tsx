@@ -4,8 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+
 import {
     ElementSearchDialog,
     EquipmentInfos,
@@ -15,6 +14,7 @@ import {
     EquipmentType,
     ExtendedEquipmentType,
     fetchNetworkElementInfos,
+    StudyContext,
     TagRendererProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -32,6 +32,7 @@ import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
 import { UUID } from 'node:crypto';
 
 interface TopBarEquipmentSearchDialogProps {
+    studyContext: StudyContext;
     showVoltageLevelDiagram: (element: EquipmentInfos) => void;
     isDialogSearchOpen: boolean;
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -42,6 +43,7 @@ interface TopBarEquipmentSearchDialogProps {
 
 export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearchDialogProps> = (props) => {
     const {
+        studyContext,
         isDialogSearchOpen,
         setIsDialogSearchOpen,
         showVoltageLevelDiagram,
@@ -50,19 +52,10 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
         disableKeyboardShortcut = false,
     } = props;
     const intl = useIntl();
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [equipmentTypeFilter, setEquipmentTypeFilter] = useState<EquipmentType | ExtendedEquipmentType | null>(null);
 
     const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } = useTopBarSearchMatchingEquipment({
-        // @ts-expect-error TODO: manage null case
-        studyUuid: studyUuid,
-        // @ts-expect-error TODO: manage null case
-        nodeUuid: currentNode?.id,
-        // @ts-expect-error TODO: manage null case
-
-        currentRootNetworkUuid,
+        studyContext,
         equipmentType: equipmentTypeFilter ?? undefined,
     });
     const disabledSearchReason = useDisabledSearchReason();
@@ -83,12 +76,11 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
         (equipment: EquipmentInfos) => {
             closeDialog();
             updateSearchTerm('');
-            // @ts-expect-error TODO: manage null case
-            addToLocalStorageSearchEquipmentHistory(studyUuid, equipment);
+            addToLocalStorageSearchEquipmentHistory(studyContext.studyId, equipment);
             fetchNetworkElementInfos(
-                studyUuid,
-                currentNode?.id,
-                currentRootNetworkUuid,
+                studyContext.studyId,
+                studyContext.nodeId,
+                studyContext.rootNetworkId,
                 equipment.type,
                 EquipmentInfosTypes.LIST.type,
                 equipment.id as UUID,
@@ -98,11 +90,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
                     showVoltageLevelDiagram(equipment);
                 })
                 .catch(() => {
-                    excludeElementFromCurrentSearchHistory(
-                        // @ts-expect-error TODO: manage null case
-                        studyUuid,
-                        equipment
-                    );
+                    excludeElementFromCurrentSearchHistory(studyContext.studyId, equipment);
                     updateSearchTerm('');
                     snackWarning({
                         messageId: 'NetworkEquipmentNotFound',
@@ -110,15 +98,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
                     });
                 });
         },
-        [
-            updateSearchTerm,
-            closeDialog,
-            showVoltageLevelDiagram,
-            studyUuid,
-            snackWarning,
-            currentNode,
-            currentRootNetworkUuid,
-        ]
+        [updateSearchTerm, closeDialog, showVoltageLevelDiagram, snackWarning, studyContext]
     );
 
     const suffixRenderer = useCallback(

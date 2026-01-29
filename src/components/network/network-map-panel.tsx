@@ -41,6 +41,7 @@ import {
     type MuiStyles,
     NotificationsUrlKeys,
     snackWithFallback,
+    StudyContext,
     useNotificationsListener,
     useSnackMessage,
     useStateBoolean,
@@ -155,6 +156,17 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         const rootNode = treeModel?.treeNodes.find((node) => node?.data?.label === ROOT_NODE_LABEL);
         return rootNode?.id;
     }, [treeModel]);
+
+    const studyContext: StudyContext | undefined = useMemo(() => {
+        if (studyUuid && currentNode.id && currentRootNetworkUuid) {
+            return {
+                studyId: studyUuid,
+                nodeId: currentNode.id,
+                rootNetworkId: currentRootNetworkUuid,
+                useNameParam: useName,
+            };
+        }
+    }, [currentNode.id, currentRootNetworkUuid, studyUuid, useName]);
 
     const dispatch = useDispatch();
     const { showInSpreadsheet, openSLD } = useWorkspacePanelActions();
@@ -1222,12 +1234,13 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
                 </>
             )}
-            {studyUuid && (
+            {studyContext && (
                 <TopBarEquipmentSearchDialog
                     showVoltageLevelDiagram={showVoltageLevelDiagram}
                     isDialogSearchOpen={isDialogSearchOpen}
                     setIsDialogSearchOpen={setIsDialogSearchOpen}
                     disableKeyboardShortcut={true}
+                    studyContext={studyContext}
                 />
             )}
         </>
