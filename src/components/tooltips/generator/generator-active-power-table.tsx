@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Table, TableRow, TableContainer, Grid } from '@mui/material';
+import { Table, TableRow, TableContainer, Grid, TableBody } from '@mui/material';
 import { GeneratorEquipmentInfos } from '../equipment-popover-type';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { CellRender } from '../cell-render';
@@ -19,50 +19,52 @@ export const GeneratorActivePowerTable: React.FC<GeneratorActivePowerTableProps>
         <Grid item sx={styles.grid}>
             <TableContainer sx={styles.table}>
                 <Table size="small" sx={styles.layout}>
-                    <TableRow>
-                        <CellRender
-                            isLabel
-                            label="activePowerSetPointTooltip"
-                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                        />
-                        <CellRender
-                            value={formatValue(equipmentInfos.targetP && Math.round(equipmentInfos.targetP))}
-                            colStyle={styles.cell}
-                        />
-                    </TableRow>
+                    <TableBody>
+                        <TableRow>
+                            <CellRender
+                                isLabel
+                                label="activePowerSetPointTooltip"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
+                            <CellRender
+                                value={formatValue(equipmentInfos.targetP && Math.round(equipmentInfos.targetP))}
+                                colStyle={styles.cell}
+                            />
+                        </TableRow>
 
-                    <TableRow>
-                        <CellRender
-                            isLabel
-                            label="MinimumActivePowerTooltip"
-                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                        />
-                        <CellRender value={formatValue(Math.round(equipmentInfos.minP))} colStyle={styles.cell} />
-                    </TableRow>
+                        <TableRow>
+                            <CellRender
+                                isLabel
+                                label="MinimumActivePowerTooltip"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
+                            <CellRender value={formatValue(Math.round(equipmentInfos.minP))} colStyle={styles.cell} />
+                        </TableRow>
 
-                    <TableRow>
-                        <CellRender
-                            isLabel
-                            label="MaximumActivePowerTooltip"
-                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                        />
-                        <CellRender value={formatValue(Math.round(equipmentInfos.maxP))} colStyle={styles.cell} />
-                    </TableRow>
+                        <TableRow>
+                            <CellRender
+                                isLabel
+                                label="MaximumActivePowerTooltip"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
+                            <CellRender value={formatValue(Math.round(equipmentInfos.maxP))} colStyle={styles.cell} />
+                        </TableRow>
 
-                    <TableRow>
-                        <CellRender
-                            isLabel
-                            label="plannedActivePowerSetPointTooltip"
-                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                        />
-                        <CellRender
-                            value={formatValue(
-                                equipmentInfos.plannedActivePowerSetPoint &&
-                                    Math.round(equipmentInfos.plannedActivePowerSetPoint)
-                            )}
-                            colStyle={styles.cell}
-                        />
-                    </TableRow>
+                        <TableRow>
+                            <CellRender
+                                isLabel
+                                label="plannedActivePowerSetPointTooltip"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
+                            <CellRender
+                                value={formatValue(
+                                    equipmentInfos.plannedActivePowerSetPoint &&
+                                        Math.round(equipmentInfos.plannedActivePowerSetPoint)
+                                )}
+                                colStyle={styles.cell}
+                            />
+                        </TableRow>
+                    </TableBody>
                 </Table>
             </TableContainer>
         </Grid>

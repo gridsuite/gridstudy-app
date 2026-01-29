@@ -51,6 +51,7 @@ export const VoltageLevelPopoverBusInfos = ({ buses }: { buses?: VoltageLevelToo
 
     return (
         <Grid item sx={genericStyles.grid}>
+            {/* Add TableContainer, Table and TableBody components here ? */}
             <TableRow>
                 <CellRender isLabel={true} label="" colStyle={{ ...genericStyles.cell, fontWeight: 'bold' }} />
                 {buses?.map((b) => (
