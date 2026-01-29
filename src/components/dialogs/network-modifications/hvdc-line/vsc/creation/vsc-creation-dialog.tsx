@@ -7,11 +7,24 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
+    EquipmentSearchDialog,
     ExtendedEquipmentType,
+    FetchStatus,
+    filledTextField,
+    FORM_LOADING_DELAY,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
+    ModificationDialog,
+    sanitizeString,
     snackWithFallback,
     TextInput,
+    toModificationProperties,
+    useFormSearchCopy,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FieldErrors, useForm } from 'react-hook-form';
@@ -34,24 +47,10 @@ import {
     R,
 } from '../../../../../utils/field-constants';
 import { Box, Grid } from '@mui/material';
-import { filledTextField, sanitizeString } from '../../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
 import yup from 'components/utils/yup-config';
-import { FORM_LOADING_DELAY } from '../../../../../network/constants';
-import { ModificationDialog } from '../../../../commons/modificationDialog';
-import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
-import { FetchStatus } from '../../../../../../services/utils';
 import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
-import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
-import EquipmentSearchDialog from '../../../../equipment-search-dialog';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
 import { VSC_CREATION_TABS } from '../vsc-utils';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -71,6 +70,7 @@ import {
     getVscConverterStationEmptyFormData,
     getVscConverterStationSchema,
 } from '../converter-station/converter-station-utils';
+import { useStudyContext } from '../../../../../../hooks/use-study-context';
 
 const formSchema = yup
     .object()
@@ -107,6 +107,7 @@ export default function VscCreationDialog({
 }: Readonly<VscCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const studyContext = useStudyContext();
     const [tabIndex, setTabIndex] = useState(VSC_CREATION_TABS.HVDC_LINE_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
 
@@ -135,7 +136,7 @@ export default function VscCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, ExtendedEquipmentType.HVDC_LINE_VSC);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, ExtendedEquipmentType.HVDC_LINE_VSC, studyContext);
 
     const generatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -258,14 +259,15 @@ export default function VscCreationDialog({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={ExtendedEquipmentType.HVDC_LINE_VSC}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={ExtendedEquipmentType.HVDC_LINE_VSC}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );
