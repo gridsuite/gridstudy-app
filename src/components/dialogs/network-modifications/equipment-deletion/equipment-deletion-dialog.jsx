@@ -46,9 +46,10 @@ const emptyFormData = {
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param defaultIdValue the default equipment id
- * @param equipmentType
- * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
+ * @param equipmentType
+ * @param onClose a callback when dialog has closed
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const EquipmentDeletionDialog = ({
     studyUuid,
@@ -59,6 +60,7 @@ const EquipmentDeletionDialog = ({
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD/map
     editDataFetchStatus,
     equipmentType,
+    onClose,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -152,6 +154,7 @@ const EquipmentDeletionDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
+                onClose={onClose}
                 titleId="DeleteEquipment"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
@@ -176,6 +179,8 @@ EquipmentDeletionDialog.propTypes = {
     isUpdate: PropTypes.bool,
     defaultIdValue: PropTypes.string,
     editDataFetchStatus: PropTypes.string,
+    equipmentType: PropTypes.string,
+    onClose: PropTypes.func,
 };
 
 export default EquipmentDeletionDialog;

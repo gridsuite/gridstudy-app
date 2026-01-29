@@ -294,13 +294,15 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         <>
                             <Divider orientation="vertical" flexItem sx={styles.divider} />
                             <Tooltip title={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}>
-                                <IconButton
-                                    sx={styles.actionIcon}
-                                    onClick={handleClickAddVoltageLevelSIcon}
-                                    disabled={isDiagramLoading || isNadCreationFromFilter}
-                                >
-                                    <AddLocationAltOutlinedIcon sx={styles.icon} />
-                                </IconButton>
+                                <span>
+                                    <IconButton
+                                        sx={styles.actionIcon}
+                                        onClick={handleClickAddVoltageLevelSIcon}
+                                        disabled={isDiagramLoading || isNadCreationFromFilter}
+                                    >
+                                        <AddLocationAltOutlinedIcon sx={styles.icon} />
+                                    </IconButton>
+                                </span>
                             </Tooltip>
                             <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
                                 <span>

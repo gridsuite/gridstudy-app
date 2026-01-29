@@ -89,9 +89,9 @@ const formSchema = yup
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1, true),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2, true),
+    [HVDC_LINE_TAB]: getVscHvdcLinePaneEmptyFormData(true),
+    [CONVERTER_STATION_1]: getVscConverterStationEmptyFormData(true),
+    [CONVERTER_STATION_2]: getVscConverterStationEmptyFormData(true),
     ...emptyProperties,
 };
 
