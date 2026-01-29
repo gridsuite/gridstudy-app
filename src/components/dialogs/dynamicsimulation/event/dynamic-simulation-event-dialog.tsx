@@ -6,7 +6,6 @@
  */
 
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
@@ -19,6 +18,7 @@ import { eventDefinitions, getEventType } from './model/event.model';
 import {
     CustomFormProvider,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,

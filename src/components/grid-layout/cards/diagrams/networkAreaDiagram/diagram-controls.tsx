@@ -6,7 +6,6 @@
  */
 
 import { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import {
@@ -16,6 +15,7 @@ import {
     ElementType,
     type EquipmentInfos,
     EquipmentInfosTypes,
+    EquipmentSearchDialog,
     EquipmentType,
     fetchNetworkElementInfos,
     type IElementCreationDialog,
@@ -33,13 +33,12 @@ import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
 import { Tooltip } from '@mui/material';
-import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
-import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import VoltageLevelSearchMenu from './voltage-level-search-menu';
+import { useStudyContext } from '../../../../../hooks/use-study-context';
 
 const styles = {
     actionIcon: (theme) => ({
@@ -112,9 +111,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isFilterSelectorOpen, setIsFilterSelectorOpen] = useState(false);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const studyContext = useStudyContext();
 
     const handleCloseSaveDialog = () => {
         setIsSaveDialogOpen(false);
@@ -220,13 +217,13 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     const onSelectionChange = useCallback(
         (equipment: EquipmentInfos) => {
             handleCloseSearchDialog();
-            if (!currentNodeUuid || !currentRootNetworkUuid) {
+            if (!studyContext) {
                 return;
             }
             fetchNetworkElementInfos(
-                studyUuid,
-                currentNodeUuid,
-                currentRootNetworkUuid,
+                studyContext.studyId,
+                studyContext.nodeId,
+                studyContext.rootNetworkId,
                 equipment.type,
                 EquipmentInfosTypes.LIST.type,
                 equipment.id as UUID,
@@ -242,10 +239,10 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     });
                 });
         },
-        [handleCloseSearchDialog, currentNodeUuid, currentRootNetworkUuid, studyUuid, onAddVoltageLevel, snackWarning]
+        [handleCloseSearchDialog, onAddVoltageLevel, snackWarning, studyContext]
     );
     function renderSearchEquipment() {
-        if (!currentRootNetworkUuid || !currentNodeUuid) {
+        if (!studyContext) {
             return;
         }
         return (
@@ -254,8 +251,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                 onClose={handleCloseSearchDialog}
                 equipmentType={EquipmentType.VOLTAGE_LEVEL}
                 onSelectionChange={onSelectionChange}
-                currentNodeUuid={currentNodeUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
+                studyContext={studyContext}
             />
         );
     }
@@ -352,11 +348,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     <FormattedMessage id={isEditNadMode ? 'apply' : 'EditNad'} />
                 </Button>
             </Box>
-            {studyUuid && (
+            {studyContext && (
                 <>
                     {isSaveDialogOpen && (
                         <ElementSaveDialog
-                            studyUuid={studyUuid}
+                            studyUuid={studyContext.studyId}
                             onClose={handleCloseSaveDialog}
                             onSave={handleSave}
                             OnUpdate={handleUpdate}

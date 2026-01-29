@@ -8,6 +8,7 @@
 import {
     CustomFormProvider,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -30,7 +31,6 @@ import {
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 import { generationDispatch } from '../../../../services/study/network-modifications';
 import { addSelectedFieldToRows } from 'components/utils/utils';

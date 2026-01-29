@@ -7,7 +7,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import { Button } from '@mui/material';
-import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
+import { ModificationDialogContent, ModificationDialogContentProps } from '@gridsuite/commons-ui';
 
 export type BasicModificationDialogProps = Omit<ModificationDialogContentProps, 'closeAndClear' | 'submitButton'> & {
     disabledSave?: boolean;

@@ -11,6 +11,7 @@ import {
     FetchStatus,
     Identifiable,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -20,7 +21,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import yup from '../../../../utils/yup-config';
 import {

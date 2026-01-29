@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
@@ -14,6 +13,7 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,

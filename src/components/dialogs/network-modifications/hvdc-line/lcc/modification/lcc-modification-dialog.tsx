@@ -27,6 +27,7 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -51,7 +52,6 @@ import { EquipmentModificationDialogProps } from '../../../../../graph/menus/net
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
-import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { LccModificationForm } from './lcc-modification-form';
 import { toModificationOperation } from '../../../../../utils/utils';
 import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';

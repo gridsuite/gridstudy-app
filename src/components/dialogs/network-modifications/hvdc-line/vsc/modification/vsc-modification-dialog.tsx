@@ -6,7 +6,6 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
 import { sanitizeString } from '../../../../dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -61,6 +60,7 @@ import {
     ExtendedEquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,

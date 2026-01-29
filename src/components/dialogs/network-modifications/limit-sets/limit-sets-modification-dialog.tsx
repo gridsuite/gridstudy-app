@@ -16,6 +16,7 @@ import { useIntl } from 'react-intl';
 import {
     CustomFormProvider,
     FetchStatus,
+    ModificationDialog,
     ModificationType,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -25,7 +26,6 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo } from 'react';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modification-form';

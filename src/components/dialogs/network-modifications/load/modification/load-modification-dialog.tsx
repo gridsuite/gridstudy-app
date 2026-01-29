@@ -11,6 +11,7 @@ import {
     EquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -41,7 +42,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import {

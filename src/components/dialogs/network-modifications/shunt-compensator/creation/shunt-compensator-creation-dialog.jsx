@@ -7,8 +7,11 @@
 
 import {
     CustomFormProvider,
+    EquipmentSearchDialog,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
+    useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -34,11 +37,8 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -59,6 +59,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { useStudyContext } from '../../../../../hooks/use-study-context.ts';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -99,7 +100,7 @@ const ShuntCompensatorCreationDialog = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
-
+    const studyContext = useStudyContext();
     const { snackError, snackWarning } = useSnackMessage();
 
     const formMethods = useForm({
@@ -167,7 +168,7 @@ const ShuntCompensatorCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.SHUNT_COMPENSATOR);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.SHUNT_COMPENSATOR, studyContext);
 
     useEffect(() => {
         if (editData) {
@@ -239,14 +240,15 @@ const ShuntCompensatorCreationDialog = ({
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

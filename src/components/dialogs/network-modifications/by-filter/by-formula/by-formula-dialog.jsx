@@ -13,13 +13,13 @@ import {
     CustomFormProvider,
     FetchStatus,
     FieldType,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import ByFormulaForm from './by-formula-form';
 import {

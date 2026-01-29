@@ -7,14 +7,18 @@
 
 import { useEffect, useMemo } from 'react';
 import { Grid } from '@mui/material';
-import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    ModificationDialog,
+    type MuiStyles,
+    type UseStateBooleanReturn,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import NodeConfigTable from './node-config-table';
 import type { UUID } from 'node:crypto';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { initialNodesForm, NODES_ALIASES, NodesForm, nodesFormSchema } from './nodes-config-dialog.utils';

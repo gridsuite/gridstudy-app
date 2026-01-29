@@ -9,18 +9,19 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
     FieldType,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
+    useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
-import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
-import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
 import {
     ADD_SUBSTATION_CREATION,
     ADDITIONAL_PROPERTIES,
@@ -52,7 +53,6 @@ import {
 import yup from 'components/utils/yup-config';
 import { FC, useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { useIntl } from 'react-intl';
@@ -76,6 +76,7 @@ import {
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { CreateCouplingDeviceDialogSchemaForm } from '../../coupling-device/coupling-device-dialog.type';
+import { useStudyContext } from '../../../../../hooks/use-study-context';
 
 export type SwitchKindFormData = { [SWITCH_KIND]: string };
 
@@ -279,6 +280,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError, snackWarning } = useSnackMessage();
+    const studyContext = useStudyContext();
 
     const defaultValues = useMemo((): VoltageLevelCreationFormData => {
         if (isAttachmentPointModification) {
@@ -423,7 +425,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         };
     }, [subscribe, trigger, getValues]);
 
-    const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EquipmentType.VOLTAGE_LEVEL);
+    const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EquipmentType.VOLTAGE_LEVEL, studyContext);
 
     useEffect(() => {
         if (editData) {
@@ -504,14 +506,15 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                     studyUuid={studyUuid as UUID}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EquipmentType.VOLTAGE_LEVEL}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={EquipmentType.VOLTAGE_LEVEL}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

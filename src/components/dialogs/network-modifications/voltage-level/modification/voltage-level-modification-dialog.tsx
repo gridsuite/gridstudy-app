@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
@@ -29,6 +28,7 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,

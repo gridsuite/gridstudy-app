@@ -8,6 +8,7 @@
 import {
     CustomFormProvider,
     FetchStatus,
+    ModificationDialog,
     ModificationType,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -33,7 +34,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import {
     getConnectivityPropertiesData,
     getConnectivityPropertiesValidationSchema,

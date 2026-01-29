@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
@@ -13,7 +12,9 @@ import {
     EquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
+    SubstationInfos,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -38,7 +39,6 @@ import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { AttributeModification } from 'services/network-modification-types';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { SubstationInfos } from '../substation-dialog.type';
 
 const formSchema = yup
     .object()

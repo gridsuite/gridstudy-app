@@ -11,13 +11,13 @@ import { FILTERS, ID, NAME, TYPE } from '../../../../utils/field-constants';
 import {
     CustomFormProvider,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipmentByFilter } from '../../../../../services/study/network-modifications';

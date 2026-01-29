@@ -9,12 +9,15 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
     FieldType,
+    ModificationDialog,
     ModificationType,
     snackWithFallback,
     TextInput,
+    useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -52,7 +55,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { APPLICABILITY, FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import {
@@ -74,8 +76,6 @@ import {
 } from '../../../limits/limits-pane-utils';
 import LineDialogTabs from '../line-dialog-tabs';
 import { filledTextField, sanitizeString } from 'components/dialogs/dialog-utils';
-import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
-import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { createLine } from '../../../../../services/study/network-modifications';
 import {
@@ -94,6 +94,7 @@ import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-ty
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { useStudyContext } from '../../../../../hooks/use-study-context';
 
 const emptyFormData: any = {
     ...getHeaderEmptyFormData(),
@@ -133,6 +134,7 @@ const LineCreationDialog = ({
 }: Readonly<LineCreationDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const studyContext = useStudyContext();
 
     const [tabIndex, setTabIndex] = useState(LineCreationDialogTab.CHARACTERISTICS_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
@@ -258,7 +260,7 @@ const LineCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.LINE);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.LINE, studyContext);
 
     useEffect(() => {
         if (editData) {
@@ -441,15 +443,15 @@ const LineCreationDialog = ({
                 <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
                     <LimitsPane />
                 </Box>
-
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EquipmentType.LINE}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={EquipmentType.LINE}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        studyContext={studyContext}
+                    />
+                )}
                 <LineTypeSegmentDialog
                     open={isOpenLineTypesCatalogDialog}
                     onClose={handleCloseLineTypesCatalogDialog}

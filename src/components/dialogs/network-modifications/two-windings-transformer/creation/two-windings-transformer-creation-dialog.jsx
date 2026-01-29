@@ -9,9 +9,12 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentSearchDialog,
     FetchStatus,
     FieldType,
+    ModificationDialog,
     snackWithFallback,
+    useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -63,8 +66,6 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
     FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
@@ -74,7 +75,6 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import {
     getPhaseTapChangerEmptyFormData,
@@ -110,6 +110,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-utils';
+import { useStudyContext } from '../../../../../hooks/use-study-context.ts';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -156,6 +157,7 @@ const TwoWindingsTransformerCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const studyContext = useStudyContext();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -390,7 +392,11 @@ const TwoWindingsTransformerCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER);
+    const searchCopy = useFormSearchCopy(
+        fromSearchCopyToFormValues,
+        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+        studyContext
+    );
 
     useEffect(() => {
         if (editData) {
@@ -642,15 +648,15 @@ const TwoWindingsTransformerCreationDialog = ({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     tabIndex={tabIndex}
                 />
-
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

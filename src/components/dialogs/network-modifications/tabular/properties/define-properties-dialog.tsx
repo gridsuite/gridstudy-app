@@ -11,13 +11,13 @@ import {
     CustomFormProvider,
     type EquipmentType,
     equipmentTypesForPredefinedPropertiesMapper,
+    ModificationDialog,
     type MuiStyles,
     type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import PropertiesForm from './properties-form';
 import {
     propertiesSchema,

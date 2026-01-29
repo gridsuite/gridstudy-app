@@ -11,13 +11,13 @@ import { DELETION_SPECIFIC_DATA, EQUIPMENT_ID, TYPE } from '../../../utils/field
 import {
     CustomFormProvider,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';

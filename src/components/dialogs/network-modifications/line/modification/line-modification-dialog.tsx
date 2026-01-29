@@ -15,6 +15,7 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -58,7 +59,6 @@ import {
 import { FieldErrors } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,

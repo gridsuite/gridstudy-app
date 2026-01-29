@@ -10,6 +10,7 @@ import {
     EquipmentType,
     FetchStatus,
     MODIFICATION_TYPES,
+    ModificationDialog,
     ModificationType,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -19,7 +20,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import yup from '../../../../utils/yup-config';
 import {

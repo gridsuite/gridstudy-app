@@ -8,6 +8,7 @@
 import {
     CustomFormProvider,
     FetchStatus,
+    ModificationDialog,
     NetworkModificationData,
     snackWithFallback,
     useOpenShortWaitFetching,
@@ -26,7 +27,6 @@ import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
 import { deleteAttachingLine } from '../../../../services/study/network-modifications';
 import DeleteAttachingLineIllustration from './delete-attaching-line-illustration';

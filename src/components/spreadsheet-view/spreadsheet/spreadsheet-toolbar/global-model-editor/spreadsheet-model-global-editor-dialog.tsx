@@ -7,10 +7,14 @@
 
 import { useEffect } from 'react';
 import { Grid } from '@mui/material';
-import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    ModificationDialog,
+    type MuiStyles,
+    type UseStateBooleanReturn,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { SpreadsheetModelGlobalEditorTable } from './spreadsheet-model-global-editor-table';
 import FormulaSearchReplace from './formula-search-replace';
 import { FormulaSearchProvider } from './formula-search-context';

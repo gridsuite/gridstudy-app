@@ -8,12 +8,12 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
 import {
     CustomFormProvider,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,

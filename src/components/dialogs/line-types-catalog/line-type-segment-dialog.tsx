@@ -8,10 +8,9 @@
 import { useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../commons/modificationDialog';
 import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
-import { CustomFormProvider } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ModificationDialog } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
 import { SegmentSchema } from './segment-utils';
 import {

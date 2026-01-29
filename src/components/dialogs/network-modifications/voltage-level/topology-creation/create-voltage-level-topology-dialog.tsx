@@ -14,6 +14,7 @@ import {
     EquipmentType,
     FetchStatus,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -25,7 +26,6 @@ import { CreateVoltageLevelTopologyDialogSchemaForm } from './create-voltage-lev
 import CreateVoltageLevelTopologyForm from './create-voltage-level-topology-form';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createVoltageLevelTopology } from '../../../../../services/study/network-modifications';
 import { CreateVoltageLevelTopologyInfos } from '../../../../../services/network-modification-types';

@@ -29,17 +29,17 @@ import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from '../common/lcc-type';
 import { Property, toModificationProperties } from '../../../common/properties/property-utils';
-import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import {
     CustomFormProvider,
+    EquipmentSearchDialog,
     ExtendedEquipmentType,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
+    useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { ModificationDialog } from '../../../../commons/modificationDialog';
-import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import { useCallback, useEffect, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { createLcc } from '../../../../../../services/study/network-modifications';
@@ -61,6 +61,7 @@ import {
 } from '../common/lcc-utils';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { Connectivity } from '../../../../connectivity/connectivity.type';
+import { useStudyContext } from '../../../../../../hooks/use-study-context';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -125,6 +126,7 @@ export function LccCreationDialog({
 }: Readonly<LccCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const studyContext = useStudyContext();
     const formMethods = useForm<DeepNullable<LccCreationSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LccCreationSchemaForm>>(formSchema),
@@ -153,9 +155,13 @@ export function LccCreationDialog({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy((data) => {
-        reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
-    }, ExtendedEquipmentType.HVDC_LINE_LCC);
+    const searchCopy = useFormSearchCopy(
+        (data) => {
+            reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
+        },
+        ExtendedEquipmentType.HVDC_LINE_LCC,
+        studyContext
+    );
 
     useEffect(() => {
         if (editData) {
@@ -255,14 +261,15 @@ export function LccCreationDialog({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     tabIndex={tabIndex}
                 />
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    equipmentType={ExtendedEquipmentType.HVDC_LINE_LCC}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        equipmentType={ExtendedEquipmentType.HVDC_LINE_LCC}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

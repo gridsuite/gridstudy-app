@@ -7,9 +7,12 @@
 
 import {
     CustomFormProvider,
+    EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
+    useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -53,11 +56,8 @@ import {
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -88,6 +88,7 @@ import {
 } from './standby-automaton-form-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
+import { useStudyContext } from '../../../../../hooks/use-study-context';
 
 export type StaticVarCompensatorCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -173,7 +174,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
-
+    const studyContext = useStudyContext();
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm<DeepNullable<StaticVarCompensatorCreationSchemaForm>>({
@@ -290,7 +291,11 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.STATIC_VAR_COMPENSATOR);
+    const searchCopy = useFormSearchCopy(
+        fromSearchCopyToFormValues,
+        EquipmentType.STATIC_VAR_COMPENSATOR,
+        studyContext
+    );
 
     useEffect(() => {
         if (editData) {
@@ -468,14 +473,15 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     tabIndex={tabIndex}
                 />
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    equipmentType={EquipmentType.STATIC_VAR_COMPENSATOR}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        equipmentType={EquipmentType.STATIC_VAR_COMPENSATOR}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

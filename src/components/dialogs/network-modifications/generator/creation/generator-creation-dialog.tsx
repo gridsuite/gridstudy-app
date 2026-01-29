@@ -6,16 +6,16 @@
  */
 
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from '../../../commons/modificationDialog';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
-import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
     CustomFormProvider,
+    EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
+    useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -95,6 +95,7 @@ import {
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
 import { toReactiveCapabilityCurveChoiceForGeneratorCreation } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { useStudyContext } from '../../../../../hooks/use-study-context';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -158,6 +159,7 @@ export default function GeneratorCreationDialog({
 }: Readonly<GeneratorCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const studyContext = useStudyContext();
 
     const formMethods = useForm<DeepNullable<GeneratorCreationDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -192,7 +194,7 @@ export default function GeneratorCreationDialog({
                     generator?.regulatingTerminalId || generator?.regulatingTerminalConnectableId
                         ? REGULATION_TYPES.DISTANT.id
                         : REGULATION_TYPES.LOCAL.id,
-                [Q_PERCENT]: isNaN(Number(generator?.coordinatedReactiveControl?.qPercent))
+                [Q_PERCENT]: Number.isNaN(Number(generator?.coordinatedReactiveControl?.qPercent))
                     ? null
                     : generator?.coordinatedReactiveControl?.qPercent,
                 ...getReactiveLimitsFormData({
@@ -219,7 +221,7 @@ export default function GeneratorCreationDialog({
         );
     };
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.GENERATOR);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.GENERATOR, studyContext);
 
     useEffect(() => {
         if (editData) {
@@ -360,15 +362,15 @@ export default function GeneratorCreationDialog({
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />
-
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EquipmentType.GENERATOR}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={EquipmentType.GENERATOR}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

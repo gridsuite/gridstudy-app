@@ -6,16 +6,16 @@
  */
 
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from '../../../commons/modificationDialog';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
-import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
     CustomFormProvider,
+    EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
+    useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -81,6 +81,7 @@ import {
     getShortCircuitFormData,
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
+import { useStudyContext } from '../../../../../hooks/use-study-context';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -126,6 +127,7 @@ export default function BatteryCreationDialog({
 }: Readonly<BatteryCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const studyContext = useStudyContext();
 
     const formMethods = useForm<DeepNullable<BatteryCreationDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -167,7 +169,8 @@ export default function BatteryCreationDialog({
             { keepDefaultValues: true }
         );
     };
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.BATTERY);
+
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.BATTERY, studyContext);
 
     useEffect(() => {
         if (editData) {
@@ -279,15 +282,15 @@ export default function BatteryCreationDialog({
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />
-
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EquipmentType.BATTERY}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={EquipmentType.BATTERY}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

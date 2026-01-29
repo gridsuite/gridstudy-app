@@ -6,13 +6,12 @@
  */
 
 import { filledTextField } from '../../../dialog-utils';
-import { CountrySelectionInput, TextInput } from '@gridsuite/commons-ui';
+import { CountrySelectionInput, SubstationInfos, TextInput } from '@gridsuite/commons-ui';
 import { COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
-import { SubstationInfos } from '../substation-dialog.type';
 
 interface SubstationModificationFormProps {
     substationToModify?: SubstationInfos | null;

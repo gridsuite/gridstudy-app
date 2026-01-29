@@ -9,7 +9,6 @@ import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createCouplingDevice } from '../../../../../services/study/network-modifications';
@@ -18,6 +17,7 @@ import {
     EquipmentType,
     FetchStatus,
     MODIFICATION_TYPES,
+    ModificationDialog,
     Option,
     snackWithFallback,
     useOpenShortWaitFetching,

@@ -8,6 +8,7 @@
 import {
     CustomFormProvider,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -32,8 +33,6 @@ import {
 import yup from 'components/utils/yup-config';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 import {
     getConnectivityData,

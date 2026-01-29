@@ -7,9 +7,12 @@
 
 import {
     CustomFormProvider,
+    EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
+    ModificationDialog,
     snackWithFallback,
+    useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -26,11 +29,8 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -52,6 +52,7 @@ import { LoadDialogTab } from '../common/load-utils';
 import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
 import useVoltageLevelsListInfos from 'hooks/use-voltage-levels-list-infos';
+import { useStudyContext } from '../../../../../hooks/use-study-context';
 
 /**
  * Dialog to create a load in the network
@@ -102,6 +103,7 @@ export function LoadCreationDialog({
     const { snackError } = useSnackMessage();
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
+    const studyContext = useStudyContext();
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const formMethods = useForm<DeepNullable<LoadCreationSchemaForm>>({
@@ -152,9 +154,13 @@ export function LoadCreationDialog({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy((data) => {
-        reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
-    }, EquipmentType.LOAD);
+    const searchCopy = useFormSearchCopy(
+        (data) => {
+            reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
+        },
+        EquipmentType.LOAD,
+        studyContext
+    );
 
     useEffect(() => {
         if (editData) {
@@ -240,14 +246,15 @@ export function LoadCreationDialog({
                     tabIndex={tabIndex}
                     voltageLevelOptions={voltageLevelOptions}
                 />
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EquipmentType.LOAD}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={EquipmentType.LOAD}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );
