@@ -128,14 +128,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     // refs to keep useLayoutEffect and callbacks stable
     const isEditNadModeRef = useRef(isEditNadMode);
     const positionsRef = useRef(positions);
-
-    useEffect(() => {
-        isEditNadModeRef.current = isEditNadMode;
-    }, [isEditNadMode]);
-
-    useEffect(() => {
-        positionsRef.current = positions;
-    }, [positions]);
+    isEditNadModeRef.current = isEditNadMode;
+    positionsRef.current = positions;
 
     // save nad when exiting edit mode
     const handleSetIsEditNadMode = useCallback(
