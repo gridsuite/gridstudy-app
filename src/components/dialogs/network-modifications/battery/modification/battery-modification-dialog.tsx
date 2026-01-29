@@ -8,14 +8,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    emptyProperties,
     EquipmentInfosTypes,
     EquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
     ModificationDialog,
+    modificationPropertiesSchema,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -57,13 +62,6 @@ import {
 import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,

@@ -8,18 +8,23 @@
 import {
     convertInputValue,
     convertOutputValue,
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
     FieldType,
     filledTextField,
     FORM_LOADING_DELAY,
+    getPropertiesFromModification,
     ModificationDialog,
     ModificationType,
     sanitizeString,
     snackWithFallback,
     TextInput,
+    toModificationProperties,
     useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -80,13 +85,6 @@ import {
 import LineDialogTabs from '../line-dialog-tabs';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { createLine } from '../../../../../services/study/network-modifications';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 import { LimitsPane } from '../../../limits/limits-pane';

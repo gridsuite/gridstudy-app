@@ -27,10 +27,12 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     FORM_LOADING_DELAY,
+    getConcatenatedProperties,
     MODIFICATION_TYPES,
     ModificationDialog,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -48,7 +50,6 @@ import {
     getLccHvdcLineModificationSchema,
 } from '../common/lcc-utils';
 import { modifyLcc } from 'services/study/network-modifications';
-import { getConcatenatedProperties, toModificationProperties } from '../../../common/properties/property-utils';
 import { EquipmentModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';

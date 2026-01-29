@@ -23,14 +23,14 @@ import {
     filledTextField,
     FloatInput,
     KiloAmpereAdornment,
+    Properties,
+    PropertiesForm,
     TextInput,
     VoltageAdornment,
 } from '@gridsuite/commons-ui';
 import { TextField, Grid } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
-import { Properties } from '../../common/properties/property-utils';
 
 interface VoltageLevelFormData {
     [NAME]?: string;

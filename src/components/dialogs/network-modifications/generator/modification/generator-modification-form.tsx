@@ -10,6 +10,7 @@ import {
     filledTextField,
     FloatInput,
     MVAPowerAdornment,
+    PropertiesForm,
     SelectInput,
     TextInput,
 } from '@gridsuite/commons-ui';
@@ -29,7 +30,6 @@ import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constan
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, TextField } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';

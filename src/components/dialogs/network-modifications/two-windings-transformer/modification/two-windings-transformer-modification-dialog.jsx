@@ -9,15 +9,20 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    emptyProperties,
     EquipmentInfosTypes,
     EquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
     FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     ModificationDialog,
+    modificationPropertiesSchema,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -124,13 +129,6 @@ import {
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import {

@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Property } from '../../../common/properties/property-utils';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 import {
@@ -24,6 +23,7 @@ import {
     R,
 } from '../../../../../utils/field-constants';
 import { LccShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
+import { Property } from '@gridsuite/commons-ui';
 
 export const LccDialogTab = {
     HVDC_LINE_TAB: 0,

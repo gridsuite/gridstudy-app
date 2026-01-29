@@ -6,14 +6,20 @@
  */
 
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
     FORM_LOADING_DELAY,
+    getPropertiesFromModification,
     ModificationDialog,
+    Property,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -65,14 +71,6 @@ import {
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { createStaticVarCompensator } from '../../../../../services/study/network-modifications';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import StaticVarCompensatorCreationDialogTabs from './static-var-compensator-creation-dialog-tabs';
 import { Grid } from '@mui/material';
 import StaticVarCompensatorCreationForm from './static-var-compensator-creation-form';

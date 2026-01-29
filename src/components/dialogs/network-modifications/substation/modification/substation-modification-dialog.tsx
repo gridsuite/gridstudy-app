@@ -13,10 +13,15 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     ModificationDialog,
+    modificationPropertiesSchema,
+    Property,
     sanitizeString,
     snackWithFallback,
     SubstationInfos,
+    toModificationProperties,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -26,13 +31,6 @@ import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils
 import SubstationModificationForm from './substation-modification-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifySubstation } from '../../../../../services/study/network-modifications';
-import {
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';

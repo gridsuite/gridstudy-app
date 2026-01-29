@@ -10,15 +10,20 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    emptyProperties,
     EquipmentInfosTypes,
     EquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
     FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     ModificationDialog,
+    modificationPropertiesSchema,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -80,13 +85,6 @@ import LineModificationDialogHeader from './line-modification-dialog-header';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLine } from '../../../../../services/study/network-modifications';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     createConnectivityData,
     getCon1andCon2WithPositionValidationSchema,

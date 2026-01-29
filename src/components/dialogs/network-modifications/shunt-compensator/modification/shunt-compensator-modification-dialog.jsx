@@ -7,14 +7,19 @@
 
 import {
     CustomFormProvider,
+    emptyProperties,
     EquipmentInfosTypes,
     EquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
     FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     ModificationDialog,
+    modificationPropertiesSchema,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -50,13 +55,6 @@ import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
 
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,

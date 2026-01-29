@@ -28,7 +28,6 @@ import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from '../common/lcc-type';
-import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import {
     CustomFormProvider,
     EquipmentSearchDialog,
@@ -36,8 +35,10 @@ import {
     FetchStatus,
     FORM_LOADING_DELAY,
     ModificationDialog,
+    Property,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,

@@ -20,9 +20,9 @@ import {
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     TAB_HEADER,
 } from '../../../../utils/field-constants';
-import { Property } from '../../common/properties/property-utils';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
 import { LineCharacteristics } from '../modification/line-modification-type';
+import { Property } from '@gridsuite/commons-ui';
 
 export interface LineCreationFormSchema {
     [TAB_HEADER]: {

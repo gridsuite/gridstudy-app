@@ -8,16 +8,23 @@
 import {
     convertInputValue,
     convertOutputValue,
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
     FieldType,
     FORM_LOADING_DELAY,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
     ModificationDialog,
+    Properties,
+    Property,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -58,15 +65,6 @@ import { useForm } from 'react-hook-form';
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { useIntl } from 'react-intl';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    Properties,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { UUID } from 'node:crypto';
 import {
     AttachedSubstationCreationInfo,

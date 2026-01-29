@@ -22,7 +22,7 @@ import {
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
-import { Property } from '../../common/properties/property-utils';
+import { Property } from '@gridsuite/commons-ui';
 
 export type LoadCreationSchemaForm = {
     [EQUIPMENT_ID]: string;

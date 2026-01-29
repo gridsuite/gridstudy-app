@@ -6,13 +6,18 @@
  */
 
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     EquipmentSearchDialog,
     FetchStatus,
     FORM_LOADING_DELAY,
+    getPropertiesFromModification,
     ModificationDialog,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -53,13 +58,6 @@ import {
 } from '../characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 import { createShuntCompensator } from '../../../../../services/study/network-modifications';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { useStudyContext } from '../../../../../hooks/use-study-context.ts';
 
 const emptyFormData = {

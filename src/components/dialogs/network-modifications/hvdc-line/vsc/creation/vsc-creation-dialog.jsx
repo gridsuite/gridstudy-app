@@ -7,16 +7,21 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     EquipmentSearchDialog,
     ExtendedEquipmentType,
     FetchStatus,
     filledTextField,
     FORM_LOADING_DELAY,
+    getPropertiesFromModification,
     ModificationDialog,
     sanitizeString,
     snackWithFallback,
     TextInput,
+    toModificationProperties,
     useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -57,13 +62,6 @@ import {
 } from '../converter-station/converter-station-utils';
 import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
 import { VSC_CREATION_TABS } from '../vsc-utils';
 import { useStudyContext } from '../../../../../../hooks/use-study-context.ts';

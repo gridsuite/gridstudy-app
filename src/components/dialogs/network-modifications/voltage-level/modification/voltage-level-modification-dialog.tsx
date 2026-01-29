@@ -23,27 +23,25 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    emptyProperties,
     EquipmentInfosTypes,
     EquipmentType,
+    EquipmentWithProperties,
     fetchNetworkElementInfos,
     FetchStatus,
     FieldType,
     FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     ModificationDialog,
+    modificationPropertiesSchema,
     snackWithFallback,
+    toModificationProperties,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
-import {
-    emptyProperties,
-    Equipment,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { UUID } from 'node:crypto';
@@ -128,6 +126,7 @@ const formSchema = yup
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero'),
     })
     .concat(modificationPropertiesSchema);
+
 const VoltageLevelModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
@@ -218,7 +217,7 @@ const VoltageLevelModificationDialog = ({
                                 (formValues) => ({
                                     ...formValues,
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
-                                        voltageLevel as Equipment,
+                                        voltageLevel as EquipmentWithProperties,
                                         getValues
                                     ),
                                     [SUBSTATION_ID]: voltageLevel?.substationId,

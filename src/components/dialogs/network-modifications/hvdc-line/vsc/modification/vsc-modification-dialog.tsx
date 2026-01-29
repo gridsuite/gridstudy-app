@@ -54,24 +54,22 @@ import {
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import {
     CustomFormProvider,
+    emptyProperties,
     EquipmentInfosTypes,
     ExtendedEquipmentType,
     fetchNetworkElementInfos,
     FetchStatus,
     FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     ModificationDialog,
+    modificationPropertiesSchema,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';

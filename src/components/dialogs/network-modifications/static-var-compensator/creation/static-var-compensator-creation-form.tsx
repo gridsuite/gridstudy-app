@@ -8,7 +8,6 @@
 import { FunctionComponent } from 'react';
 
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import PropertiesForm from '../../common/properties/properties-form';
 import { Box, Grid } from '@mui/material';
 import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
@@ -17,6 +16,7 @@ import type { UUID } from 'node:crypto';
 import GridItem from '../../../commons/grid-item';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { PropertiesForm } from '@gridsuite/commons-ui';
 
 export interface StaticVarCompensatorCreationFormProps {
     studyUuid: UUID;

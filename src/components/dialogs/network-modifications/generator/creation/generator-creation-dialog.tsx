@@ -8,15 +8,20 @@
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     EquipmentSearchDialog,
     EquipmentType,
     FetchStatus,
     FORM_LOADING_DELAY,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
     ModificationDialog,
     sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useFormSearchCopy,
     useOpenShortWaitFetching,
     useSnackMessage,
@@ -70,13 +75,6 @@ import {
     getReactiveLimitsValidationSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { createGenerator } from '../../../../../services/study/network-modifications';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     getVoltageRegulationEmptyFormData,
     getVoltageRegulationSchema,

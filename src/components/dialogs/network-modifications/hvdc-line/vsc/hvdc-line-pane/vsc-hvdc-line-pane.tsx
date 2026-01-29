@@ -9,6 +9,7 @@ import {
     ActivePowerAdornment,
     FloatInput,
     OhmAdornment,
+    PropertiesForm,
     SelectInput,
     SwitchInput,
     VoltageAdornment,
@@ -32,7 +33,6 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
 import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
-import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 

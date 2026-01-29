@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ActivePowerAdornment, filledTextField, FloatInput, TextInput } from '@gridsuite/commons-ui';
+import { ActivePowerAdornment, filledTextField, FloatInput, PropertiesForm, TextInput } from '@gridsuite/commons-ui';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -15,7 +15,6 @@ import {
 import { Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
-import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
