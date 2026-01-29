@@ -13,8 +13,6 @@ import {
     backendFetchJson,
     backendFetchText,
     ComputingType,
-    EquipmentType,
-    ExtendedEquipmentType,
     Parameter,
 } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
@@ -171,32 +169,6 @@ export function fetchNodeSeverities(
 export function fetchSvg(svgUrl: string, fetchOptions?: RequestInit): Promise<Svg> {
     console.debug(svgUrl);
     return backendFetch(svgUrl, fetchOptions).then((response) => (response.status === 204 ? null : response.json()));
-}
-
-export function searchEquipmentsInfos(
-    studyUuid: UUID,
-    nodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    searchTerm: string,
-    getUseNameParameterKey: () => 'name' | 'id',
-    inUpstreamBuiltParentNode?: boolean,
-    equipmentType?: EquipmentType | ExtendedEquipmentType
-) {
-    console.info("Fetching equipments infos matching with '%s' term ... ", searchTerm);
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('userInput', searchTerm);
-    urlSearchParams.append('fieldSelector', getUseNameParameterKey());
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode.toString());
-    }
-    if (equipmentType !== undefined) {
-        urlSearchParams.append('equipmentType', equipmentType);
-    }
-    return backendFetchJson(
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-            '/search?' +
-            urlSearchParams.toString()
-    );
 }
 
 export function fetchContingencyCount(
