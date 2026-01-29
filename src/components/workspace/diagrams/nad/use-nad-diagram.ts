@@ -152,7 +152,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
     const fetchDiagram = useCallback(() => {
         if (!currentNode || !isNodeBuilt(currentNode)) {
-            setGlobalError('Node not built');
+            setGlobalError('InvalidNode');
             return Promise.resolve();
         }
 
