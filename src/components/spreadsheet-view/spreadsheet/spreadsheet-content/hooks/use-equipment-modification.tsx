@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FetchStatus } from '@gridsuite/commons-ui';
+import { FetchStatus, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
@@ -18,6 +18,7 @@ import { type FunctionComponent, type ReactElement, useCallback, useMemo, useSta
 import { useSelector } from 'react-redux';
 import { type AppState } from 'redux/reducer';
 import { type EditableEquipmentType, SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 export type UseEquipmentModificationProps = {
     equipmentType: SpreadsheetEquipmentType;
@@ -40,7 +41,7 @@ function isEditableEquipmentType(type: SpreadsheetEquipmentType): type is Editab
 
 export function useEquipmentModification({ equipmentType }: Readonly<UseEquipmentModificationProps>) {
     const [modificationDialog, setModificationDialog] = useState<ReactElement | null>(null);
-
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -56,9 +57,10 @@ export function useEquipmentModification({ equipmentType }: Readonly<UseEquipmen
                 isUpdate={false}
                 editDataFetchStatus={FetchStatus.IDLE}
                 defaultIdValue={equipmentId}
+                language={languageLocal}
             />
         ),
-        [currentNode, studyUuid, currentRootNetworkUuid]
+        [currentNode, studyUuid, currentRootNetworkUuid, languageLocal]
     );
 
     const getDialogForEquipment = useCallback(

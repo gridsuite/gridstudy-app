@@ -15,6 +15,7 @@ import {
     FORM_LOADING_DELAY,
     getConcatenatedProperties,
     getPropertiesFromModification,
+    GsLang,
     ModificationDialog,
     modificationPropertiesSchema,
     Property,
@@ -67,6 +68,7 @@ interface SubstationModificationDialogProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
+    language: GsLang;
     editDataFetchStatus?: string;
     editData?: SubstationModificationEditData;
     defaultIdValue?: string;
@@ -90,6 +92,7 @@ const SubstationModificationDialog = ({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    language,
     editDataFetchStatus,
     ...dialogProps
 }: SubstationModificationDialogProps) => {
@@ -200,6 +203,7 @@ const SubstationModificationDialog = ({
             removeOptional={true}
             isNodeBuilt={isNodeBuilt(currentNode)}
             isUpdate={isUpdate}
+            language={language}
         >
             <ModificationDialog
                 fullWidth

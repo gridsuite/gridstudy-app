@@ -9,6 +9,7 @@ import {
     CustomFormProvider,
     FetchStatus,
     FORM_LOADING_DELAY,
+    GsLang,
     ModificationDialog,
     ModificationType,
     sanitizeString,
@@ -102,6 +103,7 @@ interface LineAttachToVoltageLevelDialogProps {
     currentRootNetworkUuid: UUID;
     editData?: AttachLineInfo;
     isUpdate: boolean;
+    language: GsLang;
     editDataFetchStatus?: FetchStatus;
     onClose: () => void;
 }
@@ -122,6 +124,7 @@ const LineAttachToVoltageLevelDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    language,
     editDataFetchStatus,
     ...dialogProps
 }: LineAttachToVoltageLevelDialogProps) => {
@@ -435,7 +438,7 @@ const LineAttachToVoltageLevelDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods} language={language}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -460,6 +463,7 @@ const LineAttachToVoltageLevelDialog = ({
                     setAttachmentPoint={setAttachmentPoint}
                     allVoltageLevelOptions={voltageLevelOptions}
                     isUpdate={isUpdate}
+                    language={language}
                     editDataFetchStatus={editDataFetchStatus}
                 />
             </ModificationDialog>

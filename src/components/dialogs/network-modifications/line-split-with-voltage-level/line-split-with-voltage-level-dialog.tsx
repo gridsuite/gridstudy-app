@@ -9,6 +9,7 @@ import {
     CustomFormProvider,
     FetchStatus,
     FORM_LOADING_DELAY,
+    GsLang,
     MODIFICATION_TYPES,
     ModificationDialog,
     sanitizeString,
@@ -119,6 +120,7 @@ interface LineSplitWithVoltageLevelDialogProps {
     currentRootNetworkUuid: UUID;
     editData?: LineSplitEditData;
     isUpdate: boolean;
+    language: GsLang;
     editDataFetchStatus?: FetchStatus;
     onClose: () => void;
 }
@@ -139,6 +141,7 @@ const LineSplitWithVoltageLevelDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    language,
     editDataFetchStatus,
     ...dialogProps
 }: LineSplitWithVoltageLevelDialogProps) => {
@@ -337,7 +340,7 @@ const LineSplitWithVoltageLevelDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods} language={language}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -358,6 +361,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     onVoltageLevelChange={onVoltageLevelChange}
                     allVoltageLevelOptions={voltageLevelOptions}
                     isUpdate={isUpdate}
+                    language={language}
                     editDataFetchStatus={editDataFetchStatus}
                 />
             </ModificationDialog>

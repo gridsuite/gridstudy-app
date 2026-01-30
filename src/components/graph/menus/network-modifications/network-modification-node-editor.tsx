@@ -217,6 +217,7 @@ const NetworkModificationNodeEditor = () => {
                 editData={editData}
                 isUpdate={isUpdate}
                 editDataFetchStatus={editDataFetchStatus}
+                language={languageLocal}
             />
         );
     }

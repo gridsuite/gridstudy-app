@@ -18,6 +18,7 @@ import {
     FieldType,
     FORM_LOADING_DELAY,
     getPropertiesFromModification,
+    GsLang,
     MODIFICATION_TYPES,
     ModificationDialog,
     Properties,
@@ -109,6 +110,7 @@ interface VoltageLevelCreationDialogProps {
     studyUuid: string;
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
+    language: GsLang;
     editDataFetchStatus?: string;
     onCreateVoltageLevel?: (data: VoltageLevelCreationInfo) => Promise<string>;
     isAttachmentPointModification?: boolean;
@@ -270,6 +272,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    language,
     editDataFetchStatus,
     onCreateVoltageLevel = createVoltageLevel,
     isAttachmentPointModification = false,
@@ -487,7 +490,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods} language={language}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
