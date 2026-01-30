@@ -371,23 +371,23 @@ export interface Variations {
     filters: VariationFilter[];
 }
 
-export interface VSCCreationConverterStation {
-    type: string;
+export interface ConverterStationCreationInfos {
     equipmentId: string;
     equipmentName: string | null;
-    lossFactor: number;
-    voltageSetpoint: number | null;
+    lossFactor: number | null;
     reactivePowerSetpoint: number | null;
+    voltageRegulationOn?: boolean;
+    voltageSetpoint: number | null;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    connectionName: string | null;
     connectionDirection: string | null;
-    connectionPosition: string | null;
-    voltageRegulationOn: boolean;
+    connectionName?: string | null;
+    connectionPosition?: number | null;
+    terminalConnected?: boolean | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
 }
 
 export interface LccShuntCompensatorInfos {
@@ -713,26 +713,24 @@ export interface DeleteAttachingLineInfo {
     replacingLine1Name: string | null;
 }
 
-export interface VSCCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name: string | null;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    operatorActivePowerLimitSide1: any;
-    operatorActivePowerLimitSide2: any;
+export interface VscCreationInfos {
+    type: ModificationType;
+    uuid?: string;
+    equipmentId: string;
+    equipmentName: string | null;
+    nominalV: number | null;
+    r: number | null;
+    maxP: number | null;
+    operatorActivePowerLimitFromSide1ToSide2: number | null;
+    operatorActivePowerLimitFromSide2ToSide1: number | null;
     convertersMode: string;
-    activePowerSetpoint: number;
-    angleDroopActivePowerControl: boolean;
+    activePowerSetpoint: number | null;
+    angleDroopActivePowerControl: boolean | null;
     p0: number | null;
     droop: number | null;
-    converterStation1: VSCCreationConverterStation;
-    converterStation2: VSCCreationConverterStation;
+    converterStation1: ConverterStationCreationInfos;
+    converterStation2: ConverterStationCreationInfos;
     properties: Property[] | null;
-    isUpdate: boolean;
-    modificationUuid: UUID;
 }
 
 export interface LCCCreationInfo {

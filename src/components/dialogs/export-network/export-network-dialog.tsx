@@ -4,16 +4,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CustomMuiDialog,
+    DescriptionField,
+    ElementType,
     fetchDirectoryElementPath,
-    Parameter,
     PARAM_DEVELOPER_MODE,
+    Parameter,
     SelectInput,
     snackWithFallback,
-    TextInput,
+    UniqueNameInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../../services/study';
@@ -22,43 +25,30 @@ import type { UUID } from 'node:crypto';
 import { useParameterState } from '../parameters/use-parameters-state';
 import { AppState } from '../../../redux/reducer';
 
-import { EXPORT_FORMAT, EXPORT_PARAMETERS, FILE_NAME } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import {
+    DESCRIPTION,
+    DIRECTORY_ITEM,
+    DIRECTORY_ITEM_ID,
+    EXPORT_DESTINATION,
+    EXPORT_FORMAT,
+    EXPORT_PARAMETERS,
+    FILE_NAME,
+} from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FlatParametersInput } from './flat-parameters-input';
-
-const STRING_LIST = 'STRING_LIST';
-const emptyObj = {};
-
-const schema = yup.object().shape({
-    [FILE_NAME]: yup.string().required(),
-    [EXPORT_FORMAT]: yup.string().required('exportStudyErrorMsg'),
-    [EXPORT_PARAMETERS]: yup.object(),
-});
-
-const emptyData = {
-    [FILE_NAME]: '',
-    [EXPORT_FORMAT]: '',
-    [EXPORT_PARAMETERS]: emptyObj,
-};
-
-export type ExportNetworkFormData = yup.InferType<typeof schema>;
-
-// we check if the param is for extension, if it is, we select all possible values by default.
-// the only way for the moment to check if the param is for extension, is by checking his type is name.
-// TODO to be removed when extensions param default value corrected in backend to include all possible values
-function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parameter[] {
-    return parameters.map((parameter) => {
-        if (
-            parameter.type === STRING_LIST &&
-            (parameter.name?.endsWith('included.extensions') || parameter.name?.endsWith('included-extensions'))
-        ) {
-            parameter.defaultValue = parameter.possibleValues;
-        }
-        return parameter;
-    });
-}
+import {
+    emptyData,
+    emptyObj,
+    ExportDestinationType,
+    ExportNetworkFormData,
+    getDefaultValuesForExtensionsParameter,
+    schema,
+} from './export-network-utils';
+import { useIntl } from 'react-intl';
+import { DirectoryItemInput } from '../../utils/rhf-inputs/directory-item-input/directory-item-input';
+import { NetworkExportInfos } from '../../../services/study-types';
+import { DirectoryItemSchema } from '../../utils/rhf-inputs/directory-item-input/directory-item-utils';
 
 /**
  * Dialog to export the network case
@@ -71,7 +61,7 @@ function getDefaultValuesForExtensionsParameter(parameters: Parameter[]): Parame
 interface ExportNetworkDialogProps {
     open: boolean;
     onClose: () => void;
-    onClick: (nodeUuid: UUID, params: Record<string, any>, selectedFormat: string, fileName: string) => void;
+    onClick: (nodeUuid: UUID, params: Record<string, any>, exportInfos: NetworkExportInfos) => void;
     studyUuid: UUID;
     nodeUuid: UUID;
 }
@@ -96,7 +86,20 @@ export function ExportNetworkDialog({
         resolver: yupResolver(schema),
     });
 
-    const { reset, subscribe, setValue, getValues } = methods;
+    const {
+        reset,
+        subscribe,
+        setValue,
+        getValues,
+        watch,
+        formState: { errors },
+    } = methods;
+    const intl = useIntl();
+
+    // due to the use of UniqueNameInput, we need to disable the validate button while the name is being validated
+    const nameError = errors[FILE_NAME];
+    const isValidating = errors.root?.isValidating;
+    const disabledSave = Boolean(nameError || isValidating);
 
     // fetch study name to build the default file name
     useEffect(() => {
@@ -104,10 +107,13 @@ export function ExportNetworkDialog({
             fetchDirectoryElementPath(studyUuid)
                 .then((response) => {
                     const studyName = response[response.length - 1]?.elementName;
-                    reset((formValues) => ({
-                        ...formValues,
-                        [FILE_NAME]: `${studyName}_${nodeName}`,
-                    }));
+                    reset(
+                        (formValues) => ({
+                            ...formValues,
+                            [FILE_NAME]: `${studyName}_${nodeName}`,
+                        }),
+                        { keepDefaultValues: true }
+                    );
                 })
                 .catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'LoadStudyAndParentsInfoError' });
@@ -133,7 +139,14 @@ export function ExportNetworkDialog({
 
     const onSubmit = useCallback(
         (data: ExportNetworkFormData) => {
-            onClick(nodeUuid, data[EXPORT_PARAMETERS], data[EXPORT_FORMAT], data[FILE_NAME]);
+            const exportToGridExplore = data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER;
+            onClick(nodeUuid, data[EXPORT_PARAMETERS], {
+                selectedFormat: data[EXPORT_FORMAT],
+                fileName: data[FILE_NAME],
+                exportToGridExplore: exportToGridExplore,
+                parentDirectoryUuid: exportToGridExplore ? data[DIRECTORY_ITEM]?.[DIRECTORY_ITEM_ID] : undefined,
+                description: data[DESCRIPTION],
+            });
         },
         [nodeUuid, onClick]
     );
@@ -154,12 +167,16 @@ export function ExportNetworkDialog({
         return () => unsubscribe();
     }, [setValue, subscribe, getValues, formatsWithParameters]);
 
+    const exportDestination = watch(EXPORT_DESTINATION);
+    const folderItem = watch(DIRECTORY_ITEM) as DirectoryItemSchema;
+
     return (
         <CustomMuiDialog
             onClose={onClose}
             open={open}
             formSchema={schema}
             formMethods={methods}
+            disabledSave={disabledSave}
             onSave={onSubmit}
             titleId="exportNetwork"
             sx={{
@@ -169,7 +186,43 @@ export function ExportNetworkDialog({
             }}
         >
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1 }}>
-                <TextInput name={FILE_NAME} label="download.fileName" />
+                <UniqueNameInput
+                    name={FILE_NAME}
+                    label="download.fileName"
+                    elementType={ElementType.CASE}
+                    activeDirectory={
+                        exportDestination === ExportDestinationType.GRID_EXPLORE
+                            ? (folderItem?.[DIRECTORY_ITEM_ID] as UUID)
+                            : undefined
+                    }
+                    formProps={{
+                        size: 'small',
+                    }}
+                />
+                <SelectInput
+                    name={EXPORT_DESTINATION}
+                    options={Object.values(ExportDestinationType).map((item) => {
+                        return { id: item, label: item };
+                    })}
+                    size="small"
+                    label="destination"
+                />
+
+                {exportDestination === ExportDestinationType.GRID_EXPLORE && (
+                    <Box>
+                        <DescriptionField />
+                        <DirectoryItemInput
+                            name={DIRECTORY_ITEM}
+                            types={[ElementType.DIRECTORY]}
+                            multiSelect={false}
+                            onlyLeaves={false}
+                            title={intl.formatMessage({
+                                id: 'showSelectDirectoryDialog',
+                            })}
+                        />
+                    </Box>
+                )}
+
                 <SelectInput
                     name={EXPORT_FORMAT}
                     label="exportFormat"

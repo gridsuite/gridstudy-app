@@ -14,9 +14,8 @@ import type { UUID } from 'node:crypto';
 import { useSldDiagram } from '../../../diagrams/sld/use-sld-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
-import { selectPanelMetadata } from '../../../../../redux/slices/workspace-selectors';
+import { selectSldDiagramFields } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
-import { SLDPanelMetadata } from 'components/workspace/types/workspace.types';
 
 interface SubstationPanelContentProps {
     panelId: UUID;
@@ -31,13 +30,11 @@ export const SubstationPanelContent = ({
     currentNodeId,
     currentRootNetworkUuid,
 }: SubstationPanelContentProps) => {
-    const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
-        | SLDPanelMetadata
-        | undefined;
+    const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.SUBSTATION,
-        diagramId: metadata!.diagramId,
+        equipmentId: sldFields?.equipmentId ?? '',
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
@@ -45,7 +42,7 @@ export const SubstationPanelContent = ({
 
     const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
 
-    if (!metadata) {
+    if (!sldFields) {
         return null;
     }
 
@@ -55,7 +52,7 @@ export const SubstationPanelContent = ({
                 <SingleLineDiagramContent
                     diagramParams={{
                         type: DiagramType.SUBSTATION,
-                        substationId: metadata.diagramId,
+                        substationId: sldFields.equipmentId,
                     }}
                     showInSpreadsheet={handleShowInSpreadsheet}
                     studyUuid={studyUuid}

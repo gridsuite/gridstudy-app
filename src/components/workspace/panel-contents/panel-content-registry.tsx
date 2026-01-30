@@ -94,7 +94,7 @@ export const PANEL_CONTENT_REGISTRY: Record<PanelType, PanelRenderer> = {
         />
     ),
 
-    [PanelType.NODE_EDITOR]: () => <NodeEditor />,
+    [PanelType.MODIFICATIONS]: () => <NodeEditor />,
 
     [PanelType.EVENT_SCENARIO]: () => <EventModificationScenarioEditor />,
 };
