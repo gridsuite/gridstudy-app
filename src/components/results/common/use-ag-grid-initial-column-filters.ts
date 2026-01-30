@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback } from 'react';
-import { useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { GridReadyEvent } from 'ag-grid-community';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import type { RootState } from '../../../redux/store';
+import { getComputationResultFilters } from '../../../services/study/study-config';
+import { AppState } from '../../../redux/reducer';
 
 /**
  * A hook to handle the initialization of AG Grid with saved filters.
@@ -24,20 +25,21 @@ export const useAgGridInitialFilters = (
     computationSubType: string,
     onGridReady?: (params: GridReadyEvent) => void
 ) => {
-    const store = useStore<RootState>();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     return useCallback(
         (params: GridReadyEvent) => {
             const { api } = params;
-            const { computationFilters } = store.getState();
-            const filters = computationFilters?.[filterType]?.columnsFilters?.[computationSubType]?.columns;
             if (!api) return;
-            updateAgGridFilters(api, filters);
             api?.sizeColumnsToFit();
+            studyUuid &&
+                getComputationResultFilters(studyUuid, filterType, computationSubType).then((filters) => {
+                    updateAgGridFilters(api, filters);
+                });
             if (onGridReady) {
                 onGridReady(params);
             }
         },
-        [filterType, computationSubType, store, onGridReady]
+        [studyUuid, filterType, computationSubType, onGridReady]
     );
 };
