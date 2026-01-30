@@ -186,5 +186,6 @@ export const FIELDS_PRIORITY_ORDER = [
     '*.phaseTapChangerStatus',
     'measurementRatioTap',
     'measurementPhaseTap',
+    'bus',
     'length(*)',
 ];
