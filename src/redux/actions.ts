@@ -25,7 +25,6 @@ import type NetworkModificationTreeModel from '../components/graph/network-modif
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
-    ComputationFiltersState,
     ComputingStatusParameters,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
@@ -153,7 +152,6 @@ export type AppActions =
     | ResetLogsPaginationAction
     | SetActiveSpreadsheetTabAction
     | SetAddedSpreadsheetTabAction
-    | InitComputationResultFiltersAction
     | UpdateColumnFiltersAction
     | UpdateGlobalFiltersAction;
 
@@ -1130,13 +1128,8 @@ export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>
     [SPREADSHEET_STORE_FIELD]: FilterConfig[];
 };
 
-export const INIT_COMPUTATION_RESULT_FILTERS = 'INIT_COMPUTATION_RESULT_FILTERS';
 export const UPDATE_COLUMN_FILTERS = 'UPDATE_COLUMN_FILTERS';
 export const UPDATE_GLOBAL_FILTERS = 'UPDATE_GLOBAL_FILTERS';
-export interface InitComputationResultFiltersAction {
-    type: typeof INIT_COMPUTATION_RESULT_FILTERS;
-    filters: ComputationFiltersState;
-}
 export type UpdateColumnFiltersAction = {
     type: typeof UPDATE_COLUMN_FILTERS;
     filterType: FilterType;
@@ -1149,9 +1142,6 @@ export type UpdateGlobalFiltersAction = {
     filterType: FilterType;
     globalFilters: GlobalFilter[];
 };
-export function initComputationResultFilters(filters: ComputationFiltersState): InitComputationResultFiltersAction {
-    return { type: INIT_COMPUTATION_RESULT_FILTERS, filters };
-}
 
 export const updateColumnFiltersAction = (
     filterType: FilterType,

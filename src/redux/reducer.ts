@@ -68,9 +68,7 @@ import {
     type FavoriteContingencyListsAction,
     HIGHLIGHT_MODIFICATION,
     HighlightModificationAction,
-    INIT_COMPUTATION_RESULT_FILTERS,
     INIT_TABLE_DEFINITIONS,
-    type InitComputationResultFiltersAction,
     type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
@@ -1821,26 +1819,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_NODE_ALIASES, (state, action: UpdateNodeAliasesAction) => {
         state.nodeAliases = action.nodeAliases;
-    });
-    builder.addCase(INIT_COMPUTATION_RESULT_FILTERS, (state, action: InitComputationResultFiltersAction) => {
-        const filtersState = action.filters;
-        Object.entries(filtersState)
-            .filter(([key]) => key !== 'id')
-            .forEach(([computationTypeKey, filterData]) => {
-                if (!filterData) return;
-                const normalizedColumnsFilters: Record<string, ComputationResultColumnFilter> = {};
-                Object.entries(filterData.columnsFilters ?? {}).forEach(
-                    ([subTypeKey, entry]: [string, ComputationResultColumnFilter]) => {
-                        normalizedColumnsFilters[subTypeKey] = {
-                            columns: entry.columns ?? [],
-                        };
-                    }
-                );
-                state.computationFilters[computationTypeKey] = {
-                    columnsFilters: normalizedColumnsFilters,
-                    globalFilters: filterData.globalFilters ?? [],
-                };
-            });
     });
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
         const { filterType, filterSubType, filters } = action;

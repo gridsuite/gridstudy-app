@@ -16,6 +16,7 @@ import {
     COMMON_APP_NAME,
     fetchConfigParameter,
     fetchConfigParameters,
+    getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
     LAST_SELECTED_DIRECTORY,
@@ -23,10 +24,9 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
-    getComputedLanguage,
-    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -38,13 +38,12 @@ import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
-    initComputationResultFilters,
     initTableDefinitions,
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
-    selectIsDeveloperMode,
     selectFavoriteContingencyLists,
+    selectIsDeveloperMode,
     selectLanguage,
     selectTheme,
     selectUseName,
@@ -53,11 +52,7 @@ import {
     setUpdateNetworkVisualizationParameters,
     updateTableColumns,
 } from '../redux/actions';
-import {
-    getComputationResultFilters,
-    getNetworkVisualizationParameters,
-    getSpreadsheetConfigCollection,
-} from '../services/study/study-config';
+import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
@@ -72,7 +67,6 @@ import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
-import { initComputationResultFiltersState } from './results/computing-result-filters.type.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -330,14 +324,6 @@ const App = () => {
                 resetTableDefinitions(collection);
             });
 
-            const fetchComputationResultFilters = getComputationResultFilters(studyUuid).then(
-                (computationResultFiltersInfos) => {
-                    const computationResultFiltersState =
-                        initComputationResultFiltersState(computationResultFiltersInfos);
-                    dispatch(initComputationResultFilters(computationResultFiltersState));
-                }
-            );
-
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
                     dispatch(setOptionalServices(retrieveOptionalServices(services)));
@@ -356,7 +342,6 @@ const App = () => {
                 fetchAppConfigPromise,
                 fetchOptionalServices,
                 fetchSpreadsheetConfigPromise,
-                fetchComputationResultFilters,
             ])
                 .then(() => {
                     dispatch(setParamsLoaded());

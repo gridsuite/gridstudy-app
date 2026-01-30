@@ -26,10 +26,9 @@ export const updateComputationColumnsFilters = (
     onBeforePersist?.();
     const columnDto = {
         id: colId,
-        name: colId,
         filterDataType: filter.dataType,
         filterType: filter.type,
-        filterValue: filter.value,
+        filterValue: filter?.value ? JSON.stringify(filter.value) : undefined,
         filterTolerance: filter.tolerance,
     };
     updateComputationResultFiltersColumn(studyUuid, filterType, filterSubType, columnDto).then();

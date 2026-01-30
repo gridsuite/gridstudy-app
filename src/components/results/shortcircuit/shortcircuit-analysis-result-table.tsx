@@ -112,7 +112,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     const dispatch = useDispatch();
     const filters = useSelector(
         (state: AppState) =>
-            state.computationFilters?.[FilterType.ShortcircuitAnalysis]?.columnsFilters?.[computationSubType].columns
+            state.computationFilters?.[FilterType.ShortcircuitAnalysis]?.columnsFilters?.[computationSubType]?.columns
     );
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {

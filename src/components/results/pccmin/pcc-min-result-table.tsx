@@ -42,7 +42,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const filters = useSelector(
-        (state: AppState) => state.computationFilters?.[FilterType.PccMin]?.columnsFilters?.[PCCMIN_RESULT].columns
+        (state: AppState) => state.computationFilters?.[FilterType.PccMin]?.columnsFilters?.[PCCMIN_RESULT]?.columns
     );
     const gridRef = useRef<AgGridReact>(null);
     const dispatch = useDispatch();
