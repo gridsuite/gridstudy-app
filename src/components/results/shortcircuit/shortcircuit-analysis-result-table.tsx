@@ -30,7 +30,6 @@ import {
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { openSLD } from '../../../redux/slices/workspace-slice';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import {
@@ -48,6 +47,7 @@ import {
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from '../../workspace/types/workspace.types';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
@@ -109,6 +109,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 }) => {
     const intl = useIntl();
     const theme = useTheme();
+    const { openSLD } = useWorkspacePanelActions();
+
     const dispatch = useDispatch();
     const filters = useSelector(
         (state: AppState) =>
@@ -118,7 +120,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         (props: ICellRendererParams) => {
             const { value } = props || {};
             const onClick = () => {
-                dispatch(openSLD({ id: value, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                openSLD({ equipmentId: value, panelType: PanelType.SLD_VOLTAGE_LEVEL });
             };
             if (value) {
                 return (
@@ -128,7 +130,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 );
             }
         },
-        [dispatch]
+        [openSLD]
     );
 
     const getEnumLabel = useCallback(

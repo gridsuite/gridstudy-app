@@ -19,11 +19,11 @@ import {
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { openSLD } from '../../../redux/slices/workspace-slice';
+import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from '../../workspace/types/workspace.types';
 
 export interface SecurityAnalysisFilterEnumsType {
@@ -46,7 +46,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-    const dispatch = useDispatch();
+    const { openSLD } = useWorkspacePanelActions();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -86,16 +86,16 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                         getBranchSide(side) ?? BranchSide.ONE
                     )
                         .then((voltageLevelId) => {
-                            if (!voltageLevelId) {
+                            if (voltageLevelId) {
+                                vlId = voltageLevelId;
+                            } else {
                                 // if we didnt find a line or transformer, it's a voltage level
                                 vlId = subjectId;
-                            } else {
-                                vlId = voltageLevelId;
                             }
                         })
                         .finally(() => {
                             if (vlId) {
-                                dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                                openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
                                 return;
                             }
                             console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);

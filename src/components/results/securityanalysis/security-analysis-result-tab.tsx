@@ -6,7 +6,6 @@
  */
 
 import {
-    ChangeEvent,
     FunctionComponent,
     SyntheticEvent,
     useCallback,
@@ -19,15 +18,18 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AppState } from '../../../redux/reducer';
 import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
-import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
+import {
+    downloadSecurityAnalysisResultZippedCsv,
+    fetchSecurityAnalysisResult,
+} from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType, type MuiStyles, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
+import { ComputingType, GsLangUser, type MuiStyles, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { QueryParamsType, SecurityAnalysisTabProps } from './security-analysis.type';
+import { SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
 import {
     convertFilterValues,
     getStoreFields,
@@ -53,6 +55,7 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
@@ -146,53 +149,43 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
+    const queryParams: SecurityAnalysisQueryParams = useMemo(() => {
+        const params: SecurityAnalysisQueryParams = {
+            resultType,
+        };
+        if (tabIndex === NMK_RESULTS_TAB_INDEX) {
+            params['page'] = page;
+            params['size'] = rowsPerPage as number;
+        }
+
+        if (sortConfig?.length) {
+            const columnToFieldMapping = mappingColumnToField(resultType);
+            params['sort'] = sortConfig.map((sort) => ({
+                ...sort,
+                colId: columnToFieldMapping[sort.colId],
+            }));
+        }
+
+        if (filters) {
+            const updatedFilters = convertFilterValues(intl, filters);
+            const columnToFieldMapping = mappingColumnToField(resultType);
+            params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
+        }
+        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
+        if (globalFilters) {
+            params['globalFilters'] = globalFilters;
+        }
+        return params;
+    }, [resultType, tabIndex, sortConfig, filters, globalFiltersFromState, page, rowsPerPage, intl]);
+
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
             if (tabIndex === LOGS_TAB_INDEX) {
                 return Promise.resolve();
             }
-
-            const queryParams: QueryParamsType = {
-                resultType,
-            };
-
-            if (tabIndex === NMK_RESULTS_TAB_INDEX) {
-                queryParams['page'] = page;
-                queryParams['size'] = rowsPerPage as number;
-            }
-
-            if (sortConfig?.length) {
-                const columnToFieldMapping = mappingColumnToField(resultType);
-                queryParams['sort'] = sortConfig.map((sort) => ({
-                    ...sort,
-                    colId: columnToFieldMapping[sort.colId],
-                }));
-            }
-
-            if (filters) {
-                const updatedFilters = convertFilterValues(intl, filters);
-                const columnToFieldMapping = mappingColumnToField(resultType);
-                queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
-            }
-            const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
-            if (globalFilters) {
-                queryParams['globalFilters'] = globalFilters;
-            }
-
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
-
-        [
-            tabIndex,
-            resultType,
-            sortConfig,
-            filters,
-            globalFiltersFromState,
-            currentRootNetworkUuid,
-            page,
-            rowsPerPage,
-            intl,
-        ]
+        [tabIndex, queryParams, currentRootNetworkUuid]
     );
 
     const {
@@ -236,7 +229,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     );
 
     const handleChangeRowsPerPage = useCallback(
-        (event: ChangeEvent<{ value: string }>) => {
+        (event: React.ChangeEvent<{ value: string }>) => {
             const newRowsPerPage = parseInt(event.target.value, 10);
             dispatchPagination({ page: 0, rowsPerPage: newRowsPerPage });
         },
@@ -259,6 +252,25 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex, goToFirstPage);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
+    const downloadZipResult = useCallback(
+        (
+            studyUuid: UUID,
+            nodeUuid: UUID,
+            rootNetworkUuid: UUID,
+            enumValueTranslations: Record<string, string>,
+            language: GsLangUser
+        ) =>
+            downloadSecurityAnalysisResultZippedCsv(
+                studyUuid,
+                nodeUuid,
+                rootNetworkUuid,
+                queryParams,
+                csvHeaders,
+                enumValueTranslations,
+                language
+            ),
+        [csvHeaders, queryParams]
+    );
 
     const isExportButtonDisabled =
         // results not ready yet
@@ -322,8 +334,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             rootNetworkUuid={currentRootNetworkUuid}
-                            csvHeaders={csvHeaders}
                             resultType={resultType}
+                            downloadZipResult={downloadZipResult}
                             disabled={isExportButtonDisabled}
                         />
                     )}

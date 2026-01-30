@@ -8,7 +8,7 @@
 import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, Button, LinearProgress } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, OverflowableText } from '@gridsuite/commons-ui';
@@ -21,8 +21,8 @@ import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 import { ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
-import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
@@ -45,7 +45,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         (state: AppState) => state.computationFilters?.[FilterType.PccMin]?.columnsFilters?.[PCCMIN_RESULT]?.columns
     );
     const gridRef = useRef<AgGridReact>(null);
-    const dispatch = useDispatch();
+    const { openSLD } = useWorkspacePanelActions();
 
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
@@ -53,7 +53,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
             const onClick = () => {
                 const vlId = node?.data?.voltageLevelId;
                 if (vlId) {
-                    dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                    openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
                 }
             };
             if (value) {
@@ -64,7 +64,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
                 );
             }
         },
-        [dispatch]
+        [openSLD]
     );
 
     const columns = useMemo(
