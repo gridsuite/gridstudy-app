@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ICellRendererParams } from 'ag-grid-community';
-import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import {
+    DescriptionModificationDialog,
+    EditNoteIcon,
+    MuiStyles,
+    NetworkModificationMetadata,
+} from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
@@ -14,6 +19,12 @@ import { AppState } from '../../../../redux/reducer';
 import IconButton from '@mui/material/IconButton';
 import type { UUID } from 'node:crypto';
 import { setModificationMetadata } from '../../../../services/study/network-modifications';
+
+const styles = {
+    coloredButton: (theme) => ({
+        color: theme.palette.text.primary,
+    }),
+} as const satisfies MuiStyles;
 
 export interface DescriptionRendererProps extends ICellRendererParams<NetworkModificationMetadata> {
     hoveredRowIndex: number;
@@ -68,9 +79,9 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
             )}
             <Tooltip title={description} arrow placement="right">
                 <IconButton
-                    color="primary"
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
+                    sx={styles.coloredButton}
                 >
                     <EditNoteIcon empty={empty} visibility={hoveredRowIndex === node.rowIndex ? 'visible' : 'hidden'} />
                 </IconButton>

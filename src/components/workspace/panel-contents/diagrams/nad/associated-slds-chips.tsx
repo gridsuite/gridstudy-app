@@ -7,14 +7,17 @@
 
 import { memo, useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
-import { Box, Chip, Button, ButtonGroup, IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
+import { Box, Chip, ButtonGroup, IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import {
     Close as CloseIcon,
     GridView as GridViewIcon,
     Layers as CascadeIcon,
     Add as AddIcon,
+    DeleteSweep as DeleteSweepIcon,
+    UnfoldMore as UnfoldMoreIcon,
+    UnfoldLess as UnfoldLessIcon,
 } from '@mui/icons-material';
-import { useIntl } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
 import { selectAssociatedPanels } from '../../../../../redux/slices/workspace-selectors';
@@ -47,13 +50,6 @@ const styles = {
         zIndex: 1000,
         minHeight: '40px',
     }),
-    actionButton: {
-        fontSize: '0.7rem',
-        minWidth: 'auto',
-        padding: '2px 8px',
-        textTransform: 'none',
-        flexShrink: 0,
-    },
     chipsScrollContainer: {
         display: 'flex',
         alignItems: 'center',
@@ -89,13 +85,6 @@ const styles = {
         height: theme.spacing(3),
         padding: 0,
     }),
-    removeAllButton: {
-        fontSize: '0.7rem',
-        minWidth: 'auto',
-        padding: '2px 8px',
-        textTransform: 'none',
-        flexShrink: 0,
-    },
     menu: {
         '& .MuiPaper-root': {
             p: 0.5,
@@ -231,9 +220,11 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     return (
         <Box sx={styles.container}>
             {onHideAll && (
-                <Button variant="text" size="small" onClick={onHideAll} sx={styles.actionButton}>
-                    {intl.formatMessage({ id: visibleCount > 0 ? 'hideAll' : 'showAll' })}
-                </Button>
+                <Tooltip title={<FormattedMessage id={visibleCount > 0 ? 'hideAll' : 'showAll'} />}>
+                    <IconButton size="small" onClick={onHideAll}>
+                        {visibleCount > 0 ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+                    </IconButton>
+                </Tooltip>
             )}
 
             <Box sx={styles.chipsScrollContainer} ref={containerRef}>
@@ -286,10 +277,12 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
                 </ButtonGroup>
             )}
 
-            {panelDetails.length > 1 && (
-                <Button variant="text" color="error" size="small" onClick={handleRemoveAll} sx={styles.removeAllButton}>
-                    {intl.formatMessage({ id: 'removeAll' })}
-                </Button>
+            {panelDetails.length > 0 && (
+                <Tooltip title={<FormattedMessage id="removeAll" />}>
+                    <IconButton color="error" size="small" onClick={handleRemoveAll}>
+                        <DeleteSweepIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             )}
 
             {showRemoveAllConfirmation && (
