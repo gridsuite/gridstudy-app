@@ -81,6 +81,7 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
 
     const submitButton = (
         <SubmitButton
+            data-testid="ValidateButton"
             onClick={handleSubmit(handleValidate, handleValidationError)}
             variant="outlined"
             disabled={disabledSave}
