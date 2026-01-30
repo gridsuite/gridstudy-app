@@ -6,6 +6,7 @@
  */
 import {
     NotificationsUrlKeys,
+    parseError,
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
@@ -28,17 +29,20 @@ export default function useExportNotification() {
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             if (isExportNetworkNotification(eventData)) {
-                const { userId: userIdNotif, exportUuid, exportToGridExplore, error } = eventData.headers;
+                const { userId: userIdNotif, exportUuid, exportToGridExplore, fileName, error } = eventData.headers;
                 const exportIdentifierNotif = buildExportIdentifier(exportUuid);
                 const isSubscribed = isExportSubscribed(exportIdentifierNotif);
                 if (isSubscribed && userIdNotif === userId) {
                     unsetExportSubscription(exportIdentifierNotif);
                     if (error) {
-                        snackWithFallback(snackError, error, { headerId: 'export.message.failed' });
+                        snackWithFallback(snackError, parseError(error), { headerId: 'export.message.failed' });
                     } else {
                         exportToGridExplore
                             ? snackSuccess({
-                                  messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: '' }),
+                                  messageTxt: intl.formatMessage(
+                                      { id: 'export.message.succeeded' },
+                                      { fileName: fileName }
+                                  ),
                                   persist: true,
                               })
                             : downloadExportNetworkFile(exportUuid);

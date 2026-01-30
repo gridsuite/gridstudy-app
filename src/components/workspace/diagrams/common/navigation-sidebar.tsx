@@ -5,7 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Typography, List, ListItemButton, ListItemIcon, ListItemText, useTheme, Theme } from '@mui/material';
+import {
+    Box,
+    Typography,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    useTheme,
+    Theme,
+    IconButton,
+} from '@mui/material';
 import { History as HistoryIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { memo } from 'react';
 import { useIntl } from 'react-intl';
@@ -57,12 +67,18 @@ const styles = {
                 pointerEvents: 'none',
             }),
     }),
-    header: (theme: Theme, hasHistory: boolean) => ({
+    headerContainer: {
+        p: 0.5,
+        pointerEvents: 'auto',
+    },
+    iconButton: {
+        p: 0.5,
+    },
+    headerExpanded: (theme: Theme, hasHistory: boolean) => ({
         display: 'flex',
         alignItems: 'center',
-        p: 1,
+        p: 0.5,
         cursor: hasHistory ? 'pointer' : 'default',
-        pointerEvents: 'auto',
         '&:hover': {
             backgroundColor: hasHistory ? theme.palette.action.hover : 'transparent',
         },
@@ -93,12 +109,26 @@ export const NavigationSidebar = memo(function NavigationSidebar({
     return (
         <Box sx={styles.sidebar(theme, isCollapsed, isAbsolutePositioned)}>
             {/* Header */}
-            <Box onClick={hasHistory ? onToggleCollapse : undefined} sx={styles.header(theme, hasHistory)}>
-                <HistoryIcon sx={styles.icon(theme, hasHistory)} />
-                {!isCollapsed && (
-                    <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
-                        {intl.formatMessage({ id: 'history' })}
-                    </Typography>
+            <Box sx={styles.headerContainer}>
+                {isCollapsed ? (
+                    <IconButton
+                        onClick={hasHistory ? onToggleCollapse : undefined}
+                        disabled={!hasHistory}
+                        size="small"
+                        sx={styles.iconButton}
+                    >
+                        <HistoryIcon sx={styles.icon(theme, hasHistory)} fontSize="small" />
+                    </IconButton>
+                ) : (
+                    <Box
+                        onClick={hasHistory ? onToggleCollapse : undefined}
+                        sx={styles.headerExpanded(theme, hasHistory)}
+                    >
+                        <HistoryIcon sx={styles.icon(theme, hasHistory)} fontSize="small" />
+                        <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
+                            {intl.formatMessage({ id: 'history' })}
+                        </Typography>
+                    </Box>
                 )}
             </Box>
 
