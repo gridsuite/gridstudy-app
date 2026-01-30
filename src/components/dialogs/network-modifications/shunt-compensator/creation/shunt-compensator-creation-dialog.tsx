@@ -185,7 +185,7 @@ export default function ShuntCompensatorCreationDialog({
             const shuntCompensatorCreationInfos = {
                 type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
                 equipmentId: shuntCompensator[EQUIPMENT_ID],
-                equipmentName: sanitizeString(shuntCompensator[EQUIPMENT_NAME]) ?? null,
+                equipmentName: sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
                 maxSusceptance:
                     shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
                         ? (shuntCompensator[MAX_SUSCEPTANCE] ?? null)

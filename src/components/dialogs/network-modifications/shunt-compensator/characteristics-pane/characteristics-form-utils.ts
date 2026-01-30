@@ -125,9 +125,10 @@ export const getCharacteristicsFormData = ({
     maximumSectionCount?: number | null;
 }) => {
     return {
-        [CHARACTERISTICS_CHOICE]: maxSusceptance
-            ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-            : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+        [CHARACTERISTICS_CHOICE]:
+            maxSusceptance !== null
+                ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+                : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [MAX_SUSCEPTANCE]: maxSusceptance,
         [SHUNT_COMPENSATOR_TYPE]: shuntCompensatorType,
         [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
