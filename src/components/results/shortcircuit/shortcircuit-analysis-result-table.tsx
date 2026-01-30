@@ -51,7 +51,7 @@ import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { PanelType } from '../../workspace/types/workspace.types';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
-import { useAgGridInitialFilters } from '../common/use-ag-grid-initial-filters';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -383,7 +383,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         []
     );
 
-    const onGridReady = useAgGridInitialFilters(
+    const onGridReady = useAgGridInitialColumnFilters(
         FilterType.ShortcircuitAnalysis,
         computationSubType,
         () => onGridColumnsChanged

@@ -33,7 +33,7 @@ import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -68,7 +68,7 @@ function PagedSensitivityAnalysisResult({
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
-    const { filters } = useFilterSelector(FilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { filters } = useComputationColumnFilters(FilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SensitivityAnalysis,
         mappingTabs(sensiKind, nOrNkIndex) as SensitivityAnalysisTab

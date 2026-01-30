@@ -33,7 +33,7 @@ import {
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
-import { useAgGridInitialFilters } from '../common/use-ag-grid-initial-filters';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
@@ -236,7 +236,7 @@ function SensitivityAnalysisResult({
         [setIsCsvButtonDisabled]
     );
 
-    const onGridReady = useAgGridInitialFilters(FilterType.SensitivityAnalysis, computationSubType, ({ api }) =>
+    const onGridReady = useAgGridInitialColumnFilters(FilterType.SensitivityAnalysis, computationSubType, ({ api }) =>
         setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 

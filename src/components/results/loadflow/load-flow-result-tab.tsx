@@ -18,12 +18,12 @@ import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import {
+    componentColumnsDefinition,
     convertFilterValues,
     countryAdequaciesColumnsDefinition,
     exchangesColumnsDefinition,
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
     loadFlowCurrentViolationsColumnsDefinition,
-    componentColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
     makeData,
     mappingFields,
@@ -36,7 +36,6 @@ import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@grids
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
@@ -56,6 +55,7 @@ import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-ac
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
 
 const styles = {
     flexWrapper: {
@@ -89,7 +89,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
 
-    const { filters } = useFilterSelector(FilterType.Loadflow, mappingTabs(tabIndex));
+    const { filters } = useComputationColumnFilters(FilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);

@@ -25,7 +25,7 @@ import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
-import { useAgGridInitialFilters } from '../common/use-ag-grid-initial-filters';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -101,7 +101,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [setIsCsvButtonDisabled]
     );
 
-    const onGridReady = useAgGridInitialFilters(FilterType.PccMin, PCCMIN_RESULT, ({ api }) =>
+    const onGridReady = useAgGridInitialColumnFilters(FilterType.PccMin, PCCMIN_RESULT, ({ api }) =>
         setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 

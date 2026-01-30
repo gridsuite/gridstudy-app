@@ -54,8 +54,8 @@ import { useGlobalFilterOptions } from '../common/global-filter/use-global-filte
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -131,7 +131,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     );
     const { page, rowsPerPage } = pagination;
 
-    const { filters } = useFilterSelector(FilterType.SecurityAnalysis, getStoreFields(tabIndex));
+    const { filters } = useComputationColumnFilters(FilterType.SecurityAnalysis, getStoreFields(tabIndex));
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
         AgGridFilterType.SecurityAnalysis
     );

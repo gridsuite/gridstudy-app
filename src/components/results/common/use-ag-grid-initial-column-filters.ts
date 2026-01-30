@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useStore } from 'react-redux';
 import { GridReadyEvent } from 'ag-grid-community';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { getComputationResultFilters } from '../../../services/study/study-config';
-import { AppState } from '../../../redux/reducer';
+import type { RootState } from '../../../redux/store';
 
 /**
  * A hook to handle the initialization of AG Grid with saved filters.
@@ -20,26 +19,25 @@ import { AppState } from '../../../redux/reducer';
  * @param computationSubType The subtype of computation (e.g., ONE_BUS, ALL_BUSES)
  * @param onGridReady Optional callback to be called at the end of onGridReady
  */
-export const useAgGridInitialFilters = (
+export const useAgGridInitialColumnFilters = (
     filterType: FilterType,
     computationSubType: string,
     onGridReady?: (params: GridReadyEvent) => void
 ) => {
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const store = useStore<RootState>();
 
     return useCallback(
         (params: GridReadyEvent) => {
             const { api } = params;
+            const { computationFilters } = store.getState();
+            const filters = computationFilters?.[filterType]?.columnsFilters?.[computationSubType]?.columns;
             if (!api) return;
+            updateAgGridFilters(api, filters);
             api?.sizeColumnsToFit();
-            studyUuid &&
-                getComputationResultFilters(studyUuid, filterType, computationSubType).then((filters) => {
-                    updateAgGridFilters(api, filters);
-                });
             if (onGridReady) {
                 onGridReady(params);
             }
         },
-        [studyUuid, filterType, computationSubType, onGridReady]
+        [filterType, computationSubType, store, onGridReady]
     );
 };

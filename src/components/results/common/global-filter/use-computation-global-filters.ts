@@ -8,25 +8,34 @@ import { FilterType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { GlobalFilter } from './global-filter-types';
-import { useCallback } from 'react';
-import { updateComputationResultFilters } from '../../../../services/study/study-config';
+import { useCallback, useEffect } from 'react';
+import {
+    getComputationResultGlobalFilters,
+    updateComputationResultFilters,
+} from '../../../../services/study/study-config';
 import { updateGlobalFiltersAction } from '../../../../redux/actions';
 
 const EMPTY_ARRAY: GlobalFilter[] = [];
 export function useComputationGlobalFilters(filterType: FilterType) {
     const dispatch = useDispatch();
-    const globalFiltersFromState = useSelector<AppState, GlobalFilter[]>(
-        (state) => state.computationFilters?.[filterType]?.globalFilters ?? EMPTY_ARRAY
-    );
-    const studyUuid = useSelector((state: any) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    useEffect(() => {
+        if (!studyUuid) return;
+        getComputationResultGlobalFilters(studyUuid, filterType).then((globalFilters: GlobalFilter[]) => {
+            dispatch(updateGlobalFiltersAction(filterType, globalFilters));
+        });
+    }, [dispatch, studyUuid, filterType]);
     const updateGlobalFilters = useCallback(
         (rawGlobalFilters: GlobalFilter[]) => {
             dispatch(updateGlobalFiltersAction(filterType, rawGlobalFilters));
+            if (!studyUuid) return;
             updateComputationResultFilters(studyUuid, filterType, rawGlobalFilters).then();
         },
         [dispatch, filterType, studyUuid]
     );
-
+    const globalFiltersFromState = useSelector<AppState, GlobalFilter[]>(
+        (state) => state.computationFilters?.[filterType]?.globalFilters ?? EMPTY_ARRAY
+    );
     return {
         globalFiltersFromState,
         updateGlobalFilters,

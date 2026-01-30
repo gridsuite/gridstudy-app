@@ -228,9 +228,20 @@ export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModel
     });
 }
 
-export function getComputationResultFilters(studyUuid: UUID): Promise<any> {
-    console.info('get computing result config collection');
-    const url = getStudyUrl(studyUuid) + '/computation-result-filters';
+export function getComputationResultColumnFilters(
+    studyUuid: UUID,
+    computationType: string,
+    computationSubType: string
+): Promise<any> {
+    console.info('get computation result column filters');
+    const url = getStudyUrl(studyUuid) + '/computation-result-filters/' + computationType + '/' + computationSubType;
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function getComputationResultGlobalFilters(studyUuid: UUID, computationType: string): Promise<any> {
+    console.info('get computation result global filters');
+    const url = getStudyUrl(studyUuid) + '/computation-result-filters/' + computationType;
     console.debug(url);
     return backendFetchJson(url);
 }

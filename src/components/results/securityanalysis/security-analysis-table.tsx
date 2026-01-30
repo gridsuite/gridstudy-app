@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { FilterType } from '../../../types/custom-aggrid-types';
-import { useAgGridInitialFilters } from '../common/use-ag-grid-initial-filters';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
     rows,
@@ -35,7 +35,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
         securityAnalysisStatus,
         !isLoadingResult
     );
-    const onGridReady = useAgGridInitialFilters(FilterType.SecurityAnalysis, computationSubType);
+    const onGridReady = useAgGridInitialColumnFilters(FilterType.SecurityAnalysis, computationSubType);
 
     const defaultColDef = useMemo(
         () => ({

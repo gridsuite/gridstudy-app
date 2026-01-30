@@ -14,7 +14,7 @@ import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
 import { FilterType as AgGridFilterType } from '../../types/custom-aggrid-types';
-import { useAgGridInitialFilters } from '../results/common/use-ag-grid-initial-filters';
+import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
 
 const styles = {
     gridContainer: {
@@ -66,7 +66,7 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
             params.api.sizeColumnsToFit();
         }
     }, []);
-    const onGridReady = useAgGridInitialFilters(computationType, computationSubType);
+    const onGridReady = useAgGridInitialColumnFilters(computationType, computationSubType);
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>

@@ -4,40 +4,45 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterType } from '../../../../types/custom-aggrid-types';
+import { FilterConfig, FilterType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { GlobalFilter } from './global-filter-types';
-import { useCallback, useEffect } from 'react';
-import {
-    getComputationResultGlobalFilters,
-    updateComputationResultFilters,
-} from '../../../../services/study/study-config';
-import { updateGlobalFiltersAction } from '../../../../redux/actions';
+import { useEffect } from 'react';
+import { getComputationResultColumnFilters } from '../../../../services/study/study-config';
+import { updateColumnFiltersAction } from '../../../../redux/actions';
 
+type ComputationResultColumnFilterInfos = {
+    id: string;
+    columnFilterInfos: any;
+};
 const EMPTY_ARRAY: GlobalFilter[] = [];
-export function useComputationGlobalFilters(filterType: FilterType) {
+export function useComputationColumnFilters(filterType: FilterType, computationSubType: string) {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     useEffect(() => {
-        if (!studyUuid) return;
-        getComputationResultGlobalFilters(studyUuid, filterType).then((globalFilters: GlobalFilter[]) => {
-            dispatch(updateGlobalFiltersAction(filterType, globalFilters));
-        });
-    }, [dispatch, studyUuid, filterType]);
-    const updateGlobalFilters = useCallback(
-        (rawGlobalFilters: GlobalFilter[]) => {
-            dispatch(updateGlobalFiltersAction(filterType, rawGlobalFilters));
-            if (!studyUuid) return;
-            updateComputationResultFilters(studyUuid, filterType, rawGlobalFilters).then();
-        },
-        [dispatch, filterType, studyUuid]
-    );
-    const globalFiltersFromState = useSelector<AppState, GlobalFilter[]>(
-        (state) => state.computationFilters?.[filterType]?.globalFilters ?? EMPTY_ARRAY
+        studyUuid &&
+            getComputationResultColumnFilters(studyUuid, filterType, computationSubType).then(
+                (columnFilterInfos: ComputationResultColumnFilterInfos[]) => {
+                    const filters: FilterConfig[] = columnFilterInfos.flatMap(({ id, columnFilterInfos }) =>
+                        (Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos]).map(
+                            (f): FilterConfig => ({
+                                column: id,
+                                value: f.filterValue,
+                                type: f.filterType,
+                                dataType: f.filterDataType,
+                                tolerance: f.filterTolerance ?? undefined,
+                            })
+                        )
+                    );
+                    dispatch(updateColumnFiltersAction(filterType, computationSubType, filters));
+                }
+            );
+    }, [dispatch, studyUuid, filterType, computationSubType]);
+    const filters = useSelector<AppState, FilterConfig[]>(
+        (state) => state.computationFilters?.[filterType]?.columnsFilters?.[computationSubType]?.columns ?? EMPTY_ARRAY
     );
     return {
-        globalFiltersFromState,
-        updateGlobalFilters,
+        filters,
     };
 }
