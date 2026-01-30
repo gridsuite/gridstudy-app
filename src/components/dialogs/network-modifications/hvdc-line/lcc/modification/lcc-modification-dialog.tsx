@@ -22,6 +22,7 @@ import {
 import yup from '../../../../../utils/yup-config';
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentInfosTypes,
     ExtendedEquipmentType,
     fetchNetworkElementInfos,
@@ -56,7 +57,6 @@ import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selec
 import { LccModificationForm } from './lcc-modification-form';
 import { toModificationOperation } from '../../../../../utils/utils';
 import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';
-import { DeepNullable } from '../../../../../utils/ts-utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { UUID } from 'node:crypto';
 

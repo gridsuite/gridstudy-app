@@ -7,6 +7,7 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     FetchStatus,
     FORM_LOADING_DELAY,
     GsLang,
@@ -56,7 +57,6 @@ import { getNewVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { VoltageLevel } from '../../../utils/equipment-types';
-import { DeepNullable } from '../../../utils/ts-utils';
 import {
     AttachLineInfo,
     ExtendedVoltageLevelCreationInfo,

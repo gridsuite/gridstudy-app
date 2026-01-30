@@ -8,6 +8,7 @@
 import { useCallback, useRef, useState } from 'react';
 import {
     CustomFormProvider,
+    DeepNullable,
     ModificationDialog,
     Option,
     snackWithFallback,
@@ -27,7 +28,6 @@ import { useForm } from 'react-hook-form';
 import { getLineTypeWithLimits } from '../../../services/network-modification';
 import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { DeepNullable } from 'components/utils/ts-utils';
 import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
 
 const formSchema = yup

@@ -13,6 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { createCouplingDevice } from '../../../../../services/study/network-modifications';
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
     FetchStatus,
     FORM_LOADING_DELAY,
@@ -29,7 +30,6 @@ import CreateCouplingDeviceForm from './create-coupling-device-form';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateCouplingDeviceInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { CreateCouplingDeviceDialogSchemaForm } from '../coupling-device-dialog.type';
 
 const emptyFormData = {

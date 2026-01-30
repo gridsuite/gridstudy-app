@@ -25,11 +25,11 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from '../../../../../utils/yup-config';
 import { useForm } from 'react-hook-form';
-import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from '../common/lcc-type';
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentSearchDialog,
     ExtendedEquipmentType,
     FetchStatus,

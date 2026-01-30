@@ -10,7 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
-import { CustomFormProvider, ModificationDialog } from '@gridsuite/commons-ui';
+import { CustomFormProvider, DeepNullable, ModificationDialog } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
 import { SegmentSchema } from './segment-utils';
 import {
@@ -21,7 +21,6 @@ import {
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import { InferType } from 'yup';
-import { DeepNullable } from '../../utils/ts-utils';
 
 const LineTypeSegmentSchema = yup
     .object()

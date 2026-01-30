@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentInfosTypes,
     EquipmentType,
@@ -69,7 +70,6 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { toModificationOperation } from '../../../../utils/utils';
 import {
     getActivePowerControlEmptyFormData,

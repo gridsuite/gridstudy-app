@@ -10,6 +10,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentSearchDialog,
     ExtendedEquipmentType,
@@ -55,7 +56,6 @@ import GridItem from '../../../../commons/grid-item';
 import { VSC_CREATION_TABS } from '../vsc-utils';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { VscCreationInfos } from '../../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../../utils/ts-utils';
 import { VscCreationDialogSchemaForm, VscFormInfos } from '../vsc-dialog.type';
 import {
     getVscHvdcLinePaneEmptyFormData,

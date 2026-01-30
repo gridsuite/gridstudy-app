@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
     FetchStatus,
     FORM_LOADING_DELAY,
@@ -25,7 +26,6 @@ import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateVoltageLevelTopologyDialogSchemaForm } from './create-voltage-level-topology-dialog.type';
 import CreateVoltageLevelTopologyForm from './create-voltage-level-topology-form';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { createVoltageLevelTopology } from '../../../../../services/study/network-modifications';
 import { CreateVoltageLevelTopologyInfos } from '../../../../../services/network-modification-types';

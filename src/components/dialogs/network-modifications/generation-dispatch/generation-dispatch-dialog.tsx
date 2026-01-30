@@ -7,6 +7,7 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     FetchStatus,
     FORM_LOADING_DELAY,
     ModificationDialog,
@@ -36,7 +37,6 @@ import { generationDispatch } from '../../../../services/study/network-modificat
 import { addSelectedFieldToRows } from 'components/utils/utils';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
-import { DeepNullable } from '../../../utils/ts-utils';
 import { GenerationDispatchModificationInfos } from '../../../../services/network-modification-types';
 
 interface GenerationDispatchProps {

@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentInfosTypes,
     EquipmentType,
@@ -94,7 +95,6 @@ import {
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { toModificationOperation } from '../../../../utils/utils';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';

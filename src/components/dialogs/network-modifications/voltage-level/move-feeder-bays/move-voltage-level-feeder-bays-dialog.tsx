@@ -7,6 +7,7 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
     FetchStatus,
     FORM_LOADING_DELAY,
@@ -41,7 +42,6 @@ import {
     MoveVoltageLevelFeederBaysInfos,
 } from '../../../../../services/network-modification-types';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import {

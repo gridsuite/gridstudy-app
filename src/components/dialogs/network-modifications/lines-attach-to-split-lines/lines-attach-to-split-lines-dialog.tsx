@@ -7,6 +7,7 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     FetchStatus,
     FORM_LOADING_DELAY,
     ModificationDialog,
@@ -44,7 +45,6 @@ import { linesAttachToSplitLines } from '../../../../services/study/network-modi
 import LineAttachToSplitLinesIllustration from './lines-attach-to-split-lines-illustration';
 import type { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
-import { DeepNullable } from '../../../utils/ts-utils';
 import { LinesAttachToSplitLinesInfo } from '../../../../services/network-modification-types';
 
 interface LinesAttachToSplitLinesProps {

@@ -11,6 +11,7 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    DeepNullable,
     FetchStatus,
     FieldType,
     FORM_LOADING_DELAY,
@@ -31,7 +32,6 @@ import {
     getDataType,
 } from './assignment/assignment-utils';
 import { Assignment, ModificationByAssignment } from './assignment/assignment.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { useIntl } from 'react-intl';
 
 const emptyFormData = {

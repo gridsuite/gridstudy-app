@@ -11,6 +11,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentSearchDialog,
     EquipmentType,
@@ -84,7 +85,6 @@ import {
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';

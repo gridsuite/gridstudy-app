@@ -9,6 +9,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentSearchDialog,
     EquipmentType,
@@ -43,7 +44,6 @@ import {
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { createLoad } from '../../../../../services/study/network-modifications';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { LoadCreationInfos, LoadCreationSchemaForm } from './load-creation.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import LoadDialogHeader from '../common/load-dialog-header';

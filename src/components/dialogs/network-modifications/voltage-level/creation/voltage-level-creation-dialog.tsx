@@ -11,6 +11,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentSearchDialog,
     EquipmentType,
@@ -73,7 +74,6 @@ import {
     VoltageLevelCreationInfo,
 } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { CreateCouplingDeviceDialogSchemaForm } from '../../coupling-device/coupling-device-dialog.type';
 import { useStudyContext } from '../../../../../hooks/use-study-context';
 

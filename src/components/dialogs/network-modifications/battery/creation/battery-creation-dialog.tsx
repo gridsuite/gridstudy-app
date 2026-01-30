@@ -11,6 +11,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentSearchDialog,
     EquipmentType,
@@ -66,7 +67,6 @@ import {
 } from '../../../reactive-limits/reactive-limits-utils';
 import { createBattery } from '../../../../../services/study/network-modifications';
 import { BatteryCreationDialogSchemaForm, BatteryFormInfos } from '../battery-dialog.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import {
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,

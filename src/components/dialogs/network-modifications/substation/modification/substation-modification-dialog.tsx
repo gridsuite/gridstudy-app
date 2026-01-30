@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentInfosTypes,
     EquipmentType,
     fetchNetworkElementInfos,
@@ -37,7 +38,6 @@ import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { AttributeModification } from 'services/network-modification-types';
 import { useForm } from 'react-hook-form';
-import { DeepNullable } from '../../../../utils/ts-utils';
 
 const formSchema = yup
     .object()

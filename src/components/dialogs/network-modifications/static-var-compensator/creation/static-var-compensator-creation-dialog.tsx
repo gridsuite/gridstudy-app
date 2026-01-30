@@ -9,6 +9,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentSearchDialog,
     EquipmentType,
@@ -85,7 +86,6 @@ import {
     getStandbyAutomatonFormData,
     getStandbyAutomatonFormValidationSchema,
 } from './standby-automaton-form-utils';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 import { useStudyContext } from '../../../../../hooks/use-study-context';
 

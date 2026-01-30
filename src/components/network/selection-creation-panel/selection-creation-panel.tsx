@@ -13,6 +13,7 @@ import {
     EquipmentType,
     fetchDirectoryElementPath,
     Identifiable,
+    Nullable,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -29,7 +30,6 @@ import { useSelector } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
-import { Nullable } from 'components/utils/ts-utils';
 import { AppState } from 'redux/reducer';
 import { SelectionCreationPanelForm } from './selection-creation-panel-form';
 import {

@@ -6,6 +6,7 @@
  */
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
     FetchStatus,
     FORM_LOADING_DELAY,
@@ -40,7 +41,6 @@ import { BusBarSections, CreateVoltageLevelSectionDialogSchemaForm } from './vol
 import { CreateVoltageLevelSectionInfos } from '../../../../../services/network-modification-types';
 import { createVoltageLevelSection } from '../../../../../services/study/network-modifications';
 import { fetchVoltageLevelBusBarSectionsInfos } from '../../../../../services/study/network';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { BusBarSectionsInfos } from '../../../../../services/study/network-map.type';
 
 const getBusBarIndexValue = ({ busbarIndex, allBusbars }: { busbarIndex: string | null; allBusbars: boolean }) => {

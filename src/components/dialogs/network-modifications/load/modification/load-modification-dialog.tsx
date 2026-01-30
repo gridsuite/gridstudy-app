@@ -7,6 +7,7 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentInfosTypes,
     EquipmentType,
@@ -66,7 +67,6 @@ import { LoadModificationInfos, LoadModificationSchemaForm } from './load-modifi
 import LoadDialogHeader from '../common/load-dialog-header';
 import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
-import { DeepNullable } from 'components/utils/ts-utils';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
