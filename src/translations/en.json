@@ -4,7 +4,7 @@
     "debug.header.fileError": "Computation data download failed",
     "export.message.started": "Export {fileName} started",
     "export.message.succeeded": "Export {fileName} succeeded",
-    "export.message.failed": "Export file failed",
+    "export.message.failed": "Node export failed",
 
     "button.delete": "Delete",
     "button.continue": "Continue",
