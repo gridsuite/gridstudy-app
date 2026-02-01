@@ -18,7 +18,7 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import {
     ComputingType,
@@ -111,7 +111,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     const theme = useTheme();
     const { openSLD } = useWorkspacePanelActions();
 
-    const dispatch = useDispatch();
     const filters = useSelector(
         (state: AppState) =>
             state.computationFilters?.[FilterType.ShortcircuitAnalysis]?.columnsFilters?.[computationSubType]?.columns
