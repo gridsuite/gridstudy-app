@@ -10,10 +10,7 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
-    cleanLoadFilterNames,
-    DynamicMarginCalculationParametersFetchReturn,
     DynamicMarginCalculationParametersInfos,
-    enrichLoadFilterNames,
 } from '@gridsuite/commons-ui';
 
 export function startDynamicMarginCalculation(
@@ -77,12 +74,11 @@ export function fetchDynamicMarginCalculationStatus(
 
 export function fetchDynamicMarginCalculationParameters(
     studyUuid: UUID
-): Promise<DynamicMarginCalculationParametersFetchReturn> {
+): Promise<DynamicMarginCalculationParametersInfos> {
     console.info(`Fetching dynamic margin calculation parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/parameters';
     console.debug(url);
-    const parametersPromise: Promise<DynamicMarginCalculationParametersInfos> = backendFetchJson(url);
-    return parametersPromise.then(enrichLoadFilterNames);
+    return backendFetchJson(url);
 }
 
 export function fetchDynamicMarginCalculationProvider(studyUuid: UUID) {
@@ -94,18 +90,17 @@ export function fetchDynamicMarginCalculationProvider(studyUuid: UUID) {
 
 export function updateDynamicMarginCalculationParameters(
     studyUuid: UUID,
-    newParams: DynamicMarginCalculationParametersFetchReturn | null
+    newParams: DynamicMarginCalculationParametersInfos | null
 ): Promise<Response> {
     console.info(`Setting dynamic margin calculation parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/parameters';
     console.debug(url);
-    const newParameters = newParams !== null ? cleanLoadFilterNames(newParams) : newParams;
     return backendFetch(url, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newParameters),
+        body: JSON.stringify(newParams),
     });
 }
