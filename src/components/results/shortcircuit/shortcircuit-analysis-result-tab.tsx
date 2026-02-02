@@ -182,7 +182,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                             csvHeader={csvHeader}
                             analysisType={tabIndex}
                             disabled={isCsvButtonDisabled}
-                            globalFilters={globalFilters}
+                            globalFilter={globalFiltersFromState}
                         />
                     )}
             </Box>
