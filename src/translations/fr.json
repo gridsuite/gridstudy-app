@@ -366,7 +366,7 @@
     "DynamicSecurityAnalysisTabStatus": "Statut",
 
     "startDynamicMarginCalculationError": "Une erreur est survenue lors du lancement du calcul de marge dynamique",
-    "DynamicMarginCalculation": "Calculation de marge dynamique",
+    "DynamicMarginCalculation": "Calcul de marge dynamique",
     "DynamicMarginCalculationRunError": "Une erreur est survenue lors de l'exécution du calcul de marge dynamique",
     "DynamicMarginCalculationTabStatus": "Statut",
 
