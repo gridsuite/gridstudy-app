@@ -26,9 +26,9 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     ComputingStatusParameters,
+    CopiedNetworkModifications,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
-    CopiedNetworkModifications,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
     TableSortConfig,
@@ -59,11 +59,12 @@ import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
-    type SpreadsheetTabDefinition,
     type SpreadsheetOptionalLoadingParameters,
+    type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
+    FilterType,
     LogsPaginationConfig,
     PaginationConfig,
     PccminTab,
@@ -163,7 +164,8 @@ export type AppActions =
     | LogsResultPaginationAction
     | ResetLogsPaginationAction
     | SetActiveSpreadsheetTabAction
-    | SetAddedSpreadsheetTabAction;
+    | SetAddedSpreadsheetTabAction
+    | UpdateGlobalFiltersAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -1583,3 +1585,19 @@ export function updateNodeAliases(nodeAliases: NodeAlias[]): UpdateNodeAliasesAc
         nodeAliases,
     };
 }
+
+export const UPDATE_GLOBAL_FILTERS = 'UPDATE_GLOBAL_FILTERS';
+export type UpdateGlobalFiltersAction = {
+    type: typeof UPDATE_GLOBAL_FILTERS;
+    filterType: FilterType;
+    globalFilters: GlobalFilter[];
+};
+
+export const updateGlobalFiltersAction = (
+    filterType: FilterType,
+    globalFilters: GlobalFilter[]
+): UpdateGlobalFiltersAction => ({
+    type: UPDATE_GLOBAL_FILTERS,
+    filterType,
+    globalFilters,
+});

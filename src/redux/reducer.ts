@@ -239,6 +239,8 @@ import {
     type UseNameAction,
     STORE_NAD_VIEW_BOX,
     StoreNadViewBoxAction,
+    UPDATE_GLOBAL_FILTERS,
+    UpdateGlobalFiltersAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -523,6 +525,17 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
+export type ComputationResultColumnFilter = {
+    columns: FilterConfig[];
+};
+
+export type ComputationFiltersState = {
+    [computationType: string]: {
+        columnsFilters: Record<string, ComputationResultColumnFilter>;
+        globalFilters: GlobalFilter[];
+    };
+};
+
 export type LogsPaginationState = Record<string, LogsPaginationConfig>;
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
@@ -620,6 +633,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     highlightedModificationUuid: UUID | null;
+    computationFilters: ComputationFiltersState;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -797,6 +811,7 @@ const initialState: AppState = {
     })),
     oneBusShortCircuitAnalysisDiagram: null,
     rootNetworkIndexationStatus: RootNetworkIndexationStatus.NOT_INDEXED,
+    computationFilters: {},
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1927,6 +1942,15 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_NODE_ALIASES, (state, action: UpdateNodeAliasesAction) => {
         state.nodeAliases = action.nodeAliases;
+    });
+
+    builder.addCase(UPDATE_GLOBAL_FILTERS, (state, action: UpdateGlobalFiltersAction) => {
+        const { filterType, globalFilters } = action;
+        state.computationFilters[filterType] ??= {
+            columnsFilters: {},
+            globalFilters: [],
+        };
+        state.computationFilters[filterType].globalFilters = globalFilters;
     });
 });
 

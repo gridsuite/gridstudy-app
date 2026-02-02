@@ -47,7 +47,6 @@ import {
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { ICellRendererParams } from 'ag-grid-community';
 import { Button, LinearProgress } from '@mui/material';
@@ -55,6 +54,8 @@ import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 const styles = {
     flexWrapper: {
@@ -91,7 +92,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
@@ -125,13 +126,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     value: limitTypeValues,
                 });
             }
+            const globalFilters = buildValidGlobalFilters(globalFiltersFromState ?? []);
             return fetchLimitViolations(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 sort: sortConfig.map((sort) => ({
                     ...sort,
                     colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
                 })),
                 filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
-                ...(isGlobalFilterParameter(globalFilters)
+                ...(globalFilters
                     ? {
                           globalFilters: {
                               ...globalFilters,
@@ -144,7 +146,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     : {}),
             });
         },
-        [tabIndex, filters, intl, sortConfig, globalFilters]
+        [tabIndex, filters, intl, sortConfig, globalFiltersFromState]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {
@@ -279,9 +281,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <GlobalFilterSelector
-                        onChange={handleGlobalFilterChange}
+                        onChange={updateGlobalFilters}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
+                        preloadedGlobalFilters={globalFiltersFromState}
                         genericFiltersStrictMode={true}
                     />
                 </Box>

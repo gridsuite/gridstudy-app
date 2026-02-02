@@ -9,8 +9,8 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 're
 import { ExportCsvButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import {
-    ShortCircuitCsvExportParams,
     downloadShortCircuitResultZippedCsv,
+    ShortCircuitCsvExportParams,
 } from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
@@ -19,7 +19,7 @@ import { BranchSide } from 'components/utils/constants';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import {
@@ -30,6 +30,7 @@ import {
 } from './shortcircuit-analysis-result-content';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 interface ShortCircuitExportButtonProps {
     studyUuid: UUID;
@@ -38,7 +39,7 @@ interface ShortCircuitExportButtonProps {
     csvHeader: string[];
     analysisType: number;
     disabled?: boolean;
-    globalFilters?: GlobalFilters;
+    globalFilter: GlobalFilter[];
 }
 
 export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButtonProps> = (props) => {
@@ -49,7 +50,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         csvHeader,
         disabled = false,
         analysisType,
-        globalFilters,
+        globalFilter,
     } = props;
     const { snackError } = useSnackMessage();
 
@@ -127,6 +128,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
             language,
             oneBusCase,
         };
+        const globalFilters = buildValidGlobalFilters(globalFilter);
         downloadShortCircuitResultZippedCsv({
             studyUuid,
             currentNodeUuid: nodeUuid,
@@ -157,7 +159,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
-        globalFilters,
+        globalFilter,
         snackError,
     ]);
 

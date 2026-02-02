@@ -89,6 +89,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     status,
     handleGlobalFilterChange,
     globalFilterOptions,
+    globalFiltersFromState,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -399,6 +400,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                             onChange={handleGlobalFilterChange}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode={true}
                         />
                     </Box>

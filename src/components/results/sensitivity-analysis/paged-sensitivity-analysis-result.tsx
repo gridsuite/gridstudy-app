@@ -17,7 +17,7 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useSnackMessage, ComputingType, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
+import { ComputingType, snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -37,8 +37,9 @@ import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -48,7 +49,7 @@ export type PagedSensitivityAnalysisResultProps = {
     sensiKind: SensiKind;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
-    globalFilters?: GlobalFilters;
+    globalFilter: GlobalFilter[];
 };
 
 function PagedSensitivityAnalysisResult({
@@ -59,7 +60,7 @@ function PagedSensitivityAnalysisResult({
     currentRootNetworkUuid,
     setCsvHeaders,
     setIsCsvButtonDisabled,
-    globalFilters,
+    globalFilter,
 }: Readonly<PagedSensitivityAnalysisResultProps>) {
     const intl = useIntl();
 
@@ -169,6 +170,7 @@ function PagedSensitivityAnalysisResult({
             return { ...elem, column: newColumn };
         });
         setIsLoading(true);
+        const globalFilters = buildValidGlobalFilters(globalFilter);
         fetchSensitivityAnalysisResult(
             studyUuid,
             nodeUuid,
@@ -196,7 +198,7 @@ function PagedSensitivityAnalysisResult({
         rowsPerPage,
         page,
         filters,
-        globalFilters,
+        globalFilter,
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
@@ -214,7 +216,7 @@ function PagedSensitivityAnalysisResult({
             fetchFilterOptions();
             debouncedFetchResult();
         }
-    }, [sensiStatus, debouncedFetchResult, fetchFilterOptions, globalFilters]);
+    }, [sensiStatus, debouncedFetchResult, fetchFilterOptions, globalFilter]);
 
     return (
         <>

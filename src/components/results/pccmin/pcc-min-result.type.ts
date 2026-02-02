@@ -6,13 +6,13 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
 import {
     FilterConfig,
+    FilterType as AgGridFilterType,
     numericFilterParams,
     textFilterParams,
-    FilterType as AgGridFilterType,
 } from 'types/custom-aggrid-types';
 import { ColumnContext } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -51,7 +51,7 @@ interface PccMinResults {
     studyUuid: UUID | null;
     currentNodeUuid?: UUID;
     currentRootNetworkUuid?: UUID;
-    globalFilters?: GlobalFilters;
+    globalFilter: GlobalFilter[];
 }
 
 export interface PccMinPagedResults extends PccMinResults {

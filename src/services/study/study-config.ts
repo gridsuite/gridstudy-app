@@ -227,3 +227,24 @@ export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModel
         },
     });
 }
+
+export function getComputationResultGlobalFilters(studyUuid: UUID, computationType: string): Promise<any> {
+    console.info('get computation result global filters');
+    const url = getStudyUrl(studyUuid) + '/computation-result-filters/' + computationType;
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function updateComputationResultFilters(
+    studyUuid: UUID,
+    filterType: string | undefined,
+    filters: GlobalFilter[]
+) {
+    return backendFetchJson(getStudyUrl(studyUuid) + `/computation-result-filters/${filterType}/global-filters`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filters),
+    });
+}

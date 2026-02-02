@@ -11,6 +11,7 @@ import { GlobalFilters } from 'components/results/common/global-filter/global-fi
 import { PccMinPagedResults } from 'components/results/pccmin/pcc-min-result.type';
 import { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
+import { buildValidGlobalFilters } from '../../components/results/common/global-filter/build-valid-global-filters';
 
 export function startPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> {
     console.info(
@@ -54,7 +55,7 @@ export function fetchPccMinPagedResults({
     currentNodeUuid,
     currentRootNetworkUuid,
     selector = {},
-    globalFilters,
+    globalFilter,
 }: PccMinPagedResults) {
     console.info(
         `Fetching pcc min result on '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
@@ -71,6 +72,7 @@ export function fetchPccMinPagedResults({
     if (size) {
         urlSearchParams.append('size', String(size));
     }
+    const globalFilters = buildValidGlobalFilters(globalFilter);
     if (globalFilters && Object.keys(globalFilters).length > 0) {
         urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
     }
