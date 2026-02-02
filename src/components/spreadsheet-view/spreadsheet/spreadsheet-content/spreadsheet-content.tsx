@@ -24,11 +24,13 @@ import { useColumnManagement } from './hooks/use-column-management';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useNodeAliases } from '../../hooks/use-node-aliases';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
-import { openSLD, updatePanelMetadata } from '../../../../redux/slices/workspace-slice';
+import type { RootState } from '../../../../redux/store';
+import { selectPanelTargetEquipment } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
+import { useWorkspacePanelActions } from '../../../workspace/hooks/use-workspace-panel-actions';
 
 const styles = {
     table: (theme) => ({
@@ -54,7 +56,6 @@ interface SpreadsheetContentProps {
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
     disabled: boolean;
-    equipmentId: string | null;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
     active: boolean;
 }
@@ -67,12 +68,13 @@ export const SpreadsheetContent = memo(
         tableDefinition,
         columns,
         disabled,
-        equipmentId,
         registerRowCounterEvents,
         active,
     }: SpreadsheetContentProps) => {
         const [isGridReady, setIsGridReady] = useState(false);
+        const targetEquipment = useSelector((state: RootState) => selectPanelTargetEquipment(state, panelId));
         const { nodeAliases } = useNodeAliases();
+        const { openSLD, clearTargetEquipment } = useWorkspacePanelActions();
         const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
         const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
         const { fetchNodesEquipmentData } = useFetchEquipment();
@@ -102,31 +104,22 @@ export const SpreadsheetContent = memo(
                 equipmentType: tableDefinition?.type,
             });
 
-        const dispatch = useDispatch();
-
         const handleEquipmentScroll = useCallback(() => {
-            if (equipmentId && gridRef.current?.api && isGridReady) {
-                const selectedRow = gridRef.current.api.getRowNode(equipmentId);
+            const targetEquipmentId = targetEquipment?.targetEquipmentId;
+            if (targetEquipmentId && gridRef.current?.api && isGridReady) {
+                const selectedRow = gridRef.current.api.getRowNode(targetEquipmentId);
                 if (selectedRow) {
                     gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
                     selectedRow.setSelected(true, true);
-                    // Clear the metadata after successfully scrolling to equipment
-                    dispatch(
-                        updatePanelMetadata({
-                            panelId,
-                            metadata: {
-                                targetEquipmentId: undefined,
-                                targetEquipmentType: undefined,
-                            },
-                        })
-                    );
+                    // Clear the target equipment after successfully scrolling
+                    clearTargetEquipment(panelId);
                 }
             }
-        }, [equipmentId, gridRef, isGridReady, dispatch, panelId]);
+        }, [targetEquipment, gridRef, isGridReady, clearTargetEquipment, panelId]);
 
         useEffect(() => {
             handleEquipmentScroll();
-        }, [handleEquipmentScroll, equipmentId]);
+        }, [handleEquipmentScroll]);
 
         const onFirstDataRendered = useCallback(() => {
             handleEquipmentScroll();
@@ -206,9 +199,9 @@ export const SpreadsheetContent = memo(
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? PanelType.SLD_SUBSTATION
                         : PanelType.SLD_VOLTAGE_LEVEL;
-                dispatch(openSLD({ id: equipmentId, panelType }));
+                openSLD({ equipmentId: equipmentId, panelType });
             },
-            [dispatch, tableDefinition?.type]
+            [openSLD, tableDefinition?.type]
         );
 
         return (
