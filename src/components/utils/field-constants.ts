@@ -25,6 +25,9 @@ export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
 export const FOLDER_ID = 'folderId';
+export const DIRECTORY_ITEM = 'directoryItem';
+export const DIRECTORY_ITEM_ID = 'directoryItemId';
+export const DIRECTORY_ITEM_FULL_PATH = 'directoryItemFullPath';
 export const DESCRIPTION = 'description';
 export const CASE_NAME = 'caseName';
 export const CASE_ID = 'caseId';
@@ -51,6 +54,7 @@ export const IS_SEPARATOR = 'isSeparator';
 export const FILE_NAME = 'fileName';
 export const EXPORT_FORMAT = 'exportFormat';
 export const EXPORT_PARAMETERS = 'exportParameters';
+export const EXPORT_DESTINATION = 'exportDestination';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';

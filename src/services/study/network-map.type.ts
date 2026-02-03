@@ -40,6 +40,12 @@ export type BranchInfos = Equipment & {
     currentLimits: CurrentLimitsData[];
     selectedOperationalLimitsGroupId1: string;
     selectedOperationalLimitsGroupId2: string;
+    r?: number;
+    x?: number;
+    g1?: number;
+    b1?: number;
+    g2?: number;
+    b2?: number;
 };
 
 export interface CurrentLimitsData {

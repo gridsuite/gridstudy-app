@@ -14,9 +14,10 @@ import {
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
-import { ModificationType } from '@gridsuite/commons-ui';
+import { ModificationType, Option } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
+import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
 export enum OperationType {
     SET = 'SET',
@@ -306,19 +307,25 @@ export interface SubstationModificationInfo {
     properties: Property[] | null;
 }
 
+export enum SwitchKind {
+    BREAKER = 'BREAKER',
+    DISCONNECTOR = 'DISCONNECTOR',
+    LOAD_BREAK_SWITCH = 'LOAD_BREAK_SWITCH',
+}
+
 export interface VoltageLeveInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    voltageLevelId: string;
-    voltageLevelName?: string | null;
+    equipmentId: string;
+    equipmentName?: string;
     substationId?: string | null;
     nominalV?: number | null;
     lowVoltageLimit?: number | null;
     highVoltageLimit?: number | null;
     busbarCount?: number;
     sectionCount?: number;
-    switchKinds?: any[];
-    couplingDevices?: any[];
+    switchKinds?: SwitchKind[];
+    couplingDevices?: CouplingDeviceInfos[];
     isUpdate?: boolean;
     modificationUuid?: UUID;
     properties: Property[] | null;
@@ -334,19 +341,6 @@ export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
 export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
     lowShortCircuitCurrentLimit: number | null;
     highShortCircuitCurrentLimit: number | null;
-}
-
-export interface AttachmentLine {
-    type: string;
-    equipmentId: string;
-    equipmentName: string | null;
-    r: number;
-    x: number;
-    g1: number;
-    b1: number;
-    g2: number;
-    b2: number;
-    currentLimits: CurrentLimits;
 }
 
 type VariationFilter = {
@@ -374,23 +368,23 @@ export interface Variations {
     filters: VariationFilter[];
 }
 
-export interface VSCCreationConverterStation {
-    type: string;
+export interface ConverterStationCreationInfos {
     equipmentId: string;
     equipmentName: string | null;
-    lossFactor: number;
-    voltageSetpoint: number | null;
+    lossFactor: number | null;
     reactivePowerSetpoint: number | null;
+    voltageRegulationOn?: boolean;
+    voltageSetpoint: number | null;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    connectionName: string | null;
     connectionDirection: string | null;
-    connectionPosition: string | null;
-    voltageRegulationOn: boolean;
+    connectionName?: string | null;
+    connectionPosition?: number | null;
+    terminalConnected?: boolean | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
 }
 
 export interface LccShuntCompensatorInfos {
@@ -517,8 +511,8 @@ export interface ShuntCompensatorCreationInfos {
     maxSusceptance: number | null;
     maxQAtNominalV: number | null;
     shuntCompensatorType: string | null;
-    sectionCount: number | null;
-    maximumSectionCount: number | null;
+    sectionCount: number;
+    maximumSectionCount: number;
     voltageLevelId: string | null;
     busOrBusbarSectionId: string | null;
     connectionDirection: string | null;
@@ -528,34 +522,32 @@ export interface ShuntCompensatorCreationInfos {
     properties: Property[] | null;
 }
 
-export interface LineCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
+export interface LineCreationInfos {
+    type: ModificationType;
+    uuid?: string | null;
     equipmentId: string;
     equipmentName: string | null;
-    r: number;
-    x: number;
-    g1: number;
-    b1: number;
-    g2: number;
-    b2: number;
-    voltageLevelId1: string;
-    busOrBusbarSectionId1: string;
-    voltageLevelId2: string;
-    busOrBusbarSectionId2: string;
-    operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroupId1: string;
-    selectedOperationalLimitsGroupId2: string;
-    isUpdate: boolean;
-    modificationUuid: string;
+    r: number | null;
+    x: number | null;
+    g1: number | null;
+    b1: number | null;
+    g2: number | null;
+    b2: number | null;
+    voltageLevelId1: string | null;
+    busOrBusbarSectionId1: string | null;
+    voltageLevelId2: string | null;
+    busOrBusbarSectionId2: string | null;
+    operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
+    selectedOperationalLimitsGroupId1?: string | null;
+    selectedOperationalLimitsGroupId2?: string | null;
     connectionName1: string | null;
     connectionDirection1: string | null;
     connectionName2: string | null;
     connectionDirection2: string | null;
-    connectionPosition1: string | null;
-    connectionPosition2: string | null;
-    connected1: boolean;
-    connected2: boolean;
+    connectionPosition1: number | null;
+    connectionPosition2: number | null;
+    connected1: boolean | null;
+    connected2: boolean | null;
     properties: Property[] | null;
 }
 
@@ -668,19 +660,24 @@ export interface DivideLineInfo {
     newLine2Name: string | null;
 }
 
+export interface ExtendedVoltageLevelCreationInfo extends VoltageLevelCreationInfo {
+    type: ModificationType.VOLTAGE_LEVEL_CREATION;
+    busbarSections?: Option[];
+}
+
 export interface AttachLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    modificationUuid: UUID;
+    uuid?: UUID;
     lineToAttachToId: string;
     percent: number;
     attachmentPointId: string;
     attachmentPointName: string | null;
-    attachmentPointDetailInformation: VoltageLevelCreationInfo;
-    mayNewVoltageLevelInfos: VoltageLevelCreationInfo;
+    attachmentPointDetailInformation: ExtendedVoltageLevelCreationInfo;
+    mayNewVoltageLevelInfos?: ExtendedVoltageLevelCreationInfo;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
-    attachmentLine: AttachmentLine;
+    attachmentLine: LineCreationInfos;
     newLine1Id: string;
     newLine1Name: string | null;
     newLine2Id: string;
@@ -713,26 +710,24 @@ export interface DeleteAttachingLineInfo {
     replacingLine1Name: string | null;
 }
 
-export interface VSCCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name: string | null;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    operatorActivePowerLimitSide1: any;
-    operatorActivePowerLimitSide2: any;
+export interface VscCreationInfos {
+    type: ModificationType;
+    uuid?: string;
+    equipmentId: string;
+    equipmentName: string | null;
+    nominalV: number | null;
+    r: number | null;
+    maxP: number | null;
+    operatorActivePowerLimitFromSide1ToSide2: number | null;
+    operatorActivePowerLimitFromSide2ToSide1: number | null;
     convertersMode: string;
-    activePowerSetpoint: number;
-    angleDroopActivePowerControl: boolean;
+    activePowerSetpoint: number | null;
+    angleDroopActivePowerControl: boolean | null;
     p0: number | null;
     droop: number | null;
-    converterStation1: VSCCreationConverterStation;
-    converterStation2: VSCCreationConverterStation;
+    converterStation1: ConverterStationCreationInfos;
+    converterStation2: ConverterStationCreationInfos;
     properties: Property[] | null;
-    isUpdate: boolean;
-    modificationUuid: UUID;
 }
 
 export interface LCCCreationInfo {

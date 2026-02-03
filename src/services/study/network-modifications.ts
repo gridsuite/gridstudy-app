@@ -36,7 +36,7 @@ import {
     GeneratorModificationInfos,
     LCCCreationInfo,
     LccModificationInfos,
-    LineCreationInfo,
+    LineCreationInfos,
     LineModificationInfos,
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
@@ -55,7 +55,7 @@ import {
     VariationType,
     VoltageLevelCreationInfo,
     VoltageLeveModificationInfo,
-    VSCCreationInfo,
+    VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
@@ -714,38 +714,21 @@ export function createStaticVarCompensator(staticVarCompensatorCreationParameter
 }
 
 export function createLine({
+    lineCreationInfos,
     studyUuid,
     nodeUuid,
-    equipmentId,
-    equipmentName,
-    r,
-    x,
-    g1,
-    b1,
-    g2,
-    b2,
-    voltageLevelId1,
-    busOrBusbarSectionId1,
-    voltageLevelId2,
-    busOrBusbarSectionId2,
-    operationalLimitsGroups,
-    selectedOperationalLimitsGroupId1,
-    selectedOperationalLimitsGroupId2,
     isUpdate = false,
     modificationUuid,
-    connectionName1,
-    connectionDirection1,
-    connectionName2,
-    connectionDirection2,
-    connectionPosition1,
-    connectionPosition2,
-    connected1,
-    connected2,
-    properties,
-}: LineCreationInfo) {
+}: {
+    lineCreationInfos: LineCreationInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let createLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
+    if (modificationUuid) {
         createLineUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating line creation');
     } else {
@@ -758,33 +741,7 @@ export function createLine({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LINE_CREATION.type,
-            equipmentId: equipmentId,
-            equipmentName: equipmentName,
-            r: r,
-            x: x,
-            g1: g1,
-            b1: b1,
-            g2: g2,
-            b2: b2,
-            voltageLevelId1: voltageLevelId1,
-            busOrBusbarSectionId1: busOrBusbarSectionId1,
-            voltageLevelId2: voltageLevelId2,
-            busOrBusbarSectionId2: busOrBusbarSectionId2,
-            operationalLimitsGroups: operationalLimitsGroups,
-            selectedOperationalLimitsGroupId1: selectedOperationalLimitsGroupId1,
-            selectedOperationalLimitsGroupId2: selectedOperationalLimitsGroupId2,
-            connectionName1: connectionName1,
-            connectionDirection1: connectionDirection1,
-            connectionName2: connectionName2,
-            connectionDirection2: connectionDirection2,
-            connectionPosition1: connectionPosition1,
-            connectionPosition2: connectionPosition2,
-            connected1: connected1,
-            connected2: connected2,
-            properties,
-        }),
+        body: JSON.stringify(lineCreationInfos),
     });
 }
 
@@ -1246,8 +1203,8 @@ export function modifySubstation({
 export function createVoltageLevel({
     studyUuid,
     nodeUuid,
-    voltageLevelId,
-    voltageLevelName,
+    equipmentId,
+    equipmentName,
     substationId,
     substationCreation,
     nominalV,
@@ -1274,8 +1231,8 @@ export function createVoltageLevel({
 
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
-        equipmentId: voltageLevelId,
-        equipmentName: voltageLevelName,
+        equipmentId,
+        equipmentName,
         substationId: substationId,
         substationCreation: substationCreation,
         nominalV: nominalV,
@@ -1304,8 +1261,8 @@ export function modifyVoltageLevel({
     studyUuid,
     nodeUuid,
     modificationUuid = undefined,
-    voltageLevelId,
-    voltageLevelName,
+    equipmentId,
+    equipmentName,
     nominalV,
     lowVoltageLimit,
     highVoltageLimit,
@@ -1331,8 +1288,8 @@ export function modifyVoltageLevel({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
-            equipmentId: voltageLevelId,
-            equipmentName: toModificationOperation(voltageLevelName),
+            equipmentId,
+            equipmentName: toModificationOperation(equipmentName),
             nominalV: toModificationOperation(nominalV),
             lowVoltageLimit: toModificationOperation(lowVoltageLimit),
             highVoltageLimit: toModificationOperation(highVoltageLimit),
@@ -1422,7 +1379,7 @@ export function divideLine({
 export function attachLine({
     studyUuid,
     nodeUuid,
-    modificationUuid,
+    uuid,
     lineToAttachToId,
     percent,
     attachmentPointId,
@@ -1455,16 +1412,15 @@ export function attachLine({
     });
 
     let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (modificationUuid) {
-        lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        lineAttachUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating line attach to voltage level');
     } else {
         console.info('Creating line attach to voltage level');
     }
 
     return backendFetchText(lineAttachUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1842,61 +1798,32 @@ export function modifyLcc({
 }
 
 export function createVsc({
+    vscCreationInfos,
     studyUuid,
     nodeUuid,
-    id,
-    name,
-    nominalV,
-    r,
-    maxP,
-    operatorActivePowerLimitSide1,
-    operatorActivePowerLimitSide2,
-    convertersMode,
-    activePowerSetpoint,
-    angleDroopActivePowerControl,
-    p0,
-    droop,
-    converterStation1,
-    converterStation2,
-    properties,
-    isUpdate,
     modificationUuid,
-}: VSCCreationInfo) {
+    isUpdate,
+}: {
+    vscCreationInfos: VscCreationInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let createVscUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (isUpdate) {
+    if (modificationUuid) {
         createVscUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating vsc creation');
     } else {
         console.info('Creating vsc creation');
     }
-
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.VSC_CREATION.type,
-        equipmentId: id,
-        equipmentName: name,
-        nominalV: nominalV,
-        r: r,
-        maxP: maxP,
-        operatorActivePowerLimitFromSide1ToSide2: operatorActivePowerLimitSide1,
-        operatorActivePowerLimitFromSide2ToSide1: operatorActivePowerLimitSide2,
-        convertersMode: convertersMode,
-        activePowerSetpoint: activePowerSetpoint,
-        angleDroopActivePowerControl: angleDroopActivePowerControl,
-        p0: p0,
-        droop: droop,
-        converterStation1: converterStation1,
-        converterStation2: converterStation2,
-        properties: properties,
-    });
-
     return backendFetchText(createVscUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body,
+        body: JSON.stringify(vscCreationInfos),
     });
 }
 
