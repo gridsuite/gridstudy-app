@@ -35,7 +35,7 @@ export function useFetchEquipment() {
                         currentRootNetworkUuid,
                         [],
                         type,
-                        EquipmentInfosTypes.TAB.type
+                        EquipmentInfosTypes.TAB
                     );
                     fetcherPromises.push(promise);
                     promise

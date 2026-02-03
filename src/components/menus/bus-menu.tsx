@@ -96,7 +96,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             currentNode?.id,
             currentRootNetworkUuid,
             EquipmentType.BUSBAR_SECTION,
-            EquipmentInfosTypes.OPERATING_STATUS.type,
+            EquipmentInfosTypes.OPERATING_STATUS,
             busId as UUID,
             false
         ).then((value: EquipmentInfo | null) => {

@@ -120,7 +120,7 @@ const withOperatingStatusMenu =
                     currentNode?.id,
                     currentRootNetworkUuid,
                     equipmentType,
-                    EquipmentInfosTypes.OPERATING_STATUS.type,
+                    EquipmentInfosTypes.OPERATING_STATUS,
                     equipment.id as UUID,
                     false
                 ).then((value) => {

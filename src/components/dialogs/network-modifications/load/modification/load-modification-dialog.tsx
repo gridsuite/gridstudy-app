@@ -167,7 +167,7 @@ export default function LoadModificationDialog({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.LOAD,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId as UUID,
                     true
                 )

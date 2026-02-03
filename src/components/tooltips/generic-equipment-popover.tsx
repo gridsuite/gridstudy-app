@@ -57,7 +57,7 @@ const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
                 currentNodeId,
                 currentRootNetworkUuid,
                 equipmentType,
-                EquipmentInfosTypes.TOOLTIP.type,
+                EquipmentInfosTypes.TOOLTIP,
                 equipmentId as UUID,
                 true
             ).then((value) => {

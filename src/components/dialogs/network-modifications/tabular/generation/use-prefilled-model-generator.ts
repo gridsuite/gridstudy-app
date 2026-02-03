@@ -59,7 +59,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
                 currentRootNetworkUuid,
                 [],
                 equipmentType,
-                EquipmentInfosTypes.FORM.type,
+                EquipmentInfosTypes.FORM,
                 true
             );
             return mapPrefilledEquipments(equipmentType, equipments) ?? [];
@@ -90,7 +90,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
                     currentRootNetworkUuid,
                     equipmentType,
                     globalFilter,
-                    EquipmentInfosTypes.FORM.type
+                    EquipmentInfosTypes.FORM
                 );
 
                 return mapPrefilledEquipments(equipmentType, equipments) ?? [];

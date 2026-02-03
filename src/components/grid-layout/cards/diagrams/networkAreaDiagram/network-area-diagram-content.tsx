@@ -289,7 +289,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     currentNode?.id,
                     currentRootNetworkUuid,
                     EquipmentType.HVDC_LINE,
-                    EquipmentInfosTypes.MAP.type,
+                    EquipmentInfosTypes.MAP,
                     equipmentId as UUID,
                     false
                 )

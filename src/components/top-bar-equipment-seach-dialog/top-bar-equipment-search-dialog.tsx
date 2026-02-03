@@ -82,7 +82,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
                 studyContext.nodeId,
                 studyContext.rootNetworkId,
                 equipment.type,
-                EquipmentInfosTypes.LIST.type,
+                EquipmentInfosTypes.LIST,
                 equipment.id as UUID,
                 false
             )

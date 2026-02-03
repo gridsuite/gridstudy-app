@@ -642,7 +642,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.TWO_WINDINGS_TRANSFORMER,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId,
                     true
                 )

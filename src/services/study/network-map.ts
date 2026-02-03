@@ -270,7 +270,7 @@ export async function createMapContingencyList(
                 currentRootNetworkUuid,
                 selectedEquipmentsIds,
                 equipmentType,
-                EquipmentInfosTypes.LIST.type,
+                EquipmentInfosTypes.LIST,
                 false,
                 nominalVoltages
             );

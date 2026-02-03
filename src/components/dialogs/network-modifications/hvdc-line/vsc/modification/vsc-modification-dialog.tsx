@@ -170,7 +170,7 @@ const VscModificationDialog: React.FC<any> = ({
                     currentNode.id,
                     currentRootNetworkUuid,
                     ExtendedEquipmentType.HVDC_LINE_VSC,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId as UUID,
                     true
                 )

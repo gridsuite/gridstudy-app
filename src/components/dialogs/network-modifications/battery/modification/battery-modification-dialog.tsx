@@ -230,7 +230,7 @@ export default function BatteryModificationDialog({
                     currentNode.id,
                     currentRootNetworkUuid,
                     EquipmentType.BATTERY,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId as UUID,
                     true
                 )

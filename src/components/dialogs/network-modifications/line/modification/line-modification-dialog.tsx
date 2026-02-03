@@ -302,7 +302,7 @@ const LineModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.LINE,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId as UUID,
                     true
                 )

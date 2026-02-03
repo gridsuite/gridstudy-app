@@ -280,7 +280,7 @@ export default function GeneratorModificationDialog({
                     currentNode.id,
                     currentRootNetworkUuid,
                     EquipmentType.GENERATOR,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId as UUID,
                     true
                 )

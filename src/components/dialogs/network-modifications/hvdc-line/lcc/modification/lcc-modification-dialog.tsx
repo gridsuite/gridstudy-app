@@ -200,7 +200,7 @@ export const LccModificationDialog = ({
                     currentNode.id,
                     currentRootNetworkUuid,
                     ExtendedEquipmentType.HVDC_LINE_LCC,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId as UUID,
                     true
                 )

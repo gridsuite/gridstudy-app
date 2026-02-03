@@ -210,7 +210,7 @@ export async function fetchNetworkElementsInfos<T extends Identifiable[] = Ident
     currentRootNetworkUuid: UUID,
     substationsIds: string[] | undefined,
     elementType: string, //TODO found which EQUIPMENT_TYPES enum to use
-    infoType: string, // TODO migrate to EquipmentInfosTypes
+    infoType: EquipmentInfosTypes,
     inUpstreamBuiltParentNode?: boolean,
     nominalVoltages?: number[]
 ): Promise<T> {
@@ -260,7 +260,7 @@ export function fetchSubstationsMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.SUBSTATION,
-        EquipmentInfosTypes.MAP.type,
+        EquipmentInfosTypes.MAP,
         inUpstreamBuiltParentNode
     );
 }
@@ -278,7 +278,7 @@ export function fetchLinesMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.LINE,
-        EquipmentInfosTypes.MAP.type,
+        EquipmentInfosTypes.MAP,
         inUpstreamBuiltParentNode
     );
 }
@@ -296,7 +296,7 @@ export function fetchTieLinesMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.TIE_LINE,
-        EquipmentInfosTypes.MAP.type,
+        EquipmentInfosTypes.MAP,
         inUpstreamBuiltParentNode
     );
 }
@@ -314,7 +314,7 @@ export function fetchHvdcLinesMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.HVDC_LINE,
-        EquipmentInfosTypes.MAP.type,
+        EquipmentInfosTypes.MAP,
         inUpstreamBuiltParentNode
     );
 }
@@ -331,7 +331,7 @@ export function fetchVoltageLevelsListInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-        EquipmentInfosTypes.LIST.type,
+        EquipmentInfosTypes.LIST,
         true
     );
 }
@@ -348,7 +348,7 @@ export function fetchVoltageLevelsMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-        EquipmentInfosTypes.MAP.type,
+        EquipmentInfosTypes.MAP,
         true
     );
 }
@@ -413,7 +413,7 @@ export function fetchExportNetworkFile(exportUuid: UUID) {
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {
-    const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EquipmentInfosTypes.TAB.type}`;
+    const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EquipmentInfosTypes.TAB}`;
     return backendFetchJson(fetchEquipmentTypeSchemaUrl, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },

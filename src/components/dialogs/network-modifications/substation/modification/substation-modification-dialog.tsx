@@ -134,7 +134,7 @@ const SubstationModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.SUBSTATION,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId as UUID,
                     true
                 )

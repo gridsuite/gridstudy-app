@@ -194,7 +194,7 @@ const VoltageLevelModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.VOLTAGE_LEVEL,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId as UUID,
                     true
                 )

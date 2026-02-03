@@ -172,7 +172,7 @@ const ShuntCompensatorModificationDialog = ({
                     currentNode?.id,
                     currentRootNetworkUuid,
                     EquipmentType.SHUNT_COMPENSATOR,
-                    EquipmentInfosTypes.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId,
                     true
                 )
