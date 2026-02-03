@@ -130,6 +130,10 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const positionsRef = useRef(positions);
     isEditNadModeRef.current = isEditNadMode;
     positionsRef.current = positions;
+    // Update drag interaction without full viewer reinitialization
+    if (diagramViewerRef.current) {
+        diagramViewerRef.current.enableDragInteraction = isEditNadMode;
+    }
 
     // save nad when exiting edit mode
     const handleSetIsEditNadMode = useCallback(
@@ -322,15 +326,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 }
             }
         },
-        [
-            additionalMetadata,
-            openEquipmentMenu,
-            currentNode?.id,
-            currentRootNetworkUuid,
-            studyUuid,
-            snackError,
-            setShouldDisplayTooltip,
-        ]
+        [additionalMetadata, openEquipmentMenu, currentNode?.id, currentRootNetworkUuid, studyUuid, snackError]
     );
 
     const handleAddVoltageLevel = useCallback(
@@ -454,13 +450,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         globalThis.addEventListener('workspace:switchWorkspace', handleSwitchWorkspace);
         return () => globalThis.removeEventListener('workspace:switchWorkspace', handleSwitchWorkspace);
     }, [nadPanelId, diagramViewerRef, dispatch]);
-
-    // Update drag interaction without full viewer reinitialization
-    useEffect(() => {
-        if (diagramViewerRef.current) {
-            diagramViewerRef.current.enableDragInteraction = isEditNadMode;
-        }
-    }, [isEditNadMode]);
 
     /**
      * DIAGRAM CONTENT BUILDING
