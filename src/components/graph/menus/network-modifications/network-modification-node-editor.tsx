@@ -21,6 +21,7 @@ import {
     SubstationCreationDialog,
     usePrevious,
     useSnackMessage,
+    fetchNetworkModification,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -73,7 +74,6 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
-import { fetchNetworkModification } from '../../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
     changeNetworkModificationOrder,
