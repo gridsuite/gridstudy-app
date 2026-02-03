@@ -7,7 +7,7 @@
 
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ComputingType, MuiStyles, useSnackMessage, snackWithFallback } from '@gridsuite/commons-ui';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
@@ -81,12 +81,27 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
 
+    const globalFiltersKey = useMemo(() => {
+        return isGlobalFilterParameter(globalFilters) ? globalFilters : '';
+    }, [globalFilters]);
+
+    const prevGlobalFiltersKeyRef = useRef<GlobalFilters | ''>(globalFiltersKey);
+
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
             dispatchPagination({ ...pagination, page: newPage });
         },
         [pagination, dispatchPagination]
     );
+
+    //To set the pagination to the first page when global filters change
+    useEffect(() => {
+        if (prevGlobalFiltersKeyRef.current === globalFiltersKey) {
+            return;
+        }
+        prevGlobalFiltersKeyRef.current = globalFiltersKey;
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [globalFiltersKey, rowsPerPage, dispatchPagination]);
 
     const handleChangeRowsPerPage = useCallback(
         (event: any) => {

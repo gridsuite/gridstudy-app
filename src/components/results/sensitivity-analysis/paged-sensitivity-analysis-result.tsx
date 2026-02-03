@@ -15,7 +15,7 @@ import {
     PAGE_OPTIONS,
     SensitivityResultTabs,
 } from './sensitivity-analysis-result-utils';
-import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage, ComputingType, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
@@ -39,6 +39,7 @@ import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -79,6 +80,21 @@ function PagedSensitivityAnalysisResult({
         mappingTabs(sensiKind, nOrNkIndex) as SensitivityAnalysisTab
     );
     const { page, rowsPerPage } = pagination;
+
+    const globalFiltersKey = useMemo(() => {
+        return isGlobalFilterParameter(globalFilters) ? globalFilters : '';
+    }, [globalFilters]);
+
+    const prevGlobalFiltersKeyRef = useRef<GlobalFilters | ''>(globalFiltersKey);
+
+    //To set the pagination to the first page when global filters change
+    useEffect(() => {
+        if (prevGlobalFiltersKeyRef.current === globalFiltersKey) {
+            return;
+        }
+        prevGlobalFiltersKeyRef.current = globalFiltersKey;
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [globalFiltersKey, rowsPerPage, dispatchPagination]);
 
     const filtersDef = useMemo(() => {
         const baseFilters = [

@@ -49,6 +49,7 @@ import { useGlobalFilterOptions } from '../common/global-filter/use-global-filte
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
+import { GlobalFilters } from '../common/global-filter/global-filter-types';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -126,6 +127,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const { page, rowsPerPage } = pagination;
     const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+
+    const globalFiltersKey = useMemo(() => {
+        return isGlobalFilterParameter(globalFilters) ? globalFilters : '';
+    }, [globalFilters]);
+
+    const prevGlobalFiltersKeyRef = useRef<GlobalFilters | ''>(globalFiltersKey);
 
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
@@ -276,6 +283,18 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         }
         return [];
     }, [tabIndex]);
+
+    //To set the pagination to the first page when global filters change
+    useEffect(() => {
+        if (tabIndex !== NMK_RESULTS_TAB_INDEX) {
+            return;
+        }
+        if (prevGlobalFiltersKeyRef.current === globalFiltersKey) {
+            return;
+        }
+        prevGlobalFiltersKeyRef.current = globalFiltersKey;
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [globalFiltersKey, tabIndex, rowsPerPage, dispatchPagination]);
 
     return (
         <>
