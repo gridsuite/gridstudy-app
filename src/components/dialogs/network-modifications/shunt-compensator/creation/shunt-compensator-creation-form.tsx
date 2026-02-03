@@ -7,28 +7,32 @@
 
 import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import { useEffect, useState } from 'react';
 
 import { filledTextField } from '../../../dialog-utils';
 
 import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import type { UUID } from 'node:crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import CharacteristicsForm from '../characteristics-pane/characteristics-form';
 
-const ShuntCompensatorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+export interface ShuntCompensatorCreationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+}
 
-    useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid).then((values) => {
-                setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)));
-            });
-        }
-    }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
+export default function ShuntCompensatorCreationForm({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+}: Readonly<ShuntCompensatorCreationFormProps>) {
+    const currentNodeUuid = currentNode?.id;
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const shuntCompensatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -46,7 +50,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode, currentRootNetwo
         />
     );
 
-    const characteristicsForm = <CharacteristicsForm />;
+    const characteristicsForm = <CharacteristicsForm isModification={false} />;
 
     return (
         <>
@@ -65,6 +69,4 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode, currentRootNetwo
             <PropertiesForm networkElementType={'shuntCompensator'} />
         </>
     );
-};
-
-export default ShuntCompensatorCreationForm;
+}
