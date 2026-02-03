@@ -23,7 +23,7 @@ export interface ShuntCompensatorModificationFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    shuntCompensatorToModify?: ShuntCompensatorFormInfos | null;
+    shuntCompensatorToModify: ShuntCompensatorFormInfos | null;
     equipmentId: string;
 }
 
