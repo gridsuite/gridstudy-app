@@ -1052,7 +1052,9 @@ const NetworkModificationNodeEditor = () => {
                     });
                 })
                 .catch((error) => {
-                    snackWithFallback(snackError, error);
+                    snackWithFallback(snackError, error, {
+                        headerId: 'ModificationReadError',
+                    });
                     setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
