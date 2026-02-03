@@ -9,9 +9,21 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    emptyProperties,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    ModificationDialog,
+    modificationPropertiesSchema,
+    sanitizeString,
     snackWithFallback,
+    toModificationProperties,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -73,15 +85,8 @@ import {
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { sanitizeString } from '../../../dialog-utils';
-import {
-    FORM_LOADING_DELAY,
-    PHASE_REGULATION_MODES,
-    RATIO_REGULATION_MODES,
-    REGULATION_TYPES,
-} from 'components/network/constants';
+import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import TwoWindingsTransformerModificationDialogTabs from './two-windings-transformer-modification-dialog-tabs';
 import TwoWindingsTransformerCharacteristicsPane from '../characteristics-pane/two-windings-transformer-characteristics-pane';
 import {
@@ -99,7 +104,6 @@ import {
     getLimitsValidationSchema,
     getOpLimitsGroupInfosFromBranchModification,
 } from '../../../limits/limits-pane-utils';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
 import {
     addSelectedFieldToRows,
@@ -107,7 +111,6 @@ import {
     computeHighTapPosition,
     toModificationOperation,
 } from '../../../../utils/utils';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import {
     getComputedPhaseTapChangerRegulationMode,
@@ -126,15 +129,6 @@ import {
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import {
@@ -648,7 +642,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.TWO_WINDINGS_TRANSFORMER,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    EquipmentInfosTypes.FORM,
                     equipmentId,
                     true
                 )

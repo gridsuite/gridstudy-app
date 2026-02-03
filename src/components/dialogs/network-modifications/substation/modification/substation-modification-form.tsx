@@ -5,15 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { filledTextField } from '../../../dialog-utils';
-import { TextInput } from '@gridsuite/commons-ui';
+import {
+    CountrySelectionInput,
+    filledTextField,
+    PropertiesForm,
+    SubstationInfos,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import { COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { TextField, Grid } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
-import { SubstationInfos } from '../substation-dialog.type';
 
 interface SubstationModificationFormProps {
     substationToModify?: SubstationInfos | null;

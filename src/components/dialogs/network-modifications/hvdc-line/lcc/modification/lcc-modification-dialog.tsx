@@ -22,16 +22,24 @@ import {
 import yup from '../../../../../utils/yup-config';
 import {
     CustomFormProvider,
+    DeepNullable,
+    EquipmentInfosTypes,
     ExtendedEquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    getConcatenatedProperties,
     MODIFICATION_TYPES,
+    ModificationDialog,
+    sanitizeString,
     snackWithFallback,
+    toModificationProperties,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccFormInfos, LccModificationSchemaForm } from '../common/lcc-type';
 import { useCallback, useEffect, useState } from 'react';
-import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
-import { FetchStatus } from 'services/utils.type';
 import {
     getConcatenatedShuntCompensatorOnSideInfos,
     getLccConverterStationModificationData,
@@ -43,20 +51,14 @@ import {
     getLccHvdcLineModificationSchema,
 } from '../common/lcc-utils';
 import { modifyLcc } from 'services/study/network-modifications';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
-import { getConcatenatedProperties, toModificationProperties } from '../../../common/properties/property-utils';
 import { EquipmentModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
-import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
-import { EQUIPMENT_INFOS_TYPES } from '../../../../../utils/equipment-types';
-import { FORM_LOADING_DELAY } from '../../../../../network/constants';
-import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { LccModificationForm } from './lcc-modification-form';
 import { toModificationOperation } from '../../../../../utils/utils';
 import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';
-import { DeepNullable } from '../../../../../utils/ts-utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { UUID } from 'node:crypto';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -198,8 +200,8 @@ export const LccModificationDialog = ({
                     currentNode.id,
                     currentRootNetworkUuid,
                     ExtendedEquipmentType.HVDC_LINE_LCC,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM,
+                    equipmentId as UUID,
                     true
                 )
                     .then((value: LccFormInfos | null) => {

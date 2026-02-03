@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const FORM_LOADING_DELAY = 200;
 export const RESULTS_LOADING_DELAY = 500;
 
 // Relevant LoadType Powsybl enum values

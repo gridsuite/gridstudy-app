@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
@@ -24,26 +23,25 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
-    EquipmentType,
-    FieldType,
-    snackWithFallback,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
-import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
-import {
     emptyProperties,
-    Equipment,
+    EquipmentInfosTypes,
+    EquipmentType,
+    EquipmentWithProperties,
+    fetchNetworkElementInfos,
+    FetchStatus,
+    FieldType,
+    FORM_LOADING_DELAY,
     getConcatenatedProperties,
     getPropertiesFromModification,
+    ModificationDialog,
     modificationPropertiesSchema,
+    snackWithFallback,
     toModificationProperties,
-} from '../../common/properties/property-utils';
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { UUID } from 'node:crypto';
@@ -128,6 +126,7 @@ const formSchema = yup
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero'),
     })
     .concat(modificationPropertiesSchema);
+
 const VoltageLevelModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
@@ -195,8 +194,8 @@ const VoltageLevelModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.VOLTAGE_LEVEL,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM,
+                    equipmentId as UUID,
                     true
                 )
                     .then((voltageLevel: VoltageLevelFormData) => {
@@ -218,7 +217,7 @@ const VoltageLevelModificationDialog = ({
                                 (formValues) => ({
                                     ...formValues,
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
-                                        voltageLevel as Equipment,
+                                        voltageLevel as EquipmentWithProperties,
                                         getValues
                                     ),
                                     [SUBSTATION_ID]: voltageLevel?.substationId,

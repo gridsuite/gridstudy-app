@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, isObjectEmpty } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, ModificationDialog } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
 import { Grid } from '@mui/material';
 import { NAME } from '../../utils/field-constants';
@@ -16,7 +16,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { isNodeExists } from 'services/study';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 export interface FormData {
     [NAME]: string;

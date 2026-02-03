@@ -8,19 +8,20 @@
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FetchStatus } from '../../../../../services/utils';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createCouplingDevice } from '../../../../../services/study/network-modifications';
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
+    FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
+    ModificationDialog,
     Option,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
@@ -29,7 +30,6 @@ import CreateCouplingDeviceForm from './create-coupling-device-form';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateCouplingDeviceInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { CreateCouplingDeviceDialogSchemaForm } from '../coupling-device-dialog.type';
 
 const emptyFormData = {

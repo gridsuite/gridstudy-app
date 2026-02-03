@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     DirectoryItemsInput,
     ElementType,
+    ModificationDialog,
     PopupConfirmationDialog,
     RadioInput,
     snackWithFallback,
@@ -24,7 +25,6 @@ import { useIntl } from 'react-intl';
 import { updateStudySpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions } from 'redux/actions';
 import type { UUID } from 'node:crypto';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
 import { SpreadsheetCollectionDto } from 'components/spreadsheet-view/types/spreadsheet.type';
 import {

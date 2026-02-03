@@ -11,9 +11,14 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
+    FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
@@ -21,14 +26,9 @@ import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateVoltageLevelTopologyDialogSchemaForm } from './create-voltage-level-topology-dialog.type';
 import CreateVoltageLevelTopologyForm from './create-voltage-level-topology-form';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { ModificationDialog } from '../../../commons/modificationDialog';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevelTopology } from '../../../../../services/study/network-modifications';
 import { CreateVoltageLevelTopologyInfos } from '../../../../../services/network-modification-types';
-import { FetchStatus } from '../../../../../services/utils';
 import { useIntl } from 'react-intl';
 
 const emptyFormData = {

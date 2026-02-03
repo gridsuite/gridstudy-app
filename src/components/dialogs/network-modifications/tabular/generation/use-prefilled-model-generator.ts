@@ -7,7 +7,13 @@
 
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { LANG_FRENCH, useSnackMessage, snackWithFallback, Identifiable } from '@gridsuite/commons-ui';
+import {
+    LANG_FRENCH,
+    useSnackMessage,
+    snackWithFallback,
+    Identifiable,
+    EquipmentInfosTypes,
+} from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import { isFieldTypeOk, TabularField, PredefinedEquipmentProperties } from '../tabular-common';
@@ -15,7 +21,7 @@ import { getNetworkElementsInfosByGlobalFilter } from 'services/study/filter';
 import { fetchNetworkElementsInfos } from 'services/study/network';
 import type { UUID } from 'node:crypto';
 import { getPrefilledColumnGroups } from './prefillable-columns-config';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { mapPrefilledEquipments, PrefilledModelGenerationParams } from './utils';
 import { TABULAR_MODIFICATION_FIELDS } from '../tabular-modification-utils';
 
@@ -53,7 +59,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
                 currentRootNetworkUuid,
                 [],
                 equipmentType,
-                EQUIPMENT_INFOS_TYPES.FORM.type,
+                EquipmentInfosTypes.FORM,
                 true
             );
             return mapPrefilledEquipments(equipmentType, equipments) ?? [];
@@ -84,7 +90,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
                     currentRootNetworkUuid,
                     equipmentType,
                     globalFilter,
-                    EQUIPMENT_INFOS_TYPES.FORM.type
+                    EquipmentInfosTypes.FORM
                 );
 
                 return mapPrefilledEquipments(equipmentType, equipments) ?? [];

@@ -5,7 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    emptyProperties,
+    EquipmentInfosTypes,
+    EquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    ModificationDialog,
+    modificationPropertiesSchema,
+    sanitizeString,
+    snackWithFallback,
+    toModificationProperties,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
@@ -33,23 +50,11 @@ import {
 import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useState } from 'react';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
-import { sanitizeString } from '../../../dialog-utils';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
+
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -166,8 +171,8 @@ const ShuntCompensatorModificationDialog = ({
                     studyUuid,
                     currentNode?.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    EquipmentType.SHUNT_COMPENSATOR,
+                    EquipmentInfosTypes.FORM,
                     equipmentId,
                     true
                 )

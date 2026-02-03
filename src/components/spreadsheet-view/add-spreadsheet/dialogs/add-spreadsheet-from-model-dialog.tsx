@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     DirectoryItemsInput,
     ElementType,
+    ModificationDialog,
     snackWithFallback,
     TextInput,
     useSnackMessage,
@@ -28,7 +29,6 @@ import {
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
 import { getSpreadsheetModel } from 'services/study-config';
 import type { UUID } from 'node:crypto';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
 import type { DialogComponentProps } from '../types';
 import { useNodeAliases } from '../../hooks/use-node-aliases';

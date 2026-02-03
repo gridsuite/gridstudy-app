@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
+import { AutocompleteInput, filledTextField, Option } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import GridItem from '../../../commons/grid-item';
 import { getObjectId } from '../../../../utils/utils';
@@ -15,7 +15,6 @@ import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLi
 import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { filledTextField } from '../../../dialog-utils';
 import GridSection from '../../../commons/grid-section';
 import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';

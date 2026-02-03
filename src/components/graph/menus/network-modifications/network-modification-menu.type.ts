@@ -7,8 +7,8 @@
 
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../tree-node.type';
-import { FetchStatus } from '../../../../services/utils.type';
 import { JSX } from 'react';
+import { FetchStatus } from '@gridsuite/commons-ui';
 
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
@@ -72,12 +72,6 @@ export interface MenuDefinitionWithoutSubItem extends MenuDefinitionBase {
 }
 
 export type MenuDefinition = MenuDefinitionWithSubItem | MenuDefinitionWithoutSubItem;
-
-export interface NetworkModificationData {
-    uuid: UUID;
-    type: string;
-    [key: string]: any;
-}
 
 export interface MenuSection {
     id: string;

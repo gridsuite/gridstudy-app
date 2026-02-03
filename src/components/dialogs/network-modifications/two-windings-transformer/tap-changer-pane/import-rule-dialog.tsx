@@ -8,9 +8,8 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
 import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
-import { CancelButton, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
+import { CancelButton, LANG_FRENCH, MAX_ROWS_NUMBER, useCSVPicker } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { PHASE_TAP, RuleType } from '../two-windings-transformer.types';
 import { AppState } from 'redux/reducer';

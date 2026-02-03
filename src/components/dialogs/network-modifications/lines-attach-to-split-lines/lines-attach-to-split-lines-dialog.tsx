@@ -5,9 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DeepNullable,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    ModificationDialog,
+    sanitizeString,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
 import {
     ATTACHED_LINE_ID,
     BUS_BAR_SECTION_ID,
@@ -26,22 +35,16 @@ import {
 import yup from 'components/utils/yup-config';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 import {
     getConnectivityData,
     getConnectivityPropertiesValidationSchema,
     getConnectivityWithoutPositionEmptyFormData,
 } from '../../connectivity/connectivity-form-utils';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';
-import { FetchStatus } from 'services/utils.type';
 import LineAttachToSplitLinesIllustration from './lines-attach-to-split-lines-illustration';
 import type { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
-import { DeepNullable } from '../../../utils/ts-utils';
 import { LinesAttachToSplitLinesInfo } from '../../../../services/network-modification-types';
 
 interface LinesAttachToSplitLinesProps {

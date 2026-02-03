@@ -7,20 +7,21 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
+    FetchStatus,
+    FORM_LOADING_DELAY,
     Identifiable,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import yup from '../../../../utils/yup-config';
 import {
@@ -41,7 +42,6 @@ import {
     MoveVoltageLevelFeederBaysInfos,
 } from '../../../../../services/network-modification-types';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import {

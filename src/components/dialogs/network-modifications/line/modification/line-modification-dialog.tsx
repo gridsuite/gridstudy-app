@@ -10,9 +10,21 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    emptyProperties,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    ModificationDialog,
+    modificationPropertiesSchema,
+    sanitizeString,
     snackWithFallback,
+    toModificationProperties,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -52,9 +64,7 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { FieldErrors } from 'react-hook-form';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
@@ -72,21 +82,9 @@ import {
 } from '../characteristics-pane/line-characteristics-pane-utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLine } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     createConnectivityData,
     getCon1andCon2WithPositionValidationSchema,
@@ -304,8 +302,8 @@ const LineModificationDialog = ({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     EquipmentType.LINE,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM,
+                    equipmentId as UUID,
                     true
                 )
                     .then((line: BranchInfos) => {

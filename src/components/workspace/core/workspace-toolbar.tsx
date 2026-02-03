@@ -36,6 +36,7 @@ import { useSelector } from 'react-redux';
 import { PanelType } from '../types/workspace.types';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { selectOpenPanels } from '../../../redux/slices/workspace-selectors';
+import { useStudyContext } from '../../../hooks/use-study-context';
 
 const styles = {
     container: {
@@ -67,6 +68,7 @@ const styles = {
 export const WorkspaceToolbar = () => {
     const intl = useIntl();
     const { openToolPanel, openSLD, openNAD, deletePanel } = useWorkspacePanelActions();
+    const studyContext = useStudyContext();
 
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
@@ -254,14 +256,15 @@ export const WorkspaceToolbar = () => {
                 })}
                 multiSelect={false}
             />
-            {
+            {studyContext && (
                 <TopBarEquipmentSearchDialog
                     showVoltageLevelDiagram={handleSearchEquipment}
                     isDialogSearchOpen={isDialogSearchOpen}
                     setIsDialogSearchOpen={setIsDialogSearchOpen}
                     disablCenterSubstation={!isMapOpen}
+                    studyContext={studyContext}
                 />
-            }
+            )}
         </Box>
     );
 };

@@ -25,7 +25,6 @@ import {
     OnToggleNadHoverCallbackType,
     OnSelectNodeCallbackType,
     NadViewerParametersOptions,
-    EQUIPMENT_TYPES,
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
@@ -35,8 +34,10 @@ import { Point } from '@svgdotjs/svg.js';
 import {
     ComputingType,
     ElementType,
+    EquipmentInfosTypes,
     EquipmentType,
     ExtendedEquipmentType,
+    fetchNetworkElementInfos,
     IElementCreationDialog,
     IElementUpdateDialog,
     mergeSx,
@@ -50,8 +51,6 @@ import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
-import { fetchNetworkElementInfos } from 'services/study/network';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
@@ -299,9 +298,9 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     studyUuid,
                     currentNode?.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.HVDC_LINE,
-                    EQUIPMENT_INFOS_TYPES.MAP.type,
-                    equipmentId,
+                    EquipmentType.HVDC_LINE,
+                    EquipmentInfosTypes.MAP,
+                    equipmentId as UUID,
                     false
                 )
                     .then((hvdcInfos) => {

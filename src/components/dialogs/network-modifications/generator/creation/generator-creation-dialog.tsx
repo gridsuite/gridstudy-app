@@ -6,15 +6,25 @@
  */
 
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from '../../../commons/modificationDialog';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
-import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
+    emptyProperties,
+    EquipmentSearchDialog,
     EquipmentType,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
+    ModificationDialog,
+    sanitizeString,
     snackWithFallback,
+    toModificationProperties,
+    useFormSearchCopy,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -59,23 +69,13 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { sanitizeString } from '../../../dialog-utils';
-import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsValidationSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createGenerator } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils.type';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     getVoltageRegulationEmptyFormData,
     getVoltageRegulationSchema,
@@ -85,7 +85,6 @@ import {
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -95,6 +94,7 @@ import {
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
 import { toReactiveCapabilityCurveChoiceForGeneratorCreation } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { useStudyContext } from '../../../../../hooks/use-study-context';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -158,6 +158,7 @@ export default function GeneratorCreationDialog({
 }: Readonly<GeneratorCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const studyContext = useStudyContext();
 
     const formMethods = useForm<DeepNullable<GeneratorCreationDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -192,7 +193,7 @@ export default function GeneratorCreationDialog({
                     generator?.regulatingTerminalId || generator?.regulatingTerminalConnectableId
                         ? REGULATION_TYPES.DISTANT.id
                         : REGULATION_TYPES.LOCAL.id,
-                [Q_PERCENT]: isNaN(Number(generator?.coordinatedReactiveControl?.qPercent))
+                [Q_PERCENT]: Number.isNaN(Number(generator?.coordinatedReactiveControl?.qPercent))
                     ? null
                     : generator?.coordinatedReactiveControl?.qPercent,
                 ...getReactiveLimitsFormData({
@@ -219,7 +220,7 @@ export default function GeneratorCreationDialog({
         );
     };
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.GENERATOR);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.GENERATOR, studyContext);
 
     useEffect(() => {
         if (editData) {
@@ -360,15 +361,15 @@ export default function GeneratorCreationDialog({
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />
-
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EquipmentType.GENERATOR}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={EquipmentType.GENERATOR}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

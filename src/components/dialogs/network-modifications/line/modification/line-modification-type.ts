@@ -15,7 +15,7 @@ import {
     LIMITS,
     STATE_ESTIMATION,
 } from '../../../../utils/field-constants';
-import { Property } from '../../common/properties/property-utils';
+import { Property } from '@gridsuite/commons-ui';
 
 export interface LineCharacteristics {
     r: number | null;

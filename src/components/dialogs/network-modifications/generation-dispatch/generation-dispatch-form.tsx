@@ -6,14 +6,20 @@
  */
 
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { DirectoryItemsInput, ElementType, EquipmentType, FieldLabel, FloatInput } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemsInput,
+    ElementType,
+    EquipmentType,
+    FieldLabel,
+    FloatInput,
+    percentageTextField,
+} from '@gridsuite/commons-ui';
 import {
     DEFAULT_OUTAGE_RATE,
     GENERATORS_WITH_FIXED_ACTIVE_POWER,
     GENERATORS_WITHOUT_OUTAGE,
     LOSS_COEFFICIENT,
 } from 'components/utils/field-constants';
-import { percentageTextField } from '../../dialog-utils';
 import { Box, Grid, Typography } from '@mui/material';
 import FrequencyReservePane from './frequency-reserve-pane';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';

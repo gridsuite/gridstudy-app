@@ -5,13 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    DeepNullable,
+    emptyProperties,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
+    ModificationDialog,
+    modificationPropertiesSchema,
+    sanitizeString,
     snackWithFallback,
+    toModificationProperties,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -55,7 +66,6 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { sanitizeString } from '../../../dialog-utils';
 import GeneratorModificationForm from './generator-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import {
@@ -68,19 +78,8 @@ import {
     REMOVE,
     toReactiveCapabilityCurveChoiceForGeneratorModification,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyGenerator } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils.type';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -96,7 +95,6 @@ import {
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { toModificationOperation } from '../../../../utils/utils';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -106,6 +104,7 @@ import {
     getShortCircuitFormData,
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
+import { UUID } from 'node:crypto';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -281,8 +280,8 @@ export default function GeneratorModificationDialog({
                     currentNode.id,
                     currentRootNetworkUuid,
                     EquipmentType.GENERATOR,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM,
+                    equipmentId as UUID,
                     true
                 )
                     .then((value: GeneratorFormInfos) => {

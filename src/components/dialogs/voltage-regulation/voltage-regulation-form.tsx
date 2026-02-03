@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, Identifiable, SelectInput } from '@gridsuite/commons-ui';
+import { FloatInput, Identifiable, percentageTextField, SelectInput, VoltageAdornment } from '@gridsuite/commons-ui';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { Q_PERCENT, VOLTAGE_REGULATION_TYPE, VOLTAGE_SET_POINT } from 'components/utils/field-constants';
 import { useMemo } from 'react';
-import { percentageTextField, VoltageAdornment } from '../dialog-utils';
 import { RegulatingTerminalForm } from '../regulating-terminal/regulating-terminal-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';

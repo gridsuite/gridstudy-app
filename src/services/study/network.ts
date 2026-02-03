@@ -11,13 +11,12 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
-    EquipmentType,
-    ExtendedEquipmentType,
+    EquipmentInfosTypes,
     type Identifiable,
 } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
+import { EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { getQueryParamsList } from '../utils';
 import { BusBarSectionsInfos, FeederBaysInfos, SwitchInfos } from './network-map.type';
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
@@ -211,7 +210,7 @@ export async function fetchNetworkElementsInfos<T extends Identifiable[] = Ident
     currentRootNetworkUuid: UUID,
     substationsIds: string[] | undefined,
     elementType: string, //TODO found which EQUIPMENT_TYPES enum to use
-    infoType: string, // TODO migrate to EquipmentInfosTypes
+    infoType: EquipmentInfosTypes,
     inUpstreamBuiltParentNode?: boolean,
     nominalVoltages?: number[]
 ): Promise<T> {
@@ -248,36 +247,6 @@ export async function fetchNetworkElementsInfos<T extends Identifiable[] = Ident
     });
 }
 
-export function fetchNetworkElementInfos(
-    studyUuid: string | undefined | null,
-    currentNodeUuid: UUID | undefined,
-    currentRootNetworkUuid: string | undefined | null,
-    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES | SpreadsheetEquipmentType,
-    infoType: string,
-    elementId: string,
-    inUpstreamBuiltParentNode: boolean
-) {
-    console.info(
-        `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append('inUpstreamBuiltParentNode', String(inUpstreamBuiltParentNode));
-    }
-    urlSearchParams.append('elementType', elementType);
-    urlSearchParams.append('infoType', infoType);
-
-    const fetchElementsUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/network/elements/' +
-        encodeURIComponent(elementId) +
-        '?' +
-        urlSearchParams.toString();
-    console.debug(fetchElementsUrl);
-
-    return backendFetchJson(fetchElementsUrl);
-}
-
 export function fetchSubstationsMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
@@ -291,7 +260,7 @@ export function fetchSubstationsMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.SUBSTATION,
-        EQUIPMENT_INFOS_TYPES.MAP.type,
+        EquipmentInfosTypes.MAP,
         inUpstreamBuiltParentNode
     );
 }
@@ -309,7 +278,7 @@ export function fetchLinesMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.LINE,
-        EQUIPMENT_INFOS_TYPES.MAP.type,
+        EquipmentInfosTypes.MAP,
         inUpstreamBuiltParentNode
     );
 }
@@ -327,7 +296,7 @@ export function fetchTieLinesMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.TIE_LINE,
-        EQUIPMENT_INFOS_TYPES.MAP.type,
+        EquipmentInfosTypes.MAP,
         inUpstreamBuiltParentNode
     );
 }
@@ -345,7 +314,7 @@ export function fetchHvdcLinesMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.HVDC_LINE,
-        EQUIPMENT_INFOS_TYPES.MAP.type,
+        EquipmentInfosTypes.MAP,
         inUpstreamBuiltParentNode
     );
 }
@@ -362,7 +331,7 @@ export function fetchVoltageLevelsListInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-        EQUIPMENT_INFOS_TYPES.LIST.type,
+        EquipmentInfosTypes.LIST,
         true
     );
 }
@@ -379,7 +348,7 @@ export function fetchVoltageLevelsMapInfos(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-        EQUIPMENT_INFOS_TYPES.MAP.type,
+        EquipmentInfosTypes.MAP,
         true
     );
 }
@@ -444,7 +413,7 @@ export function fetchExportNetworkFile(exportUuid: UUID) {
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {
-    const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EQUIPMENT_INFOS_TYPES.TAB.type}`;
+    const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EquipmentInfosTypes.TAB}`;
     return backendFetchJson(fetchEquipmentTypeSchemaUrl, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },

@@ -13,6 +13,7 @@ import {
     ElementType,
     ErrorInput,
     FieldErrorAlert,
+    ModificationDialogContent,
     SwitchInput,
 } from '@gridsuite/commons-ui';
 import { getPrefilledColumnGroups, PrefilledColumnGroup } from './prefillable-columns-config';
@@ -30,7 +31,6 @@ import {
     styles,
     USE_CURRENT_GRID_STATE,
 } from './utils';
-import { ModificationDialogContent } from 'components/dialogs/commons/modification-dialog-content';
 
 export default function GeneratePrefilledModelDialog({
     open,

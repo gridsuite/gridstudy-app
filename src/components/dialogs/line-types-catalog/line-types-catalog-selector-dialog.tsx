@@ -6,7 +6,14 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { CustomFormProvider, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DeepNullable,
+    ModificationDialog,
+    Option,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import {
@@ -19,10 +26,8 @@ import {
 } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { getLineTypeWithLimits } from '../../../services/network-modification';
-import { ModificationDialog } from '../commons/modificationDialog';
 import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { DeepNullable } from 'components/utils/ts-utils';
 import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
 
 const formSchema = yup
@@ -138,8 +143,8 @@ export default function LineTypesCatalogSelectorDialog({
                 );
 
                 if (filteredLimits) {
-                    const shapeFactorValue = parseFloat(shapeFactorId);
-                    if (!isNaN(shapeFactorValue) && shapeFactorValue !== 0) {
+                    const shapeFactorValue = Number.parseFloat(shapeFactorId);
+                    if (!Number.isNaN(shapeFactorValue) && shapeFactorValue !== 0) {
                         filteredLimits.forEach((limit) => {
                             limit.permanentLimit = Math.floor(limit.permanentLimit / shapeFactorValue);
                         });

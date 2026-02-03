@@ -22,8 +22,8 @@ import {
     P0,
     R,
 } from '../../../../utils/field-constants';
-import { Property } from '../../common/properties/property-utils';
 import { VscConverterStation, VscConverterStationFormInfos } from './converter-station/converter-station-type';
+import { Property } from '@gridsuite/commons-ui';
 
 export type VscDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;

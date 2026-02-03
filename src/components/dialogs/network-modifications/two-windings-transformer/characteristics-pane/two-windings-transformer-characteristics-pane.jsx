@@ -7,10 +7,17 @@
 
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { MicroSusceptanceAdornment, MVAPowerAdornment, OhmAdornment, VoltageAdornment } from '../../../dialog-utils';
-import { convertInputValue, FieldType, FloatInput } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    FieldType,
+    FloatInput,
+    MicroSusceptanceAdornment,
+    MVAPowerAdornment,
+    OhmAdornment,
+    PropertiesForm,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
 import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
-import PropertiesForm from '../../common/properties/properties-form';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
 

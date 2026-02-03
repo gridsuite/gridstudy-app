@@ -18,13 +18,19 @@ import {
     NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
-import { AutocompleteInput, FloatInput, TextInput } from '@gridsuite/commons-ui';
-import { filledTextField, KiloAmpereAdornment, VoltageAdornment } from '../../../dialog-utils';
+import {
+    AutocompleteInput,
+    filledTextField,
+    FloatInput,
+    KiloAmpereAdornment,
+    Properties,
+    PropertiesForm,
+    TextInput,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
 import { TextField, Grid } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
-import { Properties } from '../../common/properties/property-utils';
 
 interface VoltageLevelFormData {
     [NAME]?: string;

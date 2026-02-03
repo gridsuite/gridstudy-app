@@ -73,7 +73,6 @@
     "geoDataLoadingFail": "An error occurred while loading geographical data.",
 
     "parameters": "Parameters",
-    "button.restore": "Restore",
     "close": "Close",
     "validate": "Validate",
 
@@ -123,8 +122,6 @@
     "Spreadsheet": "Spreadsheet",
     "Results": "Results",
     "ID": "ID",
-    "Name": "Name",
-    "Country": "Country",
     "Country1": "Country 1",
     "Country2": "Country 2",
     "Properties": "Properties",
@@ -855,14 +852,8 @@
     "minSusceptance": "Susceptance min",
     "b0": "Fixed part of susceptance",
     "shuntCompensatorType": "Type",
-    "CreateSubstation": "Create substation",
-    "SubstationCreationError": "Error while creating substation",
-    "AdditionalInformation": "Additional information",
     "Information": "Information",
     "Property": "Property",
-    "AddProperty": "Add property",
-    "PropertyName": "Property name",
-    "PropertyValue": "Property value",
     "DuplicatedPropsError": "Duplicated properties: each property must be unique",
     "FillAllFields": "Please fill all fields",
     "ModifySubstation": "Modify substation",
@@ -996,7 +987,6 @@
     "IncoherentPhaseRegulatingTerminalError": "The phase tap Regulating terminal value must be filled",
     "RatioValuesError": "The values of the ratio tap ratios must be ordered and without duplicates",
     "PhaseShiftValuesError": "The values of the phase tap shifts must be ordered and without duplicates",
-    "TapPositionValueError": "The number of taps must not exceed the value {value}",
     "IncoherentLowTapPositionError": "The value should match the lowest tap position generated",
     "IncoherentHighTapPositionError": "The value should match the highest tap position generated",
 
@@ -1056,16 +1046,12 @@
     "HighTapAlpha": "Shift angle (high tap position)",
     "ImportDephasingRule": "Import dephasing rule",
 
-    "GenerateSkeleton": "Generate CSV template",
-    "GenerateTemplateFromFilter": "Generate from filter",
-    "GenerateFromFilterError": "Error while generating template from filter",
-    "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the template",
-    "uploadMessage": " No file selected",
-
     "DefinePropertiesButton": "Define properties",
     "DefinePropertiesTitle": "Additional properties",
     "GenerateEmptyModel": "Generate empty model",
+    "GenerateSkeleton": "Generate CSV template",
     "GeneratePrefilledModel": "Generate prefilled model",
+    "GenerateFromFilterError": "Error while generating template from filter",
     "RestrictEquipmentList": "Restrict equipment list",
     "CurrentGridState": "Current grid state",
     "ColumnSelectionRequired": "At least one column must be selected",
@@ -1084,10 +1070,6 @@
     "RatedVoltage": "Rated voltage",
     "TwoWindingsTransformerCreationError": "Error while creating a 2 windings transformer",
     "NewName": "New name",
-
-    "CopyFromExisting": "Copy from existing equipment",
-    "EquipmentCopied": "Data successfully copied from equipment {equipmentId}",
-    "EquipmentCopyFailed": "Equipment copy failed",
 
     "insertNodeAbove": "Above",
     "insertNodeBelow": "Below",
@@ -1203,7 +1185,6 @@
     "NADOpenedInTheGrid": "The network area diagram \"{elementId}\" was opened in the image grid",
     "generatedNADOpenedInTheGrid": "The generated network area diagram was opened in the image grid",
 
-    "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
     "AddSegment": "Add segment",
     "AtLeastOneSegmentNeeded": "At least one line segment is needed",

@@ -7,9 +7,8 @@
 
 import { useCallback, useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
-import { KilometerAdornment } from '../dialog-utils';
 import EditIcon from '@mui/icons-material/Edit';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { FloatInput, KilometerAdornment } from '@gridsuite/commons-ui';
 import { IconButton } from '@mui/material';
 import {
     SEGMENT_DISTANCE_VALUE,

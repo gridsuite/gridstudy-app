@@ -8,8 +8,7 @@
 import { Grid } from '@mui/material';
 import { DefParam, makeComponents, TYPES } from '../util/make-component-utils';
 import { FunctionComponent, useMemo } from 'react';
-import { getIdOrSelf } from '../../dialog-utils';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, getIdOrSelf } from '@gridsuite/commons-ui';
 import { MappingInfos } from 'services/study/dynamic-simulation.type';
 import { MAPPING } from './dynamic-simulation-utils';
 

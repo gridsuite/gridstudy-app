@@ -5,9 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    CustomFormProvider,
+    DeepNullable,
+    emptyProperties,
+    EquipmentSearchDialog,
+    EquipmentType,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    getPropertiesFromModification,
+    ModificationDialog,
+    Property,
+    sanitizeString,
+    snackWithFallback,
+    toModificationProperties,
+    useFormSearchCopy,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
     ADD_STAND_BY_AUTOMATON,
     ADDITIONAL_PROPERTIES,
@@ -44,30 +62,16 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { createStaticVarCompensator } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import StaticVarCompensatorCreationDialogTabs from './static-var-compensator-creation-dialog-tabs';
 import { Grid } from '@mui/material';
 import StaticVarCompensatorCreationForm from './static-var-compensator-creation-form';
@@ -82,8 +86,8 @@ import {
     getStandbyAutomatonFormData,
     getStandbyAutomatonFormValidationSchema,
 } from './standby-automaton-form-utils';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
+import { useStudyContext } from '../../../../../hooks/use-study-context';
 
 export type StaticVarCompensatorCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -169,7 +173,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
-
+    const studyContext = useStudyContext();
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm<DeepNullable<StaticVarCompensatorCreationSchemaForm>>({
@@ -286,7 +290,11 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR);
+    const searchCopy = useFormSearchCopy(
+        fromSearchCopyToFormValues,
+        EquipmentType.STATIC_VAR_COMPENSATOR,
+        studyContext
+    );
 
     useEffect(() => {
         if (editData) {
@@ -464,14 +472,15 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     tabIndex={tabIndex}
                 />
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    equipmentType={EquipmentType.STATIC_VAR_COMPENSATOR}
-                    currentNodeUuid={currentNodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                {studyContext && (
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        equipmentType={EquipmentType.STATIC_VAR_COMPENSATOR}
+                        studyContext={studyContext}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

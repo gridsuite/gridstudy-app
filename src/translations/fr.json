@@ -73,7 +73,6 @@
     "geoDataLoadingFail": "Erreur lors du chargement des données géographiques.",
 
     "parameters": "Paramètres",
-    "button.restore": "Restaurer",
     "close": "Fermer",
     "validate": "Valider",
 
@@ -123,8 +122,6 @@
     "Spreadsheet": "Tableur",
     "Results": "Résultats",
     "ID": "ID",
-    "Name": "Nom",
-    "Country": "Pays",
     "Country1": "Pays 1",
     "Country2": "Pays 2",
     "Properties": "Propriétés",
@@ -847,14 +844,8 @@
     "maximumSusceptance": "Susceptance max",
     "minSusceptance": "Susceptance min",
     "shuntCompensatorType": "Type",
-    "CreateSubstation": "Créer un site",
-    "SubstationCreationError": "Erreur lors de la création d'un site",
-    "AdditionalInformation": "Informations complémentaires",
     "Information": "Information",
     "Property": "Propriété",
-    "AddProperty": "Ajouter une propriété",
-    "PropertyName": "Nom de la propriété",
-    "PropertyValue": "Valeur de la propriété",
     "DuplicatedPropsError": "Propriétés dupliquées : chaque propriété doit être unique",
     "FillAllFields": "Veuillez remplir tous les champs",
     "ModifySubstation": "Modifier un site",
@@ -993,7 +984,6 @@
     "IncoherentPhaseRegulatingTerminalError": "La valeur du Terminal distant réglé du déphaseur doit être renseignée",
     "RatioValuesError": "Les rapports de transformation doivent être ordonnés et sans duplication",
     "PhaseShiftValuesError": "Les valeurs de déphasage doivent être ordonnés et sans duplication",
-    "TapPositionValueError": "Le nombre de prises ne doit pas dépasser la valeur {value}",
     "IncoherentLowTapPositionError": "La valeur doit correspondre à la plus petite prise générée",
     "IncoherentHighTapPositionError": "La valeur doit correspondre à la plus grande prise générée",
 
@@ -1053,16 +1043,12 @@
     "HighTapAlpha": "Déphasage (prise max)",
     "ImportDephasingRule": "Importer une loi de déphasage",
 
-    "GenerateSkeleton": "Générer le modèle",
-    "GenerateTemplateFromFilter": "Générer depuis un filtre",
-    "GenerateFromFilterError": "Erreur lors de la génération du modèle depuis le filtre",
-    "InvalidRuleHeader": "Le fichier n'a pas le bon en-tête, veuillez vous référer au modèle",
-    "uploadMessage": " Aucun fichier sélectionné",
-
     "DefinePropertiesButton": "Définir propriétés",
     "DefinePropertiesTitle": "Propriétés complémentaires",
+    "GenerateSkeleton": "Générer le modèle",
     "GenerateEmptyModel": "Générer un modèle vide",
     "GeneratePrefilledModel": "Générer un modèle pré-rempli",
+    "GenerateFromFilterError": "Erreur lors de la génération du modèle depuis le filtre",
     "RestrictEquipmentList": "Restreindre la liste des ouvrages",
     "CurrentGridState": "État actuel du réseau",
     "ColumnSelectionRequired": "Au moins une colonne doit être sélectionnée",
@@ -1081,10 +1067,6 @@
     "RatedVoltage": "Tension d'enroulement",
     "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
     "NewName": "Nouveau nom",
-
-    "CopyFromExisting": "Copier depuis un ouvrage existant",
-    "EquipmentCopied": "Données copiées depuis l'ouvrage {equipmentId}",
-    "EquipmentCopyFailed": "Erreur lors de la copie de l'ouvrage",
 
     "insertNodeAbove": "Au-dessus",
     "insertNodeBelow": "En-dessous",
@@ -1203,7 +1185,6 @@
     "dialog.button.leave": "Quitter",
     "dialog.button.launch": "Lancer",
 
-    "CatalogButtonTooltip": "Ouvrir le catalogue",
     "LineTypesCatalogDialogTitle": "Définir les segments de ligne",
     "AddSegment": "Ajouter segment",
     "AtLeastOneSegmentNeeded": "Au moins un segment de ligne est nécessaire",

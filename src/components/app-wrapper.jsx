@@ -80,6 +80,8 @@ import {
     treeviewFinderFr,
     useUniqueNameValidationEn,
     useUniqueNameValidationFr,
+    csvEn,
+    csvFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -418,6 +420,7 @@ const messages = {
         ...backend_locale_en,
         ...dynamic_mapping_models_en,
         ...csv_locale_en,
+        ...csvEn,
         ...filter_locale_en,
         ...menu_locale_en,
         ...table_locale_en,
@@ -460,6 +463,7 @@ const messages = {
         ...backend_locale_fr,
         ...dynamic_mapping_models_fr,
         ...csv_locale_fr,
+        ...csvFr,
         ...filter_locale_fr,
         ...menu_locale_fr,
         ...table_locale_fr,

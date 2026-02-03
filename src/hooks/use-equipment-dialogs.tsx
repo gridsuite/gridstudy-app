@@ -6,10 +6,17 @@
  */
 
 import { useCallback, useState } from 'react';
-import { EquipmentType, ExtendedEquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../components/utils/equipment-types';
+import {
+    EquipmentInfosTypes,
+    EquipmentType,
+    ExtendedEquipmentType,
+    fetchNetworkElementInfos,
+    PARAM_LANGUAGE,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 import { deleteEquipment } from '../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../services/study/network';
 import { CurrentTreeNode } from '../components/graph/tree-node.type';
 import type { UUID } from 'node:crypto';
 
@@ -25,6 +32,7 @@ import SubstationModificationDialog from 'components/dialogs/network-modificatio
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import VscModificationDialog from '../components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import { LccModificationDialog } from '../components/dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 type EquipmentToModify = {
     equipmentId: string;
@@ -40,7 +48,7 @@ interface UseEquipmentDialogsProps {
 
 export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetworkUuid }: UseEquipmentDialogsProps) => {
     const { snackError } = useSnackMessage();
-
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     // States
     const [equipmentToModify, setEquipmentToModify] = useState<EquipmentToModify>();
     const [equipmentToDelete, setEquipmentToDelete] = useState<EquipmentToModify>();
@@ -113,9 +121,9 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                     studyUuid,
                     currentNode?.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.HVDC_LINE,
-                    EQUIPMENT_INFOS_TYPES.MAP.type,
-                    equipmentId,
+                    EquipmentType.HVDC_LINE,
+                    EquipmentInfosTypes.MAP,
+                    equipmentId as UUID,
                     false
                 )
                     .then((hvdcInfos) => {
@@ -195,10 +203,11 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                     onClose={closeModificationDialog}
                     editData={undefined}
                     editDataFetchStatus={undefined}
+                    language={languageLocal}
                 />
             )
         );
-    }, [equipmentToModify, currentNode, currentRootNetworkUuid, studyUuid, closeModificationDialog]);
+    }, [equipmentToModify, currentNode, currentRootNetworkUuid, studyUuid, closeModificationDialog, languageLocal]);
 
     const renderDeletionDialog = useCallback(() => {
         if (!equipmentToDelete) {

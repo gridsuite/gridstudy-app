@@ -5,7 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DeepNullable,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    GsLang,
+    MODIFICATION_TYPES,
+    ModificationDialog,
+    sanitizeString,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -24,9 +36,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import {
     getConnectivityData,
     getConnectivityWithoutPositionEmptyFormData,
@@ -41,15 +51,11 @@ import {
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { buildNewBusbarSections } from 'components/utils/utils';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { divideLine } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils.type';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import { getNewVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
-import { DeepNullable } from '../../../utils/ts-utils';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
 import { VoltageLevel } from '../../../utils/equipment-types';
@@ -114,6 +120,7 @@ interface LineSplitWithVoltageLevelDialogProps {
     currentRootNetworkUuid: UUID;
     editData?: LineSplitEditData;
     isUpdate: boolean;
+    language: GsLang;
     editDataFetchStatus?: FetchStatus;
     onClose: () => void;
 }
@@ -134,6 +141,7 @@ const LineSplitWithVoltageLevelDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    language,
     editDataFetchStatus,
     ...dialogProps
 }: LineSplitWithVoltageLevelDialogProps) => {
@@ -332,7 +340,7 @@ const LineSplitWithVoltageLevelDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods} language={language}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -353,6 +361,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     onVoltageLevelChange={onVoltageLevelChange}
                     allVoltageLevelOptions={voltageLevelOptions}
                     isUpdate={isUpdate}
+                    language={language}
                     editDataFetchStatus={editDataFetchStatus}
                 />
             </ModificationDialog>

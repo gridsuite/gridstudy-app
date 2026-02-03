@@ -9,9 +9,7 @@ import { useState, useEffect, useCallback, ReactNode } from 'react';
 import { Popover, Typography, Card, CardHeader, CardContent } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
-import { fetchNetworkElementInfos } from '../../services/study/network';
-import { EquipmentType, useDebounce } from '@gridsuite/commons-ui';
+import { EquipmentInfosTypes, EquipmentType, fetchNetworkElementInfos, useDebounce } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'node:crypto';
 import { GenericEquipmentInfos } from './equipment-popover-type';
@@ -59,8 +57,8 @@ const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
                 currentNodeId,
                 currentRootNetworkUuid,
                 equipmentType,
-                EQUIPMENT_INFOS_TYPES.TOOLTIP.type,
-                equipmentId,
+                EquipmentInfosTypes.TOOLTIP,
+                equipmentId as UUID,
                 true
             ).then((value) => {
                 setEquipmentInfo(value);

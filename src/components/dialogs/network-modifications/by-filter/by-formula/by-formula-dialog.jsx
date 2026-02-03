@@ -11,16 +11,16 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
+    ModificationDialog,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
-import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from '../../../commons/modificationDialog';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import ByFormulaForm from './by-formula-form';
 import {
     EDITED_FIELD,

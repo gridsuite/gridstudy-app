@@ -20,7 +20,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
-import { Identifiable, TextInput } from '@gridsuite/commons-ui';
+import { FetchStatus, GsLang, Identifiable, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
@@ -39,7 +39,6 @@ import {
     LineCreationInfos,
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
-import { FetchStatus } from '../../../../services/utils.type';
 
 interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
@@ -54,6 +53,7 @@ interface LineAttachToVoltageLevelFormProps {
     setAttachmentPoint: Dispatch<SetStateAction<ExtendedVoltageLevelCreationInfo>>;
     allVoltageLevelOptions: Identifiable[];
     isUpdate: boolean;
+    language: GsLang;
     editDataFetchStatus?: FetchStatus;
 }
 
@@ -70,6 +70,7 @@ const LineAttachToVoltageLevelForm = ({
     setAttachmentPoint,
     allVoltageLevelOptions,
     isUpdate,
+    language,
     editDataFetchStatus,
 }: Readonly<LineAttachToVoltageLevelFormProps>) => {
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
@@ -255,6 +256,7 @@ const LineAttachToVoltageLevelForm = ({
                     isAttachmentPointModification={true}
                     titleId={'SpecifyAttachmentPoint'}
                     isUpdate={isUpdate}
+                    language={language}
                     editDataFetchStatus={editDataFetchStatus}
                 />
             )}
@@ -268,6 +270,7 @@ const LineAttachToVoltageLevelForm = ({
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
                     editData={isVoltageLevelEdit && voltageLevelToEdit ? (voltageLevelToEdit as any) : undefined}
                     isUpdate={isUpdate}
+                    language={language}
                     editDataFetchStatus={editDataFetchStatus}
                 />
             )}

@@ -13,16 +13,21 @@ import {
     TYPE,
 } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
-import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    ModificationDialog,
+    ModificationType,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../network/constants';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { FetchStatus } from 'services/utils.type';
 import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modification-form';
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { formatModification } from '../tabular/tabular-common';

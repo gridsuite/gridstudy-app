@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { sanitizeString } from '../dialog-utils';
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
@@ -46,6 +45,7 @@ import { LineModificationFormSchema } from '../network-modifications/line/modifi
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
 import { TestContext } from 'yup';
 import { APPLICABILITY } from 'components/network/constants';
+import { sanitizeString } from '@gridsuite/commons-ui';
 
 const limitsGroupValidationSchema = () => ({
     [ID]: yup.string().nonNullable().required(),

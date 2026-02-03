@@ -8,14 +8,20 @@
 import {
     ElementSaveDialog,
     ElementType,
+    FetchStatus,
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
+    NetworkModificationData,
     ModificationType,
     NetworkModificationMetadata,
+    PARAM_LANGUAGE,
+    removeNullFields,
     snackWithFallback,
+    SubstationCreationDialog,
     usePrevious,
     useSnackMessage,
+    fetchNetworkModification,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -45,7 +51,6 @@ import { LoadCreationDialog } from '../../../dialogs/network-modifications/load/
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
-import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import { TabularModificationType } from 'components/dialogs/network-modifications/tabular/tabular-common';
 import { TabularDialog } from 'components/dialogs/network-modifications/tabular/tabular-dialog';
@@ -69,7 +74,6 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
-import { fetchNetworkModification } from '../../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
     changeNetworkModificationOrder,
@@ -77,7 +81,6 @@ import {
     fetchNetworkModifications,
     stashModifications,
 } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
 import {
     ExcludedNetworkModifications,
     MenuDefinitionSubItem,
@@ -85,7 +88,6 @@ import {
     MenuSection,
     NetworkModificationCopyInfos,
     NetworkModificationCopyType,
-    NetworkModificationData,
 } from './network-modification-menu.type';
 import StaticVarCompensatorCreationDialog from '../../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
 import ModificationByAssignmentDialog from '../../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
@@ -95,6 +97,7 @@ import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-l
 import { styles } from './network-modification-node-editor-utils';
 import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
+import { useStudyContext } from '../../../../hooks/use-study-context';
 import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
@@ -115,6 +118,7 @@ import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modificat
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
@@ -149,6 +153,7 @@ const NetworkModificationNodeEditor = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -176,6 +181,8 @@ const NetworkModificationNodeEditor = () => {
 
     const copyInfosRef = useRef<NetworkModificationCopyInfos | null>(null);
     copyInfosRef.current = copyInfos;
+
+    const studyContext = useStudyContext();
 
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
@@ -210,6 +217,21 @@ const NetworkModificationNodeEditor = () => {
                 editData={editData}
                 isUpdate={isUpdate}
                 editDataFetchStatus={editDataFetchStatus}
+                language={languageLocal}
+            />
+        );
+    }
+
+    function modificationWithStudyContext(Dialog: React.FC<any>) {
+        return (
+            <Dialog
+                onClose={handleCloseDialog}
+                onValidated={handleValidatedDialog}
+                editData={editData}
+                isUpdate={isUpdate}
+                editDataFetchStatus={editDataFetchStatus}
+                studyContext={studyContext}
+                language={languageLocal}
             />
         );
     }
@@ -268,7 +290,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
                             label: 'menu.create',
-                            action: () => withDefaultParams(SubstationCreationDialog),
+                            action: () => modificationWithStudyContext(SubstationCreationDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
@@ -1012,22 +1034,6 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackError]);
 
-    const removeNullFields = useCallback((data: NetworkModificationData) => {
-        let dataTemp = data;
-        if (dataTemp) {
-            Object.keys(dataTemp).forEach((key) => {
-                if (dataTemp[key] && dataTemp[key] !== null && typeof dataTemp[key] === 'object') {
-                    dataTemp[key] = removeNullFields(dataTemp[key]);
-                }
-
-                if (dataTemp[key] === null) {
-                    delete dataTemp[key];
-                }
-            });
-        }
-        return dataTemp;
-    }, []);
-
     const doEditModification = useCallback(
         (modificationUuid: UUID, modificationType: ModificationType) => {
             setIsUpdate(true);
@@ -1046,11 +1052,13 @@ const NetworkModificationNodeEditor = () => {
                     });
                 })
                 .catch((error) => {
-                    snackWithFallback(snackError, error);
+                    snackWithFallback(snackError, error, {
+                        headerId: 'ModificationReadError',
+                    });
                     setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
-        [removeNullFields, snackError]
+        [snackError]
     );
 
     const onItemClick = (id: string) => {

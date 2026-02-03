@@ -26,7 +26,7 @@ import {
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
 import { MeasurementInfo } from '../../common/measurements/measurement.type';
-import { Property } from '../../common/properties/property-utils';
+import { Property } from '@gridsuite/commons-ui';
 
 export type LoadModificationSchemaForm = {
     [EQUIPMENT_NAME]?: string;

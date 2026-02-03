@@ -4,9 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    ModificationDialog,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -27,9 +35,6 @@ import {
     BALANCES_ADJUSTMENT_ZONES,
     SELECTED,
 } from '../../../utils/field-constants';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { FetchStatus } from '../../../../services/utils';
-import { FORM_LOADING_DELAY } from '../../../network/constants';
 import yup from 'components/utils/yup-config';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import {

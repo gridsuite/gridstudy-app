@@ -7,12 +7,12 @@
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { getQueryParamsList } from '../utils';
-import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
 import {
     backendFetchJson,
     backendFetchText,
     createFilter,
     EquipmentInfos,
+    EquipmentInfosTypes,
     EquipmentType,
     ExtendedEquipmentType,
     Identifiable,
@@ -270,7 +270,7 @@ export async function createMapContingencyList(
                 currentRootNetworkUuid,
                 selectedEquipmentsIds,
                 equipmentType,
-                EQUIPMENT_INFOS_TYPES.LIST.type,
+                EquipmentInfosTypes.LIST,
                 false,
                 nominalVoltages
             );

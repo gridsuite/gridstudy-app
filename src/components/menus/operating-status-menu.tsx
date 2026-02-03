@@ -29,18 +29,18 @@ import {
     snackWithFallback,
     useSnackMessage,
     PARAM_DEVELOPER_MODE,
+    fetchNetworkElementInfos,
+    EquipmentInfosTypes,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
-import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 import {
     energiseEquipmentEnd,
     lockoutEquipment,
     switchOnEquipment,
     tripEquipment,
 } from '../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../services/study/network';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
@@ -120,8 +120,8 @@ const withOperatingStatusMenu =
                     currentNode?.id,
                     currentRootNetworkUuid,
                     equipmentType,
-                    EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
-                    equipment.id,
+                    EquipmentInfosTypes.OPERATING_STATUS,
+                    equipment.id as UUID,
                     false
                 ).then((value) => {
                     if (value) {

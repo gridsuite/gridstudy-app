@@ -9,6 +9,7 @@ import {
     CustomFormProvider,
     DescriptionField,
     isObjectEmpty,
+    ModificationDialog,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -18,7 +19,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { isNodeExists } from 'services/study';
 import { NAME, DESCRIPTION } from 'components/utils/field-constants';

@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    filledTextField,
+    FloatInput,
+    MVAPowerAdornment,
+    PropertiesForm,
+    SelectInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_NAME,
@@ -18,12 +26,10 @@ import {
     RATED_NOMINAL_POWER,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField, MVAPowerAdornment } from '../../../dialog-utils';
 import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constants';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, TextField } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';

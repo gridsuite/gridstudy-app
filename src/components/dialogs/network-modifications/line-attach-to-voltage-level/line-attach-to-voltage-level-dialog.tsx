@@ -5,7 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DeepNullable,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    GsLang,
+    ModificationDialog,
+    ModificationType,
+    sanitizeString,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
@@ -24,9 +36,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import {
     getConnectivityPropertiesData,
     getConnectivityPropertiesValidationSchema,
@@ -40,8 +50,6 @@ import {
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { buildNewBusbarSections } from 'components/utils/utils';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { attachLine } from '../../../../services/study/network-modifications';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import LineAttachToVoltageLevelIllustration from './line-attach-to-voltage-level-illustration';
@@ -49,8 +57,6 @@ import { getNewVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { VoltageLevel } from '../../../utils/equipment-types';
-import { DeepNullable } from '../../../utils/ts-utils';
-import { FetchStatus } from '../../../../services/utils.type';
 import {
     AttachLineInfo,
     ExtendedVoltageLevelCreationInfo,
@@ -97,6 +103,7 @@ interface LineAttachToVoltageLevelDialogProps {
     currentRootNetworkUuid: UUID;
     editData?: AttachLineInfo;
     isUpdate: boolean;
+    language: GsLang;
     editDataFetchStatus?: FetchStatus;
     onClose: () => void;
 }
@@ -117,6 +124,7 @@ const LineAttachToVoltageLevelDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    language,
     editDataFetchStatus,
     ...dialogProps
 }: LineAttachToVoltageLevelDialogProps) => {
@@ -430,7 +438,7 @@ const LineAttachToVoltageLevelDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods} language={language}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -455,6 +463,7 @@ const LineAttachToVoltageLevelDialog = ({
                     setAttachmentPoint={setAttachmentPoint}
                     allVoltageLevelOptions={voltageLevelOptions}
                     isUpdate={isUpdate}
+                    language={language}
                     editDataFetchStatus={editDataFetchStatus}
                 />
             </ModificationDialog>

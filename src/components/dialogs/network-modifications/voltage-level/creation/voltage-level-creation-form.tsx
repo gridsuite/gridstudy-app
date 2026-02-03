@@ -24,27 +24,28 @@ import {
     SUBSTATION_NAME,
 } from 'components/utils/field-constants';
 import React, { useCallback, useEffect, useState } from 'react';
-import { KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
 import {
     AutocompleteInput,
+    CountrySelectionInput,
     EquipmentType,
     fetchDefaultCountry,
     FloatInput,
     IntegerInput,
+    KiloAmpereAdornment,
+    PropertiesForm,
     TextInput,
+    VoltageAdornment,
 } from '@gridsuite/commons-ui';
 import { Box, Grid, Paper, Tooltip } from '@mui/material';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
-import PropertiesForm from '../../common/properties/properties-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import IconButton from '@mui/material/IconButton';
 import { useIntl } from 'react-intl';
-import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selection-input';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
 import { UUID } from 'node:crypto';

@@ -5,35 +5,39 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DeepNullable,
+    EquipmentInfosTypes,
+    EquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    GsLang,
+    ModificationDialog,
+    modificationPropertiesSchema,
+    Property,
+    sanitizeString,
+    snackWithFallback,
+    SubstationInfos,
+    toModificationProperties,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
-import { sanitizeString } from '../../../dialog-utils';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifySubstation } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
-import {
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { AttributeModification } from 'services/network-modification-types';
 import { useForm } from 'react-hook-form';
-import { DeepNullable } from '../../../../utils/ts-utils';
-import { SubstationInfos } from '../substation-dialog.type';
 
 const formSchema = yup
     .object()
@@ -64,6 +68,7 @@ interface SubstationModificationDialogProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
+    language: GsLang;
     editDataFetchStatus?: string;
     editData?: SubstationModificationEditData;
     defaultIdValue?: string;
@@ -87,6 +92,7 @@ const SubstationModificationDialog = ({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    language,
     editDataFetchStatus,
     ...dialogProps
 }: SubstationModificationDialogProps) => {
@@ -127,9 +133,9 @@ const SubstationModificationDialog = ({
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.SUBSTATION,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentType.SUBSTATION,
+                    EquipmentInfosTypes.FORM,
+                    equipmentId as UUID,
                     true
                 )
                     .then((substation: SubstationInfos) => {
@@ -197,6 +203,7 @@ const SubstationModificationDialog = ({
             removeOptional={true}
             isNodeBuilt={isNodeBuilt(currentNode)}
             isUpdate={isUpdate}
+            language={language}
         >
             <ModificationDialog
                 fullWidth

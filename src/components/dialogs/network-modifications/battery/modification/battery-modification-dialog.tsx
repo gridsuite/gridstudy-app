@@ -8,9 +8,21 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    DeepNullable,
+    emptyProperties,
+    EquipmentInfosTypes,
     EquipmentType,
+    fetchNetworkElementInfos,
+    FetchStatus,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
+    ModificationDialog,
+    modificationPropertiesSchema,
+    sanitizeString,
     snackWithFallback,
+    toModificationProperties,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -43,25 +55,14 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { sanitizeString } from '../../../dialog-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsValidationSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -69,8 +70,6 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
-import { FetchStatus } from '../../../../../services/utils.type';
 import { toModificationOperation } from '../../../../utils/utils';
 import {
     getActivePowerControlEmptyFormData,
@@ -79,7 +78,6 @@ import {
 import { BatteryModificationInfos } from '../../../../../services/network-modification-types';
 import BatteryModificationForm from './battery-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import {
@@ -87,6 +85,7 @@ import {
     getShortCircuitFormData,
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
+import { UUID } from 'node:crypto';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -231,8 +230,8 @@ export default function BatteryModificationDialog({
                     currentNode.id,
                     currentRootNetworkUuid,
                     EquipmentType.BATTERY,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
+                    EquipmentInfosTypes.FORM,
+                    equipmentId as UUID,
                     true
                 )
                     .then((value: BatteryFormInfos) => {

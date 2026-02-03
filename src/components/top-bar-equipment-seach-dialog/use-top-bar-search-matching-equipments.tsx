@@ -4,25 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import type { UUID } from 'node:crypto';
-import { useSearchMatchingEquipments } from './use-search-matching-equipments';
+
 import { useMemo } from 'react';
 import { getLocalStorageSearchEquipmentHistory } from 'redux/session-storage/search-equipment-history';
-import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType, StudyContext, useSearchMatchingEquipments } from '@gridsuite/commons-ui';
 
 interface UseTopBarSearchMatchingEquipmentProps {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    currentRootNetworkUuid: UUID;
+    studyContext: StudyContext;
     equipmentType?: EquipmentType | ExtendedEquipmentType;
 }
 
 export const useTopBarSearchMatchingEquipment = (props: UseTopBarSearchMatchingEquipmentProps) => {
-    const { nodeUuid, studyUuid, currentRootNetworkUuid, equipmentType } = props;
+    const { studyContext, equipmentType } = props;
     const { equipmentsFound, searchTerm, ...otherStates } = useSearchMatchingEquipments({
-        studyUuid: studyUuid,
-        nodeUuid: nodeUuid,
-        currentRootNetworkUuid: currentRootNetworkUuid,
+        studyContext: studyContext,
         equipmentType: equipmentType ?? undefined,
     });
 
@@ -31,9 +26,9 @@ export const useTopBarSearchMatchingEquipment = (props: UseTopBarSearchMatchingE
         if (searchTerm.length > 0 || equipmentType !== undefined) {
             return equipmentsFound;
         } else {
-            return getLocalStorageSearchEquipmentHistory(studyUuid); //elements from localstorage
+            return getLocalStorageSearchEquipmentHistory(studyContext.studyId); //elements from localstorage
         }
-    }, [searchTerm, equipmentType, equipmentsFound, studyUuid]);
+    }, [searchTerm, equipmentType, equipmentsFound, studyContext.studyId]);
 
     return {
         ...otherStates,

@@ -8,16 +8,21 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    ModificationDialog,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
-import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { VARIATION_TYPES } from 'components/network/constants';
 import { generatorScaling } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
 import { Variations, VariationType } from '../../../../services/network-modification-types';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';

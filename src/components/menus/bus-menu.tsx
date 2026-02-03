@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { RunningStatus } from 'components/utils/running-status';
-import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { convertToEquipmentType, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
@@ -24,13 +24,15 @@ import { tripEquipment } from '../../services/study/network-modifications';
 import {
     ComputingType,
     CustomMenuItem,
-    type EquipmentType,
+    EquipmentInfosTypes,
+    EquipmentType,
+    fetchNetworkElementInfos,
     type MuiStyles,
     PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { fetchNetworkElementInfos } from '../../services/study/network';
+import { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 interface BusMenuProps {
@@ -93,9 +95,9 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             studyUuid,
             currentNode?.id,
             currentRootNetworkUuid,
-            EQUIPMENT_TYPES.BUSBAR_SECTION,
-            EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
-            busId,
+            EquipmentType.BUSBAR_SECTION,
+            EquipmentInfosTypes.OPERATING_STATUS,
+            busId as UUID,
             false
         ).then((value: EquipmentInfo | null) => {
             if (value) {

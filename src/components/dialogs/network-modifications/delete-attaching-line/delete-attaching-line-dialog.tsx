@@ -5,9 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FetchStatus,
+    FORM_LOADING_DELAY,
+    ModificationDialog,
+    NetworkModificationData,
+    sanitizeString,
+    snackWithFallback,
+    useOpenShortWaitFetching,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -17,17 +26,12 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import { ModificationDialog } from '../../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { deleteAttachingLine } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
 import DeleteAttachingLineIllustration from './delete-attaching-line-illustration';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { UUID } from 'node:crypto';
-import { NetworkModificationData } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 interface DeleteAttachingLineFormData {
     [ATTACHED_LINE_ID]: string;

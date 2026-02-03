@@ -11,16 +11,17 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    DeepNullable,
+    FetchStatus,
     FieldType,
+    FORM_LOADING_DELAY,
+    ModificationDialog,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FC, useCallback, useEffect, useMemo } from 'react';
-import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from '../../../commons/modificationDialog';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import ModificationByAssignmentForm from './modification-by-assignment-form';
 import { ASSIGNMENTS, EDITED_FIELD, EQUIPMENT_TYPE_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
 import { modifyByAssignment } from '../../../../../services/study/network-modifications';
@@ -31,7 +32,6 @@ import {
     getDataType,
 } from './assignment/assignment-utils';
 import { Assignment, ModificationByAssignment } from './assignment/assignment.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { useIntl } from 'react-intl';
 
 const emptyFormData = {

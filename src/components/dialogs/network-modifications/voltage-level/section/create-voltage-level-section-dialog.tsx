@@ -6,17 +6,20 @@
  */
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
+    FetchStatus,
+    FORM_LOADING_DELAY,
     MODIFICATION_TYPES,
+    ModificationDialog,
     snackWithFallback,
+    useOpenShortWaitFetching,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY, POSITION_NEW_SECTION_SIDE } from 'components/network/constants';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
+import { POSITION_NEW_SECTION_SIDE } from 'components/network/constants';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -32,14 +35,12 @@ import {
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
 import yup from '../../../../utils/yup-config';
-import { FetchStatus } from 'services/utils';
 import { EquipmentIdSelector } from 'components/dialogs/equipment-id/equipment-id-selector';
 import { CreateVoltageLevelSectionForm } from './create-voltage-level-section-form';
 import { BusBarSections, CreateVoltageLevelSectionDialogSchemaForm } from './voltage-level-section.type';
 import { CreateVoltageLevelSectionInfos } from '../../../../../services/network-modification-types';
 import { createVoltageLevelSection } from '../../../../../services/study/network-modifications';
 import { fetchVoltageLevelBusBarSectionsInfos } from '../../../../../services/study/network';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { BusBarSectionsInfos } from '../../../../../services/study/network-map.type';
 
 const getBusBarIndexValue = ({ busbarIndex, allBusbars }: { busbarIndex: string | null; allBusbars: boolean }) => {
