@@ -2,8 +2,8 @@
     "debug.message.downloadFile": "Computation data will be downloaded upon its completion.",
     "debug.header.fileNotFound": "Computation data not found",
     "debug.header.fileError": "Computation data download failed",
-    "export.message.started": "Export {fileName} started",
-    "export.message.succeeded": "Export {fileName} succeeded",
+    "export.message.started": "Export of case {fileName} started",
+    "export.message.succeeded": "Export of case {fileName} succeeded",
     "export.message.failed": "Node export failed",
 
     "button.delete": "Delete",
