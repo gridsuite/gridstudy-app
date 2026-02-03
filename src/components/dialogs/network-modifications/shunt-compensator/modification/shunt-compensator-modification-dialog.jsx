@@ -46,7 +46,7 @@ import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,
     getCharacteristicsFormValidationSchema,
-} from '../characteristics-pane/characteristics-form-utils';
+} from '../characteristics-pane/characteristics-form-utils.ts';
 import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useState } from 'react';
