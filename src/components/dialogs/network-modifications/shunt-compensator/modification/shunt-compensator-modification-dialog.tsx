@@ -182,10 +182,11 @@ export default function ShuntCompensatorModificationDialog({
                                 snackError({
                                     headerId: 'ShuntCompensatorNonlinearError',
                                 });
-                                setIsLinear(true);
+                                setIsLinear(false);
                             } else {
                                 setShuntCompensatorInfos(shuntCompensator);
                                 setDataFetchStatus(FetchStatus.SUCCEED);
+                                setIsLinear(true);
                                 reset(
                                     (formValues) => ({
                                         ...formValues,
@@ -289,7 +290,7 @@ export default function ShuntCompensatorModificationDialog({
                 }
                 {...dialogProps}
             >
-                {(selectedId === null || isLinear) && (
+                {(selectedId === null || !isLinear) && (
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
@@ -297,7 +298,7 @@ export default function ShuntCompensatorModificationDialog({
                         fillerHeight={5}
                     />
                 )}
-                {selectedId !== null && !isLinear && (
+                {selectedId !== null && isLinear && (
                     <ShuntCompensatorModificationForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}
