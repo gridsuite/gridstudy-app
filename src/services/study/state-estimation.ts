@@ -20,7 +20,7 @@ export function startStateEstimation(
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/state-estimation/run';
+        '/state-estimation/run?debug=true';
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
