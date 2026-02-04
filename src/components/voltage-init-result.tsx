@@ -388,10 +388,22 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 <Box sx={styles.container}>
                     <Box sx={styles.tabs}>
                         <Tabs value={tabIndex} onChange={(_event, newTabIndex) => setTabIndex(newTabIndex)}>
-                            <Tab label={intl.formatMessage({ id: 'ReactiveSlacks' })} />
-                            <Tab label={intl.formatMessage({ id: 'Indicators' })} />
-                            <Tab label={intl.formatMessage({ id: 'BusVoltages' })} />
-                            <Tab label={intl.formatMessage({ id: 'ComputationResultsLogs' })} />
+                            <Tab
+                                label={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                                data-testid="VoltageInitReactiveSlacksTab"
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'Indicators' })}
+                                data-testid="VoltageInitIndicatorsTab"
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'BusVoltages' })}
+                                data-testid="VoltageInitCalculatedVoltageProfileTab"
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'ComputationResultsLogs' })}
+                                data-testid="VoltageInitLogsTab"
+                            />
                         </Tabs>
                     </Box>
                     <Box sx={mergeSx(tabIndex === 0 || tabIndex === 2 ? styles.show : styles.hide)}>
@@ -407,6 +419,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                             variant="outlined"
                             onClick={previewModifications}
                             disabled={!result?.modificationsGroupUuid || disableApplyModifications}
+                            data-testid="VoltageInitPreviewModificationsButton"
                         >
                             <FormattedMessage id="previewModifications" />
                         </Button>
