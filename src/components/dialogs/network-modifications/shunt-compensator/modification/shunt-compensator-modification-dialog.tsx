@@ -178,12 +178,7 @@ export default function ShuntCompensatorModificationDialog({
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
-                            if (!shuntCompensator.isLinear) {
-                                snackError({
-                                    headerId: 'ShuntCompensatorNonlinearError',
-                                });
-                                setIsLinear(false);
-                            } else {
+                            if (shuntCompensator.isLinear) {
                                 setShuntCompensatorInfos(shuntCompensator);
                                 setDataFetchStatus(FetchStatus.SUCCEED);
                                 setIsLinear(true);
@@ -194,6 +189,11 @@ export default function ShuntCompensatorModificationDialog({
                                     }),
                                     { keepDirty: true }
                                 );
+                            } else {
+                                snackError({
+                                    headerId: 'ShuntCompensatorNonlinearError',
+                                });
+                                setIsLinear(false);
                             }
                         }
                     })
