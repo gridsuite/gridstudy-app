@@ -22,7 +22,7 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { exportSensitivityResultsAsCsv } from 'services/study/sensitivity-analysis';
 import { SensiKind } from './sensitivity-analysis-result.type';
-import { FilterType, SortWay } from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
@@ -58,7 +58,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
 
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
-    const { filters } = useFilterSelector(FilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );

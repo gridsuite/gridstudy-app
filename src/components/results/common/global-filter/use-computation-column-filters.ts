@@ -13,7 +13,7 @@ import { updateColumnFiltersAction } from '../../../../redux/actions';
 
 export type ComputationResultColumnFilterInfos = {
     columnId: string;
-    columnFilterInfos: any;
+    columnFilterInfos: FilterConfig;
 };
 const EMPTY_ARRAY: FilterConfig[] = [];
 export function useComputationColumnFilters(filterType: FilterType, computationSubType: string) {
@@ -22,9 +22,9 @@ export function useComputationColumnFilters(filterType: FilterType, computationS
     useEffect(() => {
         studyUuid &&
             getComputationResultColumnFilters(studyUuid, filterType, computationSubType).then(
-                (columnFilterInfos: ComputationResultColumnFilterInfos[] | null) => {
-                    const filters: FilterConfig[] = Array.isArray(columnFilterInfos)
-                        ? columnFilterInfos.flatMap(({ columnId, columnFilterInfos }) =>
+                (computationResultColumnFilterInfos: ComputationResultColumnFilterInfos[] | null) => {
+                    const filters: FilterConfig[] = Array.isArray(computationResultColumnFilterInfos)
+                        ? computationResultColumnFilterInfos.flatMap(({ columnId, columnFilterInfos }) =>
                               (Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos]).map(
                                   (f): FilterConfig => ({
                                       column: columnId,

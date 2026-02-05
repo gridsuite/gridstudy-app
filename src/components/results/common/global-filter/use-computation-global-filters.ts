@@ -20,17 +20,18 @@ export function useComputationGlobalFilters(filterType: FilterType) {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     useEffect(() => {
-        if (!studyUuid) return;
-        getComputationResultGlobalFilters(studyUuid, filterType).then((globalFiltersInfos: GlobalFilter[] | null) => {
-            const globalFilters = Array.isArray(globalFiltersInfos) ? globalFiltersInfos : EMPTY_ARRAY;
-            dispatch(updateGlobalFiltersAction(filterType, globalFilters));
-        });
+        studyUuid &&
+            getComputationResultGlobalFilters(studyUuid, filterType).then(
+                (globalFiltersInfos: GlobalFilter[] | null) => {
+                    const globalFilters = Array.isArray(globalFiltersInfos) ? globalFiltersInfos : EMPTY_ARRAY;
+                    dispatch(updateGlobalFiltersAction(filterType, globalFilters));
+                }
+            );
     }, [dispatch, studyUuid, filterType]);
     const updateGlobalFilters = useCallback(
         (rawGlobalFilters: GlobalFilter[]) => {
             dispatch(updateGlobalFiltersAction(filterType, rawGlobalFilters));
-            if (!studyUuid) return;
-            updateComputationResultFilters(studyUuid, filterType, rawGlobalFilters).then();
+            studyUuid && updateComputationResultFilters(studyUuid, filterType, rawGlobalFilters).then();
         },
         [dispatch, filterType, studyUuid]
     );

@@ -28,15 +28,15 @@ export const useAgGridInitialColumnFilters = (
 
     return useCallback(
         (params: GridReadyEvent) => {
-            const { api } = params;
+            const api = params.api;
+            if (!api) return;
             const { computationFilters } = store.getState();
             const filters = computationFilters?.[filterType]?.columnsFilters?.[computationSubType]?.columns;
-            if (!api) return;
             updateAgGridFilters(api, filters);
-            api?.sizeColumnsToFit();
-            if (onGridReady) {
-                onGridReady(params);
-            }
+            requestAnimationFrame(() => {
+                api.sizeColumnsToFit();
+            });
+            onGridReady?.(params);
         },
         [filterType, computationSubType, store, onGridReady]
     );

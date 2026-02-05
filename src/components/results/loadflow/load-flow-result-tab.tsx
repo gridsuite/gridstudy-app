@@ -35,7 +35,7 @@ import { StatusCellRender } from '../common/result-cell-renderers';
 import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
-import { FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
@@ -89,7 +89,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
 
-    const { filters } = useComputationColumnFilters(FilterType.Loadflow, mappingTabs(tabIndex));
+    const { filters } = useComputationColumnFilters(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);

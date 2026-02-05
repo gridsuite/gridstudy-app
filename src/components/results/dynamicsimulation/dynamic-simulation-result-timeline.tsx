@@ -13,14 +13,13 @@ import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { AgGridReact } from 'ag-grid-react';
-import { FilterType } from '../../../types/custom-aggrid-types';
+import { FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
 import {
@@ -30,6 +29,8 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/study/dynamic-simulation';
+import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 const styles = {
     loader: {
@@ -90,7 +91,7 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: FilterType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateAgGridFilters,
+                                updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.NUMBER,
                                 comparators: Object.values(FILTER_NUMBER_COMPARATORS),
                             },
@@ -115,7 +116,7 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: FilterType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateAgGridFilters,
+                                updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
@@ -139,7 +140,7 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: FilterType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateAgGridFilters,
+                                updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
@@ -165,7 +166,7 @@ const DynamicSimulationResultTimeline = memo(
         );
 
         const rowDataToShow = useMemo(() => (overlayMessage ? [] : timelines), [timelines, overlayMessage]);
-
+        const onGridReady = useAgGridInitialColumnFilters(AgGridFilterType.DynamicSimulation, TIMELINE);
         return (
             <>
                 {isLoading && (
@@ -178,6 +179,7 @@ const DynamicSimulationResultTimeline = memo(
                     rowData={rowDataToShow}
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
+                    onGridReady={onGridReady}
                     overlayNoRowsTemplate={overlayMessage}
                     overrideLocales={AGGRID_LOCALES}
                 />
