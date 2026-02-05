@@ -272,10 +272,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         <>
             <Box sx={styles.flexWrapper}>
                 <Tabs value={tabIndex} onChange={handleTabChange} sx={styles.flexElement}>
-                    <Tab label={<FormattedMessage id={'LoadFlowResultsCurrentViolations'} />} />
-                    <Tab label={<FormattedMessage id={'LoadFlowResultsVoltageViolations'} />} />
-                    <Tab label={<FormattedMessage id={'LoadFlowResultsSummary'} />} />
-                    <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
+                    <Tab
+                        data-testid="LfCurrentViolationsTab"
+                        label={<FormattedMessage id={'LoadFlowResultsCurrentViolations'} />}
+                    />
+                    <Tab
+                        data-testid="LfVoltageViolationsTab"
+                        label={<FormattedMessage id={'LoadFlowResultsVoltageViolations'} />}
+                    />
+                    <Tab data-testid="LfSummaryTab" label={<FormattedMessage id={'LoadFlowResultsSummary'} />} />
+                    <Tab data-testid="LfLogsTab" label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <GlobalFilterSelector

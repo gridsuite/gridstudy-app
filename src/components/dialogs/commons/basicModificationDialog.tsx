@@ -35,7 +35,7 @@ export function BasicModificationDialog({
     };
 
     const submitButton = (
-        <Button onClick={handleSubmit} variant="outlined" disabled={disabledSave}>
+        <Button onClick={handleSubmit} variant="outlined" disabled={disabledSave} data-testid="ValidateButton">
             <FormattedMessage id="validate" />
         </Button>
     );
