@@ -10,16 +10,16 @@ import { Box, IconButton, Theme } from '@mui/material';
 import { Close, Minimize, PushPin, PushPinOutlined, Fullscreen, FullscreenExit } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { closePanel, toggleMinimize, toggleMaximize, togglePin } from '../../../redux/slices/workspace-slice';
 import type { UUID } from 'node:crypto';
+import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { SldAssociationButton } from './sld-association-button';
 
-const getHeaderStyles = (theme: Theme, isFocused: boolean, isMaximized: boolean) => {
+const getHeaderStyles = (theme: Theme, isFocused: boolean, maximized: boolean) => {
     let backgroundColor: string;
     let border: string;
     if (theme.palette.mode === 'light') {
@@ -28,7 +28,7 @@ const getHeaderStyles = (theme: Theme, isFocused: boolean, isMaximized: boolean)
     } else {
         backgroundColor = '#292e33';
         border =
-            isFocused && !isMaximized ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
+            isFocused && !maximized ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
     }
 
     return {
@@ -86,14 +86,14 @@ interface PanelHeaderProps {
     panelId: UUID;
     title: string;
     panelType: PanelType;
-    isPinned: boolean;
-    isMaximized: boolean;
+    pinned: boolean;
+    maximized: boolean;
     isFocused: boolean;
 }
 
-export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximized, isFocused }: PanelHeaderProps) => {
-    const dispatch = useDispatch();
+export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized, isFocused }: PanelHeaderProps) => {
     const intl = useIntl();
+    const { deletePanel, minimizePanel, maximizePanel, pinPanel } = useWorkspacePanelActions();
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
@@ -101,15 +101,21 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
         // If it's a parameters panel with unsaved changes, trigger confirmation dialog
         if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
             globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
-        } else if (panelType === PanelType.NAD) {
-            globalThis.dispatchEvent(new CustomEvent('nadPanel:requestClose', { detail: panelId }));
+        } else if (
+            panelType === PanelType.NAD ||
+            panelType === PanelType.SLD_VOLTAGE_LEVEL ||
+            panelType === PanelType.SLD_SUBSTATION
+        ) {
+            // Diagram panels are deleted
+            deletePanel(panelId);
         } else {
-            dispatch(closePanel(panelId));
+            // Other panels are minimized
+            minimizePanel(panelId);
         }
     };
 
     return (
-        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, isMaximized)}>
+        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, maximized)}>
             <Box sx={styles.title}>
                 <Box sx={styles.titleContent}>
                     {getPanelConfig(panelType).icon}
@@ -121,10 +127,10 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     className="panel-header-close-button"
                     size="small"
                     sx={styles.iconButton}
-                    onClick={() => dispatch(togglePin(panelId))}
+                    onClick={() => pinPanel(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
-                    {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
+                    {pinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                 </IconButton>
                 {panelType === PanelType.SLD_VOLTAGE_LEVEL && (
                     <SldAssociationButton panelId={panelId} title={title} iconButtonStyles={styles.iconButton} />
@@ -136,7 +142,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                         className="panel-header-close-button"
                         size="small"
                         sx={styles.iconButton}
-                        onClick={() => dispatch(toggleMinimize(panelId))}
+                        onClick={() => minimizePanel(panelId)}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         <Minimize fontSize="small" />
@@ -146,10 +152,10 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     className="panel-header-close-button"
                     size="small"
                     sx={styles.iconButton}
-                    onClick={() => dispatch(toggleMaximize(panelId))}
+                    onClick={() => maximizePanel(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
-                    {isMaximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
+                    {maximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
                 </IconButton>
                 <IconButton
                     className="panel-header-close-button"
@@ -157,7 +163,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, isPinned, isMaximi
                     sx={styles.iconButton}
                     onClick={handleClose}
                     onMouseDown={(e) => e.stopPropagation()}
-                    disabled={isPinned}
+                    disabled={pinned}
                 >
                     <Close fontSize="small" />
                 </IconButton>

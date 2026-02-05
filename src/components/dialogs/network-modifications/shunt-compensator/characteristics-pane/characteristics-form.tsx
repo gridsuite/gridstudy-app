@@ -8,9 +8,9 @@
 import {
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
-    MAXIMUM_SECTION_COUNT,
-    MAX_SUSCEPTANCE,
     MAX_Q_AT_NOMINAL_V,
+    MAX_SUSCEPTANCE,
+    MAXIMUM_SECTION_COUNT,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
     SWITCHED_ON_Q_AT_NOMINAL_V,
@@ -24,9 +24,17 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
 import GridItem from '../../../commons/grid-item';
+import { ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
 
+export type CharacteristicsFormProps = {
+    previousValues?: ShuntCompensatorFormInfos;
+    isModification: boolean;
+};
 // this component needs to be isolated to avoid too many rerenders
-export const CharacteristicsForm = ({ previousValues, isModification = false }) => {
+export default function CharacteristicsForm({
+    previousValues,
+    isModification = false,
+}: Readonly<CharacteristicsFormProps>) {
     const intl = useIntl();
     const { setValue } = useFormContext();
 
@@ -35,13 +43,19 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
     });
 
     const previousMaxQAtNominalV = useMemo(() => {
-        const previousValue = previousValues?.qatNominalV * previousValues?.maximumSectionCount;
-        return isNaN(previousValue) ? null : previousValue;
+        const prevValue =
+            previousValues?.qAtNominalV && previousValues?.maximumSectionCount
+                ? previousValues?.qAtNominalV * previousValues.maximumSectionCount
+                : undefined;
+        return Number.isNaN(prevValue) ? undefined : prevValue;
     }, [previousValues]);
 
     const previousMaxSusceptance = useMemo(() => {
-        const previousValue = previousValues?.bperSection * previousValues?.maximumSectionCount;
-        return isNaN(previousValue) ? null : previousValue;
+        const prevValue =
+            previousValues?.bPerSection && previousValues?.maximumSectionCount
+                ? previousValues.bPerSection * previousValues.maximumSectionCount
+                : undefined;
+        return Number.isNaN(prevValue) ? undefined : prevValue;
     }, [previousValues]);
     const currentSectionCount = useMemo(
         () => sectionCount ?? previousValues?.sectionCount,
@@ -67,7 +81,7 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
         <IntegerInput
             name={MAXIMUM_SECTION_COUNT}
             label={'maximumSectionCount'}
-            previousValue={previousValues?.maximumSectionCount}
+            previousValue={previousValues?.maximumSectionCount ?? undefined}
             clearable={isModification}
         />
     );
@@ -76,7 +90,7 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
         <IntegerInput
             name={SECTION_COUNT}
             label={'sectionCount'}
-            previousValue={previousValues?.sectionCount}
+            previousValue={previousValues?.sectionCount ?? undefined}
             clearable={isModification}
         />
     );
@@ -96,7 +110,11 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
             name={SWITCHED_ON_Q_AT_NOMINAL_V}
             label={'SwitchedOnMaxQAtNominalV'}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.qatNominalV * previousValues?.sectionCount}
+            previousValue={
+                previousValues?.qAtNominalV && previousValues?.sectionCount
+                    ? previousValues.qAtNominalV * previousValues.sectionCount
+                    : undefined
+            }
             formProps={{
                 disabled: true,
             }}
@@ -105,15 +123,15 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
 
     const previousShuntCompensatorType = useMemo(
         () =>
-            previousValues?.bperSection
+            previousValues?.bPerSection
                 ? intl.formatMessage({
                       id:
-                          previousValues.bperSection > 0
+                          previousValues.bPerSection > 0
                               ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.label
                               : SHUNT_COMPENSATOR_TYPES.REACTOR.label,
                   })
                 : '',
-        [previousValues?.bperSection, intl]
+        [previousValues?.bPerSection, intl]
     );
 
     const shuntCompensatorTypeField = (
@@ -141,7 +159,11 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
             name={SWITCHED_ON_SUSCEPTANCE}
             label={'SwitchedOnMaxSusceptance'}
             adornment={SusceptanceAdornment}
-            previousValue={previousValues?.bperSection * previousValues?.sectionCount}
+            previousValue={
+                previousValues?.bPerSection && previousValues.sectionCount
+                    ? previousValues?.bPerSection * previousValues.sectionCount
+                    : undefined
+            }
             formProps={{
                 disabled: true,
             }}
@@ -153,7 +175,7 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
     );
 
     const handleSwitchedOnValue = useCallback(
-        (currentLinkedSwitchedOnValue, SWITCHED_ON_FIELD) => {
+        (currentLinkedSwitchedOnValue: number, SWITCHED_ON_FIELD: string) => {
             if (
                 ![currentSectionCount, currentMaximumSectionCount, currentLinkedSwitchedOnValue].includes(null) &&
                 currentMaximumSectionCount >= currentSectionCount
@@ -198,4 +220,4 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
             )}
         </Grid>
     );
-};
+}
