@@ -16,11 +16,13 @@ import {
     Theme,
     Tooltip,
 } from '@mui/material';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { unbuildAllStudyNodes } from 'services/study/study';
+import { NETWORK_MODIFICATION } from '../../../../utils/report/report.constant';
+import { BUILD_STATUS } from '../../../network/constants';
 
 const styles = {
     button: {
@@ -29,14 +31,19 @@ const styles = {
     playColor: (theme: Theme) => ({
         color: theme.palette.error.main,
     }),
+    disabledColor: (theme: Theme) => ({
+        color: theme.palette.grey,
+    }),
 };
 
 export const UnbuildAllNodesButton = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
 
     const [isValidationDialogOpen, setIsValidationDialogOpen] = useState(false);
+    const [areAllNodesUnBuilt, setAllNodesUnBuilt] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleCloseDialog = () => {
@@ -62,11 +69,26 @@ export const UnbuildAllNodesButton = () => {
             });
     };
 
+
+    useMemo(() => {
+        if (treeModel !== null) {
+            setAllNodesUnBuilt(
+                treeModel.treeNodes
+                    .filter((treeNode) => treeNode.type == NETWORK_MODIFICATION)
+                    .every((treeNode) => treeNode.data.globalBuildStatus == BUILD_STATUS.NOT_BUILT)
+            );
+        }
+    }, [treeModel]);
+
     return (
         <>
             <Tooltip title={intl.formatMessage({ id: 'unbuildAllNodesTooltip' })}>
-                <Button size="small" sx={styles.button} onClick={handleOpenDialog}>
-                    <StopCircleOutlined sx={styles.playColor} />
+                <Button size="small" sx={styles.button} onClick={handleOpenDialog} disabled={areAllNodesUnBuilt}>
+                    {areAllNodesUnBuilt ? (
+                        <StopCircleOutlined sx={{color: "grey"}} />
+                    ) : (
+                        <StopCircleOutlined sx={styles.playColor} />
+                    )}
                 </Button>
             </Tooltip>
             <Dialog open={isValidationDialogOpen} onClose={handleCloseDialog}>

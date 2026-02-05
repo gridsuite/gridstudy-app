@@ -79,6 +79,7 @@ const styles = {
         justifyContent: 'flex-end',
         marginTop: theme.spacing(-5),
         marginRight: theme.spacing(0),
+        marginBottom: theme.spacing(-1),
         height: '35%',
     }),
 } as const satisfies MuiStyles;
