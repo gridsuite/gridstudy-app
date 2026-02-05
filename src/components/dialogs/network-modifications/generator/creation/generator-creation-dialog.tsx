@@ -130,7 +130,24 @@ const formSchema = yup
             .required(),
         [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         ...getShortCircuitFormSchema(),
-        [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+        [PLANNED_ACTIVE_POWER_SET_POINT]: yup
+            .number()
+            .nullable()
+            .test(
+                'activePowerSetPoint',
+                'PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower',
+                (value, context) => {
+                    const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
+                    const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
+                    if (value === null || value === undefined) {
+                        return true;
+                    }
+                    if (minActivePower === null || maxActivePower === null) {
+                        return false;
+                    }
+                    return value >= minActivePower && value <= maxActivePower;
+                }
+            ),
         [MARGINAL_COST]: yup.number().nullable(),
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),

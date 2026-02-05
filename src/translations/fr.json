@@ -744,6 +744,7 @@
     "forcedOutageRate": "Indisponibilité fortuite",
     "MinActivePowerMustBeLessOrEqualToMaxActivePower": "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
     "ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower": "La valeur de la puissance active doit être égale à 0 ou comprise entre la valeur de la puissance active min et la valeur de la puissance active max",
+    "PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower": "La valeur de la puissance imposée doit être comprise entre la valeur de la puissance active min et la valeur de la puissance active max",
     "RatedNominalPowerMustBeGreaterThanZero": "La valeur de la puissance nominale doit être supérieure à 0",
     "NormalizedPercentage": "Ce pourcentage doit être compris entre 0 et 100",
     "RealPercentage": "Cette valeur doit être comprise entre 0 et 1",
