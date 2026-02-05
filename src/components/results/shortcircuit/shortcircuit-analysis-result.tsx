@@ -15,7 +15,7 @@ import {
 } from './shortcircuit-analysis-result.type';
 import { AppState } from 'redux/reducer';
 import { RunningStatus } from 'components/utils/running-status';
-import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
     convertFilterValues,
@@ -39,7 +39,6 @@ import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
-import { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -75,12 +74,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
 
     const isOneBusShortCircuitAnalysisType = analysisType === ShortCircuitAnalysisType.ONE_BUS;
 
-    const globalFiltersKey = useMemo(() => {
-        return isGlobalFilterParameter(globalFilters) ? globalFilters : '';
-    }, [globalFilters]);
-
-    const prevGlobalFiltersKeyRef = useRef<GlobalFilters | ''>(globalFiltersKey);
-
     const fromFrontColumnToBackKeys = isOneBusShortCircuitAnalysisType
         ? FROM_COLUMN_TO_FIELD_ONE_BUS
         : FROM_COLUMN_TO_FIELD;
@@ -95,15 +88,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         mappingTabs(analysisType) as ShortcircuitAnalysisTab
     );
     const { page, rowsPerPage } = pagination;
-
-    //To set the pagination to the first page when global filters change
-    useEffect(() => {
-        if (prevGlobalFiltersKeyRef.current === globalFiltersKey) {
-            return;
-        }
-        prevGlobalFiltersKeyRef.current = globalFiltersKey;
-        dispatchPagination({ page: 0, rowsPerPage });
-    }, [globalFiltersKey, rowsPerPage, dispatchPagination]);
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {

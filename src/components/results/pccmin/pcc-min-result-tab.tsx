@@ -22,6 +22,9 @@ import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filt
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
+import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
+import { PaginationType } from '../../../types/custom-aggrid-types';
+import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 
 export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     studyUuid,
@@ -35,8 +38,14 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+    const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
+    const { rowsPerPage } = pagination;
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters({
+        onChange: () => {
+            dispatchPagination({ page: 0, rowsPerPage });
+        },
+    });
 
     const handleSubTabChange = useCallback((event: React.SyntheticEvent, newIndex: number) => {
         setResultOrLogIndex(newIndex);

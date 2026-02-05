@@ -28,7 +28,9 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
-import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
+import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
+import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { PaginationType, SensitivityAnalysisTab } from '../../../types/custom-aggrid-types';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -47,7 +49,23 @@ function SensitivityAnalysisResultTab({
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const sensiKindForPagination = isSensiKind(sensiTab) ? sensiTab : SENSITIVITY_IN_DELTA_MW;
+
+    const { pagination, dispatchPagination } = usePaginationSelector(
+        PaginationType.SensitivityAnalysis,
+        mappingTabs(sensiKindForPagination, nOrNkIndex) as SensitivityAnalysisTab
+    );
+    const { rowsPerPage } = pagination;
+
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters({
+        onChange: () => {
+            if (!isSensiKind(sensiTab)) {
+                return;
+            }
+            dispatchPagination({ page: 0, rowsPerPage });
+        },
+    });
+
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {

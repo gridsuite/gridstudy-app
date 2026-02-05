@@ -20,62 +20,66 @@ export function isGlobalFilterParameter(globalFilters: GlobalFilters | undefined
     );
 }
 
-export default function useGlobalFilters() {
+export default function useGlobalFilters(options?: { onChange?: () => void }) {
     const [globalFilters, setGlobalFilters] = useState<GlobalFilters>();
 
     // see <GlobalFilterSelector onChange={...} .../>
-    const handleGlobalFilterChange = useCallback((value: GlobalFilter[]) => {
-        let newGlobalFilter: GlobalFilters = {};
+    const handleGlobalFilterChange = useCallback(
+        (value: GlobalFilter[]) => {
+            let newGlobalFilter: GlobalFilters = {};
 
-        const voltageRanges = value
-            .filter((filter: GlobalFilter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
-            .map((filter: GlobalFilter) => [filter.minValue, filter.maxValue] as [number, number]);
+            const voltageRanges = value
+                .filter((filter: GlobalFilter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
+                .map((filter: GlobalFilter) => [filter.minValue, filter.maxValue] as [number, number]);
 
-        const genericFilters: Set<string> = new Set(
+            const genericFilters: Set<string> = new Set(
+                value
+                    .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
+                    .map((filter: GlobalFilter) => filter.uuid ?? '')
+                    .filter((uuid: string): boolean => uuid !== '')
+            );
+
+            const substationOrVoltageLevelFilter: Set<string> = new Set(
+                value
+                    .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.SUBSTATION_OR_VL)
+                    .map((filter: GlobalFilter) => filter.uuid ?? '')
+                    .filter((uuid: string): boolean => uuid !== '')
+            );
+
+            const countryCodes = new Set(
+                value
+                    .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
+                    .map((filter: GlobalFilter) => filter.label)
+            );
+
+            const substationProperties: Map<string, string[]> = new Map();
             value
-                .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
-                .map((filter: GlobalFilter) => filter.uuid ?? '')
-                .filter((uuid: string): boolean => uuid !== '')
-        );
-
-        const substationOrVoltageLevelFilter: Set<string> = new Set(
-            value
-                .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.SUBSTATION_OR_VL)
-                .map((filter: GlobalFilter) => filter.uuid ?? '')
-                .filter((uuid: string): boolean => uuid !== '')
-        );
-
-        const countryCodes = new Set(
-            value
-                .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
-                .map((filter: GlobalFilter) => filter.label)
-        );
-
-        const substationProperties: Map<string, string[]> = new Map();
-        value
-            .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
-            .forEach((filter: GlobalFilter) => {
-                if (filter.filterSubtype) {
-                    const subtypeSubstationProperties = substationProperties.get(filter.filterSubtype);
-                    if (subtypeSubstationProperties) {
-                        subtypeSubstationProperties.push(filter.label);
-                    } else {
-                        substationProperties.set(filter.filterSubtype, [filter.label]);
+                .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
+                .forEach((filter: GlobalFilter) => {
+                    if (filter.filterSubtype) {
+                        const subtypeSubstationProperties = substationProperties.get(filter.filterSubtype);
+                        if (subtypeSubstationProperties) {
+                            subtypeSubstationProperties.push(filter.label);
+                        } else {
+                            substationProperties.set(filter.filterSubtype, [filter.label]);
+                        }
                     }
-                }
-            });
+                });
 
-        newGlobalFilter.voltageRanges = voltageRanges;
-        newGlobalFilter.countryCode = [...countryCodes];
-        newGlobalFilter.genericFilter = [...genericFilters];
-        newGlobalFilter.substationOrVoltageLevelFilter = Array.from(substationOrVoltageLevelFilter);
+            newGlobalFilter.voltageRanges = voltageRanges;
+            newGlobalFilter.countryCode = [...countryCodes];
+            newGlobalFilter.genericFilter = [...genericFilters];
+            newGlobalFilter.substationOrVoltageLevelFilter = Array.from(substationOrVoltageLevelFilter);
 
-        if (substationProperties.size > 0) {
-            newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
-        }
+            if (substationProperties.size > 0) {
+                newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
+            }
 
-        setGlobalFilters(newGlobalFilter);
-    }, []);
+            setGlobalFilters(newGlobalFilter);
+            options?.onChange?.();
+        },
+        [options]
+    );
 
     return { globalFilters, handleGlobalFilterChange };
 }
