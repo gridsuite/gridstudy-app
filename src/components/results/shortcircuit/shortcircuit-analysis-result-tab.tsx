@@ -6,7 +6,7 @@
  */
 
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
     computingTypeToShortcircuitTabRedirection,
@@ -31,6 +31,9 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
+import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
+import { mappingTabs } from './shortcircuit-analysis-result-content';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -65,8 +68,30 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     );
 
     const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
-
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
+    const prevTabIndexRef = useRef<number>(tabIndex);
+
+    const { pagination, dispatchPagination } = usePaginationSelector(
+        PaginationType.ShortcircuitAnalysis,
+        mappingTabs(tabIndex) as ShortcircuitAnalysisTab
+    );
+    const { page, rowsPerPage } = pagination;
+
+    const RESULTS_TAB_INDEX = 0;
+    const LOGS_TAB_INDEX = 1;
+
+    const resetPaginationIfAllBuses = useCallback(() => {
+        if (tabIndex !== ShortCircuitAnalysisResultTabs.ALL_BUSES) {
+            return;
+        }
+        if (resultOrLogIndex !== RESULTS_TAB_INDEX) {
+            return;
+        }
+        if (page === 0) {
+            return;
+        }
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [tabIndex, resultOrLogIndex, page, dispatchPagination, rowsPerPage]);
 
     const AllBusesShortCircuitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
@@ -86,10 +111,9 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         [setTabIndex, setRedirectionLock]
     );
 
-    const RESULTS_TAB_INDEX = 0;
-    const LOGS_TAB_INDEX = 1;
-
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters({
+        onChange: resetPaginationIfAllBuses,
+    });
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSubTabChange = useCallback(
@@ -138,9 +162,16 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     }, []);
 
     useEffect(() => {
-        // Clear the globalfilter when tab changes
-        handleGlobalFilterChange([]);
-    }, [handleGlobalFilterChange, tabIndex]);
+        // Clear the global filter only when switching between ALL_BUSES / ONE_BUS tabs
+        if (prevTabIndexRef.current === tabIndex) {
+            return;
+        }
+        prevTabIndexRef.current = tabIndex;
+
+        if (isGlobalFilterParameter(globalFilters)) {
+            handleGlobalFilterChange([]);
+        }
+    }, [tabIndex, globalFilters, handleGlobalFilterChange]);
 
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
