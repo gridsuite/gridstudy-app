@@ -197,7 +197,12 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                         <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellHeader} />
                         <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellHeader}>
                             <Typography variant="caption">{filtersMsg}</Typography>
-                            <Button size="small" onClick={() => onChange([])} sx={resultsGlobalFilterStyles.miniButton}>
+                            <Button
+                                size="small"
+                                onClick={() => onChange([])}
+                                sx={resultsGlobalFilterStyles.miniButton}
+                                data-testid="GlobalFilterClearAllButton"
+                            >
                                 <Typography variant="caption">
                                     <FormattedMessage id="results.globalFilter.clearAll" />
                                 </Typography>
@@ -213,6 +218,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                                             }}
                                             key={category}
                                             selected={category === filterGroupSelected}
+                                            data-testid={`GlobalFilterCategory${category}`}
                                         >
                                             <ListItemText
                                                 primary={

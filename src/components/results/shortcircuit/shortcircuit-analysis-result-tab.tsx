@@ -181,8 +181,14 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     return (
         <>
             <Tabs value={tabIndex} onChange={handleTabChange}>
-                <Tab label={<FormattedMessage id={'ShortCircuitAnalysisTabAllBuses'} />} />
-                <Tab label={<FormattedMessage id={'ShortCircuitAnalysisTabOneBus'} />} />
+                <Tab
+                    label={<FormattedMessage id={'ShortCircuitAnalysisTabAllBuses'} />}
+                    data-testid="ShortCircuitAnalysisAllBusesTab"
+                />
+                <Tab
+                    label={<FormattedMessage id={'ShortCircuitAnalysisTabOneBus'} />}
+                    data-testid="ShortCircuitAnalysisOneBusTab"
+                />
             </Tabs>
             <Box
                 sx={{
@@ -192,8 +198,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                 }}
             >
                 <Tabs value={resultOrLogIndex} onChange={handleSubTabChange}>
-                    <Tab label={<FormattedMessage id={'Results'} />} />
-                    <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
+                    <Tab label={<FormattedMessage id={'Results'} />} data-testid="ShortCircuitResultsTab" />
+                    <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} data-testid="ShortCircuitLogsTab" />
                 </Tabs>
                 {resultOrLogIndex === RESULTS_TAB_INDEX && tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
                     <GlobalFilterSelector

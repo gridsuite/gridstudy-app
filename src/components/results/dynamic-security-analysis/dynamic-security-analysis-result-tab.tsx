@@ -51,12 +51,14 @@ function DynamicSecurityAnalysisResultTab({
                             id: TAB_INDEX_STATUS,
                         })}
                         value={TAB_INDEX_STATUS}
+                        data-testid={'DynamicSecurityAnalysisStatusTab'}
                     />
                     <Tab
                         label={intl.formatMessage({
                             id: TAB_INDEX_LOGS,
                         })}
                         value={TAB_INDEX_LOGS}
+                        data-testid={'DynamicSecurityAnalysisLogsTab'}
                     />
                 </Tabs>
             </Box>
