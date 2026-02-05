@@ -7,34 +7,35 @@
 import { FilterConfig, FilterType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { GlobalFilter } from './global-filter-types';
 import { useEffect } from 'react';
 import { getComputationResultColumnFilters } from '../../../../services/study/study-config';
 import { updateColumnFiltersAction } from '../../../../redux/actions';
 
-type ComputationResultColumnFilterInfos = {
-    id: string;
+export type ComputationResultColumnFilterInfos = {
+    columnId: string;
     columnFilterInfos: any;
 };
-const EMPTY_ARRAY: GlobalFilter[] = [];
+const EMPTY_ARRAY: FilterConfig[] = [];
 export function useComputationColumnFilters(filterType: FilterType, computationSubType: string) {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     useEffect(() => {
         studyUuid &&
             getComputationResultColumnFilters(studyUuid, filterType, computationSubType).then(
-                (columnFilterInfos: ComputationResultColumnFilterInfos[]) => {
-                    const filters: FilterConfig[] = columnFilterInfos.flatMap(({ id, columnFilterInfos }) =>
-                        (Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos]).map(
-                            (f): FilterConfig => ({
-                                column: id,
-                                value: f.filterValue,
-                                type: f.filterType,
-                                dataType: f.filterDataType,
-                                tolerance: f.filterTolerance ?? undefined,
-                            })
-                        )
-                    );
+                (columnFilterInfos: ComputationResultColumnFilterInfos[] | null) => {
+                    const filters: FilterConfig[] = Array.isArray(columnFilterInfos)
+                        ? columnFilterInfos.flatMap(({ columnId, columnFilterInfos }) =>
+                              (Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos]).map(
+                                  (f): FilterConfig => ({
+                                      column: columnId,
+                                      value: f.filterValue,
+                                      type: f.filterType,
+                                      dataType: f.filterDataType,
+                                      tolerance: f.filterTolerance ?? undefined,
+                                  })
+                              )
+                          )
+                        : EMPTY_ARRAY;
                     dispatch(updateColumnFiltersAction(filterType, computationSubType, filters));
                 }
             );

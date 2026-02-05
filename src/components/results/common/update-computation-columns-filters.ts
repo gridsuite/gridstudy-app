@@ -25,7 +25,7 @@ export const updateComputationColumnsFilters = (
     if (!filter) return;
     onBeforePersist?.();
     const columnDto = {
-        id: colId,
+        columnId: colId,
         columnFilterInfos: {
             filterDataType: filter.dataType,
             filterType: filter.type,

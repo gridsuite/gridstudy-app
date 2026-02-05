@@ -21,7 +21,8 @@ export function useComputationGlobalFilters(filterType: FilterType) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     useEffect(() => {
         if (!studyUuid) return;
-        getComputationResultGlobalFilters(studyUuid, filterType).then((globalFilters: GlobalFilter[]) => {
+        getComputationResultGlobalFilters(studyUuid, filterType).then((globalFiltersInfos: GlobalFilter[] | null) => {
+            const globalFilters = Array.isArray(globalFiltersInfos) ? globalFiltersInfos : EMPTY_ARRAY;
             dispatch(updateGlobalFiltersAction(filterType, globalFilters));
         });
     }, [dispatch, studyUuid, filterType]);
