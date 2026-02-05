@@ -8,7 +8,13 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { useSnackMessage, ComputingType, snackWithFallback } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    NotificationsUrlKeys,
+    snackWithFallback,
+    useNotificationsListener,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
 import type { UUID } from 'node:crypto';
@@ -23,7 +29,6 @@ export type UseGetStateEstimationParametersProps = [
 
 export const useGetStateEstimationParameters = (): UseGetStateEstimationParametersProps => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
     const { snackError } = useSnackMessage();
     const [stateEstimationParams, setStateEstimationParams] = useState<StateEstimationParameters | null>(null);
 
@@ -50,15 +55,22 @@ export const useGetStateEstimationParameters = (): UseGetStateEstimationParamete
     }, [stateEstimationAvailability, studyUuid, fetchStateEstimationStudyParameters]);
 
     // fetch the parameter if STATE_ESTIMATION  notification type is received.
-    useEffect(() => {
-        if (
-            studyUuid &&
-            stateEstimationAvailabilityRef.current === OptionalServicesStatus.Up &&
-            isComputationParametersUpdated(ComputingType.STATE_ESTIMATION, studyUpdated)
-        ) {
-            fetchStateEstimationStudyParameters(studyUuid);
-        }
-    }, [studyUuid, fetchStateEstimationStudyParameters, studyUpdated]);
+    const handleEvent = useCallback(
+        (event: MessageEvent) => {
+            if (
+                studyUuid &&
+                stateEstimationAvailabilityRef.current === OptionalServicesStatus.Up &&
+                isComputationParametersUpdated(ComputingType.STATE_ESTIMATION, event)
+            ) {
+                fetchStateEstimationStudyParameters(studyUuid);
+            }
+        },
+        [studyUuid, fetchStateEstimationStudyParameters]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleEvent,
+    });
 
     return [stateEstimationParams, setStateEstimationParams];
 };
