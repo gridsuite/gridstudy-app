@@ -24,17 +24,16 @@ export function useComputationColumnFilters(filterType: FilterType, computationS
             getComputationResultColumnFilters(studyUuid, filterType, computationSubType).then(
                 (computationResultColumnFilterInfos: ComputationResultColumnFilterInfos[] | null) => {
                     const filters: FilterConfig[] = Array.isArray(computationResultColumnFilterInfos)
-                        ? computationResultColumnFilterInfos.flatMap(({ columnId, columnFilterInfos }) =>
-                              (Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos]).map(
-                                  (f): FilterConfig => ({
-                                      column: columnId,
-                                      value: f.filterValue,
-                                      type: f.filterType,
-                                      dataType: f.filterDataType,
-                                      tolerance: f.filterTolerance ?? undefined,
-                                  })
-                              )
-                          )
+                        ? computationResultColumnFilterInfos.flatMap(({ columnId, columnFilterInfos }) => {
+                              const list = Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos];
+                              return list.map((filter) => ({
+                                  column: columnId,
+                                  value: filter.filterValue,
+                                  type: filter.filterType,
+                                  dataType: filter.filterDataType,
+                                  tolerance: filter.filterTolerance ?? undefined,
+                              }));
+                          })
                         : EMPTY_ARRAY;
                     dispatch(updateColumnFiltersAction(filterType, computationSubType, filters));
                 }
