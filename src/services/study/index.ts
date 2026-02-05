@@ -31,7 +31,7 @@ export const getStudyUrl = (studyUuid: UUID | null) =>
 
 export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (
     studyUuid: string | null | undefined,
-    nodeUuid: string | undefined,
+    nodeUuid: string | null | undefined, // ça peut pas être null ?
     rootNetworkUuid: string | undefined | null
 ) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
@@ -200,16 +200,16 @@ export function searchEquipmentsInfos(
 }
 
 export function fetchContingencyCount(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    contingencyListNames: string[]
+    studyUuid: UUID | null, // ça peut pas être null ?
+    currentNodeUuid: UUID | null,
+    currentRootNetworkUuid: UUID | null,
+    contingencyListNames: string[] | null
 ): Promise<number> {
     console.info(
         `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
 
-    const contingencyListNamesParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
+    const contingencyListNamesParams = getRequestParamFromList(contingencyListNames ?? [], 'contingencyListName');
     const urlSearchParams = new URLSearchParams(contingencyListNamesParams);
 
     const url =

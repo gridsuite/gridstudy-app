@@ -69,6 +69,7 @@ import {
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
+import { fetchContingencyCount } from '../services/study';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -295,6 +296,9 @@ const ParametersTabs: FunctionComponent = () => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
+                        fetchContingencyCount={(contingencyLists: string[] | null) =>
+                            fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
+                        }
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
                     />

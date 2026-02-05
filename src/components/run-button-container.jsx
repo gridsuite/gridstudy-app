@@ -219,16 +219,16 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         [currentNode, snackError]
     );
 
-    const handleStartSecurityAnalysis = (contingencyListNames) => {
+    const handleStartSecurityAnalysis = useCallback(() => {
         startComputationAsync(
             ComputingType.SECURITY_ANALYSIS,
             null,
-            () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, contingencyListNames),
+            () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
             () => {},
             null,
             null
         );
-    };
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, startComputationAsync]);
 
     const handleStartDynamicSimulation = (dynamicSimulationConfiguration, debug) => {
         startComputationAsync(
@@ -310,7 +310,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             [ComputingType.SECURITY_ANALYSIS]: {
                 messageId: 'SecurityAnalysis',
                 startComputation() {
-                    setShowContingencyListSelector(true);
+                    //setShowContingencyListSelector(true);
+                    handleStartSecurityAnalysis();
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.SECURITY_ANALYSIS, () =>
@@ -508,6 +509,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         checkForbiddenProvider,
         studyUuid,
         handleStartLoadFlow,
+        handleStartSecurityAnalysis,
         currentNode?.id,
         currentRootNetworkUuid,
         startComputationAsync,
