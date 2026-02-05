@@ -69,13 +69,12 @@ export const UnbuildAllNodesButton = () => {
             });
     };
 
-
     useMemo(() => {
         if (treeModel !== null) {
             setAllNodesUnBuilt(
                 treeModel.treeNodes
-                    .filter((treeNode) => treeNode.type == NETWORK_MODIFICATION)
-                    .every((treeNode) => treeNode.data.globalBuildStatus == BUILD_STATUS.NOT_BUILT)
+                    .filter((treeNode) => treeNode.type === NETWORK_MODIFICATION)
+                    .every((treeNode) => treeNode.data.globalBuildStatus === BUILD_STATUS.NOT_BUILT)
             );
         }
     }, [treeModel]);
@@ -85,7 +84,7 @@ export const UnbuildAllNodesButton = () => {
             <Tooltip title={intl.formatMessage({ id: 'unbuildAllNodesTooltip' })}>
                 <Button size="small" sx={styles.button} onClick={handleOpenDialog} disabled={areAllNodesUnBuilt}>
                     {areAllNodesUnBuilt ? (
-                        <StopCircleOutlined sx={{color: "grey"}} />
+                        <StopCircleOutlined sx={{ color: 'grey' }} />
                     ) : (
                         <StopCircleOutlined sx={styles.playColor} />
                     )}
