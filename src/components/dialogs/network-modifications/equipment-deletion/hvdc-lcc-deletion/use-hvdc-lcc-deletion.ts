@@ -16,6 +16,12 @@ import { useCallback } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchHvdcLineWithShuntCompensators } from '../../../../../services/study/network-map';
+import {
+    EquipmentDeletionInfos,
+    HvdcLccDeletionInfos,
+    LccShuntCompensatorConnectionInfos,
+} from '../equipement-deletion-dialog.type';
+import { UUID } from 'node:crypto';
 
 const useHvdcLccDeletion = () => {
     const { replace: replaceMcsList1 } = useFieldArray({
@@ -28,23 +34,27 @@ const useHvdcLccDeletion = () => {
     const { snackError } = useSnackMessage();
 
     const updateMcsLists = useCallback(
-        (hvdcLineData, editData) => {
-            function mergeMcsLists(dynamicList, editList) {
-                if (!dynamicList && !editList) {
+        (hvdcLineData: HvdcLccDeletionInfos, editData?: EquipmentDeletionInfos) => {
+            function mergeMcsLists(
+                dynamicList: LccShuntCompensatorConnectionInfos[],
+                editList: LccShuntCompensatorConnectionInfos[]
+            ) {
+                if (!dynamicList?.length && !editList?.length) {
                     return [];
-                } else if (!dynamicList) {
+                } else if (!dynamicList?.length) {
                     // TODO: we should refactor modification-server to store only selected MCS
                     return editList.filter((item) => item.connectedToHvdc);
-                } else if (!editList) {
+                } else if (!editList?.length) {
                     return dynamicList;
                 }
-                const mergedList = dynamicList.map((obj) => {
+                // dynamicList and editList are not empty : let's merge them
+                const mergedList: LccShuntCompensatorConnectionInfos[] = dynamicList.map((obj) => {
                     return { ...obj, connectedToHvdc: false };
                 });
                 // now overwrite dynamic values with edited modification values
-                const dynamicIds = dynamicList.map((obj) => obj.id);
+                const dynamicIds = new Set(dynamicList.map((obj) => obj.id));
                 for (let editObj of editList.values()) {
-                    if (dynamicIds.includes(editObj.id)) {
+                    if (dynamicIds.has(editObj.id)) {
                         const mergedObj = mergedList.find((obj) => obj.id === editObj.id);
                         if (mergedObj) {
                             mergedObj.connectedToHvdc = editObj.connectedToHvdc;
@@ -60,16 +70,12 @@ const useHvdcLccDeletion = () => {
             if (
                 hvdcLineData?.mcsOnSide1 ||
                 hvdcLineData?.mcsOnSide2 ||
-                editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide1 ||
-                editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide2
+                editData?.equipmentInfos?.mcsOnSide1 ||
+                editData?.equipmentInfos?.mcsOnSide2
             ) {
                 setValue(`${DELETION_SPECIFIC_DATA}.${DELETION_SPECIFIC_TYPE}`, HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE);
-                replaceMcsList1(
-                    mergeMcsLists(hvdcLineData?.mcsOnSide1, editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide1)
-                );
-                replaceMcsList2(
-                    mergeMcsLists(hvdcLineData?.mcsOnSide2, editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide2)
-                );
+                replaceMcsList1(mergeMcsLists(hvdcLineData?.mcsOnSide1, editData?.equipmentInfos?.mcsOnSide1 ?? []));
+                replaceMcsList2(mergeMcsLists(hvdcLineData?.mcsOnSide2, editData?.equipmentInfos?.mcsOnSide2 ?? []));
             } else {
                 setValue(DELETION_SPECIFIC_DATA, null);
             }
@@ -78,14 +84,20 @@ const useHvdcLccDeletion = () => {
     );
 
     const specificUpdate = useCallback(
-        (studyUuid, nodeId, currentRootNetworkUuid, equipmentId, editData) => {
+        (
+            studyUuid: UUID,
+            nodeId: UUID,
+            currentRootNetworkUuid: UUID,
+            equipmentId: UUID,
+            editData?: EquipmentDeletionInfos
+        ) => {
             fetchHvdcLineWithShuntCompensators(studyUuid, nodeId, currentRootNetworkUuid, equipmentId)
                 .then((hvdcLineData) => {
                     updateMcsLists(hvdcLineData, editData);
                 })
                 .catch((error) => {
                     setValue(DELETION_SPECIFIC_DATA, null);
-                    snackWithFallback(snackError, error, { headerId: 'HVDCLineConverterStationError' });
+                    snackWithFallback(snackError, error, { headerId: 'FetchHvdcLineWithShuntCompensatorsError' });
                 });
         },
         [setValue, updateMcsLists, snackError]

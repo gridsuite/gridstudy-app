@@ -37,6 +37,7 @@ import {
     ElementType,
     EquipmentType,
     ExtendedEquipmentType,
+    HvdcType,
     IElementCreationDialog,
     IElementUpdateDialog,
     mergeSx,
@@ -306,7 +307,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 )
                     .then((hvdcInfos) => {
                         const equipmentSubtype =
-                            hvdcInfos?.hvdcType === 'LCC'
+                            hvdcInfos?.hvdcType === HvdcType.LCC
                                 ? ExtendedEquipmentType.HVDC_LINE_LCC
                                 : ExtendedEquipmentType.HVDC_LINE_VSC;
 
