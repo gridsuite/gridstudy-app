@@ -23,6 +23,7 @@ import { BusBarSectionsInfos, FeederBaysInfos, SwitchInfos } from './network-map
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
 import { isBlankOrEmpty } from '../../components/utils/validation-functions';
+import { NetworkExportInfos } from '../study-types';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -405,21 +406,28 @@ export function exportNetworkFile(
     nodeUuid: UUID,
     rootNetworkUuid: UUID,
     params: Record<string, any>,
-    selectedFormat: string,
-    fileName: string
+    exportInfos: NetworkExportInfos
 ): Promise<UUID> {
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
         '/export-network/' +
-        selectedFormat;
+        exportInfos.selectedFormat;
 
     const urlSearchParams = new URLSearchParams();
     if (Object.keys(params).length > 0) {
         const paramsJson = JSON.stringify(params);
         urlSearchParams.append('formatParameters', paramsJson);
     }
-    if (!isBlankOrEmpty(fileName)) {
-        urlSearchParams.append('fileName', fileName);
+    if (!isBlankOrEmpty(exportInfos.fileName)) {
+        urlSearchParams.append('fileName', exportInfos.fileName);
+    }
+
+    urlSearchParams.append('exportToGridExplore', String(exportInfos.exportToGridExplore));
+    if (exportInfos?.parentDirectoryUuid && !isBlankOrEmpty(exportInfos.parentDirectoryUuid)) {
+        urlSearchParams.append('parentDirectoryUuid', exportInfos.parentDirectoryUuid);
+    }
+    if (exportInfos?.description && !isBlankOrEmpty(exportInfos.description)) {
+        urlSearchParams.append('description', exportInfos.description);
     }
 
     const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';

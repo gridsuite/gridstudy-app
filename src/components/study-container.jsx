@@ -22,8 +22,9 @@ import {
     setRootNetworkIndexationStatus,
     setRootNetworks,
 } from '../redux/actions';
-import { initializeWorkspaces } from '../redux/slices/workspace-slice';
+import { setWorkspacesMetadata, setActiveWorkspace } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
+import { getWorkspacesMetadata, getWorkspace } from '../services/study/workspace';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
@@ -56,7 +57,7 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
-import { loadWorkspacesFromStorage } from 'redux/slices/workspace-storage';
+import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -506,11 +507,21 @@ export function StudyContainer() {
             websocketExpectedCloseRef.current = false;
             dispatch(openStudy(studyUuid));
 
-            const savedWorkspaces = loadWorkspacesFromStorage(studyUuid);
-            if (savedWorkspaces) {
-                dispatch(initializeWorkspaces(savedWorkspaces));
-            }
+            // Load workspaces metadata from backend
+            getWorkspacesMetadata(studyUuid)
+                .then((workspacesMetadata) => {
+                    dispatch(setWorkspacesMetadata(workspacesMetadata));
 
+                    // Load the first workspace for now (maybe remember last active workspace per study and load it instead later)
+                    if (workspacesMetadata.length > 0) {
+                        return getWorkspace(studyUuid, workspacesMetadata[0].id);
+                    }
+                })
+                .then((workspace) => {
+                    if (workspace) {
+                        dispatch(setActiveWorkspace(workspace));
+                    }
+                });
             return function () {
                 websocketExpectedCloseRef.current = true;
                 dispatch(closeStudy());
@@ -527,6 +538,8 @@ export function StudyContainer() {
         currentNodeRef.current = currentNode;
         currentRootNetworkUuidRef.current = currentRootNetworkUuid;
     }, [currentNode, currentRootNetworkUuid]);
+
+    useWorkspaceNotifications(studyUuid);
 
     return (
         <WaitingLoader

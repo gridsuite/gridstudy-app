@@ -6,6 +6,7 @@
  */
 import {
     NotificationsUrlKeys,
+    parseError,
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
@@ -16,31 +17,40 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { isExportNetworkNotification } from '../types/notification-types';
 import { buildExportIdentifier, isExportSubscribed, unsetExportSubscription } from '../utils/export-network-utils';
+import { useIntl } from 'react-intl/lib';
 
 export default function useExportNotification() {
-    const { snackError } = useSnackMessage();
+    const { snackError, snackSuccess } = useSnackMessage();
     const { downloadExportNetworkFile } = useExportDownload();
+    const intl = useIntl();
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const handleExportNotification = useCallback(
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             if (isExportNetworkNotification(eventData)) {
-                const { userId: userIdNotif, exportUuid, error } = eventData.headers;
-
+                const { userId: userIdNotif, exportUuid, exportToGridExplore, fileName, error } = eventData.headers;
                 const exportIdentifierNotif = buildExportIdentifier(exportUuid);
                 const isSubscribed = isExportSubscribed(exportIdentifierNotif);
                 if (isSubscribed && userIdNotif === userId) {
                     unsetExportSubscription(exportIdentifierNotif);
                     if (error) {
-                        snackWithFallback(snackError, error, { headerId: 'export.message.failed' });
+                        snackWithFallback(snackError, parseError(error), { headerId: 'export.message.failed' });
                     } else {
-                        downloadExportNetworkFile(exportUuid);
+                        exportToGridExplore
+                            ? snackSuccess({
+                                  messageTxt: intl.formatMessage(
+                                      { id: 'export.message.succeeded' },
+                                      { fileName: fileName }
+                                  ),
+                                  persist: true,
+                              })
+                            : downloadExportNetworkFile(exportUuid);
                     }
                 }
             }
         },
-        [userId, snackError, downloadExportNetworkFile]
+        [userId, snackError, downloadExportNetworkFile, snackSuccess, intl]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleExportNotification });

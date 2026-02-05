@@ -5,10 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
+    BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
     CONNECTED,
@@ -18,14 +25,14 @@ import {
     CONNECTIVITY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    ID,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
@@ -37,7 +44,7 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
+    getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import {
     getCharacteristicsCreateFormDataFromSearchCopy,
@@ -55,6 +62,10 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { ShuntCompensatorCreationDialogSchemaForm, ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
+import { DeepNullable } from '../../../../utils/ts-utils';
+import { ShuntCompensatorCreationInfos } from '../../../../../services/network-modification-types';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -69,8 +80,8 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
-        ...getConnectivityWithPositionValidationSchema(),
-        ...getCharacteristicsFormValidationSchema(),
+        [CONNECTIVITY]: getConnectivityWithPositionSchema(),
+        ...getCharacteristicsFormValidationSchema(false),
     })
     .concat(creationPropertiesSchema)
     .required();
@@ -85,7 +96,12 @@ const formSchema = yup
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
-const ShuntCompensatorCreationDialog = ({
+
+export type ShuntCompensatorCreationDialogProps = NetworkModificationDialogProps & {
+    editData: ShuntCompensatorCreationInfos;
+};
+
+export default function ShuntCompensatorCreationDialog({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
@@ -93,20 +109,20 @@ const ShuntCompensatorCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: Readonly<ShuntCompensatorCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
 
     const { snackError, snackWarning } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<ShuntCompensatorCreationDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<ShuntCompensatorCreationDialogSchemaForm>>(formSchema),
     });
 
     const { reset } = formMethods;
 
     const fromSearchCopyToFormValues = useCallback(
-        (shuntCompensator) => {
+        (shuntCompensator: ShuntCompensatorFormInfos) => {
             reset(
                 {
                     [EQUIPMENT_ID]: shuntCompensator.id + '(1)',
@@ -119,8 +135,8 @@ const ShuntCompensatorCreationDialog = ({
                         // terminalConnected is not copied on purpose: we use the default value (true) in all cases
                     }),
                     ...getCharacteristicsCreateFormDataFromSearchCopy({
-                        bperSection: shuntCompensator.bperSection,
-                        qAtNominalV: shuntCompensator.qatNominalV,
+                        bPerSection: shuntCompensator.bPerSection ?? null,
+                        qAtNominalV: shuntCompensator.qAtNominalV ?? null,
                         sectionCount: shuntCompensator.sectionCount,
                         maximumSectionCount: shuntCompensator.maximumSectionCount,
                     }),
@@ -137,70 +153,69 @@ const ShuntCompensatorCreationDialog = ({
         [reset, snackWarning]
     );
 
-    const fromEditDataToFormValues = useCallback(
-        (shuntCompensator) => {
-            reset({
-                [EQUIPMENT_ID]: shuntCompensator.equipmentId,
-                [EQUIPMENT_NAME]: shuntCompensator.equipmentName ?? '',
-                ...getConnectivityFormData({
-                    busbarSectionId: shuntCompensator.busOrBusbarSectionId,
-                    connectionDirection: shuntCompensator.connectionDirection,
-                    connectionName: shuntCompensator.connectionName,
-                    connectionPosition: shuntCompensator.connectionPosition,
-                    voltageLevelId: shuntCompensator.voltageLevelId,
-                    terminalConnected: shuntCompensator.terminalConnected,
-                }),
-                ...getCharacteristicsFormData({
-                    maxSusceptance: shuntCompensator.maxSusceptance ?? null,
-                    maxQAtNominalV: shuntCompensator.maxQAtNominalV ?? null,
-                    shuntCompensatorType: shuntCompensator.shuntCompensatorType,
-                    sectionCount: shuntCompensator.sectionCount,
-                    maximumSectionCount: shuntCompensator.maximumSectionCount,
-                }),
-                ...getPropertiesFromModification(shuntCompensator.properties),
-            });
-        },
-        [reset]
-    );
-
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.SHUNT_COMPENSATOR);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.SHUNT_COMPENSATOR);
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            reset({
+                [EQUIPMENT_ID]: editData.equipmentId,
+                [EQUIPMENT_NAME]: editData.equipmentName ?? '',
+                ...getConnectivityFormData({
+                    voltageLevelId: editData.voltageLevelId,
+                    busbarSectionId: editData.busOrBusbarSectionId,
+                    connectionDirection: editData.connectionDirection,
+                    connectionName: editData.connectionName,
+                    connectionPosition: editData.connectionPosition,
+                    terminalConnected: editData.terminalConnected,
+                }),
+                ...getCharacteristicsFormData({
+                    maxSusceptance: editData.maxSusceptance ?? null,
+                    maxQAtNominalV: editData.maxQAtNominalV ?? null,
+                    shuntCompensatorType: editData.shuntCompensatorType,
+                    sectionCount: editData.sectionCount,
+                    maximumSectionCount: editData.maximumSectionCount,
+                }),
+                ...getPropertiesFromModification(editData.properties),
+            });
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [reset, editData]);
 
     const onSubmit = useCallback(
-        (shuntCompensator) => {
-            createShuntCompensator({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                shuntCompensatorId: shuntCompensator[EQUIPMENT_ID],
-                shuntCompensatorName: sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
+        (shuntCompensator: ShuntCompensatorCreationDialogSchemaForm) => {
+            const shuntCompensatorCreationInfos = {
+                type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
+                equipmentId: shuntCompensator[EQUIPMENT_ID],
+                equipmentName: sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
                 maxSusceptance:
                     shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                        ? shuntCompensator[MAX_SUSCEPTANCE]
+                        ? (shuntCompensator[MAX_SUSCEPTANCE] ?? null)
                         : null,
                 maxQAtNominalV:
                     shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                        ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
+                        ? (shuntCompensator[MAX_Q_AT_NOMINAL_V] ?? null)
                         : null,
                 shuntCompensatorType:
                     shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                        ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
+                        ? (shuntCompensator[SHUNT_COMPENSATOR_TYPE] ?? null)
                         : null,
-                sectionCount: shuntCompensator[SECTION_COUNT],
-                maximumSectionCount: shuntCompensator[MAXIMUM_SECTION_COUNT],
-                connectivity: shuntCompensator[CONNECTIVITY],
-                isUpdate: !!editData,
-                modificationUuid: editData ? editData.uuid : undefined,
+                sectionCount: shuntCompensator[SECTION_COUNT] ?? null,
+                maximumSectionCount: shuntCompensator[MAXIMUM_SECTION_COUNT] ?? null,
+                voltageLevelId: shuntCompensator[CONNECTIVITY][VOLTAGE_LEVEL][ID] ?? null,
+                busOrBusbarSectionId: shuntCompensator[CONNECTIVITY][BUS_OR_BUSBAR_SECTION][ID] ?? null,
                 connectionDirection:
                     shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
                 connectionName: sanitizeString(shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]),
                 connectionPosition: shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null,
-                terminalConnected: shuntCompensator[CONNECTIVITY]?.[CONNECTED],
+                terminalConnected: shuntCompensator[CONNECTIVITY]?.[CONNECTED] ?? null,
                 properties: toModificationProperties(shuntCompensator),
+            } satisfies ShuntCompensatorCreationInfos;
+
+            createShuntCompensator({
+                shuntCompensatorCreationInfos: shuntCompensatorCreationInfos,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                isUpdate: !!editData,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'ShuntCompensatorCreationError' });
             });
@@ -238,7 +253,7 @@ const ShuntCompensatorCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR}
+                    equipmentType={EquipmentType.SHUNT_COMPENSATOR}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
@@ -246,19 +261,4 @@ const ShuntCompensatorCreationDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-ShuntCompensatorCreationDialog.propTypes = {
-    editData: PropTypes.object,
-    voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    isUpdate: PropTypes.bool,
-    currentRootNetworkUuid: PropTypes.string,
-    editDataFetchStatus: PropTypes.string,
-};
-
-export default ShuntCompensatorCreationDialog;
+}

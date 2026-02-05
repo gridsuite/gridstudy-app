@@ -21,11 +21,10 @@ import { SLD_DISPLAY_MODE } from '../../../network/constants';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
-import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 
 interface UseSldDiagramProps {
     diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
-    diagramId: string;
+    equipmentId: string;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
@@ -33,7 +32,7 @@ interface UseSldDiagramProps {
 
 export const useSldDiagram = ({
     diagramType,
-    diagramId,
+    equipmentId,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
@@ -43,14 +42,13 @@ export const useSldDiagram = ({
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const { snackError } = useSnackMessage();
-    const { baseVoltagesConfig } = useBaseVoltages();
 
     const [diagram, setDiagram] = useState<Diagram>(
         () =>
             ({
                 type: diagramType,
                 svg: null,
-                diagramId,
+                equipmentId,
             }) as Diagram
     );
     const [loading, setLoading] = useState(false);
@@ -107,7 +105,7 @@ export const useSldDiagram = ({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        voltageLevelId: currentDiagram.diagramId,
+                        voltageLevelId: currentDiagram.equipmentId,
                     });
                     fetchOptions = {
                         method: 'POST',
@@ -120,7 +118,6 @@ export const useSldDiagram = ({
                             sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
                             topologicalColoring: true,
                             language,
-                            baseVoltagesConfigInfos: baseVoltagesConfig,
                         }),
                     };
                 } else if (currentDiagram.type === DiagramType.SUBSTATION) {
@@ -128,7 +125,7 @@ export const useSldDiagram = ({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        substationId: currentDiagram.diagramId,
+                        substationId: currentDiagram.equipmentId,
                     });
                     fetchOptions = {
                         method: 'POST',
@@ -141,7 +138,6 @@ export const useSldDiagram = ({
                             componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
                             topologicalColoring: true,
                             language,
-                            baseVoltagesConfigInfos: baseVoltagesConfig,
                         }),
                     };
                 }
@@ -168,7 +164,6 @@ export const useSldDiagram = ({
         currentRootNetworkUuid,
         paramUseName,
         networkVisuParams,
-        baseVoltagesConfig,
         language,
         processSvgData,
         handleFetchError,
@@ -186,13 +181,13 @@ export const useSldDiagram = ({
 
         setGlobalError(undefined);
 
-        // Update diagram from diagramId
+        // Update diagram from equipmentId
         setDiagram(
             (prev) =>
                 ({
                     ...prev,
                     type: diagramType,
-                    diagramId,
+                    equipmentId,
                 }) as Diagram
         );
 
@@ -205,7 +200,7 @@ export const useSldDiagram = ({
         currentNode?.type,
         currentNode?.data?.globalBuildStatus,
         currentRootNetworkUuid,
-        diagramId,
+        equipmentId,
     ]);
 
     // Listen for notifications and refetch
