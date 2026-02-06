@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SelectInput, TextInput } from '@gridsuite/commons-ui';
+import { SelectInput, TextInput, Nullable } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { NAME, SELECTION_TYPE } from 'components/utils/field-constants';
 
@@ -13,7 +13,6 @@ import { useWatch } from 'react-hook-form';
 import { ContingencyFilterCreationFields } from './contingency-filter-creation/contingency-filter-creation-fields';
 import { SELECTION_TYPES, selectionTypeToLabel } from './selection-types';
 import { SelectionCreationPaneFields } from './selection-creation-schema';
-import { Nullable } from 'components/utils/ts-utils';
 import GridSection from '../../dialogs/commons/grid-section';
 
 interface SelectionCreationPanelFormProps {

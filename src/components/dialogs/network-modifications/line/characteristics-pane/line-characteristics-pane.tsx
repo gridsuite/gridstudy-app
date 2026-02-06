@@ -6,8 +6,13 @@
  */
 
 import { Grid } from '@mui/material';
-import { MicroSusceptanceAdornment, OhmAdornment } from '../../../dialog-utils';
-import { convertInputValue, FieldType, FloatInput } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    FieldType,
+    FloatInput,
+    MicroSusceptanceAdornment,
+    OhmAdornment,
+} from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import {
     B1,
@@ -20,7 +25,7 @@ import {
     R,
     X,
 } from 'components/utils/field-constants';
-import PropertiesForm from '../../common/properties/properties-form';
+import { PropertiesForm } from '@gridsuite/commons-ui';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
