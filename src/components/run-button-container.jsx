@@ -49,11 +49,17 @@ import {
 } from '../services/study/dynamic-security-analysis';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { isSecurityModificationNode } from './graph/tree-node.type';
-import useComputationDebug from '../hooks/use-computation-debug';
 import { PaginationType } from 'types/custom-aggrid-types';
 import { usePaginationReset } from 'hooks/use-pagination-selector';
 import { useLogsPaginationResetByType } from './report-viewer/use-logs-pagination';
 import { startPccMin, stopPccMin } from 'services/study/pcc-min';
+import {
+    fetchDynamicMarginCalculationProvider,
+    startDynamicMarginCalculation,
+    stopDynamicMarginCalculation,
+} from '../services/study/dynamic-margin-calculation.ts';
+import useDebugSubscription from '../hooks/computation-debug/use-debug-subscription.ts';
+import useDebugNotification from '../hooks/computation-debug/use-debug-notification.ts';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -97,6 +103,9 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const dynamicSecurityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.DYNAMIC_SECURITY_ANALYSIS]
     );
+    const dynamicMarginCalculationStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.DYNAMIC_MARGIN_CALCULATION]
+    );
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
     const stateEstimationStatus = useSelector((state) => state.computingStatus[ComputingType.STATE_ESTIMATION]);
     const pccMinStatus = useSelector((state) => state.computingStatus[ComputingType.PCC_MIN]);
@@ -123,6 +132,9 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
+    const dynamicMarginCalculationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.DynamicMarginCalculation
+    );
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
@@ -162,8 +174,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         ]
     );
 
+    // --- for listening to debug notifications then perform download debug file --- //
+    useDebugNotification();
+
     // --- for running in debug mode --- //
-    const subscribeDebug = useComputationDebug({
+    const subscribeDebug = useDebugSubscription({
         studyUuid: studyUuid,
         nodeUuid: currentNode?.id,
         rootNetworkUuid: currentRootNetworkUuid,
@@ -442,6 +457,45 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     );
                 },
             },
+            [ComputingType.DYNAMIC_MARGIN_CALCULATION]: {
+                messageId: 'DynamicMarginCalculation',
+                async startComputation(debug) {
+                    try {
+                        const isProviderValid = await checkForbiddenProvider(
+                            studyUuid,
+                            ComputingType.DYNAMIC_MARGIN_CALCULATION,
+                            fetchDynamicMarginCalculationProvider,
+                            [PARAM_PROVIDER_DYNAWO]
+                        );
+
+                        if (!isProviderValid) {
+                            return;
+                        }
+
+                        startComputationAsync(
+                            ComputingType.DYNAMIC_MARGIN_CALCULATION,
+                            null,
+                            () =>
+                                startDynamicMarginCalculation(
+                                    studyUuid,
+                                    currentNode?.id,
+                                    currentRootNetworkUuid,
+                                    debug
+                                ),
+                            () => debug && subscribeDebug(ComputingType.DYNAMIC_MARGIN_CALCULATION),
+                            null,
+                            'startDynamicMarginCalculationError'
+                        );
+                    } catch (error) {
+                        snackWithFallback(snackError, error, { headerId: 'startDynamicMarginCalculationError' });
+                    }
+                },
+                actionOnRunnable() {
+                    actionOnRunnables(ComputingType.DYNAMIC_MARGIN_CALCULATION, () =>
+                        stopDynamicMarginCalculation(studyUuid, currentNode?.id, currentRootNetworkUuid)
+                    );
+                },
+            },
 
             [ComputingType.VOLTAGE_INITIALIZATION]: {
                 messageId: 'VoltageInit',
@@ -533,6 +587,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     return dynamicSimulationStatus;
                 case ComputingType.DYNAMIC_SECURITY_ANALYSIS:
                     return dynamicSecurityAnalysisStatus;
+                case ComputingType.DYNAMIC_MARGIN_CALCULATION:
+                    return dynamicMarginCalculationStatus;
                 case ComputingType.VOLTAGE_INITIALIZATION:
                     return voltageInitStatus;
                 case ComputingType.STATE_ESTIMATION:
@@ -551,6 +607,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             allBusesShortCircuitAnalysisStatus,
             dynamicSimulationStatus,
             dynamicSecurityAnalysisStatus,
+            dynamicMarginCalculationStatus,
             voltageInitStatus,
             stateEstimationStatus,
             pccMinStatus,
@@ -573,6 +630,9 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             ...(dynamicSecurityAnalysisAvailability === OptionalServicesStatus.Up && isDeveloperMode
                 ? [ComputingType.DYNAMIC_SECURITY_ANALYSIS]
                 : []),
+            ...(dynamicMarginCalculationAvailability === OptionalServicesStatus.Up && isDeveloperMode
+                ? [ComputingType.DYNAMIC_MARGIN_CALCULATION]
+                : []),
             ...(voltageInitAvailability === OptionalServicesStatus.Up ? [ComputingType.VOLTAGE_INITIALIZATION] : []),
             ...(stateEstimationAvailability === OptionalServicesStatus.Up && isDeveloperMode
                 ? [ComputingType.STATE_ESTIMATION]
@@ -586,6 +646,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         dynamicSimulationAvailability,
         isDeveloperMode,
         dynamicSecurityAnalysisAvailability,
+        dynamicMarginCalculationAvailability,
         voltageInitAvailability,
         stateEstimationAvailability,
         pccMinAvailability,
