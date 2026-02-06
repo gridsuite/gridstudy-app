@@ -8,7 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useSnackMessage, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
+import { useSnackMessage, PARAM_LANGUAGE, snackWithFallback } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { Diagram, DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg } from '../../../../services/study';
@@ -74,11 +74,11 @@ export const useSldDiagram = ({
                 });
             } else if (error?.status === 403) {
                 errorMessage = error.message || 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
+                snackWithFallback(snackError, error, { headerId: errorMessage });
                 setGlobalError(errorMessage);
             } else {
                 errorMessage = 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
+                snackWithFallback(snackError, error, { headerId: errorMessage });
                 setGlobalError(errorMessage);
             }
         },
