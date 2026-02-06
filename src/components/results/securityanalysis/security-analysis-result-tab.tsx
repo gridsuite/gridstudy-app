@@ -287,9 +287,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             <Box sx={styles.tabsAndToolboxContainer}>
                 <Box sx={styles.tabs}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
-                        {isDeveloperMode && <Tab label="N" value={N_RESULTS_TAB_INDEX} />}
-                        <Tab label="N-K" value={NMK_RESULTS_TAB_INDEX} />
-                        <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} value={LOGS_TAB_INDEX} />
+                        {isDeveloperMode && (
+                            <Tab label="N" value={N_RESULTS_TAB_INDEX} data-testid={'SecurityAnalysisNTab'} />
+                        )}
+                        <Tab label="N-K" value={NMK_RESULTS_TAB_INDEX} data-testid={'SecurityAnalysisN-KTab'} />
+                        <Tab
+                            label={<FormattedMessage id={'ComputationResultsLogs'} />}
+                            value={LOGS_TAB_INDEX}
+                            data-testid={'SecurityAnalysisLogsTab'}
+                        />
                     </Tabs>
                 </Box>
                 {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
