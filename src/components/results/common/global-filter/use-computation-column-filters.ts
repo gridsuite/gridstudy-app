@@ -21,19 +21,13 @@ function toColumnFilterInfos(infos: ComputationResultColumnFilterInfos[] | null)
     }
     return infos.flatMap(mapColumnFilters);
 }
-function parseFilterValue(filterValue: string) {
-    const parsed = JSON.parse(filterValue);
-    if (!Array.isArray(parsed)) {
-        return parsed;
-    }
-    return parsed.flatMap((v) => (typeof v === 'string' ? v.split(',').map((s) => s.trim()) : v));
-}
+
 function mapColumnFilters({ columnId, columnFilterInfos }: ComputationResultColumnFilterInfos): FilterConfig[] {
     const filters = Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos];
 
     return filters.map((filter) => ({
         column: columnId,
-        value: parseFilterValue(filter.filterValue),
+        value: filter.filterValue,
         type: filter.filterType,
         dataType: filter.filterDataType,
         tolerance: filter.filterTolerance ?? undefined,
