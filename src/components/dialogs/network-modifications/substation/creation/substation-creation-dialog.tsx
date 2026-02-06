@@ -14,8 +14,6 @@ import {
     CustomFormProvider,
     EquipmentType,
     fetchDefaultCountry,
-    FieldConstants,
-    getPropertiesFromModification,
     snackWithFallback,
     SubstationCreationDto,
     substationCreationEmptyFormData,
@@ -26,6 +24,7 @@ import {
     useSnackMessage,
     DeepNullable,
     sanitizeString,
+    substationCreationDtoToForm,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
@@ -78,9 +77,9 @@ const SubstationCreationDialog = ({
     const fromSearchCopyToFormValues = (substation: SubstationInfos) => {
         reset(
             {
-                [FieldConstants.EQUIPMENT_ID]: substation.id + '(1)',
-                [FieldConstants.EQUIPMENT_NAME]: substation.name ?? '',
-                [FieldConstants.COUNTRY]: substation.country,
+                equipmentID: substation.id + '(1)',
+                equipmentName: substation.name ?? '',
+                country: substation.country,
                 ...copyEquipmentPropertiesForCreation(substation),
             },
             { keepDefaultValues: true }
@@ -91,12 +90,7 @@ const SubstationCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            reset({
-                [FieldConstants.EQUIPMENT_ID]: editData.equipmentId,
-                [FieldConstants.EQUIPMENT_NAME]: editData.equipmentName ?? '',
-                [FieldConstants.COUNTRY]: editData.country,
-                ...getPropertiesFromModification(editData.properties),
-            });
+            reset(substationCreationDtoToForm(editData));
         }
     }, [reset, editData]);
 
@@ -107,7 +101,7 @@ const SubstationCreationDialog = ({
                 if (country) {
                     reset({
                         ...getValues(),
-                        [FieldConstants.COUNTRY]: country,
+                        country,
                     });
                 }
             });
@@ -123,9 +117,9 @@ const SubstationCreationDialog = ({
             createSubstation({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                substationId: substation[FieldConstants.EQUIPMENT_ID],
-                substationName: sanitizeString(substation[FieldConstants.EQUIPMENT_NAME]),
-                country: substation[FieldConstants.COUNTRY] ?? null,
+                substationId: substation.equipmentID,
+                substationName: sanitizeString(substation.equipmentName),
+                country: substation.country ?? null,
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
                 properties: toModificationProperties(substation),
