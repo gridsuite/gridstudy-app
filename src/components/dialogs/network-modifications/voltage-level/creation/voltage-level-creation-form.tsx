@@ -8,6 +8,7 @@
 import {
     ADD_SUBSTATION_CREATION,
     BUS_BAR_COUNT,
+    EQUIPMENT_ID,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
     IS_ATTACHMENT_POINT_CREATION,
@@ -94,7 +95,7 @@ const VoltageLevelCreationForm = ({
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const voltageLevelIdField = (
-        <TextInput name={FieldConstants.EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
     );
 
     function getCustomPaper(children: React.ReactNode) {

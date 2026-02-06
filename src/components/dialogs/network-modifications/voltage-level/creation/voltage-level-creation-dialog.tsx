@@ -34,6 +34,7 @@ import {
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,
     COUPLING_OMNIBUS,
+    EQUIPMENT_ID,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
     ID,
@@ -81,7 +82,7 @@ interface VoltageLevelCreationFormData {
     [BUS_BAR_COUNT]: number;
     [FieldConstants.COUNTRY]: string | null;
     [COUPLING_OMNIBUS]: CreateCouplingDeviceDialogSchemaForm[];
-    [FieldConstants.EQUIPMENT_ID]: string;
+    [EQUIPMENT_ID]: string;
     [FieldConstants.EQUIPMENT_NAME]: string;
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
     [HIGH_VOLTAGE_LIMIT]: number | null;
@@ -126,7 +127,7 @@ interface VoltageLevelCreationDialogProps {
  */
 
 const emptyFormData: VoltageLevelCreationFormData = {
-    [FieldConstants.EQUIPMENT_ID]: '',
+    [EQUIPMENT_ID]: '',
     [FieldConstants.EQUIPMENT_NAME]: '',
     [SUBSTATION_ID]: null,
     [NOMINAL_V]: null,
@@ -151,7 +152,7 @@ const emptyFormData: VoltageLevelCreationFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [FieldConstants.EQUIPMENT_ID]: yup
+        [EQUIPMENT_ID]: yup
             .string()
             .required()
             .when([ADD_SUBSTATION_CREATION], {
@@ -177,10 +178,7 @@ const formSchema = yup
                 then: (schema) =>
                     schema
                         .required()
-                        .notOneOf(
-                            [yup.ref(FieldConstants.EQUIPMENT_ID), null],
-                            'CreateSubstationInVoltageLevelIdenticalId'
-                        ),
+                        .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
             }),
         [SUBSTATION_CREATION_ID]: yup
             .string()
@@ -190,10 +188,7 @@ const formSchema = yup
                 then: (schema) =>
                     schema
                         .required()
-                        .notOneOf(
-                            [yup.ref(FieldConstants.EQUIPMENT_ID), null],
-                            'CreateSubstationInVoltageLevelIdenticalId'
-                        ),
+                        .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
             }),
         [SUBSTATION_NAME]: yup.string().nullable(),
         [FieldConstants.COUNTRY]: yup.string().nullable(),
@@ -321,8 +316,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                     ?.map((switchKind: string) => intl.formatMessage({ id: switchKind }))
                     .join(' / ') || '';
 
-            const equipmentId =
-                (voltageLevel[FieldConstants.EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : '');
+            const equipmentId = (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : '');
             const equipmentName = voltageLevel[FieldConstants.EQUIPMENT_NAME] ?? voltageLevel[NAME];
             const substationId = isSubstationCreation ? null : (voltageLevel[SUBSTATION_ID] ?? null);
 
@@ -331,7 +325,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 : getPropertiesFromModification(voltageLevel.properties);
             reset(
                 {
-                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
+                    [EQUIPMENT_ID]: equipmentId,
                     [FieldConstants.EQUIPMENT_NAME]: equipmentName,
                     [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
                     [SUBSTATION_ID]: substationId,
@@ -392,7 +386,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
         // Watch EQUIPMENT_ID changed
         const unsubscribeEquipmentId = subscribe({
-            name: [FieldConstants.EQUIPMENT_ID],
+            name: [EQUIPMENT_ID],
             formState: {
                 values: true,
             },
@@ -413,8 +407,8 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 values: true,
             },
             callback: () => {
-                if (getValues(FieldConstants.EQUIPMENT_ID)) {
-                    trigger(FieldConstants.EQUIPMENT_ID);
+                if (getValues(EQUIPMENT_ID)) {
+                    trigger(EQUIPMENT_ID);
                 }
             },
         });
@@ -448,7 +442,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
             onCreateVoltageLevel({
                 studyUuid: studyUuid as UUID,
                 nodeUuid: currentNodeUuid,
-                equipmentId: voltageLevel[FieldConstants.EQUIPMENT_ID],
+                equipmentId: voltageLevel[EQUIPMENT_ID],
                 equipmentName: sanitizeString(voltageLevel[FieldConstants.EQUIPMENT_NAME]) ?? undefined,
                 substationId: substationCreation === null ? voltageLevel[SUBSTATION_ID] : null,
                 substationCreation: substationCreation,
