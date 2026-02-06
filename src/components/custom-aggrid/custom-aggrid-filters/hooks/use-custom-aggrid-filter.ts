@@ -72,7 +72,7 @@ export const useCustomAggridFilter = (
             } else {
                 updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
             }
-            updateAgGridFilters(api, filters);
+            updateAgGridFilters(api, updatedFilters);
             updateFilterCallback?.(api, updatedFilters, colId, studyUuid, type, tab);
             dispatchFilters(updatedFilters);
         },

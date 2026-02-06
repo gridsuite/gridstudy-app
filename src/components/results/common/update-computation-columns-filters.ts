@@ -18,19 +18,18 @@ export const updateComputationColumnsFilters = (
     filterSubType?: string,
     onBeforePersist?: () => void
 ) => {
-    if (!agGridApi || !studyUuid || !filters || !colId || !filterSubType || !filterType) {
+    if (!agGridApi || !studyUuid || !colId || !filterSubType || !filterType) {
         return;
     }
-    const filter = filters.find((f) => f.column === colId);
-    if (!filter) return;
+    const filter = filters?.find((f) => f.column === colId);
     onBeforePersist?.();
     const columnDto = {
         columnId: colId,
         columnFilterInfos: {
-            filterDataType: filter.dataType,
-            filterType: filter.type,
+            filterDataType: filter?.dataType,
+            filterType: filter?.type,
             filterValue: filter?.value,
-            filterTolerance: filter.tolerance,
+            filterTolerance: filter?.tolerance,
         },
     };
     updateComputationResultFiltersColumn(studyUuid, filterType, filterSubType, columnDto).then();
