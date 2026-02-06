@@ -56,6 +56,8 @@ import {
     CLOSE_STUDY,
     type CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
+    COPIED_NETWORK_MODIFICATIONS,
+    type CopiedNetworkModificationsAction,
     CURRENT_ROOT_NETWORK_UUID,
     CURRENT_TREE_NODE,
     type CurrentRootNetworkUuidAction,
@@ -97,9 +99,7 @@ import {
     type NetworkModificationTreeNodesReorderAction,
     type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
-    COPIED_NETWORK_MODIFICATIONS,
     type NodeSelectionForCopyAction,
-    type CopiedNetworkModificationsAction,
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
@@ -149,6 +149,8 @@ import {
     ResetShortcircuitAnalysisPaginationAction,
     SAVE_SPREADSHEET_GS_FILTER,
     type SaveSpreadSheetGlobalFilterAction,
+    SECURITY_ANALYSIS_RESULT_PAGINATION,
+    SecurityAnalysisResultPaginationAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
     SELECT_SYNC_ENABLED,
@@ -201,6 +203,8 @@ import {
     ShortcircuitAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
+    STORE_NAD_VIEW_BOX,
+    StoreNadViewBoxAction,
     STUDY_UPDATED,
     type StudyUpdatedAction,
     TABLE_SORT,
@@ -225,8 +229,6 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
-    STORE_NAD_VIEW_BOX,
-    StoreNadViewBoxAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -1638,6 +1640,11 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_LAST_COMPLETED_COMPUTATION, (state, action: SetLastCompletedComputationAction) => {
         state.lastCompletedComputation = action.lastCompletedComputation;
+    });
+
+    builder.addCase(SECURITY_ANALYSIS_RESULT_PAGINATION, (state, action: SecurityAnalysisResultPaginationAction) => {
+        state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
+            action[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD];
     });
 
     builder.addCase(RESET_SECURITY_ANALYSIS_PAGINATION, (state, _action: ResetSecurityAnalysisPaginationAction) => {
