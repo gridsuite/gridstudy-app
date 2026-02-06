@@ -17,10 +17,9 @@ import {
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
 import { Box, Button, Grid, Slider, TextField, Tooltip, Typography } from '@mui/material';
-import { filledTextField } from '../../../dialog-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { AutocompleteInput, Option, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, filledTextField, Option, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import GridSection from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';

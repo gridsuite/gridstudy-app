@@ -8,9 +8,8 @@
 import React from 'react';
 import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE } from 'components/utils/field-constants';
 import { Box, Grid, TextField } from '@mui/material';
-import { filledTextField } from 'components/dialogs/dialog-utils';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
-import { SelectInput, TextInput } from '@gridsuite/commons-ui';
+import { filledTextField, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 import { useIntl } from 'react-intl';
 import LoadDialogTabs from './load-dialog-tabs';

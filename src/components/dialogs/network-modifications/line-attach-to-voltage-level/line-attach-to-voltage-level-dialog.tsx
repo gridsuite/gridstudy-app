@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    ModificationType,
+    snackWithFallback,
+    useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
@@ -24,7 +31,6 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import {
@@ -49,7 +55,6 @@ import { getNewVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { VoltageLevel } from '../../../utils/equipment-types';
-import { DeepNullable } from '../../../utils/ts-utils';
 import { FetchStatus } from '../../../../services/utils.type';
 import {
     AttachLineInfo,

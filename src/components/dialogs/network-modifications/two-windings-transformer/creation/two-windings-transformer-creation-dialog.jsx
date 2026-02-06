@@ -8,9 +8,15 @@
 import {
     convertInputValue,
     convertOutputValue,
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     FieldType,
+    getPropertiesFromModification,
+    sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -61,7 +67,6 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
@@ -102,13 +107,6 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 import { addSelectedFieldToRows, computeHighTapPosition, formatCompleteCurrentLimit } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-utils';
 
 /**

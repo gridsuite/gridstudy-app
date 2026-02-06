@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextInput } from '@gridsuite/commons-ui';
+import { TextInput, PropertiesForm, filledTextField } from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
-import { filledTextField } from '../../../dialog-utils';
 import { Grid, TextField } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';

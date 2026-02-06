@@ -5,11 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    CustomFormProvider,
+    emptyProperties,
+    EquipmentType,
+    getPropertiesFromModification,
+    snackWithFallback,
+    toModificationProperties,
+    useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     CONNECTIVITY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -18,7 +30,6 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
@@ -32,14 +43,6 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { LoadCreationInfos, LoadCreationSchemaForm } from './load-creation.type';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -197,7 +200,7 @@ export function LoadCreationDialog({
         if (
             errors?.[ACTIVE_POWER_SETPOINT] !== undefined ||
             errors?.[REACTIVE_POWER_SET_POINT] !== undefined ||
-            errors?.[ADDITIONAL_PROPERTIES] !== undefined
+            errors?.[FieldConstants.ADDITIONAL_PROPERTIES] !== undefined
         ) {
             tabsInError.push(LoadDialogTab.CHARACTERISTICS_TAB);
         }

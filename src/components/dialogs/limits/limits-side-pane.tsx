@@ -7,6 +7,7 @@
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    AmpereAdornment,
     ColumnNumeric,
     ColumnText,
     DndColumn,
@@ -32,7 +33,6 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import { AmpereAdornment } from '../dialog-utils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { isNodeBuilt } from '../../graph/util/model-functions';

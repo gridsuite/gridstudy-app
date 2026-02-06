@@ -7,13 +7,12 @@
 
 import { FC } from 'react';
 import { ASSIGNMENTS, EQUIPMENT_TYPE_FIELD } from '../../../../utils/field-constants';
-import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
 import AssignmentForm from './assignment/assignment-form';
 import { Box, Grid } from '@mui/material';
 import { getAssignmentInitialValue } from './assignment/assignment-utils';
 import { useFormContext } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
-import { mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
+import { ExpandableInput, mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENTS_FIELDS } from './assignment/assignment-constants';
 import useGetLabelEquipmentTypes from '../../../../../hooks/use-get-label-equipment-types';
 import GridItem from '../../../commons/grid-item';

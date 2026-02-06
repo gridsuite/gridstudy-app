@@ -6,11 +6,18 @@
  */
 
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     EquipmentType,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
+    DeepNullable,
+    sanitizeString,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -35,7 +42,6 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
@@ -55,16 +61,8 @@ import {
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 import { createShuntCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { ShuntCompensatorCreationDialogSchemaForm, ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { ShuntCompensatorCreationInfos } from '../../../../../services/network-modification-types';
 
 const emptyFormData = {

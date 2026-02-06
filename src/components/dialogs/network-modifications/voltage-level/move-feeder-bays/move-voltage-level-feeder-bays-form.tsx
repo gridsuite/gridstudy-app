@@ -8,11 +8,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
-import { filledTextField } from '../../../dialog-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import HeaderWithTooltip from '../topology-modification/header-with-tooltip';
-import { AutocompleteInput, CustomAGGrid, TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomAGGrid, filledTextField, TextInput } from '@gridsuite/commons-ui';
 import {
     BUSBAR_SECTION_ID,
     BUSBAR_SECTION_IDS,

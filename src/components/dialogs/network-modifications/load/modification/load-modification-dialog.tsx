@@ -5,13 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    emptyProperties,
+    EquipmentType,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    modificationPropertiesSchema,
+    snackWithFallback,
+    toModificationProperties,
+    useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -26,25 +38,16 @@ import {
     REACTIVE_POWER_SET_POINT,
     STATE_ESTIMATION,
     VALIDITY,
-    VALUE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
     getConnectivityFormData,
@@ -63,7 +66,6 @@ import { LoadModificationInfos, LoadModificationSchemaForm } from './load-modifi
 import LoadDialogHeader from '../common/load-dialog-header';
 import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
-import { DeepNullable } from 'components/utils/ts-utils';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
@@ -173,7 +175,7 @@ export default function LoadModificationDialog({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
                                 }),
                                 { keepDirty: true }
                             );
@@ -215,9 +217,9 @@ export default function LoadModificationDialog({
                 connectionDirection: load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 connectionPosition: load[CONNECTIVITY]?.[CONNECTION_POSITION],
                 terminalConnected: load[CONNECTIVITY]?.[CONNECTED],
-                pMeasurementValue: stateEstimationData?.[MEASUREMENT_P]?.[VALUE],
+                pMeasurementValue: stateEstimationData?.[MEASUREMENT_P]?.[FieldConstants.VALUE],
                 pMeasurementValidity: stateEstimationData?.[MEASUREMENT_P]?.[VALIDITY],
-                qMeasurementValue: stateEstimationData?.[MEASUREMENT_Q]?.[VALUE],
+                qMeasurementValue: stateEstimationData?.[MEASUREMENT_Q]?.[FieldConstants.VALUE],
                 qMeasurementValidity: stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY],
                 properties: toModificationProperties(load) ?? null,
             }).catch((error: Error) => {
@@ -244,7 +246,7 @@ export default function LoadModificationDialog({
         if (
             errors?.[ACTIVE_POWER_SETPOINT] !== undefined ||
             errors?.[REACTIVE_POWER_SET_POINT] !== undefined ||
-            errors?.[ADDITIONAL_PROPERTIES] !== undefined
+            errors?.[FieldConstants.ADDITIONAL_PROPERTIES] !== undefined
         ) {
             tabsInError.push(LoadDialogTab.CHARACTERISTICS_TAB);
         }

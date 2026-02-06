@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { IntegerInput } from '@gridsuite/commons-ui';
+import { filledTextField, IntegerInput } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
 import GridItem from '../../../commons/grid-item';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
@@ -14,7 +14,6 @@ import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLi
 import { useCallback, useMemo, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { filledTextField } from '../../../dialog-utils';
 import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';

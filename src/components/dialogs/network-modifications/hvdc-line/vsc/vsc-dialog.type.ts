@@ -6,7 +6,6 @@
  */
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
@@ -22,8 +21,8 @@ import {
     P0,
     R,
 } from '../../../../utils/field-constants';
-import { Property } from '../../common/properties/property-utils';
 import { VscConverterStation, VscConverterStationFormInfos } from './converter-station/converter-station-type';
+import { FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type VscDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -42,7 +41,7 @@ export type VscDialogSchemaBaseForm = {
     [CONVERTER_STATION_1]: VscConverterStation;
     [CONVERTER_STATION_2]: VscConverterStation;
     // Properties
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 export type VscCreationDialogSchemaForm = { [EQUIPMENT_ID]: string } & VscDialogSchemaBaseForm;

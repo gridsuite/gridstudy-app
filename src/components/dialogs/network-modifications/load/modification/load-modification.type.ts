@@ -9,7 +9,6 @@ import { AttributeModification } from 'services/network-modification-types';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -26,7 +25,7 @@ import {
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
 import { MeasurementInfo } from '../../common/measurements/measurement.type';
-import { Property } from '../../common/properties/property-utils';
+import { FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type LoadModificationSchemaForm = {
     [EQUIPMENT_NAME]?: string;
@@ -46,7 +45,7 @@ export type LoadModificationSchemaForm = {
         [MEASUREMENT_Q]?: MeasurementInfo;
     };
     // Properties
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 export interface LoadModificationInfos {

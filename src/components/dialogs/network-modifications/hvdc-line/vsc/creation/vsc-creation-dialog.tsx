@@ -7,12 +7,20 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     ExtendedEquipmentType,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
     snackWithFallback,
     TextInput,
+    toModificationProperties,
     useSnackMessage,
+    DeepNullable,
+    filledTextField,
+    sanitizeString,
 } from '@gridsuite/commons-ui';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -34,7 +42,6 @@ import {
     R,
 } from '../../../../../utils/field-constants';
 import { Box, Grid } from '@mui/material';
-import { filledTextField, sanitizeString } from '../../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
 import yup from 'components/utils/yup-config';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
@@ -45,18 +52,10 @@ import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
 import { VSC_CREATION_TABS } from '../vsc-utils';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { VscCreationInfos } from '../../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../../utils/ts-utils';
 import { VscCreationDialogSchemaForm, VscFormInfos } from '../vsc-dialog.type';
 import {
     getVscHvdcLinePaneEmptyFormData,

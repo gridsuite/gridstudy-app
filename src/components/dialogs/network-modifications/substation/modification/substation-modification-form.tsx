@@ -5,13 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { filledTextField } from '../../../dialog-utils';
-import { TextInput } from '@gridsuite/commons-ui';
-import { COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
+import { FieldConstants, filledTextField, TextInput } from '@gridsuite/commons-ui';
 import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { TextField, Grid } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
+import { PropertiesForm } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 import { SubstationInfos } from '../substation-dialog.type';
 
@@ -39,7 +37,7 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }: Readonl
 
     const substationNameField = (
         <TextInput
-            name={EQUIPMENT_NAME}
+            name={FieldConstants.EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
             previousValue={substationToModify?.name}
@@ -49,7 +47,7 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }: Readonl
 
     const substationCountryField = (
         <CountrySelectionInput
-            name={COUNTRY}
+            name={FieldConstants.COUNTRY}
             label={'Country'}
             formProps={filledTextField}
             size={'small'}

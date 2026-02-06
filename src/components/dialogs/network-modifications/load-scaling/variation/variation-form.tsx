@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemsInput, SelectInput, FloatInput, ElementType } from '@gridsuite/commons-ui';
+import { DirectoryItemsInput, SelectInput, FloatInput, ElementType, ActivePowerAdornment } from '@gridsuite/commons-ui';
 import {
     FILTERS,
     REACTIVE_VARIATION_MODE,
@@ -17,7 +17,6 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
 import { ACTIVE_VARIATION_MODES, REACTIVE_VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
-import { ActivePowerAdornment } from '../../../dialog-utils';
 import { IDENTIFIER_LIST } from './variation-utils';
 import GridItem from '../../../commons/grid-item';
 import { ItemFilterType, VariationType } from '../../../../../services/network-modification-types';

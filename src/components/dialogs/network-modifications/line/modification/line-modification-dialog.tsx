@@ -10,14 +10,20 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    emptyProperties,
     EquipmentType,
+    FieldConstants,
     FieldType,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    modificationPropertiesSchema,
+    sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    ADDITIONAL_PROPERTIES,
     B1,
     B2,
     BUS_OR_BUSBAR_SECTION,
@@ -47,12 +53,10 @@ import {
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
     VALIDITY,
-    VALUE,
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
 import { FieldErrors } from 'react-hook-form';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
@@ -80,13 +84,6 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     createConnectivityData,
     getCon1andCon2WithPositionValidationSchema,
@@ -276,13 +273,13 @@ const LineModificationDialog = ({
                 connected1: connectivity1[CONNECTED],
                 connected2: connectivity2[CONNECTED],
                 properties: toModificationProperties(line),
-                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][VALUE],
+                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][FieldConstants.VALUE],
                 p1MeasurementValidity: stateEstimationData[MEASUREMENT_P1][VALIDITY],
-                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][VALUE],
+                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][FieldConstants.VALUE],
                 q1MeasurementValidity: stateEstimationData[MEASUREMENT_Q1][VALIDITY],
-                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][VALUE],
+                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][FieldConstants.VALUE],
                 p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
-                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][VALUE],
+                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][FieldConstants.VALUE],
                 q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LineModificationError' });
@@ -329,7 +326,7 @@ const LineModificationDialog = ({
                                                       ),
                                               },
                                     },
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),
                                 { keepDirty: true }
                             );

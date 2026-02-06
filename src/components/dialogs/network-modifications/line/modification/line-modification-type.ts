@@ -7,7 +7,6 @@
 
 import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
 import {
-    ADDITIONAL_PROPERTIES,
     CHARACTERISTICS,
     CONNECTIVITY,
     EQUIPMENT_ID,
@@ -15,7 +14,7 @@ import {
     LIMITS,
     STATE_ESTIMATION,
 } from '../../../../utils/field-constants';
-import { Property } from '../../common/properties/property-utils';
+import { FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export interface LineCharacteristics {
     r: number | null;
@@ -32,6 +31,6 @@ export interface LineModificationFormSchema {
     [CONNECTIVITY]: any;
     [CHARACTERISTICS]: any;
     [LIMITS]: OperationalLimitsGroupsFormSchema;
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
     [STATE_ESTIMATION]: any;
 }

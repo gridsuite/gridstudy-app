@@ -14,9 +14,10 @@ import {
     EquipmentType,
     ExtendedEquipmentType,
     type Identifiable,
+    safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { getQueryParamsList } from '../utils';
 import { BusBarSectionsInfos, FeederBaysInfos, SwitchInfos } from './network-map.type';

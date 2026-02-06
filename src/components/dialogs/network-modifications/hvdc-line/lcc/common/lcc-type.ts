@@ -4,12 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Property } from '../../../common/properties/property-utils';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTER_STATION_NAME,
@@ -24,6 +22,7 @@ import {
     R,
 } from '../../../../../utils/field-constants';
 import { LccShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
+import { FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export const LccDialogTab = {
     HVDC_LINE_TAB: 0,
@@ -39,7 +38,7 @@ export type LccModificationSchemaForm = {
         [MAX_P]?: number;
         [CONVERTERS_MODE]?: string;
         [ACTIVE_POWER_SETPOINT]?: number;
-        [ADDITIONAL_PROPERTIES]?: Property[];
+        [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
     };
     [CONVERTER_STATION_1]: ConverterStationType;
     [CONVERTER_STATION_2]: ConverterStationType;

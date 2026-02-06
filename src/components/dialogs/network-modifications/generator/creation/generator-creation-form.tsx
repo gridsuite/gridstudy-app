@@ -5,7 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    filledTextField,
+    FloatInput,
+    italicFontTextField,
+    MVAPowerAdornment,
+    SelectInput,
+    SwitchInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -19,13 +28,12 @@ import {
     RATED_NOMINAL_POWER,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField, italicFontTextField, MVAPowerAdornment } from '../../../dialog-utils';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import { Box, Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { SetPointsForm } from '../../../set-points/set-points-form';
-import PropertiesForm from '../../common/properties/properties-form';
+import { PropertiesForm } from '@gridsuite/commons-ui';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';

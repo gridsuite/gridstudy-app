@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { ExpandableInput } from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
     FINAL_CURRENT_LIMITS,
@@ -32,6 +31,7 @@ import { calculateReactance, calculateResistance, calculateSusceptance } from '.
 import {
     CustomAGGrid,
     DefaultCellRenderer,
+    ExpandableInput,
     type MuiStyles,
     snackWithFallback,
     useSnackMessage,

@@ -7,12 +7,23 @@
 
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    modificationPropertiesSchema,
+    Property,
+    snackWithFallback,
+    toModificationProperties,
+    useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
-import { sanitizeString } from '../../../dialog-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -20,35 +31,27 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifySubstation } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { AttributeModification } from 'services/network-modification-types';
 import { useForm } from 'react-hook-form';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { SubstationInfos } from '../substation-dialog.type';
 
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [COUNTRY]: yup.string().nullable(),
+        [FieldConstants.EQUIPMENT_NAME]: yup.string().nullable(),
+        [FieldConstants.COUNTRY]: yup.string().nullable(),
     })
     .concat(modificationPropertiesSchema);
 
 export type SubstationModificationFormData = yup.InferType<typeof formSchema>;
 
 const emptyFormData: SubstationModificationFormData = {
-    [EQUIPMENT_NAME]: '',
-    [COUNTRY]: null,
-    [ADDITIONAL_PROPERTIES]: [],
+    [FieldConstants.EQUIPMENT_NAME]: '',
+    [FieldConstants.COUNTRY]: null,
+    [FieldConstants.ADDITIONAL_PROPERTIES]: [],
 };
 
 interface SubstationModificationEditData {
@@ -108,8 +111,8 @@ const SubstationModificationDialog = ({
                 setSelectedId(editData.equipmentId);
             }
             reset({
-                [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
-                [COUNTRY]: editData.country?.value ?? null,
+                [FieldConstants.EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
+                [FieldConstants.COUNTRY]: editData.country?.value ?? null,
                 ...getPropertiesFromModification(editData?.properties ?? undefined),
             });
         }
@@ -138,7 +141,10 @@ const SubstationModificationDialog = ({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(substation, getValues),
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
+                                        substation,
+                                        getValues
+                                    ),
                                 }),
                                 { keepDirty: true }
                             );
@@ -172,8 +178,8 @@ const SubstationModificationDialog = ({
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid,
                 id: selectedId,
-                name: sanitizeString(substation[EQUIPMENT_NAME]),
-                country: substation[COUNTRY] ?? null,
+                name: sanitizeString(substation[FieldConstants.EQUIPMENT_NAME]),
+                country: substation[FieldConstants.COUNTRY] ?? null,
                 properties: toModificationProperties(substation),
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'SubstationModificationError' });

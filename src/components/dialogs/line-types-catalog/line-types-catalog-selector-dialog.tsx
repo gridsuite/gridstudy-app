@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { CustomFormProvider, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, Option, snackWithFallback, useSnackMessage, DeepNullable } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import {
@@ -22,7 +22,6 @@ import { getLineTypeWithLimits } from '../../../services/network-modification';
 import { ModificationDialog } from '../commons/modificationDialog';
 import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { DeepNullable } from 'components/utils/ts-utils';
 import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
 
 const formSchema = yup

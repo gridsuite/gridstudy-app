@@ -8,7 +8,6 @@
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -22,7 +21,7 @@ import {
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
-import { Property } from '../../common/properties/property-utils';
+import { FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type LoadCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -39,7 +38,7 @@ export type LoadCreationSchemaForm = {
         [CONNECTED]?: boolean;
     };
     // Properties
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 export interface LoadCreationInfos {
