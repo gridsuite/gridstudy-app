@@ -17,7 +17,6 @@ import { mergePositions } from '../../../grid-layout/cards/diagrams/diagram-util
 import type { DiagramMetadata } from '@powsybl/network-viewer';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 import { selectNadDiagramFields, selectActiveWorkspaceId } from '../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../redux/store';
 import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
@@ -68,7 +67,6 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const { snackError } = useSnackMessage();
-    const { baseVoltagesConfig } = useBaseVoltages();
 
     const [diagram, setDiagram] = useState<NetworkAreaDiagram>(() => ({
         type: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -152,7 +150,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
     const fetchDiagram = useCallback(() => {
         if (!currentNode || !isNodeBuilt(currentNode)) {
-            setGlobalError('Node not built');
+            setGlobalError('InvalidNode');
             return Promise.resolve();
         }
 
@@ -162,7 +160,6 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         // we use setDiagram to capture current state without adding diagram to dependencies
         return setDiagram((currentDiagram) => {
             const body: any = {
-                baseVoltagesConfigInfos: baseVoltagesConfig,
                 nadPositionsGenerationMode: networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
                 voltageLevelIds: currentDiagram.voltageLevelIds,
                 voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
@@ -182,7 +179,6 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 .then(processSvgData)
                 .catch(handleFetchError)
                 .finally(() => setLoading(false));
-
             return currentDiagram;
         });
     }, [
@@ -190,7 +186,6 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
-        baseVoltagesConfig,
         networkVisuParams,
         processSvgData,
         handleFetchError,
