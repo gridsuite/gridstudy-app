@@ -6,7 +6,6 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
-import { getRequestParamFromList } from '../utils';
 import type { UUID } from 'node:crypto';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, GsLangUser } from '@gridsuite/commons-ui';
 import { SecurityAnalysisQueryParams } from '../../components/results/securityanalysis/security-analysis.type';
@@ -14,21 +13,17 @@ import { SecurityAnalysisQueryParams } from '../../components/results/securityan
 export function startSecurityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    contingencyListUuids: UUID[]
+    currentRootNetworkUuid: UUID
 ): Promise<Response> {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
-    // Add params to Url
-    const contingencyListsQueryParams = getRequestParamFromList(contingencyListUuids, 'contingencyListName');
-    const urlSearchParams = new URLSearchParams(contingencyListsQueryParams);
 
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/security-analysis/run?${urlSearchParams}`;
+    )}/security-analysis/run`;
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
