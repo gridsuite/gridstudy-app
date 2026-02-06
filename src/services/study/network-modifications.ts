@@ -26,6 +26,7 @@ import {
     BalancesAdjustmentInfos,
     BatteryCreationInfos,
     BatteryModificationInfos,
+    ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
     CreateVoltageLevelSectionInfos,
     CreateVoltageLevelTopologyInfos,
@@ -1888,8 +1889,7 @@ export function modifyVsc({
 export function modifyByFormula(
     studyUuid: string,
     nodeUuid: UUID,
-    equipmentType: string,
-    formulas: any,
+    byFormulaModificationInfos: ByFormulaModificationInfos,
     isUpdate: boolean,
     modificationUuid: UUID
 ) {
@@ -1902,19 +1902,13 @@ export function modifyByFormula(
         console.info('Creating by formula modification');
     }
 
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
-        identifiableType: equipmentType,
-        formulaInfosList: formulas,
-    });
-
     return backendFetchText(modificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify(byFormulaModificationInfos),
     });
 }
 
