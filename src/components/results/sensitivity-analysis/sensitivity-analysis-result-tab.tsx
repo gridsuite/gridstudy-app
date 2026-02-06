@@ -87,7 +87,11 @@ function SensitivityAnalysisResultTab({
                     >
                         <Tabs value={nOrNkIndex} onChange={handleSensiNOrNkIndexChange}>
                             {SensitivityResultTabs.map((tab) => (
-                                <Tab key={tab.label} label={tab.label} />
+                                <Tab
+                                    key={tab.label}
+                                    label={tab.label}
+                                    data-testid={`SensitivityAnalysis${tab.label}Tab`}
+                                />
                             ))}
                         </Tabs>
                         <Box sx={{ display: 'flex', flexGrow: 0 }}>
