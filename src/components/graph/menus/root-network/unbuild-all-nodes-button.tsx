@@ -70,8 +70,8 @@ export const UnbuildAllNodesButton = () => {
             return false;
         }
         return treeModel.treeNodes
-                .filter((treeNode) => treeNode.type === NETWORK_MODIFICATION)
-                .every((treeNode) => treeNode.data.globalBuildStatus === BUILD_STATUS.NOT_BUILT);
+            .filter((treeNode) => treeNode.type === NETWORK_MODIFICATION)
+            .every((treeNode) => treeNode.data.globalBuildStatus === BUILD_STATUS.NOT_BUILT);
     }, [treeModel]);
 
     return (
