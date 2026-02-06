@@ -28,12 +28,13 @@ export const useGlobalFilterOptions = () => {
     const [propertiesFilter, setPropertiesFilter] = useState<GlobalFilter[]>([]);
 
     useEffect(() => {
-        const newVoltageLevelsFilter = baseVoltages.map((voltage) => ({
-            label: voltage.name,
-            minValue: voltage.minValue,
-            maxValue: voltage.maxValue,
-            filterType: FilterType.VOLTAGE_LEVEL,
-        }));
+        const newVoltageLevelsFilter =
+            baseVoltages?.map((voltage) => ({
+                label: voltage.name,
+                minValue: voltage.minValue,
+                maxValue: voltage.maxValue,
+                filterType: FilterType.VOLTAGE_LEVEL,
+            })) ?? [];
         setVoltageLevelsFilter(newVoltageLevelsFilter);
     }, [baseVoltages]);
 

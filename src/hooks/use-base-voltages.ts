@@ -24,9 +24,11 @@ export const useBaseVoltages = () => {
 
     const getBaseVoltageInterval = useCallback(
         (voltageValue: number): BaseVoltage | undefined => {
-            for (let interval of baseVoltages) {
-                if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
-                    return interval;
+            if (baseVoltages) {
+                for (let interval of baseVoltages) {
+                    if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
+                        return interval;
+                    }
                 }
             }
         },

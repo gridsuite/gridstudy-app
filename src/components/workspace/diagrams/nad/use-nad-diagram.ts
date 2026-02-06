@@ -160,7 +160,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         // we use setDiagram to capture current state without adding diagram to dependencies
         return setDiagram((currentDiagram) => {
             const body: any = {
-                nadPositionsGenerationMode: networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+                nadPositionsGenerationMode: networkVisuParams?.networkAreaDiagramParameters.nadPositionsGenerationMode,
                 voltageLevelIds: currentDiagram.voltageLevelIds,
                 voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
                 positions: currentDiagram.positions,
