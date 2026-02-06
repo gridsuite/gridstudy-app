@@ -45,7 +45,11 @@ import {
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { TwoWindingsTransformerData, PhaseTapChangerData, TapChangerStep } from '../../two-windings-transformer.types';
+import {
+    TapChangerMapInfos,
+    TapChangerStep,
+    TwoWindingsTransformerMapInfos,
+} from '../../two-windings-transformer.types';
 
 const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -163,6 +167,10 @@ const phaseTapChangerValidationSchema = (isModification: boolean, id: string) =>
     }),
 });
 
+export type PhaseTapChangerFormSchema = yup.InferType<
+    ReturnType<typeof phaseTapChangerValidationSchema>[typeof PHASE_TAP_CHANGER]
+>;
+
 export const getPhaseTapChangerValidationSchema = (isModification = false, id = PHASE_TAP_CHANGER) => {
     return phaseTapChangerValidationSchema(isModification, id);
 };
@@ -247,7 +255,7 @@ export const getPhaseTapChangerFormData = (
 type PhaseRegulationMode = (typeof PHASE_REGULATION_MODES)[keyof typeof PHASE_REGULATION_MODES] | undefined;
 
 export const getComputedPhaseTapChangerRegulationMode = (
-    phaseTapChangerFormValues?: PhaseTapChangerData
+    phaseTapChangerFormValues?: TapChangerMapInfos
 ): PhaseRegulationMode => {
     if (
         phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.OFF.id ||
@@ -270,7 +278,7 @@ export const getComputedPhaseTapChangerRegulationMode = (
     return undefined;
 };
 
-export const getPhaseTapRegulationSideId = (twt?: TwoWindingsTransformerData): string | null => {
+export const getPhaseTapRegulationSideId = (twt?: TwoWindingsTransformerMapInfos): string | null => {
     const phaseTapChangerValues = twt?.phaseTapChanger;
     if (!phaseTapChangerValues || !twt) {
         return null;
@@ -283,7 +291,7 @@ export const getPhaseTapRegulationSideId = (twt?: TwoWindingsTransformerData): s
 
 type RegulationType = (typeof REGULATION_TYPES)[keyof typeof REGULATION_TYPES] | null;
 
-export const getComputedPhaseRegulationType = (twt?: TwoWindingsTransformerData): RegulationType => {
+export const getComputedPhaseRegulationType = (twt?: TwoWindingsTransformerMapInfos): RegulationType => {
     if (!twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
         return null;
     }
@@ -293,12 +301,14 @@ export const getComputedPhaseRegulationType = (twt?: TwoWindingsTransformerData)
     return REGULATION_TYPES.LOCAL;
 };
 
-export const getComputedPhaseRegulationTypeId = (twt?: TwoWindingsTransformerData): string | null => {
+export const getComputedPhaseRegulationTypeId = (twt?: TwoWindingsTransformerMapInfos): string | null => {
     const regulationType = getComputedPhaseRegulationType(twt);
     return regulationType?.id ?? null;
 };
 
-export const getComputedPreviousPhaseRegulationType = (previousValues?: TwoWindingsTransformerData): string | null => {
+export const getComputedPreviousPhaseRegulationType = (
+    previousValues?: TwoWindingsTransformerMapInfos
+): string | null => {
     const previousRegulationType = getComputedPhaseRegulationType(previousValues);
     return previousRegulationType?.id ?? null;
 };

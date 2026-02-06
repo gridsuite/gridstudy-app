@@ -294,10 +294,12 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
     return Array.from({ length }, (_, index) => start + index * step);
 }
 
-export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
-    return rows?.map((row) => {
-        return { ...row, [SELECTED]: false };
-    });
+export const addSelectedFieldToRows = <T>(rows?: T[]): (T & { selected: boolean })[] => {
+    return (
+        rows?.map((row) => {
+            return { ...row, [SELECTED]: false };
+        }) ?? []
+    );
 };
 
 //Escapes regex special characters to avoid misinterpreting user prompts
