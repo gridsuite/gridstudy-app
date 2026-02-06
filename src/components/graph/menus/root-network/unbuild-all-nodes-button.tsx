@@ -31,9 +31,6 @@ const styles = {
     playColor: (theme: Theme) => ({
         color: theme.palette.error.main,
     }),
-    disabledColor: (theme: Theme) => ({
-        color: theme.palette.grey,
-    }),
 };
 
 export const UnbuildAllNodesButton = () => {
@@ -43,7 +40,6 @@ export const UnbuildAllNodesButton = () => {
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
 
     const [isValidationDialogOpen, setIsValidationDialogOpen] = useState(false);
-    const [areAllNodesUnBuilt, setAllNodesUnBuilt] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleCloseDialog = () => {
@@ -69,26 +65,23 @@ export const UnbuildAllNodesButton = () => {
             });
     };
 
-    useMemo(() => {
-        if (treeModel !== null) {
-            setAllNodesUnBuilt(
-                treeModel.treeNodes
-                    .filter((treeNode) => treeNode.type === NETWORK_MODIFICATION)
-                    .every((treeNode) => treeNode.data.globalBuildStatus === BUILD_STATUS.NOT_BUILT)
-            );
+    const allNodesUnBuilt = useMemo(() => {
+        if (!treeModel) {
+            return false;
         }
+        return treeModel.treeNodes
+                .filter((treeNode) => treeNode.type === NETWORK_MODIFICATION)
+                .every((treeNode) => treeNode.data.globalBuildStatus === BUILD_STATUS.NOT_BUILT);
     }, [treeModel]);
 
     return (
         <>
-            <Tooltip title={intl.formatMessage({ id: 'unbuildAllNodesTooltip' })}>
-                <Button size="small" sx={styles.button} onClick={handleOpenDialog} disabled={areAllNodesUnBuilt}>
-                    {areAllNodesUnBuilt ? (
-                        <StopCircleOutlined sx={{ color: 'grey' }} />
-                    ) : (
-                        <StopCircleOutlined sx={styles.playColor} />
-                    )}
-                </Button>
+            <Tooltip title={intl.formatMessage({ id: 'unbuildAllNodesTooltip' })} disableInteractive>
+                <span style={{ display: 'inline-block' }}>
+                    <Button size="small" sx={styles.button} onClick={handleOpenDialog} disabled={allNodesUnBuilt}>
+                        <StopCircleOutlined sx={allNodesUnBuilt ? undefined : styles.playColor} />
+                    </Button>
+                </span>
             </Tooltip>
             <Dialog open={isValidationDialogOpen} onClose={handleCloseDialog}>
                 <DialogTitle style={{ display: 'flex' }} data-testid="DialogTitle">

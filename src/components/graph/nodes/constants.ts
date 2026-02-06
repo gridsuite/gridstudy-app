@@ -6,5 +6,5 @@
  */
 
 // data extracted from index.css - react-flow__node-NETWORK_MODIFICATION class
-export const NODE_HEIGHT = 115;
+export const NODE_HEIGHT = 110;
 export const NODE_WIDTH = 230;
