@@ -29,7 +29,7 @@ export const updateComputationColumnsFilters = (
             ? {
                   filterDataType: filter?.dataType,
                   filterType: filter?.type,
-                  filterValue: filter?.value,
+                  filterValue: JSON.stringify(filter.value),
                   filterTolerance: filter?.tolerance,
               }
             : null,
