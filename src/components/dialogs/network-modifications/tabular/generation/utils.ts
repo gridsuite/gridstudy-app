@@ -22,7 +22,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
 } from 'components/utils/field-constants';
-import { mapGeneratorDataForTable, mapTwtDataForTable } from 'utils/spreadsheet-equipments-mapper';
+import { mapTwtDataForTable } from 'utils/spreadsheet-equipments-mapper';
 
 export const styles = {
     dialogContent: {
@@ -188,7 +188,7 @@ export const mapPrefilledEquipments = (equipmentType: EQUIPMENT_TYPES, equipment
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
             return equipments.map(mapTwtDataForTable);
         case EQUIPMENT_TYPES.GENERATOR:
-            return equipments.map((eq) => mapReactiveCapabilityCurvePointsToFormFields(mapGeneratorDataForTable(eq)));
+            return equipments.map((eq) => mapReactiveCapabilityCurvePointsToFormFields(eq));
         case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
             return equipments.map(mapShuntCompensatorToFormFields);
         case EQUIPMENT_TYPES.BATTERY:

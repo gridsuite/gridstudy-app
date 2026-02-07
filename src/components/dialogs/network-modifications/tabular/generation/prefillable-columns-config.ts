@@ -75,6 +75,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
+    REGULATION_TYPE_TEXT,
 } from 'components/utils/field-constants';
 
 /**
@@ -347,6 +348,11 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             labelId: TARGET_V,
             csvColumns: [TARGET_V],
             networkFields: ['targetV'],
+        },
+        {
+            labelId: REGULATION_TYPE_TEXT,
+            csvColumns: [REGULATION_TYPE_TEXT],
+            networkFields: ['regulationTypeText'],
         },
         {
             labelId: REGULATING_TERMINAL_ID,
