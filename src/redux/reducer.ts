@@ -205,8 +205,6 @@ import {
     type SpreadsheetFilterAction,
     STORE_NAD_VIEW_BOX,
     StoreNadViewBoxAction,
-    STUDY_UPDATED,
-    type StudyUpdatedAction,
     TABLE_SORT,
     type TableSortAction,
     UPDATE_COLUMN_FILTERS,
@@ -328,7 +326,7 @@ import {
     RootNetworkMetadata,
 } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
-import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
+import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
@@ -336,9 +334,6 @@ import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 // Redux state
-export type StudyUpdated = {
-    force: number; //IntRange<0, 1>;
-} & StudyUpdateNotification;
 export type NadViewBox = Record<UUID, ViewBoxLike | null>;
 export enum EquipmentUpdateType {
     LINES = 'lines',
@@ -525,7 +520,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     appTabIndex: number;
     attemptedLeaveParametersTabIndex: number | null;
     isDirtyComputationParameters: boolean;
-    studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
     currentRootNetworkUuid: UUID | null;
@@ -699,8 +693,6 @@ const initialState: AppState = {
     signInCallbackError: null,
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
-    // @ts-expect-error TODO can't have empty eventData here
-    studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
     isExplorerDrawerOpen: true,
     centerOnSubstation: undefined,
@@ -1190,15 +1182,6 @@ export const reducer = createReducer(initialState, (builder) => {
             }
         }
     );
-
-    builder.addCase(STUDY_UPDATED, (state, action: StudyUpdatedAction) => {
-        state.studyUpdated = {
-            force: 1 - state.studyUpdated.force,
-            // @ts-expect-error TODO types incompatible here
-            type: action.eventData.headers.updateType,
-            eventData: action.eventData,
-        };
-    });
 
     builder.addCase(MAP_DATA_LOADING, (state, action: MapDataLoadingAction) => {
         state.mapDataLoading = action.mapDataLoading;
