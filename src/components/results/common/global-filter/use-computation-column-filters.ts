@@ -48,8 +48,6 @@ export function useComputationColumnFilters(filterType: FilterType, computationS
         studyUuid &&
             getComputationResultColumnFilters(studyUuid, filterType, computationSubType).then((infos) => {
                 const filters = toColumnFilterInfos(infos);
-                console.log('===========================toColumnFilterInfos', filters);
-
                 dispatch(updateColumnFiltersAction(filterType, computationSubType, filters));
             });
     }, [dispatch, studyUuid, filterType, computationSubType]);
