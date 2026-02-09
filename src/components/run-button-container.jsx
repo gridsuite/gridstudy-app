@@ -467,9 +467,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.STATE_ESTIMATION,
                         null,
-                        () => {
-                            return startStateEstimation(studyUuid, currentNode?.id, currentRootNetworkUuid, debug);
-                        },
+                        () => startStateEstimation(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
                         () => debug && subscribeDebug(ComputingType.STATE_ESTIMATION),
                         null,
                         'startStateEstimationError'
