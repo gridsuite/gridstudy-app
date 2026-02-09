@@ -19,15 +19,18 @@ import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-an
 import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from 'components/utils/running-status';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GlobalFilter } from '../common/global-filter/global-filter-types';
 
 interface ShortCircuitAnalysisOneBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    globalFilter: GlobalFilter[];
 }
 
 export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAnalysisOneBusResultProps> = ({
     onGridColumnsChanged,
     onRowDataUpdated,
+    globalFilter,
 }) => {
     const { snackError } = useSnackMessage();
 
@@ -96,6 +99,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
             }}
             onGridColumnsChanged={onGridColumnsChanged}
             onRowDataUpdated={onRowDataUpdated}
+            globalFilter={globalFilter}
         />
     );
 };

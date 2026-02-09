@@ -84,10 +84,12 @@ const formatCustomFiltersForAgGrid = (filters: FilterConfig[]): FilterModel => {
     return agGridFilterModel;
 };
 
-export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] | undefined) => {
+export const updateAgGridFilters = (api: GridApi | undefined, filters: FilterConfig[] | undefined) => {
     // Check if filters are provided and if the AG Grid API is accessible
-    if (!filters || !api) {
-        return; // Exit if no filters are provided or if the grid API is not accessible
+    if (!api) return;
+    if (!filters?.length) {
+        api.setFilterModel(null); // No filters → clear and exit early
+        return;
     }
 
     // Retrieve the current column definitions from AG Grid
@@ -98,14 +100,15 @@ export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] 
         currentColumnDefs?.some((col) => col.getColId() === filter.column && col.isVisible())
     );
 
-    // If we have any valid filters, apply them
-    if (validFilters.length > 0) {
-        const filterWithTolerance = addToleranceToFilter(validFilters);
-        // Format the valid filters for AG Grid and apply them using setFilterModel
-        const formattedFilters = formatCustomFiltersForAgGrid(filterWithTolerance);
-        api.setFilterModel(formattedFilters);
-    } else {
-        // Clear filters if no valid filters exist
+    if (!validFilters.length) {
         api.setFilterModel(null);
+        return;
     }
+    // If we have any valid filters, apply them
+    const filterWithTolerance = addToleranceToFilter(validFilters);
+    // Format the valid filters for AG Grid and apply them using setFilterModel
+    const formattedFilters = formatCustomFiltersForAgGrid(filterWithTolerance);
+    api.setFilterModel(formattedFilters);
+    // Ensure AG Grid reacts immediately
+    api.onFilterChanged();
 };
