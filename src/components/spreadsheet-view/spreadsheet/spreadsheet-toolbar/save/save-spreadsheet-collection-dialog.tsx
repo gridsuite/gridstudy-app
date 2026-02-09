@@ -167,14 +167,14 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                     if (!column) {
                         return null;
                     }
-                    const columnFilter: Partial<ColumnDefinitionDto> = {};
+                    const columnFilterInfos: ColumnDefinitionDto['columnFilterInfos'] = {};
                     if (includeFilters) {
                         const filter = tablesFilters[table.uuid]?.find((f) => f.column === column.id);
                         if (filter) {
-                            columnFilter.filterDataType = filter.dataType;
-                            columnFilter.filterTolerance = filter.tolerance;
-                            columnFilter.filterType = filter.type;
-                            columnFilter.filterValue = JSON.stringify(filter.value);
+                            columnFilterInfos.filterDataType = filter.dataType;
+                            columnFilterInfos.filterTolerance = filter.tolerance;
+                            columnFilterInfos.filterType = filter.type;
+                            columnFilterInfos.filterValue = JSON.stringify(filter.value);
                         }
                     }
                     const dto: ColumnDefinitionDto = {
@@ -185,7 +185,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                         precision: column.precision,
                         formula: column.formula || '',
                         dependencies: column.dependencies?.length ? JSON.stringify(column.dependencies) : undefined,
-                        ...columnFilter,
+                        columnFilterInfos,
                         visible: includeVisibility ? column.visible : true,
                     };
                     return dto;

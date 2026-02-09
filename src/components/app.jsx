@@ -16,6 +16,7 @@ import {
     COMMON_APP_NAME,
     fetchConfigParameter,
     fetchConfigParameters,
+    getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
     LAST_SELECTED_DIRECTORY,
@@ -23,10 +24,9 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
-    getComputedLanguage,
-    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -42,8 +42,8 @@ import {
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
-    selectIsDeveloperMode,
     selectFavoriteContingencyLists,
+    selectIsDeveloperMode,
     selectLanguage,
     selectTheme,
     selectUseName,

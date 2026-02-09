@@ -15,7 +15,9 @@ import {
     ModificationType,
     NetworkModificationMetadata,
     removeNullFields,
+    NotificationsUrlKeys,
     snackWithFallback,
+    useNotificationsListener,
     usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -107,6 +109,8 @@ import {
     ModificationsStashingInProgressEventData,
     ModificationsUpdatingInProgressEventData,
     NotificationType,
+    parseEventData,
+    StudyUpdateEventData,
 } from 'types/notification-types';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level/topology-modification/voltage-level-topology-modification-dialog';
@@ -166,7 +170,6 @@ const NetworkModificationNodeEditor = () => {
     const [importDialogOpen, setImportDialogOpen] = useState(false);
     const [createCompositeModificationDialogOpen, setCreateCompositeModificationDialogOpen] = useState(false);
     const dispatch = useDispatch();
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [notificationMessageId, setNotificationMessageId] = useState('');
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
@@ -784,68 +787,59 @@ const NetworkModificationNodeEditor = () => {
         modificationsToExclude,
     ]);
 
-    useEffect(() => {
-        if (isNodeDeletedNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce.eventData;
+    const handleEvent = useCallback(
+        (event: MessageEvent) => {
+            const eventData = parseEventData<StudyUpdateEventData>(event);
+            if (isNodeDeletedNotification(eventData)) {
+                if (
+                    copyInfosRef.current &&
+                    eventData.headers.nodes.some((nodeId) => nodeId === copyInfosRef.current?.originNodeUuid)
+                ) {
+                    // Must clean modifications clipboard if the origin Node is removed
+                    cleanClipboard();
+                }
+            }
 
-            if (
-                copyInfosRef.current &&
-                studyUpdatedEventData.headers.nodes.some((nodeId) => nodeId === copyInfosRef.current?.originNodeUuid)
-            ) {
-                // Must clean modifications clipboard if the origin Node is removed
-                cleanClipboard();
+            if (isPendingModificationNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
+                if (eventData.headers.updateType === NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS) {
+                    // deleting means removing from trashcan (stashed elements) so there is no network modification
+                    setDeleteInProgress(true);
+                } else {
+                    dispatch(setModificationsInProgress(true));
+                    setPendingState(true);
+                    manageNotification(eventData);
+                }
             }
-        }
+            // notify  finished action (success or error => we remove the loader)
+            // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
+            if (isModificationsUpdateFinishedNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
+                // fetch modifications because it must have changed
+                // Do not clear the modifications list, because currentNode is the concerned one
+                // this allows to append new modifications to the existing list.
+                dofetchNetworkModifications();
+                dofetchExcludedNetworkModifications();
+                dispatch(removeNotificationByNode([eventData.headers.parentNode, ...(eventData.headers.nodes ?? [])]));
+            }
+            if (isModificationsDeleteFinishedNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
+                setDeleteInProgress(false);
+                dofetchNetworkModifications();
+            }
+        },
+        [dispatch, dofetchNetworkModifications, manageNotification, cleanClipboard, dofetchExcludedNetworkModifications]
+    );
 
-        if (isPendingModificationNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce.eventData;
-            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
-                return;
-            }
-            if (studyUpdatedEventData.headers.updateType === NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS) {
-                // deleting means removing from trashcan (stashed elements) so there is no network modification
-                setDeleteInProgress(true);
-            } else {
-                dispatch(setModificationsInProgress(true));
-                setPendingState(true);
-                manageNotification(studyUpdatedEventData);
-            }
-        }
-        // notify  finished action (success or error => we remove the loader)
-        // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-        if (isModificationsUpdateFinishedNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce.eventData;
-            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
-                return;
-            }
-            // fetch modifications because it must have changed
-            // Do not clear the modifications list, because currentNode is the concerned one
-            // this allows to append new modifications to the existing list.
-            dofetchNetworkModifications();
-            dofetchExcludedNetworkModifications();
-            dispatch(
-                removeNotificationByNode([
-                    studyUpdatedEventData.headers.parentNode,
-                    ...(studyUpdatedEventData.headers.nodes ?? []),
-                ])
-            );
-        }
-        if (isModificationsDeleteFinishedNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce.eventData;
-            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
-                return;
-            }
-            setDeleteInProgress(false);
-            dofetchNetworkModifications();
-        }
-    }, [
-        dispatch,
-        dofetchNetworkModifications,
-        manageNotification,
-        studyUpdatedForce,
-        cleanClipboard,
-        dofetchExcludedNetworkModifications,
-    ]);
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleEvent,
+    });
 
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] = useState(false);
 

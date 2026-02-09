@@ -729,6 +729,30 @@ export interface VscCreationInfos {
     properties: Property[] | null;
 }
 
+export interface ReferenceFieldOrValue {
+    value: number | null;
+    equipmentField: string | null;
+}
+
+export interface FilterInfos {
+    id: UUID;
+    name: string;
+}
+
+export interface ByFormulaModificationInfos {
+    type: ModificationType;
+    uuid?: UUID;
+    identifiableType: string;
+    formulaInfosList: {
+        id?: UUID;
+        fieldOrValue1: ReferenceFieldOrValue;
+        fieldOrValue2: ReferenceFieldOrValue;
+        filters: FilterInfos[];
+        editedField: string;
+        operator: string;
+    };
+}
+
 export interface LCCCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
