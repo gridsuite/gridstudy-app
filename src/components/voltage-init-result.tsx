@@ -39,6 +39,7 @@ import RunningStatus from './utils/running-status';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import { FilterType } from 'types/custom-aggrid-types';
 
 const styles = {
     container: {
@@ -89,6 +90,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     status,
     handleGlobalFilterChange,
     globalFilterOptions,
+    globalFiltersFromState,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -279,6 +281,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
+                    computationType={FilterType.VoltageInit}
+                    computationSubType="Indicators"
                 />
             </>
         );
@@ -318,6 +322,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
+                    computationType={FilterType.VoltageInit}
+                    computationSubType="ReactiveSlacks"
                 />
             </>
         );
@@ -367,6 +373,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     return undefined;
                 }}
                 overlayNoRowsTemplate={undefined}
+                computationType={FilterType.VoltageInit}
+                computationSubType="BusVoltages"
             />
         );
     }
@@ -388,10 +396,22 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 <Box sx={styles.container}>
                     <Box sx={styles.tabs}>
                         <Tabs value={tabIndex} onChange={(_event, newTabIndex) => setTabIndex(newTabIndex)}>
-                            <Tab label={intl.formatMessage({ id: 'ReactiveSlacks' })} />
-                            <Tab label={intl.formatMessage({ id: 'Indicators' })} />
-                            <Tab label={intl.formatMessage({ id: 'BusVoltages' })} />
-                            <Tab label={intl.formatMessage({ id: 'ComputationResultsLogs' })} />
+                            <Tab
+                                label={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                                data-testid="VoltageInitReactiveSlacksTab"
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'Indicators' })}
+                                data-testid="VoltageInitIndicatorsTab"
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'BusVoltages' })}
+                                data-testid="VoltageInitCalculatedVoltageProfileTab"
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'ComputationResultsLogs' })}
+                                data-testid="VoltageInitLogsTab"
+                            />
                         </Tabs>
                     </Box>
                     <Box sx={mergeSx(tabIndex === 0 || tabIndex === 2 ? styles.show : styles.hide)}>
@@ -399,6 +419,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                             onChange={handleGlobalFilterChange}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode={true}
                         />
                     </Box>
@@ -407,6 +428,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                             variant="outlined"
                             onClick={previewModifications}
                             disabled={!result?.modificationsGroupUuid || disableApplyModifications}
+                            data-testid="VoltageInitPreviewModificationsButton"
                         >
                             <FormattedMessage id="previewModifications" />
                         </Button>
