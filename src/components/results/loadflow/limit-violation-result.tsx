@@ -22,12 +22,14 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from 'redux/reducer';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
 export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> = ({
     result,
     isLoadingResult,
     columnDefs,
     tableName,
+    computationSubType,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -87,6 +89,8 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}
+                    computationType={AgGridFilterType.Loadflow}
+                    computationSubType={computationSubType}
                 />
             </>
         );

@@ -6,7 +6,7 @@
  */
 
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 
@@ -18,10 +18,11 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
 export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     studyUuid,
@@ -35,10 +36,10 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.PccMin);
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
-    const handleSubTabChange = useCallback((event: React.SyntheticEvent, newIndex: number) => {
+    const handleSubTabChange = useCallback((event: SyntheticEvent, newIndex: number) => {
         setResultOrLogIndex(newIndex);
     }, []);
 
@@ -50,11 +51,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
         return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
     }, []);
-
-    useEffect(() => {
-        // Clear the globalfilter when tab changes
-        handleGlobalFilterChange([]);
-    }, [handleGlobalFilterChange]);
 
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
@@ -71,9 +67,10 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                 {resultOrLogIndex === RESULTS_TAB_INDEX && (
                     <Box sx={{ flex: 1 }}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
+                            onChange={updateGlobalFilters}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
+                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode
                         />
                     </Box>
@@ -87,7 +84,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             currentRootNetworkUuid={currentRootNetworkUuid}
-                            globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
+                            globalFilter={globalFiltersFromState}
                             customTablePaginationProps={{
                                 labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
                             }}

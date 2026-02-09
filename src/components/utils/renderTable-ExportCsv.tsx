@@ -6,13 +6,15 @@
  */
 
 import { FunctionComponent, RefObject, useCallback } from 'react';
-import { ColDef, GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-community';
-import { CustomAGGrid, CsvExport, type MuiStyles } from '@gridsuite/commons-ui';
+import { ColDef, RowClassParams, RowStyle } from 'ag-grid-community';
+import { CsvExport, CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { Box, LinearProgress } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
+import { FilterType as AgGridFilterType } from '../../types/custom-aggrid-types';
+import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
 
 const styles = {
     gridContainer: {
@@ -40,6 +42,8 @@ interface RenderTableAndExportCsvProps {
     getRowStyle?: (params: RowClassParams) => RowStyle | undefined;
     overlayNoRowsTemplate: string | undefined;
     skipColumnHeaders: boolean;
+    computationType: AgGridFilterType;
+    computationSubType: string;
 }
 
 export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvProps> = ({
@@ -50,6 +54,8 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     rows,
     getRowStyle,
     overlayNoRowsTemplate,
+    computationType,
+    computationSubType,
     skipColumnHeaders = false,
     showLinearProgress = false,
 }) => {
@@ -60,9 +66,7 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
             params.api.sizeColumnsToFit();
         }
     }, []);
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
+    const onGridReady = useAgGridInitialColumnFilters(computationType, computationSubType);
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
