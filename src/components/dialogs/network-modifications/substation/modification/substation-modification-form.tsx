@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FieldConstants, filledTextField, TextInput } from '@gridsuite/commons-ui';
-import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
+import { CountrySelectionInput, FieldConstants, filledTextField, TextInput } from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { TextField, Grid } from '@mui/material';
 import { PropertiesForm } from '@gridsuite/commons-ui';

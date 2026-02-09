@@ -24,6 +24,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     AutocompleteInput,
+    CountrySelectionInput,
     EquipmentType,
     fetchDefaultCountry,
     FieldConstants,
@@ -44,7 +45,6 @@ import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import IconButton from '@mui/material/IconButton';
 import { useIntl } from 'react-intl';
-import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selection-input';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
 import { UUID } from 'node:crypto';
