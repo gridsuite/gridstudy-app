@@ -220,7 +220,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         addStandbyAutomaton: !!staticCompensator.standbyAutomatonInfos,
                         standby: staticCompensator.standbyAutomatonInfos?.standby,
                         b0: staticCompensator.standbyAutomatonInfos?.b0,
-                        q0: null,
+                        q0: staticCompensator.standbyAutomatonInfos ? null : undefined,
                         nominalV: staticCompensator.nominalV,
                         lVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.lowVoltageSetpoint,
                         hVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.highVoltageSetpoint,
