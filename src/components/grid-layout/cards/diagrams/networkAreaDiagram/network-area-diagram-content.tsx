@@ -141,6 +141,9 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
             if (isEditNadMode && !newMode) {
                 onSaveNad?.();
             }
+            if (newMode) {
+                setShouldDisplayTooltip(false);
+            }
             setIsEditNadMode(newMode);
         },
         [isEditNadMode, onSaveNad]
