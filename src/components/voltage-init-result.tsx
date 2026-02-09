@@ -39,6 +39,7 @@ import RunningStatus from './utils/running-status';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import { FilterType } from 'types/custom-aggrid-types';
 
 const styles = {
     container: {
@@ -89,6 +90,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     status,
     handleGlobalFilterChange,
     globalFilterOptions,
+    globalFiltersFromState,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -279,6 +281,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
+                    computationType={FilterType.VoltageInit}
+                    computationSubType="Indicators"
                 />
             </>
         );
@@ -318,6 +322,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
+                    computationType={FilterType.VoltageInit}
+                    computationSubType="ReactiveSlacks"
                 />
             </>
         );
@@ -367,6 +373,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     return undefined;
                 }}
                 overlayNoRowsTemplate={undefined}
+                computationType={FilterType.VoltageInit}
+                computationSubType="BusVoltages"
             />
         );
     }
@@ -411,6 +419,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                             onChange={handleGlobalFilterChange}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode={true}
                         />
                     </Box>

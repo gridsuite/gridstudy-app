@@ -60,10 +60,12 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
                     precision: item.precision,
                     formula: item.formula,
                     dependencies: item.dependencies?.length ? JSON.stringify(item.dependencies) : undefined,
-                    filterDataType: columnFilter?.dataType,
-                    filterTolerance: columnFilter?.tolerance,
-                    filterType: columnFilter?.type,
-                    filterValue: JSON.stringify(columnFilter?.value) ?? undefined,
+                    columnFilterInfos: {
+                        filterDataType: columnFilter?.dataType,
+                        filterTolerance: columnFilter?.tolerance,
+                        filterType: columnFilter?.type,
+                        filterValue: JSON.stringify(columnFilter?.value) ?? undefined,
+                    },
                     visible: includeVisibility ? item.visible : true,
                 };
                 return acc;
