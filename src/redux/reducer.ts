@@ -565,9 +565,9 @@ export interface AppState extends CommonStoreState, AppConfigState {
     spreadsheetNetwork: SpreadsheetNetworkState;
     globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
     spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
-    networkVisualizationsParameters: NetworkVisualizationParameters;
+    networkVisualizationsParameters: NetworkVisualizationParameters | null;
     syncEnabled: boolean;
-    baseVoltages: BaseVoltage[];
+    baseVoltages: BaseVoltage[] | null;
     [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SecurityAnalysisTab, PaginationConfig>;
     [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SensitivityAnalysisTab, PaginationConfig>;
     [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
@@ -666,7 +666,7 @@ const initialTablesState: TablesState = {
 
 const initialState: AppState = {
     syncEnabled: false,
-    baseVolatges: null,
+    baseVoltages: null,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
     isDirtyComputationParameters: false,
@@ -702,7 +702,6 @@ const initialState: AppState = {
     // @ts-expect-error TODO can't have empty eventData here
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
-    setMapOpen: false,
     isExplorerDrawerOpen: true,
     centerOnSubstation: undefined,
     notificationIdList: [],
@@ -734,6 +733,7 @@ const initialState: AppState = {
             networkComponents: false,
         },
     },
+    networkVisualizationsParameters: null,
     highlightedModificationUuid: null,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
