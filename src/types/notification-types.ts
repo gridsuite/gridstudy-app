@@ -1170,9 +1170,8 @@ export function isWorkspaceNadConfigUpdatedNotification(notif: unknown): notif i
 }
 
 export function parseEventData<T>(event: MessageEvent | null): T | null {
-    if (!event?.data) return null;
     try {
-        return JSON.parse(event.data);
+        return JSON.parse(event?.data);
     } catch {
         return null;
     }
