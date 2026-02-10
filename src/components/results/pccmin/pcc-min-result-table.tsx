@@ -18,11 +18,14 @@ import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { GridReadyEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
+import { ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
+import { FilterType } from '../../../types/custom-aggrid-types';
+import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 const styles = {
     gridContainer: { display: 'flex', flexDirection: 'column', height: '100%' },
@@ -32,13 +35,15 @@ const styles = {
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     result,
     isFetching,
-    onFilter,
-    filters,
+    goToFirstPage,
     setCsvHeaders,
     setIsCsvButtonDisabled,
 }) => {
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
+    const filters = useSelector(
+        (state: AppState) => state.computationFilters?.[FilterType.PccMin]?.columnsFilters?.[PCCMIN_RESULT]?.columns
+    );
     const gridRef = useRef<AgGridReact>(null);
     const { openSLD } = useWorkspacePanelActions();
 
@@ -63,11 +68,11 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     );
 
     const columns = useMemo(
-        () => getPccMinColumns(intl, onFilter, voltageLevelIdRenderer),
-        [intl, onFilter, voltageLevelIdRenderer]
+        () => getPccMinColumns(intl, voltageLevelIdRenderer, goToFirstPage),
+        [goToFirstPage, intl, voltageLevelIdRenderer]
     );
 
-    const statusMessage = useIntlResultStatusMessages(intl, true, filters.length > 0);
+    const statusMessage = useIntlResultStatusMessages(intl, true, filters?.length > 0);
 
     const defaultColDef = useMemo(
         () => ({
@@ -96,14 +101,8 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [setIsCsvButtonDisabled]
     );
 
-    const handleGridReady = useCallback(
-        (event: GridReadyEvent) => {
-            if (event.api) {
-                event.api.sizeColumnsToFit();
-                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
-            }
-        },
-        [setCsvHeaders]
+    const onGridReady = useAgGridInitialColumnFilters(FilterType.PccMin, PCCMIN_RESULT, ({ api }) =>
+        setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 
     return (
@@ -117,7 +116,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
                     defaultColDef={defaultColDef}
                     columnDefs={columns}
                     onRowDataUpdated={handleRowDataUpdated}
-                    onGridReady={handleGridReady}
+                    onGridReady={onGridReady}
                     overlayNoRowsTemplate={noRowMessage}
                     overrideLocales={AGGRID_LOCALES}
                     onModelUpdated={({ api }) => {

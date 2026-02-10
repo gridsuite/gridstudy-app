@@ -13,6 +13,7 @@ import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page } from '../common/utils';
+import { RESULT_TYPE } from './security-analysis-result-utils';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -89,7 +90,14 @@ export interface PreContingencyResult {
     limitViolation?: LimitViolation;
 }
 
-export type QueryParamsType = Record<string, string | number | SortConfig[] | FilterConfig[] | GlobalFilters>;
+export type SecurityAnalysisQueryParams = {
+    resultType: RESULT_TYPE;
+    globalFilters?: GlobalFilters;
+    filters?: FilterConfig[];
+    sort?: SortConfig[];
+    page?: number;
+    size?: number;
+};
 
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
@@ -108,6 +116,7 @@ export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
     columnDefs: ColDef<any>[];
+    computationSubType: string;
 }
 
 export interface SecurityAnalysisResultNmkProps {
@@ -116,6 +125,7 @@ export interface SecurityAnalysisResultNmkProps {
     isLoadingResult: boolean;
     isFromContingency: boolean;
     paginationProps: TablePaginationProps;
+    computationSubType: string;
 }
 
 export interface SecurityAnalysisNTableRow {
@@ -139,4 +149,5 @@ export interface SecurityAnalysisResultProps {
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
+    computationSubType: string;
 }

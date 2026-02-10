@@ -38,20 +38,13 @@ import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-    LOADFLOW_RESULT_STORE_FIELD,
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
-    PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
-    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
-    STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
@@ -59,11 +52,12 @@ import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
-    type SpreadsheetTabDefinition,
     type SpreadsheetOptionalLoadingParameters,
+    type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
+    FilterType,
     LogsPaginationConfig,
     PaginationConfig,
     PccminTab,
@@ -73,7 +67,7 @@ import {
     SortConfig,
 } from '../types/custom-aggrid-types';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { ViewBoxLike } from '@svgdotjs/svg.js';
@@ -106,7 +100,6 @@ export type AppActions =
     | CloseStudyAction
     | UseNameAction
     | EnableDeveloperModeAction
-    | StudyUpdatedAction
     | MapDataLoadingAction
     | MapEquipmentsInitializedAction
     | FavoriteContingencyListsAction
@@ -129,18 +122,12 @@ export type AppActions =
     | AddToRecentGlobalFiltersAction
     | RemoveFromRecentGlobalFiltersAction
     | SetLastCompletedComputationAction
-    | LoadflowResultFilterAction
-    | SecurityAnalysisResultFilterAction
-    | SensitivityAnalysisResultFilterAction
-    | ShortcircuitAnalysisResultFilterAction
-    | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
     | UpdateSpreadsheetPartialDataAction
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
-    | StateEstimationResultFilterAction
     | AddFilterForNewSpreadsheetAction
     | SaveSpreadSheetGlobalFilterAction
     | ResetAllSpreadsheetGlobalFiltersAction
@@ -163,7 +150,9 @@ export type AppActions =
     | LogsResultPaginationAction
     | ResetLogsPaginationAction
     | SetActiveSpreadsheetTabAction
-    | SetAddedSpreadsheetTabAction;
+    | SetAddedSpreadsheetTabAction
+    | UpdateColumnFiltersAction
+    | UpdateGlobalFiltersAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -652,15 +641,6 @@ export function selectIsDeveloperMode(isDeveloperMode: boolean): EnableDeveloper
     };
 }
 
-export const STUDY_UPDATED = 'STUDY_UPDATED';
-export type StudyUpdatedAction = Readonly<Action<typeof STUDY_UPDATED>> & {
-    eventData: StudyUpdateEventData;
-};
-
-export function studyUpdated(eventData: StudyUpdateEventData): StudyUpdatedAction {
-    return { type: STUDY_UPDATED, eventData };
-}
-
 export const MAP_DATA_LOADING = 'MAP_DATA_LOADING';
 export type MapDataLoadingAction = Readonly<Action<typeof MAP_DATA_LOADING>> & {
     mapDataLoading: boolean;
@@ -1024,108 +1004,6 @@ export function setLastCompletedComputation(
     };
 }
 
-export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
-export type LoadflowResultFilterAction = Readonly<Action<typeof LOADFLOW_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD];
-    [LOADFLOW_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setLoadflowResultFilter(
-    filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD],
-    loadflowResultFilter: FilterConfig[]
-): LoadflowResultFilterAction {
-    return {
-        type: LOADFLOW_RESULT_FILTER,
-        filterTab: filterTab,
-        [LOADFLOW_RESULT_STORE_FIELD]: loadflowResultFilter,
-    };
-}
-
-export const SECURITY_ANALYSIS_RESULT_FILTER = 'SECURITY_ANALYSIS_RESULT_FILTER';
-export type SecurityAnalysisResultFilterAction = Readonly<Action<typeof SECURITY_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setSecurityAnalysisResultFilter(
-    filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD],
-    securityAnalysisResultFilter: FilterConfig[]
-): SecurityAnalysisResultFilterAction {
-    return {
-        type: SECURITY_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: securityAnalysisResultFilter,
-    };
-}
-
-export const SENSITIVITY_ANALYSIS_RESULT_FILTER = 'SENSITIVITY_ANALYSIS_RESULT_FILTER';
-export type SensitivityAnalysisResultFilterAction = Readonly<Action<typeof SENSITIVITY_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setSensitivityAnalysisResultFilter(
-    filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD],
-    sensitivityAnalysisResultFilter: FilterConfig[]
-): SensitivityAnalysisResultFilterAction {
-    return {
-        type: SENSITIVITY_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: sensitivityAnalysisResultFilter,
-    };
-}
-
-export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER = 'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
-export type ShortcircuitAnalysisResultFilterAction = Readonly<Action<typeof SHORTCIRCUIT_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setShortcircuitAnalysisResultFilter(
-    filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD],
-    shortcircuitAnalysisResultFilter: FilterConfig[]
-): ShortcircuitAnalysisResultFilterAction {
-    return {
-        type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: shortcircuitAnalysisResultFilter,
-    };
-}
-
-export const PCCMIN_ANALYSIS_RESULT_FILTER = 'PCCMIN_ANALYSIS_RESULT_FILTER';
-export type PccminAnalysisResultFilterAction = Readonly<Action<typeof PCCMIN_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof PCCMIN_ANALYSIS_RESULT_STORE_FIELD];
-    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setPccminAnalysisResultFilter(
-    filterTab: keyof AppState[typeof PCCMIN_ANALYSIS_RESULT_STORE_FIELD],
-    pccminAnalysisResultFilter: FilterConfig[]
-): PccminAnalysisResultFilterAction {
-    return {
-        type: PCCMIN_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: pccminAnalysisResultFilter,
-    };
-}
-
-export const DYNAMIC_SIMULATION_RESULT_FILTER = 'DYNAMIC_SIMULATION_RESULT_FILTER';
-export type DynamicSimulationResultFilterAction = Readonly<Action<typeof DYNAMIC_SIMULATION_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setDynamicSimulationResultFilter(
-    filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD],
-    dynamicSimulationResultFilter: FilterConfig[]
-): DynamicSimulationResultFilterAction {
-    return {
-        type: DYNAMIC_SIMULATION_RESULT_FILTER,
-        filterTab: filterTab,
-        [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: dynamicSimulationResultFilter,
-    };
-}
-
 export const SECURITY_ANALYSIS_RESULT_PAGINATION = 'SECURITY_ANALYSIS_RESULT_PAGINATION';
 export type SecurityAnalysisResultPaginationAction = Readonly<Action<typeof SECURITY_ANALYSIS_RESULT_PAGINATION>> & {
     paginationTab: SecurityAnalysisTab;
@@ -1240,16 +1118,40 @@ export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>
     [SPREADSHEET_STORE_FIELD]: FilterConfig[];
 };
 
-export function setSpreadsheetFilter(
-    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
-    spreadsheetFilter: FilterConfig[]
-): SpreadsheetFilterAction {
-    return {
-        type: SPREADSHEET_FILTER,
-        filterTab: filterTab,
-        [SPREADSHEET_STORE_FIELD]: spreadsheetFilter,
-    };
-}
+export const UPDATE_COLUMN_FILTERS = 'UPDATE_COLUMN_FILTERS';
+export const UPDATE_GLOBAL_FILTERS = 'UPDATE_GLOBAL_FILTERS';
+export type UpdateColumnFiltersAction = {
+    type: typeof UPDATE_COLUMN_FILTERS;
+    filterType: FilterType;
+    filterSubType: string;
+    filters: FilterConfig[];
+};
+
+export type UpdateGlobalFiltersAction = {
+    type: typeof UPDATE_GLOBAL_FILTERS;
+    filterType: FilterType;
+    globalFilters: GlobalFilter[];
+};
+
+export const updateColumnFiltersAction = (
+    filterType: FilterType,
+    filterSubType: string,
+    filters: FilterConfig[]
+): UpdateColumnFiltersAction => ({
+    type: UPDATE_COLUMN_FILTERS,
+    filterType,
+    filterSubType,
+    filters,
+});
+
+export const updateGlobalFiltersAction = (
+    filterType: FilterType,
+    globalFilters: GlobalFilter[]
+): UpdateGlobalFiltersAction => ({
+    type: UPDATE_GLOBAL_FILTERS,
+    filterType,
+    globalFilters,
+});
 
 export const LOGS_FILTER = 'LOGS_FILTER';
 export type LogsFilterAction = Readonly<Action<typeof LOGS_FILTER>> & {
@@ -1330,6 +1232,17 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
         table,
         tab,
         sort,
+    };
+}
+
+export function setSpreadsheetFilter(
+    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
+    spreadsheetFilter: FilterConfig[]
+): SpreadsheetFilterAction {
+    return {
+        type: SPREADSHEET_FILTER,
+        filterTab: filterTab,
+        [SPREADSHEET_STORE_FIELD]: spreadsheetFilter,
     };
 }
 
@@ -1502,23 +1415,6 @@ export const addSortForNewSpreadsheet = (tabUuid: UUID, value: SortConfig[]): Ad
         value,
     },
 });
-
-export const STATEESTIMATION_RESULT_FILTER = 'STATEESTIMATION_RESULT_FILTER';
-export type StateEstimationResultFilterAction = Readonly<Action<typeof STATEESTIMATION_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD];
-    [STATEESTIMATION_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setStateEstimationResultFilter(
-    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD],
-    stateEstimationResultFilter: FilterConfig[]
-): StateEstimationResultFilterAction {
-    return {
-        type: STATEESTIMATION_RESULT_FILTER,
-        filterTab: filterTab,
-        [STATEESTIMATION_RESULT_STORE_FIELD]: stateEstimationResultFilter,
-    };
-}
 
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
 export type SaveSpreadSheetGlobalFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {

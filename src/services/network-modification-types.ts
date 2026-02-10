@@ -128,25 +128,22 @@ export interface LoadModificationInfo {
     properties: Property[] | null;
 }
 
-export interface ShuntCompensatorModificationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    shuntCompensatorId: string;
-    shuntCompensatorName: string | null;
-    maxSusceptance: number | null;
-    maxQAtNominalV: number | null;
-    shuntCompensatorType: string;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    sectionCount: number;
-    maximumSectionCount: number;
-    connectivity?: any;
-    isUpdate?: boolean;
-    modificationUuid?: string;
-    connectionDirection?: string | null;
-    connectionName?: string | null;
-    connectionPosition?: string | null;
-    terminalConnected?: boolean | null;
+export interface ShuntCompensatorModificationInfos {
+    type: string;
+    uuid: string | null;
+    equipmentId: string;
+    equipmentName: AttributeModification<string> | null;
+    maxSusceptance: AttributeModification<number> | null;
+    maxQAtNominalV: AttributeModification<number> | null;
+    shuntCompensatorType: AttributeModification<string> | null;
+    sectionCount: AttributeModification<number> | null;
+    maximumSectionCount: AttributeModification<number> | null;
+    voltageLevelId: AttributeModification<string> | null;
+    busOrBusbarSectionId: AttributeModification<string> | null;
+    connectionDirection: AttributeModification<string> | null;
+    connectionName?: AttributeModification<string> | null;
+    connectionPosition?: AttributeModification<number> | null;
+    terminalConnected?: AttributeModification<boolean> | null;
     properties: Property[] | null;
 }
 
@@ -420,23 +417,23 @@ export interface Variations {
     filters: VariationFilter[];
 }
 
-export interface VSCCreationConverterStation {
-    type: string;
+export interface ConverterStationCreationInfos {
     equipmentId: string;
     equipmentName: string | null;
-    lossFactor: number;
-    voltageSetpoint: number | null;
+    lossFactor: number | null;
     reactivePowerSetpoint: number | null;
+    voltageRegulationOn?: boolean;
+    voltageSetpoint: number | null;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    connectionName: string | null;
     connectionDirection: string | null;
-    connectionPosition: string | null;
-    voltageRegulationOn: boolean;
+    connectionName?: string | null;
+    connectionPosition?: number | null;
+    terminalConnected?: boolean | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
 }
 
 export interface LccShuntCompensatorInfos {
@@ -555,22 +552,21 @@ export interface GeneratorCreationInfos {
     properties: Property[] | null;
 }
 
-export interface ShuntCompensatorCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    shuntCompensatorId: string;
-    shuntCompensatorName: string | null;
+export interface ShuntCompensatorCreationInfos {
+    type: ModificationType;
+    uuid?: string;
+    equipmentId: string;
+    equipmentName: string | null;
     maxSusceptance: number | null;
     maxQAtNominalV: number | null;
-    shuntCompensatorType: string;
+    shuntCompensatorType: string | null;
     sectionCount: number;
     maximumSectionCount: number;
-    connectivity: any;
-    isUpdate: boolean;
-    modificationUuid: string;
+    voltageLevelId: string | null;
+    busOrBusbarSectionId: string | null;
     connectionDirection: string | null;
     connectionName: string | null;
-    connectionPosition: string | null;
+    connectionPosition: number | null;
     terminalConnected: boolean | null;
     properties: Property[] | null;
 }
@@ -818,26 +814,48 @@ export interface DeleteAttachingLineInfo {
     replacingLine1Name: string | null;
 }
 
-export interface VSCCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name: string | null;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    operatorActivePowerLimitSide1: any;
-    operatorActivePowerLimitSide2: any;
+export interface VscCreationInfos {
+    type: ModificationType;
+    uuid?: string;
+    equipmentId: string;
+    equipmentName: string | null;
+    nominalV: number | null;
+    r: number | null;
+    maxP: number | null;
+    operatorActivePowerLimitFromSide1ToSide2: number | null;
+    operatorActivePowerLimitFromSide2ToSide1: number | null;
     convertersMode: string;
-    activePowerSetpoint: number;
-    angleDroopActivePowerControl: boolean;
+    activePowerSetpoint: number | null;
+    angleDroopActivePowerControl: boolean | null;
     p0: number | null;
     droop: number | null;
-    converterStation1: VSCCreationConverterStation;
-    converterStation2: VSCCreationConverterStation;
+    converterStation1: ConverterStationCreationInfos;
+    converterStation2: ConverterStationCreationInfos;
     properties: Property[] | null;
-    isUpdate: boolean;
-    modificationUuid: UUID;
+}
+
+export interface ReferenceFieldOrValue {
+    value: number | null;
+    equipmentField: string | null;
+}
+
+export interface FilterInfos {
+    id: UUID;
+    name: string;
+}
+
+export interface ByFormulaModificationInfos {
+    type: ModificationType;
+    uuid?: UUID;
+    identifiableType: string;
+    formulaInfosList: {
+        id?: UUID;
+        fieldOrValue1: ReferenceFieldOrValue;
+        fieldOrValue2: ReferenceFieldOrValue;
+        filters: FilterInfos[];
+        editedField: string;
+        operator: string;
+    };
 }
 
 export interface LCCCreationInfo {

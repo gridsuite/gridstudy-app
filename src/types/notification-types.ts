@@ -545,6 +545,7 @@ interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
     userId: string;
     exportUuid: UUID;
     exportToGridExplore?: boolean;
+    fileName: string;
     error: string | null;
 }
 
@@ -1168,6 +1169,14 @@ export function isWorkspaceNadConfigUpdatedNotification(notif: unknown): notif i
     );
 }
 
+export function parseEventData<T>(event: MessageEvent | null): T | null {
+    try {
+        return JSON.parse(event?.data);
+    } catch {
+        return null;
+    }
+}
+
 // Notification types
 export type StudyUpdateEventData =
     | StudyEventData
@@ -1233,10 +1242,6 @@ export type StudyUpdateEventData =
     | PccMinFailedEventData
     | PccMinStatusEventData
     | ExportNetworkEventData;
-
-export type StudyUpdateNotification = {
-    eventData: StudyUpdateEventData;
-};
 
 /******************* TO REMOVE LATER ****************/
 // Headers

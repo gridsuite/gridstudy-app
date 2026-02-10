@@ -15,7 +15,6 @@ import { getVoltageLevelSingleLineDiagramUrl } from '../../../../../../services/
 import { AppState } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
-import { useBaseVoltages } from '../../../../../../hooks/use-base-voltages';
 import { PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 
 interface PositionDiagramPaneProps {
@@ -38,7 +37,6 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
-    const { baseVoltagesConfig } = useBaseVoltages();
     const voltageLevelSingleLineDiagramUrl = useMemo(() => {
         if (!voltageLevelId) {
             return '';
@@ -52,13 +50,12 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     }, [voltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
     const sldRequestInfos = {
         useName: useName,
-        centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-        diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-        componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+        centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,
+        diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
+        componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
         sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
         topologicalColoring: true,
         language: language,
-        baseVoltagesConfigInfos: baseVoltagesConfig,
     };
     const fetchOptions = {
         method: 'POST',
