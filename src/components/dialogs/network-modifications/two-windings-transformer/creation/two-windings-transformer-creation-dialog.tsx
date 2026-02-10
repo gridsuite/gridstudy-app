@@ -8,11 +8,19 @@
 import {
     convertInputValue,
     convertOutputValue,
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
-    FieldType,
-    snackWithFallback,
-    useSnackMessage,
+    DeepNullable,
+    emptyProperties,
     EquipmentType,
+    EquipmentWithProperties,
+    FieldType,
+    getPropertiesFromModification,
+    sanitizeString,
+    snackWithFallback,
+    toModificationProperties,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Breakpoint, Grid } from '@mui/material';
@@ -60,7 +68,6 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect, useState } from 'react';
 import { Resolver, useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
@@ -104,14 +111,6 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 import { addSelectedFieldToRows, computeHighTapPosition, formatCompleteCurrentLimit } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    Equipment,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
@@ -129,7 +128,6 @@ import {
     TapChangerCreationInfos,
     TwoWindingsTransformerCreationInfo,
 } from 'services/network-modification-types';
-import { DeepNullable } from 'components/utils/ts-utils';
 import { CurrentLimitsData } from 'services/study/network-map.type';
 import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
 /**
@@ -451,7 +449,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId,
                         equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableType,
                     }),
-                    ...copyEquipmentPropertiesForCreation(twt as Equipment),
+                    ...copyEquipmentPropertiesForCreation(twt as EquipmentWithProperties),
                 } as DeepNullable<TwoWindingsTransformerCreationFormValues>,
                 { keepDefaultValues: true }
             );

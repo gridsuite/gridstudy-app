@@ -9,15 +9,22 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    emptyProperties,
     EquipmentType,
+    EquipmentWithProperties,
+    FieldConstants,
     FieldType,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    modificationPropertiesSchema,
+    sanitizeString,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
-    ADDITIONAL_PROPERTIES,
     B,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
@@ -67,13 +74,11 @@ import {
     TO_BE_ESTIMATED,
     TYPE,
     VALIDITY,
-    VALUE,
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, Resolver } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
 import {
     FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
@@ -131,14 +136,6 @@ import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/rati
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    Equipment,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import {
@@ -597,13 +594,13 @@ const TwoWindingsTransformerModificationDialog = ({
                 terminal1Connected: connectivity1?.[CONNECTED],
                 terminal2Connected: connectivity2?.[CONNECTED],
                 properties: toModificationProperties(twt),
-                p1MeasurementValue: stateEstimationData?.[MEASUREMENT_P1]?.[VALUE],
+                p1MeasurementValue: stateEstimationData?.[MEASUREMENT_P1]?.[FieldConstants.VALUE],
                 p1MeasurementValidity: stateEstimationData?.[MEASUREMENT_P1]?.[VALIDITY],
-                q1MeasurementValue: stateEstimationData?.[MEASUREMENT_Q1]?.[VALUE],
+                q1MeasurementValue: stateEstimationData?.[MEASUREMENT_Q1]?.[FieldConstants.VALUE],
                 q1MeasurementValidity: stateEstimationData?.[MEASUREMENT_Q1]?.[VALIDITY],
-                p2MeasurementValue: stateEstimationData?.[MEASUREMENT_P2]?.[VALUE],
+                p2MeasurementValue: stateEstimationData?.[MEASUREMENT_P2]?.[FieldConstants.VALUE],
                 p2MeasurementValidity: stateEstimationData?.[MEASUREMENT_P2]?.[VALIDITY],
-                q2MeasurementValue: stateEstimationData?.[MEASUREMENT_Q2]?.[VALUE],
+                q2MeasurementValue: stateEstimationData?.[MEASUREMENT_Q2]?.[FieldConstants.VALUE],
                 q2MeasurementValidity: stateEstimationData?.[MEASUREMENT_Q2]?.[VALIDITY],
                 ratioTapChangerToBeEstimated: stateEstimationData?.[TO_BE_ESTIMATED]?.[RATIO_TAP_CHANGER_STATUS],
                 phaseTapChangerToBeEstimated: stateEstimationData?.[TO_BE_ESTIMATED]?.[PHASE_TAP_CHANGER_STATUS],
@@ -793,7 +790,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                         equipmentType: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
                                         voltageLevelId: getValues(`${PHASE_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
                                     }),
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(twt as Equipment, getValues),
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(twt as EquipmentWithProperties, getValues),
                                 }),
                                 { keepDirty: true }
                             );

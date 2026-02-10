@@ -21,8 +21,7 @@ import {
 import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { VoltageAdornment } from '../../../../dialog-utils';
-import { FloatInput, Identifiable, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { FloatInput, Identifiable, SelectInput, SwitchInput, VoltageAdornment } from '@gridsuite/commons-ui';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import { RATIO_REGULATION_MODES } from 'components/network/constants';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';

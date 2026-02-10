@@ -18,8 +18,7 @@ import {
 import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
-import { parseIntData } from '../../../../dialog-utils';
-import { DndColumn, DndColumnType } from '@gridsuite/commons-ui';
+import { DndColumn, DndColumnType, parseIntData } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { PHASE_TAP, TapChangerMapInfos } from '../../two-windings-transformer.types';
 import { TwoWindingsTransformerModificationInfo } from 'services/network-modification-types';

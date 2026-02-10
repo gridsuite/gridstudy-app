@@ -7,8 +7,7 @@
 
 import { Grid, TextField } from '@mui/material';
 import { ENABLED, EQUIPMENT_NAME, RATIO_TAP_CHANGER, PHASE_TAP_CHANGER } from 'components/utils/field-constants';
-import { filledTextField } from '../../../dialog-utils';
-import { SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import { filledTextField, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 
 interface TwoWindingsTransformerModificationDialogHeaderProps {
