@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useMemo } from 'react';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, TextInput } from '@gridsuite/commons-ui';
 import { NAME, VALUE, PREVIOUS_VALUE, DELETION_MARK, ADDED } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { TextInput } from '@gridsuite/commons-ui';
 import { PredefinedProperties } from './property-utils';
 import { italicFontTextField } from '../../../dialog-utils';
 import GridItem from '../../../commons/grid-item';
@@ -32,11 +31,11 @@ const PropertyForm = ({ name, index, predefinedProperties }: PropertyFormProps) 
     });
 
     const predefinedNames = useMemo(() => {
-        return Object.keys(predefinedProperties ?? {}).sort();
+        return Object.keys(predefinedProperties ?? {}).sort((a, b) => a.localeCompare(b));
     }, [predefinedProperties]);
 
     const predefinedValues = useMemo(() => {
-        return predefinedProperties?.[watchPropertyName]?.sort() ?? [];
+        return predefinedProperties?.[watchPropertyName]?.toSorted((a, b) => a.localeCompare(b)) ?? [];
     }, [watchPropertyName, predefinedProperties]);
 
     const nameField = (
