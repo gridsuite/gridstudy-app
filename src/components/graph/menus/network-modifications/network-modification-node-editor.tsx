@@ -1192,12 +1192,10 @@ const NetworkModificationNodeEditor = () => {
 
     const onRowDragStart = (event: DragStart) => {
         setIsDragging(true);
-        // In hello-pangea/dnd, the source index is equivalent to AG-Grid's overIndex
         setInitialPosition(event.source.index);
     };
 
     const onRowDragEnd = (event: DropResult) => {
-        // Early exit if no destination (dropped outside droppable area)
         if (!event.destination) {
             setIsDragging(false);
             return;
@@ -1206,25 +1204,19 @@ const NetworkModificationNodeEditor = () => {
         const newPosition = event.destination.index;
         const oldPosition = initialPosition;
 
-        // Early exit if no valid positions or dropped in same position
         if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
             setIsDragging(false);
             return;
         }
 
-        // Create backup and working copy of modifications
         const previousModifications = [...modifications];
         const updatedModifications = [...modifications];
 
-        // Perform the reorder operation
         const [movedItem] = updatedModifications.splice(oldPosition, 1);
         updatedModifications.splice(newPosition, 0, movedItem);
 
-        // Optimistically update the UI
         setModifications(updatedModifications);
 
-        // Determine the 'before' UUID for the API call
-        // The item after the new position (or null if moved to end)
         const before = updatedModifications[newPosition + 1]?.uuid || null;
 
         // Persist the change to the backend
