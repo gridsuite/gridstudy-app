@@ -69,10 +69,12 @@ export type ColumnDefinition = {
 
 export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {
     dependencies?: string;
-    filterDataType?: string;
-    filterTolerance?: number;
-    filterType?: string;
-    filterValue?: string;
+    columnFilterInfos?: {
+        filterDataType?: string;
+        filterTolerance?: number;
+        filterType?: string;
+        filterValue?: string;
+    };
     visible?: boolean;
 };
 

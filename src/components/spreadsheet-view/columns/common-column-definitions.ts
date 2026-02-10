@@ -18,10 +18,7 @@ import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import {
-    BooleanFilterValue,
-    updateFilters,
-} from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { BooleanFilterValue } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { FilterConfig, FilterType, SortConfig } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
@@ -44,7 +41,6 @@ const updateAndPersistFilters = (
     api: GridApi,
     filters: FilterConfig[]
 ) => {
-    updateFilters(api, filters);
     const studyUuid = api.getGridOption('context')?.studyUuid;
     if (studyUuid) {
         const filter = filters?.find((f) => f.column === colDef.id);
