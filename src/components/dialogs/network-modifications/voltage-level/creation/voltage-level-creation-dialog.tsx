@@ -8,27 +8,33 @@
 import {
     convertInputValue,
     convertOutputValue,
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     EquipmentType,
     FieldType,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
+    Properties,
+    Property,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
 import {
     ADD_SUBSTATION_CREATION,
-    ADDITIONAL_PROPERTIES,
     BUS_BAR_COUNT,
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,
-    COUNTRY,
     COUPLING_OMNIBUS,
     EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
     ID,
@@ -59,15 +65,6 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    Properties,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { UUID } from 'node:crypto';
 import {
     AttachedSubstationCreationInfo,
@@ -75,19 +72,18 @@ import {
     VoltageLevelCreationInfo,
 } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { CreateCouplingDeviceDialogSchemaForm } from '../../coupling-device/coupling-device-dialog.type';
 
 export type SwitchKindFormData = { [SWITCH_KIND]: string };
 
 interface VoltageLevelCreationFormData {
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
     [ADD_SUBSTATION_CREATION]: boolean;
     [BUS_BAR_COUNT]: number;
-    [COUNTRY]: string | null;
+    [FieldConstants.COUNTRY]: string | null;
     [COUPLING_OMNIBUS]: CreateCouplingDeviceDialogSchemaForm[];
     [EQUIPMENT_ID]: string;
-    [EQUIPMENT_NAME]: string;
+    [FieldConstants.EQUIPMENT_NAME]: string;
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
     [HIGH_VOLTAGE_LIMIT]: number | null;
     [IS_ATTACHMENT_POINT_CREATION]: boolean;
@@ -132,7 +128,7 @@ interface VoltageLevelCreationDialogProps {
 
 const emptyFormData: VoltageLevelCreationFormData = {
     [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
+    [FieldConstants.EQUIPMENT_NAME]: '',
     [SUBSTATION_ID]: null,
     [NOMINAL_V]: null,
     [LOW_VOLTAGE_LIMIT]: null,
@@ -147,7 +143,7 @@ const emptyFormData: VoltageLevelCreationFormData = {
     [ADD_SUBSTATION_CREATION]: false,
     [SUBSTATION_CREATION_ID]: null,
     [SUBSTATION_NAME]: null,
-    [COUNTRY]: null,
+    [FieldConstants.COUNTRY]: null,
     [IS_ATTACHMENT_POINT_CREATION]: false,
     [TOPOLOGY_KIND]: null,
     [SUBSTATION_CREATION]: emptyProperties,
@@ -172,7 +168,7 @@ const formSchema = yup
                         'CreateSubstationInVoltageLevelIdenticalId'
                     ),
             }),
-        [EQUIPMENT_NAME]: yup.string().nullable(),
+        [FieldConstants.EQUIPMENT_NAME]: yup.string().nullable(),
         [ADD_SUBSTATION_CREATION]: yup.boolean().required(),
         [SUBSTATION_ID]: yup
             .string()
@@ -195,7 +191,7 @@ const formSchema = yup
                         .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
             }),
         [SUBSTATION_NAME]: yup.string().nullable(),
-        [COUNTRY]: yup.string().nullable(),
+        [FieldConstants.COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
         [NOMINAL_V]: yup
             .number()
@@ -321,7 +317,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                     .join(' / ') || '';
 
             const equipmentId = (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : '');
-            const equipmentName = voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME];
+            const equipmentName = voltageLevel[FieldConstants.EQUIPMENT_NAME] ?? voltageLevel[NAME];
             const substationId = isSubstationCreation ? null : (voltageLevel[SUBSTATION_ID] ?? null);
 
             const properties = fromCopy
@@ -330,7 +326,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
             reset(
                 {
                     [EQUIPMENT_ID]: equipmentId,
-                    [EQUIPMENT_NAME]: equipmentName,
+                    [FieldConstants.EQUIPMENT_NAME]: equipmentName,
                     [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
                     [SUBSTATION_ID]: substationId,
                     [NOMINAL_V]: voltageLevel[NOMINAL_V],
@@ -351,13 +347,13 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 const substationKeys = [
                     [SUBSTATION_CREATION_ID, voltageLevel.substationCreation?.equipmentId],
                     [SUBSTATION_NAME, voltageLevel.substationCreation?.equipmentName],
-                    [COUNTRY, voltageLevel.substationCreation?.country],
+                    [FieldConstants.COUNTRY, voltageLevel.substationCreation?.country],
                 ];
                 substationKeys.forEach(([key, value]) => {
                     setValue(key, value);
                 });
                 setValue(
-                    `${SUBSTATION_CREATION}.${ADDITIONAL_PROPERTIES}`,
+                    `${SUBSTATION_CREATION}.${FieldConstants.ADDITIONAL_PROPERTIES}`,
                     voltageLevel.substationCreation?.properties
                 );
                 setValue(ADD_SUBSTATION_CREATION, true);
@@ -439,7 +435,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                       type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
                       equipmentId: voltageLevel[SUBSTATION_CREATION_ID],
                       equipmentName: voltageLevel[SUBSTATION_NAME],
-                      country: voltageLevel[COUNTRY],
+                      country: voltageLevel[FieldConstants.COUNTRY],
                       properties: toModificationProperties(voltageLevel[SUBSTATION_CREATION]),
                   }
                 : null;
@@ -447,7 +443,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 studyUuid: studyUuid as UUID,
                 nodeUuid: currentNodeUuid,
                 equipmentId: voltageLevel[EQUIPMENT_ID],
-                equipmentName: sanitizeString(voltageLevel[EQUIPMENT_NAME]) ?? undefined,
+                equipmentName: sanitizeString(voltageLevel[FieldConstants.EQUIPMENT_NAME]) ?? undefined,
                 substationId: substationCreation === null ? voltageLevel[SUBSTATION_ID] : null,
                 substationCreation: substationCreation,
                 nominalV: voltageLevel[NOMINAL_V],

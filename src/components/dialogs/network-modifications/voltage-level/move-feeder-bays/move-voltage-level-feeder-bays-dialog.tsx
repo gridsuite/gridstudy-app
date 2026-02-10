@@ -12,6 +12,7 @@ import {
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
+    DeepNullable,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
@@ -41,7 +42,6 @@ import {
     MoveVoltageLevelFeederBaysInfos,
 } from '../../../../../services/network-modification-types';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import {
