@@ -91,8 +91,8 @@ export const getStandbyAutomatonFormValidationSchema = () =>
         [Q0]: requiredWhenQatNominalVChoice(yup.number().nullable()),
     });
 
-export const computeQ0 = (b0: number | null, nominalV: number | null): number | null => {
-    return b0 !== null && nominalV !== null ? b0 * Math.pow(nominalV, 2) : null;
+export const computeQ0 = (b0?: number | null, nominalV?: number | null): number | undefined => {
+    return b0 != null && nominalV != null ? b0 * Math.pow(nominalV, 2) : undefined;
 };
 
 export const getStandbyAutomatonFormData = ({
