@@ -67,7 +67,7 @@ import {
     SortConfig,
 } from '../types/custom-aggrid-types';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { ViewBoxLike } from '@svgdotjs/svg.js';
@@ -100,7 +100,6 @@ export type AppActions =
     | CloseStudyAction
     | UseNameAction
     | EnableDeveloperModeAction
-    | StudyUpdatedAction
     | MapDataLoadingAction
     | MapEquipmentsInitializedAction
     | FavoriteContingencyListsAction
@@ -640,15 +639,6 @@ export function selectIsDeveloperMode(isDeveloperMode: boolean): EnableDeveloper
         type: ENABLE_DEVELOPER_MODE,
         [PARAM_DEVELOPER_MODE]: isDeveloperMode,
     };
-}
-
-export const STUDY_UPDATED = 'STUDY_UPDATED';
-export type StudyUpdatedAction = Readonly<Action<typeof STUDY_UPDATED>> & {
-    eventData: StudyUpdateEventData;
-};
-
-export function studyUpdated(eventData: StudyUpdateEventData): StudyUpdatedAction {
-    return { type: STUDY_UPDATED, eventData };
 }
 
 export const MAP_DATA_LOADING = 'MAP_DATA_LOADING';

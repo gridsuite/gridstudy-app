@@ -123,6 +123,7 @@ function SensitivityAnalysisResultTab({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
+                        globalFilter={globalFiltersFromState}
                     />
                 </>
             )}
