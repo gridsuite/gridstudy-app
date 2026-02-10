@@ -7,7 +7,6 @@
 
 import { getObjectId } from 'components/utils/utils';
 import {
-    ADDITIONAL_PROPERTIES,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -18,13 +17,20 @@ import {
     NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
-import { AutocompleteInput, FloatInput, TextInput } from '@gridsuite/commons-ui';
-import { filledTextField, KiloAmpereAdornment, VoltageAdornment } from '../../../dialog-utils';
-import { TextField, Grid } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
+import {
+    AutocompleteInput,
+    FieldConstants,
+    filledTextField,
+    FloatInput,
+    KiloAmpereAdornment,
+    Properties,
+    PropertiesForm,
+    TextInput,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
+import { Grid, TextField } from '@mui/material';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
-import { Properties } from '../../common/properties/property-utils';
 
 interface VoltageLevelFormData {
     [NAME]?: string;
@@ -35,7 +41,7 @@ interface VoltageLevelFormData {
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
     [IDENTIFIABLE_SHORT_CIRCUIT]?: { ipMin: number; ipMax: number };
-    [ADDITIONAL_PROPERTIES]?: Properties;
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Properties;
 }
 
 interface VoltageLevelModificationFormProps {
