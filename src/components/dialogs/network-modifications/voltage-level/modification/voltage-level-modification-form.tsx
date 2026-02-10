@@ -24,11 +24,11 @@ import {
     FloatInput,
     KiloAmpereAdornment,
     Properties,
+    PropertiesForm,
     TextInput,
     VoltageAdornment,
 } from '@gridsuite/commons-ui';
-import { TextField, Grid } from '@mui/material';
-import { PropertiesForm } from '@gridsuite/commons-ui';
+import { Grid, TextField } from '@mui/material';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 

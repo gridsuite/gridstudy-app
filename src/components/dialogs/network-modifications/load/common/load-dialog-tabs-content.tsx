@@ -8,7 +8,7 @@
 import { Box } from '@mui/material';
 import { ConnectivityForm } from 'components/dialogs/connectivity/connectivity-form';
 import { SetPointsForm } from 'components/dialogs/set-points/set-points-form';
-import { PropertiesForm } from '@gridsuite/commons-ui';
+import { Identifiable, PropertiesForm } from '@gridsuite/commons-ui';
 import { LoadDialogTab } from './load-utils';
 import { PowerMeasurementsForm } from '../../common/measurements/power-measurements-form';
 import GridSection from 'components/dialogs/commons/grid-section';
@@ -16,7 +16,6 @@ import React from 'react';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { LoadFormInfos } from './load.type';
-import { Identifiable } from '@gridsuite/commons-ui';
 
 interface LoadDialogTabsContentProps {
     studyUuid: UUID;

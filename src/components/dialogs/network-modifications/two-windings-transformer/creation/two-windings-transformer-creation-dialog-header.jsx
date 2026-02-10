@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { filledTextField, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import {
     ENABLED,
@@ -13,8 +14,6 @@ import {
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
-import { filledTextField, TextInput } from '@gridsuite/commons-ui';
-import { SwitchInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {

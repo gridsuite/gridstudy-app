@@ -8,9 +8,8 @@
 import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 
-import { filledTextField, TextInput } from '@gridsuite/commons-ui';
+import { filledTextField, PropertiesForm, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { PropertiesForm } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import type { UUID } from 'node:crypto';

@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
 import {
     convertInputValue,
     FieldType,
@@ -14,12 +12,14 @@ import {
     MicroSusceptanceAdornment,
     MVAPowerAdornment,
     OhmAdornment,
+    PropertiesForm,
     VoltageAdornment,
 } from '@gridsuite/commons-ui';
+import { Grid } from '@mui/material';
 import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
-import { PropertiesForm } from '@gridsuite/commons-ui';
-import GridSection from '../../../commons/grid-section';
+import { FormattedMessage } from 'react-intl';
 import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const TwoWindingsTransformerCharacteristicsPane = ({ id = CHARACTERISTICS, twtToModify, isModification = false }) => {
     const width = isModification ? 12 : 8;

@@ -31,6 +31,7 @@ import {
     FloatInput,
     IntegerInput,
     KiloAmpereAdornment,
+    PropertiesForm,
     TextInput,
     VoltageAdornment,
 } from '@gridsuite/commons-ui';
@@ -39,7 +40,6 @@ import { Box, Grid, Paper, Tooltip } from '@mui/material';
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
-import { PropertiesForm } from '@gridsuite/commons-ui';
 import { useFormContext, useWatch } from 'react-hook-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
