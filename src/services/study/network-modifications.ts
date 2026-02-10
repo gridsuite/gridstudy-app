@@ -13,7 +13,6 @@ import {
     EquipmentType,
     MODIFICATION_TYPES,
     ModificationType,
-    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
@@ -68,6 +67,7 @@ import {
     OLGS_MODIFICATION_TYPE,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '../../components/utils/field-constants';
+import { NetworkModificationMetadata } from '../../components/graph/menus/network-modifications/tanstack-poc/network-modifications-table';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
