@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
     CONNECTED,
@@ -25,8 +24,8 @@ import {
     SWITCHED_ON_SUSCEPTANCE,
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
-import { Property } from '../common/properties/property-utils';
 import { ConnectablePositionFormInfos } from '../../connectivity/connectivity.type';
+import { FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type ShuntCompensatorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -46,7 +45,7 @@ export type ShuntCompensatorDialogSchemaBaseForm = {
     [SECTION_COUNT]: number;
     [SWITCHED_ON_Q_AT_NOMINAL_V]?: number;
     [SWITCHED_ON_SUSCEPTANCE]?: number;
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
 };
 export type ShuntCompensatorCreationDialogSchemaForm = {
     [EQUIPMENT_ID]: string;

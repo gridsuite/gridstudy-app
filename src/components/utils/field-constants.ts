@@ -327,14 +327,6 @@ export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
 export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
 
-// substation
-export const COUNTRY = 'country';
-export const VALUE = 'value';
-export const PREVIOUS_VALUE = 'previousValue';
-export const ADDED = 'added';
-export const DELETION_MARK = 'deletionMark';
-export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
-
 // generation dispatch
 export const LOSS_COEFFICIENT = 'lossCoefficient';
 export const DEFAULT_OUTAGE_RATE = 'defaultOutageRate';

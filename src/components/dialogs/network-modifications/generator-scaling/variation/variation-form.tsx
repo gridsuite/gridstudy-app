@@ -14,6 +14,7 @@ import {
     useSnackMessage,
     FloatInput,
     SelectInput,
+    ActivePowerAdornment,
 } from '@gridsuite/commons-ui';
 import {
     FILTERS,
@@ -28,7 +29,6 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
-import { ActivePowerAdornment } from '../../../dialog-utils';
 import { IDENTIFIER_LIST } from './variation-utils';
 import GridItem from '../../../commons/grid-item';
 import { ItemFilterType, VariationType } from '../../../../../services/network-modification-types';

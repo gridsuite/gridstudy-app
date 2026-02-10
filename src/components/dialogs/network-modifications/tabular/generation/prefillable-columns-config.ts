@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    EQUIPMENT_NAME,
-    COUNTRY,
     NOMINAL_V,
     LOW_VOLTAGE_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -77,6 +75,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
     REGULATION_TYPE_TEXT,
 } from 'components/utils/field-constants';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 /**
  * Represents a group of pre-fillable columns
@@ -94,21 +93,21 @@ export interface PrefilledColumnGroup {
 export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = {
     SUBSTATION: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
-            labelId: COUNTRY,
-            csvColumns: [COUNTRY],
+            labelId: FieldConstants.COUNTRY,
+            csvColumns: [FieldConstants.COUNTRY],
             networkFields: ['country'],
         },
     ],
 
     VOLTAGE_LEVEL: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -140,8 +139,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     LINE: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -192,8 +191,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     TWO_WINDINGS_TRANSFORMER: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -264,8 +263,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     GENERATOR: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -418,8 +417,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     LOAD: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -455,8 +454,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     BATTERY: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -534,8 +533,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     SHUNT_COMPENSATOR: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
