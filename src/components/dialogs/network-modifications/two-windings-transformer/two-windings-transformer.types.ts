@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Identifiable } from '@gridsuite/commons-ui';
+import { Identifiable, FieldConstants } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import {
     B,
@@ -50,7 +50,6 @@ import {
     TARGET_V,
     TO_BE_ESTIMATED,
     VALIDITY,
-    VALUE,
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
@@ -107,7 +106,7 @@ export type CharacteristicsCreationFormSchema = CharacteristicsFormSchema & {
 };
 
 export interface MeasurementFormSchema {
-    [VALUE]: number | null;
+    [FieldConstants.VALUE]: number | null;
     [VALIDITY]: boolean | null;
 }
 

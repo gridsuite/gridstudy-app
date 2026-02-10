@@ -790,7 +790,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                         equipmentType: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
                                         voltageLevelId: getValues(`${PHASE_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
                                     }),
-                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(twt as EquipmentWithProperties, getValues),
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
+                                        twt as EquipmentWithProperties,
+                                        getValues
+                                    ),
                                 }),
                                 { keepDirty: true }
                             );
