@@ -177,13 +177,9 @@ const NetworkModificationNodeEditor = () => {
     const alteredModifications = useMemo<NetworkModificationMetadata[]>(() => {
         const MAX_DEPTH = 5;
         const MAX_CHILDREN = 3;
-
         const createChildren = (base: NetworkModificationMetadata, depth: number): NetworkModificationMetadata[] => {
             if (depth >= MAX_DEPTH) return [];
-
-            // random number of children (0 → MAX_CHILDREN)
             const childCount = Math.floor(Math.random() * (MAX_CHILDREN + 1));
-
             return Array.from({ length: childCount }).map(() => {
                 const child: NetworkModificationMetadata = {
                     ...base,
@@ -191,7 +187,6 @@ const NetworkModificationNodeEditor = () => {
                     subModifications: [],
                 };
 
-                // recursively generate grandchildren
                 child.subModifications = createChildren(child, depth + 1);
 
                 return child;
@@ -200,15 +195,12 @@ const NetworkModificationNodeEditor = () => {
 
         return modifications.map((modification) => {
             const { subModifications, ...rest } = modification;
-
             const root: NetworkModificationMetadata = {
                 ...rest,
-                uuid: modification.uuid, // keep root uuid stable
+                uuid: modification.uuid,
                 subModifications: [],
             };
-
             root.subModifications = createChildren(root, 1);
-
             return root;
         });
     }, [modifications]);
@@ -1219,10 +1211,8 @@ const NetworkModificationNodeEditor = () => {
 
         const before = updatedModifications[newPosition + 1]?.uuid || null;
 
-        // Persist the change to the backend
         changeNetworkModificationOrder(studyUuid, currentNode?.id, movedItem.uuid, before)
             .catch((error) => {
-                // Rollback on error
                 snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
                 setModifications(previousModifications);
             })
