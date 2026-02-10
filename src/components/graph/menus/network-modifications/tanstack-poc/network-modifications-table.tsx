@@ -561,7 +561,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                                         />
                                     );
                                 })}
-                                {provided.placeholder}
                             </TableBody>
                         </Table>
                     </Box>
