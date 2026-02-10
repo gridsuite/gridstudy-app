@@ -78,6 +78,7 @@ import {
     getReactiveFormValidationSchema,
 } from './set-points-limits-form-utils';
 import {
+    computeQ0,
     getStandbyAutomatonEmptyFormData,
     getStandbyAutomatonFormData,
     getStandbyAutomatonFormValidationSchema,
@@ -220,8 +221,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         addStandbyAutomaton: !!staticCompensator.standbyAutomatonInfos,
                         standby: staticCompensator.standbyAutomatonInfos?.standby,
                         b0: staticCompensator.standbyAutomatonInfos?.b0,
-                        q0: null,
-                        nominalV: staticCompensator.nominalV,
+                        q0: computeQ0(staticCompensator.standbyAutomatonInfos?.b0, staticCompensator.nominalV),
                         lVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.lowVoltageSetpoint,
                         hVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.highVoltageSetpoint,
                         lVoltageThreshold: staticCompensator.standbyAutomatonInfos?.lowVoltageThreshold,
@@ -274,7 +274,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     standby: staticCompensator.standby,
                     b0: staticCompensator.b0 ?? null,
                     q0: staticCompensator.q0 ?? null,
-                    nominalV: null,
                     lVoltageSetpoint: staticCompensator.lowVoltageSetpoint ?? null,
                     hVoltageSetpoint: staticCompensator.highVoltageSetpoint ?? null,
                     lVoltageThreshold: staticCompensator.lowVoltageThreshold ?? null,
