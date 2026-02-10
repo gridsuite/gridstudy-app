@@ -8,7 +8,13 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { DELETION_SPECIFIC_DATA, EQUIPMENT_ID, TYPE } from '../../../utils/field-constants';
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DeepNullable,
+    EquipmentType,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import { ModificationDialog } from '../../commons/modificationDialog';
@@ -18,7 +24,6 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipment } from '../../../../services/study/network-modifications';
 import { UUID } from 'node:crypto';
 import { FetchStatus } from 'services/utils.type';
-import { DeepNullable } from 'components/utils/ts-utils';
 import { EquipmentDeletionInfos } from './equipement-deletion-dialog.type';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import { getHvdcLccDeletionSchema } from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';

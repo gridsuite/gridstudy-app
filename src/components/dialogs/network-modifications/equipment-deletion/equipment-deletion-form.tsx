@@ -8,7 +8,13 @@
 import { Grid } from '@mui/material';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useSnackMessage, AutocompleteInput, EquipmentType, filledTextField, snackWithFallback } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    AutocompleteInput,
+    EquipmentType,
+    filledTextField,
+    snackWithFallback,
+} from '@gridsuite/commons-ui';
 import {
     DELETION_SPECIFIC_DATA,
     EQUIPMENT_ID,
