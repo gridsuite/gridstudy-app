@@ -6,10 +6,15 @@
  */
 
 import { useEffect, useState } from 'react';
-import { filledTextField } from '../dialog-utils';
 import type { UUID } from 'node:crypto';
 import { Autocomplete, Box, CircularProgress, Grid, TextField } from '@mui/material';
-import { type EquipmentType, type ExtendedEquipmentType, FieldLabel, type MuiStyles } from '@gridsuite/commons-ui';
+import {
+    type EquipmentType,
+    type ExtendedEquipmentType,
+    FieldLabel,
+    filledTextField,
+    type MuiStyles,
+} from '@gridsuite/commons-ui';
 import { FormFiller } from './formFiller.js';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';

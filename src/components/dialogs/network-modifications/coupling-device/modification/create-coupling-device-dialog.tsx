@@ -22,6 +22,7 @@ import {
     Option,
     snackWithFallback,
     useSnackMessage,
+    DeepNullable,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
@@ -29,7 +30,6 @@ import CreateCouplingDeviceForm from './create-coupling-device-form';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateCouplingDeviceInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { CreateCouplingDeviceDialogSchemaForm } from '../coupling-device-dialog.type';
 
 const emptyFormData = {
