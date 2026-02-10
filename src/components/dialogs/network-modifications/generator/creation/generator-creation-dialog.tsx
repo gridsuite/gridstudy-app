@@ -87,7 +87,11 @@ import {
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
-import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
+import {
+    getSetPointsEmptyFormData,
+    getSetPointsSchema,
+    testValueWithinPowerInterval,
+} from '../../../set-points/set-points-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     getShortCircuitEmptyFormData,
@@ -136,17 +140,7 @@ const formSchema = yup
             .test(
                 'activePowerSetPoint',
                 'PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower',
-                (value, context) => {
-                    const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
-                    const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
-                    if (value === null || value === undefined) {
-                        return true;
-                    }
-                    if (minActivePower === null || maxActivePower === null) {
-                        return false;
-                    }
-                    return value >= minActivePower && value <= maxActivePower;
-                }
+                testValueWithinPowerInterval
             ),
         [MARGINAL_COST]: yup.number().nullable(),
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
