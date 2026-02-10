@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Identifiable, yupConfig as yup, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { Identifiable, type MuiStyles, type UseStateBooleanReturn, yupConfig as yup } from '@gridsuite/commons-ui';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -187,10 +187,9 @@ export const mapPrefilledEquipments = (equipmentType: EQUIPMENT_TYPES, equipment
     switch (equipmentType) {
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
             return equipments.map(mapTwtDataForTable);
-        case EQUIPMENT_TYPES.GENERATOR:
-            return equipments.map((eq) => mapReactiveCapabilityCurvePointsToFormFields(eq));
         case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
             return equipments.map(mapShuntCompensatorToFormFields);
+        case EQUIPMENT_TYPES.GENERATOR:
         case EQUIPMENT_TYPES.BATTERY:
             return equipments.map(mapReactiveCapabilityCurvePointsToFormFields);
         default:
