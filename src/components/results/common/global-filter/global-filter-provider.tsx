@@ -29,12 +29,14 @@ export default function GlobalFilterProvider({
     filterCategories,
     genericFiltersStrictMode = false,
     equipmentTypes = undefined,
+    afterChange,
 }: PropsWithChildren & {
-    onChange: (globalFilters: GlobalFilter[]) => void;
+    onChange: (globalFilters: GlobalFilter[], afterChange?: () => void) => void;
     filterCategories: string[];
     preloadedGlobalFilters?: GlobalFilter[];
     genericFiltersStrictMode: boolean;
     equipmentTypes: string[] | undefined;
+    afterChange?: () => void;
 }) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
@@ -110,10 +112,10 @@ export default function GlobalFilterProvider({
             checkSelectedFiltersPromise(selectedFilters).then((validSelectedGlobalFilters) => {
                 setSelectedGlobalFilters(validSelectedGlobalFilters);
                 // propagate only valid selected filters
-                handleChange(validSelectedGlobalFilters);
+                handleChange(validSelectedGlobalFilters, afterChange);
             });
         },
-        [checkSelectedFiltersPromise, setSelectedGlobalFilters, handleChange]
+        [checkSelectedFiltersPromise, setSelectedGlobalFilters, handleChange, afterChange]
     );
 
     const value = useMemo(

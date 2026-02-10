@@ -12,10 +12,11 @@ import { useMemo } from 'react';
 import { FilterType } from '../utils';
 
 export type GlobalFilterSelectorProps = GlobalFilterAutocompleteProps & {
-    onChange: (globalFilters: GlobalFilter[]) => void;
+    onChange: (globalFilters: GlobalFilter[], afterChange?: () => void) => void;
     preloadedGlobalFilters?: GlobalFilter[];
     genericFiltersStrictMode: boolean;
     disableGenericFilters?: boolean;
+    afterChange?: () => void;
 };
 export default function GlobalFilterSelector({
     onChange,
@@ -25,6 +26,7 @@ export default function GlobalFilterSelector({
     //If this parameter is enabled, only generic filters of the same type as those provided in filterableEquipmentTypes will be available
     genericFiltersStrictMode = false,
     disableGenericFilters = false,
+    afterChange,
 }: Readonly<GlobalFilterSelectorProps>) {
     // Global filter autocomplete displayed categories are dynamically provided from the on hand filters, GENERIC_FILTER gets manually added
     const filterCategories = useMemo(() => {
@@ -41,6 +43,7 @@ export default function GlobalFilterSelector({
     return (
         <GlobalFilterProvider
             onChange={onChange}
+            afterChange={afterChange}
             filterCategories={filterCategories}
             preloadedGlobalFilters={preloadedGlobalFilters}
             genericFiltersStrictMode={genericFiltersStrictMode}

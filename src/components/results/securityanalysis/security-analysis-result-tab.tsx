@@ -141,6 +141,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
+    const resetPaginationIfNKResults = useCallback(() => {
+        if (tabIndex === NMK_RESULTS_TAB_INDEX) {
+            dispatchPagination({ page: 0, rowsPerPage });
+        }
+    }, [dispatchPagination, tabIndex, rowsPerPage]);
+
     const queryParams: SecurityAnalysisQueryParams = useMemo(() => {
         const params: SecurityAnalysisQueryParams = {
             resultType,
@@ -302,6 +308,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
                             onChange={updateGlobalFilters}
+                            afterChange={resetPaginationIfNKResults}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}

@@ -31,7 +31,13 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import {
+    FilterType as AgGridFilterType,
+    PaginationType,
+    ShortcircuitAnalysisTab,
+} from '../../../types/custom-aggrid-types';
+import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
+import { mappingTabs } from './shortcircuit-analysis-result-content';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -69,6 +75,28 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
+    const { pagination, dispatchPagination } = usePaginationSelector(
+        PaginationType.ShortcircuitAnalysis,
+        mappingTabs(tabIndex) as ShortcircuitAnalysisTab
+    );
+    const { page, rowsPerPage } = pagination;
+
+    const RESULTS_TAB_INDEX = 0;
+    const LOGS_TAB_INDEX = 1;
+
+    const resetPaginationIfAllBuses = useCallback(() => {
+        if (tabIndex !== ShortCircuitAnalysisResultTabs.ALL_BUSES) {
+            return;
+        }
+        if (resultOrLogIndex !== RESULTS_TAB_INDEX) {
+            return;
+        }
+        if (page === 0) {
+            return;
+        }
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [tabIndex, resultOrLogIndex, page, dispatchPagination, rowsPerPage]);
+
     const AllBusesShortCircuitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
@@ -86,9 +114,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         },
         [setTabIndex, setRedirectionLock]
     );
-
-    const RESULTS_TAB_INDEX = 0;
-    const LOGS_TAB_INDEX = 1;
 
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
         AgGridFilterType.ShortcircuitAnalysis
@@ -171,6 +196,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                 {resultOrLogIndex === RESULTS_TAB_INDEX && tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
                     <GlobalFilterSelector
                         onChange={updateGlobalFilters}
+                        afterChange={resetPaginationIfAllBuses}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
                         preloadedGlobalFilters={globalFiltersFromState}

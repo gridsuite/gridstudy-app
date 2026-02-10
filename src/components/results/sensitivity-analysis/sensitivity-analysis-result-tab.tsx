@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SyntheticEvent, useMemo, useState } from 'react';
+import { SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
@@ -27,9 +27,14 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
-import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
+import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import {
+    FilterType as AgGridFilterType,
+    PaginationType,
+    SensitivityAnalysisTab,
+} from '../../../types/custom-aggrid-types';
+import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -55,6 +60,19 @@ function SensitivityAnalysisResultTab({
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
         setNOrNkIndex(newNOrNKIndex);
     };
+
+    const sensiKindForPagination = isSensiKind(sensiTab) ? sensiTab : SENSITIVITY_IN_DELTA_MW;
+
+    const { pagination, dispatchPagination } = usePaginationSelector(
+        PaginationType.SensitivityAnalysis,
+        mappingTabs(sensiKindForPagination, nOrNkIndex) as SensitivityAnalysisTab
+    );
+
+    const { rowsPerPage } = pagination;
+
+    const resetPagination = useCallback(() => {
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [dispatchPagination, rowsPerPage]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING,
@@ -97,6 +115,7 @@ function SensitivityAnalysisResultTab({
                         <Box sx={{ display: 'flex', flexGrow: 0 }}>
                             <GlobalFilterSelector
                                 onChange={updateGlobalFilters}
+                                afterChange={resetPagination}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
                                 preloadedGlobalFilters={globalFiltersFromState}
