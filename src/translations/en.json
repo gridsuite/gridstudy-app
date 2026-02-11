@@ -67,8 +67,6 @@
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "noWritePermissionOnStudy": "The user has no access right on study with id \"{studyUuid}\"",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
-    "svgLoadingFail": "The diagram couldn't be loaded",
-    "nadConfiguredPositionsModeFailed": "The configured positions have not been initialized. You need to change the initialization parameter of the network area diagrams.",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
     "geoDataLoadingFail": "An error occurred while loading geographical data.",
 
@@ -1187,8 +1185,6 @@
     "YupNotTypeNumber": "This field only accepts numeric values",
     "YupNotTypeDefault": "Field value format is incorrect",
 
-    "SubstationNotFound": "This substation does not exist in this network",
-    "VoltageLevelNotFound": "This voltage level does not exist in this network",
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
     "SLDOpenedInTheGrid": "The {diagramType} \"{equipmentId}\" was opened in the image grid",
     "NADOpenedInTheGrid": "The network area diagram \"{elementId}\" was opened in the image grid",

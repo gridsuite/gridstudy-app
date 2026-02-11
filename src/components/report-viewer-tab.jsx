@@ -131,7 +131,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
 
     return (
         <>
-            {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
+            {disabled && <AlertCustomMessageNode message={{ descriptor: { id: 'InvalidNode' } }} />}
             {!disabled && !!report && (
                 <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
                     <Paper sx={styles.container}>
