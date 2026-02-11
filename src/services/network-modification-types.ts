@@ -6,7 +6,6 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { Property } from '../components/dialogs/network-modifications/common/properties/property-utils';
 import {
     DataType,
     FieldValue,
@@ -14,7 +13,7 @@ import {
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
-import { ModificationType, Option } from '@gridsuite/commons-ui';
+import { ModificationType, Option, Property } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
@@ -728,6 +727,30 @@ export interface VscCreationInfos {
     converterStation1: ConverterStationCreationInfos;
     converterStation2: ConverterStationCreationInfos;
     properties: Property[] | null;
+}
+
+export interface ReferenceFieldOrValue {
+    value: number | null;
+    equipmentField: string | null;
+}
+
+export interface FilterInfos {
+    id: UUID;
+    name: string;
+}
+
+export interface ByFormulaModificationInfos {
+    type: ModificationType;
+    uuid?: UUID;
+    identifiableType: string;
+    formulaInfosList: {
+        id?: UUID;
+        fieldOrValue1: ReferenceFieldOrValue;
+        fieldOrValue2: ReferenceFieldOrValue;
+        filters: FilterInfos[];
+        editedField: string;
+        operator: string;
+    };
 }
 
 export interface LCCCreationInfo {

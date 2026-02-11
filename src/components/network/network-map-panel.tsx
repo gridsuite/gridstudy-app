@@ -145,9 +145,9 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         (state: AppState) => state.isNetworkModificationTreeModelUpToDate
     );
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
-    const lineFullPath = networkVisuParams.mapParameters.lineFullPath;
-    const lineParallelPath = networkVisuParams.mapParameters.lineParallelPath;
-    const lineFlowMode = networkVisuParams.mapParameters.lineFlowMode as LineFlowMode;
+    const lineFullPath = networkVisuParams?.mapParameters.lineFullPath;
+    const lineParallelPath = networkVisuParams?.mapParameters.lineParallelPath;
+    const lineFlowMode = networkVisuParams?.mapParameters.lineFlowMode as LineFlowMode;
     const isInDrawingMode = useStateBoolean(false);
     const theme = useTheme();
 
@@ -192,7 +192,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     const freezeMapUpdates = useSelector((state: AppState) => state.freezeMapUpdates);
     const isMapEquipmentsInitialized = useSelector((state: AppState) => state.isMapEquipmentsInitialized);
     const refIsMapManualRefreshEnabled = useRef<boolean>(null);
-    refIsMapManualRefreshEnabled.current = networkVisuParams.mapParameters.mapManualRefresh;
+    refIsMapManualRefreshEnabled.current = networkVisuParams?.mapParameters.mapManualRefresh ?? null;
     const [firstRendering, setFirstRendering] = useState<boolean>(true);
 
     const [choiceVoltageLevelsSubstationId, setChoiceVoltageLevelsSubstationId] = useState<string | null>(null);
@@ -891,7 +891,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     // Reload geo data (if necessary) when we switch on full path
     useEffect(() => {
         const prevLineFullPath = lineFullPathRef.current;
-        lineFullPathRef.current = lineFullPath;
+        lineFullPathRef.current = lineFullPath ?? null;
         if (isInitialized && lineFullPath && !prevLineFullPath) {
             loadGeoData();
         }
@@ -1107,7 +1107,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     mapBoxToken={mapBoxToken}
                     centerOnSubstation={centerOnSubstation}
                     isManualRefreshBackdropDisplayed={
-                        networkVisuParams.mapParameters.mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
+                        networkVisuParams?.mapParameters.mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
                     }
                     // only 2 things need this to ensure the map keeps the correct size:
                     // - changing study display mode because it changes the map container size
@@ -1117,7 +1117,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     onManualRefreshClick={loadMapManually}
                     triggerMapResizeOnChange={triggerMapResizeOnChange}
                     renderPopover={renderLinePopover}
-                    mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
+                    mapLibrary={networkVisuParams?.mapParameters.mapBaseMap}
                     mapTheme={theme?.palette.mode}
                     areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
                     onDrawPolygonModeActive={handleDrawingModeChange}

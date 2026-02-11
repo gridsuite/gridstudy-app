@@ -35,14 +35,14 @@ type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
     tabIndex: number,
-    onFilter: () => void
+    goToFirstPage: () => void
 ) => ColDef[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
     tabIndex,
-    onFilter
+    goToFirstPage
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -141,7 +141,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    onFilter
+                    goToFirstPage
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -150,12 +150,18 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    onFilter
+                    goToFirstPage
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex, onFilter);
+                return securityAnalysisTableNColumnsDefinition(
+                    intl,
+                    filterEnums.n,
+                    getEnumLabel,
+                    tabIndex,
+                    goToFirstPage
+                );
         }
-    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, onFilter]);
+    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, goToFirstPage]);
 
     return columnDefs;
 };

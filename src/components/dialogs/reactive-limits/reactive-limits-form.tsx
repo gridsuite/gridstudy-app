@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, RadioInput } from '@gridsuite/commons-ui';
+import { FloatInput, RadioInput, ReactivePowerAdornment } from '@gridsuite/commons-ui';
 import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
@@ -14,7 +14,6 @@ import {
     REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import { REACTIVE_LIMIT_TYPES } from 'components/network/constants';
-import { ReactivePowerAdornment } from '../dialog-utils';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import GridItem from '../commons/grid-item';

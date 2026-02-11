@@ -14,9 +14,10 @@ import {
     MODIFICATION_TYPES,
     ModificationType,
     NetworkModificationMetadata,
+    safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
-import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
+import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
@@ -26,6 +27,7 @@ import {
     BalancesAdjustmentInfos,
     BatteryCreationInfos,
     BatteryModificationInfos,
+    ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
     CreateVoltageLevelSectionInfos,
     CreateVoltageLevelTopologyInfos,
@@ -60,13 +62,13 @@ import {
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
     ENABLE_OLG_MODIFICATION,
     OLGS_MODIFICATION_TYPE,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '../../components/utils/field-constants';
+import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1888,8 +1890,7 @@ export function modifyVsc({
 export function modifyByFormula(
     studyUuid: string,
     nodeUuid: UUID,
-    equipmentType: string,
-    formulas: any,
+    byFormulaModificationInfos: ByFormulaModificationInfos,
     isUpdate: boolean,
     modificationUuid: UUID
 ) {
@@ -1902,19 +1903,13 @@ export function modifyByFormula(
         console.info('Creating by formula modification');
     }
 
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
-        identifiableType: equipmentType,
-        formulaInfosList: formulas,
-    });
-
     return backendFetchText(modificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify(byFormulaModificationInfos),
     });
 }
 
