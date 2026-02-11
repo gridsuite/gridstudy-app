@@ -10,7 +10,6 @@ import {
     CountryAdequacy,
     ExchangePair,
     ExchangeValue,
-    LimitTypes,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
 } from './load-flow-result.type';
