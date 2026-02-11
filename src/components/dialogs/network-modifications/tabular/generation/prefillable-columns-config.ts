@@ -73,6 +73,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
+    REGULATION_TYPE,
 } from 'components/utils/field-constants';
 import { FieldConstants } from '@gridsuite/commons-ui';
 
@@ -346,6 +347,11 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             labelId: TARGET_V,
             csvColumns: [TARGET_V],
             networkFields: ['targetV'],
+        },
+        {
+            labelId: REGULATION_TYPE,
+            csvColumns: [REGULATION_TYPE],
+            networkFields: ['regulationType'],
         },
         {
             labelId: REGULATING_TERMINAL_ID,
