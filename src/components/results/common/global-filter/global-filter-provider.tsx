@@ -31,7 +31,7 @@ export default function GlobalFilterProvider({
     equipmentTypes = undefined,
     onAfterChange,
 }: PropsWithChildren & {
-    onChange: (globalFilters: GlobalFilter[], afterChange?: () => void) => void;
+    onChange: (globalFilters: GlobalFilter[]) => void;
     filterCategories: string[];
     preloadedGlobalFilters?: GlobalFilter[];
     genericFiltersStrictMode: boolean;

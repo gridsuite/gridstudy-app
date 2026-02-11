@@ -65,7 +65,7 @@ function SensitivityAnalysisResultTab({
 
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SensitivityAnalysis,
-        mappingTabs(sensiKindForPagination, nOrNkIndex) as SensitivityAnalysisTab
+        mappingTabs(sensiKindForPagination, nOrNkIndex)
     );
 
     const { rowsPerPage } = pagination;

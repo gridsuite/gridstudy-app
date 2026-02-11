@@ -20,6 +20,7 @@ import {
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
+import { SensitivityAnalysisTab } from '../../../types/custom-aggrid-types';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -63,7 +64,7 @@ export const DATA_KEY_TO_SORT_KEY = {
     functionReferenceAfter: 'POST_REFERENCE',
     valueAfter: 'POST_SENSITIVITY',
 };
-export const mappingTabs = (sensiResultKind: SensiKind, nOrNkIndex: number) => {
+export const mappingTabs = (sensiResultKind: SensiKind, nOrNkIndex: number) : SensitivityAnalysisTab => {
     switch (sensiResultKind) {
         case SENSITIVITY_IN_DELTA_MW:
             return nOrNkIndex === 0 ? SENSITIVITY_IN_DELTA_MW_N : SENSITIVITY_IN_DELTA_MW_N_K;
@@ -71,8 +72,6 @@ export const mappingTabs = (sensiResultKind: SensiKind, nOrNkIndex: number) => {
             return nOrNkIndex === 0 ? SENSITIVITY_IN_DELTA_A_N : SENSITIVITY_IN_DELTA_A_N_K;
         case SENSITIVITY_AT_NODE:
             return nOrNkIndex === 0 ? SENSITIVITY_AT_NODE_N : SENSITIVITY_AT_NODE_N_K;
-        default:
-            return '';
     }
 };
 
