@@ -32,12 +32,6 @@
     stroke-width: 0.2%;
     fill: none;
 }
-path.nad-arrow-out:not(.nad-state-out .nad-arrow-out) {
-    visibility: hidden;
-}
-path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
-    visibility: hidden;
-}
 .nad-active {
     fill: #787F81;
 }

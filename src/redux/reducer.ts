@@ -1503,6 +1503,7 @@ export const reducer = createReducer(initialState, (builder) => {
         switch (action.equipmentType) {
             case SpreadsheetEquipmentType.GENERATOR:
                 propsToClean = {
+                    regulationType: undefined,
                     regulatingTerminalVlName: undefined,
                     regulatingTerminalConnectableId: undefined,
                     regulatingTerminalConnectableType: undefined,
