@@ -137,6 +137,7 @@ const formSchema = yup
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup
             .number()
             .nullable()
+            .default(null)
             .test(
                 'activePowerSetPoint',
                 'PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower',

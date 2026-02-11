@@ -35,14 +35,14 @@ export const getReactivePowerSetPointSchema = (isEquipmentModification = false) 
         }),
 });
 
-const testValueWithinPowerIntervalOrEqualToZero = (value: number | null | undefined, context: TestContext) => {
+const testValueWithinPowerIntervalOrEqualToZero = (value: number, context: TestContext) => {
     if (value === 0) {
         return true;
     }
     return testValueWithinPowerInterval(value, context);
 };
 
-export const testValueWithinPowerInterval = (value: number | null | undefined, context: TestContext) => {
+export const testValueWithinPowerInterval = (value: number | null, context: TestContext) => {
     const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
     const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
     if (value === null || value === undefined) {
