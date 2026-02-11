@@ -296,7 +296,7 @@ const ParametersTabs: FunctionComponent = () => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
-                        fetchContingencyCount={(contingencyLists: string[] | null) =>
+                        fetchContingencyCount={(contingencyLists: UUID[] | null) =>
                             fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
                         }
                         setHaveDirtyFields={setDirtyFields}
