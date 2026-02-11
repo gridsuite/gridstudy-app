@@ -52,12 +52,12 @@ import { SubjectIdRendererType } from '../securityanalysis/security-analysis.typ
 import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
 import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
 
-export const convertSide = (side: string | undefined, intl: IntlShape) => {
+export const convertSide = (side: string | undefined, intl: IntlShape): string => {
     return side === BranchSide.ONE
         ? intl.formatMessage({ id: 'Side1' })
         : side === BranchSide.TWO
           ? intl.formatMessage({ id: 'Side2' })
-          : undefined;
+          : '';
 };
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {
@@ -139,7 +139,7 @@ export const makeData = (
             patlLimit: overloadedEquipment.patlLimit,
             limitName: translateLimitNameBackToFront(overloadedEquipment.limitName, intl),
             nextLimitName: translateLimitNameBackToFront(overloadedEquipment.nextLimitName, intl),
-            side: convertSide(overloadedEquipment.side, intl),
+            side: overloadedEquipment.side,
             limitType: overloadedEquipment.limitType,
         };
     });
@@ -373,13 +373,12 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 }
             ),
+            valueGetter: (value: ValueGetterParams) => value.data.side,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
     ];
 };
 
-export const formatLimitType = (limitType: string, intl: IntlShape) => {
-    return limitType in LimitTypes ? intl.formatMessage({ id: limitType }) : limitType;
-};
 export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
@@ -417,9 +416,8 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 }
             ),
-            valueGetter: (value: ValueGetterParams) => {
-                return formatLimitType(value.data.limitType, intl);
-            },
+            valueGetter: (value: ValueGetterParams) => value.data.limitType,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
         makeAgGridCustomHeaderColumn(
             makeAgGridFloatColumn('VoltageViolationLimit', 'limit', intl, sortParams, filterParams)
@@ -466,6 +464,8 @@ export const componentColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 }
             ),
+            valueGetter: (value: ValueGetterParams) => value.data.status,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
             cellRenderer: statusCellRender,
         }),
         makeAgGridCustomHeaderColumn({

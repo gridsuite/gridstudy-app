@@ -15,6 +15,7 @@ import {
     ICellRendererParams,
     RowClassParams,
     RowDataUpdatedEvent,
+    ValueFormatterParams,
     ValueGetterParams,
 } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
@@ -237,6 +238,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('faultType') }),
                 },
+                valueGetter: (value: ValueGetterParams) => value.data.faultType,
+                valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
@@ -267,6 +270,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams('side') }),
                 },
+                valueGetter: (value: ValueGetterParams) => value.data.side,
+                valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
             }),
             {
                 ...makeAgGridCustomHeaderColumn({
@@ -276,6 +281,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     context: {
                         ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('limitType') }),
                     },
+                    valueGetter: (value: ValueGetterParams) => value.data.limitType,
+                    valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
                 }),
                 minWidth: 150,
             },

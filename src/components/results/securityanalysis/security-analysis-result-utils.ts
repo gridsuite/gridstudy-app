@@ -313,6 +313,8 @@ export const securityAnalysisTableNColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 },
             },
+            valueGetter: (value: ValueGetterParams) => value.data.limitType,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
         makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn({
@@ -372,6 +374,8 @@ export const securityAnalysisTableNColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 },
             },
+            valueGetter: (value: ValueGetterParams) => value.data.side,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
     ];
 };
@@ -408,6 +412,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 },
             },
+            valueGetter: (value: ValueGetterParams) => value.data.status,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, {
@@ -432,6 +438,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 },
             },
+            valueGetter: (value: ValueGetterParams) => value.data.limitType,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
         makeAgGridCustomHeaderColumn(
             makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, {
@@ -532,6 +540,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 },
             },
+            valueGetter: (value: ValueGetterParams) => value.data.side,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
@@ -582,6 +592,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 },
             },
+            valueGetter: (value: ValueGetterParams) => value.data.status,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
@@ -599,6 +611,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 },
             },
+            valueGetter: (value: ValueGetterParams) => value.data.limitType,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
         makeAgGridCustomHeaderColumn(
             makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, {
@@ -690,6 +704,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     getOptionLabel: getEnumLabel,
                 },
             },
+            valueGetter: (value: ValueGetterParams) => value.data.side,
+            valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
