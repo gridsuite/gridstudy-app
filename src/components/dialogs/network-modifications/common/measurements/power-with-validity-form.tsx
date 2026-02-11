@@ -8,12 +8,18 @@
 import Grid from '@mui/material/Grid';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { convertInputValue, FieldType, FloatInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    convertInputValue,
+    FieldConstants,
+    FieldType,
+    FloatInput,
+    ReactivePowerAdornment,
+} from '@gridsuite/commons-ui';
 import { MeasurementProps } from './measurement.type';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import GridItem from '../../../commons/grid-item';
-import { VALIDITY, VALUE } from '../../../../utils/field-constants';
-import { ActivePowerAdornment, ReactivePowerAdornment } from '../../../dialog-utils';
+import { VALIDITY } from '../../../../utils/field-constants';
 
 export const PowerWithValidityForm: FunctionComponent<MeasurementProps> = ({ id, field, measurement }) => {
     const intl = useIntl();
@@ -29,7 +35,7 @@ export const PowerWithValidityForm: FunctionComponent<MeasurementProps> = ({ id,
 
     const valueField = (
         <FloatInput
-            name={`${id}.${VALUE}`}
+            name={`${id}.${FieldConstants.VALUE}`}
             label={field === FieldType.ACTIVE_POWER ? 'ActivePowerText' : 'ReactivePowerText'}
             adornment={field === FieldType.ACTIVE_POWER ? ActivePowerAdornment : ReactivePowerAdornment}
             previousValue={convertInputValue(field, measurement?.value)}

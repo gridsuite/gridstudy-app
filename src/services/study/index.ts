@@ -16,13 +16,10 @@ import {
     EquipmentType,
     ExtendedEquipmentType,
     Parameter,
+    safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
-
-export function safeEncodeURIComponent(value: string | null | undefined): string {
-    return value != null ? encodeURIComponent(value) : '';
-}
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 

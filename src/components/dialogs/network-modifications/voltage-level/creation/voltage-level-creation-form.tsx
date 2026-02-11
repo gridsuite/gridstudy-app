@@ -8,9 +8,7 @@
 import {
     ADD_SUBSTATION_CREATION,
     BUS_BAR_COUNT,
-    COUNTRY,
     EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
     IS_ATTACHMENT_POINT_CREATION,
@@ -24,27 +22,29 @@ import {
     SUBSTATION_NAME,
 } from 'components/utils/field-constants';
 import React, { useCallback, useEffect, useState } from 'react';
-import { KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
 import {
     AutocompleteInput,
+    CountrySelectionInput,
     EquipmentType,
     fetchDefaultCountry,
+    FieldConstants,
     FloatInput,
     IntegerInput,
+    KiloAmpereAdornment,
+    PropertiesForm,
     TextInput,
+    VoltageAdornment,
 } from '@gridsuite/commons-ui';
 import { Box, Grid, Paper, Tooltip } from '@mui/material';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
-import PropertiesForm from '../../common/properties/properties-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import IconButton from '@mui/material/IconButton';
 import { useIntl } from 'react-intl';
-import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selection-input';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
 import { UUID } from 'node:crypto';
@@ -70,10 +70,10 @@ const VoltageLevelCreationForm = ({
 
     useEffect(() => {
         // in new substation mode, set the default country
-        if (watchAddSubstationCreation && !getValues(COUNTRY)) {
+        if (watchAddSubstationCreation && !getValues(FieldConstants.COUNTRY)) {
             fetchDefaultCountry().then((country) => {
                 if (country) {
-                    setValue(COUNTRY, country);
+                    setValue(FieldConstants.COUNTRY, country);
                 }
             });
         }
@@ -120,7 +120,9 @@ const VoltageLevelCreationForm = ({
         setValue(SUBSTATION_CREATION_ID, getValues(SUBSTATION_ID));
         setValue(ADD_SUBSTATION_CREATION, true);
     }, [setValue, getValues]);
-    const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
+    const voltageLevelNameField = (
+        <TextInput name={FieldConstants.EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />
+    );
 
     const substationField = (
         <AutocompleteInput
@@ -174,14 +176,16 @@ const VoltageLevelCreationForm = ({
     const substationCreationIdField = <TextInput name={SUBSTATION_CREATION_ID} label={'SubstationId'} />;
     const substationCreationNameField = <TextInput name={SUBSTATION_NAME} label={'substationName'} />;
 
-    const substationCreationCountryField = <CountrySelectionInput name={COUNTRY} label={'Country'} size={'small'} />;
+    const substationCreationCountryField = (
+        <CountrySelectionInput name={FieldConstants.COUNTRY} label={'Country'} size={'small'} />
+    );
 
     const handleDeleteButton = useCallback(() => {
         setValue(ADD_SUBSTATION_CREATION, false);
         // clear the fields of the new substation
         setValue(SUBSTATION_CREATION_ID, null);
         setValue(SUBSTATION_NAME, null);
-        setValue(COUNTRY, null);
+        setValue(FieldConstants.COUNTRY, null);
     }, [setValue]);
 
     return (

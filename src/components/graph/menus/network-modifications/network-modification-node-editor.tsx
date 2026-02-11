@@ -8,11 +8,13 @@
 import {
     ElementSaveDialog,
     ElementType,
+    fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
     ModificationType,
     NetworkModificationMetadata,
+    removeNullFields,
     NotificationsUrlKeys,
     snackWithFallback,
     useNotificationsListener,
@@ -71,7 +73,6 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
-import { fetchNetworkModification } from '../../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
     changeNetworkModificationOrder,
@@ -1006,22 +1007,6 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackError]);
 
-    const removeNullFields = useCallback((data: NetworkModificationData) => {
-        let dataTemp = data;
-        if (dataTemp) {
-            Object.keys(dataTemp).forEach((key) => {
-                if (dataTemp[key] && dataTemp[key] !== null && typeof dataTemp[key] === 'object') {
-                    dataTemp[key] = removeNullFields(dataTemp[key]);
-                }
-
-                if (dataTemp[key] === null) {
-                    delete dataTemp[key];
-                }
-            });
-        }
-        return dataTemp;
-    }, []);
-
     const doEditModification = useCallback(
         (modificationUuid: UUID, modificationType: ModificationType) => {
             setIsUpdate(true);
@@ -1044,7 +1029,7 @@ const NetworkModificationNodeEditor = () => {
                     setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
-        [removeNullFields, snackError]
+        [snackError]
     );
 
     const onItemClick = (id: string) => {
