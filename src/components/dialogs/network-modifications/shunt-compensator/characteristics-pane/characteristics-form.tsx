@@ -18,8 +18,14 @@ import {
 } from 'components/utils/field-constants';
 import { Box, Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { FloatInput, IntegerInput, RadioInput, SelectInput } from '@gridsuite/commons-ui';
-import { ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
+import {
+    FloatInput,
+    IntegerInput,
+    RadioInput,
+    ReactivePowerAdornment,
+    SelectInput,
+    SusceptanceAdornment,
+} from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
