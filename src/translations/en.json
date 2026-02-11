@@ -746,6 +746,7 @@
     "forcedOutageRate": "Forced outage rate",
     "MinActivePowerMustBeLessOrEqualToMaxActivePower": "Minimum active power value must be less than or equal to maximum active power value",
     "ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower": "Active power value must be equal to 0 or between minimum and maximum active power values",
+    "PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower": "Planned active power set point must be between minimum and maximum active power values",
     "RatedNominalPowerMustBeGreaterThanZero": "The rated nominal power value must be greater than 0",
     "NormalizedPercentage": "This percentage must be between 0 and 100",
     "RealPercentage": "This value must be between 0 and 1",
