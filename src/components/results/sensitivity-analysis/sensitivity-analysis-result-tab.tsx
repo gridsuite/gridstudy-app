@@ -29,10 +29,7 @@ import { useGlobalFilterOptions } from '../common/global-filter/use-global-filte
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
 import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import {
-    FilterType as AgGridFilterType,
-    PaginationType,
-} from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType, PaginationType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 
 export type SensitivityAnalysisResultTabProps = {
