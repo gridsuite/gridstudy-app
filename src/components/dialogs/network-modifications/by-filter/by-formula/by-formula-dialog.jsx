@@ -11,6 +11,7 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    FieldConstants,
     FieldType,
     MODIFICATION_TYPES,
     snackWithFallback,
@@ -32,7 +33,6 @@ import {
     OPERATOR,
     REFERENCE_FIELD_OR_VALUE_1,
     REFERENCE_FIELD_OR_VALUE_2,
-    VALUE,
 } from '../../../../utils/field-constants';
 import { modifyByFormula } from '../../../../../services/study/network-modifications';
 import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils';
@@ -43,12 +43,12 @@ function getFieldOrConvertedUnitValue(input, fieldType, convert) {
 
     if (isNumber) {
         return {
-            [VALUE]: convert ? convertOutputValue(fieldType, value) : value,
+            [FieldConstants.VALUE]: convert ? convertOutputValue(fieldType, value) : value,
             [EQUIPMENT_FIELD]: null,
         };
     } else {
         return {
-            [VALUE]: null,
+            [FieldConstants.VALUE]: null,
             [EQUIPMENT_FIELD]: input,
         };
     }

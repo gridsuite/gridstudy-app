@@ -64,7 +64,7 @@ export const DATA_KEY_TO_SORT_KEY = {
     functionReferenceAfter: 'POST_REFERENCE',
     valueAfter: 'POST_SENSITIVITY',
 };
-export const mappingTabs = (sensiResultKind: SensiKind, nOrNkIndex: number) : SensitivityAnalysisTab => {
+export const mappingTabs = (sensiResultKind: SensiKind, nOrNkIndex: number): SensitivityAnalysisTab => {
     switch (sensiResultKind) {
         case SENSITIVITY_IN_DELTA_MW:
             return nOrNkIndex === 0 ? SENSITIVITY_IN_DELTA_MW_N : SENSITIVITY_IN_DELTA_MW_N_K;

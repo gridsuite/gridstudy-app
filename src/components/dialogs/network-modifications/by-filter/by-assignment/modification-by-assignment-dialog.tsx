@@ -14,6 +14,7 @@ import {
     FieldType,
     snackWithFallback,
     useSnackMessage,
+    DeepNullable,
 } from '@gridsuite/commons-ui';
 import { FC, useCallback, useEffect, useMemo } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
@@ -31,7 +32,6 @@ import {
     getDataType,
 } from './assignment/assignment-utils';
 import { Assignment, ModificationByAssignment } from './assignment/assignment.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { useIntl } from 'react-intl';
 
 const emptyFormData = {

@@ -32,7 +32,6 @@ import { useComputationGlobalFilters } from '../common/global-filter/use-computa
 import {
     FilterType as AgGridFilterType,
     PaginationType,
-    SensitivityAnalysisTab,
 } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 
