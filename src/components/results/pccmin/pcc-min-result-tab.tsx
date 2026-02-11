@@ -22,7 +22,9 @@ import { useGlobalFilterOptions } from '../common/global-filter/use-global-filte
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType, PaginationType } from '../../../types/custom-aggrid-types';
+import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
+import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 
 export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     studyUuid,
@@ -38,6 +40,13 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
 
     const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.PccMin);
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+
+    const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
+    const { rowsPerPage } = pagination;
+
+    const resetPagination = useCallback(() => {
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [dispatchPagination, rowsPerPage]);
 
     const handleSubTabChange = useCallback((event: SyntheticEvent, newIndex: number) => {
         setResultOrLogIndex(newIndex);
@@ -68,6 +77,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                     <Box sx={{ flex: 1 }}>
                         <GlobalFilterSelector
                             onChange={updateGlobalFilters}
+                            onAfterChange={resetPagination}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             preloadedGlobalFilters={globalFiltersFromState}
