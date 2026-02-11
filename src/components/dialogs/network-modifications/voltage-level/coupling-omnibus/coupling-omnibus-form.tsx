@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ExpandableInput } from 'components/utils/rhf-inputs/expandable-input';
 import {
     BUS_BAR_COUNT,
     BUS_BAR_SECTION_ID1,
@@ -18,6 +17,7 @@ import { CouplingOmnibusCreation } from './coupling-omnibus-creation';
 import { useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { buildNewBusbarSections } from 'components/utils/utils';
+import { ExpandableInput } from '@gridsuite/commons-ui';
 
 export const CouplingOmnibusForm = () => {
     const { setValue } = useFormContext();

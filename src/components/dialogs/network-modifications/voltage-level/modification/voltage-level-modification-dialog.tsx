@@ -9,7 +9,6 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
-    ADDITIONAL_PROPERTIES,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -24,9 +23,16 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    emptyProperties,
     EquipmentType,
+    EquipmentWithProperties,
+    FieldConstants,
     FieldType,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    modificationPropertiesSchema,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -36,14 +42,6 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    Equipment,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { UUID } from 'node:crypto';
@@ -83,7 +81,7 @@ interface VoltageLevelFormData {
     [HIGH_VOLTAGE_LIMIT]?: number;
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
-    [ADDITIONAL_PROPERTIES]?: any;
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: any;
     [key: string]: any;
 }
 
@@ -217,8 +215,8 @@ const VoltageLevelModificationDialog = ({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
-                                        voltageLevel as Equipment,
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
+                                        voltageLevel as EquipmentWithProperties,
                                         getValues
                                     ),
                                     [SUBSTATION_ID]: voltageLevel?.substationId,

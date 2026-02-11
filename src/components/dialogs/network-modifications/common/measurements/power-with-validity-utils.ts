@@ -6,13 +6,14 @@
  */
 
 import yup from '../../../../utils/yup-config';
-import { VALIDITY, VALUE } from '../../../../utils/field-constants';
+import { VALIDITY } from '../../../../utils/field-constants';
 import { MeasurementInfo } from './measurement.type';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 export function getPowerWithValidityEmptyFormData(id: string) {
     return {
         [id]: {
-            [VALUE]: null,
+            [FieldConstants.VALUE]: null,
             [VALIDITY]: null,
         },
     };
@@ -21,7 +22,7 @@ export function getPowerWithValidityEmptyFormData(id: string) {
 export function getPowerWithValidityValidationSchema(id: string) {
     return {
         [id]: yup.object().shape({
-            [VALUE]: yup.number().nullable(),
+            [FieldConstants.VALUE]: yup.number().nullable(),
             [VALIDITY]: yup.boolean().nullable(),
         }),
     };
@@ -30,7 +31,7 @@ export function getPowerWithValidityValidationSchema(id: string) {
 export function getPowerWithValidityEditData(id: string, measurement: MeasurementInfo) {
     return {
         [id]: {
-            [VALUE]: measurement?.value ?? null,
+            [FieldConstants.VALUE]: measurement?.value ?? null,
             [VALIDITY]: measurement?.validity ?? null,
         },
     };

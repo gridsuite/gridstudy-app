@@ -10,7 +10,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { SELECTION_TYPES } from './selection-types';
 import { SelectionCreationPaneFields } from './selection-creation-schema';
-import { Nullable } from 'components/utils/ts-utils';
+import { Nullable } from '@gridsuite/commons-ui';
 
 interface SelectionCreationPanelSubmitButtonProps {
     handleValidate: (formData: SelectionCreationPaneFields) => void;

@@ -8,7 +8,7 @@
 import { FunctionComponent } from 'react';
 
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import PropertiesForm from '../../common/properties/properties-form';
+import { PropertiesForm } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
 import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
