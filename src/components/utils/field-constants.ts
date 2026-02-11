@@ -285,7 +285,6 @@ export const ACTIVATED = 'activated';
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
 export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerX';
-export const REGULATION_TYPE_TEXT = 'regulationTypeText';
 export const REGULATING_TERMINAL_ID = 'regulatingTerminalId';
 export const REGULATING_TERMINAL_VOLTAGE_LEVEL_ID = 'regulatingTerminalVlId';
 export const REGULATING_TERMINAL_TYPE = 'regulatingTerminalType';
