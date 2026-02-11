@@ -77,7 +77,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                     <Box sx={{ flex: 1 }}>
                         <GlobalFilterSelector
                             onChange={updateGlobalFilters}
-                            afterChange={resetPagination}
+                            onAfterChange={resetPagination}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             preloadedGlobalFilters={globalFiltersFromState}

@@ -29,10 +29,9 @@ export function useComputationGlobalFilters(filterType: FilterType) {
             );
     }, [dispatch, studyUuid, filterType]);
     const updateGlobalFilters = useCallback(
-        (rawGlobalFilters: GlobalFilter[], afterChange?: () => void) => {
+        (rawGlobalFilters: GlobalFilter[]) => {
             dispatch(updateGlobalFiltersAction(filterType, rawGlobalFilters));
             studyUuid && updateComputationResultFilters(studyUuid, filterType, rawGlobalFilters).then();
-            afterChange?.();
         },
         [dispatch, filterType, studyUuid]
     );

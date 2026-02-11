@@ -196,7 +196,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                 {resultOrLogIndex === RESULTS_TAB_INDEX && tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
                     <GlobalFilterSelector
                         onChange={updateGlobalFilters}
-                        afterChange={resetPaginationIfAllBuses}
+                        onAfterChange={resetPaginationIfAllBuses}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
                         preloadedGlobalFilters={globalFiltersFromState}

@@ -308,7 +308,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
                             onChange={updateGlobalFilters}
-                            afterChange={resetPaginationIfNKResults}
+                            onAfterChange={resetPaginationIfNKResults}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}

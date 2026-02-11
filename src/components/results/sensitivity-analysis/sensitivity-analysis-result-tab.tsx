@@ -115,7 +115,7 @@ function SensitivityAnalysisResultTab({
                         <Box sx={{ display: 'flex', flexGrow: 0 }}>
                             <GlobalFilterSelector
                                 onChange={updateGlobalFilters}
-                                afterChange={resetPagination}
+                                onAfterChange={resetPagination}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
                                 preloadedGlobalFilters={globalFiltersFromState}
