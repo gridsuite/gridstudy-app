@@ -18,8 +18,7 @@ import { Box, Grid, TextField } from '@mui/material';
 import LccHvdcLine from '../common/lcc-hvdc-line';
 import LccConverterStation from '../common/lcc-converter-station';
 import LccTabs from '../common/lcc-tabs';
-import { TextInput } from '@gridsuite/commons-ui';
-import { filledTextField } from '../../../../dialog-utils';
+import { filledTextField, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../../commons/grid-item';
 
 interface LccModificationFormProps {

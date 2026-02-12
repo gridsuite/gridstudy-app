@@ -17,9 +17,8 @@ import {
 } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { ActivePowerAdornment, AmpereAdornment } from '../../../../dialog-utils';
 import { PHASE_REGULATION_MODES } from 'components/network/constants';
-import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
+import { ActivePowerAdornment, AmpereAdornment, FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import {
     getComputedPhaseTapChangerRegulationMode,

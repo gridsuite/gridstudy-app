@@ -5,13 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { filledTextField } from '../../../dialog-utils';
-import { TextInput } from '@gridsuite/commons-ui';
-import { COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
+import {
+    CountrySelectionInput,
+    FieldConstants,
+    filledTextField,
+    PropertiesForm,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { TextField, Grid } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
+import { Grid, TextField } from '@mui/material';
 import GridItem from '../../../commons/grid-item';
 import { SubstationInfos } from '../substation-dialog.type';
 
@@ -39,7 +41,7 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }: Readonl
 
     const substationNameField = (
         <TextInput
-            name={EQUIPMENT_NAME}
+            name={FieldConstants.EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
             previousValue={substationToModify?.name}
@@ -49,7 +51,7 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }: Readonl
 
     const substationCountryField = (
         <CountrySelectionInput
-            name={COUNTRY}
+            name={FieldConstants.COUNTRY}
             label={'Country'}
             formProps={filledTextField}
             size={'small'}

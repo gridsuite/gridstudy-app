@@ -19,8 +19,7 @@ import {
     SHUNT_COMPENSATOR_NAME,
     SHUNT_COMPENSATOR_SELECTED,
 } from '../../../../../utils/field-constants';
-import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
-import { ReactivePowerAdornment } from '../../../../dialog-utils';
+import { FloatInput, ReactivePowerAdornment, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 
 interface FiltersShuntCompensatorTableProps {
     id: string;

@@ -387,7 +387,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     const onGridReady = useAgGridInitialColumnFilters(
         FilterType.ShortcircuitAnalysis,
         computationSubType,
-        () => onGridColumnsChanged
+        onGridColumnsChanged
     );
     const handleRowDataUpdated = useCallback(
         (event: RowDataUpdatedEvent) => {
