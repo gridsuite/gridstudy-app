@@ -16,7 +16,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -164,6 +164,11 @@ const EquipmentDeletionDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
+    const waitingForData = useMemo(
+        () => isUpdate && editDataFetchStatus === FetchStatus.RUNNING,
+        [editDataFetchStatus, isUpdate]
+    );
+
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -175,7 +180,7 @@ const EquipmentDeletionDialog = ({
                 onSave={onSubmit}
                 titleId="DeleteEquipment"
                 open={open}
-                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                isDataFetching={waitingForData}
                 {...dialogProps}
             >
                 <DeleteEquipmentForm
@@ -183,6 +188,7 @@ const EquipmentDeletionDialog = ({
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     editData={editData}
+                    waitingForData={waitingForData}
                 />
             </ModificationDialog>
         </CustomFormProvider>

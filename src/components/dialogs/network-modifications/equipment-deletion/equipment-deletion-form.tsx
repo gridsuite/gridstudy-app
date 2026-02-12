@@ -38,6 +38,7 @@ export interface DeleteEquipmentFormProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     editData?: EquipmentDeletionInfos;
+    waitingForData: boolean;
 }
 
 const NULL_UUID: UUID = '00000000-0000-0000-0000-000000000000';
@@ -47,6 +48,7 @@ export default function DeleteEquipmentForm({
     currentNode,
     currentRootNetworkUuid,
     editData,
+    waitingForData,
 }: Readonly<DeleteEquipmentFormProps>) {
     const { snackError } = useSnackMessage();
     const editedIdRef = useRef<UUID | null>(null);
@@ -84,6 +86,10 @@ export default function DeleteEquipmentForm({
     }, []);
 
     useEffect(() => {
+        if (waitingForData) {
+            // don't fetch equipment Ids if the dialog is not fully loaded (in update mode)
+            return;
+        }
         setEquipmentsOptions([]);
         if (watchType) {
             if (watchType !== currentTypeRef.current) {
@@ -104,7 +110,7 @@ export default function DeleteEquipmentForm({
                 ignore = true;
             };
         }
-    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, watchType, snackError]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, watchType, snackError, waitingForData]);
 
     useEffect(() => {
         if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
@@ -173,7 +179,7 @@ export default function DeleteEquipmentForm({
             options={equipmentsOptions}
             getOptionLabel={getObjectId}
             //hack to work with freesolo autocomplete
-            //setting null programmatically when freesolo is enable won't empty the field
+            //setting null programmatically when freesolo is enabled won't empty the field
             inputTransform={(value) => value ?? ''}
             outputTransform={(value: any) => (value === '' ? null : getObjectId(value))}
             size={'small'}
