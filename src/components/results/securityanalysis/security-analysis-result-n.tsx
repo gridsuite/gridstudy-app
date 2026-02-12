@@ -35,9 +35,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                       limitType: intl.formatMessage({
                           id: limitViolation?.limitType,
                       }),
-                      // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                      acceptableDuration:
-                          limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
+                      acceptableDuration: limitViolation?.acceptableDuration ?? null,
                       limitName: translateLimitNameBackToFront(limitViolation?.limitName, intl),
                       limit: limitViolation?.limit,
                       value: limitViolation?.value,

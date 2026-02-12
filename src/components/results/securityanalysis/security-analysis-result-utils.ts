@@ -131,9 +131,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
                 nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
                 side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
                 linkedElementId: contingencyId,
-                // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                acceptableDuration:
-                    limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
+                acceptableDuration: limitViolation?.acceptableDuration ?? null,
                 upcomingAcceptableDuration:
                     limitViolation?.upcomingAcceptableDuration === MAX_INT32
                         ? null
@@ -169,9 +167,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                     nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
                     side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
-                    // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                    acceptableDuration:
-                        limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
+                    acceptableDuration: limitViolation?.acceptableDuration ?? null,
                     upcomingAcceptableDuration:
                         limitViolation?.upcomingAcceptableDuration === MAX_INT32
                             ? null
