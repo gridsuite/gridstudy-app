@@ -6,7 +6,7 @@
  */
 
 import React, { memo, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {mergeSx, ModificationType, type MuiStyles, useModificationLabelComputer} from '@gridsuite/commons-ui';
+import { mergeSx, ModificationType, type MuiStyles, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import {
     Badge,
