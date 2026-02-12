@@ -7,9 +7,8 @@
 
 import { EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { Box, Grid, TextField } from '@mui/material';
-import { filledTextField } from 'components/dialogs/dialog-utils';
 import LineDialogTabs from '../line-dialog-tabs';
-import { TextInput } from '@gridsuite/commons-ui';
+import { filledTextField, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 

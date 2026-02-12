@@ -6,7 +6,7 @@
  */
 
 import React, { memo, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { mergeSx, type MuiStyles, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import {mergeSx, ModificationType, type MuiStyles, useModificationLabelComputer} from '@gridsuite/commons-ui';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import {
     Badge,
@@ -62,7 +62,7 @@ import SwitchCellRenderer from './switch-cell-renderer-tanstack';
 
 export interface NetworkModificationMetadata {
     uuid: UUID;
-    type: string;
+    type: ModificationType;
     date: Date;
     stashed: boolean;
     activated: boolean;
