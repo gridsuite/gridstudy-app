@@ -263,7 +263,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType, equipmentId: string) => {
-            if (equipmentType && currentNode?.id) {
+            if (currentNode?.id) {
                 if (
                     equipmentType === EquipmentType.HVDC_LINE &&
                     mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === HvdcType.LCC
@@ -273,7 +273,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                 } else {
                     deleteEquipment({
                         studyUuid,
-                        nodeUuid: currentNode?.id,
+                        nodeUuid: currentNode.id,
                         equipmentId: equipmentId as UUID,
                         equipmentType,
                     }).catch((error) => {
