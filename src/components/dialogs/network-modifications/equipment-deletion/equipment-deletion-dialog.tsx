@@ -41,7 +41,7 @@ export type EquipmentDeletionFormInfos = yup.InferType<typeof formSchema>;
 
 const emptyFormData: EquipmentDeletionFormInfos = {
     [EQUIPMENT_ID]: '',
-    [TYPE]: EquipmentType.SUBSTATION,
+    [TYPE]: null!,
     [DELETION_SPECIFIC_DATA]: null,
 };
 
@@ -188,7 +188,6 @@ const EquipmentDeletionDialog = ({
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     editData={editData}
-                    waitingForData={waitingForData}
                 />
             </ModificationDialog>
         </CustomFormProvider>
