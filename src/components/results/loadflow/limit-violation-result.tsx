@@ -74,7 +74,7 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
     const messages = useIntlResultStatusMessages(intl);
 
     const renderLoadFlowLimitViolations = () => {
-        const message = getNoRowsMessage(messages, result, loadFlowStatus, !isLoadingResult && !!result);
+        const message = getNoRowsMessage(messages, result, loadFlowStatus, !isLoadingResult);
         const rowsToShow = getRows(result, loadFlowStatus);
 
         return (

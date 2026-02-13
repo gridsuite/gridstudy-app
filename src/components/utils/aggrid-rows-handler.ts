@@ -20,7 +20,7 @@ export interface RunningStatusMessage {
 
 export function getNoRowsMessage(
     messages: RunningStatusMessage,
-    rows: any[] | undefined | null,
+    rows: any[] | undefined,
     status: string,
     isDataReady?: boolean
 ): string | undefined {
@@ -32,9 +32,9 @@ export function getNoRowsMessage(
         case RunningStatus.FAILED:
             return messages.failed;
         case RunningStatus.SUCCEED:
-            if (!isDataReady) {
+            if (!isDataReady || !rows) {
                 return messages.fetching;
-            } else if (!rows || rows?.length === 0) {
+            } else if (rows && rows.length === 0) {
                 return messages.noData ? messages.noData : messages.noLimitViolation;
             }
             return undefined;
@@ -43,7 +43,7 @@ export function getNoRowsMessage(
     }
 }
 
-export function getRows(rows: any[] | null, status: string): any[] {
+export function getRows(rows: any[] | undefined, status: string): any[] {
     return status === RunningStatus.SUCCEED && rows ? rows : [];
 }
 export const useIntlResultStatusMessages = (

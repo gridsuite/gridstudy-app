@@ -33,7 +33,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
         resultStatusMessages,
         rows,
         securityAnalysisStatus,
-        !isLoadingResult && !!rows
+        !isLoadingResult
     );
     const onGridReady = useAgGridInitialColumnFilters(FilterType.SecurityAnalysis, computationSubType);
 

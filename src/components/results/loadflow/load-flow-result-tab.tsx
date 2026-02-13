@@ -241,7 +241,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const result = useMemo(() => {
         if (!loadflowResult) {
-            return null;
+            return undefined;
         }
         if (tabIndex === 0 || tabIndex === 1) {
             return makeData(loadflowResult, intl);
