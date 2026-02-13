@@ -43,7 +43,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
-import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
 import type { UUID } from 'node:crypto';
 

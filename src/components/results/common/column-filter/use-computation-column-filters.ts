@@ -15,29 +15,19 @@ export type ComputationResultColumnFilterInfos = {
     columnId: string;
     columnFilterInfos: FilterConfig;
 };
-function toColumnFilterInfos(infos: ComputationResultColumnFilterInfos[] | null): FilterConfig[] {
+function toFilterConfig(infos: ComputationResultColumnFilterInfos[] | null): FilterConfig[] {
     if (!Array.isArray(infos)) {
         return EMPTY_ARRAY;
     }
-    return infos.flatMap(mapColumnFilters);
-}
-function parseFilterValue(filterValue: string) {
-    const parsed = JSON.parse(filterValue);
-    if (!Array.isArray(parsed)) {
-        return parsed;
-    }
-    return parsed.flatMap((v) => (typeof v === 'string' ? v.split(',').map((s) => s.trim()) : v));
-}
-function mapColumnFilters({ columnId, columnFilterInfos }: ComputationResultColumnFilterInfos): FilterConfig[] {
-    const filters = Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos];
-
-    return filters.map((filter) => ({
-        column: columnId,
-        value: parseFilterValue(filter.filterValue),
-        type: filter.filterType,
-        dataType: filter.filterDataType,
-        tolerance: filter.filterTolerance ?? undefined,
-    }));
+    return infos.flatMap(({ columnId, columnFilterInfos }) =>
+        (Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos]).map((filter) => ({
+            column: columnId,
+            value: JSON.parse(filter.filterValue),
+            type: filter.filterType,
+            dataType: filter.filterDataType,
+            tolerance: filter.filterTolerance,
+        }))
+    );
 }
 
 const EMPTY_ARRAY: FilterConfig[] = [];
@@ -47,7 +37,7 @@ export function useComputationColumnFilters(filterType: FilterType, computationS
     useEffect(() => {
         studyUuid &&
             getComputationResultColumnFilters(studyUuid, filterType, computationSubType).then((infos) => {
-                const filters = toColumnFilterInfos(infos);
+                const filters = toFilterConfig(infos);
                 dispatch(updateColumnFiltersAction(filterType, computationSubType, filters));
             });
     }, [dispatch, studyUuid, filterType, computationSubType]);
