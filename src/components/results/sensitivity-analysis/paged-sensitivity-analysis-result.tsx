@@ -216,7 +216,7 @@ function PagedSensitivityAnalysisResult({
     return (
         <>
             <SensitivityAnalysisResult
-                result={result?.sensitivities || []}
+                result={result?.sensitivities || undefined}
                 nOrNkIndex={nOrNkIndex}
                 sensiKind={sensiKind}
                 goToFirstPage={goToFirstPage}
