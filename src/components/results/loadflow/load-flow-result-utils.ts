@@ -15,7 +15,6 @@ import {
 } from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { BranchSide } from '../../utils/constants';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { JSX, useEffect, useState } from 'react';
@@ -50,6 +49,7 @@ import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/f
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
 import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
+import { BranchSide } from '../../utils/constants';
 
 export const convertSide = (side: string | undefined, intl: IntlShape): string => {
     return side === BranchSide.ONE
