@@ -8,7 +8,6 @@
 import { ConnectablePositionInfos, Connectivity } from '../../../connectivity/connectivity.type';
 import { CurrentLimitsData } from '../../../../../services/study/network-map.type';
 import {
-    ADDITIONAL_PROPERTIES,
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
@@ -20,9 +19,9 @@ import {
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     TAB_HEADER,
 } from '../../../../utils/field-constants';
-import { Property } from '../../common/properties/property-utils';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
 import { LineCharacteristics } from '../modification/line-modification-type';
+import { FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export interface LineCreationFormSchema {
     [TAB_HEADER]: {
@@ -38,7 +37,7 @@ export interface LineCreationFormSchema {
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
     };
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
 }
 
 export interface LineFormInfos {
