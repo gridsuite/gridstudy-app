@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MODIFICATION_TYPES, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -24,7 +31,6 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import {
@@ -49,7 +55,6 @@ import { fetchVoltageLevelsListInfos } from '../../../../services/study/network'
 import { getNewVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
-import { DeepNullable } from '../../../utils/ts-utils';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
 import { VoltageLevel } from '../../../utils/equipment-types';

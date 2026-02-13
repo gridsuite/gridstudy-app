@@ -13,7 +13,6 @@ import { ComponentType, useCallback, useMemo, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import {
-    DELETION_MARK,
     FILTERS_SHUNT_COMPENSATOR_TABLE,
     MAX_Q_AT_NOMINAL_V,
     PREVIOUS_SHUNT_COMPENSATOR_SELECTED,
@@ -21,8 +20,7 @@ import {
     SHUNT_COMPENSATOR_NAME,
     SHUNT_COMPENSATOR_SELECTED,
 } from '../../../../../utils/field-constants';
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
-import { ReactivePowerAdornment } from '../../../../dialog-utils';
+import { FieldConstants, FloatInput, ReactivePowerAdornment, TextInput } from '@gridsuite/commons-ui';
 import TextField from '@mui/material/TextField';
 import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { LccShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
@@ -141,12 +139,12 @@ function DeletableMarkRow<T>({ id, RowForm, rowFormProps }: Readonly<DeletableMa
 
     const watchedDeletionMark =
         useWatch({
-            name: `${id}.${DELETION_MARK}`,
+            name: `${id}.${FieldConstants.DELETION_MARK}`,
         }) ?? false;
 
     const markRowToDeleteOrRestore = useCallback(() => {
-        const newDeleteMark = !getValues(`${id}.${DELETION_MARK}`);
-        setValue(`${id}.${DELETION_MARK}`, newDeleteMark, {
+        const newDeleteMark = !getValues(`${id}.${FieldConstants.DELETION_MARK}`);
+        setValue(`${id}.${FieldConstants.DELETION_MARK}`, newDeleteMark, {
             shouldDirty: true,
         });
     }, [getValues, id, setValue]);

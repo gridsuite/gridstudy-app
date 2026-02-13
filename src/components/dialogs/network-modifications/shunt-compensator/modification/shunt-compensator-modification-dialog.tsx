@@ -7,13 +7,20 @@
 
 import {
     CustomFormProvider,
+    emptyProperties,
     EquipmentType,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
+    modificationPropertiesSchema,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
 } from '@gridsuite/commons-ui';
 import {
-    ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
@@ -37,19 +44,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
-import { sanitizeString } from '../../../dialog-utils';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -58,7 +57,6 @@ import {
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { ShuntCompensatorModificationInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { ShuntCompensatorModificationDialogSchemaForm } from '../shunt-compensator-dialog.type';
 import {
     getCharacteristicsEmptyFormData,
@@ -185,7 +183,10 @@ export default function ShuntCompensatorModificationDialog({
                                 reset(
                                     (formValues) => ({
                                         ...formValues,
-                                        [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(shuntCompensator, getValues),
+                                        [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
+                                            shuntCompensator,
+                                            getValues
+                                        ),
                                     }),
                                     { keepDirty: true }
                                 );

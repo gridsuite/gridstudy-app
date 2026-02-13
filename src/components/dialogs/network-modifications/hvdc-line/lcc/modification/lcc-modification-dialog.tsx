@@ -7,7 +7,6 @@
 
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
@@ -23,9 +22,14 @@ import yup from '../../../../../utils/yup-config';
 import {
     CustomFormProvider,
     ExtendedEquipmentType,
+    getConcatenatedProperties,
     MODIFICATION_TYPES,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccFormInfos, LccModificationSchemaForm } from '../common/lcc-type';
@@ -43,8 +47,6 @@ import {
     getLccHvdcLineModificationSchema,
 } from '../common/lcc-utils';
 import { modifyLcc } from 'services/study/network-modifications';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
-import { getConcatenatedProperties, toModificationProperties } from '../../../common/properties/property-utils';
 import { EquipmentModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
@@ -55,7 +57,6 @@ import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { LccModificationForm } from './lcc-modification-form';
 import { toModificationOperation } from '../../../../../utils/utils';
 import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';
-import { DeepNullable } from '../../../../../utils/ts-utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
@@ -210,7 +211,7 @@ export const LccModificationDialog = ({
                                     ...formValues,
                                     [HVDC_LINE_TAB]: {
                                         ...formValues,
-                                        [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
+                                        [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
                                             value,
                                             getValues,
                                             HVDC_LINE_TAB
