@@ -199,7 +199,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     });
 
     const resetResultStates = useCallback(() => {
-        setResult(null);
+        setResult(undefined);
         setCount(0);
     }, [setResult]);
 
