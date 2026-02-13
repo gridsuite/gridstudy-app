@@ -104,11 +104,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
         rows.push({
             contingencyId,
             contingencyEquipmentsIds: elements.map((element) => element.id),
-            status: status
-                ? intl.formatMessage({
-                      id: status,
-                  })
-                : '',
+            status: status,
             violationCount: subjectLimitViolations.length,
         });
         subjectLimitViolations?.forEach((constraint: Constraint) => {
@@ -117,11 +113,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
             rows.push({
                 subjectId: subjectId,
                 locationId: limitViolation.locationId,
-                limitType: limitViolation.limitType
-                    ? intl.formatMessage({
-                          id: limitViolation.limitType,
-                      })
-                    : '',
+                limitType: limitViolation.limitType,
                 limit: limitViolation.limit,
                 patlLimit: limitViolation.patlLimit,
                 value: limitViolation.value,
@@ -129,7 +121,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
                 patlLoading: limitViolation.patlLoading,
                 limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                 nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
-                side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
+                side: limitViolation.side,
                 linkedElementId: contingencyId,
                 // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                 acceptableDuration:
@@ -156,19 +148,11 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                 rows.push({
                     contingencyId: contingency.contingencyId,
                     contingencyEquipmentsIds: contingency.elements?.map((element) => element.id),
-                    status: contingency.status
-                        ? intl.formatMessage({
-                              id: contingency.status,
-                          })
-                        : '',
-                    limitType: limitViolation.limitType
-                        ? intl.formatMessage({
-                              id: limitViolation.limitType,
-                          })
-                        : '',
+                    status: contingency.status,
+                    limitType: limitViolation.limitType,
                     limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                     nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
-                    side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
+                    side: limitViolation.side,
                     // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                     acceptableDuration:
                         limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
