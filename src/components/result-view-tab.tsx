@@ -309,6 +309,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     id: service.id,
                 })}
                 disabled={disabled}
+                data-testid={service.id + 'ResTab'}
             />
         );
     };

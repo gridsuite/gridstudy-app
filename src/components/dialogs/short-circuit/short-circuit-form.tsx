@@ -6,9 +6,8 @@
  */
 import GridItem from '../commons/grid-item';
 import { Grid } from '@mui/material';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { FloatInput, OhmAdornment } from '@gridsuite/commons-ui';
 import { TRANSFORMER_REACTANCE, TRANSIENT_REACTANCE } from '../../utils/field-constants';
-import { OhmAdornment } from '../dialog-utils';
 import { ShortCircuitInfos } from './short-circuit.type';
 
 export interface ShortCircuitFormProps {

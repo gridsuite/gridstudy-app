@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SyntheticEvent, useMemo, useState } from 'react';
+import { SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
@@ -23,12 +23,14 @@ import {
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
-import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
+import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { FilterType as AgGridFilterType, PaginationType } from '../../../types/custom-aggrid-types';
+import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -46,13 +48,27 @@ function SensitivityAnalysisResultTab({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
+        AgGridFilterType.SensitivityAnalysis
+    );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
         setNOrNkIndex(newNOrNKIndex);
     };
+
+    const sensiKindForPagination = isSensiKind(sensiTab) ? sensiTab : SENSITIVITY_IN_DELTA_MW;
+
+    const { pagination, dispatchPagination } = usePaginationSelector(
+        PaginationType.SensitivityAnalysis,
+        mappingTabs(sensiKindForPagination, nOrNkIndex)
+    );
+
+    const { rowsPerPage } = pagination;
+
+    const resetPagination = useCallback(() => {
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [dispatchPagination, rowsPerPage]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING,
@@ -85,14 +101,20 @@ function SensitivityAnalysisResultTab({
                     >
                         <Tabs value={nOrNkIndex} onChange={handleSensiNOrNkIndexChange}>
                             {SensitivityResultTabs.map((tab) => (
-                                <Tab key={tab.label} label={tab.label} />
+                                <Tab
+                                    key={tab.label}
+                                    label={tab.label}
+                                    data-testid={`SensitivityAnalysis${tab.label}Tab`}
+                                />
                             ))}
                         </Tabs>
                         <Box sx={{ display: 'flex', flexGrow: 0 }}>
                             <GlobalFilterSelector
-                                onChange={handleGlobalFilterChange}
+                                onChange={updateGlobalFilters}
+                                onAfterChange={resetPagination}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
+                                preloadedGlobalFilters={globalFiltersFromState}
                                 genericFiltersStrictMode={true}
                                 disableGenericFilters={sensiTab === SENSITIVITY_AT_NODE}
                             />
@@ -104,7 +126,7 @@ function SensitivityAnalysisResultTab({
                             csvHeaders={csvHeaders}
                             nOrNkIndex={nOrNkIndex}
                             sensiKind={sensiTab}
-                            globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
+                            globalFilter={globalFiltersFromState}
                             disabled={isCsvButtonDisabled}
                         />
                     </Box>
@@ -116,7 +138,7 @@ function SensitivityAnalysisResultTab({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                        globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
+                        globalFilter={globalFiltersFromState}
                     />
                 </>
             )}

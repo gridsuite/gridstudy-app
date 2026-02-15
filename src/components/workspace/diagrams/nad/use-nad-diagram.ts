@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
@@ -85,6 +85,12 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<string | undefined>();
 
+    // Keep ref synced to check node build status in async callbacks (avoids stale closures)
+    const currentNodeRef = useRef(currentNode);
+    useEffect(() => {
+        currentNodeRef.current = currentNode;
+    }, [currentNode]);
+
     const setDiagramAndSync = useCallback(
         (updater: React.SetStateAction<NetworkAreaDiagram>, syncToBackend = true) => {
             setDiagram((prev) => {
@@ -129,21 +135,23 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
     const handleFetchError = useCallback(
         (error: any) => {
-            console.error('Error fetching NAD diagram:', error);
-            let errorMessage: string;
-            if (error?.status === 400) {
-                errorMessage = 'nadConfiguredPositionsModeFailed';
-                snackError({ headerId: errorMessage });
-            } else if (error?.status === 404) {
-                errorMessage = 'VoltageLevelNotFound';
-            } else if (error?.status === 403) {
-                errorMessage = error.message || 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
-            } else {
-                errorMessage = 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
+            if (isNodeBuilt(currentNodeRef.current)) {
+                console.error('Error fetching NAD diagram:', error);
+                let errorMessage: string;
+                if (error?.status === 400) {
+                    errorMessage = 'nadConfiguredPositionsModeFailed';
+                    snackError({ headerId: errorMessage });
+                } else if (error?.status === 404) {
+                    errorMessage = 'VoltageLevelNotFound';
+                } else if (error?.status === 403) {
+                    errorMessage = error.message || 'svgLoadingFail';
+                    snackError({ headerId: errorMessage });
+                } else {
+                    errorMessage = 'svgLoadingFail';
+                    snackError({ headerId: errorMessage });
+                }
+                setGlobalError(errorMessage);
             }
-            setGlobalError(errorMessage);
         },
         [snackError]
     );
@@ -160,7 +168,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         // we use setDiagram to capture current state without adding diagram to dependencies
         return setDiagram((currentDiagram) => {
             const body: any = {
-                nadPositionsGenerationMode: networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+                nadPositionsGenerationMode: networkVisuParams?.networkAreaDiagramParameters.nadPositionsGenerationMode,
                 voltageLevelIds: currentDiagram.voltageLevelIds,
                 voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
                 positions: currentDiagram.positions,

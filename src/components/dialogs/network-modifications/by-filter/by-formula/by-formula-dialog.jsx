@@ -11,7 +11,9 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    FieldConstants,
     FieldType,
+    MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -31,7 +33,6 @@ import {
     OPERATOR,
     REFERENCE_FIELD_OR_VALUE_1,
     REFERENCE_FIELD_OR_VALUE_2,
-    VALUE,
 } from '../../../../utils/field-constants';
 import { modifyByFormula } from '../../../../../services/study/network-modifications';
 import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils';
@@ -42,12 +43,12 @@ function getFieldOrConvertedUnitValue(input, fieldType, convert) {
 
     if (isNumber) {
         return {
-            [VALUE]: convert ? convertOutputValue(fieldType, value) : value,
+            [FieldConstants.VALUE]: convert ? convertOutputValue(fieldType, value) : value,
             [EQUIPMENT_FIELD]: null,
         };
     } else {
         return {
-            [VALUE]: null,
+            [FieldConstants.VALUE]: null,
             [EQUIPMENT_FIELD]: input,
         };
     }
@@ -160,17 +161,32 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
                     shouldConverts.convertValue2
                 );
 
+                const filters = formula[FILTERS]?.map((filter) => {
+                    return {
+                        id: filter.id,
+                        name: filter.name,
+                    };
+                });
+
                 return {
                     fieldOrValue1,
                     fieldOrValue2,
-                    ...formula,
+                    filters,
+                    operator: formula.operator,
+                    editedField: formula.editedField,
                 };
             });
+
+            const byFormulaModificationInfos = {
+                type: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
+                identifiableType: data[EQUIPMENT_TYPE_FIELD],
+                formulaInfosList: formulas,
+            };
+
             modifyByFormula(
                 studyUuid,
                 currentNodeUuid,
-                data[EQUIPMENT_TYPE_FIELD],
-                formulas,
+                byFormulaModificationInfos,
                 !!editData,
                 editData?.uuid ?? null
             ).catch((error) => {

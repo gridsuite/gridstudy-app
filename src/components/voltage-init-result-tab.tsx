@@ -15,8 +15,10 @@ import { AppState } from '../redux/reducer';
 import { VoltageInitResult } from './voltage-init-result';
 import { useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
-import useGlobalFilters, { isGlobalFilterParameter } from './results/common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options';
+import { useComputationGlobalFilters } from './results/common/global-filter/use-computation-global-filters';
+import { FilterType as AgGridFilterType } from '../types/custom-aggrid-types';
+import { buildValidGlobalFilters } from './results/common/global-filter/build-valid-global-filters';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;
@@ -33,19 +35,21 @@ export function VoltageInitResultTab({
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
+    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.VoltageInit);
     const globalFilterOptions = useMemo(
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
 
     const fetchVoltageInitResultWithGlobalFilters = useMemo(
-        () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) =>
-            fetchVoltageInitResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
+        () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => {
+            const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
+            return fetchVoltageInitResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 filters: null,
-                ...(isGlobalFilterParameter(globalFilters) ? { globalFilters: { ...globalFilters } } : {}),
-            }),
-        [globalFilters]
+                ...(globalFilters ? { globalFilters: { ...globalFilters } } : {}),
+            });
+        },
+        [globalFiltersFromState]
     );
 
     const { result: voltageInitResult } = useNodeData({
@@ -65,8 +69,9 @@ export function VoltageInitResultTab({
         <VoltageInitResult
             result={voltageInitResultToShow}
             status={voltageInitStatus}
-            handleGlobalFilterChange={handleGlobalFilterChange}
+            handleGlobalFilterChange={updateGlobalFilters}
             globalFilterOptions={globalFilterOptions}
+            globalFiltersFromState={globalFiltersFromState}
         />
     );
 }
