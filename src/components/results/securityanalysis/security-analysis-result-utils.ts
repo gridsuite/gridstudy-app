@@ -15,7 +15,14 @@ import {
     SubjectIdRendererType,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
-import { ColDef, GridApi, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import {
+    ColDef,
+    GridApi,
+    type IFilterOptionDef,
+    PostSortRowsParams,
+    ValueFormatterParams,
+    ValueGetterParams,
+} from 'ag-grid-community';
 import { ComputingType, ContingencyCellRenderer } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
@@ -207,6 +214,20 @@ const makeAgGridStringColumn = (
     };
 };
 
+const createMultiEnumFilterParams = (): { filterOptions: IFilterOptionDef[] } => ({
+    filterOptions: [
+        {
+            displayKey: 'customInRange',
+            displayName: 'customInRange',
+            predicate: (filterValues: string[], cellValue: string | number) => {
+                if (!filterValues[0]) return false;
+                const allowedValues = filterValues[0].split(',');
+                return allowedValues.includes(String(cellValue));
+            },
+        },
+    ],
+});
+
 const makeAgGridFloatColumn = (
     intlId: string,
     fieldId: string,
@@ -285,6 +306,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             colId: 'limitType',
             field: 'limitType',
+            filterParams: createMultiEnumFilterParams,
             context: {
                 sortParams,
                 filterComponent: CustomAggridAutocompleteFilter,
@@ -346,6 +368,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             colId: 'side',
             field: 'side',
+            filterParams: createMultiEnumFilterParams,
             context: {
                 sortParams,
                 filterComponent: CustomAggridAutocompleteFilter,
@@ -384,6 +407,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             colId: 'status',
             field: 'status',
+            filterParams: createMultiEnumFilterParams,
             context: {
                 sortParams,
                 filterComponent: CustomAggridAutocompleteFilter,
@@ -410,6 +434,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             colId: 'limitType',
             field: 'limitType',
+            filterParams: createMultiEnumFilterParams,
             context: {
                 sortParams: { ...sortParams, isChildren: true },
                 filterComponent: CustomAggridAutocompleteFilter,
@@ -512,6 +537,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             colId: 'side',
             field: 'side',
+            filterParams: createMultiEnumFilterParams,
             context: {
                 sortParams: { ...sortParams, isChildren: true },
                 filterComponent: CustomAggridAutocompleteFilter,
@@ -564,6 +590,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             colId: 'status',
             field: 'status',
+            filterParams: createMultiEnumFilterParams,
             context: {
                 sortParams: { ...sortParams, isChildren: true },
                 filterComponent: CustomAggridAutocompleteFilter,
@@ -583,6 +610,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             colId: 'limitType',
             field: 'limitType',
+            filterParams: createMultiEnumFilterParams,
             context: {
                 sortParams: { ...sortParams, isChildren: true },
                 filterComponent: CustomAggridAutocompleteFilter,
@@ -676,6 +704,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             colId: 'side',
             field: 'side',
+            filterParams: createMultiEnumFilterParams,
             context: {
                 sortParams: { ...sortParams, isChildren: true },
                 filterComponent: CustomAggridAutocompleteFilter,

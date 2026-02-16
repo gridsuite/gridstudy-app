@@ -13,6 +13,7 @@ import {
     GridApi,
     GridReadyEvent,
     ICellRendererParams,
+    type IFilterOptionDef,
     RowClassParams,
     RowDataUpdatedEvent,
     ValueFormatterParams,
@@ -197,6 +198,20 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             };
         };
 
+        const createMultiEnumFilterParams = (): { filterOptions: IFilterOptionDef[] } => ({
+            filterOptions: [
+                {
+                    displayKey: 'customInRange',
+                    displayName: 'customInRange',
+                    predicate: (filterValues: string[], cellValue: string | number) => {
+                        if (!filterValues[0]) return false;
+                        const allowedValues = filterValues[0].split(',');
+                        return allowedValues.includes(String(cellValue));
+                    },
+                },
+            ],
+        });
+
         const autocompleteFilterParams = (colId: string) => {
             return {
                 filterComponent: CustomAggridAutocompleteFilter,
@@ -236,6 +251,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 headerName: intl.formatMessage({ id: 'Type' }),
                 colId: 'faultType',
                 field: 'faultType',
+                filterParams: createMultiEnumFilterParams,
                 context: {
                     ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('faultType') }),
                 },
@@ -268,6 +284,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 colId: 'side',
                 field: 'side',
                 hide: isAllBusesAnalysisType,
+                filterParams: createMultiEnumFilterParams,
                 context: {
                     ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams('side') }),
                 },
@@ -279,6 +296,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     headerName: intl.formatMessage({ id: 'LimitType' }),
                     colId: 'limitType',
                     field: 'limitType',
+                    filterParams: createMultiEnumFilterParams,
                     context: {
                         ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('limitType') }),
                     },
