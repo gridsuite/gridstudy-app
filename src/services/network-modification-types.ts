@@ -715,8 +715,8 @@ export interface TwoWindingsTransformerCreationInfo {
     connectionDirection1: string | null;
     connectionName2: string | null;
     connectionDirection2: string | null;
-    connectionPosition1: string | null;
-    connectionPosition2: string | null;
+    connectionPosition1: number | null;
+    connectionPosition2: number | null;
     connected1: boolean;
     connected2: boolean;
     properties: Property[] | null;

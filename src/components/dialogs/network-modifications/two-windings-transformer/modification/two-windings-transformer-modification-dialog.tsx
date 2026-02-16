@@ -135,7 +135,6 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import {
@@ -174,6 +173,7 @@ import {
 } from 'services/network-modification-types';
 import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
 import { LineModificationFormSchema } from '../../line/modification/line-modification-type';
+import { FetchStatus } from 'services/utils.type';
 
 export interface TwoWindingsTransformerModificationDialogProps {
     studyUuid: UUID;
@@ -182,7 +182,7 @@ export interface TwoWindingsTransformerModificationDialogProps {
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
     editData?: TwoWindingsTransformerModificationInfo;
-    editDataFetchStatus?: (typeof FetchStatus)[keyof typeof FetchStatus];
+    editDataFetchStatus?: FetchStatus;
     onClose?: () => void;
     onValidated?: () => void;
 }
@@ -251,9 +251,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
     const [tabIndex, setTabIndex] = useState<number>(TwoWindingsTransformerModificationDialogTab.CONNECTIVITY_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
-    const [dataFetchStatus, setDataFetchStatus] = useState<(typeof FetchStatus)[keyof typeof FetchStatus]>(
-        FetchStatus.IDLE
-    );
+    const [dataFetchStatus, setDataFetchStatus] = useState<FetchStatus>(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState<TwoWindingsTransformerMapInfos | null>(null);
     const intl = useIntl();
 

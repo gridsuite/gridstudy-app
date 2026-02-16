@@ -270,7 +270,7 @@ const RatioTapChangerPane = ({
             <RatioTapChangerPaneSteps
                 disabled={!ratioTapChangerEnabledWatcher}
                 previousValues={previousValues?.ratioTapChanger}
-                editData={editData?.ratioTapChanger as Record<string, unknown> | undefined}
+                editData={editData}
                 currentNode={currentNode}
                 isModification={isModification}
             />

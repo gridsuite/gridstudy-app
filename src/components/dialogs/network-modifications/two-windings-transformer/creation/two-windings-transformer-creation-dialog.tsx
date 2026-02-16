@@ -179,7 +179,7 @@ export interface TwoWindingsTransformerCreationDialogProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
-    editDataFetchStatus?: (typeof FetchStatus)[keyof typeof FetchStatus];
+    editDataFetchStatus?: FetchStatus;
     onClose: () => void;
     onValidated?: () => void;
 }
@@ -254,6 +254,32 @@ const TwoWindingsTransformerCreationDialog = ({
         return tap.regulatingTerminalConnectableId === twt.id ? REGULATION_TYPES.LOCAL.id : REGULATION_TYPES.DISTANT.id;
     };
 
+    /**
+     * Transforms operational limits groups from dto info form format
+     */
+    const transformOperationalLimitsGroupsForForm = (operationalLimitsGroups: OperationalLimitsGroupInfos[] | null) => {
+        return operationalLimitsGroups
+            ?.filter(
+                (group): group is OperationalLimitsGroupInfos & { id: string; applicability: string } =>
+                    group.id != null && group.applicability != null
+            )
+            .map(({ id, currentLimits, applicability, limitsProperties }) => ({
+                id: id + applicability,
+                name: id,
+                applicability,
+                limitsProperties: limitsProperties ?? undefined,
+                currentLimits: {
+                    permanentLimit: currentLimits?.permanentLimit ?? null,
+                    temporaryLimits:
+                        currentLimits?.temporaryLimits?.map((tl) => ({
+                            name: tl.name ?? undefined,
+                            value: tl.value ?? undefined,
+                            acceptableDuration: tl.acceptableDuration ?? undefined,
+                        })) ?? [],
+                },
+            }));
+    };
+
     const fromEditDataToFormValues = useCallback(
         (twt: TwoWindingsTransformerCreationInfo) => {
             reset({
@@ -272,10 +298,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             busbarSectionId: twt.busOrBusbarSectionId1,
                             connectionDirection: twt.connectionDirection1 ?? null,
                             connectionName: twt.connectionName1,
-                            connectionPosition:
-                                twt.connectionPosition1 !== null && twt.connectionPosition1 !== undefined
-                                    ? Number(twt.connectionPosition1)
-                                    : null,
+                            connectionPosition: twt.connectionPosition1,
                             voltageLevelId: twt.voltageLevelId1,
                             terminalConnected: twt.connected1,
                         },
@@ -286,10 +309,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             busbarSectionId: twt.busOrBusbarSectionId2,
                             connectionDirection: twt.connectionDirection2 ?? null,
                             connectionName: twt.connectionName2,
-                            connectionPosition:
-                                twt.connectionPosition2 !== null && twt.connectionPosition2 !== undefined
-                                    ? Number(twt.connectionPosition2)
-                                    : null,
+                            connectionPosition: twt.connectionPosition2,
                             voltageLevelId: twt.voltageLevelId2,
                             terminalConnected: twt.connected2,
                         },
@@ -297,26 +317,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData(
-                    twt?.operationalLimitsGroups
-                        ?.filter(
-                            (group): group is OperationalLimitsGroupInfos & { id: string; applicability: string } =>
-                                group.id != null && group.applicability != null
-                        )
-                        .map(({ id, currentLimits, applicability, limitsProperties }) => ({
-                            id: id + applicability,
-                            name: id,
-                            applicability,
-                            limitsProperties: limitsProperties ?? undefined,
-                            currentLimits: {
-                                permanentLimit: currentLimits?.permanentLimit ?? null,
-                                temporaryLimits:
-                                    currentLimits?.temporaryLimits?.map((tl) => ({
-                                        name: tl.name ?? undefined,
-                                        value: tl.value ?? undefined,
-                                        acceptableDuration: tl.acceptableDuration ?? undefined,
-                                    })) ?? [],
-                            },
-                        })),
+                    transformOperationalLimitsGroupsForForm(twt?.operationalLimitsGroups),
                     twt?.selectedOperationalLimitsGroupId1 ?? null,
                     twt?.selectedOperationalLimitsGroupId2 ?? null
                 ),
@@ -635,8 +636,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 connectionName2: sanitizeString(characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]),
                 connectionDirection2:
                     characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                connectionPosition1: String(characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION]),
-                connectionPosition2: String(characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION]),
+                connectionPosition1: Number(characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION]),
+                connectionPosition2: Number(characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION]),
                 connected1: Boolean(characteristics[CONNECTIVITY_1]?.[CONNECTED]),
                 connected2: Boolean(characteristics[CONNECTIVITY_2]?.[CONNECTED]),
                 properties: toModificationProperties(twt as unknown as Record<string, unknown>),
