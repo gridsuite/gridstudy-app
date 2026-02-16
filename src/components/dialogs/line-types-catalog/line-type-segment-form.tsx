@@ -38,7 +38,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
-import { CurrentLimitsInfo, AreaAndTemperatureInfo, LineTypeInfo } from './line-catalog.type';
+import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import { emptyLineSegment, SegmentFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
 import GridSection from '../commons/grid-section';
@@ -159,7 +159,7 @@ export const LineTypeSegmentForm = () => {
                                     foundTemporaryLimit.limitValue = temporaryLimit.limitValue;
                                 }
                             } else {
-                                computedLimit?.temporaryLimits.push(Object.assign({}, temporaryLimit));
+                                computedLimit?.temporaryLimits.push(temporaryLimit);
                             }
                         });
                         computedLimit.permanentLimit = Math.min(computedLimit.permanentLimit, limit.permanentLimit);
@@ -211,6 +211,7 @@ export const LineTypeSegmentForm = () => {
             openCatalogDialogIndex,
             updateSegmentLimitsValues,
             keepMostConstrainingLimits,
+            snackError,
         ]
     );
 
