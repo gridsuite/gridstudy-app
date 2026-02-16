@@ -13,7 +13,6 @@ import {
     GridApi,
     GridReadyEvent,
     ICellRendererParams,
-    type IFilterOptionDef,
     RowClassParams,
     RowDataUpdatedEvent,
     ValueFormatterParams,
@@ -53,6 +52,7 @@ import { PanelType } from '../../workspace/types/workspace.types';
 import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
+import { createMultiEnumFilterParams } from '../common/column-filter/utilis';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -197,20 +197,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 },
             };
         };
-
-        const createMultiEnumFilterParams = (): { filterOptions: IFilterOptionDef[] } => ({
-            filterOptions: [
-                {
-                    displayKey: 'customInRange',
-                    displayName: 'customInRange',
-                    predicate: (filterValues: string[], cellValue: string | number) => {
-                        if (!filterValues[0]) return false;
-                        const allowedValues = filterValues[0].split(',');
-                        return allowedValues.includes(String(cellValue));
-                    },
-                },
-            ],
-        });
 
         const autocompleteFilterParams = (colId: string) => {
             return {
