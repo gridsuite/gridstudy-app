@@ -54,7 +54,7 @@ import type { UUID } from 'node:crypto';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 interface ShortCircuitAnalysisResultProps {
-    result: SCAFaultResult[];
+    result: SCAFaultResult[] | undefined;
     analysisType: ShortCircuitAnalysisType;
     isFetching: boolean;
     filterEnums: FilterEnumsType;
@@ -481,7 +481,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         },
         [getCurrent, intl, analysisType]
     );
-    const rows = useMemo(() => flattenResult(result), [flattenResult, result]);
+    const rows = useMemo(() => {
+        if (result) {
+            return flattenResult(result);
+        } else {
+            return undefined;
+        }
+    }, [flattenResult, result]);
 
     const message = getNoRowsMessage(messages, rows, shortCircuitAnalysisStatus, !isFetching);
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
