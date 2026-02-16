@@ -149,24 +149,24 @@ export const LineTypeSegmentForm = () => {
                             const foundTemporaryLimit = computedLimit?.temporaryLimits.find(
                                 (temporaryLimitData) => temporaryLimitData.name === temporaryLimit.name
                             );
-                            if (foundTemporaryLimit !== undefined) {
-                                if (temporaryLimit.limitValue !== null) {
+                            if (foundTemporaryLimit === undefined) {
+                                computedLimit?.temporaryLimits.push(temporaryLimit);
+                            } else {
+                                if (temporaryLimit.limitValue === null) {
+                                    foundTemporaryLimit.limitValue = temporaryLimit.limitValue;
+                                } else {
                                     foundTemporaryLimit.limitValue = Math.min(
                                         foundTemporaryLimit.limitValue,
                                         temporaryLimit.limitValue
                                     );
-                                } else {
-                                    foundTemporaryLimit.limitValue = temporaryLimit.limitValue;
                                 }
-                            } else {
-                                computedLimit?.temporaryLimits.push(temporaryLimit);
                             }
                         });
                         computedLimit.permanentLimit = Math.min(computedLimit.permanentLimit, limit.permanentLimit);
                     }
                 } else {
                     // need deep copy else segment[SEGMENT_CURRENT_LIMITS] will be modified with computedLimit
-                    mostContrainingLimits.set(limit.limitSetName, JSON.parse(JSON.stringify(limit)));
+                    mostContrainingLimits.set(limit.limitSetName, structuredClone(limit));
                 }
             });
         });
