@@ -6,9 +6,9 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { CustomFormProvider, Option, snackWithFallback, useSnackMessage, DeepNullable } from '@gridsuite/commons-ui';
+import { CustomFormProvider, DeepNullable, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
+import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo, AreaAndTemperatureInfo } from './line-catalog.type';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
@@ -18,7 +18,7 @@ import {
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
-import { getLineTypeWithLimits } from '../../../services/network-modification';
+import { getLineTypeWithAreaAndTemperature } from '../../../services/network-modification';
 import { ModificationDialog } from '../commons/modificationDialog';
 import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -82,7 +82,7 @@ const emptyFormData = {
 export type LineTypesCatalogSelectorDialogSchemaForm = yup.InferType<typeof formSchema>;
 
 export type LineTypesCatalogSelectorDialogProps = {
-    onSelectLine: (selectedLine: LineTypeInfo) => void;
+    onSelectLine: (selectedLine: LineTypeInfo, selectedAreaAndTemperature: AreaAndTemperatureInfo) => void;
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
@@ -109,7 +109,7 @@ export default function LineTypesCatalogSelectorDialog({
     const { setValue, getValues } = formMethods;
 
     const handleSelectedAerial = useCallback(
-        (selectedAerialRow: LineTypeInfo) => {
+        (selectedAerialRow: LineTypeInfo): AreaAndTemperatureInfo => {
             const selectedArea = getValues(AERIAL_AREAS);
             const selectedTemperature = getValues(AERIAL_TEMPERATURES);
 
@@ -119,15 +119,15 @@ export default function LineTypesCatalogSelectorDialog({
                 );
                 selectedAerialRow.limitsForLineType = filteredLimits ? filteredLimits : [];
             }
+            return { area: selectedArea.id, temperature: selectedTemperature.id };
         },
         [getValues, areasOptions?.length, aerialTemperatures?.length]
     );
 
     const handleSelectedUnderground = useCallback(
-        (selectedUndergroundRow: LineTypeInfo) => {
+        (selectedUndergroundRow: LineTypeInfo): AreaAndTemperatureInfo => {
             const selectedArea = getValues(UNDERGROUND_AREAS);
             const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
-
             const areaId = selectedArea?.id;
             const shapeFactorId = selectedShapeFactor?.id;
 
@@ -148,18 +148,19 @@ export default function LineTypesCatalogSelectorDialog({
                     selectedUndergroundRow.limitsForLineType = [];
                 }
             }
+            return { area: selectedArea.id, temperature: null };
         },
         [getValues, areasOptions]
     );
 
     const onSubmit = useCallback(() => {
+        let selectedAreaAndTemperature: AreaAndTemperatureInfo = { area: null, temperature: null };
         if (selectedRow?.category === CATEGORIES_TABS.AERIAL.name) {
-            handleSelectedAerial(selectedRow);
+            selectedAreaAndTemperature = handleSelectedAerial(selectedRow);
         } else if (selectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name) {
-            handleSelectedUnderground(selectedRow);
+            selectedAreaAndTemperature = handleSelectedUnderground(selectedRow);
         }
-
-        selectedRow && onSelectLine?.(selectedRow);
+        selectedRow && onSelectLine?.(selectedRow, selectedAreaAndTemperature);
     }, [selectedRow, handleSelectedAerial, handleSelectedUnderground, onSelectLine]);
 
     const createOptionsFromAreas = (limitsData?: CurrentLimitsInfo[]) => {
@@ -191,7 +192,7 @@ export default function LineTypesCatalogSelectorDialog({
     const handleSelectedRowData = useCallback(
         async (selectedData: LineTypeInfo) => {
             try {
-                const lineTypeWithLimits = await getLineTypeWithLimits(selectedData.id);
+                const lineTypeWithLimits = await getLineTypeWithAreaAndTemperature(selectedData.id);
                 selectedData.limitsForLineType = lineTypeWithLimits.limitsForLineType;
                 selectedData.shapeFactors = lineTypeWithLimits.shapeFactors;
                 setSelectedRow(selectedData);

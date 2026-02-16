@@ -40,11 +40,20 @@ export type ComputedLineCharacteristics = {
 export type CurrentLimitsInfo = {
     limitSetName: string;
     permanentLimit: number;
-    temporaryLimitValue: number;
-    temporaryLimitAcceptableDuration: number;
-    temporaryLimitName: string;
+    temporaryLimits: TemporaryLimitsInfo[];
     area: string;
     temperature: string;
+};
+
+export type AreaAndTemperatureInfo = {
+    area: string | null;
+    temperature: string | null;
+};
+
+export type TemporaryLimitsInfo = {
+    limitValue: number;
+    acceptableDuration: number;
+    name: string;
 };
 
 export const CATEGORIES_TABS = {

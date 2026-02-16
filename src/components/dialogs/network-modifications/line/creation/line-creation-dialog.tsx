@@ -92,7 +92,10 @@ import { LineCreationInfos } from '../../../../../services/network-modification-
 import { LineModificationFormSchema } from '../modification/line-modification-type';
 import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
-import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
+import {
+    OperationalLimitsGroupFormSchema,
+    TemporaryLimitFormSchema,
+} from '../../../limits/operational-limits-groups-types';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData: any = {
@@ -281,14 +284,14 @@ const LineCreationDialog = ({
         });
         const finalLimits: OperationalLimitsGroupFormSchema[] = [];
         data[FINAL_CURRENT_LIMITS].forEach((item: CurrentLimitsInfo) => {
-            const temporaryLimitsList = [];
-            if (item.temporaryLimitValue) {
+            const temporaryLimitsList: TemporaryLimitFormSchema[] = [];
+            item.temporaryLimits.forEach((temporaryLimit) => {
                 temporaryLimitsList.push({
-                    name: item.temporaryLimitName,
-                    acceptableDuration: item.temporaryLimitAcceptableDuration,
-                    value: item.temporaryLimitValue,
+                    name: temporaryLimit.name,
+                    acceptableDuration: temporaryLimit.acceptableDuration,
+                    value: temporaryLimit.limitValue,
                 });
-            }
+            });
             finalLimits.push({
                 id: item.limitSetName + APPLICABILITY.EQUIPMENT.id,
                 name: item.limitSetName,
@@ -300,6 +303,8 @@ const LineCreationDialog = ({
                 },
             });
         });
+        console.log('test');
+        console.log(finalLimits);
         setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
     };
 

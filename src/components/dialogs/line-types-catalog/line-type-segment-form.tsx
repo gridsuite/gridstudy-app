@@ -36,9 +36,9 @@ import {
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { getLineTypesCatalog } from '../../../services/network-modification';
+import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
-import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
+import { CurrentLimitsInfo, AreaAndTemperatureInfo, LineTypeInfo } from './line-catalog.type';
 import { emptyLineSegment, SegmentFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
 import GridSection from '../commons/grid-section';
@@ -104,12 +104,10 @@ export const LineTypeSegmentForm = () => {
     );
 
     const updateSegmentLimitsValues = useCallback(
-        (index: number) => {
-            const typeId = getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
-            const entryFromCatalog = lineTypesCatalog?.find((entry) => entry.id === typeId);
-            setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, entryFromCatalog?.limitsForLineType);
+        (index: number, limitInfo: CurrentLimitsInfo[]) => {
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, limitInfo);
         },
-        [getValues, setValue, lineTypesCatalog]
+        [setValue]
     );
 
     const updateTotals = useCallback(() => {
@@ -141,54 +139,69 @@ export const LineTypeSegmentForm = () => {
 
     const keepMostConstrainingLimits = useCallback(() => {
         const segments: SegmentFormData[] = getValues(SEGMENTS);
-        const computedLimits = new Map<string, CurrentLimitsInfo>();
+        const mostContrainingLimits = new Map<string, CurrentLimitsInfo>();
         segments.forEach((segment) => {
             segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit: CurrentLimitsInfo) => {
-                if (computedLimits.has(limit.limitSetName)) {
-                    let computedLimit: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
-                    if (computedLimit !== undefined) {
-                        if (limit?.temporaryLimitValue != null) {
-                            if (computedLimit.temporaryLimitValue == null) {
-                                computedLimit.temporaryLimitValue = limit.temporaryLimitValue;
-                                computedLimit.temporaryLimitName = limit.temporaryLimitName;
-                                computedLimit.temporaryLimitAcceptableDuration = limit.temporaryLimitAcceptableDuration;
-                            } else {
-                                let temporaryLimitValue = Math.min(
-                                    computedLimit.temporaryLimitValue,
-                                    limit.temporaryLimitValue
-                                );
-                                if (temporaryLimitValue === limit.temporaryLimitValue) {
-                                    computedLimit.temporaryLimitValue = limit.temporaryLimitValue;
-                                    computedLimit.temporaryLimitAcceptableDuration =
-                                        limit.temporaryLimitAcceptableDuration;
-                                    computedLimit.temporaryLimitName = limit.temporaryLimitName;
+                if (mostContrainingLimits.has(limit.limitSetName)) {
+                    let computedLimit: CurrentLimitsInfo | undefined = mostContrainingLimits.get(limit.limitSetName);
+                    if (computedLimit !== undefined && computedLimit.temporaryLimits !== null) {
+                        limit.temporaryLimits.forEach((temporaryLimit) => {
+                            const foundTemporaryLimit = computedLimit?.temporaryLimits.find(
+                                (temporaryLimitData) => temporaryLimitData.name === temporaryLimit.name
+                            );
+                            if (foundTemporaryLimit !== undefined) {
+                                if (temporaryLimit.limitValue !== null) {
+                                    foundTemporaryLimit.limitValue = Math.min(
+                                        foundTemporaryLimit.limitValue,
+                                        temporaryLimit.limitValue
+                                    );
+                                } else {
+                                    foundTemporaryLimit.limitValue = temporaryLimit.limitValue;
                                 }
+                            } else {
+                                computedLimit?.temporaryLimits.push(Object.assign({}, temporaryLimit));
                             }
-                        }
+                        });
                         computedLimit.permanentLimit = Math.min(computedLimit.permanentLimit, limit.permanentLimit);
                     }
                 } else {
-                    computedLimits.set(limit.limitSetName, limit);
+                    // need deep copy else segment[SEGMENT_CURRENT_LIMITS] will be modified with computedLimit
+                    mostContrainingLimits.set(limit.limitSetName, JSON.parse(JSON.stringify(limit)));
                 }
             });
         });
-        setCurrentLimitResult(Array.from(computedLimits.values()));
-        setValue(FINAL_CURRENT_LIMITS, Array.from(computedLimits.values()));
+        setCurrentLimitResult(Array.from(mostContrainingLimits.values()));
+        setValue(FINAL_CURRENT_LIMITS, Array.from(mostContrainingLimits.values()));
     }, [getValues, setValue, setCurrentLimitResult]);
 
     const onSelectCatalogLine = useCallback(
-        (selectedLine: LineTypeInfo) => {
-            if (selectedLine && openCatalogDialogIndex !== null) {
-                const selectedType = selectedLine.type ?? '';
-                const selectedTypeId = selectedLine.id ?? '';
-                setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`, selectedType);
-                setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_ID}`, selectedTypeId);
-                clearErrors(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`);
-                updateSegmentValues(openCatalogDialogIndex);
-                updateSegmentLimitsValues(openCatalogDialogIndex);
-                updateTotals();
-                keepMostConstrainingLimits();
-            }
+        (
+            selectedLine: LineTypeInfo,
+            selectedAreaAndTemperature2LineTypeData: { area: string | null; temperature: string | null }
+        ) => {
+            getLineTypeWithLimits(
+                selectedLine.id,
+                selectedAreaAndTemperature2LineTypeData?.area,
+                selectedAreaAndTemperature2LineTypeData?.temperature
+            )
+                .then((lineTypeWithLimits) => {
+                    if (lineTypeWithLimits && openCatalogDialogIndex !== null) {
+                        const selectedType = lineTypeWithLimits.type ?? '';
+                        const selectedTypeId = lineTypeWithLimits.id ?? '';
+                        setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`, selectedType);
+                        setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_ID}`, selectedTypeId);
+                        clearErrors(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`);
+                        updateSegmentValues(openCatalogDialogIndex);
+                        updateSegmentLimitsValues(openCatalogDialogIndex, lineTypeWithLimits.limitsForLineType);
+                        updateTotals();
+                        keepMostConstrainingLimits();
+                    }
+                })
+                .catch((error) =>
+                    snackWithFallback(snackError, error, {
+                        headerId: 'LineTypesCatalogFetchingError',
+                    })
+                );
         },
         [
             updateSegmentValues,
@@ -278,7 +291,7 @@ export const LineTypeSegmentForm = () => {
     );
 
     const limitsColumnDefs = useMemo((): ColDef[] => {
-        return [
+        let base: ColDef[] = [
             {
                 headerName: intl.formatMessage({ id: 'lineTypes.currentLimits.limitSet' }),
                 field: 'limitSetName',
@@ -290,13 +303,40 @@ export const LineTypeSegmentForm = () => {
                 field: 'permanentLimit',
                 cellRenderer: DefaultCellRenderer,
             },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.currentLimits.Temporary' }),
-                field: 'temporaryLimitValue',
-                cellRenderer: DefaultCellRenderer,
-            },
         ];
-    }, [intl]);
+        let limitNamesSet = new Set<string>();
+        currentLimitResult.forEach((limit) => {
+            limit.temporaryLimits?.forEach((temporaryLimit) => {
+                limitNamesSet.add(temporaryLimit.name);
+            });
+        });
+        let i = 0;
+        limitNamesSet.forEach((limitName) => {
+            base.push({
+                headerName: `${limitName}`,
+                field: 'temporaryLimit' + i,
+                cellRenderer: DefaultCellRenderer,
+            });
+            i++;
+        });
+        return base;
+    }, [intl, currentLimitResult]);
+
+    const rowData = useMemo(() => {
+        const testArray: any[] = [];
+        currentLimitResult.forEach((currentLimit) => {
+            let test: any = {};
+            test['limitSetName'] = currentLimit.limitSetName;
+            test['permanentLimit'] = currentLimit.permanentLimit;
+            let c = 0;
+            currentLimit.temporaryLimits?.forEach((temporaryLimit) => {
+                test['temporaryLimit' + c] = temporaryLimit.limitValue;
+                c++;
+            });
+            testArray.push(test);
+        });
+        return testArray;
+    }, [currentLimitResult]);
 
     return (
         <>
@@ -331,7 +371,7 @@ export const LineTypeSegmentForm = () => {
             <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
             <Grid container sx={{ height: '100%' }} direction="column">
                 <CustomAGGrid
-                    rowData={currentLimitResult}
+                    rowData={rowData}
                     defaultColDef={limitsDefaultColDef}
                     columnDefs={limitsColumnDefs}
                     domLayout="autoHeight"
