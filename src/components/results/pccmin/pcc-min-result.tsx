@@ -62,10 +62,10 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
-    const [result, setResult] = useState<SinglePccMinResultInfos[]>([]);
+    const [result, setResult] = useState<SinglePccMinResultInfos[] | undefined>(undefined);
 
     const updateResult = useCallback((results: SinglePccMinResultInfos[] | null) => {
-        setResult(results ?? []);
+        setResult(results ?? undefined);
     }, []);
 
     const [count, setCount] = useState<number>(0);
