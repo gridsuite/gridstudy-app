@@ -119,7 +119,7 @@ export default function LineTypesCatalogSelectorDialog({
                 );
                 selectedAerialRow.limitsForLineType = filteredLimits ? filteredLimits : [];
             }
-            return { area: selectedArea.id, temperature: selectedTemperature.id };
+            return { area: selectedArea?.id, temperature: selectedTemperature?.id } as AreaAndTemperatureInfo;
         },
         [getValues, areasOptions?.length, aerialTemperatures?.length]
     );
@@ -148,7 +148,7 @@ export default function LineTypesCatalogSelectorDialog({
                     selectedUndergroundRow.limitsForLineType = [];
                 }
             }
-            return { area: selectedArea.id, temperature: null };
+            return { area: selectedArea?.id, temperature: null } as AreaAndTemperatureInfo;
         },
         [getValues, areasOptions]
     );
