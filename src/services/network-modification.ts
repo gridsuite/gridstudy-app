@@ -24,8 +24,24 @@ export function getLineTypeWithAreaAndTemperature(id: string): Promise<LineTypeI
 export function getLineTypeWithLimits(
     id: string,
     area: string | null,
-    temperature: string | null
+    temperature: string | null,
+    shapeFactor: number | null
 ): Promise<LineTypeInfo> {
-    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}/area/${area}/temperature/${temperature}`;
-    return backendFetchJson(url);
+    let urlSearchParams = new URLSearchParams();
+    if (area !== null && area !== undefined) {
+        urlSearchParams.append('area', area);
+    }
+    if (temperature !== null && temperature !== undefined) {
+        urlSearchParams.append('temperature', temperature);
+    }
+    if (shapeFactor !== null && shapeFactor !== undefined) {
+        urlSearchParams.append('shapeFactor', shapeFactor.toString());
+    }
+    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}/withLimits?` + urlSearchParams.toString();
+    return backendFetchJson(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
 }

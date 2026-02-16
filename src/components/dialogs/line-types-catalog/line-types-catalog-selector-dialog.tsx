@@ -8,7 +8,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { CustomFormProvider, DeepNullable, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo, AreaAndTemperatureInfo } from './line-catalog.type';
+import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo, AreaTemperatureShapeFactorInfo } from './line-catalog.type';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
@@ -82,7 +82,7 @@ const emptyFormData = {
 export type LineTypesCatalogSelectorDialogSchemaForm = yup.InferType<typeof formSchema>;
 
 export type LineTypesCatalogSelectorDialogProps = {
-    onSelectLine: (selectedLine: LineTypeInfo, selectedAreaAndTemperature: AreaAndTemperatureInfo) => void;
+    onSelectLine: (selectedLine: LineTypeInfo, selectedAreaAndTemperature: AreaTemperatureShapeFactorInfo) => void;
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
@@ -109,52 +109,27 @@ export default function LineTypesCatalogSelectorDialog({
     const { setValue, getValues } = formMethods;
 
     const handleSelectedAerial = useCallback(
-        (selectedAerialRow: LineTypeInfo): AreaAndTemperatureInfo => {
+        (selectedAerialRow: LineTypeInfo): AreaTemperatureShapeFactorInfo => {
             const selectedArea = getValues(AERIAL_AREAS);
             const selectedTemperature = getValues(AERIAL_TEMPERATURES);
-
-            if (areasOptions?.length > 0 && aerialTemperatures?.length > 0) {
-                const filteredLimits = selectedAerialRow?.limitsForLineType?.filter(
-                    (limit) => limit?.area === selectedArea?.id && limit?.temperature === selectedTemperature?.id
-                );
-                selectedAerialRow.limitsForLineType = filteredLimits ? filteredLimits : [];
-            }
-            return { area: selectedArea?.id, temperature: selectedTemperature?.id } as AreaAndTemperatureInfo;
+            return { area: selectedArea?.id, temperature: selectedTemperature?.id } as AreaTemperatureShapeFactorInfo;
         },
         [getValues, areasOptions?.length, aerialTemperatures?.length]
     );
 
     const handleSelectedUnderground = useCallback(
-        (selectedUndergroundRow: LineTypeInfo): AreaAndTemperatureInfo => {
+        (selectedUndergroundRow: LineTypeInfo): AreaTemperatureShapeFactorInfo => {
             const selectedArea = getValues(UNDERGROUND_AREAS);
             const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
             const areaId = selectedArea?.id;
             const shapeFactorId = selectedShapeFactor?.id;
-
-            if (areasOptions.length > 0 && areaId && shapeFactorId) {
-                const filteredLimits = selectedUndergroundRow?.limitsForLineType?.filter(
-                    (limit) => limit?.area === areaId
-                );
-
-                if (filteredLimits) {
-                    const shapeFactorValue = parseFloat(shapeFactorId);
-                    if (!isNaN(shapeFactorValue) && shapeFactorValue !== 0) {
-                        filteredLimits.forEach((limit) => {
-                            limit.permanentLimit = Math.floor(limit.permanentLimit / shapeFactorValue);
-                        });
-                        selectedUndergroundRow.limitsForLineType = filteredLimits;
-                    }
-                } else {
-                    selectedUndergroundRow.limitsForLineType = [];
-                }
-            }
-            return { area: selectedArea?.id, temperature: null } as AreaAndTemperatureInfo;
+            return { area: areaId, shapeFactor: shapeFactorId } as AreaTemperatureShapeFactorInfo;
         },
         [getValues, areasOptions]
     );
 
     const onSubmit = useCallback(() => {
-        let selectedAreaAndTemperature: AreaAndTemperatureInfo = { area: null, temperature: null };
+        let selectedAreaAndTemperature: AreaTemperatureShapeFactorInfo = { area: null, temperature: null };
         if (selectedRow?.category === CATEGORIES_TABS.AERIAL.name) {
             selectedAreaAndTemperature = handleSelectedAerial(selectedRow);
         } else if (selectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name) {

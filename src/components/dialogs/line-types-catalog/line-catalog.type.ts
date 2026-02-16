@@ -45,9 +45,10 @@ export type CurrentLimitsInfo = {
     temperature: string;
 };
 
-export type AreaAndTemperatureInfo = {
+export type AreaTemperatureShapeFactorInfo = {
     area: string | null;
     temperature: string | null;
+    shapeFactor: number | null;
 };
 
 export type TemporaryLimitsInfo = {

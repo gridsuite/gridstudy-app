@@ -38,7 +38,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
-import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
+import { AreaTemperatureShapeFactorInfo, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import { emptyLineSegment, SegmentFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
 import GridSection from '../commons/grid-section';
@@ -175,12 +175,13 @@ export const LineTypeSegmentForm = () => {
     const onSelectCatalogLine = useCallback(
         (
             selectedLine: LineTypeInfo,
-            selectedAreaAndTemperature2LineTypeData: { area: string | null; temperature: string | null }
+            selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo
         ) => {
             getLineTypeWithLimits(
                 selectedLine.id,
                 selectedAreaAndTemperature2LineTypeData?.area,
-                selectedAreaAndTemperature2LineTypeData?.temperature
+                selectedAreaAndTemperature2LineTypeData?.temperature,
+                selectedAreaAndTemperature2LineTypeData?.shapeFactor
             )
                 .then((lineTypeWithLimits) => {
                     if (lineTypeWithLimits && openCatalogDialogIndex !== null) {
