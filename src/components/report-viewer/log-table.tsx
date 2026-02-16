@@ -39,6 +39,7 @@ import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
 import { reportStyles } from './report.styles';
 import { useLogsPagination } from './use-logs-pagination';
+import { useStableComputedArray } from '../../hooks/use-stable-computed-array';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -129,7 +130,10 @@ const LogTable = ({
         setFiltersInitialized(false);
     }, [reportType, severities]);
 
-    const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
+    const severityFilter = useStableComputedArray<string>(
+        () => getColumnFilterValue(filters, 'severity') ?? [],
+        [filters]
+    );
     const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
 
     const resetSearch = useCallback(() => {
