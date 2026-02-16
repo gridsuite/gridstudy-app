@@ -1588,6 +1588,7 @@
     "CouplingDeviceText": "Bus bar sections",
     "CouplingDeviceBusBarSectionToolTipText": "If both bus bar sections have a different section number it creates an omnibus otherwise a coupling device",
     "BalancesAdjustment": "Balances adjustment",
+    "BalancesAdjustmentError": "Error while creating a balances adjustment",
     "BalancesAdjustmentZone": "Zone name",
     "BalancesAdjustmentCountry": "Countries",
     "BalancesAdjustmentShiftEquipmentType": "Equipment type",
