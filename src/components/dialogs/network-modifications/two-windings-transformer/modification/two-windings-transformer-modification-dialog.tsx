@@ -280,8 +280,6 @@ const TwoWindingsTransformerModificationDialog = ({
             if (twtModification?.equipmentId) {
                 setSelectedId(twtModification.equipmentId);
             }
-            console.log('TWT Edit data:', twtModification);
-            console.log('TWT Connectivity 1:', createConnectivityData(twtModification, 1));
             reset({
                 [EQUIPMENT_NAME]: twtModification.equipmentName?.value,
                 [CONNECTIVITY]: {
@@ -729,7 +727,6 @@ const TwoWindingsTransformerModificationDialog = ({
                     .then((twt: TwoWindingsTransformerMapInfos) => {
                         if (twt) {
                             setTwtToModify(twt);
-                            console.log('TWT form values', getValues());
                             reset(
                                 (formValues) => ({
                                     ...formValues,
