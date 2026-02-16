@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ErrorMessageDescriptor, extractErrorMessageDescriptor } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
@@ -83,6 +83,12 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     }));
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<ErrorMessageDescriptor | undefined>();
+
+    // Keep ref synced to check node build status in async callbacks (avoids stale closures)
+    const currentNodeRef = useRef(currentNode);
+    useEffect(() => {
+        currentNodeRef.current = currentNode;
+    }, [currentNode]);
 
     const setDiagramAndSync = useCallback(
         (updater: React.SetStateAction<NetworkAreaDiagram>, syncToBackend = true) => {
