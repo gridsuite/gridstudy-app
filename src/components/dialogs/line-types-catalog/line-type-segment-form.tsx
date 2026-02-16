@@ -151,15 +151,13 @@ export const LineTypeSegmentForm = () => {
                             );
                             if (foundTemporaryLimit === undefined) {
                                 computedLimit?.temporaryLimits.push(temporaryLimit);
+                            } else if (temporaryLimit.limitValue === null) {
+                                foundTemporaryLimit.limitValue = temporaryLimit.limitValue;
                             } else {
-                                if (temporaryLimit.limitValue === null) {
-                                    foundTemporaryLimit.limitValue = temporaryLimit.limitValue;
-                                } else {
-                                    foundTemporaryLimit.limitValue = Math.min(
-                                        foundTemporaryLimit.limitValue,
-                                        temporaryLimit.limitValue
-                                    );
-                                }
+                                foundTemporaryLimit.limitValue = Math.min(
+                                    foundTemporaryLimit.limitValue,
+                                    temporaryLimit.limitValue
+                                );
                             }
                         });
                         computedLimit.permanentLimit = Math.min(computedLimit.permanentLimit, limit.permanentLimit);
