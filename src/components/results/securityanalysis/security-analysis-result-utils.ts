@@ -31,7 +31,6 @@ import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import RunningStatus from 'components/utils/running-status';
 import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import {
@@ -43,9 +42,10 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
-import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
 import type { UUID } from 'node:crypto';
+import { createEnumColumn } from '../common/column-filter/utilis';
 
 interface TableParams {
     sortParams: SortParams;
@@ -104,11 +104,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
         rows.push({
             contingencyId,
             contingencyEquipmentsIds: elements.map((element) => element.id),
-            status: status
-                ? intl.formatMessage({
-                      id: status,
-                  })
-                : '',
+            status: status,
             violationCount: subjectLimitViolations.length,
         });
         subjectLimitViolations?.forEach((constraint: Constraint) => {
@@ -117,11 +113,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
             rows.push({
                 subjectId: subjectId,
                 locationId: limitViolation.locationId,
-                limitType: limitViolation.limitType
-                    ? intl.formatMessage({
-                          id: limitViolation.limitType,
-                      })
-                    : '',
+                limitType: limitViolation.limitType,
                 limit: limitViolation.limit,
                 patlLimit: limitViolation.patlLimit,
                 value: limitViolation.value,
@@ -129,7 +121,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
                 patlLoading: limitViolation.patlLoading,
                 limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                 nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
-                side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
+                side: limitViolation.side,
                 linkedElementId: contingencyId,
                 // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                 acceptableDuration:
@@ -156,19 +148,11 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                 rows.push({
                     contingencyId: contingency.contingencyId,
                     contingencyEquipmentsIds: contingency.elements?.map((element) => element.id),
-                    status: contingency.status
-                        ? intl.formatMessage({
-                              id: contingency.status,
-                          })
-                        : '',
-                    limitType: limitViolation.limitType
-                        ? intl.formatMessage({
-                              id: limitViolation.limitType,
-                          })
-                        : '',
+                    status: contingency.status,
+                    limitType: limitViolation.limitType,
                     limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                     nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
-                    side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
+                    side: limitViolation.side,
                     // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                     acceptableDuration:
                         limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
@@ -297,23 +281,15 @@ export const securityAnalysisTableNColumnsDefinition = (
 
     return [
         makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, sortParams)),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'ViolationType' }),
-            colId: 'limitType',
-            field: 'limitType',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
-                    options: filterEnums['limitType'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                },
-            },
-        }),
+        createEnumColumn(
+            'limitType',
+            'ViolationType',
+            filterEnums['limitType'] ?? [],
+            getEnumLabel,
+            intl,
+            sortParams,
+            filterParams
+        ),
         makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn('LimitNameCurrentViolation', 'limitName', intl, filterParams, sortParams, [
@@ -355,24 +331,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         ),
 
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('CalculatedValue', 'value', intl, filterParams, sortParams)),
-
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            colId: 'side',
-            field: 'side',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
-                    options: filterEnums['side'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                },
-            },
-        }),
+        createEnumColumn('side', 'LimitSide', filterEnums['side'] ?? [], getEnumLabel, intl, sortParams, filterParams),
     ];
 };
 
@@ -392,23 +351,15 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'ComputationStatus' }),
-            colId: 'status',
-            field: 'status',
-            context: {
-                sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
-                    options: filterEnums['status'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                },
-            },
-        }),
+        createEnumColumn(
+            'status',
+            'ComputationStatus',
+            filterEnums['status'] ?? [],
+            getEnumLabel,
+            intl,
+            sortParams,
+            filterParams
+        ),
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, {
                 ...sortParams,
@@ -416,23 +367,15 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             }),
             cellRenderer: subjectIdRenderer,
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'ViolationType' }),
-            colId: 'limitType',
-            field: 'limitType',
-            context: {
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
-                    options: filterEnums['limitType'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                },
-            },
-        }),
+        createEnumColumn(
+            'limitType',
+            'ViolationType',
+            filterEnums['limitType'] ?? [],
+            getEnumLabel,
+            intl,
+            { ...sortParams, isChildren: true },
+            filterParams
+        ),
         makeAgGridCustomHeaderColumn(
             makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, {
                 ...sortParams,
@@ -516,23 +459,15 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 isChildren: true,
             })
         ),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            colId: 'side',
-            field: 'side',
-            context: {
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
-                    options: filterEnums['side'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                },
-            },
-        }),
+        createEnumColumn(
+            'side',
+            'LimitSide',
+            filterEnums['side'] ?? [],
+            getEnumLabel,
+            intl,
+            { ...sortParams, isChildren: true },
+            filterParams
+        ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
@@ -566,40 +501,24 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'ComputationStatus' }),
-            colId: 'status',
-            field: 'status',
-            context: {
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
-                    options: filterEnums['status'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                },
-            },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'ViolationType' }),
-            colId: 'limitType',
-            field: 'limitType',
-            context: {
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
-                    options: filterEnums['limitType'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                },
-            },
-        }),
+        createEnumColumn(
+            'status',
+            'ComputationStatus',
+            filterEnums['status'] ?? [],
+            getEnumLabel,
+            intl,
+            { ...sortParams, isChildren: true },
+            filterParams
+        ),
+        createEnumColumn(
+            'limitType',
+            'ViolationType',
+            filterEnums['limitType'] ?? [],
+            getEnumLabel,
+            intl,
+            { ...sortParams, isChildren: true },
+            filterParams
+        ),
         makeAgGridCustomHeaderColumn(
             makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, {
                 ...sortParams,
@@ -673,24 +592,15 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 isChildren: true,
             })
         ),
-
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            colId: 'side',
-            field: 'side',
-            context: {
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        ...filterParams,
-                    },
-                    options: filterEnums['side'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                },
-            },
-        }),
+        createEnumColumn(
+            'side',
+            'LimitSide',
+            filterEnums['side'] ?? [],
+            getEnumLabel,
+            intl,
+            { ...sortParams, isChildren: true },
+            filterParams
+        ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
