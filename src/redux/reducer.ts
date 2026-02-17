@@ -1457,6 +1457,15 @@ export const reducer = createReducer(initialState, (builder) => {
                         action.nodeId
                     ] = updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
                 }
+                // since we don't receive deleted buses ids in the notifications
+                // we have to check buses connected to the deleted voltage level and delete them
+                const currentBuses = state.spreadsheetNetwork.equipments[SpreadsheetEquipmentType.BUS]
+                    .equipmentsByNodeId[action.nodeId] as Record<string, Bus> | null;
+                if (currentBuses != null) {
+                    state.spreadsheetNetwork.equipments[SpreadsheetEquipmentType.BUS].equipmentsByNodeId[
+                        action.nodeId
+                    ] = updateBusesAfterVLDeletion(currentBuses, equipmentToDeleteId);
+                }
             }
             if (state.spreadsheetNetwork.equipments[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId]) {
                 delete state.spreadsheetNetwork.equipments[equipmentToDeleteType].equipmentsByNodeId[action.nodeId][
@@ -1835,9 +1844,20 @@ function updateSubstationAfterVLDeletion(
     return currentSubstations;
 }
 
+function updateBusesAfterVLDeletion(currentBuses: Record<string, Bus>, VLToDeleteId: string): Record<string, Bus> {
+    for (const busId in currentBuses) {
+        if (currentBuses[busId][VOLTAGE_LEVEL_ID] === VLToDeleteId) {
+            delete currentBuses[busId];
+        }
+    }
+    return currentBuses;
+}
+
 export type Substation = Identifiable & {
     voltageLevels: Identifiable[];
 };
+
+export type Bus = Identifiable & { [VOLTAGE_LEVEL_ID]: string };
 
 function updateSubstationsAndVoltageLevels(
     currentSubstations: Record<string, Substation>,

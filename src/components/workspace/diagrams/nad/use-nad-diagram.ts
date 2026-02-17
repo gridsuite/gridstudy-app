@@ -6,18 +6,18 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ErrorMessageDescriptor, extractErrorMessageDescriptor } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../../../services/study';
-import { saveNadConfig, deleteNadConfig } from '../../../../services/study/workspace';
+import { deleteNadConfig, saveNadConfig } from '../../../../services/study/workspace';
 import { mergePositions } from '../../../grid-layout/cards/diagrams/diagram-utils';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { selectNadDiagramFields, selectActiveWorkspaceId } from '../../../../redux/slices/workspace-selectors';
+import { selectActiveWorkspaceId, selectNadDiagramFields } from '../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../redux/store';
 import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
 import { PERSISTENT_NAD_FIELDS } from '../../types/workspace.types';
@@ -66,7 +66,6 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const workspaceId = useSelector((state: RootState) => selectActiveWorkspaceId(state));
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
-    const { snackError } = useSnackMessage();
 
     const [diagram, setDiagram] = useState<NetworkAreaDiagram>(() => ({
         type: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -83,7 +82,13 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         positions: [],
     }));
     const [loading, setLoading] = useState(false);
-    const [globalError, setGlobalError] = useState<string | undefined>();
+    const [globalError, setGlobalError] = useState<ErrorMessageDescriptor | undefined>();
+
+    // Keep ref synced to check node build status in async callbacks (avoids stale closures)
+    const currentNodeRef = useRef(currentNode);
+    useEffect(() => {
+        currentNodeRef.current = currentNode;
+    }, [currentNode]);
 
     const setDiagramAndSync = useCallback(
         (updater: React.SetStateAction<NetworkAreaDiagram>, syncToBackend = true) => {
@@ -127,30 +132,13 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         [setDiagramAndSync]
     );
 
-    const handleFetchError = useCallback(
-        (error: any) => {
-            console.error('Error fetching NAD diagram:', error);
-            let errorMessage: string;
-            if (error?.status === 400) {
-                errorMessage = 'nadConfiguredPositionsModeFailed';
-                snackError({ headerId: errorMessage });
-            } else if (error?.status === 404) {
-                errorMessage = 'VoltageLevelNotFound';
-            } else if (error?.status === 403) {
-                errorMessage = error.message || 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
-            } else {
-                errorMessage = 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
-            }
-            setGlobalError(errorMessage);
-        },
-        [snackError]
-    );
+    const handleFetchError = useCallback((error: any) => {
+        setGlobalError(extractErrorMessageDescriptor(error, ''));
+    }, []);
 
     const fetchDiagram = useCallback(() => {
         if (!currentNode || !isNodeBuilt(currentNode)) {
-            setGlobalError('InvalidNode');
+            setGlobalError({ descriptor: { id: 'InvalidNode' } });
             return Promise.resolve();
         }
 

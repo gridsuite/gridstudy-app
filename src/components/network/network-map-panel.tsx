@@ -160,7 +160,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     const { showInSpreadsheet, openSLD } = useWorkspacePanelActions();
 
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] = useState(false);
-    const [isInitialized, setInitialized] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
     const mapBoxToken = useMapBoxToken();
 
     const { snackError } = useSnackMessage();
@@ -262,17 +262,24 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     });
 
     const handleDeleteEquipment = useCallback(
-        (equipmentType: EquipmentType | null, equipmentId: string) => {
-            if (
-                equipmentType === EquipmentType.HVDC_LINE &&
-                mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
-            ) {
-                // only hvdc line with LCC requires a Dialog (to select MCS)
-                handleOpenDeletionDialog(equipmentId, EQUIPMENT_TYPES.HVDC_LINE);
-            } else {
-                deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
-                });
+        (equipmentType: EquipmentType, equipmentId: string) => {
+            if (currentNode?.id) {
+                if (
+                    equipmentType === EquipmentType.HVDC_LINE &&
+                    mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === HvdcType.LCC
+                ) {
+                    // only hvdc line with LCC requires a Dialog (to select MCS)
+                    handleOpenDeletionDialog(equipmentId, EquipmentType.HVDC_LINE);
+                } else {
+                    deleteEquipment({
+                        studyUuid,
+                        nodeUuid: currentNode.id,
+                        equipmentId: equipmentId as UUID,
+                        equipmentType,
+                    }).catch((error) => {
+                        snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
+                    });
+                }
             }
         },
         [studyUuid, currentNode?.id, snackError, handleOpenDeletionDialog, mapEquipments?.hvdcLinesById]
@@ -579,7 +586,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                 // trigger root node geodata fetching
                 loadRootNodeGeoData();
                 // set initialized to false to trigger "missing geo-data fetching"
-                setInitialized(false);
+                setIsInitialized(false);
                 // set isRootNodeGeoDataLoaded to false so "missing geo-data fetching" waits for root node geo-data to be fully fetched before triggering
                 setIsRootNodeGeoDataLoaded(false);
             }
@@ -762,7 +769,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             if (isRootNetworksUpdatedNotification(eventData)) {
                 const rootNetworkUuidsFromNotification = eventData.headers.rootNetworkUuids;
                 if (rootNetworkUuidsFromNotification.includes(currentRootNetworkUuid)) {
-                    setInitialized(false);
+                    setIsInitialized(false);
                     setIsRootNodeGeoDataLoaded(false);
                     dispatch(resetMapEquipment());
                 }
@@ -802,7 +809,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         // when root network has just been changed, we reset map equipment and geo data, they will be loaded as if we were opening a new study
         // DO NOT BREAK AT FIRST LOADING (previousCurrentRootNetworkUuid=null)
         if (previousCurrentRootNetworkUuid && previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
-            setInitialized(false);
+            setIsInitialized(false);
             setIsRootNodeGeoDataLoaded(false);
             dispatch(resetMapEquipment());
             return;
@@ -876,7 +883,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     dispatch(setMapDataLoading(false));
                 });
             }
-            setInitialized(true);
+            setIsInitialized(true);
         }
     }, [
         handleFilteredNominalVoltagesChange,
