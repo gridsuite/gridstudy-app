@@ -15,14 +15,7 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react-jsx",
-        "compilerOptions": {
-            "baseUrl": "src",
-            "paths": {
-                "@gridsuite/commons-ui": ["../../commons-ui/src"],
-                "@gridsuite/commons-ui/*": ["../../commons-ui/src/*"]
-            }
-        }
+        "jsx": "react-jsx"
     },
     "include": [
         "src",
