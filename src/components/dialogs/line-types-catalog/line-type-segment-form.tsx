@@ -173,10 +173,7 @@ export const LineTypeSegmentForm = () => {
     }, [getValues, setValue, setCurrentLimitResult]);
 
     const onSelectCatalogLine = useCallback(
-        (
-            selectedLine: LineTypeInfo,
-            selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo
-        ) => {
+        (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
             getLineTypeWithLimits(
                 selectedLine.id,
                 selectedAreaAndTemperature2LineTypeData?.area,

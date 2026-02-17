@@ -37,7 +37,9 @@ export function getLineTypeWithLimits(
     if (shapeFactor !== null && shapeFactor !== undefined) {
         urlSearchParams.append('shapeFactor', shapeFactor.toString());
     }
-    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}/withLimits?` + urlSearchParams.toString();
+    const url =
+        `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}/withLimits?` +
+        urlSearchParams.toString();
     return backendFetchJson(url, {
         method: 'GET',
         headers: {

@@ -8,7 +8,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { CustomFormProvider, DeepNullable, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo, AreaTemperatureShapeFactorInfo } from './line-catalog.type';
+import { AreaTemperatureShapeFactorInfo, CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
@@ -108,35 +108,29 @@ export default function LineTypesCatalogSelectorDialog({
     });
     const { setValue, getValues } = formMethods;
 
-    const handleSelectedAerial = useCallback(
-        (selectedAerialRow: LineTypeInfo): AreaTemperatureShapeFactorInfo => {
-            const selectedArea = getValues(AERIAL_AREAS);
-            const selectedTemperature = getValues(AERIAL_TEMPERATURES);
-            return { area: selectedArea?.id, temperature: selectedTemperature?.id } as AreaTemperatureShapeFactorInfo;
-        },
-        [getValues, areasOptions?.length, aerialTemperatures?.length]
-    );
+    const handleSelectedAerial = useCallback((): AreaTemperatureShapeFactorInfo => {
+        const selectedArea = getValues(AERIAL_AREAS);
+        const selectedTemperature = getValues(AERIAL_TEMPERATURES);
+        return { area: selectedArea?.id, temperature: selectedTemperature?.id } as AreaTemperatureShapeFactorInfo;
+    }, [getValues]);
 
-    const handleSelectedUnderground = useCallback(
-        (selectedUndergroundRow: LineTypeInfo): AreaTemperatureShapeFactorInfo => {
-            const selectedArea = getValues(UNDERGROUND_AREAS);
-            const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
-            const areaId = selectedArea?.id;
-            const shapeFactorId = selectedShapeFactor?.id;
-            return { area: areaId, shapeFactor: shapeFactorId } as AreaTemperatureShapeFactorInfo;
-        },
-        [getValues, areasOptions]
-    );
+    const handleSelectedUnderground = useCallback((): AreaTemperatureShapeFactorInfo => {
+        const selectedArea = getValues(UNDERGROUND_AREAS);
+        const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
+        const areaId = selectedArea?.id;
+        const shapeFactorId = selectedShapeFactor?.id;
+        return { area: areaId, shapeFactor: shapeFactorId } as AreaTemperatureShapeFactorInfo;
+    }, [getValues]);
 
     const onSubmit = useCallback(() => {
-        let selectedAreaAndTemperature: AreaTemperatureShapeFactorInfo = { area: null, temperature: null };
+        let selectedAreaAndTemperature = { area: null, temperature: null } as AreaTemperatureShapeFactorInfo;
         if (selectedRow?.category === CATEGORIES_TABS.AERIAL.name) {
-            selectedAreaAndTemperature = handleSelectedAerial(selectedRow);
+            selectedAreaAndTemperature = handleSelectedAerial();
         } else if (selectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name) {
-            selectedAreaAndTemperature = handleSelectedUnderground(selectedRow);
+            selectedAreaAndTemperature = handleSelectedUnderground();
         }
         selectedRow && onSelectLine?.(selectedRow, selectedAreaAndTemperature);
-    }, [selectedRow, handleSelectedAerial, handleSelectedUnderground, onSelectLine]);
+    }, [selectedRow, onSelectLine]);
 
     const createOptionsFromAreas = (limitsData?: CurrentLimitsInfo[]) => {
         if (!limitsData?.length) {
