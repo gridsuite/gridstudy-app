@@ -130,7 +130,7 @@ export default function LineTypesCatalogSelectorDialog({
             selectedAreaAndTemperature = handleSelectedUnderground();
         }
         selectedRow && onSelectLine?.(selectedRow, selectedAreaAndTemperature);
-    }, [selectedRow, onSelectLine]);
+    }, [selectedRow, handleSelectedUnderground, handleSelectedAerial, onSelectLine]);
 
     const createOptionsFromAreas = (limitsData?: CurrentLimitsInfo[]) => {
         if (!limitsData?.length) {
