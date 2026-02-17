@@ -39,9 +39,9 @@ const formSchema = yup
 
 export type EquipmentDeletionFormInfos = yup.InferType<typeof formSchema>;
 
-const emptyFormData: EquipmentDeletionFormInfos = {
+const emptyFormData: DeepNullable<EquipmentDeletionFormInfos> = {
     [EQUIPMENT_ID]: '',
-    [TYPE]: null!,
+    [TYPE]: null,
     [DELETION_SPECIFIC_DATA]: null,
 };
 
