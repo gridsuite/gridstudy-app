@@ -15,6 +15,7 @@ import {
     ICellRendererParams,
     RowClassParams,
     RowDataUpdatedEvent,
+    ValueFormatterParams,
     ValueGetterParams,
 } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
@@ -28,7 +29,6 @@ import {
     unitToKiloUnit,
 } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
@@ -49,9 +49,10 @@ import {
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
+import { createMultiEnumFilterParams } from '../common/column-filter/utilis';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[] | undefined;
@@ -134,10 +135,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 
     const getEnumLabel = useCallback(
         (value: string) =>
-            intl.formatMessage({
-                id: value,
-                defaultMessage: value,
-            }),
+            value
+                ? intl.formatMessage({
+                      id: value,
+                      defaultMessage: value,
+                  })
+                : '',
         [intl]
     );
 
@@ -234,9 +237,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 headerName: intl.formatMessage({ id: 'Type' }),
                 colId: 'faultType',
                 field: 'faultType',
+                filterParams: createMultiEnumFilterParams,
                 context: {
                     ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('faultType') }),
                 },
+                valueGetter: (value: ValueGetterParams) => value.data.faultType,
+                valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
@@ -264,18 +270,24 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 colId: 'side',
                 field: 'side',
                 hide: isAllBusesAnalysisType,
+                filterParams: createMultiEnumFilterParams,
                 context: {
                     ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams('side') }),
                 },
+                valueGetter: (value: ValueGetterParams) => value.data.side,
+                valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
             }),
             {
                 ...makeAgGridCustomHeaderColumn({
                     headerName: intl.formatMessage({ id: 'LimitType' }),
                     colId: 'limitType',
                     field: 'limitType',
+                    filterParams: createMultiEnumFilterParams,
                     context: {
                         ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('limitType') }),
                     },
+                    valueGetter: (value: ValueGetterParams) => value.data.limitType,
+                    valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
                 }),
                 minWidth: 150,
             },
@@ -422,9 +434,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 if (limitViolations.length > 0) {
                     let lv = limitViolations[0];
                     firstLimitViolation = {
-                        limitType: intl.formatMessage({
-                            id: lv.limitType,
-                        }),
+                        limitType: lv.limitType,
                     };
                 }
 
@@ -436,7 +446,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     faultId: fault.id,
                     elementId: fault.elementId,
                     voltageLevel: fault.voltageLevelId,
-                    faultType: intl.formatMessage({ id: fault.faultType }),
+                    faultType: fault.faultType,
                     shortCircuitPower: faultResult.shortCircuitPower,
                     limitMin: faultResult.shortCircuitLimits.ipMin,
                     limitMax: faultResult.shortCircuitLimits.ipMax,
@@ -448,9 +458,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 });
                 limitViolations.slice(1).forEach((lv) => {
                     rows.push({
-                        limitType: intl.formatMessage({
-                            id: lv.limitType,
-                        }),
+                        limitType: lv.limitType,
                         limitMin: lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT' ? lv.limit : null,
                         limitMax: lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT' ? lv.limit : null,
                         current: lv.value,
@@ -473,13 +481,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         voltageLevel: '', // we have to add this otherwise it's automatically filtered
                         faultType: '', // we have to add this otherwise it's automatically filtered
                         limitType: '', // we have to add this otherwise it's automatically filtered
-                        side: convertSide(side, intl),
+                        side: side,
                     });
                 });
             });
             return rows;
         },
-        [getCurrent, intl, analysisType]
+        [getCurrent, analysisType]
     );
     const rows = useMemo(() => {
         if (result) {

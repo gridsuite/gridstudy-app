@@ -67,8 +67,6 @@
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "noWritePermissionOnStudy": "L'utilisateur n'a pas le droit d'accès sur l'étude avec l'identifiant \"{studyUuid}\"",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
-    "svgLoadingFail": "L'image n'a pas pu être chargée",
-    "nadConfiguredPositionsModeFailed": "Les positions configurées n'ont pas été initialisées. Vous devez modifier le paramétrage d'initialisation des images nodales de la zone.",
     "networkLoadingFail": "Le réseau de l'étude avec l'identifiant \"{studyUuid}\" n'a pas pu être chargé",
     "geoDataLoadingFail": "Erreur lors du chargement des données géographiques.",
 
@@ -333,6 +331,7 @@
     "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
     "FetchNominalVoltagesError": "Une erreur est survenue lors du chargement des tensions nominales",
     "FetchVoltageLevelsError": "Une erreur est survenue lors du chargement des postes",
+    "FetchHvdcLineWithShuntCompensatorsError": "Une erreur est survenue lors du chargement des lignes HVDC et des MCS associés",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
@@ -1183,8 +1182,6 @@
     "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
     "YupNotTypeDefault": "La valeur du champ n'est pas au bon format",
 
-    "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
-    "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
     "NetworkEquipmentNotFound": "L'ouvrage \"{equipmentId}\" n'existe pas dans ce réseau",
 
     "SLDOpenedInTheGrid": "Le {diagramType} \"{equipmentId}\" a été ouvert dans la grille des images",
