@@ -6,21 +6,26 @@
  */
 
 import { Grid } from '@mui/material';
-import { CheckboxInput } from '@gridsuite/commons-ui';
-import ReadOnlyInput from 'components/utils/rhf-inputs/read-only/read-only-input';
 import {
-    SHUNT_COMPENSATOR_SELECTED,
-    ID,
     DELETION_SPECIFIC_DATA,
+    SHUNT_COMPENSATOR_SELECTED,
     SHUNT_COMPENSATOR_SIDE_1,
     SHUNT_COMPENSATOR_SIDE_2,
 } from 'components/utils/field-constants';
-import { FormattedMessage } from 'react-intl';
 import { useFieldArray } from 'react-hook-form';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
+import { CheckboxInput, ID } from '@gridsuite/commons-ui';
+import ReadOnlyInput from '../../../../utils/rhf-inputs/read-only/read-only-input';
+import { FormattedMessage } from 'react-intl';
 
-const HvdcLccDeletionSpecificForm = () => {
+interface ShuntCompensatorSelectionFormProps {
+    title: string;
+    arrayFormName: string;
+    mcsRows: Record<'id', string>[];
+}
+
+export default function HvdcLccDeletionSpecificForm() {
     const { fields: mcsRows1 } = useFieldArray({
         name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`,
     });
@@ -28,7 +33,7 @@ const HvdcLccDeletionSpecificForm = () => {
         name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`,
     });
 
-    const ShuntCompensatorSelectionForm = ({ title, arrayFormName, mcsRows }) => {
+    const ShuntCompensatorSelectionForm = ({ title, arrayFormName, mcsRows }: ShuntCompensatorSelectionFormProps) => {
         return (
             <Grid item container spacing={1} direction="column">
                 <Grid item>
@@ -38,13 +43,13 @@ const HvdcLccDeletionSpecificForm = () => {
                 </Grid>
                 {mcsRows.map((field, index) => (
                     <Grid container spacing={1} alignItems="center" key={field.id}>
-                        <Grid item xs={1} align={'start'}>
+                        <Grid item xs={1} alignItems={'start'}>
                             <CheckboxInput
                                 key={field.id + 'SEL'}
                                 name={`${arrayFormName}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
                             />
                         </Grid>
-                        <Grid item xs={11} align={'start'}>
+                        <Grid item xs={11} alignItems={'start'}>
                             <ReadOnlyInput key={field.id + 'ID'} name={`${arrayFormName}[${index}].${ID}`} />
                         </Grid>
                     </Grid>
@@ -78,6 +83,4 @@ const HvdcLccDeletionSpecificForm = () => {
             </Grid>
         </Grid>
     );
-};
-
-export default HvdcLccDeletionSpecificForm;
+}

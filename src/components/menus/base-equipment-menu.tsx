@@ -36,10 +36,10 @@ const styles = {
 } as const satisfies MuiStyles;
 
 type HandleViewInSpreadsheet = (equipmentType: EquipmentType, equipmentId: string) => void;
-type HandleDeleteEquipment = (equipmentType: EquipmentType | null, equipmentId: string) => void;
+type HandleDeleteEquipment = (equipmentType: EquipmentType, equipmentId: string) => void;
 type HandleOpenModificationDialog = (
     equipmentId: string,
-    equipmentType: EquipmentType | null,
+    equipmentType: EquipmentType,
     equipmentSubtype: ExtendedEquipmentType | null
 ) => void;
 
@@ -85,7 +85,12 @@ const DeleteEquipmentItem = ({
     return (
         <CustomMenuItem
             sx={styles.menuItem}
-            onClick={() => handleDeleteEquipment(getCommonEquipmentType(equipmentType), equipmentId)}
+            onClick={() => {
+                const commonType = getCommonEquipmentType(equipmentType);
+                if (commonType) {
+                    handleDeleteEquipment(commonType, equipmentId);
+                }
+            }}
             selected={false}
             disabled={isNodeReadOnly(currentNode)}
         >
@@ -115,9 +120,12 @@ const ModifyEquipmentItem = ({
     return (
         <CustomMenuItem
             sx={styles.menuItem}
-            onClick={() =>
-                handleOpenModificationDialog(equipmentId, getCommonEquipmentType(equipmentType), equipmentSubtype)
-            }
+            onClick={() => {
+                const commonType = getCommonEquipmentType(equipmentType);
+                if (commonType) {
+                    handleOpenModificationDialog(equipmentId, commonType, equipmentSubtype);
+                }
+            }}
             selected={false}
             disabled={isNodeReadOnly(currentNode)}
         >
