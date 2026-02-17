@@ -1755,5 +1755,9 @@
     "unbuildAllNodesError": "Une erreur est survenue lors de la déréalisation de l'ensemble des nœuds",
     "uuidCopiedToClipboard": "L'UUID a été copié dans le presse-papier système",
     "uuidCopiedToClipboardError": "L'UUID n'a pas pu être copié dans le presse-papier système",
-    "uuid": "UUID"
+    "uuid": "UUID",
+    "PanelError": "Une erreur est survenue dans ce panneau",
+    "Reload": "Recharger",
+    "CopyError": "Copier l'erreur",
+    "Copied": "Copiée"
 }

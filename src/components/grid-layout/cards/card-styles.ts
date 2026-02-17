@@ -20,15 +20,6 @@ export const cardStyles = {
             },
         },
     },
-    alertMessage: (theme) => ({
-        borderRadius: '0 0 0 0',
-        border:
-            theme.palette.mode === 'light'
-                ? `1px solid ${theme.palette.grey[500]}`
-                : `1px solid ${theme.palette.grey[800]}`,
-        borderTop: 'none', // remove the top border to avoid double border with CustomCardHeader
-        borderBottom: 'none',
-    }),
     diagramContainer: (theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
