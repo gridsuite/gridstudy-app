@@ -303,8 +303,6 @@ const LineCreationDialog = ({
                 },
             });
         });
-        console.log('test');
-        console.log(finalLimits);
         setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
     };
 
