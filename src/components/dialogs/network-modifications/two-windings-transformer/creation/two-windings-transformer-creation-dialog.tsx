@@ -620,8 +620,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 operationalLimitsGroups: sanitizeLimitsGroups(
                     limits[OPERATIONAL_LIMITS_GROUPS] as OperationalLimitsGroupFormSchema[]
                 ) as OperationalLimitsGroupInfos[],
-                selectedOperationalLimitsGroupId1: String(limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]),
-                selectedOperationalLimitsGroupId2: String(limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]),
+                selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1] ?? null,
+                selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2] ?? null,
                 voltageLevelId1: String(characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID]),
                 busOrBusbarSectionId1: String(characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
                 voltageLevelId2: String(characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID]),
@@ -636,8 +636,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 connectionName2: sanitizeString(characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]),
                 connectionDirection2:
                     characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                connectionPosition1: Number(characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION]),
-                connectionPosition2: Number(characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION]),
+                connectionPosition1: characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION],
+                connectionPosition2: characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION],
                 connected1: Boolean(characteristics[CONNECTIVITY_1]?.[CONNECTED]),
                 connected2: Boolean(characteristics[CONNECTIVITY_2]?.[CONNECTED]),
                 properties: toModificationProperties(twt as unknown as Record<string, unknown>),
