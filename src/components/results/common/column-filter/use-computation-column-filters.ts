@@ -15,23 +15,19 @@ export type ComputationResultColumnFilterInfos = {
     columnId: string;
     columnFilterInfos: FilterConfig;
 };
-function toColumnFilterInfos(infos: ComputationResultColumnFilterInfos[] | null): FilterConfig[] {
+function toFilterConfig(infos: ComputationResultColumnFilterInfos[] | null): FilterConfig[] {
     if (!Array.isArray(infos)) {
         return EMPTY_ARRAY;
     }
-    return infos.flatMap(mapColumnFilters);
-}
-
-function mapColumnFilters({ columnId, columnFilterInfos }: ComputationResultColumnFilterInfos): FilterConfig[] {
-    const filters = Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos];
-
-    return filters.map((filter) => ({
-        column: columnId,
-        value: filter.filterValue,
-        type: filter.filterType,
-        dataType: filter.filterDataType,
-        tolerance: filter.filterTolerance ?? undefined,
-    }));
+    return infos.flatMap(({ columnId, columnFilterInfos }) =>
+        (Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos]).map((filter) => ({
+            column: columnId,
+            value: JSON.parse(filter.filterValue),
+            type: filter.filterType,
+            dataType: filter.filterDataType,
+            tolerance: filter.filterTolerance,
+        }))
+    );
 }
 
 const EMPTY_ARRAY: FilterConfig[] = [];
@@ -41,7 +37,7 @@ export function useComputationColumnFilters(tableType: TableType, computationSub
     useEffect(() => {
         studyUuid &&
             getComputationResultColumnFilters(studyUuid, tableType, computationSubType).then((infos) => {
-                const filters = toColumnFilterInfos(infos);
+                const filters = toFilterConfig(infos);
                 dispatch(updateColumnFiltersAction(tableType, computationSubType, filters));
             });
     }, [dispatch, studyUuid, tableType, computationSubType]);

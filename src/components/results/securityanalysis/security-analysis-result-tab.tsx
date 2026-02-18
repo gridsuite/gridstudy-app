@@ -45,7 +45,7 @@ import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
-import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import { FilterType, isCriteriaFilterType } from '../common/utils';
 
 const styles = {

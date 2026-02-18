@@ -25,7 +25,7 @@ import { UUID } from 'node:crypto';
 import { PccMinExportButton } from './pcc-min-export-button';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
-import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 interface PccMinResultProps {
     studyUuid: UUID;

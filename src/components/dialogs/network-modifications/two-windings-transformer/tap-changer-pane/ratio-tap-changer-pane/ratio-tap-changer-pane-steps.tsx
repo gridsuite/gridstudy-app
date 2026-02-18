@@ -19,12 +19,13 @@ import { useIntl } from 'react-intl';
 import { DndColumn, DndColumnType, parseIntData } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import TapChangerSteps from '../tap-changer-steps';
-import { RATIO_TAP, RatioTapChangerData } from '../../two-windings-transformer.types';
+import { RATIO_TAP, TapChangerMapInfos } from '../../two-windings-transformer.types';
+import { TwoWindingsTransformerModificationInfo } from 'services/network-modification-types';
 
 export interface RatioTapChangerPaneStepsProps {
     disabled?: boolean;
-    previousValues?: RatioTapChangerData;
-    editData?: Record<string, unknown>;
+    previousValues?: TapChangerMapInfos;
+    editData?: TwoWindingsTransformerModificationInfo;
     currentNode: CurrentTreeNode;
     isModification?: boolean;
 }

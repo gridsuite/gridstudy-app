@@ -39,7 +39,7 @@ import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custo
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
-import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
