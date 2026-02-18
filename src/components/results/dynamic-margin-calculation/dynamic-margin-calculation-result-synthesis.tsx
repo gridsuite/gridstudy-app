@@ -82,7 +82,7 @@ const DynamicMarginCalculationResultSynthesis = memo(
 
         // messages to show when no data
         const dynamicMarginCalculationStatus = useSelector(
-            (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SECURITY_ANALYSIS]
+            (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_MARGIN_CALCULATION]
         );
         const messages = useIntlResultStatusMessages(intl, true);
         const overlayMessage = useMemo(
@@ -92,6 +92,7 @@ const DynamicMarginCalculationResultSynthesis = memo(
 
         const rowDataToShow = useMemo(() => (overlayMessage ? [] : result), [result, overlayMessage]);
 
+        console.log('xxx dmc', { rowDataToShow, result, overlayMessage, dynamicMarginCalculationStatus });
         return (
             <>
                 {isLoading && (
