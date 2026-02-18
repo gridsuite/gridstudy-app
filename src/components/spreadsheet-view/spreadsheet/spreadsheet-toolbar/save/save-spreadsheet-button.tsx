@@ -110,10 +110,12 @@ export default function SaveSpreadsheetButton({
             [SpreadsheetSaveOptionId.COPY_CSV]: {
                 id: SpreadsheetSaveOptionId.COPY_CSV,
                 label: 'spreadsheet/save/options/csv/clipboard',
-                action: () => {
+                action: async () => {
                     const csvProps = getCsvProps(SpreadsheetSaveOptionId.COPY_CSV);
+                    csvProps.isCopyCsv = true;
                     if (csvProps) {
-                        copyToClipboard(getData(csvProps) ?? '', onClipboardCopy, onClipboardError);
+                        let data = await getData(csvProps);
+                        copyToClipboard(data ?? '', onClipboardCopy, onClipboardError);
                     }
                 },
                 disabled: dataSize === 0,
@@ -121,10 +123,10 @@ export default function SaveSpreadsheetButton({
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv/export',
-                action: () => {
+                action: async () => {
                     const csvProps = getCsvProps(SpreadsheetSaveOptionId.EXPORT_CSV);
                     if (csvProps) {
-                        getData(csvProps);
+                        await getData(csvProps);
                     }
                 },
                 disabled: dataSize === 0,
