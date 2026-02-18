@@ -6,9 +6,9 @@
  */
 
 import type { NonEmptyTuple } from 'type-fest';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import type { GlobalFilter } from './global-filter-types';
 import { evaluateGlobalFilter } from '../../../../services/study/filter';
 import type { AppState } from '../../../../redux/reducer';
@@ -26,31 +26,45 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
     const [filteredIds, setFilteredIds] = useState<string[]>();
     const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
 
+    const fetchFilteredIds = useCallback(
+        (filtersParam: GlobalFilter[], equipmentTypesParam: NonEmptyTuple<FilterEquipmentType>) => {
+            if (
+                isTreeModelUpToDate &&
+                studyUuid &&
+                currentRootNetworkUuid &&
+                currentNode?.id &&
+                isStatusBuilt(currentNode?.data?.globalBuildStatus)
+            ) {
+                const globalFilters = buildValidGlobalFilters(filtersParam);
+                globalFilters &&
+                    evaluateGlobalFilter(
+                        studyUuid,
+                        currentNode.id,
+                        currentRootNetworkUuid,
+                        equipmentTypesParam,
+                        globalFilters
+                    )
+                        .then(setFilteredIds)
+                        .catch((error) => {
+                            snackWithFallback(snackError, error, { headerId: 'FilterEvaluationError' });
+                        });
+            }
+        },
+        [
+            currentNode?.data?.globalBuildStatus,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            isTreeModelUpToDate,
+            snackError,
+            studyUuid,
+        ]
+    );
+
+    const debouncedFetchResult = useDebounce(fetchFilteredIds);
+
     useEffect(() => {
-        if (
-            isTreeModelUpToDate &&
-            studyUuid &&
-            currentRootNetworkUuid &&
-            currentNode?.id &&
-            isStatusBuilt(currentNode?.data?.globalBuildStatus)
-        ) {
-            const globalFilters = buildValidGlobalFilters(filters);
-            globalFilters &&
-                evaluateGlobalFilter(studyUuid, currentNode.id, currentRootNetworkUuid, equipmentTypes, globalFilters)
-                    .then(setFilteredIds)
-                    .catch((error) => {
-                        snackWithFallback(snackError, error, { headerId: 'FilterEvaluationError' });
-                    });
-        }
-    }, [
-        currentNode?.data?.globalBuildStatus,
-        currentNode?.id,
-        currentRootNetworkUuid,
-        equipmentTypes,
-        filters,
-        isTreeModelUpToDate,
-        snackError,
-        studyUuid,
-    ]);
+        debouncedFetchResult(filters, equipmentTypes);
+    }, [equipmentTypes, filters, debouncedFetchResult]);
+    
     return filteredIds;
 }
