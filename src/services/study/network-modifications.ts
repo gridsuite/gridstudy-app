@@ -69,6 +69,7 @@ import {
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '../../components/utils/field-constants';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
+import { EquipmentDeletionSpecificInfos } from '../../components/dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -845,8 +846,8 @@ export function modifyLine({
 export function createTwoWindingsTransformer({
     studyUuid,
     nodeUuid,
-    twoWindingsTransformerId,
-    twoWindingsTransformerName,
+    equipmentId,
+    equipmentName,
     r,
     x,
     g,
@@ -854,9 +855,9 @@ export function createTwoWindingsTransformer({
     ratedS,
     ratedU1,
     ratedU2,
-    limitsGroups,
-    selectedLimitsGroup1,
-    selectedLimitsGroup2,
+    operationalLimitsGroups,
+    selectedOperationalLimitsGroupId1,
+    selectedOperationalLimitsGroupId2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -864,7 +865,7 @@ export function createTwoWindingsTransformer({
     ratioTapChanger,
     phaseTapChanger,
     isUpdate,
-    modificationUuid,
+    uuid,
     connectionName1,
     connectionDirection1,
     connectionName2,
@@ -878,7 +879,7 @@ export function createTwoWindingsTransformer({
     let createTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
-        createTwoWindingsTransformerUrl += '/' + encodeURIComponent(modificationUuid);
+        createTwoWindingsTransformerUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating two windings transformer creation');
     } else {
         console.info('Creating two windings transformer creation');
@@ -892,8 +893,8 @@ export function createTwoWindingsTransformer({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION.type,
-            equipmentId: twoWindingsTransformerId,
-            equipmentName: twoWindingsTransformerName,
+            equipmentId,
+            equipmentName,
             r: r,
             x: x,
             g: g,
@@ -901,9 +902,9 @@ export function createTwoWindingsTransformer({
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            operationalLimitsGroups: limitsGroups,
-            selectedOperationalLimitsGroupId1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroupId2: selectedLimitsGroup2,
+            operationalLimitsGroups,
+            selectedOperationalLimitsGroupId1,
+            selectedOperationalLimitsGroupId2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
@@ -927,8 +928,8 @@ export function modifyTwoWindingsTransformer({
     studyUuid,
     nodeUuid,
     modificationUuid = undefined,
-    twoWindingsTransformerId,
-    twoWindingsTransformerName,
+    equipmentId,
+    equipmentName,
     r,
     x,
     g,
@@ -937,8 +938,8 @@ export function modifyTwoWindingsTransformer({
     ratedU1,
     ratedU2,
     operationalLimitsGroups,
-    selectedLimitsGroup1,
-    selectedLimitsGroup2,
+    selectedOperationalLimitsGroupId1,
+    selectedOperationalLimitsGroupId2,
     enableOLGModification,
     ratioTapChanger,
     phaseTapChanger,
@@ -952,8 +953,8 @@ export function modifyTwoWindingsTransformer({
     connectionDirection2 = undefined,
     connectionPosition1 = undefined,
     connectionPosition2 = undefined,
-    connected1 = undefined,
-    connected2 = undefined,
+    terminal1Connected = undefined,
+    terminal2Connected = undefined,
     properties: propertiesForBackend,
     p1MeasurementValue,
     p1MeasurementValidity,
@@ -984,8 +985,8 @@ export function modifyTwoWindingsTransformer({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
-            equipmentId: twoWindingsTransformerId,
-            equipmentName: twoWindingsTransformerName,
+            equipmentId,
+            equipmentName,
             r: r,
             x: x,
             g: g,
@@ -994,8 +995,8 @@ export function modifyTwoWindingsTransformer({
             ratedU1: ratedU1,
             ratedU2: ratedU2,
             operationalLimitsGroups: operationalLimitsGroups,
-            selectedOperationalLimitsGroupId1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroupId2: selectedLimitsGroup2,
+            selectedOperationalLimitsGroupId1,
+            selectedOperationalLimitsGroupId2,
             [ENABLE_OLG_MODIFICATION]: enableOLGModification,
             [OLGS_MODIFICATION_TYPE]: enableOLGModification
                 ? OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE
@@ -1012,8 +1013,8 @@ export function modifyTwoWindingsTransformer({
             connectionDirection2: toModificationOperation(connectionDirection2),
             connectionPosition1: toModificationOperation(connectionPosition1),
             connectionPosition2: toModificationOperation(connectionPosition2),
-            terminal1Connected: toModificationOperation(connected1),
-            terminal2Connected: toModificationOperation(connected2),
+            terminal1Connected: toModificationOperation(terminal1Connected),
+            terminal2Connected: toModificationOperation(terminal2Connected),
             properties: propertiesForBackend,
             p1MeasurementValue: toModificationOperation(p1MeasurementValue),
             p1MeasurementValidity: toModificationOperation(p1MeasurementValidity),
@@ -1130,35 +1131,35 @@ export function formatPropertiesForBackend(previousProperties: any, newPropertie
     const newPropertiesArray = Object.entries(newProperties).map(([name, value]) => ({ name, value }));
 
     const propertiesModifications: any = [];
-    previousPropertiesArray.forEach((previousPropertiePair) => {
-        const updatedProperty = newPropertiesArray.find((updatedObj) => updatedObj.name === previousPropertiePair.name);
+    previousPropertiesArray.forEach((previousPropertyPair) => {
+        const updatedProperty = newPropertiesArray.find((updatedObj) => updatedObj.name === previousPropertyPair.name);
 
         if (!updatedProperty) {
             // The property has been deleted (does not exist in the new properties array)
             propertiesModifications.push({
-                ...previousPropertiePair,
-                previousValue: previousPropertiePair.value,
+                ...previousPropertyPair,
+                previousValue: previousPropertyPair.value,
                 value: null,
                 deletionMark: true,
             });
-        } else if (updatedProperty.value !== previousPropertiePair.value) {
+        } else if (updatedProperty.value !== previousPropertyPair.value) {
             // the property exist in both the previous and the new properties array but has been modified
             propertiesModifications.push({
                 ...updatedProperty,
                 added: false,
                 deletionMark: false,
-                previousValue: previousPropertiePair.value,
+                previousValue: previousPropertyPair.value,
             });
         }
     });
 
-    newPropertiesArray.forEach((newPropertie) => {
+    newPropertiesArray.forEach((newProperty) => {
         // The property has been added
-        const previousPropertie = previousPropertiesArray.find((oldObj) => oldObj.name === newPropertie.name);
+        const previousProperty = previousPropertiesArray.find((oldObj) => oldObj.name === newProperty.name);
         //the propertie is new ( does not exist in the previous properties array)
-        if (!previousPropertie) {
+        if (!previousProperty) {
             propertiesModifications.push({
-                ...newPropertie,
+                ...newProperty,
                 added: true,
                 deletionMark: false,
             });
@@ -1612,25 +1613,34 @@ export function deleteAttachingLine({
     });
 }
 
-export function deleteEquipment(
-    studyUuid: string,
-    nodeUuid: UUID | undefined,
-    equipmentType: EquipmentType | string | null,
-    equipmentId: string,
-    modificationUuid: UUID | undefined,
-    equipmentInfos: any = undefined
-) {
+export interface DeleteEquipmentInfo {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    uuid?: UUID;
+    equipmentId: UUID;
+    equipmentType: EquipmentType;
+    equipmentSpecificInfos?: EquipmentDeletionSpecificInfos;
+}
+
+export function deleteEquipment({
+    studyUuid,
+    nodeUuid,
+    uuid,
+    equipmentId,
+    equipmentType,
+    equipmentSpecificInfos,
+}: DeleteEquipmentInfo) {
     let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (modificationUuid) {
-        deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        deleteEquipmentUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating equipment deletion');
     } else {
         console.info('Creating equipment deletion');
     }
 
     return backendFetch(deleteEquipmentUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1639,7 +1649,7 @@ export function deleteEquipment(
             type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
             equipmentId: equipmentId,
             equipmentType: equipmentType,
-            equipmentInfos: equipmentInfos,
+            equipmentInfos: equipmentSpecificInfos,
         }),
     });
 }

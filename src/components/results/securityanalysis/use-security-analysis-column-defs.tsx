@@ -54,10 +54,12 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
 
     const getEnumLabel = useCallback(
         (value: string) =>
-            intl.formatMessage({
-                id: value,
-                defaultMessage: value,
-            }),
+            value
+                ? intl.formatMessage({
+                      id: value,
+                      defaultMessage: value,
+                  })
+                : '',
         [intl]
     );
 

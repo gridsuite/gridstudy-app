@@ -10,13 +10,11 @@ import {
     CountryAdequacy,
     ExchangePair,
     ExchangeValue,
-    LimitTypes,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
 } from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { BranchSide } from '../../utils/constants';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { JSX, useEffect, useState } from 'react';
@@ -40,7 +38,6 @@ import {
     numericFilterParams,
     textFilterParams,
 } from '../../../types/custom-aggrid-types';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
@@ -49,16 +46,9 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
-import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
-
-export const convertSide = (side: string | undefined, intl: IntlShape) => {
-    return side === BranchSide.ONE
-        ? intl.formatMessage({ id: 'Side1' })
-        : side === BranchSide.TWO
-          ? intl.formatMessage({ id: 'Side2' })
-          : undefined;
-};
+import { createEnumColumn } from '../common/column-filter/utilis';
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {
     subjectId: 'subjectId',
@@ -139,7 +129,7 @@ export const makeData = (
             patlLimit: overloadedEquipment.patlLimit,
             limitName: translateLimitNameBackToFront(overloadedEquipment.limitName, intl),
             nextLimitName: translateLimitNameBackToFront(overloadedEquipment.nextLimitName, intl),
-            side: convertSide(overloadedEquipment.side, intl),
+            side: overloadedEquipment.side,
             limitType: overloadedEquipment.limitType,
         };
     });
@@ -359,27 +349,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         makeAgGridCustomHeaderColumn(
             makeAgGridFloatColumn('CurrentViolationValue', 'value', intl, sortParams, filterParams)
         ),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            colId: 'side',
-            field: 'side',
-            context: createColumnContext(
-                sortParams,
-                filterParams,
-                CustomAggridAutocompleteFilter,
-                { dataType: FILTER_DATA_TYPES.TEXT },
-                {
-                    options: filterEnums['side'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                }
-            ),
-        }),
+        createEnumColumn('side', 'LimitSide', filterEnums['side'] ?? [], getEnumLabel, intl, sortParams, filterParams),
     ];
 };
 
-export const formatLimitType = (limitType: string, intl: IntlShape) => {
-    return limitType in LimitTypes ? intl.formatMessage({ id: limitType }) : limitType;
-};
 export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
@@ -403,24 +376,15 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             cellRenderer: subjectIdRenderer,
             context: createColumnContext(sortParams, filterParams, CustomAggridComparatorFilter, textFilterParams),
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'ViolationType' }),
-            colId: 'limitType',
-            field: 'limitType',
-            context: createColumnContext(
-                sortParams,
-                filterParams,
-                CustomAggridAutocompleteFilter,
-                { dataType: FILTER_DATA_TYPES.TEXT },
-                {
-                    options: filterEnums['limitType'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                }
-            ),
-            valueGetter: (value: ValueGetterParams) => {
-                return formatLimitType(value.data.limitType, intl);
-            },
-        }),
+        createEnumColumn(
+            'limitType',
+            'ViolationType',
+            filterEnums['limitType'] ?? [],
+            getEnumLabel,
+            intl,
+            sortParams,
+            filterParams
+        ),
         makeAgGridCustomHeaderColumn(
             makeAgGridFloatColumn('VoltageViolationLimit', 'limit', intl, sortParams, filterParams)
         ),
@@ -452,22 +416,16 @@ export const componentColumnsDefinition = (
             field: 'synchronousComponentNum',
             context: createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'status' }),
-            colId: 'status',
-            field: 'status',
-            context: createColumnContext(
-                undefined,
-                filterParams,
-                CustomAggridAutocompleteFilter,
-                { dataType: FILTER_DATA_TYPES.TEXT },
-                {
-                    options: filterEnums['status'] ?? [],
-                    getOptionLabel: getEnumLabel,
-                }
-            ),
-            cellRenderer: statusCellRender,
-        }),
+        createEnumColumn(
+            'status',
+            'status',
+            filterEnums['status'] ?? [],
+            getEnumLabel,
+            intl,
+            undefined,
+            filterParams,
+            statusCellRender
+        ),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'consumptions' }),
             colId: 'consumptions',
