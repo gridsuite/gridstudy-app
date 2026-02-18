@@ -264,7 +264,7 @@ export function updateComputationResultFiltersColumn(
     studyUuid: UUID,
     filterType: FilterType,
     filterSubType: string,
-    column: any
+    columnFilterInfos: any
 ) {
     const url = `${getStudyUrl(studyUuid)}/computation-result-filters/${filterType}/${filterSubType}/columns`;
     return backendFetchJson(url, {
@@ -272,6 +272,6 @@ export function updateComputationResultFiltersColumn(
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(column),
+        body: JSON.stringify(columnFilterInfos),
     });
 }
