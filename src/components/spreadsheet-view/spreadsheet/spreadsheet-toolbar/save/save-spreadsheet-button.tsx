@@ -112,8 +112,8 @@ export default function SaveSpreadsheetButton({
                 label: 'spreadsheet/save/options/csv/clipboard',
                 action: async () => {
                     const csvProps = getCsvProps(SpreadsheetSaveOptionId.COPY_CSV);
-                    csvProps.isCopyCsv = true;
                     if (csvProps) {
+                        csvProps.isCopyCsv = true;
                         let data = await getData(csvProps);
                         copyToClipboard(data ?? '', onClipboardCopy, onClipboardError);
                     }
