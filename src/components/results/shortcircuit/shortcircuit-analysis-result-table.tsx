@@ -34,8 +34,7 @@ import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggri
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import {
     FilterConfig,
-    FilterType,
-    FilterType as AgGridFilterType,
+    TableType,
     numericFilterParams,
     textFilterParams,
 } from '../../../types/custom-aggrid-types';
@@ -113,7 +112,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 
     const filters = useSelector(
         (state: AppState) =>
-            state.computationFilters?.[FilterType.ShortcircuitAnalysis]?.columnsFilters?.[computationSubType]?.columns
+            state.tableFilters.columnsFilters?.[TableType.ShortcircuitAnalysis]?.[computationSubType]?.columns
     );
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
@@ -156,14 +155,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         };
 
         const filterParams = {
-            type: AgGridFilterType.ShortcircuitAnalysis,
+            type: TableType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
             updateFilterCallback: (
                 agGridApi?: GridApi,
                 filters?: FilterConfig[],
                 colId?: string,
                 studyUuid?: UUID,
-                filterType?: FilterType,
+                filterType?: TableType,
                 filterSubType?: string
             ) =>
                 updateComputationColumnsFilters(
@@ -385,7 +384,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     );
 
     const onGridReady = useAgGridInitialColumnFilters(
-        FilterType.ShortcircuitAnalysis,
+        TableType.ShortcircuitAnalysis,
         computationSubType,
         onGridColumnsChanged
     );

@@ -35,7 +35,7 @@ import { StatusCellRender } from '../common/result-cell-renderers';
 import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { TableType } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
@@ -47,7 +47,6 @@ import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { Button, LinearProgress } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
@@ -56,6 +55,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 
 const styles = {
     flexWrapper: {
@@ -89,10 +89,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
 
-    const { filters } = useComputationColumnFilters(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
+    const { filters } = useComputationColumnFilters(TableType.Loadflow, mappingTabs(tabIndex));
 
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.Loadflow);
+    useComputationGlobalFilters(TableType.Loadflow);
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
@@ -125,7 +124,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     value: limitTypeValues,
                 });
             }
-            const globalFilters = buildValidGlobalFilters(globalFiltersFromState ?? []);
+            const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.Loadflow));
             return fetchLimitViolations(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 sort: sortConfig.map((sort) => ({
                     ...sort,
@@ -145,7 +144,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     : {}),
             });
         },
-        [tabIndex, filters, intl, sortConfig, globalFiltersFromState]
+        [tabIndex, filters, intl, sortConfig]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {
@@ -259,11 +258,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return [];
     }, [tabIndex]);
 
-    const globalFilterOptions = useMemo(
-        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
-        [voltageLevelsFilter, countriesFilter, propertiesFilter]
-    );
-
     const openLoaderReportTab = useOpenLoaderShortWait({
         isLoading: loadFlowStatus === RunningStatus.RUNNING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
@@ -286,11 +280,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <GlobalFilterSelector
-                        onChange={updateGlobalFilters}
-                        filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
-                        preloadedGlobalFilters={globalFiltersFromState}
                         genericFiltersStrictMode={true}
+                        tableType={TableType.Loadflow}
                     />
                 </Box>
                 <Box sx={styles.emptySpace}></Box>

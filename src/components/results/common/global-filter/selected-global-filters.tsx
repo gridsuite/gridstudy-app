@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2026, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -16,11 +17,14 @@ import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { FilterType } from '../utils';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { removeFromSelectedGlobalFilters } from '../../../../redux/actions';
+import { useDispatch } from 'react-redux';
 
 function SelectedGlobalFilters() {
-    const { selectedGlobalFilters, setSelectedGlobalFilters, onChange } = useContext(GlobalFilterContext);
+    const { selectedGlobalFilters, tableType, tableUuid } = useContext(GlobalFilterContext);
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
+    const dispatch = useDispatch();
 
     const filtersByCategories: Map<string, GlobalFilter[]> = new Map();
     selectedGlobalFilters.forEach((filter: GlobalFilter) => {
@@ -71,14 +75,11 @@ function SelectedGlobalFilters() {
                     <Box sx={resultsGlobalFilterStyles.selectedFiltersChips}>
                         {filters.map((element: GlobalFilter) => (
                             <OverflowableChip
+                                key={element.id}
                                 label={getOptionLabel(element, translate, intl)}
                                 sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                                 onDelete={() => {
-                                    const newSelectedGlobalFilters = selectedGlobalFilters.filter(
-                                        (filter) => filter !== element
-                                    );
-                                    setSelectedGlobalFilters(newSelectedGlobalFilters);
-                                    onChange(newSelectedGlobalFilters);
+                                    dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, [element.id]));
                                 }}
                             />
                         ))}

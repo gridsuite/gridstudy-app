@@ -34,12 +34,7 @@ import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
-import {
-    FilterConfig,
-    FilterType as AgGridFilterType,
-    numericFilterParams,
-    textFilterParams,
-} from '../../../types/custom-aggrid-types';
+import { FilterConfig, numericFilterParams, TableType, textFilterParams } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
     ColumnContext,
@@ -216,7 +211,7 @@ export const convertFilterValues = (filterSelector: FilterConfig[], intl: IntlSh
 interface TableParams {
     sortParams: SortParams;
     filterParams: {
-        type: AgGridFilterType;
+        type: TableType;
         tab: string;
         updateFilterCallback: typeof updateComputationColumnsFilters;
     };
@@ -230,7 +225,7 @@ const createTableParams = (tabIndex: number): TableParams => {
             tab,
         },
         filterParams: {
-            type: AgGridFilterType.Loadflow,
+            type: TableType.Loadflow,
             tab,
             updateFilterCallback: updateComputationColumnsFilters,
         },
@@ -243,7 +238,7 @@ const makeAgGridFloatColumn = (
     intl: IntlShape,
     sortParams: ColumnContext['sortParams'],
     filterParams: {
-        type: AgGridFilterType;
+        type: TableType;
         tab: string;
     }
 ) => {

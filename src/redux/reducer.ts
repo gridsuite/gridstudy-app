@@ -36,15 +36,17 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     ADD_FILTER_FOR_NEW_SPREADSHEET,
+    ADD_GLOBAL_FILTERS,
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_SPREADSHEET_LOADED_NODES_IDS,
-    ADD_TO_RECENT_GLOBAL_FILTERS,
+    ADD_TO_GLOBAL_FILTER_OPTIONS,
     type AddFilterForNewSpreadsheetAction,
+    AddGlobalFiltersAction,
     type AddNotificationAction,
     type AddSortForNewSpreadsheetAction,
     AddSpreadsheetLoadedNodesIdsAction,
-    type AddToRecentGlobalFiltersAction,
+    type AddToGlobalFilterOptionsAction,
     type AppActions,
     ATTEMPT_LEAVE_PARAMETERS_TAB,
     type AttemptLeaveParametersTabAction,
@@ -53,6 +55,8 @@ import {
     type CenterOnSubstationAction,
     CLEAN_EQUIPMENTS,
     CleanEquipmentsAction,
+    CLEAR_GLOBAL_FILTERS,
+    ClearGlobalFiltersAction,
     CLOSE_STUDY,
     type CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
@@ -70,7 +74,9 @@ import {
     type FavoriteContingencyListsAction,
     HIGHLIGHT_MODIFICATION,
     HighlightModificationAction,
+    INIT_SPREADSHEET_GLOBAL_FILTER,
     INIT_TABLE_DEFINITIONS,
+    type InitSpreadSheetGlobalFilterAction,
     type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
@@ -107,14 +113,16 @@ import {
     PccminAnalysisResultPaginationAction,
     REMOVE_COLUMN_DEFINITION,
     REMOVE_EQUIPMENT_DATA,
-    REMOVE_FROM_RECENT_GLOBAL_FILTERS,
+    REMOVE_FROM_GLOBAL_FILTER_OPTIONS,
+    REMOVE_GLOBAL_FILTERS,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
     REMOVE_SPREADSHEET_LOADED_NODES_IDS,
     REMOVE_TABLE_DEFINITION,
     type RemoveColumnDefinitionAction,
     type RemoveEquipmentDataAction,
-    type RemoveFromRecentGlobalFiltersAction,
+    type RemoveFromGlobalFilterOptionsAction,
+    RemoveGlobalFiltersAction,
     type RemoveNodeDataAction,
     type RemoveNotificationByNodeAction,
     RemoveSpreadsheetLoadedNodesIdsAction,
@@ -123,7 +131,6 @@ import {
     type RenameTableDefinitionAction,
     REORDER_TABLE_DEFINITIONS,
     type ReorderTableDefinitionsAction,
-    RESET_ALL_SPREADSHEET_GS_FILTERS,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_COMPUTATION,
@@ -135,7 +142,6 @@ import {
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
     RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
-    type ResetAllSpreadsheetGlobalFiltersAction,
     type ResetEquipmentsAction,
     type ResetEquipmentsByTypesAction,
     type ResetEquipmentsPostComputationAction,
@@ -147,8 +153,6 @@ import {
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
     ResetShortcircuitAnalysisPaginationAction,
-    SAVE_SPREADSHEET_GS_FILTER,
-    type SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_PAGINATION,
     SecurityAnalysisResultPaginationAction,
     SELECT_COMPUTED_LANGUAGE,
@@ -210,7 +214,6 @@ import {
     UPDATE_COLUMN_FILTERS,
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
-    UPDATE_GLOBAL_FILTERS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UPDATE_NODE_ALIASES,
     UPDATE_SPREADSHEET_PARTIAL_DATA,
@@ -219,7 +222,6 @@ import {
     UpdateColumnFiltersAction,
     type UpdateColumnsDefinitionsAction,
     type UpdateEquipmentsAction,
-    UpdateGlobalFiltersAction,
     type UpdateNetworkVisualizationParametersAction,
     UpdateNodeAliasesAction,
     type UpdateSpreadsheetPartialDataAction,
@@ -332,6 +334,8 @@ import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants'
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 import { ViewBoxLike } from '@svgdotjs/svg.js';
+import { isCriteriaFilter } from '../components/results/common/utils';
+import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
 
 // Redux state
 export type NadViewBox = Record<UUID, ViewBoxLike | null>;
@@ -505,11 +509,9 @@ export type ComputationResultColumnFilter = {
     columns: FilterConfig[];
 };
 
-export type ComputationFiltersState = {
-    [computationType: string]: {
-        columnsFilters: Record<string, ComputationResultColumnFilter>;
-        globalFilters: GlobalFilter[];
-    };
+export type TableFiltersState = {
+    columnsFilters: Record<string, Record<string, ComputationResultColumnFilter>>;
+    globalFilters: Record<string, string[]>; // filter IDs
 };
 
 export type LogsPaginationState = Record<string, LogsPaginationConfig>;
@@ -531,7 +533,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     optionalServices: IOptionalService[];
     oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
     notificationIdList: UUID[];
-    recentGlobalFilters: GlobalFilter[];
+    globalFilterOptions: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramDepth: number;
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
@@ -557,7 +559,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     freezeMapUpdates: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
-    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
+
     spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
     networkVisualizationsParameters: NetworkVisualizationParameters | null;
     syncEnabled: boolean;
@@ -574,7 +576,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     highlightedModificationUuid: UUID | null;
-    computationFilters: ComputationFiltersState;
+    tableFilters: TableFiltersState;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -642,7 +644,6 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     },
 };
 
-export type GlobalFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
 
 interface TablesState {
     uuid: UUID | null;
@@ -707,7 +708,7 @@ const initialState: AppState = {
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
-    globalFilterSpreadsheetState: {},
+
     spreadsheetOptionalLoadingParameters: {
         [SpreadsheetEquipmentType.BRANCH]: {
             operationalLimitsGroups: false,
@@ -760,7 +761,7 @@ const initialState: AppState = {
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
 
-    recentGlobalFilters: [],
+    globalFilterOptions: [],
     lastCompletedComputation: null,
     [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: {
         [SECURITY_ANALYSIS_RESULT_N]: { ...DEFAULT_PAGINATION },
@@ -857,7 +858,10 @@ const initialState: AppState = {
             ],
         },
     },
-    computationFilters: {},
+    tableFilters: {
+        columnsFilters: {},
+        globalFilters: {},
+    },
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -1021,7 +1025,18 @@ export const reducer = createReducer(initialState, (builder) => {
                 ];
                 return acc;
             }, {} as TableSortConfig);
-        state.globalFilterSpreadsheetState = action?.globalFilterSpreadsheetState ?? {};
+        const spreadsheetGlobalFilters = action.globalFilters ?? {};
+        Object.entries(spreadsheetGlobalFilters).forEach(([tabUuid, filters]) => {
+            // Store only IDs in globalFilters
+            state.tableFilters.globalFilters[tabUuid] = filters.map(getGlobalFilterId);
+            // Store full objects in globalFilterOptions only if not already present
+            filters.filter(isCriteriaFilter).forEach((filter) => {
+                const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
+                if (!alreadyExists) {
+                    state.globalFilterOptions.push(addGlobalFilterId(filter));
+                }
+            });
+        });
     });
 
     builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
@@ -1598,28 +1613,25 @@ export const reducer = createReducer(initialState, (builder) => {
         state.rootNetworkIndexationStatus = action.rootNetworkIndexationStatus;
     });
 
-    builder.addCase(ADD_TO_RECENT_GLOBAL_FILTERS, (state, action: AddToRecentGlobalFiltersAction) => {
-        let newRecentGlobalFilters = [...state.recentGlobalFilters];
+    builder.addCase(ADD_TO_GLOBAL_FILTER_OPTIONS, (state, action: AddToGlobalFilterOptionsAction) => {
         action.globalFilters.forEach((filter) => {
-            if (
-                !newRecentGlobalFilters.some(
-                    (obj) =>
-                        obj.label === filter.label &&
-                        obj.filterType === filter.filterType &&
-                        obj.filterSubtype === filter.filterSubtype &&
-                        obj.uuid === filter.uuid
-                )
-            ) {
-                newRecentGlobalFilters.push(filter);
+            const existingIndex = state.globalFilterOptions.findIndex((obj) => obj.id === filter.id);
+            if (existingIndex >= 0) {
+                state.globalFilterOptions[existingIndex] = filter;
+            } else {
+                state.globalFilterOptions.push(filter);
             }
         });
-        state.recentGlobalFilters = newRecentGlobalFilters;
     });
 
-    builder.addCase(REMOVE_FROM_RECENT_GLOBAL_FILTERS, (state, action: RemoveFromRecentGlobalFiltersAction) => {
-        state.recentGlobalFilters = [
-            ...state.recentGlobalFilters.filter((recentGlobalFilter) => recentGlobalFilter.uuid !== action.uuid),
-        ];
+    builder.addCase(REMOVE_FROM_GLOBAL_FILTER_OPTIONS, (state, action: RemoveFromGlobalFilterOptionsAction) => {
+        state.globalFilterOptions = state.globalFilterOptions.filter((opt) => opt.id !== action.id);
+        // We also need to remove it from the selected filter IDs.
+        for (const key of Object.keys(state.tableFilters.globalFilters)) {
+            state.tableFilters.globalFilters[key] = state.tableFilters.globalFilters[key].filter(
+                (id) => id !== action.id
+            );
+        }
     });
 
     builder.addCase(SET_LAST_COMPLETED_COMPUTATION, (state, action: SetLastCompletedComputationAction) => {
@@ -1789,8 +1801,17 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGlobalFilterAction) => {
-        state.globalFilterSpreadsheetState[action.tabUuid] = action.filters;
+    builder.addCase(INIT_SPREADSHEET_GLOBAL_FILTER, (state, action: InitSpreadSheetGlobalFilterAction) => {
+        console.log('Reducer INIT_SPREADSHEET_GLOBAL_FILTER:', action);
+        // Store only IDs in globalFilters
+        state.tableFilters.globalFilters[action.tabUuid] = action.filters.map(getGlobalFilterId);
+        // Store full objects in globalFilterOptions only if not already present
+        action.filters.filter(isCriteriaFilter).forEach((filter) => {
+            const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
+            if (!alreadyExists) {
+                state.globalFilterOptions.push(addGlobalFilterId(filter));
+            }
+        });
     });
 
     builder.addCase(SET_CALCULATION_SELECTIONS, (state, action: SetCalculationSelectionsAction) => {
@@ -1798,10 +1819,6 @@ export const reducer = createReducer(initialState, (builder) => {
             ...state.calculationSelections,
             [action.tabUuid]: action.selections,
         };
-    });
-
-    builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGlobalFiltersAction) => {
-        state.globalFilterSpreadsheetState = {};
     });
 
     builder.addCase(SELECT_SYNC_ENABLED, (state, action: SelectSyncEnabledAction) => {
@@ -1813,23 +1830,56 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
         const { filterType, filterSubType, filters } = action;
-        state.computationFilters[filterType] ??= {
-            columnsFilters: {},
-            globalFilters: [],
-        };
-        state.computationFilters[filterType].columnsFilters[filterSubType] ??= {
+        state.tableFilters.columnsFilters[filterType] ??= {};
+        state.tableFilters.columnsFilters[filterType][filterSubType] ??= {
             columns: [],
         };
-        state.computationFilters[filterType].columnsFilters[filterSubType].columns = filters;
+        state.tableFilters.columnsFilters[filterType][filterSubType].columns = filters;
     });
 
-    builder.addCase(UPDATE_GLOBAL_FILTERS, (state, action: UpdateGlobalFiltersAction) => {
-        const { filterType, globalFilters } = action;
-        state.computationFilters[filterType] ??= {
-            columnsFilters: {},
-            globalFilters: [],
-        };
-        state.computationFilters[filterType].globalFilters = globalFilters;
+    builder.addCase(ADD_GLOBAL_FILTERS, (state, action: AddGlobalFiltersAction) => {
+        const { tableId, filterIds } = action;
+
+        state.tableFilters.globalFilters[tableId] ??= [];
+
+        filterIds.forEach((id) => {
+            if (!state.tableFilters.globalFilters[tableId].includes(id)) {
+                state.tableFilters.globalFilters[tableId].push(id);
+            }
+            const option = state.globalFilterOptions.find((opt) => opt.id === id);
+            if (option?.recent === true) {
+                option.recent = false;
+            }
+        });
+    });
+
+    builder.addCase(REMOVE_GLOBAL_FILTERS, (state, action: RemoveGlobalFiltersAction) => {
+        const { tableId, filterIds } = action;
+
+        state.tableFilters.globalFilters[tableId] ??= [];
+
+        state.tableFilters.globalFilters[tableId] = state.tableFilters.globalFilters[tableId].filter(
+            (id) => !filterIds.includes(id)
+        );
+
+        filterIds.forEach((filterId) => {
+            const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
+            if (option && !option.recent) {
+                option.recent = true;
+            }
+        });
+    });
+
+    builder.addCase(CLEAR_GLOBAL_FILTERS, (state, action: ClearGlobalFiltersAction) => {
+        const { tableId } = action;
+        const previousFilterIds = state.tableFilters.globalFilters[tableId] ?? [];
+        previousFilterIds.forEach((filterId) => {
+            const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
+            if (option && !option.recent) {
+                option.recent = true;
+            }
+        });
+        state.tableFilters.globalFilters[tableId] = [];
     });
 });
 

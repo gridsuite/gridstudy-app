@@ -30,12 +30,7 @@ import {
     RESULT_TYPE,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
-import {
-    FilterType,
-    FilterType as AgGridFilterType,
-    PaginationType,
-    SecurityAnalysisTab,
-} from '../../../types/custom-aggrid-types';
+import { PaginationType, SecurityAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -44,13 +39,14 @@ import { securityAnalysisResultInvalidations } from '../../computing-status/use-
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
+import { FilterType, isCriteriaFilterType } from '../common/utils';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -126,16 +122,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     );
     const { page, rowsPerPage } = pagination;
 
-    const { filters } = useComputationColumnFilters(FilterType.SecurityAnalysis, getStoreFields(tabIndex));
-    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
-        AgGridFilterType.SecurityAnalysis
-    );
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-
-    const globalFilterOptions = useMemo(
-        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
-        [voltageLevelsFilter, countriesFilter, propertiesFilter]
-    );
+    const { filters } = useComputationColumnFilters(TableType.SecurityAnalysis, getStoreFields(tabIndex));
+    useComputationGlobalFilters(TableType.SecurityAnalysis);
 
     const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
@@ -169,12 +157,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             const columnToFieldMapping = mappingColumnToField(resultType);
             params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
         }
-        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
+        const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.SecurityAnalysis));
         if (globalFilters) {
             params['globalFilters'] = globalFilters;
         }
         return params;
-    }, [resultType, tabIndex, sortConfig, filters, globalFiltersFromState, page, rowsPerPage, intl]);
+    }, [resultType, tabIndex, sortConfig, filters, page, rowsPerPage, intl]);
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
@@ -288,6 +276,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         return [];
     }, [tabIndex]);
 
+    const filterTypes: FilterType[] = useMemo(() => {
+        const allFilterTypes = Object.values(FilterType);
+        if (tabIndex === N_RESULTS_TAB_INDEX) {
+            // in this case we disable generic filters
+            return allFilterTypes.filter((filterType) => !isCriteriaFilterType(filterType));
+        }
+        return allFilterTypes;
+    }, [tabIndex]);
+
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>
@@ -307,13 +304,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
-                            onChange={updateGlobalFilters}
-                            onAfterChange={resetPaginationIfNKResults}
-                            filters={globalFilterOptions}
+                            filterCategories={filterTypes}
                             filterableEquipmentTypes={filterableEquipmentTypes}
-                            disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}
-                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode={true}
+                            tableType={TableType.SecurityAnalysis}
                         />
                     </Box>
                 )}

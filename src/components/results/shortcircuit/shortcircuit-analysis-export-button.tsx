@@ -19,9 +19,9 @@ import { BranchSide } from 'components/utils/constants';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType } from '../../../types/custom-aggrid-types';
+import { TableType } from '../../../types/custom-aggrid-types';
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 import {
     convertFilterValues,
     FROM_COLUMN_TO_FIELD,
@@ -39,7 +39,6 @@ interface ShortCircuitExportButtonProps {
     csvHeader: string[];
     analysisType: number;
     disabled?: boolean;
-    globalFilter: GlobalFilter[];
 }
 
 export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButtonProps> = (props) => {
@@ -50,7 +49,6 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         csvHeader,
         disabled = false,
         analysisType,
-        globalFilter,
     } = props;
     const { snackError } = useSnackMessage();
 
@@ -61,7 +59,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
-    const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
+    const { filters } = useFilterSelector(TableType.ShortcircuitAnalysis, mappingTabs(analysisType));
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
@@ -133,7 +131,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
             currentNodeUuid: nodeUuid,
             currentRootNetworkUuid,
             type: analysisType,
-            globalFilters: buildValidGlobalFilters(globalFilter),
+            globalFilters: buildValidGlobalFilters(getSelectedGlobalFilters(TableType.ShortcircuitAnalysis)),
             selector,
             csvParams: exportParams,
         })
@@ -158,7 +156,6 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
-        globalFilter,
         snackError,
     ]);
 

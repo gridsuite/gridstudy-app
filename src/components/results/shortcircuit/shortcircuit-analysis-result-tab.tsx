@@ -29,10 +29,9 @@ import type { UUID } from 'node:crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import {
-    FilterType as AgGridFilterType,
+    TableType,
     PaginationType,
     ShortcircuitAnalysisTab,
 } from '../../../types/custom-aggrid-types';
@@ -115,10 +114,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         [setTabIndex, setRedirectionLock]
     );
 
-    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
-        AgGridFilterType.ShortcircuitAnalysis
-    );
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+    useComputationGlobalFilters(TableType.ShortcircuitAnalysis);
 
     const handleSubTabChange = useCallback(
         (event: SyntheticEvent, newIndex: number) => {
@@ -165,11 +161,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
     }, []);
 
-    const globalFilterOptions = useMemo(
-        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
-        [voltageLevelsFilter, countriesFilter, propertiesFilter]
-    );
-
     return (
         <>
             <Tabs value={tabIndex} onChange={handleTabChange}>
@@ -195,12 +186,9 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                 </Tabs>
                 {resultOrLogIndex === RESULTS_TAB_INDEX && tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
                     <GlobalFilterSelector
-                        onChange={updateGlobalFilters}
-                        onAfterChange={resetPaginationIfAllBuses}
-                        filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
-                        preloadedGlobalFilters={globalFiltersFromState}
                         genericFiltersStrictMode={true}
+                        tableType={TableType.ShortcircuitAnalysis}
                     />
                 )}
                 <Box sx={{ flexGrow: 1 }}></Box>
@@ -214,7 +202,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                             csvHeader={csvHeader}
                             analysisType={tabIndex}
                             disabled={isCsvButtonDisabled}
-                            globalFilter={globalFiltersFromState}
                         />
                     )}
             </Box>
@@ -223,13 +210,11 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
-                        globalFilter={globalFiltersFromState}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
-                        globalFilter={globalFiltersFromState}
                     />
                 ))}
             {resultOrLogIndex === LOGS_TAB_INDEX && (

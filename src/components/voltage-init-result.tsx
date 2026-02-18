@@ -39,7 +39,7 @@ import RunningStatus from './utils/running-status';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
-import { FilterType } from 'types/custom-aggrid-types';
+import { TableType } from 'types/custom-aggrid-types';
 
 const styles = {
     container: {
@@ -88,9 +88,6 @@ const styles = {
 export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     result = null,
     status,
-    handleGlobalFilterChange,
-    globalFilterOptions,
-    globalFiltersFromState,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -281,7 +278,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
-                    computationType={FilterType.VoltageInit}
+                    computationType={TableType.VoltageInit}
                     computationSubType="Indicators"
                 />
             </>
@@ -322,7 +319,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
-                    computationType={FilterType.VoltageInit}
+                    computationType={TableType.VoltageInit}
                     computationSubType="ReactiveSlacks"
                 />
             </>
@@ -373,7 +370,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     return undefined;
                 }}
                 overlayNoRowsTemplate={undefined}
-                computationType={FilterType.VoltageInit}
+                computationType={TableType.VoltageInit}
                 computationSubType="BusVoltages"
             />
         );
@@ -416,11 +413,9 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     </Box>
                     <Box sx={mergeSx(tabIndex === 0 || tabIndex === 2 ? styles.show : styles.hide)}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
-                            filters={globalFilterOptions}
                             filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
-                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode={true}
+                            tableType={TableType.VoltageInit}
                         />
                     </Box>
                     <Box sx={styles.buttonApplyModifications}>

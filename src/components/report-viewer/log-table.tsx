@@ -30,7 +30,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
-import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
+import { FilterConfig, TableType } from '../../types/custom-aggrid-types';
 import {
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
@@ -107,7 +107,7 @@ const LogTable = ({
     const [, , , fetchLogs, fetchLogMatches] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
-    const { filters } = useFilterSelector(FilterType.Logs, reportType);
+    const { filters } = useFilterSelector(TableType.Logs, reportType);
     const { pagination, setPagination } = useLogsPagination(reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
@@ -224,7 +224,7 @@ const LogTable = ({
                     filterComponent: CustomAggridComparatorFilter,
                     filterComponentParams: {
                         filterParams: {
-                            type: FilterType.Logs,
+                            type: TableType.Logs,
                             tab: reportType,
                             dataType: FILTER_DATA_TYPES.TEXT,
                             comparators: [FILTER_TEXT_COMPARATORS.CONTAINS],

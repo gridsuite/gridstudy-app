@@ -7,6 +7,9 @@
 
 import { createContext } from 'react';
 import { GlobalFilter } from './global-filter-types';
+import { TableType } from '../../../../types/custom-aggrid-types';
+import { FilterType } from '../utils';
+import type { UUID } from 'node:crypto';
 
 export const GlobalFilterContext = createContext<{
     // manage internal states
@@ -16,13 +19,13 @@ export const GlobalFilterContext = createContext<{
     setDirectoryItemSelectorOpen: (open: boolean) => void;
     filterGroupSelected?: string;
     setFilterGroupSelected: (selectedFilterGroup: string) => void;
+    globalFilterOptions: GlobalFilter[];
     selectedGlobalFilters: GlobalFilter[];
-    setSelectedGlobalFilters: (selectedGlobalFilters: GlobalFilter[]) => void;
-    // callback to communicate to parent component
-    onChange: (globalFilters: GlobalFilter[]) => void;
     filterCategories: string[];
     genericFiltersStrictMode: boolean;
-    equipmentTypes: string[] | undefined;
+    filterableEquipmentTypes: string[];
+    tableType: TableType;
+    tableUuid: string;
 }>({
     openedDropdown: false,
     setOpenedDropdown: () => {},
@@ -30,10 +33,11 @@ export const GlobalFilterContext = createContext<{
     setDirectoryItemSelectorOpen: () => {},
     filterGroupSelected: undefined,
     setFilterGroupSelected: () => {},
+    globalFilterOptions: [],
     selectedGlobalFilters: [],
-    setSelectedGlobalFilters: () => {},
-    onChange: () => {},
     filterCategories: [],
     genericFiltersStrictMode: false,
-    equipmentTypes: undefined,
+    filterableEquipmentTypes: [],
+    tableType: TableType.Loadflow,
+    tableUuid: TableType.Loadflow,
 });

@@ -25,12 +25,12 @@ import {
 } from './sensitivity-analysis-result.type';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
 import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { FilterType as AgGridFilterType, PaginationType } from '../../../types/custom-aggrid-types';
+import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
+import { FilterType, isCriteriaFilterType } from '../common/utils';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -48,10 +48,8 @@ function SensitivityAnalysisResultTab({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(
-        AgGridFilterType.SensitivityAnalysis
-    );
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+
+    useComputationGlobalFilters(TableType.SensitivityAnalysis);
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
         setNOrNkIndex(newNOrNKIndex);
@@ -82,10 +80,14 @@ function SensitivityAnalysisResultTab({
         return sensiTab === SENSITIVITY_AT_NODE ? [] : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
     }, [sensiTab]);
 
-    const globalFilterOptions = useMemo(
-        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
-        [voltageLevelsFilter, countriesFilter, propertiesFilter]
-    );
+    const filterTypes: FilterType[] = useMemo(() => {
+        const allFilterTypes = Object.values(FilterType);
+        if (sensiTab === SENSITIVITY_AT_NODE) {
+            // in this case we disable generic filters
+            return allFilterTypes.filter((filterType) => !isCriteriaFilterType(filterType));
+        }
+        return allFilterTypes;
+    }, [sensiTab]);
 
     return (
         <>
@@ -110,13 +112,10 @@ function SensitivityAnalysisResultTab({
                         </Tabs>
                         <Box sx={{ display: 'flex', flexGrow: 0 }}>
                             <GlobalFilterSelector
-                                onChange={updateGlobalFilters}
-                                onAfterChange={resetPagination}
-                                filters={globalFilterOptions}
+                                filterCategories={filterTypes}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
-                                preloadedGlobalFilters={globalFiltersFromState}
                                 genericFiltersStrictMode={true}
-                                disableGenericFilters={sensiTab === SENSITIVITY_AT_NODE}
+                                tableType={TableType.SensitivityAnalysis}
                             />
                         </Box>
                         <SensitivityExportButton
@@ -126,7 +125,6 @@ function SensitivityAnalysisResultTab({
                             csvHeaders={csvHeaders}
                             nOrNkIndex={nOrNkIndex}
                             sensiKind={sensiTab}
-                            globalFilter={globalFiltersFromState}
                             disabled={isCsvButtonDisabled}
                         />
                     </Box>
@@ -138,7 +136,6 @@ function SensitivityAnalysisResultTab({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                        globalFilter={globalFiltersFromState}
                     />
                 </>
             )}

@@ -18,11 +18,10 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { FilterType as AgGridFilterType, PaginationType } from '../../../types/custom-aggrid-types';
+import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 
@@ -38,8 +37,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
-    const { globalFiltersFromState, updateGlobalFilters } = useComputationGlobalFilters(AgGridFilterType.PccMin);
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+    useComputationGlobalFilters(TableType.PccMin);
 
     const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { rowsPerPage } = pagination;
@@ -61,11 +59,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
         return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
     }, []);
 
-    const globalFilterOptions = useMemo(
-        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
-        [voltageLevelsFilter, countriesFilter, propertiesFilter]
-    );
-
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0, mb: 1 }}>
@@ -76,12 +69,9 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                 {resultOrLogIndex === RESULTS_TAB_INDEX && (
                     <Box sx={{ flex: 1 }}>
                         <GlobalFilterSelector
-                            onChange={updateGlobalFilters}
-                            onAfterChange={resetPagination}
-                            filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
-                            preloadedGlobalFilters={globalFiltersFromState}
                             genericFiltersStrictMode
+                            tableType={TableType.PccMin}
                         />
                     </Box>
                 )}
@@ -94,7 +84,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             currentRootNetworkUuid={currentRootNetworkUuid}
-                            globalFilter={globalFiltersFromState}
                             customTablePaginationProps={{
                                 labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
                             }}

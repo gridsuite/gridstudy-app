@@ -17,7 +17,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
 import { mappingTabs, SUFFIX_TYPES } from './sensitivity-analysis-result-utils.js';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterConfig, FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterConfig, TableType } from '../../../types/custom-aggrid-types';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
@@ -107,14 +107,14 @@ function SensitivityAnalysisResult({
                             comparators: isNum
                                 ? Object.values(FILTER_NUMBER_COMPARATORS)
                                 : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                            type: AgGridFilterType.SensitivityAnalysis,
+                            type: TableType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
                             updateFilterCallback: (
                                 agGridApi?: GridApi,
                                 filters?: FilterConfig[],
                                 colId?: string,
                                 studyUuid?: UUID,
-                                filterType?: FilterType,
+                                filterType?: TableType,
                                 filterSubType?: string
                             ) =>
                                 updateComputationColumnsFilters(
@@ -236,7 +236,7 @@ function SensitivityAnalysisResult({
         [setIsCsvButtonDisabled]
     );
 
-    const onGridReady = useAgGridInitialColumnFilters(FilterType.SensitivityAnalysis, computationSubType, ({ api }) =>
+    const onGridReady = useAgGridInitialColumnFilters(TableType.SensitivityAnalysis, computationSubType, ({ api }) =>
         setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 
