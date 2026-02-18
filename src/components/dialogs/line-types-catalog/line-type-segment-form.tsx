@@ -32,6 +32,7 @@ import {
     CustomAGGrid,
     DefaultCellRenderer,
     ExpandableInput,
+    fetchStudyMetadata,
     type MuiStyles,
     snackWithFallback,
     useSnackMessage,
@@ -65,6 +66,7 @@ export const LineTypeSegmentForm = () => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const [currentLimitResult, setCurrentLimitResult] = useState<CurrentLimitsInfo[]>([]);
+    const [limitsColumnDefs, setLimitsColumnDefs] = useState<ColDef[]>([]);
 
     // Fetches the lineTypes catalog on startup
     useEffect(() => {
@@ -287,7 +289,7 @@ export const LineTypeSegmentForm = () => {
         []
     );
 
-    const limitsColumnDefs = useMemo((): ColDef[] => {
+   useMemo((): void => {
         let base: ColDef[] = [
             {
                 headerName: intl.formatMessage({ id: 'lineTypes.currentLimits.limitSet' }),
@@ -307,30 +309,31 @@ export const LineTypeSegmentForm = () => {
                 limitNamesSet.add(temporaryLimit.name);
             });
         });
-        let i = 0;
-        limitNamesSet.forEach((limitName) => {
-            base.push({
-                headerName: `${limitName}`,
-                field: 'temporaryLimit' + i,
-                cellRenderer: DefaultCellRenderer,
+        fetchStudyMetadata().then((studyMetadata) => {
+            // metadata order makes order of temporary limits columns
+            studyMetadata?.temporaryLimitsNamesForCatalog.forEach((limitName) => {
+                if (limitNamesSet.has(limitName)) {
+                    base.push({
+                        headerName: `${limitName} [A]`,
+                        field: limitName,
+                        cellRenderer: DefaultCellRenderer,
+                    });
+                }
             });
-            i++;
+            setLimitsColumnDefs(base);
         });
-        return base;
     }, [intl, currentLimitResult]);
 
     const rowData = useMemo(() => {
         const testArray: any[] = [];
         currentLimitResult.forEach((currentLimit) => {
-            let test: any = {};
-            test['limitSetName'] = currentLimit.limitSetName;
-            test['permanentLimit'] = currentLimit.permanentLimit;
-            let c = 0;
-            currentLimit.temporaryLimits?.forEach((temporaryLimit) => {
-                test['temporaryLimit' + c] = temporaryLimit.limitValue;
-                c++;
-            });
-            testArray.push(test);
+            let limitData: any = {};
+            limitData['limitSetName'] = currentLimit.limitSetName;
+            limitData['permanentLimit'] = currentLimit.permanentLimit;
+            currentLimit.temporaryLimits.forEach((temporaryLimit) => {
+                    limitData[temporaryLimit.name] = temporaryLimit.limitValue;
+                });
+            testArray.push(limitData);
         });
         return testArray;
     }, [currentLimitResult]);
