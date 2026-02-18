@@ -92,7 +92,6 @@ const DynamicMarginCalculationResultSynthesis = memo(
 
         const rowDataToShow = useMemo(() => (overlayMessage ? [] : result), [result, overlayMessage]);
 
-        console.log('xxx dmc', { rowDataToShow, result, overlayMessage, dynamicMarginCalculationStatus });
         return (
             <>
                 {isLoading && (
