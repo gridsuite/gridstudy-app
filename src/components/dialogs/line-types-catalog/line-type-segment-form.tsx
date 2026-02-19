@@ -289,7 +289,7 @@ export const LineTypeSegmentForm = () => {
         []
     );
 
-   useMemo((): void => {
+    useMemo((): void => {
         let base: ColDef[] = [
             {
                 headerName: intl.formatMessage({ id: 'lineTypes.currentLimits.limitSet' }),
@@ -331,8 +331,8 @@ export const LineTypeSegmentForm = () => {
             limitData['limitSetName'] = currentLimit.limitSetName;
             limitData['permanentLimit'] = currentLimit.permanentLimit;
             currentLimit.temporaryLimits.forEach((temporaryLimit) => {
-                    limitData[temporaryLimit.name] = temporaryLimit.limitValue;
-                });
+                limitData[temporaryLimit.name] = temporaryLimit.limitValue;
+            });
             testArray.push(limitData);
         });
         return testArray;
