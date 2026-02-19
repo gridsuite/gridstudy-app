@@ -57,12 +57,16 @@ function SensitivityAnalysisResultTab({
 
     const sensiKindForPagination = isSensiKind(sensiTab) ? sensiTab : SENSITIVITY_IN_DELTA_MW;
 
-    const { pagination } = usePaginationSelector(
+    const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SensitivityAnalysis,
         mappingTabs(sensiKindForPagination, nOrNkIndex)
     );
 
     const { rowsPerPage } = pagination;
+
+    const resetPagination = useCallback(() => {
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [dispatchPagination, rowsPerPage]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING,

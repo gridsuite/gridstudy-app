@@ -79,6 +79,19 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
+    const resetPaginationIfAllBuses = useCallback(() => {
+        if (tabIndex !== ShortCircuitAnalysisResultTabs.ALL_BUSES) {
+            return;
+        }
+        if (resultOrLogIndex !== RESULTS_TAB_INDEX) {
+            return;
+        }
+        if (page === 0) {
+            return;
+        }
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [tabIndex, resultOrLogIndex, page, dispatchPagination, rowsPerPage]);
+
     const AllBusesShortCircuitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );

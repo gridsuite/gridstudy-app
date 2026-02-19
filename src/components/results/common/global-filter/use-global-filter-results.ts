@@ -60,11 +60,11 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
         ]
     );
 
-    const debouncedFetchResult = useDebounce(fetchFilteredIds);
+    const debouncedFetchFilteredIds = useDebounce(fetchFilteredIds);
 
     useEffect(() => {
-        debouncedFetchResult(filters, equipmentTypes);
-    }, [equipmentTypes, filters, debouncedFetchResult]);
+        debouncedFetchFilteredIds(filters, equipmentTypes);
+    }, [equipmentTypes, filters, debouncedFetchFilteredIds]);
 
     return filteredIds;
 }
