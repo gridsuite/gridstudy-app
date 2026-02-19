@@ -30,11 +30,7 @@ import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import {
-    TableType,
-    PaginationType,
-    ShortcircuitAnalysisTab,
-} from '../../../types/custom-aggrid-types';
+import { TableType, PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
 
@@ -82,19 +78,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
-
-    const resetPaginationIfAllBuses = useCallback(() => {
-        if (tabIndex !== ShortCircuitAnalysisResultTabs.ALL_BUSES) {
-            return;
-        }
-        if (resultOrLogIndex !== RESULTS_TAB_INDEX) {
-            return;
-        }
-        if (page === 0) {
-            return;
-        }
-        dispatchPagination({ page: 0, rowsPerPage });
-    }, [tabIndex, resultOrLogIndex, page, dispatchPagination, rowsPerPage]);
 
     const AllBusesShortCircuitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]

@@ -85,10 +85,7 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
-    result = null,
-    status,
-}) => {
+export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ result = null, status }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);

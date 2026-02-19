@@ -37,7 +37,11 @@ export const getGlobalFilterId = (filter: GlobalFilterWithoutId): string => {
     }
 };
 
-export const getOptionLabel = (option: GlobalFilterWithoutId, translate: (arg: string) => string, intl: IntlShape): string => {
+export const getOptionLabel = (
+    option: GlobalFilterWithoutId,
+    translate: (arg: string) => string,
+    intl: IntlShape
+): string => {
     switch (option.filterType) {
         case FilterType.COUNTRY:
             return translate(option.label);

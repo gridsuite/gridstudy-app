@@ -86,16 +86,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [
-        filters,
-        studyUuid,
-        nodeUuid,
-        currentRootNetworkUuid,
-        sortConfig,
-        csvHeaders,
-        language,
-        snackError,
-    ]);
+    }, [filters, studyUuid, nodeUuid, currentRootNetworkUuid, sortConfig, csvHeaders, language, snackError]);
 
     return (
         <ExportCsvButton

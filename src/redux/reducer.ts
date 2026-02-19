@@ -644,7 +644,6 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     },
 };
 
-
 interface TablesState {
     uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];

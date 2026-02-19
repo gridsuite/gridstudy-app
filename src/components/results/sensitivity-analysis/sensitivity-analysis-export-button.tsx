@@ -40,15 +40,7 @@ interface SensitivityExportButtonProps {
 }
 
 export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonProps> = (props) => {
-    const {
-        studyUuid,
-        nodeUuid,
-        currentRootNetworkUuid,
-        csvHeaders,
-        disabled = false,
-        nOrNkIndex,
-        sensiKind,
-    } = props;
+    const { studyUuid, nodeUuid, currentRootNetworkUuid, csvHeaders, disabled = false, nOrNkIndex, sensiKind } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);

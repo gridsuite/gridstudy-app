@@ -129,12 +129,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
-    const resetPaginationIfNKResults = useCallback(() => {
-        if (tabIndex === NMK_RESULTS_TAB_INDEX) {
-            dispatchPagination({ page: 0, rowsPerPage });
-        }
-    }, [dispatchPagination, tabIndex, rowsPerPage]);
-
     const queryParams: SecurityAnalysisQueryParams = useMemo(() => {
         const params: SecurityAnalysisQueryParams = {
             resultType,

@@ -28,7 +28,11 @@ import { GlobalFilterContext } from './global-filter-context';
 import SelectedGlobalFilters from './selected-global-filters';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { TextWithInfoIcon } from './text-with-info-icon';
-import { addToSelectedGlobalFilters, addToGlobalFilterOptions, clearSelectedGlobalFilters } from '../../../../redux/actions';
+import {
+    addToSelectedGlobalFilters,
+    addToGlobalFilterOptions,
+    clearSelectedGlobalFilters,
+} from '../../../../redux/actions';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 
@@ -83,7 +87,8 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
             .filter((category) => {
                 // when we are filtering substations the SUBSTATION_OR_VL makes no sense and is removed :
                 const onlySubstations =
-                    filterableEquipmentTypes?.length === 1 && filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION;
+                    filterableEquipmentTypes?.length === 1 &&
+                    filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION;
                 return !(category === FilterType.SUBSTATION_OR_VL && onlySubstations);
             });
         return [RECENT_FILTER, ...filteredCategories];
@@ -156,7 +161,13 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
             });
 
             dispatch(addToGlobalFilterOptions(newlySelectedFilters));
-            dispatch(addToSelectedGlobalFilters(tableType, tableUuid, newlySelectedFilters.map((f) => f.id)));
+            dispatch(
+                addToSelectedGlobalFilters(
+                    tableType,
+                    tableUuid,
+                    newlySelectedFilters.map((f) => f.id)
+                )
+            );
             setDirectoryItemSelectorOpen(false);
         },
         [selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown, dispatch, tableType, tableUuid]

@@ -65,6 +65,6 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
     useEffect(() => {
         debouncedFetchResult(filters, equipmentTypes);
     }, [equipmentTypes, filters, debouncedFetchResult]);
-    
+
     return filteredIds;
 }

@@ -40,7 +40,6 @@ import {
     addSortForNewSpreadsheet,
     initTableDefinitions,
     renameTableDefinition,
-    initSpreadsheetGlobalFilters,
     selectComputedLanguage,
     selectFavoriteContingencyLists,
     selectIsDeveloperMode,

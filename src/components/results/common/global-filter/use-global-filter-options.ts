@@ -18,7 +18,6 @@ import { AppState } from '../../../../redux/reducer';
 import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 import { addToGlobalFilterOptions } from '../../../../redux/actions';
 
-
 /**
  * Custom hook that manages global filter options for tables.
  *

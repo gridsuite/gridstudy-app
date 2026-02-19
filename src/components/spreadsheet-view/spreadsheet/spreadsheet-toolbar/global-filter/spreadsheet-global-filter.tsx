@@ -19,7 +19,6 @@ export type SpreadsheetGlobalFilterProps = {
 };
 
 export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<SpreadsheetGlobalFilterProps>) {
-
     const filterTypes: FilterType[] = useMemo(() => {
         const allFilterTypes = Object.values(FilterType);
         if (

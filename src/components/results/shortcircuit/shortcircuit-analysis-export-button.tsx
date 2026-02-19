@@ -42,14 +42,7 @@ interface ShortCircuitExportButtonProps {
 }
 
 export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButtonProps> = (props) => {
-    const {
-        studyUuid,
-        nodeUuid,
-        currentRootNetworkUuid,
-        csvHeader,
-        disabled = false,
-        analysisType,
-    } = props;
+    const { studyUuid, nodeUuid, currentRootNetworkUuid, csvHeader, disabled = false, analysisType } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
