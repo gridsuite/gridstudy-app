@@ -66,8 +66,6 @@ import {
     type DeleteEquipmentsAction,
     ENABLE_DEVELOPER_MODE,
     type EnableDeveloperModeAction,
-    FAVORITE_CONTINGENCY_LISTS,
-    type FavoriteContingencyListsAction,
     HIGHLIGHT_MODIFICATION,
     HighlightModificationAction,
     INIT_TABLE_DEFINITIONS,
@@ -236,13 +234,7 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import {
-    PARAM_COMPUTED_LANGUAGE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LIMIT_REDUCTION,
-    PARAM_USE_NAME,
-    PARAMS_LOADED,
-} from '../utils/config-params';
+import { PARAM_COMPUTED_LANGUAGE, PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
 import { RunningStatus } from 'components/utils/running-status';
@@ -496,7 +488,6 @@ export interface AppConfigState {
     [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
     [PARAM_LIMIT_REDUCTION]: number;
     [PARAM_USE_NAME]: boolean;
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAMS_LOADED]: boolean;
 }
@@ -756,7 +747,6 @@ const initialState: AppState = {
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
     [PARAM_USE_NAME]: true,
     [PARAM_LIMIT_REDUCTION]: 100,
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
 
@@ -1252,10 +1242,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.isMapEquipmentsInitialized = action.newValue;
     });
 
-    builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
-        state[PARAM_FAVORITE_CONTINGENCY_LISTS] = action[PARAM_FAVORITE_CONTINGENCY_LISTS];
-    });
-
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
         state.reloadMapNeeded = true;
@@ -1470,6 +1456,15 @@ export const reducer = createReducer(initialState, (builder) => {
                     state.spreadsheetNetwork.equipments[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[
                         action.nodeId
                     ] = updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
+                }
+                // since we don't receive deleted buses ids in the notifications
+                // we have to check buses connected to the deleted voltage level and delete them
+                const currentBuses = state.spreadsheetNetwork.equipments[SpreadsheetEquipmentType.BUS]
+                    .equipmentsByNodeId[action.nodeId] as Record<string, Bus> | null;
+                if (currentBuses != null) {
+                    state.spreadsheetNetwork.equipments[SpreadsheetEquipmentType.BUS].equipmentsByNodeId[
+                        action.nodeId
+                    ] = updateBusesAfterVLDeletion(currentBuses, equipmentToDeleteId);
                 }
             }
             if (state.spreadsheetNetwork.equipments[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId]) {
@@ -1849,9 +1844,20 @@ function updateSubstationAfterVLDeletion(
     return currentSubstations;
 }
 
+function updateBusesAfterVLDeletion(currentBuses: Record<string, Bus>, VLToDeleteId: string): Record<string, Bus> {
+    for (const busId in currentBuses) {
+        if (currentBuses[busId][VOLTAGE_LEVEL_ID] === VLToDeleteId) {
+            delete currentBuses[busId];
+        }
+    }
+    return currentBuses;
+}
+
 export type Substation = Identifiable & {
     voltageLevels: Identifiable[];
 };
+
+export type Bus = Identifiable & { [VOLTAGE_LEVEL_ID]: string };
 
 function updateSubstationsAndVoltageLevels(
     currentSubstations: Record<string, Substation>,

@@ -17,7 +17,6 @@ import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import IconButton from '@mui/material/IconButton';
-import type { UUID } from 'node:crypto';
 import { setModificationMetadata } from '../../../../services/study/network-modifications';
 
 const styles = {
@@ -44,17 +43,17 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
     const empty = !description;
 
     const updateModification = useCallback(
-        async (uuid: UUID, descriptionRecord: Record<string, string>) => {
+        async (descriptionRecord: Record<string, string>) => {
             setIsLoading(true);
 
-            return setModificationMetadata(studyUuid, currentNode?.id, uuid, {
+            return setModificationMetadata(studyUuid, currentNode?.id, modificationUuid, {
                 description: descriptionRecord.description,
                 type: data?.type,
             }).finally(() => {
                 setIsLoading(false);
             });
         },
-        [studyUuid, currentNode?.id, data?.type]
+        [studyUuid, currentNode?.id, modificationUuid, data?.type]
     );
 
     const handleDescDialogClose = useCallback(() => {
@@ -72,7 +71,6 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
                 <DescriptionModificationDialog
                     open
                     description={description ?? ''}
-                    elementUuid={modificationUuid}
                     onClose={handleDescDialogClose}
                     updateElement={updateModification}
                 />

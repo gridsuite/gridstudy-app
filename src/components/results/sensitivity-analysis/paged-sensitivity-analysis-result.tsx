@@ -33,8 +33,8 @@ import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;

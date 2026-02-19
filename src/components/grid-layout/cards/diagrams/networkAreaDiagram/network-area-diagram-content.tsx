@@ -37,6 +37,7 @@ import {
     ElementType,
     EquipmentType,
     ExtendedEquipmentType,
+    HvdcType,
     IElementCreationDialog,
     IElementUpdateDialog,
     mergeSx,
@@ -306,7 +307,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 )
                     .then((hvdcInfos) => {
                         const equipmentSubtype =
-                            hvdcInfos?.hvdcType === 'LCC'
+                            hvdcInfos?.hvdcType === HvdcType.LCC
                                 ? ExtendedEquipmentType.HVDC_LINE_LCC
                                 : ExtendedEquipmentType.HVDC_LINE_VSC;
 
@@ -472,6 +473,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onToggleHoverCallback: handleToggleHover,
                 onRightClickCallback: showEquipmentMenu,
                 initialViewBox: nadViewBox[nadPanelId] ?? diagramViewerRef?.current?.getViewBox(),
+                enableAdaptiveTextZoom: true,
+                adaptiveTextZoomThreshold: 3500,
             };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
