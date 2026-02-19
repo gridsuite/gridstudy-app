@@ -240,13 +240,6 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
     display: none;
 }
 
-/* Hides the labels until sufficiently zoomed in. */
-:is(.nad-zoom-3500, .nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
-    .nad-label-box
-    ) {
-    display: none;
-}
-
 /* Hides the voltage levels 0 to 50 when zoomed out. */
 :is(.nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
     .nad-voltage-level-1, .nad-voltage-level-2

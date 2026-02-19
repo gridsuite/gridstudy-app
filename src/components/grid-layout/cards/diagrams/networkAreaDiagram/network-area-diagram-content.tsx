@@ -474,7 +474,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onRightClickCallback: showEquipmentMenu,
                 initialViewBox: nadViewBox[nadPanelId] ?? diagramViewerRef?.current?.getViewBox(),
                 enableAdaptiveTextZoom: true,
-                adaptiveTextZoomThreshold: 2000,
+                adaptiveTextZoomThreshold: 3500,
             };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
