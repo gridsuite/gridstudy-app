@@ -70,12 +70,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
-    const { pagination, dispatchPagination } = usePaginationSelector(
-        PaginationType.ShortcircuitAnalysis,
-        mappingTabs(tabIndex) as ShortcircuitAnalysisTab
-    );
-    const { page, rowsPerPage } = pagination;
-
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
