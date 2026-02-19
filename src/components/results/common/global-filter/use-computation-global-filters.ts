@@ -8,7 +8,7 @@ import { TableType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { GlobalFilter } from './global-filter-types';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { getComputationResultGlobalFilters } from '../../../../services/study/study-config';
 import { addToGlobalFilterOptions, addToSelectedGlobalFilters } from '../../../../redux/actions';
 import { isCriteriaFilter } from '../utils';
@@ -35,7 +35,18 @@ export function useFetchComputationGlobalFilters(tableType: TableType) {
     }, [dispatch, studyUuid, tableType]);
 }
 
-export function useComputationGlobalFilters(tableType: TableType) {
+export function useComputationGlobalFilters(tableType: TableType, onGlobalFiltersChange?: () => void) {
     useFetchComputationGlobalFilters(tableType);
-    return useSelectedGlobalFilters(tableType);
+    const selectedGlobalFilters = useSelectedGlobalFilters(tableType);
+
+    const isFirstRender = useRef(true);
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        onGlobalFiltersChange?.();
+    }, [onGlobalFiltersChange, selectedGlobalFilters]);
+
+    return selectedGlobalFilters;
 }

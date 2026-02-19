@@ -37,14 +37,14 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
-    useComputationGlobalFilters(TableType.PccMin);
-
     const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { rowsPerPage } = pagination;
 
     const resetPagination = useCallback(() => {
         dispatchPagination({ page: 0, rowsPerPage });
     }, [dispatchPagination, rowsPerPage]);
+
+    useComputationGlobalFilters(TableType.PccMin, resetPagination);
 
     const handleSubTabChange = useCallback((event: SyntheticEvent, newIndex: number) => {
         setResultOrLogIndex(newIndex);

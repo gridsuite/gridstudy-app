@@ -122,7 +122,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const { page, rowsPerPage } = pagination;
 
     const { filters } = useComputationColumnFilters(TableType.SecurityAnalysis, getStoreFields(tabIndex));
-    const globalFiltersFromState = useComputationGlobalFilters(TableType.SecurityAnalysis);
 
     const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
@@ -133,6 +132,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             dispatchPagination({ page: 0, rowsPerPage });
         }
     }, [dispatchPagination, tabIndex, rowsPerPage]);
+
+    const globalFiltersFromState = useComputationGlobalFilters(TableType.SecurityAnalysis, resetPaginationIfNKResults);
 
     const queryParams: SecurityAnalysisQueryParams = useMemo(() => {
         const params: SecurityAnalysisQueryParams = {

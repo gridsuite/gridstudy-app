@@ -49,8 +49,6 @@ function SensitivityAnalysisResultTab({
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    useComputationGlobalFilters(TableType.SensitivityAnalysis);
-
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
         setNOrNkIndex(newNOrNKIndex);
     };
@@ -67,6 +65,8 @@ function SensitivityAnalysisResultTab({
     const resetPagination = useCallback(() => {
         dispatchPagination({ page: 0, rowsPerPage });
     }, [dispatchPagination, rowsPerPage]);
+
+    useComputationGlobalFilters(TableType.SensitivityAnalysis, resetPagination);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING,
