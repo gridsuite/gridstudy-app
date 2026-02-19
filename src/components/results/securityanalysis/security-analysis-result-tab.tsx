@@ -44,7 +44,6 @@ import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import { FilterType, isCriteriaFilterType } from '../common/utils';
 
@@ -123,7 +122,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const { page, rowsPerPage } = pagination;
 
     const { filters } = useComputationColumnFilters(TableType.SecurityAnalysis, getStoreFields(tabIndex));
-    useComputationGlobalFilters(TableType.SecurityAnalysis);
+    const globalFiltersFromState = useComputationGlobalFilters(TableType.SecurityAnalysis);
 
     const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
@@ -157,12 +156,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             const columnToFieldMapping = mappingColumnToField(resultType);
             params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
         }
-        const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.SecurityAnalysis));
+        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
         if (globalFilters) {
             params['globalFilters'] = globalFilters;
         }
         return params;
-    }, [resultType, tabIndex, sortConfig, filters, page, rowsPerPage, intl]);
+    }, [resultType, tabIndex, sortConfig, filters, globalFiltersFromState, page, rowsPerPage, intl]);
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {

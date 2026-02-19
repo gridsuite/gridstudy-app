@@ -13,9 +13,10 @@ import { getComputationResultGlobalFilters } from '../../../../services/study/st
 import { addToGlobalFilterOptions, addToSelectedGlobalFilters } from '../../../../redux/actions';
 import { isCriteriaFilter } from '../utils';
 import { addGlobalFilterId, getGlobalFilterId } from './global-filter-utils';
+import { useSelectedGlobalFilters } from './use-selected-global-filters';
 
 // Get the global filters for a given table from the server and store them in the Redux store
-export function useComputationGlobalFilters(tableType: TableType) {
+export function useFetchComputationGlobalFilters(tableType: TableType) {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -32,4 +33,9 @@ export function useComputationGlobalFilters(tableType: TableType) {
                 }
             );
     }, [dispatch, studyUuid, tableType]);
+}
+
+export function useComputationGlobalFilters(tableType: TableType) {
+    useFetchComputationGlobalFilters(tableType);
+    return useSelectedGlobalFilters(tableType);
 }

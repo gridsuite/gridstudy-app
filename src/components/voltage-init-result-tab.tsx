@@ -18,7 +18,6 @@ import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import { useComputationGlobalFilters } from './results/common/global-filter/use-computation-global-filters';
 import { TableType } from '../types/custom-aggrid-types';
 import { buildValidGlobalFilters } from './results/common/global-filter/build-valid-global-filters';
-import { getSelectedGlobalFilters } from './results/common/global-filter/use-selected-global-filters';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;
@@ -34,17 +33,17 @@ export function VoltageInitResultTab({
     const voltageInitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
-    useComputationGlobalFilters(TableType.VoltageInit);
+    const globalFiltersFromState = useComputationGlobalFilters(TableType.VoltageInit);
 
     const fetchVoltageInitResultWithGlobalFilters = useMemo(
         () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => {
-            const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.VoltageInit));
+            const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
             return fetchVoltageInitResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 filters: null,
                 ...(globalFilters ? { globalFilters: { ...globalFilters } } : {}),
             });
         },
-        []
+        [globalFiltersFromState]
     );
 
     const { result: voltageInitResult } = useNodeData({

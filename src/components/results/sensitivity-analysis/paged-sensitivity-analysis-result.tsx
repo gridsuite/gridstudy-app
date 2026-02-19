@@ -26,14 +26,13 @@ import {
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { TableType, PaginationType, SensitivityAnalysisTab, SortWay } from '../../../types/custom-aggrid-types';
+import { PaginationType, SensitivityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
-import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
+import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
@@ -69,6 +68,7 @@ function PagedSensitivityAnalysisResult({
     );
 
     const { filters } = useComputationColumnFilters(TableType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const globalFiltersFromState = useSelectedGlobalFilters(TableType.SensitivityAnalysis);
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SensitivityAnalysis,
         mappingTabs(sensiKind, nOrNkIndex) as SensitivityAnalysisTab
@@ -164,7 +164,7 @@ function PagedSensitivityAnalysisResult({
             return { ...elem, column: newColumn };
         });
         setIsLoading(true);
-        const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.SensitivityAnalysis));
+        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
         fetchSensitivityAnalysisResult(
             studyUuid,
             nodeUuid,
@@ -195,6 +195,7 @@ function PagedSensitivityAnalysisResult({
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
+        globalFiltersFromState,
         snackError,
     ]);
 
@@ -209,7 +210,7 @@ function PagedSensitivityAnalysisResult({
             fetchFilterOptions();
             debouncedFetchResult();
         }
-    }, [sensiStatus, debouncedFetchResult, fetchFilterOptions]);
+    }, [sensiStatus, debouncedFetchResult, fetchFilterOptions, globalFiltersFromState]);
 
     return (
         <>

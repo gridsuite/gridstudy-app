@@ -55,7 +55,6 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
-import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 
 const styles = {
     flexWrapper: {
@@ -91,7 +90,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const { filters } = useComputationColumnFilters(TableType.Loadflow, mappingTabs(tabIndex));
 
-    useComputationGlobalFilters(TableType.Loadflow);
+    const globalFiltersFromState = useComputationGlobalFilters(TableType.Loadflow);
+
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
@@ -124,7 +124,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     value: limitTypeValues,
                 });
             }
-            const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.Loadflow));
+            const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
             return fetchLimitViolations(studyUuid, nodeUuid, currentRootNetworkUuid, {
                 sort: sortConfig.map((sort) => ({
                     ...sort,
@@ -144,7 +144,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     : {}),
             });
         },
-        [tabIndex, filters, intl, sortConfig]
+        [tabIndex, filters, intl, sortConfig, globalFiltersFromState]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {

@@ -24,7 +24,7 @@ import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
 import { PccMinExportButton } from './pcc-min-export-button';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 interface PccMinResultProps {
@@ -74,6 +74,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     );
 
     const { filters } = useComputationColumnFilters(TableType.PccMin, PCCMIN_RESULT);
+    const globalFiltersFromState = useSelectedGlobalFilters(TableType.PccMin);
     const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { page, rowsPerPage } = pagination;
     const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
@@ -115,7 +116,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
             filter: filters ? mapFieldsToColumnsFilter(filters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null,
             sort: sortConfig,
         };
-        const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.PccMin));
+        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
         fetchPccMinPagedResults({
             studyUuid,
             currentNodeUuid: nodeUuid,
@@ -152,6 +153,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         intl,
         filters,
         sortConfig,
+        globalFiltersFromState,
     ]);
 
     return (

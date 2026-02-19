@@ -18,7 +18,6 @@ import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN } from './pcc-min-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 
@@ -38,7 +37,6 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const { filters } = useFilterSelector(TableType.PccMin, PCCMIN_RESULT);
-    useComputationGlobalFilters(TableType.PccMin);
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
