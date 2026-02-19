@@ -30,7 +30,7 @@ import {
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
-import { APP_NAME, PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME } from '../utils/config-params';
+import { APP_NAME, PARAM_USE_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
@@ -42,7 +42,6 @@ import {
     renameTableDefinition,
     saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
-    selectFavoriteContingencyLists,
     selectIsDeveloperMode,
     selectLanguage,
     selectTheme,
@@ -128,9 +127,6 @@ const App = () => {
                         break;
                     case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));
-                        break;
-                    case PARAM_FAVORITE_CONTINGENCY_LISTS:
-                        dispatch(selectFavoriteContingencyLists(param.value.split(',').filter((list) => list)));
                         break;
                     case LAST_SELECTED_DIRECTORY:
                         localStorage.setItem(LAST_SELECTED_DIRECTORY, param.value);
