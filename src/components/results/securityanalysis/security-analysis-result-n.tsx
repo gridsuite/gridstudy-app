@@ -49,7 +49,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                               ? null
                               : limitViolation?.upcomingAcceptableDuration,
                   } as SecurityAnalysisNTableRow;
-              }) ?? []);
+              }));
     }, [intl, result]);
 
     return (
