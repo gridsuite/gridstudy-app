@@ -27,7 +27,6 @@ import {
 } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import { DynamicSimulationParametersSelector } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
-import { ContingencyListSelector } from './dialogs/contingency-list-selector';
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';
 import {
     fetchDynamicSimulationParameters,
@@ -100,8 +99,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
     const stateEstimationStatus = useSelector((state) => state.computingStatus[ComputingType.STATE_ESTIMATION]);
     const pccMinStatus = useSelector((state) => state.computingStatus[ComputingType.PCC_MIN]);
-
-    const [showContingencyListSelector, setShowContingencyListSelector] = useState(false);
 
     const [showDynamicSimulationParametersSelector, setShowDynamicSimulationParametersSelector] = useState(false);
 
@@ -219,16 +216,16 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         [currentNode, snackError]
     );
 
-    const handleStartSecurityAnalysis = (contingencyListNames) => {
+    const handleStartSecurityAnalysis = useCallback(() => {
         startComputationAsync(
             ComputingType.SECURITY_ANALYSIS,
             null,
-            () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, contingencyListNames),
+            () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
             () => {},
             null,
             null
         );
-    };
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, startComputationAsync]);
 
     const handleStartDynamicSimulation = (dynamicSimulationConfiguration, debug) => {
         startComputationAsync(
@@ -310,7 +307,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             [ComputingType.SECURITY_ANALYSIS]: {
                 messageId: 'SecurityAnalysis',
                 startComputation() {
-                    setShowContingencyListSelector(true);
+                    handleStartSecurityAnalysis();
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.SECURITY_ANALYSIS, () =>
@@ -508,6 +505,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         checkForbiddenProvider,
         studyUuid,
         handleStartLoadFlow,
+        handleStartSecurityAnalysis,
         currentNode?.id,
         currentRootNetworkUuid,
         startComputationAsync,
@@ -599,14 +597,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 getStatus={getRunningStatus}
                 computationStopped={computationStopped}
                 disabled={isModificationsInProgress || disabled}
-            />
-            <ContingencyListSelector
-                open={showContingencyListSelector}
-                onClose={() => setShowContingencyListSelector(false)}
-                onStart={(params) => {
-                    handleStartSecurityAnalysis(params);
-                    setShowContingencyListSelector(false);
-                }}
             />
             {!disabled && showDynamicSimulationParametersSelector && (
                 <DynamicSimulationParametersSelector
