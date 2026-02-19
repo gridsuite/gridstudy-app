@@ -27,7 +27,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
     const rows = useMemo(() => {
         return !result
             ? undefined
-            : (result?.map((preContingencyResult: PreContingencyResult) => {
+            : (result.map((preContingencyResult: PreContingencyResult) => {
                   const { limitViolation, subjectId } = preContingencyResult;
                   return {
                       subjectId: subjectId,
