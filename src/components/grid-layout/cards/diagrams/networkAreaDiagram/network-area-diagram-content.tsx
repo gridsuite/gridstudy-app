@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useLayoutEffect, useRef, useCallback, useState, useEffect, memo } from 'react';
+import { useLayoutEffect, useRef, useCallback, useState, useEffect, memo, useEffectEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RunningStatus from 'components/utils/running-status';
 import {
@@ -107,7 +107,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         showInSpreadsheet,
         onSaveNad,
     } = props;
-    const svgRef = useRef(null);
+    const svgRef = useRef<HTMLElement>(null);
     const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>(null);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
@@ -127,10 +127,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const dispatch = useDispatch();
 
     // refs to keep useLayoutEffect and callbacks stable
-    const isEditNadModeRef = useRef(isEditNadMode);
-    const positionsRef = useRef(positions);
-    isEditNadModeRef.current = isEditNadMode;
-    positionsRef.current = positions;
     // Update drag interaction without full viewer reinitialization
     if (diagramViewerRef.current) {
         diagramViewerRef.current.enableDragInteraction = isEditNadMode;
@@ -154,7 +150,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const handleToggleHover: OnToggleNadHoverCallbackType = useCallback(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
             // Do not show the hover in edit mode
-            if (isEditNadModeRef.current) {
+            if (isEditNadMode) {
                 return;
             }
             if (mousePosition) {
@@ -176,13 +172,13 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 setShouldDisplayTooltip(false);
             }
         },
-        []
+        [isEditNadMode]
     );
 
     const handleNodeLeftClick: OnSelectNodeCallbackType = useCallback(
         (equipmentId, nodeId, mousePosition) => {
             if (mousePosition && !loadingState) {
-                if (isEditNadModeRef.current) {
+                if (isEditNadMode) {
                     setSelectedVoltageLevelId(equipmentId);
                     setShouldDisplayMenu(true);
                     setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
@@ -191,7 +187,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 }
             }
         },
-        [onVoltageLevelClick, loadingState]
+        [loadingState, isEditNadMode, onVoltageLevelClick]
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
@@ -269,7 +265,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
 
     const showEquipmentMenu = useCallback(
         (svgId: string, equipmentId: string, equipmentType: string, mousePosition: Point) => {
-            if (isEditNadModeRef.current || !equipmentsWithContextualMenu.includes(equipmentType)) {
+            if (isEditNadMode || !equipmentsWithContextualMenu.includes(equipmentType)) {
                 return;
             }
 
@@ -327,7 +323,15 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 }
             }
         },
-        [additionalMetadata, openEquipmentMenu, currentNode?.id, currentRootNetworkUuid, studyUuid, snackError]
+        [
+            isEditNadMode,
+            openEquipmentMenu,
+            additionalMetadata?.voltageLevels,
+            studyUuid,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            snackError,
+        ]
     );
 
     const handleAddVoltageLevel = useCallback(
@@ -383,24 +387,24 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
 
     const handleMoveNode = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number) => {
-            const updatedPositions = positionsRef.current.map((position) =>
+            const updatedPositions = positions.map((position) =>
                 position.voltageLevelId === equipmentId ? { ...position, xPosition: x, yPosition: y } : position
             );
             onUpdatePositions(updatedPositions);
         },
-        [onUpdatePositions]
+        [onUpdatePositions, positions]
     );
 
     const handleMoveTextnode = useCallback(
         (equipmentId: string, vlNodeId: string, textNodeId: string, shiftX: number, shiftY: number) => {
-            const updatedPositions = positionsRef.current.map((position) =>
+            const updatedPositions = positions.map((position) =>
                 position.voltageLevelId === equipmentId
                     ? { ...position, xLabelPosition: shiftX, yLabelPosition: shiftY }
                     : position
             );
             onUpdatePositions(updatedPositions);
         },
-        [onUpdatePositions]
+        [onUpdatePositions, positions]
     );
 
     const handleReplaceNadConfig = useCallback(
@@ -452,62 +456,59 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         return () => globalThis.removeEventListener('workspace:switchWorkspace', handleSwitchWorkspace);
     }, [nadPanelId, diagramViewerRef, dispatch]);
 
+    const onNadRefresh = useEffectEvent((newSvg: string, newSvgMetadata: DiagramMetadata | undefined) => {
+        if (!svgRef.current || !newSvg) {
+            return;
+        }
+        // Initializing the diagram viewer
+        const nadViewerParameters: NadViewerParametersOptions = {
+            minWidth: MIN_WIDTH,
+            minHeight: MIN_HEIGHT,
+            maxWidth: MAX_WIDTH_NETWORK_AREA_DIAGRAM,
+            maxHeight: MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
+            enableDragInteraction: isEditNadMode,
+            enableLevelOfDetail: true,
+            zoomLevels: NAD_ZOOM_LEVELS,
+            addButtons: false,
+            onMoveNodeCallback: handleMoveNode,
+            onMoveTextNodeCallback: handleMoveTextnode,
+            onSelectNodeCallback: handleNodeLeftClick,
+            onToggleHoverCallback: handleToggleHover,
+            onRightClickCallback: showEquipmentMenu,
+            initialViewBox: nadViewBox[nadPanelId] ?? diagramViewerRef?.current?.getViewBox(),
+        };
+        const diagramViewer = new NetworkAreaDiagramViewer(
+            svgRef.current,
+            newSvg,
+            newSvgMetadata ?? null,
+            nadViewerParameters
+        );
+
+        // Repositioning the nodes with specified positions
+        if (positions.length > 0) {
+            for (const position of positions) {
+                if (position.xPosition !== undefined && position.yPosition !== undefined) {
+                    diagramViewer.moveNodeToCoordinates(
+                        position.voltageLevelId,
+                        position.xPosition,
+                        position.yPosition
+                    );
+                }
+            }
+        }
+        // We keep a reference of the diagram viewer to get its viewbox for the next render.
+        diagramViewerRef.current = diagramViewer;
+    });
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
 
     useLayoutEffect(() => {
         if (svg && svgRef.current && !loadingState) {
-            const nadViewerParameters: NadViewerParametersOptions = {
-                minWidth: MIN_WIDTH,
-                minHeight: MIN_HEIGHT,
-                maxWidth: MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-                maxHeight: MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
-                enableDragInteraction: isEditNadModeRef.current,
-                enableLevelOfDetail: true,
-                zoomLevels: NAD_ZOOM_LEVELS,
-                addButtons: false,
-                onMoveNodeCallback: handleMoveNode,
-                onMoveTextNodeCallback: handleMoveTextnode,
-                onSelectNodeCallback: handleNodeLeftClick,
-                onToggleHoverCallback: handleToggleHover,
-                onRightClickCallback: showEquipmentMenu,
-                initialViewBox: nadViewBox[nadPanelId] ?? diagramViewerRef?.current?.getViewBox(),
-            };
-            const diagramViewer = new NetworkAreaDiagramViewer(
-                svgRef.current,
-                svg,
-                svgMetadata ?? null,
-                nadViewerParameters
-            );
-
-            // Repositioning the nodes with specified positions
-            if (positionsRef.current.length > 0) {
-                for (const position of positionsRef.current) {
-                    if (position.xPosition !== undefined && position.yPosition !== undefined) {
-                        diagramViewer.moveNodeToCoordinates(
-                            position.voltageLevelId,
-                            position.xPosition,
-                            position.yPosition
-                        );
-                    }
-                }
-            }
-            // We keep a reference of the diagram viewer to get its viewbox for the next render.
-            diagramViewerRef.current = diagramViewer;
+            onNadRefresh(svg, svgMetadata);
         }
-    }, [
-        svg,
-        svgMetadata,
-        nadViewBox,
-        nadPanelId,
-        loadingState,
-        handleMoveNode,
-        handleMoveTextnode,
-        handleNodeLeftClick,
-        handleToggleHover,
-        showEquipmentMenu,
-    ]);
+    }, [svg, svgMetadata, nadViewBox, nadPanelId, loadingState]);
 
     const closeMenu = () => {
         setMenuAnchorPosition(null);
