@@ -15,6 +15,7 @@ import {
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
 } from '../../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
+import { CharacteristicsFormSchema, ConnectivityFormSchema } from '../../two-windings-transformer.types';
 
 const twoWindingsTransformerValidationSchema = () =>
     getCharacteristicsValidationSchema(false, {
@@ -46,6 +47,9 @@ export const getTwoWindingsTransformerFormData = ({
     ratedU2 = null,
     connectivity1 = null,
     connectivity2 = null,
+}: CharacteristicsFormSchema & {
+    connectivity1?: ConnectivityFormSchema | null;
+    connectivity2?: ConnectivityFormSchema | null;
 }) =>
     getCharacteristicsFormData(
         {

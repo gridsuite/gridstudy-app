@@ -33,7 +33,7 @@ import { compareStepsWithPreviousValues, computeHighTapPosition } from 'componen
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { transformIfFrenchNumber } from '../../tabular/tabular-common.js';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { RuleType, TapChangerData, TapChangerStep } from '../two-windings-transformer.types';
+import { RuleType, TapChangerMapInfos, TapChangerStep } from '../two-windings-transformer.types';
 
 export interface TapChangerStepsProps {
     tapChanger: string;
@@ -47,7 +47,7 @@ export interface TapChangerStepsProps {
     resetButtonMessageId: string;
     handleImportRow: (val: Record<string, string>) => Record<string, string | number>;
     disabled?: boolean;
-    previousValues?: TapChangerData;
+    previousValues?: TapChangerMapInfos;
     editData?: Record<string, unknown>;
     currentNode: CurrentTreeNode;
     isModification?: boolean;
