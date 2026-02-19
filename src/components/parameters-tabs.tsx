@@ -71,6 +71,7 @@ import {
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
+import { fetchContingencyCount } from '../services/study';
 import { fetchDefaultDynamicSecurityAnalysisProvider } from '../services/study/dynamic-security-analysis';
 import {
     fetchDynamicMarginCalculationParameters,
@@ -325,6 +326,9 @@ const ParametersTabs: FunctionComponent = () => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
+                        fetchContingencyCount={(contingencyLists: UUID[] | null) =>
+                            fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
+                        }
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
                     />
