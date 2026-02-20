@@ -40,7 +40,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
     paginationProps,
     computationSubType,
 }) => {
-    const { content } = result || {};
+    const content = result?.content ?? null;
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
