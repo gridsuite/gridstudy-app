@@ -69,6 +69,15 @@ export const styles = {
             bottom: 0,
         },
     }),
+    dragRowClone: {
+        backgroundColor: 'background.paper',
+        boxShadow: 4,
+        opacity: 1,
+        border: '1px solid #f5f5f5',
+        display: 'flex',
+        borderRadius: 4,
+        width: 'fit-content',
+    },
     overflow: {
         whiteSpace: 'pre',
         textOverflow: 'ellipsis',

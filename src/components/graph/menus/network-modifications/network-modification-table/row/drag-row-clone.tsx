@@ -5,26 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TableCell, TableRow } from '@mui/material';
-import { mergeSx, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { Box } from '@mui/material';
+import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { createCellStyle, styles } from '../styles';
 import { flexRender, Row } from '@tanstack/react-table';
 import { memo } from 'react';
 
 const DragCloneRow = memo(({ row }: { row: Row<NetworkModificationMetadata> }) => (
-    <TableRow
-        sx={mergeSx(styles.tr, {
-            backgroundColor: 'background.paper',
-            boxShadow: 4,
-            opacity: 1,
-        })}
-    >
-        {row.getVisibleCells().map((cell) => (
-            <TableCell key={cell.id} style={createCellStyle(cell, styles)}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </TableCell>
-        ))}
-    </TableRow>
+    <Box sx={styles.dragRowClone}>
+        {row.getVisibleCells().map(
+            (cell) =>
+                cell.column.columnDef.id === 'modificationName' && (
+                    <Box key={cell.id} style={createCellStyle(cell, styles)}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </Box>
+                )
+        )}
+    </Box>
 ));
 
 export default DragCloneRow;
