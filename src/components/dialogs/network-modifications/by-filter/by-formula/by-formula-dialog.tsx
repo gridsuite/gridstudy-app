@@ -11,7 +11,7 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
-    FieldConstants,
+    DeepNullable,
     FieldType,
     MODIFICATION_TYPES,
     snackWithFallback,
@@ -26,7 +26,6 @@ import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import ByFormulaForm from './by-formula-form';
 import {
     EDITED_FIELD,
-    EQUIPMENT_FIELD,
     EQUIPMENT_TYPE_FIELD,
     FILTERS,
     FORMULAS,
@@ -36,29 +35,32 @@ import {
 } from '../../../../utils/field-constants';
 import { modifyByFormula } from '../../../../../services/study/network-modifications';
 import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils';
-import { ByFormulaDialogProps } from './by-formula.type';
+import { ByFormulaModificationInfos, ReferenceFieldOrValue } from '../../../../../services/network-modification-types';
+import { UUID } from 'node:crypto';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
-function getFieldOrConvertedUnitValue(input, fieldType, convert) {
-    const value = input.replace(',', '.');
-    const isNumber = !Number.isNaN(Number.parseFloat(value));
+type FormReferenceFieldOrValue = number | string | null;
 
-    if (isNumber) {
-        return {
-            [FieldConstants.VALUE]: convert ? convertOutputValue(fieldType, value) : value,
-            [EQUIPMENT_FIELD]: null,
-        };
-    } else {
-        return {
-            [FieldConstants.VALUE]: null,
-            [EQUIPMENT_FIELD]: input,
-        };
+function isMixedValueNumber(formFieldOrValue: FormReferenceFieldOrValue) {
+    if (formFieldOrValue == null) {
+        return false;
     }
+    let numValue;
+    if (typeof formFieldOrValue === 'number') {
+        numValue = formFieldOrValue;
+    } else {
+        numValue = Number.parseFloat(formFieldOrValue.replace(',', '.'));
+    }
+    return !Number.isNaN(numValue);
 }
 
-function shouldConvert(input1: number | null, input2: number | null, operator: string) {
-    const isNumber1 = input1 && !Number.isNaN(input1);
-    const isNumber2 = input2 && !Number.isNaN(input2);
-
+function shouldConvertMixedValue(
+    input1: FormReferenceFieldOrValue,
+    input2: FormReferenceFieldOrValue,
+    operator: string
+) {
+    const isNumber1 = isMixedValueNumber(input1);
+    const isNumber2 = isMixedValueNumber(input2);
     switch (operator) {
         case 'DIVISION':
             if (isNumber1 && isNumber2) {
@@ -76,17 +78,41 @@ function shouldConvert(input1: number | null, input2: number | null, operator: s
     }
 }
 
+function getFieldOrConvertedUnitValue(
+    input: FormReferenceFieldOrValue,
+    fieldType: string,
+    convert: boolean
+): ReferenceFieldOrValue {
+    if (isMixedValueNumber(input)) {
+        return {
+            value: convert ? convertOutputValue(fieldType as FieldType, input) : input,
+            equipmentField: null,
+        };
+    } else {
+        return {
+            value: null,
+            equipmentField: input as string,
+        };
+    }
+}
+
 const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        ...getFormulaSchema(FORMULAS),
+        [FORMULAS]: getFormulaSchema(),
     })
     .required();
 
-const emptyFormData = {
+export type ByFormulaFormData = yup.InferType<typeof formSchema>;
+
+const emptyFormData: DeepNullable<ByFormulaFormData> = {
     [EQUIPMENT_TYPE_FIELD]: '',
     [FORMULAS]: [getFormulaInitialValue()],
+};
+
+export type ByFormulaDialogProps = NetworkModificationDialogProps & {
+    editData: ByFormulaModificationInfos;
 };
 
 const ByFormulaDialog = ({
@@ -100,9 +126,9 @@ const ByFormulaDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<ByFormulaFormData>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<ByFormulaFormData>>(formSchema),
     });
 
     const open = useOpenShortWaitFetching({
@@ -116,7 +142,7 @@ const ByFormulaDialog = ({
     useEffect(() => {
         if (editData) {
             const formulas = editData.formulaInfosList?.map((formula) => {
-                const shouldConverts = shouldConvert(
+                const shouldConverts = shouldConvertMixedValue(
                     formula.fieldOrValue1?.value,
                     formula.fieldOrValue2?.value,
                     formula.operator
@@ -151,27 +177,27 @@ const ByFormulaDialog = ({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (data) => {
-            const formulas = data[FORMULAS].map((formula) => {
-                const shouldConverts = shouldConvert(
-                    formula[REFERENCE_FIELD_OR_VALUE_1],
-                    formula[REFERENCE_FIELD_OR_VALUE_2],
+        (data: ByFormulaFormData) => {
+            const formulas = data[FORMULAS]?.map((formula) => {
+                const shouldConverts = shouldConvertMixedValue(
+                    formula[REFERENCE_FIELD_OR_VALUE_1] as FormReferenceFieldOrValue,
+                    formula[REFERENCE_FIELD_OR_VALUE_2] as FormReferenceFieldOrValue,
                     formula[OPERATOR]
                 );
                 const fieldOrValue1 = getFieldOrConvertedUnitValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_1],
-                    formula[EDITED_FIELD] as FieldType,
+                    formula[REFERENCE_FIELD_OR_VALUE_1] as FormReferenceFieldOrValue,
+                    formula[EDITED_FIELD],
                     shouldConverts.convertValue1
                 );
                 const fieldOrValue2 = getFieldOrConvertedUnitValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_2],
-                    formula[EDITED_FIELD] as FieldType,
+                    formula[REFERENCE_FIELD_OR_VALUE_2] as FormReferenceFieldOrValue,
+                    formula[EDITED_FIELD],
                     shouldConverts.convertValue2
                 );
 
                 const filters = formula[FILTERS]?.map((filter) => {
                     return {
-                        id: filter.id,
+                        id: filter.id as UUID,
                         name: filter.name,
                     };
                 });
@@ -188,7 +214,7 @@ const ByFormulaDialog = ({
             const byFormulaModificationInfos = {
                 type: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                 identifiableType: data[EQUIPMENT_TYPE_FIELD],
-                formulaInfosList: formulas,
+                formulaInfosList: formulas ?? [],
             };
 
             modifyByFormula(studyUuid, currentNodeUuid, byFormulaModificationInfos, editData?.uuid).catch((error) => {
