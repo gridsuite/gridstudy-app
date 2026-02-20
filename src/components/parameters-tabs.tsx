@@ -69,6 +69,7 @@ import {
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
+import { isNodeBuilt } from './graph/util/model-functions';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -89,6 +90,7 @@ const ParametersTabs: FunctionComponent = () => {
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode ?? null);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
@@ -307,6 +309,7 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
+                        isNodeBuilt={isNodeBuilt(currentNode)}
                         isDeveloperMode={isDeveloperMode}
                     />
                 );
