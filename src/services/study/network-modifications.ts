@@ -1901,20 +1901,19 @@ export function modifyByFormula(
     studyUuid: string,
     nodeUuid: UUID,
     byFormulaModificationInfos: ByFormulaModificationInfos,
-    isUpdate: boolean,
-    modificationUuid: UUID
+    uuid?: UUID
 ) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
-        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        modificationUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating by formula modification');
     } else {
         console.info('Creating by formula modification');
     }
 
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',

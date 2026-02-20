@@ -6,26 +6,25 @@
  */
 
 import { FunctionComponent } from 'react';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../../utils/field-constants';
 import FormulaForm from './formula/formula-form';
 import { getFormulaInitialValue } from './formula/formula-utils';
 import { useFormContext } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
 import { Box, Grid } from '@mui/material';
-import { ExpandableInput, mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
+import { EquipmentType, ExpandableInput, mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 
 interface ByFormulaFormProps {}
 
 const EQUIPMENT_TYPE_OPTIONS = [
-    EQUIPMENT_TYPES.GENERATOR,
-    EQUIPMENT_TYPES.BATTERY,
-    EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-    EQUIPMENT_TYPES.LOAD,
-    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-    EQUIPMENT_TYPES.LINE,
+    EquipmentType.GENERATOR,
+    EquipmentType.BATTERY,
+    EquipmentType.SHUNT_COMPENSATOR,
+    EquipmentType.VOLTAGE_LEVEL,
+    EquipmentType.LOAD,
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.LINE,
 ];
 
 const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
