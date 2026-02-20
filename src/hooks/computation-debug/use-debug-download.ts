@@ -14,6 +14,7 @@ import { downloadDebugFileDynamicSecurityAnalysis } from '../../services/dynamic
 import { downloadDebugFileDynamicMarginCalculation } from '../../services/dynamic-margin-calculation';
 import { downloadDebugFileVoltageInit } from '../../services/voltage-init';
 import { downloadDebugFileShortCircuitAnalysis } from '../../services/short-circuit-analysis';
+import { downloadDebugFileStateEstimationServer } from 'services/state-estimation';
 
 const downloadDebugFileFetchers = {
     [ComputingType.DYNAMIC_SIMULATION]: downloadDebugFileDynamicSimulation,
@@ -22,6 +23,7 @@ const downloadDebugFileFetchers = {
     [ComputingType.VOLTAGE_INITIALIZATION]: downloadDebugFileVoltageInit,
     [ComputingType.SHORT_CIRCUIT]: downloadDebugFileShortCircuitAnalysis,
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: downloadDebugFileShortCircuitAnalysis,
+    [ComputingType.STATE_ESTIMATION]: downloadDebugFileStateEstimationServer,
 } as Record<ComputingType, ((resultUuid: UUID) => Promise<Response>) | null>;
 
 export default function useDebugDownload() {
