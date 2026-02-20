@@ -34,6 +34,20 @@ export const styles = {
             stroke: theme.palette.text.primary,
             strokeWidth: 3,
         },
+
+        /* css edge infos */
+        '& .nad-arrow-out, & .nad-arrow-in': {
+            fill: 'black',
+        },
+        '& .nad-reactive.nad-arrow-out, & .nad-reactive.nad-arrow-in': {
+            fill: 'blue',
+        },
+        '& text.nad-reactive': {
+            fill: 'black',
+        },
+        '& .nad-active, & .nad-permanent-limit-percentage, & .nad-bus-descr, & .nad-reactive text': {
+            fill: 'black',
+        },
     }),
     divSingleLineDiagram: (theme) => ({
         '& polyline': {
@@ -124,14 +138,14 @@ export const styles = {
         },
     },
     divDiagramLoadflowInvalid: {
-        '& .sld-active-power, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum':
+        '& .sld-active-power, & .nad-reactive, & text.nad-permanent-limit-percentage, & path.nad-permanent-limit-percentage, & .nad-active, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum':
             {
                 opacity: INVALID_COMPUTATION_OPACITY,
             },
         '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
             animation: 'none !important',
         },
-        '& .nad-active': {
+        '& .nad-active, & text.nad-reactive, & .nad-permanent-limit-percentage': {
             fill: '#787F81', // Text color of the values and arrows on lines (same color in light and dark mode)
         },
         '& .nad-bus-descr': {

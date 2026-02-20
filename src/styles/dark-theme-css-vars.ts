@@ -12,6 +12,9 @@ export const darkThemeCssVars = {
     '.nad-active': {
         fill: 'white', // Text color of the values and arrows on lines.
     },
+    '.nad-reactive': {
+        fill: 'white',
+    },
     '.nad-label-box': {
         backgroundColor: '#6c6c6c20',
     },
