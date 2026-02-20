@@ -106,7 +106,7 @@ export function stashModifications(studyUuid: UUID | null, nodeUuid: UUID | unde
 export function setModificationMetadata(
     studyUuid: UUID | null,
     nodeUuid: UUID | undefined,
-    modificationUuid: UUID,
+    modificationUuid: UUID | undefined,
     metadata: Partial<NetworkModificationMetadata>
 ): Promise<Response> {
     const urlSearchParams = new URLSearchParams();

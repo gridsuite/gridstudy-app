@@ -70,8 +70,6 @@ import {
     type DeleteEquipmentsAction,
     ENABLE_DEVELOPER_MODE,
     type EnableDeveloperModeAction,
-    FAVORITE_CONTINGENCY_LISTS,
-    type FavoriteContingencyListsAction,
     HIGHLIGHT_MODIFICATION,
     HighlightModificationAction,
     INIT_SPREADSHEET_GLOBAL_FILTER,
@@ -238,13 +236,7 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import {
-    PARAM_COMPUTED_LANGUAGE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LIMIT_REDUCTION,
-    PARAM_USE_NAME,
-    PARAMS_LOADED,
-} from '../utils/config-params';
+import { PARAM_COMPUTED_LANGUAGE, PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
 import { RunningStatus } from 'components/utils/running-status';
@@ -500,7 +492,6 @@ export interface AppConfigState {
     [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
     [PARAM_LIMIT_REDUCTION]: number;
     [PARAM_USE_NAME]: boolean;
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAMS_LOADED]: boolean;
 }
@@ -756,7 +747,6 @@ const initialState: AppState = {
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
     [PARAM_USE_NAME]: true,
     [PARAM_LIMIT_REDUCTION]: 100,
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
 
@@ -1264,10 +1254,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
         state.isMapEquipmentsInitialized = action.newValue;
-    });
-
-    builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
-        state[PARAM_FAVORITE_CONTINGENCY_LISTS] = action[PARAM_FAVORITE_CONTINGENCY_LISTS];
     });
 
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
