@@ -20,7 +20,6 @@ const debouncedSyncTimers: Record<string, ReturnType<typeof setTimeout>> = {};
  * This ensures that the server state remains in sync with the client-side filter state from Redux.
  */
 export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (next) => (action) => {
-
     const result = next(action); // Let Redux update the state first
 
     if (!isAction(action)) {
