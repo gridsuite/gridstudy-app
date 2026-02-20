@@ -363,6 +363,11 @@
     "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
     "DynamicSecurityAnalysisTabStatus": "Status",
 
+    "startDynamicMarginCalculationError": "An error occurred while starting the dynamic margin calculation",
+    "DynamicMarginCalculation": "Dynamic margin calculation",
+    "DynamicMarginCalculationRunError": "An error occurred while executing the dynamic margin calculation",
+    "DynamicMarginCalculationTabStatus": "Status",
+
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
 

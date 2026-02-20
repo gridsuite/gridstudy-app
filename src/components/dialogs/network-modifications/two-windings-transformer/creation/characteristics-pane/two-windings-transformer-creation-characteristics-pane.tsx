@@ -15,7 +15,9 @@ import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-level
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 import { TwoWindingsTransformerCreationDialogTab } from '../../two-windings-transformer-utils';
-import { LimitsPane } from '../../../../limits/limits-pane.tsx';
+import { LimitsPane } from '../../../../limits/limits-pane';
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 const styles = {
     h3: {
@@ -25,13 +27,21 @@ const styles = {
     },
 };
 
+export interface TwoWindingsTransformerCreationCharacteristicsPaneProps {
+    id?: string;
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    tabIndex: number;
+}
+
 const TwoWindingsTransformerCreationCharacteristicsPane = ({
     id = CHARACTERISTICS,
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
     tabIndex,
-}) => {
+}: TwoWindingsTransformerCreationCharacteristicsPaneProps) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
     const connectivity1Field = (
         <ConnectivityForm
@@ -59,7 +69,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
         <>
             <Box hidden={tabIndex !== TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB} p={1}>
                 <GridSection title="Connectivity" customStyle={styles.h3} />
-                <GridSection title="Side1" heading={4} size="6" />
+                <GridSection title="Side1" heading={4} size={6} />
                 <Grid container spacing={2}>
                     <Grid item container direction="column">
                         <Grid container direction="column" spacing={2}>
@@ -67,7 +77,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                         </Grid>
                     </Grid>
                 </Grid>
-                <GridSection title="Side2" heading={4} size="6" />
+                <GridSection title="Side2" heading={4} size={6} />
                 <Grid container spacing={2}>
                     <Grid item container>
                         <Grid container direction="column" spacing={2}>

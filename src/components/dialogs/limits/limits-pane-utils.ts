@@ -36,6 +36,7 @@ import {
     AttributeModification,
     CurrentLimits,
     OperationalLimitsGroup,
+    OperationalLimitsGroupModificationInfos,
     OperationType,
     TemporaryLimit,
 } from '../../../services/network-modification-types';
@@ -142,6 +143,8 @@ const limitsValidationSchemaCreation = (id: string) => {
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
 
+export type LimitsFormSchema = yup.InferType<ReturnType<typeof limitsValidationSchemaCreation>[typeof LIMITS]>;
+
 export const getLimitsValidationSchema = (id: string = LIMITS) => {
     return limitsValidationSchemaCreation(id);
 };
@@ -162,7 +165,7 @@ export const getLimitsEmptyFormData = (isModification = true, id = LIMITS) => {
 };
 
 export const formatOpLimitGroupsToFormInfos = (
-    limitGroups: OperationalLimitsGroup[]
+    limitGroups?: OperationalLimitsGroup[] | OperationalLimitsGroupModificationInfos[] | null
 ): OperationalLimitsGroupFormSchema[] => {
     if (!limitGroups) {
         return [];
@@ -170,23 +173,23 @@ export const formatOpLimitGroupsToFormInfos = (
 
     return limitGroups
         .filter(
-            (opLimitGroup: OperationalLimitsGroup) =>
+            (opLimitGroup: OperationalLimitsGroup | OperationalLimitsGroupModificationInfos) =>
                 opLimitGroup.modificationType !== LIMIT_SETS_MODIFICATION_TYPE.DELETE
         )
-        .map((opLimitGroup: OperationalLimitsGroup) => {
+        .map((opLimitGroup: OperationalLimitsGroup | OperationalLimitsGroupModificationInfos) => {
             return {
                 id: opLimitGroup.id + opLimitGroup.applicability,
                 name: opLimitGroup.id,
                 applicability: opLimitGroup.applicability,
                 limitsProperties: opLimitGroup.limitsProperties,
                 currentLimits: {
-                    permanentLimit: opLimitGroup.currentLimits.permanentLimit,
+                    permanentLimit: opLimitGroup?.currentLimits?.permanentLimit,
                     temporaryLimits: formatTemporaryLimitsModificationToFormSchema(
-                        opLimitGroup.currentLimits.temporaryLimits
+                        opLimitGroup?.currentLimits?.temporaryLimits as TemporaryLimit[]
                     ),
                 },
             };
-        });
+        }) as OperationalLimitsGroupFormSchema[];
 };
 
 export const getAllLimitsFormData = (

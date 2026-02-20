@@ -12,7 +12,17 @@ import { ENABLED, PHASE_TAP_CHANGER, RATIO_TAP_CHANGER } from 'components/utils/
 import { getTabIndicatorStyle, getTabStyle } from '../../../../utils/tab-utils';
 import { TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
 
-const TwoWindingsTransformerModificationDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
+interface TwoWindingsTransformerModificationDialogTabsProps {
+    tabIndex: number;
+    tabIndexesWithError: number[];
+    setTabIndex: (index: number) => void;
+}
+
+const TwoWindingsTransformerModificationDialogTabs = ({
+    tabIndex,
+    tabIndexesWithError,
+    setTabIndex,
+}: TwoWindingsTransformerModificationDialogTabsProps) => {
     const phaseTapChangerEnabledWatch = useWatch({
         name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
     });
