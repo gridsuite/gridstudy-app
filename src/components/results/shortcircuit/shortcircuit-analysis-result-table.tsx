@@ -32,13 +32,7 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-a
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import {
-    FilterConfig,
-    FilterType,
-    FilterType as AgGridFilterType,
-    numericFilterParams,
-    textFilterParams,
-} from '../../../types/custom-aggrid-types';
+import { FilterConfig, TableType, numericFilterParams, textFilterParams } from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
 import { resultsStyles } from '../common/utils';
 import {
@@ -114,7 +108,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 
     const filters = useSelector(
         (state: AppState) =>
-            state.computationFilters?.[FilterType.ShortcircuitAnalysis]?.columnsFilters?.[computationSubType]?.columns
+            state.tableFilters.columnsFilters?.[TableType.ShortcircuitAnalysis]?.[computationSubType]?.columns
     );
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
@@ -159,14 +153,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         };
 
         const filterParams = {
-            type: AgGridFilterType.ShortcircuitAnalysis,
+            type: TableType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
             updateFilterCallback: (
                 agGridApi?: GridApi,
                 filters?: FilterConfig[],
                 colId?: string,
                 studyUuid?: UUID,
-                filterType?: FilterType,
+                filterType?: TableType,
                 filterSubType?: string
             ) =>
                 updateComputationColumnsFilters(
@@ -397,7 +391,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     );
 
     const onGridReady = useAgGridInitialColumnFilters(
-        FilterType.ShortcircuitAnalysis,
+        TableType.ShortcircuitAnalysis,
         computationSubType,
         onGridColumnsChanged
     );

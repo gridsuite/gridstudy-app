@@ -28,6 +28,13 @@ import { GlobalFilterContext } from './global-filter-context';
 import SelectedGlobalFilters from './selected-global-filters';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { TextWithInfoIcon } from './text-with-info-icon';
+import {
+    addToSelectedGlobalFilters,
+    addToGlobalFilterOptions,
+    clearSelectedGlobalFilters,
+} from '../../../../redux/actions';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../../redux/store';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;
@@ -45,25 +52,31 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         filterGroupSelected,
         setFilterGroupSelected,
         selectedGlobalFilters,
-        onChange,
         filterCategories,
         genericFiltersStrictMode,
-        equipmentTypes,
+        filterableEquipmentTypes,
+        tableType,
+        tableUuid,
     } = useContext(GlobalFilterContext);
     const intl = useIntl();
-    const [categories, setCategories] = useState<string[]>([]);
+    const dispatch = useDispatch<AppDispatch>();
+    const [substationPropertiesFilters, setSubstationPropertiesFilters] = useState<Map<string, string[]>>();
+
+    // fetches substation properties global filters from local config
+    useEffect(() => {
+        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+            setSubstationPropertiesFilters(substationPropertiesGlobalFilters);
+        });
+    }, []);
 
     const standardCategories: string[] = useMemo(() => {
-        const allCategories = Object.values(FilterType) as string[];
-        const filteredCategories = allCategories
-            .filter(
-                (category) =>
-                    filterCategories.includes(category as FilterType) && category !== FilterType.SUBSTATION_PROPERTY
-            )
+        const filteredCategories = filterCategories
+            // removes the SUBSTATION_PROPERTY type because we want to display them by subtype
+            .filter((category) => category !== FilterType.SUBSTATION_PROPERTY)
             .filter((category) => {
                 // for the following EQUIPMENT_TYPES the GENERIC_FILTER FilterType is hidden
                 // because the SUBSTATION_OR_VL FilterType handles all the possible filters
-                const onlyVoltageLevels = equipmentTypes?.every(
+                const onlyVoltageLevels = filterableEquipmentTypes?.every(
                     (equipment) =>
                         equipment === EQUIPMENT_TYPES.VOLTAGE_LEVEL ||
                         equipment === EQUIPMENT_TYPES.BUS ||
@@ -74,37 +87,36 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
             .filter((category) => {
                 // when we are filtering substations the SUBSTATION_OR_VL makes no sense and is removed :
                 const onlySubstations =
-                    equipmentTypes?.length === 1 && equipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION;
+                    filterableEquipmentTypes?.length === 1 &&
+                    filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION;
                 return !(category === FilterType.SUBSTATION_OR_VL && onlySubstations);
             });
         return [RECENT_FILTER, ...filteredCategories];
-    }, [filterCategories, equipmentTypes]);
+    }, [filterCategories, filterableEquipmentTypes]);
 
-    // fetches extra global filter subcategories if there are some in the local config
-    useEffect(() => {
-        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
-            const sortedCategories = [
-                ...standardCategories,
-                ...(substationPropertiesGlobalFilters ? Array.from(substationPropertiesGlobalFilters.keys()) : []),
-            ];
-            // criteria filters are always at the end of the menu
-            const substationCategory: string[] = sortedCategories.splice(
-                sortedCategories.indexOf(FilterType.SUBSTATION_OR_VL),
-                1
-            );
-            if (substationCategory.length > 0) {
-                sortedCategories.push(substationCategory[0]);
-            }
-            const genericFilterCategory: string[] = sortedCategories.splice(
-                sortedCategories.indexOf(FilterType.GENERIC_FILTER),
-                1
-            );
-            if (genericFilterCategory.length > 0) {
-                sortedCategories.push(genericFilterCategory[0]);
-            }
-            setCategories(sortedCategories);
-        });
-    }, [standardCategories]);
+    // adds extra global filter subcategories if there are some in the local config
+    const categories = useMemo(() => {
+        const sortedCategories = [
+            ...standardCategories,
+            ...(substationPropertiesFilters ? Array.from(substationPropertiesFilters.keys()) : []),
+        ];
+        // criteria filters are always at the end of the menu
+        const substationCategory: string[] = sortedCategories.splice(
+            sortedCategories.indexOf(FilterType.SUBSTATION_OR_VL),
+            1
+        );
+        if (substationCategory.length > 0) {
+            sortedCategories.push(substationCategory[0]);
+        }
+        const genericFilterCategory: string[] = sortedCategories.splice(
+            sortedCategories.indexOf(FilterType.GENERIC_FILTER),
+            1
+        );
+        if (genericFilterCategory.length > 0) {
+            sortedCategories.push(genericFilterCategory[0]);
+        }
+        return sortedCategories;
+    }, [standardCategories, substationPropertiesFilters]);
 
     const filtersMsg: string = useMemo(
         () =>
@@ -138,20 +150,27 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                         element.specificMetadata?.equipmentType === EQUIPMENT_TYPES.SUBSTATION ||
                         element.specificMetadata?.equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL;
                     newlySelectedFilters.push({
+                        id: element.elementUuid,
                         uuid: element.elementUuid,
                         equipmentType: element.specificMetadata?.equipmentType,
                         label: element.elementName,
                         filterType: substationOrVoltageLevel ? FilterType.SUBSTATION_OR_VL : FilterType.GENERIC_FILTER,
                         filterTypeFromMetadata: element.specificMetadata?.type,
-                        recent: true,
                     });
                 }
             });
 
-            onChange([...selectedGlobalFilters, ...newlySelectedFilters]);
+            dispatch(addToGlobalFilterOptions(newlySelectedFilters));
+            dispatch(
+                addToSelectedGlobalFilters(
+                    tableType,
+                    tableUuid,
+                    newlySelectedFilters.map((f) => f.id)
+                )
+            );
             setDirectoryItemSelectorOpen(false);
         },
-        [onChange, selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown]
+        [selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown, dispatch, tableType, tableUuid]
     );
 
     /**
@@ -164,12 +183,12 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         }
 
         return genericFiltersStrictMode
-            ? equipmentTypes
+            ? filterableEquipmentTypes
             : Object.values(EQUIPMENT_TYPES).filter(
                   (equipmentType) =>
                       equipmentType !== EQUIPMENT_TYPES.SUBSTATION && equipmentType !== EQUIPMENT_TYPES.VOLTAGE_LEVEL
               );
-    }, [equipmentTypes, genericFiltersStrictMode, filterGroupSelected]);
+    }, [filterableEquipmentTypes, genericFiltersStrictMode, filterGroupSelected]);
 
     return (
         <>
@@ -199,7 +218,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                             <Typography variant="caption">{filtersMsg}</Typography>
                             <Button
                                 size="small"
-                                onClick={() => onChange([])}
+                                onClick={() => dispatch(clearSelectedGlobalFilters(tableType, tableUuid))}
                                 sx={resultsGlobalFilterStyles.miniButton}
                                 data-testid="GlobalFilterClearAllButton"
                             >
