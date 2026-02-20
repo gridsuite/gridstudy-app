@@ -19,6 +19,7 @@ import {
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
+    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -95,7 +96,7 @@ import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
-import NetworkModificationsTable from './tanstack-poc/network-modifications-table';
+import NetworkModificationsTable from './network-modification-table/network-modifications-table';
 import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
@@ -122,7 +123,6 @@ import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modificati
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
 import { DragStart, DropResult } from '@hello-pangea/dnd';
-import { NetworkModificationMetadata } from './tanstack-poc/network-modifications-table';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -174,37 +174,6 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
-
-    const alteredModifications = useMemo<NetworkModificationMetadata[]>(() => {
-        const MAX_DEPTH = 5;
-        const MAX_CHILDREN = 3;
-        const createChildren = (base: NetworkModificationMetadata, depth: number): NetworkModificationMetadata[] => {
-            if (depth >= MAX_DEPTH) return [];
-            const childCount = Math.floor(Math.random() * (MAX_CHILDREN + 1));
-            return Array.from({ length: childCount }).map(() => {
-                const child: NetworkModificationMetadata = {
-                    ...base,
-                    uuid: crypto.randomUUID(),
-                    subModifications: [],
-                };
-
-                child.subModifications = createChildren(child, depth + 1);
-
-                return child;
-            });
-        };
-
-        return modifications.map((modification) => {
-            const { subModifications, ...rest } = modification;
-            const root: NetworkModificationMetadata = {
-                ...rest,
-                uuid: modification.uuid,
-                subModifications: [],
-            };
-            root.subModifications = createChildren(root, 1);
-            return root;
-        });
-    }, [modifications]);
 
     const { networkModificationsToCopy, copyInfos, copyNetworkModifications, cutNetworkModifications, cleanClipboard } =
         useCopiedNetworkModifications();
@@ -1110,7 +1079,7 @@ const NetworkModificationNodeEditor = () => {
         return (
             <NetworkModificationsTable
                 handleCellClick={debounce(handleCellClick, 300)}
-                modifications={alteredModifications}
+                modifications={modifications}
                 setModifications={setModifications}
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}

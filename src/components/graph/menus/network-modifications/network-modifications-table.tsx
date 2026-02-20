@@ -34,13 +34,13 @@ import { useIntl } from 'react-intl';
 import {
     NetworkModificationEditorNameHeader,
     NetworkModificationEditorNameHeaderProps,
-} from './network-modification-node-editor-name-header';
+} from './network-modification-table/renderers/network-modification-node-editor-name-header';
 import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
-import SwitchCellRenderer from './switch-cell-renderer';
+import SwitchCellRenderer from './network-modification-table/renderers/switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { ExcludedNetworkModifications } from './network-modification-menu.type';
 import { AgGridReact } from 'ag-grid-react';
-import DescriptionRenderer from './DescriptionRenderer';
+import DescriptionCellRenderer from './network-modification-table/renderers/description-cell-renderer';
 
 const styles = {
     container: (theme) => ({
@@ -148,7 +148,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             },
             {
                 colId: 'modificationDescription',
-                cellRenderer: DescriptionRenderer,
+                cellRenderer: DescriptionCellRenderer,
                 cellRendererParams: {
                     hoveredRowIndex: hoveredRowIndex,
                 },

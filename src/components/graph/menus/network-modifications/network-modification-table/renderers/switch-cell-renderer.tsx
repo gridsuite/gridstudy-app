@@ -12,15 +12,15 @@ import { setModificationMetadata } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { AppState } from 'redux/reducer';
-import { ICellRendererParams } from 'ag-grid-community';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
-export interface SwitchCellRendererProps extends ICellRendererParams<NetworkModificationMetadata> {
+export interface SwitchCellRendererProps {
+    data: NetworkModificationMetadata;
     setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
 }
 
 const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
-    const { data, api, setModifications } = props;
+    const { data, setModifications } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -51,25 +51,29 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
         [modificationUuid, studyUuid, currentNode?.id, data?.type, snackError]
     );
 
-    const toggleModificationActive = useCallback(() => {
-        setIsLoading(true);
-        setModifications((oldModifications) => {
-            const modificationToUpdateIndex = oldModifications.findIndex((m) => m.uuid === modificationUuid);
-            if (modificationToUpdateIndex === -1) {
-                return oldModifications;
-            }
-            const newModifications = [...oldModifications];
-            const newStatus = !newModifications[modificationToUpdateIndex].activated;
+    const toggleModificationActive = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation(); // Prevent row click from firing
+            setIsLoading(true);
+            setModifications((oldModifications) => {
+                const modificationToUpdateIndex = oldModifications.findIndex((m) => m.uuid === modificationUuid);
+                if (modificationToUpdateIndex === -1) {
+                    return oldModifications;
+                }
+                const newModifications = [...oldModifications];
+                const newStatus = !newModifications[modificationToUpdateIndex].activated;
 
-            newModifications[modificationToUpdateIndex] = {
-                ...newModifications[modificationToUpdateIndex],
-            };
+                newModifications[modificationToUpdateIndex] = {
+                    ...newModifications[modificationToUpdateIndex],
+                    activated: newStatus,
+                };
 
-            updateModification(newStatus);
-            return newModifications;
-        });
-        api.stopEditing();
-    }, [modificationUuid, updateModification, setModifications, api]);
+                updateModification(newStatus);
+                return newModifications;
+            });
+        },
+        [modificationUuid, updateModification, setModifications]
+    );
 
     return (
         <Tooltip title={<FormattedMessage id={modificationActivated ? 'disable' : 'enable'} />} arrow>

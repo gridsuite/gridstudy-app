@@ -4,32 +4,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    DescriptionModificationDialog,
-    EditNoteIcon,
-    MuiStyles,
-    NetworkModificationMetadata,
-} from '@gridsuite/commons-ui';
+import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
-import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
 import IconButton from '@mui/material/IconButton';
 import type { UUID } from 'node:crypto';
-import { setModificationMetadata } from '../../../../../services/study/network-modifications';
-
-const styles = {
-    coloredButton: (theme) => ({
-        color: theme.palette.text.primary,
-    }),
-} as const satisfies MuiStyles;
+import { AppState } from '../../../../../../redux/reducer';
+import { useIsAnyNodeBuilding } from '../../../../../utils/is-any-node-building-hook';
+import { setModificationMetadata } from '../../../../../../services/study/network-modifications';
+import { styles } from '../styles';
 
 export interface DescriptionRendererProps {
     data: NetworkModificationMetadata;
 }
 
-const DescriptionRenderer = (props: DescriptionRendererProps) => {
+const DescriptionCellRenderer = (props: DescriptionRendererProps) => {
     const { data } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -94,4 +84,4 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
     );
 };
 
-export default DescriptionRenderer;
+export default DescriptionCellRenderer;
