@@ -156,7 +156,33 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 }
 
 /* NETWORK AREA DIAGRAM LEVEL OF DETAIL */
+/* default hide */
+.nad-edge-infos .nad-active,
+.nad-edge-infos .nad-reactive,
+.nad-edge-infos .nad-permanent-limit-percentage {
+    display:none;
+}
 
+/* zoom 2000 → active + permanent */
+/* Afficher seulement pour les zooms 3500 et 6000 */
+.nad-zoom-3500 .nad-active,
+.nad-zoom-3500 .nad-reactive,
+.nad-zoom-3500 .nad-permanent-limit-percentage,
+.nad-zoom-6000 .nad-active,
+.nad-zoom-6000 .nad-reactive,
+.nad-zoom-6000 .nad-permanent-limit-percentage {
+    display: inline;
+}
+/* zoom 500 → + reactive */
+.nad-zoom-500 .nad-active,
+.nad-zoom-500 .nad-permanent-limit-percentage {
+    display:inline;
+}
+
+/* zoom 0 → show all */
+.nad-zoom-0 .nad-edge-infos * {
+    display:inline;
+}
 /* Makes the nodes' edges thicker when zooming a lot */
 .nad-zoom-0 {
     :is(
@@ -233,13 +259,7 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
     }
 }
 
-/* Hides the data on the lines until sufficiently zoomed in. */
-:is(.nad-zoom-2000, .nad-zoom-3500, .nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
-    .nad-edge-infos
-    ) {
-    display: none;
-}
-
+ 
 /* Hides the voltage levels 0 to 50 when zoomed out. */
 :is(.nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
     .nad-voltage-level-1, .nad-voltage-level-2

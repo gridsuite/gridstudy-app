@@ -12,6 +12,9 @@ export const lightThemeCssVars = {
     '.nad-active': {
         fill: '#212121', // Text color of the values and arrows on lines.
     },
+    '.nad-reactive': {
+        fill: '#212121',
+    },
     '.nad-label-box': {
         backgroundColor: '#9c9c9c20',
     },
