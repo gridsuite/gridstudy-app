@@ -145,7 +145,7 @@ export interface SecurityAnalysisNTableRow {
 }
 
 export interface SecurityAnalysisResultProps {
-    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[];
+    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[] | undefined;
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
