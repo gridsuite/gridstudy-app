@@ -110,26 +110,30 @@ export default function SaveSpreadsheetButton({
             [SpreadsheetSaveOptionId.COPY_CSV]: {
                 id: SpreadsheetSaveOptionId.COPY_CSV,
                 label: 'spreadsheet/save/options/csv/clipboard',
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                action: async () => {
-                    const csvProps = getCsvProps(SpreadsheetSaveOptionId.COPY_CSV);
-                    if (csvProps) {
-                        csvProps.isCopyCsv = true;
-                        let data = await getData(csvProps);
-                        copyToClipboard(data ?? '', onClipboardCopy, onClipboardError);
-                    }
+                // fix sonnar issue : Promise-returning function provided to property where a void return was expected.
+                action: () => {
+                    (async () => {
+                        const csvProps = getCsvProps(SpreadsheetSaveOptionId.COPY_CSV);
+                        if (csvProps) {
+                            csvProps.isCopyCsv = true;
+                            let data = await getData(csvProps);
+                            copyToClipboard(data ?? '', onClipboardCopy, onClipboardError);
+                        }
+                    })();
                 },
                 disabled: dataSize === 0,
             },
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv/export',
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                action: async () => {
-                    const csvProps = getCsvProps(SpreadsheetSaveOptionId.EXPORT_CSV);
-                    if (csvProps) {
-                        await getData(csvProps);
-                    }
+                // fix sonnar issue : Promise-returning function provided to property where a void return was expected.
+                action: () => {
+                    (async () => {
+                        const csvProps = getCsvProps(SpreadsheetSaveOptionId.EXPORT_CSV);
+                        if (csvProps) {
+                            await getData(csvProps);
+                        }
+                    })();
                 },
                 disabled: dataSize === 0,
             },
