@@ -32,6 +32,9 @@ export const styles = {
         top: 0,
         zIndex: 1,
         width: '100%',
+        '& tr:hover': {
+            backgroundColor: 'transparent',
+        },
     }),
     th: {
         borderTop: `1px solid #68686e`,
@@ -48,6 +51,7 @@ export const styles = {
         display: 'flex',
         alignItems: 'center',
         '&:hover': {
+            backgroundColor: 'rgba(144, 202, 249, 0.08)',
             '& .editDescription': {
                 opacity: 1,
                 pointerEvents: 'auto',

@@ -135,7 +135,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         if (highlightedModificationUuid && parentRef.current) {
             const rowIndex = rows.findIndex((row) => row.original.uuid === highlightedModificationUuid);
             if (rowIndex !== -1) {
-                virtualizer.scrollToIndex(rowIndex, { align: 'center', behavior: 'smooth' });
+                virtualizer.scrollToIndex(rowIndex, { align: 'start', behavior: 'auto' });
             }
         }
     }, [highlightedModificationUuid, rows, virtualizer]);

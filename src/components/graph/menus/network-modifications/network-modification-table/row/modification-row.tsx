@@ -36,13 +36,22 @@ const ModificationRow = memo<ModificationRowProps>(
             <Draggable draggableId={row.id} index={virtualRow.index} isDragDisabled={isRowDragDisabled}>
                 {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
                     <TableRow
+                        className={'modificationRow'}
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         data-row-id={row.original.uuid}
                         data-depth={row.depth}
                         sx={mergeSx(styles.tr, {
                             backgroundColor:
-                                row.original.uuid === highlightedModificationUuid ? 'action.selected' : 'transparent',
+                                row.original.uuid === highlightedModificationUuid || row.getIsSelected()
+                                    ? 'rgba(144, 202, 249, 0.16)'
+                                    : 'transparent',
+                            '&:hover': {
+                                backgroundColor:
+                                    row.original.uuid === highlightedModificationUuid || row.getIsSelected()
+                                        ? 'rgba(144, 202, 249, 0.24)'
+                                        : 'rgba(144, 202, 249, 0.08)',
+                            },
                             opacity: !row.original.activated ? 0.4 : snapshot.isDragging ? 0.5 : 1,
                         })}
                         style={createRowStyle(provided, snapshot, virtualRow)}
