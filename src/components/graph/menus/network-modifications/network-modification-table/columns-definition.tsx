@@ -44,6 +44,7 @@ export const createStaticColumns = (
             />
         ),
         size: 40,
+        minSize: 40,
         meta: {
             cellStyle: { padding: 2 },
         },
@@ -52,6 +53,7 @@ export const createStaticColumns = (
         id: 'dragHandle',
         cell: () => <DragHandleCell isRowDragDisabled={isRowDragDisabled} />,
         size: 20,
+        minSize: 20,
     },
     {
         id: 'modificationName',
@@ -62,15 +64,18 @@ export const createStaticColumns = (
         meta: {
             cellStyle: { cursor: 'pointer', minWidth: 0, overflow: 'hidden', flex: 1, paddingLeft: '0.8vw' },
         },
+        minSize: 180,
     },
     {
         id: 'modificationDescription',
         cell: ({ row }) => <DescriptionCellRenderer data={row.original} />,
         size: 40,
+        minSize: 40,
     },
     {
         id: 'switch',
         cell: ({ row }) => <SwitchCellRenderer data={row.original} setModifications={setModifications} />,
+        size: 60,
         minSize: 60,
     },
 ];
@@ -97,14 +102,17 @@ export const createDynamicColumns = (
                     </Box>
                 ) : null,
             cell: ({ row }) => (
-                <RootNetworkChipCellRenderer
-                    data={row.original}
-                    rootNetwork={rootNetwork}
-                    modificationsToExclude={modificationsToExclude}
-                    setModificationsToExclude={setModificationsToExclude}
-                />
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    <RootNetworkChipCellRenderer
+                        data={row.original}
+                        rootNetwork={rootNetwork}
+                        modificationsToExclude={modificationsToExclude}
+                        setModificationsToExclude={setModificationsToExclude}
+                    />
+                </Box>
             ),
             size: 72,
+            minSize: 72,
             meta: {
                 cellStyle: { textAlign: 'center' },
             },

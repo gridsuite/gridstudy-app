@@ -32,10 +32,12 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';
-import { styles } from './styles';
+import { createHeaderCellStyle, styles } from './styles';
 import { createDynamicColumns, createStaticColumns } from './columns-definition';
 import ModificationRow from './row/modification-row';
 import DragCloneRow from './row/drag-row-clone';
+
+export const MODIFICATION_ROW_HEIGHT = 41;
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];
@@ -65,6 +67,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const currentTreeNodeId = useSelector((state: AppState) => state.currentTreeNode?.id);
 
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const [expanded, setExpanded] = useState<ExpandedState>({});
@@ -113,9 +116,13 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         count: rows.length,
         getScrollElement: () => parentRef.current,
         overscan: 5,
-        estimateSize: () => 41,
+        estimateSize: () => MODIFICATION_ROW_HEIGHT,
     });
     const virtualItems = virtualizer.getVirtualItems();
+
+    useEffect(() => {
+        setRowSelection({});
+    }, [currentTreeNodeId]);
 
     useEffect(() => {
         if (onRowSelected) {
@@ -168,15 +175,9 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                         <Table sx={styles.table}>
                             <TableHead sx={styles.thead}>
                                 {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id}>
+                                    <TableRow key={headerGroup.id} sx={styles.tr}>
                                         {headerGroup.headers.map((header) => (
-                                            <TableCell
-                                                key={header.id}
-                                                style={{
-                                                    ...styles.th,
-                                                    width: header.getSize() !== 0 ? header.getSize() : undefined,
-                                                }}
-                                            >
+                                            <TableCell key={header.id} style={createHeaderCellStyle(header, styles)}>
                                                 {flexRender(header.column.columnDef.header, header.getContext())}
                                             </TableCell>
                                         ))}

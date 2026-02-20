@@ -8,6 +8,7 @@
 import { MuiStyles } from '@gridsuite/commons-ui';
 import { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
+import { MODIFICATION_ROW_HEIGHT } from './network-modifications-table';
 
 export const styles = {
     container: (theme) => ({
@@ -28,13 +29,13 @@ export const styles = {
     thead: (theme) => ({
         backgroundColor: theme.palette.background.paper,
         position: 'sticky',
-        borderTop: `2px solid #68686e`,
-        borderBottom: `2px solid #68686e`,
         top: 0,
         zIndex: 1,
         width: '100%',
     }),
     th: {
+        borderTop: `1px solid #68686e`,
+        borderBottom: `1px solid #68686e`,
         padding: 2,
         textAlign: 'left',
         fontWeight: 600,
@@ -98,9 +99,22 @@ export const createCellStyle = (cell: any, styles: any) => ({
     ...styles.td,
     ...cell.column.columnDef.meta?.cellStyle,
     width: cell.column.id === 'modificationName' ? '100%' : cell.column.getSize(),
-    minWidth: cell.column.id === 'modificationName' ? 0 : cell.column.columnDef.minSize,
     maxWidth: cell.column.id === 'modificationName' ? '100%' : cell.column.getSize(),
-    height: '41px',
+    minWidth: cell.column.columnDef.minSize,
+    height: `${MODIFICATION_ROW_HEIGHT}px`,
     display: 'flex',
     alignItems: 'center',
+    flexGrow: 1,
+});
+
+export const createHeaderCellStyle = (header: any, styles: any) => ({
+    ...styles.th,
+    width: header.column.id === 'modificationName' ? '100%' : header.column.getSize(),
+    maxWidth: header.column.id === 'modificationName' ? '100%' : header.column.getSize(),
+    minWidth: header.column.columnDef.minSize,
+    height: `${MODIFICATION_ROW_HEIGHT}px`,
+    display: 'flex',
+    alignItems: 'center',
+    paddingTop: '2.5vh',
+    paddingBottom: '2.5vh',
 });
