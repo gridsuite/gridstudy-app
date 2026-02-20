@@ -39,7 +39,12 @@ import {
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
-import { AreaTemperatureShapeFactorInfo, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
+import {
+    AreaTemperatureShapeFactorInfo,
+    CurrentLimitsInfo,
+    LimitSelectedRowData,
+    LineTypeInfo,
+} from './line-catalog.type';
 import { emptyLineSegment, SegmentFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
 import GridSection from '../commons/grid-section';
@@ -311,25 +316,28 @@ export const LineTypeSegmentForm = () => {
         });
         fetchStudyMetadata().then((studyMetadata) => {
             // metadata order makes order of temporary limits columns
-            studyMetadata?.temporaryLimitsNamesForCatalog.forEach((limitName) => {
-                if (limitNamesSet.has(limitName)) {
-                    base.push({
-                        headerName: `${limitName} [A]`,
-                        field: limitName,
-                        cellRenderer: DefaultCellRenderer,
-                    });
-                }
-            });
+            if (studyMetadata?.temporaryLimitsNamesForCatalog) {
+                studyMetadata?.temporaryLimitsNamesForCatalog.forEach((limitName) => {
+                    if (limitNamesSet.has(limitName)) {
+                        base.push({
+                            headerName: `${limitName} [A]`,
+                            field: limitName,
+                            cellRenderer: DefaultCellRenderer,
+                        });
+                    }
+                });
+            }
             setLimitsColumnDefs(base);
         });
     }, [intl, currentLimitResult]);
 
     const rowData = useMemo(() => {
-        const testArray: any[] = [];
+        const testArray: LimitSelectedRowData[] = [];
         currentLimitResult.forEach((currentLimit) => {
-            let limitData: any = {};
-            limitData['limitSetName'] = currentLimit.limitSetName;
-            limitData['permanentLimit'] = currentLimit.permanentLimit;
+            const limitData: LimitSelectedRowData = {
+                limitSetName: currentLimit.limitSetName,
+                permanentLimit: currentLimit.permanentLimit,
+            };
             currentLimit.temporaryLimits.forEach((temporaryLimit) => {
                 limitData[temporaryLimit.name] = temporaryLimit.limitValue;
             });

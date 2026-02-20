@@ -28,13 +28,13 @@ export function getLineTypeWithLimits(
     shapeFactor: number | null
 ): Promise<LineTypeInfo> {
     let urlSearchParams = new URLSearchParams();
-    if (area !== null && area !== undefined) {
+    if (area != null) {
         urlSearchParams.append('area', area);
     }
-    if (temperature !== null && temperature !== undefined) {
+    if (temperature != null) {
         urlSearchParams.append('temperature', temperature);
     }
-    if (shapeFactor !== null && shapeFactor !== undefined) {
+    if (shapeFactor != null) {
         urlSearchParams.append('shapeFactor', shapeFactor.toString());
     }
     const url =

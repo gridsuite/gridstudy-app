@@ -37,13 +37,20 @@ export type ComputedLineCharacteristics = {
     finalCurrentLimits: CurrentLimitsInfo[];
 };
 
-export type CurrentLimitsInfo = {
+export type CurrentLimitHeader = {
     limitSetName: string;
     permanentLimit: number;
+}
+
+export type CurrentLimitsInfo = CurrentLimitHeader & {
     temporaryLimits: TemporaryLimitsInfo[];
     area: string;
     temperature: string;
 };
+
+export type LimitSelectedRowData = CurrentLimitHeader & TemporaryLimitSelectedRowData;
+
+export type TemporaryLimitSelectedRowData = Record<string, number | string>
 
 export type AreaTemperatureShapeFactorInfo = {
     area: string | null;
