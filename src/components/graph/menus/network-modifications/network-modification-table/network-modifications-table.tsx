@@ -106,7 +106,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         onRowSelectionChange: setRowSelection,
         onExpandedChange: setExpanded,
         getCoreRowModel: getCoreRowModel(),
-        getRowId: (row, index, parent) => (parent ? `${parent.id}.${row.uuid}` : row.uuid),
+        getRowId: (row) => row.uuid,
         enableRowSelection: true,
     });
 
