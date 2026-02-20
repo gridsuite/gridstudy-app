@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
+import { PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import type { Action } from 'redux';
 import {
     BaseVoltage,
@@ -102,7 +102,6 @@ export type AppActions =
     | EnableDeveloperModeAction
     | MapDataLoadingAction
     | MapEquipmentsInitializedAction
-    | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
     | StoreNadViewBoxAction
@@ -674,18 +673,6 @@ export function setMapEquipementsInitialized(newValue: boolean): MapEquipmentsIn
     return {
         type: MAP_EQUIPMENTS_INITIALIZED,
         newValue,
-    };
-}
-
-export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
-export type FavoriteContingencyListsAction = Readonly<Action<typeof FAVORITE_CONTINGENCY_LISTS>> & {
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
-};
-
-export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[]): FavoriteContingencyListsAction {
-    return {
-        type: FAVORITE_CONTINGENCY_LISTS,
-        [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
     };
 }
 

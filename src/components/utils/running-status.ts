@@ -106,6 +106,21 @@ export function getDynamicSecurityAnalysisRunningStatus(dynamicSecurityAnalysisS
     }
 }
 
+export function getDynamicMarginCalculationRunningStatus(dynamicMarginCalculationStatus: string | null): RunningStatus {
+    switch (dynamicMarginCalculationStatus) {
+        case 'SUCCEED':
+            return RunningStatus.SUCCEED;
+        case 'FAILED':
+            return RunningStatus.FAILED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
 export function getVoltageInitRunningStatus(voltageInitStatus: string | null): RunningStatus {
     switch (voltageInitStatus) {
         case 'OK':
