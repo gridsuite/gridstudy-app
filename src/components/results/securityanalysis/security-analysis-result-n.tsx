@@ -25,8 +25,9 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
     const intl: IntlShape = useIntl();
 
     const rows = useMemo(() => {
-        return result?.length // check if it's not Page object
-            ? (result?.map((preContingencyResult: PreContingencyResult) => {
+        return !result
+            ? undefined
+            : result.map((preContingencyResult: PreContingencyResult) => {
                   const { limitViolation, subjectId } = preContingencyResult;
                   return {
                       subjectId: subjectId,
@@ -48,8 +49,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                               ? null
                               : limitViolation?.upcomingAcceptableDuration,
                   } as SecurityAnalysisNTableRow;
-              }) ?? [])
-            : [];
+              });
     }, [intl, result]);
 
     return (
