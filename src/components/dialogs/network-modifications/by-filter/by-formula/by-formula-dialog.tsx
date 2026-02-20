@@ -36,10 +36,11 @@ import {
 } from '../../../../utils/field-constants';
 import { modifyByFormula } from '../../../../../services/study/network-modifications';
 import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils';
+import { ByFormulaDialogProps } from './by-formula.type';
 
 function getFieldOrConvertedUnitValue(input, fieldType, convert) {
     const value = input.replace(',', '.');
-    const isNumber = !isNaN(parseFloat(value));
+    const isNumber = !Number.isNaN(Number.parseFloat(value));
 
     if (isNumber) {
         return {
@@ -54,9 +55,9 @@ function getFieldOrConvertedUnitValue(input, fieldType, convert) {
     }
 }
 
-function shouldConvert(input1, input2, operator) {
-    const isNumber1 = input1 && (!isNaN(input1) || !isNaN(parseFloat(input1.replace(',', '.'))));
-    const isNumber2 = input2 && (!isNaN(input2) || !isNaN(parseFloat(input2.replace(',', '.'))));
+function shouldConvert(input1: number | null, input2: number | null, operator: string) {
+    const isNumber1 = input1 && !Number.isNaN(input1);
+    const isNumber2 = input2 && !Number.isNaN(input2);
 
     switch (operator) {
         case 'DIVISION':
@@ -88,7 +89,14 @@ const emptyFormData = {
     [FORMULAS]: [getFormulaInitialValue()],
 };
 
-const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
+const ByFormulaDialog = ({
+    studyUuid,
+    currentNode,
+    editData,
+    isUpdate,
+    editDataFetchStatus,
+    ...dialogProps
+}: ByFormulaDialogProps) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
@@ -109,20 +117,20 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
         if (editData) {
             const formulas = editData.formulaInfosList?.map((formula) => {
                 const shouldConverts = shouldConvert(
-                    formula?.fieldOrValue1?.value,
-                    formula?.fieldOrValue2?.value,
-                    formula?.operator
+                    formula.fieldOrValue1?.value,
+                    formula.fieldOrValue2?.value,
+                    formula.operator
                 );
 
                 const valueConverted1 = shouldConverts.convertValue1
-                    ? convertInputValue(FieldType[formula[EDITED_FIELD]], formula?.fieldOrValue1?.value)
-                    : formula?.fieldOrValue1?.value;
+                    ? convertInputValue(formula.editedField as FieldType, formula.fieldOrValue1?.value)
+                    : formula.fieldOrValue1?.value;
                 const valueConverted2 = shouldConverts.convertValue2
-                    ? convertInputValue(FieldType[formula[EDITED_FIELD]], formula?.fieldOrValue2?.value)
-                    : formula?.fieldOrValue2.value;
+                    ? convertInputValue(formula.editedField as FieldType, formula.fieldOrValue2?.value)
+                    : formula.fieldOrValue2.value;
 
-                const ref1 = valueConverted1?.toString() ?? formula?.fieldOrValue1?.equipmentField;
-                const ref2 = valueConverted2?.toString() ?? formula?.fieldOrValue2?.equipmentField;
+                const ref1 = valueConverted1?.toString() ?? formula.fieldOrValue1?.equipmentField;
+                const ref2 = valueConverted2?.toString() ?? formula.fieldOrValue2?.equipmentField;
                 return {
                     [REFERENCE_FIELD_OR_VALUE_1]: ref1,
                     [REFERENCE_FIELD_OR_VALUE_2]: ref2,
@@ -152,12 +160,12 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
                 );
                 const fieldOrValue1 = getFieldOrConvertedUnitValue(
                     formula[REFERENCE_FIELD_OR_VALUE_1],
-                    FieldType[formula[EDITED_FIELD]],
+                    formula[EDITED_FIELD] as FieldType,
                     shouldConverts.convertValue1
                 );
                 const fieldOrValue2 = getFieldOrConvertedUnitValue(
                     formula[REFERENCE_FIELD_OR_VALUE_2],
-                    FieldType[formula[EDITED_FIELD]],
+                    formula[EDITED_FIELD] as FieldType,
                     shouldConverts.convertValue2
                 );
 
@@ -183,13 +191,7 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
                 formulaInfosList: formulas,
             };
 
-            modifyByFormula(
-                studyUuid,
-                currentNodeUuid,
-                byFormulaModificationInfos,
-                !!editData,
-                editData?.uuid ?? null
-            ).catch((error) => {
+            modifyByFormula(studyUuid, currentNodeUuid, byFormulaModificationInfos, editData?.uuid).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'ModifyByFormula' });
             });
         },
