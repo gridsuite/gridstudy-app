@@ -20,7 +20,6 @@ const debouncedSyncTimers: Record<string, ReturnType<typeof setTimeout>> = {};
  * This ensures that the server state remains in sync with the client-side filter state from Redux.
  */
 export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (next) => (action) => {
-    console.log('Action dispatched middleware: ', action);
 
     const result = next(action); // Let Redux update the state first
 
@@ -31,8 +30,8 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
     // Synchronize filter changes with the backend
     switch (action.type) {
         case ADD_GLOBAL_FILTERS:
-        case CLEAR_GLOBAL_FILTERS:
-        case REMOVE_GLOBAL_FILTERS: {
+        case REMOVE_GLOBAL_FILTERS:
+        case CLEAR_GLOBAL_FILTERS: {
             const { tableType, tableId } = action as GlobalFilterAction;
             // State after the action
             const state = store.getState();
