@@ -40,11 +40,15 @@ export const styles = {
         textAlign: 'left',
         fontWeight: 600,
     },
+    editDescription: {
+        opacity: 0,
+        pointerEvents: 'none',
+    },
     tr: {
         display: 'flex',
         alignItems: 'center',
         '&:hover': {
-            '& .edit-description-button': {
+            '& .editDescription': {
                 opacity: 1,
                 pointerEvents: 'auto',
             },
