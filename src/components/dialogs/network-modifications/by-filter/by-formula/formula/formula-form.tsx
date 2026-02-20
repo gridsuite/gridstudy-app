@@ -16,12 +16,13 @@ import {
     REFERENCE_FIELD_OR_VALUE_2,
 } from '../../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { EQUIPMENTS_FIELDS } from './formula-utils';
+import { EQUIPMENTS_FIELDS, EquipmentTypeOptionType } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { Grid } from '@mui/material';
 import GridItem from '../../../../commons/grid-item';
+import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 
 interface FormulaProps {
     name: string;
@@ -35,13 +36,18 @@ const OPERATOR_OPTIONS = [
     { id: 'DIVISION', label: '/' },
     { id: 'PERCENTAGE', label: '%' },
 ];
+
 const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
-    const equipmentTypeWatch = useWatch({
+    const equipmentTypeWatch: EquipmentTypeOptionType = useWatch({
         name: EQUIPMENT_TYPE_FIELD,
     });
-    const equipmentFields: { id: string; label: string; unit: string }[] =
-        // @ts-expect-error TODO: missing type in context
-        EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
+    const equipmentFields = EQUIPMENTS_FIELDS[equipmentTypeWatch] ?? [];
+    const editableEquipmentFields =
+        equipmentTypeWatch === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
+            ? (EQUIPMENTS_FIELDS[equipmentTypeWatch].filter(
+                  (field) => field.id !== 'RATIO_HIGH_TAP_POSITION' && field.id !== 'PHASE_HIGH_TAP_POSITION'
+              ) ?? [])
+            : (EQUIPMENTS_FIELDS[equipmentTypeWatch] ?? []);
 
     const formatLabelWithUnit = useFormatLabelWithUnit();
 
@@ -59,10 +65,10 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
     const editedField = (
         <AutocompleteInput
             name={`${name}.${index}.${EDITED_FIELD}`}
-            options={equipmentFields}
+            options={editableEquipmentFields}
             label={'EditedField'}
             size={'small'}
-            inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
+            inputTransform={(value: any) => editableEquipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
             getOptionLabel={(option: any) => formatLabelWithUnit(option)}
         />
