@@ -43,7 +43,7 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
         // import selected modifications
         if (modificationUuidList.length > 0 && studyUuid && currentNode) {
             const copyInfos = {
-                copyType: NetworkModificationCopyType.INSERT,
+                copyType: NetworkModificationCopyType.SPLIT_COMPOSITE,
                 originStudyUuid: studyUuid,
                 originNodeUuid: currentNode.id,
             };

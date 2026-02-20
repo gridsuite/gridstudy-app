@@ -102,8 +102,7 @@ export default function ShuntCompensatorModificationDialog({
     const { snackError } = useSnackMessage();
 
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
-    const [isLinear, setIsLinear] = useState(false);
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState(null);
 
     const formMethods = useFormWithDirtyTracking<DeepNullable<ShuntCompensatorModificationDialogSchemaForm>>({
@@ -179,7 +178,6 @@ export default function ShuntCompensatorModificationDialog({
                             if (shuntCompensator.isLinear) {
                                 setShuntCompensatorInfos(shuntCompensator);
                                 setDataFetchStatus(FetchStatus.SUCCEED);
-                                setIsLinear(true);
                                 reset(
                                     (formValues) => ({
                                         ...formValues,
@@ -194,7 +192,6 @@ export default function ShuntCompensatorModificationDialog({
                                 snackError({
                                     headerId: 'ShuntCompensatorNonlinearError',
                                 });
-                                setIsLinear(false);
                             }
                         }
                     })
@@ -291,7 +288,7 @@ export default function ShuntCompensatorModificationDialog({
                 }
                 {...dialogProps}
             >
-                {(selectedId === null || !isLinear) && (
+                {selectedId === null && (
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
@@ -299,7 +296,7 @@ export default function ShuntCompensatorModificationDialog({
                         fillerHeight={5}
                     />
                 )}
-                {selectedId !== null && isLinear && (
+                {selectedId !== null && (
                     <ShuntCompensatorModificationForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}
