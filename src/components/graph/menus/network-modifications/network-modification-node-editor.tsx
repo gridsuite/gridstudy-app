@@ -1147,12 +1147,15 @@ const NetworkModificationNodeEditor = () => {
             return;
         }
 
-        const newPosition = event.destination.index;
+        let newPosition = event.destination.index;
         const oldPosition = initialPosition;
 
         if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
             setIsDragging(false);
             return;
+        }
+        if (newPosition === -1) {
+            newPosition = modifications.length;
         }
 
         const previousModifications = [...modifications];
