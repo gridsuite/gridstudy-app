@@ -39,6 +39,8 @@ import { ByFormulaModificationInfos, ReferenceFieldOrValue } from '../../../../.
 import { UUID } from 'node:crypto';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
+// In the back (cf editData), a ReferenceFieldOrValue has 2 exclusive attributes number vs string.
+// But in the Form, we use a single yup mixed attribute that can be either a number or a string.
 type FormReferenceFieldOrValue = number | string | null;
 
 function isMixedValueNumber(formFieldOrValue: FormReferenceFieldOrValue) {
