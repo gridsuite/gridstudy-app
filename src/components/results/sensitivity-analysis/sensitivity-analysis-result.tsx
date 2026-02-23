@@ -45,7 +45,7 @@ function sanitizeObject(record: Object): Object {
 }
 
 type SensitivityAnalysisResultProps = CustomAGGridProps & {
-    result: Sensitivity[];
+    result: Sensitivity[] | undefined;
     nOrNkIndex: number;
     sensiKind: SensiKind;
     filtersDef: { field: string; options: string[] }[];
@@ -205,7 +205,13 @@ function SensitivityAnalysisResult({
         return returnedTable;
     }, [makeColumn, nOrNkIndex, sensiKind]);
 
-    const rows = useMemo(() => makeRows(result), [result]);
+    const rows = useMemo(() => {
+        if (result) {
+            return makeRows(result);
+        } else {
+            return undefined;
+        }
+    }, [result]);
 
     const defaultColDef = useMemo(
         () => ({
