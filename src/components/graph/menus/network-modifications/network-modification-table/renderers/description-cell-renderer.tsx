@@ -10,7 +10,7 @@ import {
     mergeSx,
     NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
-import { useCallback, useState } from 'react';
+import { MouseEvent, useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useSelector } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
@@ -55,7 +55,7 @@ const DescriptionCellRenderer = (props: DescriptionRendererProps) => {
         setOpenDescModificationDialog(false);
     }, []);
 
-    const handleModifyDescription = useCallback((e: React.MouseEvent) => {
+    const handleModifyDescription = useCallback((e: MouseEvent) => {
         e.stopPropagation(); // Prevent row click from firing
         setOpenDescModificationDialog(true);
     }, []);

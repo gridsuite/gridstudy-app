@@ -10,7 +10,7 @@ import { Box } from '@mui/material';
 import { memo } from 'react';
 import { styles } from '../styles';
 
-const DragHandleCell = memo(({ isRowDragDisabled }: { isRowDragDisabled: boolean }) => {
+const DragHandleCell = ({ isRowDragDisabled }: { isRowDragDisabled: boolean }) => {
     if (isRowDragDisabled) {
         return <Box sx={{ width: 24 }} />;
     }
@@ -19,6 +19,6 @@ const DragHandleCell = memo(({ isRowDragDisabled }: { isRowDragDisabled: boolean
             <DragIndicatorIcon fontSize="small" />
         </Box>
     );
-});
+};
 
 export default DragHandleCell;
