@@ -29,9 +29,8 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import yup from '../../../utils/yup-config';
 import type { UUID } from 'node:crypto';
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
-import { toModificationOperation } from '../../../utils/utils';
-import { AttributeModification } from '../../../../services/network-modification-types';
 import { APPLICABILITY } from '../../../network/constants';
+import { AttributeModification, toModificationOperation } from '@gridsuite/commons-ui';
 
 type TemporaryLimit = {
     name: AttributeModification<string>;

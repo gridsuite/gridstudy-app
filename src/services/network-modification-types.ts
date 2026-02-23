@@ -13,20 +13,10 @@ import {
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
-import { ModificationType, Option, Property } from '@gridsuite/commons-ui';
+import { AttributeModification, ModificationType, Option, Property } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
-
-export enum OperationType {
-    SET = 'SET',
-    UNSET = 'UNSET',
-}
-
-export type AttributeModification<T> = {
-    value?: T;
-    op: OperationType;
-};
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;

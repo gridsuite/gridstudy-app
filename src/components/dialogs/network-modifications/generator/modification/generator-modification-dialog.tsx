@@ -21,6 +21,7 @@ import {
     DeepNullable,
     sanitizeString,
     FieldConstants,
+    toModificationOperation,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -96,7 +97,6 @@ import {
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
-import { toModificationOperation } from '../../../../utils/utils';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import {

@@ -19,6 +19,7 @@ import {
     modificationPropertiesSchema,
     sanitizeString,
     snackWithFallback,
+    toModificationOperation,
     toModificationProperties,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -103,7 +104,6 @@ import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
 import { LineModificationFormSchema } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
-import { toModificationOperation } from '../../../../utils/utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
 import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
