@@ -35,9 +35,9 @@ import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
 import {
-    TwoWindingsTransformerData,
-    RatioTapChangerData,
-    RatioTapChangerPaneProps,
+    TapChangerMapInfos,
+    TapChangerPaneProps,
+    TwoWindingsTransformerMapInfos,
 } from '../../two-windings-transformer.types';
 
 const RatioTapChangerPane = ({
@@ -49,7 +49,7 @@ const RatioTapChangerPane = ({
     previousValues,
     editData,
     isModification = false,
-}: RatioTapChangerPaneProps) => {
+}: TapChangerPaneProps) => {
     const { trigger, setValue, getValues } = useFormContext();
     const intl = useIntl();
 
@@ -63,7 +63,7 @@ const RatioTapChangerPane = ({
         return undefined;
     };
 
-    const getRatioTapChangerRegulationModeLabel = (ratioTapChangerFormValues?: RatioTapChangerData | null) => {
+    const getRatioTapChangerRegulationModeLabel = (ratioTapChangerFormValues?: TapChangerMapInfos | null) => {
         if (!ratioTapChangerFormValues) {
             return undefined;
         }
@@ -104,7 +104,7 @@ const RatioTapChangerPane = ({
     }, [previousValues, regulationTypeWatch]);
 
     const findAndSetVoltageLevelFromPrevious = useCallback(
-        (previousValues: TwoWindingsTransformerData | undefined, voltageLevelOptions: Identifiable[]) => {
+        (previousValues: TwoWindingsTransformerMapInfos | undefined, voltageLevelOptions: Identifiable[]) => {
             const prevVl = voltageLevelOptions.find(
                 (vl) => vl.id === previousValues?.ratioTapChanger?.regulatingTerminalVlId
             );
@@ -123,7 +123,7 @@ const RatioTapChangerPane = ({
     );
 
     const setEquipmentFromPrevious = useCallback(
-        (previousValues: TwoWindingsTransformerData | undefined) => {
+        (previousValues: TwoWindingsTransformerMapInfos | undefined) => {
             const prevEquipmentId = previousValues?.ratioTapChanger?.regulatingTerminalConnectableId;
             if (prevEquipmentId) {
                 const prevEquipmentType = previousValues?.ratioTapChanger?.regulatingTerminalConnectableType;
@@ -270,7 +270,7 @@ const RatioTapChangerPane = ({
             <RatioTapChangerPaneSteps
                 disabled={!ratioTapChangerEnabledWatcher}
                 previousValues={previousValues?.ratioTapChanger}
-                editData={editData?.ratioTapChanger as Record<string, unknown> | undefined}
+                editData={editData}
                 currentNode={currentNode}
                 isModification={isModification}
             />

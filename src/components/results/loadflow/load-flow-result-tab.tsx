@@ -55,7 +55,7 @@ import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-ac
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 const styles = {
     flexWrapper: {
@@ -241,7 +241,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const result = useMemo(() => {
         if (!loadflowResult) {
-            return [];
+            return undefined;
         }
         if (tabIndex === 0 || tabIndex === 1) {
             return makeData(loadflowResult, intl);

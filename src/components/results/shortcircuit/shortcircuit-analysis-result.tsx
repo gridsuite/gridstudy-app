@@ -39,12 +39,12 @@ import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custo
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
     analysisStatus: RunningStatus;
-    result: SCAFaultResult[];
+    result: SCAFaultResult[] | undefined;
     updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
     customTablePaginationProps: any;
     onGridColumnsChanged: (params: GridReadyEvent) => void;

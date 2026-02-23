@@ -25,7 +25,7 @@ import { UUID } from 'node:crypto';
 import { PccMinExportButton } from './pcc-min-export-button';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { GlobalFilter } from '../common/global-filter/global-filter-types';
-import { useComputationColumnFilters } from '../common/global-filter/use-computation-column-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 interface PccMinResultProps {
     studyUuid: UUID;
@@ -62,10 +62,10 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
-    const [result, setResult] = useState<SinglePccMinResultInfos[]>([]);
+    const [result, setResult] = useState<SinglePccMinResultInfos[] | undefined>(undefined);
 
     const updateResult = useCallback((results: SinglePccMinResultInfos[] | null) => {
-        setResult(results ?? []);
+        setResult(results ?? undefined);
     }, []);
 
     const [count, setCount] = useState<number>(0);
