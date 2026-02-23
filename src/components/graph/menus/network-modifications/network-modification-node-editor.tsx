@@ -1130,7 +1130,7 @@ const NetworkModificationNodeEditor = () => {
         (modification: NetworkModificationMetadata) => {
             if (isModificationClickable(modification)) {
                 // Check if the clicked column is the 'modificationName' column
-                doEditModification(modification.uuid, modification.type as ModificationType);
+                doEditModification(modification.uuid, modification.type);
             }
         },
         [doEditModification, isModificationClickable]
