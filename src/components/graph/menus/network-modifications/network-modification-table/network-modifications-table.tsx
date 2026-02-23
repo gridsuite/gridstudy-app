@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Dispatch, FC, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -41,17 +41,17 @@ export const MODIFICATION_ROW_HEIGHT = 41;
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];
-    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
+    setModifications: Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
     handleCellClick?: (modification: NetworkModificationMetadata) => void;
     isRowDragDisabled?: boolean;
     onRowDragStart?: (event: DragStart) => void;
     onRowDragEnd?: (event: DropResult) => void;
     onRowSelected?: (selectedRows: NetworkModificationMetadata[]) => void;
     modificationsToExclude: ExcludedNetworkModifications[];
-    setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
+    setModificationsToExclude: Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
 }
 
-const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
+const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
     modifications,
     setModifications,
     handleCellClick,

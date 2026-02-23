@@ -9,9 +9,8 @@ import { Box } from '@mui/material';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { createCellStyle, styles } from '../styles';
 import { flexRender, Row } from '@tanstack/react-table';
-import { memo } from 'react';
 
-const DragCloneRow = memo(({ row }: { row: Row<NetworkModificationMetadata> }) => (
+const DragCloneRow = ({ row }: { row: Row<NetworkModificationMetadata> }) => (
     <Box sx={styles.dragRowClone}>
         {row.getVisibleCells().map(
             (cell) =>
@@ -22,6 +21,6 @@ const DragCloneRow = memo(({ row }: { row: Row<NetworkModificationMetadata> }) =
                 )
         )}
     </Box>
-));
+);
 
 export default DragCloneRow;

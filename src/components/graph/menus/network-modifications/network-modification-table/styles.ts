@@ -102,7 +102,7 @@ export const createRowStyle = (
     virtualRow: VirtualItem
 ) => ({
     ...provided.draggableProps.style,
-    position: 'absolute' as const,
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,

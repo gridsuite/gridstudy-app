@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback, SetStateAction } from 'react';
+import React, { MouseEvent, useState, useCallback, SetStateAction } from 'react';
 import { Switch, Tooltip } from '@mui/material';
 import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationMetadata } from 'services/study/network-modifications';
@@ -52,7 +52,7 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
     );
 
     const toggleModificationActive = useCallback(
-        (e: React.MouseEvent) => {
+        (e: MouseEvent) => {
             e.stopPropagation(); // Prevent row click from firing
             setIsLoading(true);
             setModifications((oldModifications) => {
