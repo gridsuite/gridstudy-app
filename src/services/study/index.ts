@@ -238,13 +238,18 @@ export function copyOrMoveModifications(
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
+    // TODO : conversion to a ModificationsToCopyInfos dto => this will be useful and improved when INSERT_COMPOSITE action will be made available from the front
+    const modifications = modificationToCutUuidList.map((modificationUuid) => {
+        return { uuid: modificationUuid };
+    });
+
     return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modificationToCutUuidList),
+        body: JSON.stringify(modifications),
     });
 }
 
