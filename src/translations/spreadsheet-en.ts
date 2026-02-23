@@ -46,7 +46,7 @@ const spreadsheetEn = {
     'spreadsheet/save/options/filter': 'As a filter',
     'spreadsheet/save/options/collection': 'Collection',
     'spreadsheet/save/options/csv/export': 'Export CSV',
-    'spreadsheet/save/options/csv/clipboard': 'Copy CSV',
+    'spreadsheet/save/options/csv/clipboard': 'Copy',
     'spreadsheet/save/options/csv/clipboard/success': 'Sheet content copied to system clipboard',
     'spreadsheet/save/options/csv/clipboard/error': 'Could not copy sheet content to system clipboard',
     'spreadsheet/save/dialog_title': 'Save a spreadsheet model',
