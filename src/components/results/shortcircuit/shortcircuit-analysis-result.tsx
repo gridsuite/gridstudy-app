@@ -44,7 +44,7 @@ import { useComputationColumnFilters } from '../common/column-filter/use-computa
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
     analysisStatus: RunningStatus;
-    result: SCAFaultResult[];
+    result: SCAFaultResult[] | undefined;
     updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
     customTablePaginationProps: any;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
