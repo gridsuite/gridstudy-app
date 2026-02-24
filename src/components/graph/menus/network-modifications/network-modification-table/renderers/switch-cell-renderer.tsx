@@ -63,7 +63,6 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
 
             newModifications[modificationToUpdateIndex] = {
                 ...newModifications[modificationToUpdateIndex],
-                activated: newStatus,
             };
 
             updateModification(newStatus);
