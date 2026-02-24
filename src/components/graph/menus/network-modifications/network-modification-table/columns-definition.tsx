@@ -17,11 +17,12 @@ import SwitchCellRenderer from './renderers/switch-cell-renderer';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';
 import RootNetworkChipCellRenderer from './renderers/root-network-chip-cell-renderer';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
+import SelectCellRenderer from './renderers/select-cell-renderer';
 
-const CHIP_PADDING_PX = 24; // horizontal padding inside the chip
-const CHAR_WIDTH_PX = 8; // approximate px per character
-const COLUMN_PADDING_PX = 12; // cell padding around the chip
-const MIN_COLUMN_SIZE = 40; // absolute floor
+const CHIP_PADDING_PX = 24;
+const CHAR_WIDTH_PX = 8;
+const COLUMN_PADDING_PX = 12;
+const MIN_COLUMN_SIZE = 40;
 
 const computeTagMinSize = (tag: string): number => {
     const chipContentWidth = tag.length * CHAR_WIDTH_PX + CHIP_PADDING_PX;
@@ -77,14 +78,7 @@ export const createStaticColumns = (
                 onChange={table.getToggleAllRowsSelectedHandler()}
             />
         ),
-        cell: ({ row }) => (
-            <Checkbox
-                size="small"
-                checked={row.getIsSelected()}
-                disabled={!row.getCanSelect()}
-                onChange={row.getToggleSelectedHandler()}
-            />
-        ),
+        cell: ({ row, table }) => <SelectCellRenderer row={row} table={table} />,
         size: 40,
         minSize: 40,
         meta: {
