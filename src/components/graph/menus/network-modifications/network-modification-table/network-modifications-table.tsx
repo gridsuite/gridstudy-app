@@ -38,7 +38,6 @@ import { createDynamicColumns, createStaticColumns } from './columns-definition'
 import ModificationRow from './row/modification-row';
 import DragCloneRow from './row/drag-row-clone';
 import { useTheme } from '@mui/material/styles';
-import { RangeSelectionTableMeta } from './renderers/select-cell-renderer';
 
 export const MODIFICATION_ROW_HEIGHT = 41;
 
@@ -77,7 +76,6 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
     const [expanded, setExpanded] = useState<ExpandedState>({});
 
     const parentRef = useRef<HTMLDivElement>(null);
-    const lastClickedIndex = useRef<number | null>(null);
 
     const columns = useMemo<ColumnDef<NetworkModificationMetadata>[]>(() => {
         const staticColumns = createStaticColumns(isRowDragDisabled, modifications, nameHeaderProps, setModifications);
@@ -113,7 +111,6 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
         getCoreRowModel: getCoreRowModel(),
         getRowId: (row) => row.uuid,
         enableRowSelection: true,
-        meta: { lastClickedIndex } satisfies RangeSelectionTableMeta,
     });
 
     const { rows } = table.getRowModel();
@@ -128,7 +125,6 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
 
     useEffect(() => {
         setRowSelection({});
-        lastClickedIndex.current = null;
     }, [currentTreeNodeId]);
 
     useEffect(() => {
@@ -190,44 +186,46 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
 
     return (
         <DragDropContext onDragEnd={handleDragEnd} onDragStart={onRowDragStart} onDragUpdate={handleDragUpdate}>
-            <Droppable droppableId="modifications-table" mode="virtual" renderClone={renderClone}>
-                {(provided: DroppableProvided) => (
-                    <Box ref={parentRef} sx={styles.container}>
-                        <Table sx={styles.table}>
-                            <TableHead sx={styles.thead}>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id} sx={styles.tr}>
-                                        {headerGroup.headers.map((header) => (
-                                            <TableCell key={header.id} style={createHeaderCellStyle(header, theme)}>
-                                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableHead>
-                            <TableBody
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                style={{ ...styles.tableBody, height: `${virtualizer.getTotalSize()}px` }}
-                            >
-                                {virtualItems.map((virtualRow) => {
-                                    const row = rows[virtualRow.index];
-                                    return (
-                                        <ModificationRow
-                                            key={row.id}
-                                            virtualRow={virtualRow}
-                                            row={row}
-                                            handleCellClick={handleCellClick}
-                                            isRowDragDisabled={isRowDragDisabled}
-                                            highlightedModificationUuid={highlightedModificationUuid}
-                                        />
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
-                    </Box>
-                )}
-            </Droppable>
+            <Box sx={styles.tableWrapper}>
+                <Droppable droppableId="modifications-table" mode="virtual" renderClone={renderClone}>
+                    {(provided: DroppableProvided) => (
+                        <Box ref={parentRef} sx={styles.container}>
+                            <Table sx={styles.table}>
+                                <TableHead sx={styles.thead}>
+                                    {table.getHeaderGroups().map((headerGroup) => (
+                                        <TableRow key={headerGroup.id} sx={styles.tr}>
+                                            {headerGroup.headers.map((header) => (
+                                                <TableCell key={header.id} style={createHeaderCellStyle(header, theme)}>
+                                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))}
+                                </TableHead>
+                                <TableBody
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    style={{ ...styles.tableBody, height: `${virtualizer.getTotalSize()}px` }}
+                                >
+                                    {virtualItems.map((virtualRow) => {
+                                        const row = rows[virtualRow.index];
+                                        return (
+                                            <ModificationRow
+                                                key={row.id}
+                                                virtualRow={virtualRow}
+                                                row={row}
+                                                handleCellClick={handleCellClick}
+                                                isRowDragDisabled={isRowDragDisabled}
+                                                highlightedModificationUuid={highlightedModificationUuid}
+                                            />
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </Box>
+                    )}
+                </Droppable>
+            </Box>
         </DragDropContext>
     );
 };

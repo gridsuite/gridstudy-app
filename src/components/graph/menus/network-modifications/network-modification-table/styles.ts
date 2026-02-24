@@ -14,13 +14,19 @@ import { CSSProperties } from 'react';
 import { Theme } from '@mui/material';
 
 export const styles = {
-    container: (theme) => ({
+    tableWrapper: (theme) => ({
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        margin: theme.spacing(1),
+        border: `1px solid ${theme.palette.divider}`,
+    }),
+    container: {
         position: 'relative',
         flexGrow: 1,
-        marginTop: theme.spacing(1),
         overflow: 'auto',
         height: '100%',
-    }),
+    },
     table: (theme) => ({
         width: '100%',
         tableLayout: 'fixed',
