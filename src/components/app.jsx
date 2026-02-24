@@ -38,6 +38,7 @@ import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
+    initOrUpdateSpreadsheetGlobalFilters,
     initTableDefinitions,
     renameTableDefinition,
     selectComputedLanguage,
@@ -198,9 +199,11 @@ const App = () => {
                     const tabUuid = model.id;
                     const formattedColumns = mapColumnsDto(model.columns);
                     const columnsFilters = extractColumnsFilters(model.columns);
+                    const formattedGlobalFilters = model.globalFilters ?? [];
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
+                    dispatch(initOrUpdateSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
                     dispatch(
                         addSortForNewSpreadsheet(tabUuid, [
                             {

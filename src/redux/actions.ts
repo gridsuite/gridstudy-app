@@ -127,7 +127,7 @@ export type AppActions =
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | AddFilterForNewSpreadsheetAction
-    | InitSpreadSheetGlobalFilterAction
+    | InitOrUpdateSpreadSheetGlobalFilterAction
     | RemoveTableDefinitionAction
     | SetCalculationSelectionsAction
     | ReorderTableDefinitionsAction
@@ -1438,18 +1438,20 @@ export const addSortForNewSpreadsheet = (tabUuid: UUID, value: SortConfig[]): Ad
     },
 });
 
-export const INIT_SPREADSHEET_GLOBAL_FILTER = 'INIT_SPREADSHEET_GLOBAL_FILTER';
-export type InitSpreadSheetGlobalFilterAction = Readonly<Action<typeof INIT_SPREADSHEET_GLOBAL_FILTER>> & {
+export const INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER = 'INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER';
+export type InitOrUpdateSpreadSheetGlobalFilterAction = Readonly<
+    Action<typeof INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER>
+> & {
     tabUuid: UUID;
     filters: GlobalFilter[];
 };
 
-export function initSpreadsheetGlobalFilters(
+export function initOrUpdateSpreadsheetGlobalFilters(
     tabUuid: UUID,
     filters: GlobalFilter[]
-): InitSpreadSheetGlobalFilterAction {
+): InitOrUpdateSpreadSheetGlobalFilterAction {
     return {
-        type: INIT_SPREADSHEET_GLOBAL_FILTER,
+        type: INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER,
         tabUuid: tabUuid,
         filters: filters,
     };

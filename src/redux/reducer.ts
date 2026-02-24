@@ -72,9 +72,9 @@ import {
     type EnableDeveloperModeAction,
     HIGHLIGHT_MODIFICATION,
     HighlightModificationAction,
-    INIT_SPREADSHEET_GLOBAL_FILTER,
+    INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER,
     INIT_TABLE_DEFINITIONS,
-    type InitSpreadSheetGlobalFilterAction,
+    type InitOrUpdateSpreadSheetGlobalFilterAction,
     type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
@@ -1795,18 +1795,29 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(INIT_SPREADSHEET_GLOBAL_FILTER, (state, action: InitSpreadSheetGlobalFilterAction) => {
-        console.log('Reducer INIT_SPREADSHEET_GLOBAL_FILTER:', action);
-        // Store only IDs in globalFilters
-        state.tableFilters.globalFilters[action.tabUuid] = action.filters.map(getGlobalFilterId);
-        // Store full objects in globalFilterOptions only if not already present
-        action.filters.filter(isCriteriaFilter).forEach((filter) => {
-            const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
-            if (!alreadyExists) {
-                state.globalFilterOptions.push(addGlobalFilterId(filter));
+    builder.addCase(
+        INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER,
+        (state, action: InitOrUpdateSpreadSheetGlobalFilterAction) => {
+            // Replace selected IDs in globalFilters only if different
+            const currentIds = state.tableFilters.globalFilters[action.tabUuid];
+            const newIds = action.filters.map(getGlobalFilterId);
+            const areEqual =
+                currentIds?.length === newIds.length &&
+                currentIds.every((id) => newIds.includes(id)) &&
+                newIds.every((id) => currentIds.includes(id));
+            if (!areEqual) {
+                state.tableFilters.globalFilters[action.tabUuid] = newIds;
             }
-        });
-    });
+
+            // Store full objects in globalFilterOptions only if not already present
+            action.filters.filter(isCriteriaFilter).forEach((filter) => {
+                const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
+                if (!alreadyExists) {
+                    state.globalFilterOptions.push(addGlobalFilterId(filter));
+                }
+            });
+        }
+    );
 
     builder.addCase(SET_CALCULATION_SELECTIONS, (state, action: SetCalculationSelectionsAction) => {
         state.calculationSelections = {

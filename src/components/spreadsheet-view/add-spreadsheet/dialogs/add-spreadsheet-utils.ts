@@ -19,7 +19,7 @@ import { snackWithFallback, UseStateBooleanReturn } from '@gridsuite/commons-ui'
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
-    initSpreadsheetGlobalFilters,
+    initOrUpdateSpreadsheetGlobalFilters,
     setAddedSpreadsheetTab,
     updateTableDefinition,
 } from 'redux/actions';
@@ -143,7 +143,7 @@ const handleSuccess = (
             const formattedGlobalFilters = model.globalFilters ?? [];
             dispatch(updateTableDefinition(newTableDefinition));
             dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
-            dispatch(initSpreadsheetGlobalFilters(uuid, formattedGlobalFilters));
+            dispatch(initOrUpdateSpreadsheetGlobalFilters(uuid, formattedGlobalFilters));
             dispatch(
                 addSortForNewSpreadsheet(uuid, [
                     {
