@@ -60,7 +60,7 @@ const ModificationRow = memo<ModificationRowProps>(
                         {row.getVisibleCells().map((cell) => (
                             <TableCell
                                 key={cell.id}
-                                style={createCellStyle(cell, styles)}
+                                style={createCellStyle(cell)}
                                 onClick={() => handleCellClickCallback(cell.column.id)}
                                 {...(cell.column.id === STATIC_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
                                     ? provided.dragHandleProps

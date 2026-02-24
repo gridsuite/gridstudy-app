@@ -37,6 +37,7 @@ import { createHeaderCellStyle, DROP_INDICATOR_BOTTOM, DROP_INDICATOR_TOP, style
 import { createDynamicColumns, createStaticColumns } from './columns-definition';
 import ModificationRow from './row/modification-row';
 import DragCloneRow from './row/drag-row-clone';
+import { useTheme } from '@mui/material/styles';
 
 export const MODIFICATION_ROW_HEIGHT = 41;
 
@@ -64,6 +65,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
     setModificationsToExclude,
     ...nameHeaderProps
 }) => {
+    const theme = useTheme();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
@@ -192,7 +194,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
                                 {table.getHeaderGroups().map((headerGroup) => (
                                     <TableRow key={headerGroup.id} sx={styles.tr}>
                                         {headerGroup.headers.map((header) => (
-                                            <TableCell key={header.id} style={createHeaderCellStyle(header, styles)}>
+                                            <TableCell key={header.id} style={createHeaderCellStyle(header, theme)}>
                                                 {flexRender(header.column.columnDef.header, header.getContext())}
                                             </TableCell>
                                         ))}

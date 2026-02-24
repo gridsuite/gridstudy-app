@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MuiStyles, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { MuiStyles } from '@gridsuite/commons-ui';
 import { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { MODIFICATION_ROW_HEIGHT } from './network-modifications-table';
 import { AUTO_EXTENSIBLE_COLUMNS } from './columns-definition';
 import { CSSProperties } from 'react';
+import { Theme } from '@mui/material';
 
 export const styles = {
     container: (theme) => ({
@@ -36,13 +37,6 @@ export const styles = {
             backgroundColor: 'transparent',
         },
     }),
-    th: {
-        borderTop: `1px solid #68686e`,
-        borderBottom: `1px solid #68686e`,
-        padding: 2,
-        textAlign: 'left',
-        fontWeight: 600,
-    },
     tr: {
         display: 'flex',
         alignItems: 'center',
@@ -59,10 +53,6 @@ export const styles = {
                 opacity: 1,
             },
         },
-    },
-
-    td: {
-        padding: 0,
     },
     tableBody: {
         position: 'relative',
@@ -124,14 +114,14 @@ export const createRowStyle = (
     };
 };
 
-export const createCellStyle = (cell: any, styles: any) => {
+export const createCellStyle = (cell: any) => {
     const isAutoExtensible = AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id);
     const size = cell.column.getSize();
     const minSize = cell.column.columnDef.minSize;
 
     return {
-        ...styles.td,
         ...cell.column.columnDef.meta?.cellStyle,
+        padding: 0,
         flex: isAutoExtensible ? `1 1 ${size}px` : `0 1 ${size}px`,
         minWidth: minSize ? `${minSize}px` : undefined,
         height: `${MODIFICATION_ROW_HEIGHT}px`,
@@ -140,21 +130,26 @@ export const createCellStyle = (cell: any, styles: any) => {
     };
 };
 
-export const createHeaderCellStyle = (header: any, styles: any) => {
+export const createHeaderCellStyle = (header: any, theme: Theme) => {
     const isAutoExtensible = AUTO_EXTENSIBLE_COLUMNS.includes(header.column.id);
     const size = header.column.getSize();
     const minSize = header.column.columnDef.minSize;
 
     return {
-        ...styles.th,
         ...header.column.columnDef.meta?.cellStyle,
         flex: isAutoExtensible ? `1 1 ${size}px` : `0 1 ${size}px`,
         minWidth: minSize ? `${minSize}px` : undefined,
         height: `${MODIFICATION_ROW_HEIGHT}px`,
+        borderTop: `1px solid #68686e`,
+        borderBottom: `1px solid #68686e`,
+        padding: 2,
+        textAlign: 'left',
+        fontWeight: 600,
         display: 'flex',
         alignItems: 'center',
         paddingTop: '2.5vh',
         paddingBottom: '2.5vh',
+        backgroundColor: theme.palette.background.paper,
     };
 };
 

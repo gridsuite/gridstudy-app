@@ -6,7 +6,7 @@
  */
 
 import { Box } from '@mui/material';
-import { mergeSx, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { createCellStyle, styles } from '../styles';
 import { flexRender, Row } from '@tanstack/react-table';
 import { STATIC_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
@@ -22,7 +22,7 @@ const DragCloneRow = ({ row }: { row: Row<NetworkModificationMetadata> }) => (
                 ].includes(cell.column.columnDef.id!)
             )
             .map((cell) => (
-                <Box key={cell.id} sx={mergeSx(createCellStyle(cell, styles))}>
+                <Box key={cell.id} sx={createCellStyle(cell)}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </Box>
             ))}
