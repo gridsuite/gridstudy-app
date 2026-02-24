@@ -39,30 +39,24 @@ import { ByFormulaModificationInfos, ReferenceFieldOrValue } from '../../../../.
 import { UUID } from 'node:crypto';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
-// In the back (cf editData), a ReferenceFieldOrValue has 2 exclusive attributes number vs string.
-// But in the Form, we use a single yup mixed attribute that can be either a number or a string.
-type FormReferenceFieldOrValue = number | string | null;
+function getFieldOrConvertedUnitValue(input: string, fieldType: FieldType, convert: boolean): ReferenceFieldOrValue {
+    const value = input.replace(',', '.');
+    const isNumber = !Number.isNaN(Number.parseFloat(value));
 
-function isMixedValueNumber(formFieldOrValue: FormReferenceFieldOrValue) {
-    if (formFieldOrValue == null) {
-        return false;
-    }
-    let numValue;
-    if (typeof formFieldOrValue === 'number') {
-        numValue = formFieldOrValue;
+    if (isNumber) {
+        return {
+            value: convert ? convertOutputValue(fieldType, value) : value,
+            equipmentField: null,
+        };
     } else {
-        numValue = Number.parseFloat(formFieldOrValue.replace(',', '.'));
+        return {
+            value: null,
+            equipmentField: input,
+        };
     }
-    return !Number.isNaN(numValue);
 }
 
-function shouldConvertMixedValue(
-    input1: FormReferenceFieldOrValue,
-    input2: FormReferenceFieldOrValue,
-    operator: string
-) {
-    const isNumber1 = isMixedValueNumber(input1);
-    const isNumber2 = isMixedValueNumber(input2);
+function shouldConvert(isNumber1: boolean, isNumber2: boolean, operator: string) {
     switch (operator) {
         case 'DIVISION':
             if (isNumber1 && isNumber2) {
@@ -80,22 +74,16 @@ function shouldConvertMixedValue(
     }
 }
 
-function getFieldOrConvertedUnitValue(
-    input: FormReferenceFieldOrValue,
-    fieldType: string,
-    convert: boolean
-): ReferenceFieldOrValue {
-    if (isMixedValueNumber(input)) {
-        return {
-            value: convert ? convertOutputValue(fieldType as FieldType, input) : input,
-            equipmentField: null,
-        };
-    } else {
-        return {
-            value: null,
-            equipmentField: input as string,
-        };
-    }
+function shouldConvertFromNumber(input1: number | null, input2: number | null, operator: string) {
+    const isNumber1 = input1 !== null && !Number.isNaN(input1);
+    const isNumber2 = input2 !== null && !Number.isNaN(input2);
+    return shouldConvert(isNumber1, isNumber2, operator);
+}
+
+function shouldConvertFromString(input1: string | null, input2: string | null, operator: string) {
+    const isNumber1 = input1 !== null && !Number.isNaN(Number.parseFloat(input1.replace(',', '.')));
+    const isNumber2 = input2 !== null && !Number.isNaN(Number.parseFloat(input2.replace(',', '.')));
+    return shouldConvert(isNumber1, isNumber2, operator);
 }
 
 const formSchema = yup
@@ -144,21 +132,21 @@ const ByFormulaDialog = ({
     useEffect(() => {
         if (editData) {
             const formulas = editData.formulaInfosList?.map((formula) => {
-                const shouldConverts = shouldConvertMixedValue(
-                    formula.fieldOrValue1?.value,
-                    formula.fieldOrValue2?.value,
-                    formula.operator
+                const shouldConverts = shouldConvertFromNumber(
+                    formula?.fieldOrValue1?.value,
+                    formula?.fieldOrValue2?.value,
+                    formula?.operator
                 );
 
                 const valueConverted1 = shouldConverts.convertValue1
-                    ? convertInputValue(formula.editedField as FieldType, formula.fieldOrValue1?.value)
-                    : formula.fieldOrValue1?.value;
+                    ? convertInputValue(formula.editedField as FieldType, formula?.fieldOrValue1?.value)
+                    : formula?.fieldOrValue1?.value;
                 const valueConverted2 = shouldConverts.convertValue2
-                    ? convertInputValue(formula.editedField as FieldType, formula.fieldOrValue2?.value)
-                    : formula.fieldOrValue2.value;
+                    ? convertInputValue(formula.editedField as FieldType, formula?.fieldOrValue2?.value)
+                    : formula?.fieldOrValue2?.value;
 
-                const ref1 = valueConverted1?.toString() ?? formula.fieldOrValue1?.equipmentField;
-                const ref2 = valueConverted2?.toString() ?? formula.fieldOrValue2?.equipmentField;
+                const ref1 = valueConverted1?.toString() ?? formula?.fieldOrValue1?.equipmentField;
+                const ref2 = valueConverted2?.toString() ?? formula?.fieldOrValue2?.equipmentField;
                 return {
                     [REFERENCE_FIELD_OR_VALUE_1]: ref1,
                     [REFERENCE_FIELD_OR_VALUE_2]: ref2,
@@ -181,19 +169,19 @@ const ByFormulaDialog = ({
     const onSubmit = useCallback(
         (data: ByFormulaFormData) => {
             const formulas = data[FORMULAS]?.map((formula) => {
-                const shouldConverts = shouldConvertMixedValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_1] as FormReferenceFieldOrValue,
-                    formula[REFERENCE_FIELD_OR_VALUE_2] as FormReferenceFieldOrValue,
+                const shouldConverts = shouldConvertFromString(
+                    formula[REFERENCE_FIELD_OR_VALUE_1] as string,
+                    formula[REFERENCE_FIELD_OR_VALUE_2] as string,
                     formula[OPERATOR]
                 );
                 const fieldOrValue1 = getFieldOrConvertedUnitValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_1] as FormReferenceFieldOrValue,
-                    formula[EDITED_FIELD],
+                    formula[REFERENCE_FIELD_OR_VALUE_1] as string,
+                    formula[EDITED_FIELD] as FieldType,
                     shouldConverts.convertValue1
                 );
                 const fieldOrValue2 = getFieldOrConvertedUnitValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_2] as FormReferenceFieldOrValue,
-                    formula[EDITED_FIELD],
+                    formula[REFERENCE_FIELD_OR_VALUE_2] as string,
+                    formula[EDITED_FIELD] as FieldType,
                     shouldConverts.convertValue2
                 );
 
