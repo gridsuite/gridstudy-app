@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { MouseEvent, useState, useCallback, SetStateAction } from 'react';
+import React, { SetStateAction, useCallback, useState } from 'react';
 import { Switch, Tooltip } from '@mui/material';
 import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationMetadata } from 'services/study/network-modifications';
@@ -51,29 +51,25 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
         [modificationUuid, studyUuid, currentNode?.id, data?.type, snackError]
     );
 
-    const toggleModificationActive = useCallback(
-        (e: MouseEvent) => {
-            e.stopPropagation(); // Prevent row click from firing
-            setIsLoading(true);
-            setModifications((oldModifications) => {
-                const modificationToUpdateIndex = oldModifications.findIndex((m) => m.uuid === modificationUuid);
-                if (modificationToUpdateIndex === -1) {
-                    return oldModifications;
-                }
-                const newModifications = [...oldModifications];
-                const newStatus = !newModifications[modificationToUpdateIndex].activated;
+    const toggleModificationActive = useCallback(() => {
+        setIsLoading(true);
+        setModifications((oldModifications) => {
+            const modificationToUpdateIndex = oldModifications.findIndex((m) => m.uuid === modificationUuid);
+            if (modificationToUpdateIndex === -1) {
+                return oldModifications;
+            }
+            const newModifications = [...oldModifications];
+            const newStatus = !newModifications[modificationToUpdateIndex].activated;
 
-                newModifications[modificationToUpdateIndex] = {
-                    ...newModifications[modificationToUpdateIndex],
-                    activated: newStatus,
-                };
+            newModifications[modificationToUpdateIndex] = {
+                ...newModifications[modificationToUpdateIndex],
+                activated: newStatus,
+            };
 
-                updateModification(newStatus);
-                return newModifications;
-            });
-        },
-        [modificationUuid, updateModification, setModifications]
-    );
+            updateModification(newStatus);
+            return newModifications;
+        });
+    }, [modificationUuid, updateModification, setModifications]);
 
     return (
         <Tooltip title={<FormattedMessage id={modificationActivated ? 'disable' : 'enable'} />} arrow>

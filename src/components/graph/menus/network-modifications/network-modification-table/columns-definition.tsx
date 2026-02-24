@@ -101,7 +101,7 @@ export const createStaticColumns = (
         meta: {
             cellStyle: { cursor: 'pointer', minWidth: 0, overflow: 'hidden', flex: 1, paddingLeft: '0.8vw' },
         },
-        minSize: 400,
+        minSize: 160,
     },
     {
         id: STATIC_MODIFICATION_TABLE_COLUMNS.DESCRIPTION.id,
@@ -144,8 +144,12 @@ export const createDynamicColumns = (
                 ) : null,
             cell: ({ row }) => (
                 <Box
-                    sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}
-                    style={{ opacity: row.original.activated ? 1 : 0.4 }}
+                    sx={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        opacity: row.original.activated ? 1 : 0.4,
+                    }}
                 >
                     <RootNetworkChipCellRenderer
                         data={row.original}
