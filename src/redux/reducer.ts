@@ -1798,7 +1798,7 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER,
         (state, action: InitOrUpdateSpreadSheetGlobalFilterAction) => {
-            // Replace selected IDs in globalFilters only if different
+            // Replace selected IDs in globalFilters only if different to avoid unnecessary re-render and re-fetch
             const currentIds = state.tableFilters.globalFilters[action.tabUuid];
             const newIds = action.filters.map(getGlobalFilterId);
             const areEqual =
@@ -1809,7 +1809,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.tableFilters.globalFilters[action.tabUuid] = newIds;
             }
 
-            // Store full objects in globalFilterOptions only if not already present
+            // Store full objects in globalFilterOptions only if not already present (same as above and also preserve the recent status)
             action.filters.filter(isCriteriaFilter).forEach((filter) => {
                 const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
                 if (!alreadyExists) {
