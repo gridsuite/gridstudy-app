@@ -9,6 +9,8 @@ import { MuiStyles } from '@gridsuite/commons-ui';
 import { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { MODIFICATION_ROW_HEIGHT } from './network-modifications-table';
+import { AUTO_EXTENSIBLE_COLUMNS } from './columns-definition';
+import { CSSProperties } from 'react';
 
 export const styles = {
     container: (theme) => ({
@@ -18,8 +20,6 @@ export const styles = {
         overflow: 'auto',
         height: '100%',
     }),
-    dragHandle: { display: 'flex', alignItems: 'center', cursor: 'grab' },
-    modificationLabel: { textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'preserve nowrap' },
     table: (theme) => ({
         width: '100%',
         tableLayout: 'fixed',
@@ -43,47 +43,41 @@ export const styles = {
         textAlign: 'left',
         fontWeight: 600,
     },
-    editDescription: {
-        opacity: 0,
-        pointerEvents: 'none',
-    },
     tr: {
         display: 'flex',
         alignItems: 'center',
+        '.dragHandle': {
+            opacity: 0,
+        },
         '&:hover': {
             backgroundColor: 'rgba(144, 202, 249, 0.08)',
             '& .editDescription': {
                 opacity: 1,
-                pointerEvents: 'auto',
+                cursor: 'pointer',
+            },
+            '& .dragHandle': {
+                opacity: 1,
             },
         },
     },
+
     td: {
         padding: 0,
     },
     tableBody: {
         position: 'relative',
     },
-    tableCell: (theme) => ({
+    tableCell: {
         fontSize: 'small',
         minWidth: 0,
-        cursor: 'inherit',
         display: 'flex',
-        '&:before': {
-            content: '""',
-            position: 'absolute',
-            left: theme.spacing(0.5),
-            right: theme.spacing(0.5),
-            bottom: 0,
-        },
-    }),
+    },
     dragRowClone: {
         backgroundColor: 'background.paper',
         boxShadow: 4,
         opacity: 1,
         border: '1px solid #f5f5f5',
         display: 'flex',
-        borderRadius: 4,
         width: 'fit-content',
     },
     overflow: {
@@ -91,16 +85,21 @@ export const styles = {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
     },
-    coloredButton: (theme) => ({
-        color: theme.palette.text.primary,
-    }),
+    dragHandle: {
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'grab',
+        paddingLeft: 0.5,
+        opacity: 1,
+    },
+    modificationLabel: { textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'preserve nowrap' },
 } as const satisfies MuiStyles;
 
 export const createRowStyle = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot,
     virtualRow: VirtualItem
-) => ({
+): CSSProperties => ({
     ...provided.draggableProps.style,
     position: 'absolute',
     top: 0,
@@ -112,26 +111,41 @@ export const createRowStyle = (
     transition: snapshot.isDragging ? 'none' : 'transform 0.2s ease',
 });
 
-export const createCellStyle = (cell: any, styles: any) => ({
-    ...styles.td,
-    ...cell.column.columnDef.meta?.cellStyle,
-    width: cell.column.id === 'modificationName' ? '100%' : cell.column.getSize(),
-    maxWidth: cell.column.id === 'modificationName' ? '100%' : cell.column.getSize(),
-    minWidth: cell.column.columnDef.minSize,
-    height: `${MODIFICATION_ROW_HEIGHT}px`,
-    display: 'flex',
-    alignItems: 'center',
-    flexGrow: 1,
-});
+export const createCellStyle = (cell: any, styles: any) => {
+    const isAutoExtensible = AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id);
+    const size = cell.column.getSize();
+    const minSize = cell.column.columnDef.minSize;
 
-export const createHeaderCellStyle = (header: any, styles: any) => ({
-    ...styles.th,
-    width: header.column.id === 'modificationName' ? '100%' : header.column.getSize(),
-    maxWidth: header.column.id === 'modificationName' ? '100%' : header.column.getSize(),
-    minWidth: header.column.columnDef.minSize,
-    height: `${MODIFICATION_ROW_HEIGHT}px`,
-    display: 'flex',
-    alignItems: 'center',
-    paddingTop: '2.5vh',
-    paddingBottom: '2.5vh',
+    return {
+        ...styles.td,
+        ...cell.column.columnDef.meta?.cellStyle,
+        flex: isAutoExtensible ? `1 1 ${size}px` : `0 1 ${size}px`,
+        minWidth: minSize ? `${minSize}px` : undefined,
+        height: `${MODIFICATION_ROW_HEIGHT}px`,
+        display: 'flex',
+        alignItems: 'center',
+    };
+};
+
+export const createHeaderCellStyle = (header: any, styles: any) => {
+    const isAutoExtensible = AUTO_EXTENSIBLE_COLUMNS.includes(header.column.id);
+    const size = header.column.getSize();
+    const minSize = header.column.columnDef.minSize;
+
+    return {
+        ...styles.th,
+        ...header.column.columnDef.meta?.cellStyle,
+        flex: isAutoExtensible ? `1 1 ${size}px` : `0 1 ${size}px`,
+        minWidth: minSize ? `${minSize}px` : undefined,
+        height: `${MODIFICATION_ROW_HEIGHT}px`,
+        display: 'flex',
+        alignItems: 'center',
+        paddingTop: '2.5vh',
+        paddingBottom: '2.5vh',
+    };
+};
+
+export const createEditDescriptionStyle = (description: string) => ({
+    opacity: description ? 1 : 0,
+    cursor: 'pointer',
 });

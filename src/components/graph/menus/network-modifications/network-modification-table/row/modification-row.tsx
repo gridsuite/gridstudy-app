@@ -12,6 +12,7 @@ import { TableCell, TableRow } from '@mui/material';
 import { createCellStyle, createRowStyle, styles } from '../styles';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
+import { STATIC_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
 
 interface ModificationRowProps {
     virtualRow: VirtualItem;
@@ -25,7 +26,7 @@ const ModificationRow = memo<ModificationRowProps>(
     ({ virtualRow, row, handleCellClick, isRowDragDisabled, highlightedModificationUuid }) => {
         const handleCellClickCallback = useCallback(
             (columnId: string) => {
-                if (columnId === 'modificationName') {
+                if (columnId === STATIC_MODIFICATION_TABLE_COLUMNS.MODIFICATION_NAME.id) {
                     handleCellClick?.(row.original);
                 }
             },
@@ -43,16 +44,16 @@ const ModificationRow = memo<ModificationRowProps>(
                         data-depth={row.depth}
                         sx={mergeSx(styles.tr, {
                             backgroundColor:
-                                row.original.uuid === highlightedModificationUuid || row.getIsSelected()
+                                row.original.uuid === highlightedModificationUuid
                                     ? 'rgba(144, 202, 249, 0.16)'
                                     : 'transparent',
                             '&:hover': {
                                 backgroundColor:
-                                    row.original.uuid === highlightedModificationUuid || row.getIsSelected()
+                                    row.original.uuid === highlightedModificationUuid
                                         ? 'rgba(144, 202, 249, 0.24)'
                                         : 'rgba(144, 202, 249, 0.08)',
                             },
-                            opacity: !row.original.activated ? 0.4 : snapshot.isDragging ? 0.5 : 1,
+                            opacity: snapshot.isDragging ? 0.5 : 1,
                         })}
                         style={createRowStyle(provided, snapshot, virtualRow)}
                     >
@@ -61,7 +62,9 @@ const ModificationRow = memo<ModificationRowProps>(
                                 key={cell.id}
                                 style={createCellStyle(cell, styles)}
                                 onClick={() => handleCellClickCallback(cell.column.id)}
-                                {...(cell.column.id === 'dragHandle' ? provided.dragHandleProps : undefined)}
+                                {...(cell.column.id === STATIC_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
+                                    ? provided.dragHandleProps
+                                    : undefined)}
                             >
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>

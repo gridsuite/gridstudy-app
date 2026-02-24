@@ -4,19 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    DescriptionModificationDialog,
-    EditNoteIcon,
-    mergeSx,
-    NetworkModificationMetadata,
-} from '@gridsuite/commons-ui';
+import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { MouseEvent, useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useSelector } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
 import { AppState } from '../../../../../../redux/reducer';
 import { useIsAnyNodeBuilding } from '../../../../../utils/is-any-node-building-hook';
-import { styles } from '../styles';
+import { createEditDescriptionStyle } from '../styles';
 import { setModificationMetadata } from '../../../../../../services/study/network-modifications';
 
 export interface DescriptionRendererProps {
@@ -74,7 +69,7 @@ const DescriptionCellRenderer = (props: DescriptionRendererProps) => {
                     className="editDescription"
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
-                    sx={mergeSx(styles.coloredButton, styles.editDescription)}
+                    sx={createEditDescriptionStyle(data.description)}
                 >
                     <EditNoteIcon empty={empty} />
                 </IconButton>

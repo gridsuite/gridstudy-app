@@ -15,8 +15,45 @@ import NetworkModificationNameCell from './renderers/network-modification-name-c
 import DescriptionCellRenderer from './renderers/description-cell-renderer';
 import SwitchCellRenderer from './renderers/switch-cell-renderer';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';
-import RootNetworkChipCellRenderer from '../root-network-chip-cell-renderer';
+import RootNetworkChipCellRenderer from './renderers/root-network-chip-cell-renderer';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
+
+const CHIP_PADDING_PX = 24; // horizontal padding inside the chip
+const CHAR_WIDTH_PX = 8; // approximate px per character
+const COLUMN_PADDING_PX = 12; // cell padding around the chip
+const MIN_COLUMN_SIZE = 40; // absolute floor
+
+const computeTagMinSize = (tag: string): number => {
+    const chipContentWidth = tag.length * CHAR_WIDTH_PX + CHIP_PADDING_PX;
+    return Math.max(chipContentWidth + COLUMN_PADDING_PX, MIN_COLUMN_SIZE);
+};
+
+export const STATIC_MODIFICATION_TABLE_COLUMNS = {
+    SELECT: {
+        id: 'select',
+        autoExtensible: false,
+    },
+    DRAG_HANDLE: {
+        id: 'dragHandle',
+        autoExtensible: false,
+    },
+    MODIFICATION_NAME: {
+        id: 'modificationName',
+        autoExtensible: true,
+    },
+    DESCRIPTION: {
+        id: 'modificationDescription',
+        autoExtensible: false,
+    },
+    SWITCH: {
+        id: 'switch',
+        autoExtensible: false,
+    },
+};
+
+export const AUTO_EXTENSIBLE_COLUMNS = Object.values(STATIC_MODIFICATION_TABLE_COLUMNS)
+    .filter((column) => column.autoExtensible)
+    .map((column) => column.id);
 
 export const createStaticColumns = (
     isRowDragDisabled: boolean,
@@ -25,7 +62,13 @@ export const createStaticColumns = (
     setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>
 ): ColumnDef<NetworkModificationMetadata>[] => [
     {
-        id: 'select',
+        id: STATIC_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
+        cell: () => <DragHandleCell isRowDragDisabled={isRowDragDisabled} />,
+        size: 24,
+        minSize: 24,
+    },
+    {
+        id: STATIC_MODIFICATION_TABLE_COLUMNS.SELECT.id,
         header: ({ table }) => (
             <Checkbox
                 size="small"
@@ -46,17 +89,11 @@ export const createStaticColumns = (
         size: 40,
         minSize: 40,
         meta: {
-            cellStyle: { padding: 2 },
+            cellStyle: { padding: 2, justifyContent: 'center' },
         },
     },
     {
-        id: 'dragHandle',
-        cell: () => <DragHandleCell isRowDragDisabled={isRowDragDisabled} />,
-        size: 20,
-        minSize: 20,
-    },
-    {
-        id: 'modificationName',
+        id: STATIC_MODIFICATION_TABLE_COLUMNS.MODIFICATION_NAME.id,
         header: () => (
             <NetworkModificationEditorNameHeader modificationCount={modifications?.length} {...nameHeaderProps} />
         ),
@@ -64,19 +101,19 @@ export const createStaticColumns = (
         meta: {
             cellStyle: { cursor: 'pointer', minWidth: 0, overflow: 'hidden', flex: 1, paddingLeft: '0.8vw' },
         },
-        minSize: 180,
+        minSize: 400,
     },
     {
-        id: 'modificationDescription',
+        id: STATIC_MODIFICATION_TABLE_COLUMNS.DESCRIPTION.id,
         cell: ({ row }) => <DescriptionCellRenderer data={row.original} />,
         size: 40,
-        minSize: 40,
+        minSize: 32,
     },
     {
-        id: 'switch',
+        id: STATIC_MODIFICATION_TABLE_COLUMNS.SWITCH.id,
         cell: ({ row }) => <SwitchCellRenderer data={row.original} setModifications={setModifications} />,
-        size: 60,
-        minSize: 60,
+        size: 64,
+        minSize: 40,
     },
 ];
 
@@ -87,9 +124,13 @@ export const createDynamicColumns = (
     modificationsToExclude: ExcludedNetworkModifications[],
     setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>
 ): ColumnDef<NetworkModificationMetadata>[] => {
-    return rootNetworks.map((rootNetwork) => {
+    const tagMinSizes = rootNetworks.map((rootNetwork) => computeTagMinSize(rootNetwork.tag ?? ''));
+    const sharedSize = Math.max(Math.min(...tagMinSizes), 56);
+
+    return rootNetworks.map((rootNetwork, index) => {
         const rootNetworkUuid = rootNetwork.rootNetworkUuid;
         const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
+        const tagMinSize = tagMinSizes[index];
 
         return {
             id: rootNetworkUuid,
@@ -102,7 +143,10 @@ export const createDynamicColumns = (
                     </Box>
                 ) : null,
             cell: ({ row }) => (
-                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Box
+                    sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+                    style={{ opacity: row.original.activated ? 1 : 0.4 }}
+                >
                     <RootNetworkChipCellRenderer
                         data={row.original}
                         rootNetwork={rootNetwork}
@@ -111,8 +155,8 @@ export const createDynamicColumns = (
                     />
                 </Box>
             ),
-            size: 72,
-            minSize: 72,
+            size: sharedSize,
+            minSize: tagMinSize,
             meta: {
                 cellStyle: { textAlign: 'center' },
             },

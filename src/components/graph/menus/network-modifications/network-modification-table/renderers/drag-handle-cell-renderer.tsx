@@ -7,16 +7,12 @@
 
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box } from '@mui/material';
-import { memo } from 'react';
 import { styles } from '../styles';
 
 const DragHandleCell = ({ isRowDragDisabled }: { isRowDragDisabled: boolean }) => {
-    if (isRowDragDisabled) {
-        return <Box sx={{ width: 24 }} />;
-    }
     return (
-        <Box sx={styles.dragHandle}>
-            <DragIndicatorIcon fontSize="small" />
+        <Box sx={styles.dragHandle} className={'dragHandle'}>
+            {!isRowDragDisabled && <DragIndicatorIcon fontSize="small" style={{ width: '16px', height: '16px' }} />}
         </Box>
     );
 };

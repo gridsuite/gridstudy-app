@@ -10,7 +10,7 @@ import { ActivableChip, NetworkModificationMetadata, snackWithFallback, useSnack
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { ExcludedNetworkModifications, RootNetworkMetadata } from './network-modification-menu.type';
+import { ExcludedNetworkModifications, RootNetworkMetadata } from '../../network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import type { UUID } from 'node:crypto';
 

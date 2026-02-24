@@ -29,7 +29,7 @@ const NetworkModificationNameCell = ({ row }: { row: Row<NetworkModificationMeta
     const label = useMemo(() => getModificationLabel(row.original), [getModificationLabel, row.original]);
 
     return (
-        <Box sx={styles.tableCell}>
+        <Box sx={styles.tableCell} style={{ opacity: row.original.activated ? 1 : 0.4 }}>
             <Tooltip disableFocusListener disableTouchListener title={label}>
                 <span style={styles.modificationLabel}>{label}</span>
             </Tooltip>

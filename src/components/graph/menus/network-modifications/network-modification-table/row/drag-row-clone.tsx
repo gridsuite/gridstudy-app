@@ -6,20 +6,26 @@
  */
 
 import { Box } from '@mui/material';
-import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { mergeSx, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { createCellStyle, styles } from '../styles';
 import { flexRender, Row } from '@tanstack/react-table';
+import { STATIC_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
 
 const DragCloneRow = ({ row }: { row: Row<NetworkModificationMetadata> }) => (
     <Box sx={styles.dragRowClone}>
-        {row.getVisibleCells().map(
-            (cell) =>
-                cell.column.columnDef.id === 'modificationName' && (
-                    <Box key={cell.id} style={createCellStyle(cell, styles)}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </Box>
-                )
-        )}
+        {row
+            .getVisibleCells()
+            .filter((cell) =>
+                [
+                    STATIC_MODIFICATION_TABLE_COLUMNS.MODIFICATION_NAME.id,
+                    STATIC_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
+                ].includes(cell.column.columnDef.id!)
+            )
+            .map((cell) => (
+                <Box key={cell.id} sx={mergeSx(createCellStyle(cell, styles))}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </Box>
+            ))}
     </Box>
 );
 
