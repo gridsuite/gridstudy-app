@@ -124,7 +124,7 @@ export const styles = {
         },
     },
     divDiagramLoadflowInvalid: {
-        '& .sld-active-power, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum':
+        '& .sld-active-power, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum, & .sld-balance':
             {
                 opacity: INVALID_COMPUTATION_OPACITY,
             },
