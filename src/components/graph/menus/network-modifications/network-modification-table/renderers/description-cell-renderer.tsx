@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import { MouseEvent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useSelector } from 'react-redux';
 import IconButton from '@mui/material/IconButton';

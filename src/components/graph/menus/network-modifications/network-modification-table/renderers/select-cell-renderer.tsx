@@ -49,12 +49,7 @@ const SelectCellRenderer: React.FC<SelectCellRendererProps> = ({ row, table }) =
     );
 
     return (
-        <Checkbox
-            size="small"
-            checked={row.getIsSelected()}
-            disabled={!row.getCanSelect()}
-            onClick={handleChange}
-        />
+        <Checkbox size="small" checked={row.getIsSelected()} disabled={!row.getCanSelect()} onClick={handleChange} />
     );
 };
 
