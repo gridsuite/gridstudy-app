@@ -49,8 +49,7 @@ const DescriptionCellRenderer = (props: DescriptionRendererProps) => {
         setOpenDescModificationDialog(false);
     }, []);
 
-    const handleModifyDescription = useCallback((e: MouseEvent) => {
-        e.stopPropagation(); // Prevent row click from firing
+    const handleModifyDescription = useCallback(() => {
         setOpenDescModificationDialog(true);
     }, []);
 
