@@ -20,6 +20,8 @@ export const styles = {
         flexGrow: 1,
         margin: theme.spacing(1),
         border: `1px solid ${theme.palette.divider}`,
+        overflow: 'hidden',
+        minHeight: 0,
     }),
     container: {
         position: 'relative',
