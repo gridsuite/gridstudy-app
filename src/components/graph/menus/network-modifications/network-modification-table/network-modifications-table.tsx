@@ -38,6 +38,7 @@ import { createDynamicColumns, createStaticColumns } from './columns-definition'
 import ModificationRow from './row/modification-row';
 import DragCloneRow from './row/drag-row-clone';
 import { useTheme } from '@mui/material/styles';
+import { RangeSelectionTableMeta } from './renderers/select-cell-renderer';
 
 export const MODIFICATION_ROW_HEIGHT = 41;
 
@@ -76,6 +77,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
     const [expanded, setExpanded] = useState<ExpandedState>({});
 
     const parentRef = useRef<HTMLDivElement>(null);
+    const lastClickedIndex = useRef<number | null>(null);
 
     const columns = useMemo<ColumnDef<NetworkModificationMetadata>[]>(() => {
         const staticColumns = createStaticColumns(isRowDragDisabled, modifications, nameHeaderProps, setModifications);
@@ -111,6 +113,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
         getCoreRowModel: getCoreRowModel(),
         getRowId: (row) => row.uuid,
         enableRowSelection: true,
+        meta: { lastClickedIndex } satisfies RangeSelectionTableMeta,
     });
 
     const { rows } = table.getRowModel();
@@ -125,6 +128,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
 
     useEffect(() => {
         setRowSelection({});
+        lastClickedIndex.current = null;
     }, [currentTreeNodeId]);
 
     useEffect(() => {
