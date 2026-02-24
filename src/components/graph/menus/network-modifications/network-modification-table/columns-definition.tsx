@@ -83,7 +83,6 @@ export const createStaticColumns = (
                 checked={row.getIsSelected()}
                 disabled={!row.getCanSelect()}
                 onChange={row.getToggleSelectedHandler()}
-                onClick={(e) => e.stopPropagation()}
             />
         ),
         size: 40,
