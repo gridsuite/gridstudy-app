@@ -35,7 +35,7 @@ export interface PccMinResultTabProps {
 export type PagedPccMinResults = Page<SinglePccMinResultInfos>;
 
 export interface PccMinResultTableProps {
-    result: SinglePccMinResultInfos[];
+    result: SinglePccMinResultInfos[] | undefined;
     isFetching: boolean;
     goToFirstPage: () => void;
     setCsvHeaders: (newHeaders: string[]) => void;

@@ -48,7 +48,7 @@ const spreadsheetFr = {
     'spreadsheet/save/options/filter': 'En tant que filtre',
     'spreadsheet/save/options/collection': 'Collection',
     'spreadsheet/save/options/csv/export': 'Export CSV',
-    'spreadsheet/save/options/csv/clipboard': 'Copie CSV',
+    'spreadsheet/save/options/csv/clipboard': 'Copie',
     'spreadsheet/save/options/csv/clipboard/success':
         'Le contenu de la feuille a été copié dans le presse-papier système',
     'spreadsheet/save/options/csv/clipboard/error':

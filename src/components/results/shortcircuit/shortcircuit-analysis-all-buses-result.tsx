@@ -29,10 +29,10 @@ export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitA
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
-    const [result, setResult] = useState<SCAFaultResult[]>([]);
+    const [result, setResult] = useState<SCAFaultResult[] | undefined>(undefined);
 
     const updateResult = useCallback((results: SCAFaultResult[] | SCAFeederResult[] | null) => {
-        setResult((results as SCAFaultResult[]) ?? []);
+        setResult((results as SCAFaultResult[]) ?? undefined);
     }, []);
 
     return (

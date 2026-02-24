@@ -96,8 +96,11 @@ const contingencyGetterValues = (params: ValueGetterParams) => {
     }
 };
 
-export const flattenNmKResultsContingencies = (intl: IntlShape, result: ConstraintsFromContingencyItem[] = []) => {
+export const flattenNmKResultsContingencies = (intl: IntlShape, result: ConstraintsFromContingencyItem[] | null) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
+    if (!result) {
+        return undefined;
+    }
 
     result?.forEach(({ subjectLimitViolations = [], contingency }: ConstraintsFromContingencyItem) => {
         const { contingencyId, status, elements = [] } = contingency || {};
@@ -137,8 +140,12 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
     return rows;
 };
 
-export const flattenNmKResultsConstraints = (intl: IntlShape, result: ContingenciesFromConstraintItem[] = []) => {
+export const flattenNmKResultsConstraints = (intl: IntlShape, result: ContingenciesFromConstraintItem[] | null) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
+
+    if (!result) {
+        return undefined;
+    }
 
     result?.forEach(({ contingencies = [], subjectId }) => {
         if (!rows.find((row) => row.subjectId === subjectId)) {
