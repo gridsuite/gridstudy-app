@@ -21,7 +21,6 @@ import { useSelector } from 'react-redux';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { TableType } from '../../../types/custom-aggrid-types';
-import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 import {
     convertFilterValues,
     FROM_COLUMN_TO_FIELD,
@@ -31,6 +30,7 @@ import {
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { getSelectedGlobalFilters } from '../common/global-filter/global-filter-utils';
 
 interface ShortCircuitExportButtonProps {
     studyUuid: UUID;

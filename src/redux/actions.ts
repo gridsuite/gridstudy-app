@@ -150,6 +150,7 @@ export type AppActions =
     | SetAddedSpreadsheetTabAction
     | UpdateColumnFiltersAction
     | AddGlobalFiltersAction
+    | RemoveGlobalFiltersAction
     | ClearGlobalFiltersAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';

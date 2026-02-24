@@ -22,12 +22,13 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { exportSensitivityResultsAsCsv } from 'services/study/sensitivity-analysis';
 import { SensiKind } from './sensitivity-analysis-result.type';
-import { TableType, SortWay } from '../../../types/custom-aggrid-types';
+import { SortWay, TableType } from '../../../types/custom-aggrid-types';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+
+import { getSelectedGlobalFilters } from '../common/global-filter/global-filter-utils';
 
 interface SensitivityExportButtonProps {
     studyUuid: UUID;

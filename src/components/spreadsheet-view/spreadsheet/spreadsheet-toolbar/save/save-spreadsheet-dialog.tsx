@@ -22,7 +22,9 @@ import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 import { SaveSpreadsheetModelDialog } from './save-spreadsheet-model-dialog';
-import { getSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
+
+import { getSelectedGlobalFilters } from '../../../../results/common/global-filter/global-filter-utils';
+
 export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
