@@ -24,6 +24,7 @@ import {
     DraggableRubric,
     DraggableStateSnapshot,
     DragStart,
+    DragUpdate,
     Droppable,
     DroppableProvided,
     DropResult,
@@ -32,7 +33,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';
-import { createHeaderCellStyle, styles } from './styles';
+import { createHeaderCellStyle, DROP_INDICATOR_BOTTOM, DROP_INDICATOR_TOP, styles } from './styles';
 import { createDynamicColumns, createStaticColumns } from './columns-definition';
 import ModificationRow from './row/modification-row';
 import DragCloneRow from './row/drag-row-clone';
@@ -140,20 +141,34 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
         }
     }, [highlightedModificationUuid, rows, virtualizer]);
 
+    const clearRowDragIndicator = () => {
+        parentRef.current?.querySelectorAll<HTMLElement>('.modificationRow').forEach((el) => {
+            el.style.boxShadow = '';
+        });
+    };
+
     // Event handlers
-    const handleDragStart = useCallback(
-        (event: DragStart) => {
-            onRowDragStart?.(event);
+    const handleDragUpdate = useCallback(
+        (update: DragUpdate) => {
+            clearRowDragIndicator();
+            const { source, destination } = update;
+            if (!destination || source.index === destination.index) return;
+            const el = parentRef.current?.querySelector<HTMLElement>(
+                `[data-row-id="${rows[destination.index]?.original.uuid}"]`
+            );
+            if (el) {
+                el.style.boxShadow = destination.index > source.index ? DROP_INDICATOR_BOTTOM : DROP_INDICATOR_TOP;
+            }
         },
-        [onRowDragStart]
+        [rows]
     );
 
     const handleDragEnd = useCallback(
         (result: DropResult) => {
-            if (!result.destination || result.source.index === result.destination.index) {
-                return;
+            clearRowDragIndicator();
+            if (result.destination && result.source.index !== result.destination.index) {
+                onRowDragEnd?.(result);
             }
-            onRowDragEnd?.(result);
         },
         [onRowDragEnd]
     );
@@ -168,7 +183,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
     );
 
     return (
-        <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+        <DragDropContext onDragEnd={handleDragEnd} onDragStart={onRowDragStart} onDragUpdate={handleDragUpdate}>
             <Droppable droppableId="modifications-table" mode="virtual" renderClone={renderClone}>
                 {(provided: DroppableProvided) => (
                     <Box ref={parentRef} sx={styles.container}>

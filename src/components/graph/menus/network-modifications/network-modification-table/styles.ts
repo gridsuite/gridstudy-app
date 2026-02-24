@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MuiStyles } from '@gridsuite/commons-ui';
+import { MuiStyles, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { MODIFICATION_ROW_HEIGHT } from './network-modifications-table';
@@ -95,21 +95,34 @@ export const styles = {
     modificationLabel: { textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'preserve nowrap' },
 } as const satisfies MuiStyles;
 
+export const DROP_INDICATOR_TOP = 'inset 0 2px 0 #90caf9';
+export const DROP_INDICATOR_BOTTOM = 'inset 0 -2px 0 #90caf9';
+
 export const createRowStyle = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot,
     virtualRow: VirtualItem
-): CSSProperties => ({
-    ...provided.draggableProps.style,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    width: '100%',
-    height: `${virtualRow.size}px`,
-    transform: snapshot.isDragging ? provided.draggableProps.style?.transform : `translateY(${virtualRow.start}px)`,
-    transition: snapshot.isDragging ? 'none' : 'transform 0.2s ease',
-});
+): CSSProperties => {
+    if (snapshot.isDragging) {
+        return {
+            ...provided.draggableProps.style,
+            height: `${virtualRow.size}px`,
+            transition: 'none',
+            zIndex: 9999,
+        };
+    }
+    return {
+        ...provided.draggableProps.style,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        width: '100%',
+        height: `${virtualRow.size}px`,
+        transform: `translateY(${virtualRow.start}px)`,
+        transition: 'none',
+    };
+};
 
 export const createCellStyle = (cell: any, styles: any) => {
     const isAutoExtensible = AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id);
