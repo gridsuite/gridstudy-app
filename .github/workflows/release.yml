@@ -14,7 +14,7 @@ on:
 
 jobs:
   run-release:
-    uses: powsybl/github-ci/.github/workflows/release-frontend-app-generic.yml@c81718897ef649fcdc685955a094bf724bf7fa9e
+    uses: powsybl/github-ci/.github/workflows/release-frontend-app-generic.yml@3ed0caeb3395e55868884f466d726ddaee877850
     with:
       releaseVersion: ${{ github.event.inputs.releaseVersion }}
       commitSha: ${{ github.event.inputs.gitReference }}
