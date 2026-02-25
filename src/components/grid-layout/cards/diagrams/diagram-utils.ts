@@ -22,7 +22,7 @@ export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = Infinity;
 
 // Array of zoom levels used to determine level-of-detail rendering by applying in the network-viewer the
 // corresponding css class 'nad-zoom-{level}' to the NAD's SVG.
-export const NAD_ZOOM_LEVELS = [0, 2000, 3500, 6000, 9000, 12000, 15000];
+export const NAD_ZOOM_LEVELS = [0, 500, 2000, 3500, 6000, 9000, 12000, 15000];
 
 // be careful when using this method because there are treatments made on purpose
 export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): {
