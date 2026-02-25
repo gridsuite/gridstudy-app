@@ -19,10 +19,9 @@ const ROW_HOVER_COLOR = 'rgba(144, 202, 249, 0.08)';
 const DRAG_OPACITY = 0.5;
 const DEACTIVATED_OPACITY = 0.4;
 
-// ─── Static styles ────────────────────────────────────────────────────────────
+// Static styles
 
 export const styles = {
-    // Table layout
     tableWrapper: (theme) => ({
         display: 'flex',
         flexDirection: 'column',
@@ -121,7 +120,7 @@ export const styles = {
     },
 } as const satisfies MuiStyles;
 
-// ─── Dynamic style factories ──────────────────────────────────────────────────
+// Dynamic styles
 
 export const DROP_INDICATOR_TOP = 'inset 0 2px 0 #90caf9';
 export const DROP_INDICATOR_BOTTOM = 'inset 0 -2px 0 #90caf9';
