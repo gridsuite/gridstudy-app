@@ -213,6 +213,21 @@ export function fetchNetworkModificationTree(studyUuid: UUID, rootNetworkUuid: U
     return backendFetchJson(url);
 }
 
+export function exportNodeInfos(studyUuid: UUID, nodeUuid: UUID) {
+    console.info('Exporting modification node informations');
+
+    const url = getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid) + '/exported-modifications';
+
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+        },
+    });
+}
+
 export function fetchNetworkModificationSubtree(studyUuid: UUID, parentId: UUID) {
     console.info('Fetching network modification tree node : ', parentId);
     const url = getStudyUrl(studyUuid) + '/subtree?parentNodeUuid=' + encodeURIComponent(parentId);

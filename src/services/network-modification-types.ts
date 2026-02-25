@@ -1051,3 +1051,14 @@ export interface MoveFeederBayInfos {
     connectionName: string | null;
     connectionDirection: string | null;
 }
+
+export interface NetworkModificationExportInfos {
+    modifications: any[];
+    unexportedModifications: any[];
+}
+
+export interface NodeModificationExportInfos {
+    nodeName: string;
+    modifications: any[];
+    unexportedModifications: any[];
+}
