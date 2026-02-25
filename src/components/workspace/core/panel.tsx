@@ -50,7 +50,6 @@ const styles = {
         },
     },
     content: (theme: any) => ({
-        display: 'flex',
         flexGrow: 1,
         overflow: 'hidden',
         position: 'relative',

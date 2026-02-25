@@ -16,7 +16,7 @@ const styles = {
     container: {
         display: 'flex',
         flexDirection: 'column',
-        flexGrow: 1,
+        height: '100%',
     },
     centeredContent: (theme: any) => ({
         display: 'flex',
