@@ -43,7 +43,6 @@ const ModificationRow = memo<ModificationRowProps>(
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         data-row-id={row.original.uuid}
-                        data-depth={row.depth}
                         sx={mergeSx(styles.tr, createRowSx(isHighlighted, snapshot.isDragging))}
                         style={createRowStyle(provided, snapshot, virtualRow)}
                     >
