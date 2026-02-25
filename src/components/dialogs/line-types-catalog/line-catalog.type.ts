@@ -50,7 +50,7 @@ export type CurrentLimitsInfo = CurrentLimitHeader & {
 
 export type LimitSelectedRowData = CurrentLimitHeader & TemporaryLimitSelectedRowData;
 
-export type TemporaryLimitSelectedRowData = Record<string, number | string>
+export type TemporaryLimitSelectedRowData = Record<string, number | string>;
 
 export type AreaTemperatureShapeFactorInfo = {
     area: string | null;
