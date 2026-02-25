@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { Dispatch, FC, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Dispatch, FC, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -18,27 +18,17 @@ import {
     RowSelectionState,
     useReactTable,
 } from '@tanstack/react-table';
-import {
-    DragDropContext,
-    DraggableProvided,
-    DraggableRubric,
-    DraggableStateSnapshot,
-    DragStart,
-    DragUpdate,
-    Droppable,
-    DroppableProvided,
-    DropResult,
-} from '@hello-pangea/dnd';
+import { DragDropContext, DragStart, Droppable, DroppableProvided, DropResult } from '@hello-pangea/dnd';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';
-import { createHeaderCellStyle, DROP_INDICATOR_BOTTOM, DROP_INDICATOR_TOP, styles } from './styles';
+import { createHeaderCellStyle, styles } from './styles';
 import { createDynamicColumns, createStaticColumns } from './columns-definition';
 import ModificationRow from './row/modification-row';
-import DragCloneRow from './row/drag-row-clone';
 import { useTheme } from '@mui/material/styles';
 import { RangeSelectionTableMeta } from './renderers/select-cell-renderer';
+import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
 
 export const MODIFICATION_ROW_HEIGHT = 41;
 
@@ -76,7 +66,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const [expanded, setExpanded] = useState<ExpandedState>({});
 
-    const parentRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const lastClickedIndex = useRef<number | null>(null);
 
     const columns = useMemo<ColumnDef<NetworkModificationMetadata>[]>(() => {
@@ -120,11 +110,17 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
 
     const virtualizer = useVirtualizer({
         count: rows.length,
-        getScrollElement: () => parentRef.current,
+        getScrollElement: () => containerRef.current,
         overscan: 5,
         estimateSize: () => MODIFICATION_ROW_HEIGHT,
     });
     const virtualItems = virtualizer.getVirtualItems();
+
+    const { handleDragUpdate, handleDragEnd, renderClone } = useModificationsDragAndDrop({
+        rows,
+        containerRef,
+        onRowDragEnd,
+    });
 
     useEffect(() => {
         setRowSelection({});
@@ -139,7 +135,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
     }, [rowSelection, onRowSelected, table]);
 
     useEffect(() => {
-        if (highlightedModificationUuid && parentRef.current) {
+        if (highlightedModificationUuid && containerRef.current) {
             const rowIndex = rows.findIndex((row) => row.original.uuid === highlightedModificationUuid);
             if (rowIndex !== -1) {
                 virtualizer.scrollToIndex(rowIndex, { align: 'start', behavior: 'auto' });
@@ -147,53 +143,12 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
         }
     }, [highlightedModificationUuid, rows, virtualizer]);
 
-    const clearRowDragIndicator = () => {
-        parentRef.current?.querySelectorAll<HTMLElement>('.modificationRow').forEach((el) => {
-            el.style.boxShadow = '';
-        });
-    };
-
-    // Event handlers
-    const handleDragUpdate = useCallback(
-        (update: DragUpdate) => {
-            clearRowDragIndicator();
-            const { source, destination } = update;
-            if (!destination || source.index === destination.index) return;
-            const el = parentRef.current?.querySelector<HTMLElement>(
-                `[data-row-id="${rows[destination.index]?.original.uuid}"]`
-            );
-            if (el) {
-                el.style.boxShadow = destination.index > source.index ? DROP_INDICATOR_BOTTOM : DROP_INDICATOR_TOP;
-            }
-        },
-        [rows]
-    );
-
-    const handleDragEnd = useCallback(
-        (result: DropResult) => {
-            clearRowDragIndicator();
-            if (result.destination && result.source.index !== result.destination.index) {
-                onRowDragEnd?.(result);
-            }
-        },
-        [onRowDragEnd]
-    );
-
-    const renderClone = useCallback(
-        (provided: DraggableProvided, snapshot: DraggableStateSnapshot, rubric: DraggableRubric) => (
-            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                <DragCloneRow row={rows[rubric.source.index]} />
-            </div>
-        ),
-        [rows]
-    );
-
     return (
         <DragDropContext onDragEnd={handleDragEnd} onDragStart={onRowDragStart} onDragUpdate={handleDragUpdate}>
             <Box sx={styles.tableWrapper}>
                 <Droppable droppableId="modifications-table" mode="virtual" renderClone={renderClone}>
                     {(provided: DroppableProvided) => (
-                        <Box ref={parentRef} sx={styles.container}>
+                        <Box ref={containerRef} sx={styles.container}>
                             <Table sx={styles.table}>
                                 <TableHead sx={styles.thead}>
                                     {table.getHeaderGroups().map((headerGroup) => (
