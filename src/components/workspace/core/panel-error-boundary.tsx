@@ -16,7 +16,7 @@ const styles = {
     container: {
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        flexGrow: 1,
     },
     centeredContent: (theme: any) => ({
         display: 'flex',
@@ -65,7 +65,7 @@ export default class PanelErrorBoundary extends Component<PanelErrorBoundaryProp
         this.setState({ errorInfo });
     }
 
-    handleReset = () => {
+    handleReload = () => {
         this.setState({ hasError: false, error: null, errorInfo: null, copied: false });
     };
 
@@ -100,7 +100,7 @@ export default class PanelErrorBoundary extends Component<PanelErrorBoundaryProp
                         <Typography>
                             <FormattedMessage id="PanelError" />
                         </Typography>
-                        <Button variant="outlined" size="small" startIcon={<RefreshIcon />} onClick={this.handleReset}>
+                        <Button variant="outlined" size="small" startIcon={<RefreshIcon />} onClick={this.handleReload}>
                             <FormattedMessage id="Reload" />
                         </Button>
                     </Box>
