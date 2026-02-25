@@ -1,6 +1,6 @@
 {
     "name": "gridstudy-app",
-    "version": "2.31.0-SNAPSHOT",
+    "version": "2.31.0",
     "license": "MPL-2.0",
     "private": true,
     "type": "module",
