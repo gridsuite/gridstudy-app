@@ -122,10 +122,12 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'RATED_S', label: 'RatedNominalPowerText', unit: MEGA_VOLT_AMPERE },
         { id: 'TARGET_V', label: 'RatioTargetV', unit: KILO_VOLT },
         { id: 'RATIO_LOW_TAP_POSITION', label: 'RatioLowTapPosition' },
+        { id: 'RATIO_HIGH_TAP_POSITION', label: 'RatioHighTapPosition' },
         { id: 'RATIO_TAP_POSITION', label: 'RatioTapPosition' },
         { id: 'RATIO_TARGET_DEADBAND', label: 'RatioDeadBand', unit: KILO_VOLT },
         { id: 'REGULATION_VALUE', label: 'PhaseRegulatingValue' },
         { id: 'PHASE_LOW_TAP_POSITION', label: 'PhaseLowTapPosition' },
+        { id: 'PHASE_HIGH_TAP_POSITION', label: 'PhaseHighTapPosition' },
         { id: 'PHASE_TAP_POSITION', label: 'PhaseTapPosition' },
         { id: 'PHASE_TARGET_DEADBAND', label: 'PhaseDeadBand' },
     ],
@@ -138,6 +140,8 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'B2', label: 'ShuntSusceptanceText2', unit: MICRO_SIEMENS },
     ],
 };
+
+export type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;
 
 function isValueInEquipmentFields(context: TestContext<AnyObject>, value: string) {
     // this will return the highest level parent, so we can get the equipment type
