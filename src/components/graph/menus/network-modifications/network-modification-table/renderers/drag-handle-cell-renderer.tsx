@@ -12,7 +12,7 @@ import { styles } from '../styles';
 const DragHandleCell = ({ isRowDragDisabled }: { isRowDragDisabled: boolean }) => {
     return (
         <Box sx={styles.dragHandle} className={'dragHandle'}>
-            {!isRowDragDisabled && <DragIndicatorIcon fontSize="small" style={{ width: '16px', height: '16px' }} />}
+            {!isRowDragDisabled && <DragIndicatorIcon fontSize="small" style={styles.dragIndicatorIcon} />}
         </Box>
     );
 };

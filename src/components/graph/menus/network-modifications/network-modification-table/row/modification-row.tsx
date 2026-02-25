@@ -9,7 +9,7 @@ import React, { memo, useCallback } from 'react';
 import { flexRender, Row } from '@tanstack/react-table';
 import { mergeSx, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { TableCell, TableRow } from '@mui/material';
-import { createCellStyle, createRowStyle, styles } from '../styles';
+import { createCellStyle, createRowStyle, createRowSx, styles } from '../styles';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { STATIC_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
@@ -24,6 +24,8 @@ interface ModificationRowProps {
 
 const ModificationRow = memo<ModificationRowProps>(
     ({ virtualRow, row, handleCellClick, isRowDragDisabled, highlightedModificationUuid }) => {
+        const isHighlighted = row.original.uuid === highlightedModificationUuid;
+
         const handleCellClickCallback = useCallback(
             (columnId: string) => {
                 if (columnId === STATIC_MODIFICATION_TABLE_COLUMNS.MODIFICATION_NAME.id) {
@@ -42,19 +44,7 @@ const ModificationRow = memo<ModificationRowProps>(
                         {...provided.draggableProps}
                         data-row-id={row.original.uuid}
                         data-depth={row.depth}
-                        sx={mergeSx(styles.tr, {
-                            backgroundColor:
-                                row.original.uuid === highlightedModificationUuid
-                                    ? 'rgba(144, 202, 249, 0.16)'
-                                    : 'transparent',
-                            '&:hover': {
-                                backgroundColor:
-                                    row.original.uuid === highlightedModificationUuid
-                                        ? 'rgba(144, 202, 249, 0.24)'
-                                        : 'rgba(144, 202, 249, 0.08)',
-                            },
-                            opacity: snapshot.isDragging ? 0.5 : 1,
-                        })}
+                        sx={mergeSx(styles.tr, createRowSx(isHighlighted, snapshot.isDragging))}
                         style={createRowStyle(provided, snapshot, virtualRow)}
                     >
                         {row.getVisibleCells().map((cell) => (

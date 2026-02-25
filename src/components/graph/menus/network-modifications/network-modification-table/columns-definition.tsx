@@ -21,6 +21,7 @@ import { ExcludedNetworkModifications, RootNetworkMetadata } from '../network-mo
 import RootNetworkChipCellRenderer from './renderers/root-network-chip-cell-renderer';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import SelectCellRenderer from './renderers/select-cell-renderer';
+import { createRootNetworkChipCellSx, styles } from './styles';
 
 const CHIP_PADDING_PX = 24;
 const CHAR_WIDTH_PX = 8;
@@ -87,7 +88,7 @@ export const createStaticColumns = (
         size: 40,
         minSize: 40,
         meta: {
-            cellStyle: { padding: 2, justifyContent: 'center' },
+            cellStyle: styles.columnCell.select,
         },
     },
     {
@@ -97,7 +98,7 @@ export const createStaticColumns = (
         ),
         cell: ({ row }) => <NetworkModificationNameCell row={row} />,
         meta: {
-            cellStyle: { cursor: 'pointer', minWidth: 0, overflow: 'hidden', flex: 1, paddingLeft: '0.8vw' },
+            cellStyle: styles.columnCell.modificationName,
         },
         minSize: 160,
     },
@@ -134,21 +135,14 @@ export const createDynamicColumns = (
             id: rootNetworkUuid,
             header: () =>
                 isCurrentRootNetwork && modificationsCount >= 1 ? (
-                    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    <Box sx={styles.rootNetworkHeader}>
                         <Badge overlap="circular" color="primary" variant="dot">
                             <RemoveRedEyeIcon />
                         </Badge>
                     </Box>
                 ) : null,
             cell: ({ row }) => (
-                <Box
-                    sx={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        opacity: row.original.activated ? 1 : 0.4,
-                    }}
-                >
+                <Box sx={createRootNetworkChipCellSx(row.original.activated)}>
                     <RootNetworkChipCellRenderer
                         data={row.original}
                         rootNetwork={rootNetwork}
@@ -160,7 +154,7 @@ export const createDynamicColumns = (
             size: sharedSize,
             minSize: tagMinSize,
             meta: {
-                cellStyle: { textAlign: 'center' },
+                cellStyle: styles.columnCell.rootNetworkChip,
             },
         };
     });

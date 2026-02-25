@@ -10,7 +10,7 @@ import { Row } from '@tanstack/react-table';
 import { NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, Tooltip } from '@mui/material';
-import { styles } from '../styles';
+import { createModificationNameCellStyle, styles } from '../styles';
 
 const NetworkModificationNameCell = ({ row }: { row: Row<NetworkModificationMetadata> }) => {
     const intl = useIntl();
@@ -29,7 +29,7 @@ const NetworkModificationNameCell = ({ row }: { row: Row<NetworkModificationMeta
     const label = useMemo(() => getModificationLabel(row.original), [getModificationLabel, row.original]);
 
     return (
-        <Box sx={styles.tableCell} style={{ opacity: row.original.activated ? 1 : 0.4 }}>
+        <Box sx={styles.tableCell} style={createModificationNameCellStyle(row.original.activated)}>
             <Tooltip disableFocusListener disableTouchListener title={label}>
                 <span style={styles.modificationLabel}>{label}</span>
             </Tooltip>
