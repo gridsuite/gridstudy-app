@@ -10,11 +10,14 @@ import { Badge, Box, Checkbox } from '@mui/material';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { ColumnDef } from '@tanstack/react-table';
 import DragHandleCell from './renderers/drag-handle-cell-renderer';
-import { NetworkModificationEditorNameHeader } from './renderers/network-modification-node-editor-name-header';
+import {
+    NetworkModificationEditorNameHeader,
+    NetworkModificationEditorNameHeaderProps,
+} from './renderers/network-modification-node-editor-name-header';
 import NetworkModificationNameCell from './renderers/network-modification-name-cell-renderer';
 import DescriptionCellRenderer from './renderers/description-cell-renderer';
 import SwitchCellRenderer from './renderers/switch-cell-renderer';
-import { ExcludedNetworkModifications } from '../network-modification-menu.type';
+import { ExcludedNetworkModifications, RootNetworkMetadata } from '../network-modification-menu.type';
 import RootNetworkChipCellRenderer from './renderers/root-network-chip-cell-renderer';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import SelectCellRenderer from './renderers/select-cell-renderer';
@@ -56,10 +59,12 @@ export const AUTO_EXTENSIBLE_COLUMNS = Object.values(STATIC_MODIFICATION_TABLE_C
     .filter((column) => column.autoExtensible)
     .map((column) => column.id);
 
+type NameHeaderProps = Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'>;
+
 export const createStaticColumns = (
     isRowDragDisabled: boolean,
     modifications: NetworkModificationMetadata[],
-    nameHeaderProps: any,
+    nameHeaderProps: NameHeaderProps,
     setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>
 ): ColumnDef<NetworkModificationMetadata>[] => [
     {
@@ -111,7 +116,7 @@ export const createStaticColumns = (
 ];
 
 export const createDynamicColumns = (
-    rootNetworks: any[],
+    rootNetworks: RootNetworkMetadata[],
     currentRootNetworkUuid: string,
     modificationsCount: number,
     modificationsToExclude: ExcludedNetworkModifications[],
