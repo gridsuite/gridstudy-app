@@ -92,6 +92,9 @@ export const styles = {
         alignItems: 'center',
         minWidth: 0,
         gap: 2,
+        '& .MuiTypography-root': {
+            fontSize: 'inherit',
+        },
     },
 } as const satisfies MuiStyles;
 

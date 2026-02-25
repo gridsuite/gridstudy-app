@@ -70,14 +70,15 @@ export const styles = {
         minWidth: 0,
         display: 'flex',
     },
-    dragRowClone: {
+    dragRowClone: (theme) => ({
         backgroundColor: 'background.paper',
         boxShadow: 4,
         opacity: 1,
         border: '1px solid #f5f5f5',
         display: 'flex',
         width: 'fit-content',
-    },
+        paddingRight: theme.spacing(1),
+    }),
     overflow: {
         whiteSpace: 'pre',
         textOverflow: 'ellipsis',
@@ -106,7 +107,7 @@ export const createRowStyle = (
             ...provided.draggableProps.style,
             height: `${virtualRow.size}px`,
             transition: 'none',
-            zIndex: 9999,
+            zIndex: 1,
         };
     }
     return {
@@ -148,15 +149,13 @@ export const createHeaderCellStyle = (header: any, theme: Theme) => {
         flex: isAutoExtensible ? `1 1 ${size}px` : `0 1 ${size}px`,
         minWidth: minSize ? `${minSize}px` : undefined,
         height: `${MODIFICATION_ROW_HEIGHT}px`,
-        borderTop: `1px solid #68686e`,
-        borderBottom: `1px solid #68686e`,
         padding: 2,
         textAlign: 'left',
         fontWeight: 600,
         display: 'flex',
         alignItems: 'center',
-        paddingTop: '2.5vh',
-        paddingBottom: '2.5vh',
+        paddingTop: '1.5vh',
+        paddingBottom: '1.5vh',
         backgroundColor: theme.palette.background.paper,
     };
 };
