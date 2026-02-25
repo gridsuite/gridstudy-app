@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import {
@@ -114,13 +114,6 @@ export function fetchSensitivityAnalysisFilterOptions(
     )}/sensitivity-analysis/result/filter-options?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
-}
-
-export function fetchDefaultSensitivityAnalysisProvider() {
-    console.info('fetch default sensitivity analysis provider');
-    const url = `${PREFIX_STUDY_QUERIES}/v1/sensitivity-analysis-default-provider`;
-    console.debug(url);
-    return backendFetchText(url);
 }
 
 export function getSensitivityAnalysisParameters(studyUuid: UUID) {

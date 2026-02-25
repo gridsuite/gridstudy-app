@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import type { UUID } from 'node:crypto';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, GsLangUser } from '@gridsuite/commons-ui';
 import { SecurityAnalysisQueryParams } from '../../components/results/securityanalysis/security-analysis.type';
@@ -105,27 +105,6 @@ export function fetchSecurityAnalysisStatus(studyUuid: UUID, currentNodeUuid: UU
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/security-analysis/status';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
-export function updateSecurityAnalysisProvider(studyUuid: UUID, newProvider: string) {
-    console.info('update security analysis provider');
-    const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newProvider,
-    });
-}
-
-export function fetchDefaultSecurityAnalysisProvider() {
-    console.info('fetch default security analysis provider');
-    const url = PREFIX_STUDY_QUERIES + '/v1/security-analysis-default-provider';
     console.debug(url);
     return backendFetchText(url);
 }

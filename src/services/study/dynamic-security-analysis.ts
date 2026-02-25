@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
@@ -79,27 +79,6 @@ export function fetchDynamicSecurityAnalysisProvider(studyUuid: UUID) {
     const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/provider';
     console.debug(url);
     return backendFetchText(url);
-}
-
-export function fetchDefaultDynamicSecurityAnalysisProvider() {
-    console.info('Fetching default dynamic security analysis provider');
-    const url = PREFIX_STUDY_QUERIES + '/v1/dynamic-security-analysis-default-provider';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
-export function updateDynamicSecurityAnalysisProvider(studyUuid: UUID, newProvider: string) {
-    console.info(`Updating dynamic security analysis provider on study '${studyUuid}' ...`);
-    const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/provider';
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newProvider,
-    });
 }
 
 export function fetchDynamicSecurityAnalysisParameters(

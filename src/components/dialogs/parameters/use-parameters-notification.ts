@@ -50,9 +50,9 @@ export const useParametersNotification = <T extends ComputingType>(
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const optionalServiceStatusRef = useRef(optionalServiceStatus);
     optionalServiceStatusRef.current = optionalServiceStatus;
-    const [, , fetchProvider, , , , fetchParameters, , , ,] = parametersBackend;
+    const { fetchParameters } = parametersBackend;
 
-    // we need to fetch provider and parameters when ever a computationParametersUpdated notification received.
+    // we need to fetch parameters when ever a computationParametersUpdated notification received.
     // use optionalServiceStatusRef here to avoid double effects proc
     // other dependencies don't change this much
     const handleEvent = useCallback(
@@ -62,11 +62,10 @@ export const useParametersNotification = <T extends ComputingType>(
                 studyUuid &&
                 optionalServiceStatusRef.current === OptionalServicesStatus.Up
             ) {
-                fetchProvider(studyUuid);
                 fetchParameters(studyUuid);
             }
         },
-        [fetchParameters, fetchProvider, studyUuid, type]
+        [fetchParameters, studyUuid, type]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
