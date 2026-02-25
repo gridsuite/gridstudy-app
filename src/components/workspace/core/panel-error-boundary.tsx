@@ -23,12 +23,8 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        flex: 1,
+        flexGrow: 1,
         gap: theme.spacing(2),
-    }),
-    icon: (theme: any) => ({
-        fontSize: 48,
-        color: theme.palette.error.main,
     }),
     alertMessage: {
         width: '100%',
@@ -100,7 +96,7 @@ export default class PanelErrorBoundary extends Component<PanelErrorBoundaryProp
             return (
                 <Box sx={styles.container}>
                     <Box sx={styles.centeredContent}>
-                        <ErrorOutlineIcon sx={styles.icon} />
+                        <ErrorOutlineIcon fontSize="large" color="error" />
                         <Typography>
                             <FormattedMessage id="PanelError" />
                         </Typography>

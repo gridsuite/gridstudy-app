@@ -8,6 +8,7 @@
 import { Box, CircularProgress } from '@mui/material';
 import { ReactNode } from 'react';
 import AlertCustomMessageNode from '../../utils/alert-custom-message-node';
+import { cardStyles } from '../../grid-layout/cards/card-styles';
 import { ErrorMessageDescriptor } from '@gridsuite/commons-ui';
 
 interface DiagramWrapperProps {
@@ -27,7 +28,7 @@ export const DiagramWrapper = ({ loading, hasSvg, globalError, children }: Diagr
     }
 
     if (globalError) {
-        return <AlertCustomMessageNode message={globalError} noMargin />;
+        return <AlertCustomMessageNode message={globalError} noMargin style={cardStyles.alertMessage} />;
     }
 
     return <Box sx={{ height: '100%', width: '100%' }}>{children}</Box>;
