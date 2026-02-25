@@ -7,8 +7,12 @@
 
 import { CHARACTERISTICS, G, B, RATED_S, RATED_U1, RATED_U2, R, X } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
+import { CharacteristicsFormSchema } from '../two-windings-transformer.types';
 
-const characteristicsValidationSchema = (isModification, additionalFields) => ({
+type AdditionalValidationFields = Record<string, yup.AnySchema>;
+type AdditionalDataFields = Record<string, unknown>;
+
+const characteristicsValidationSchema = (isModification: boolean, additionalFields: AdditionalValidationFields) => ({
     [CHARACTERISTICS]: yup.object().shape({
         [R]: isModification
             ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
@@ -33,7 +37,7 @@ export const getCharacteristicsValidationSchema = (isModification = false, addit
     return characteristicsValidationSchema(isModification, additionalFields);
 };
 
-const characteristicsEmptyFormData = (additionalFields) => ({
+const characteristicsEmptyFormData = (additionalFields: AdditionalDataFields) => ({
     [CHARACTERISTICS]: {
         [R]: null,
         [X]: null,
@@ -51,7 +55,15 @@ export const getCharacteristicsEmptyFormData = (additionalFields = {}) => {
 };
 
 export const getCharacteristicsFormData = (
-    { r = null, x = null, g = null, b = null, ratedS = null, ratedU1 = null, ratedU2 = null },
+    {
+        r = null,
+        x = null,
+        g = null,
+        b = null,
+        ratedS = null,
+        ratedU1 = null,
+        ratedU2 = null,
+    }: CharacteristicsFormSchema,
     additionalFields = {}
 ) => {
     return {

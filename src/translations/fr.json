@@ -331,6 +331,7 @@
     "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
     "FetchNominalVoltagesError": "Une erreur est survenue lors du chargement des tensions nominales",
     "FetchVoltageLevelsError": "Une erreur est survenue lors du chargement des postes",
+    "FetchHvdcLineWithShuntCompensatorsError": "Une erreur est survenue lors du chargement des lignes HVDC et des MCS associés",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
@@ -359,6 +360,11 @@
     "DynamicSecurityAnalysisScenarioDuration": "Durée du scenario",
     "DynamicSecurityAnalysisContingenciesStartTime": "Temps de début des aléas",
     "DynamicSecurityAnalysisTabStatus": "Statut",
+
+    "startDynamicMarginCalculationError": "Une erreur est survenue lors du lancement du calcul de marge dynamique",
+    "DynamicMarginCalculation": "Calcul de marge dynamique",
+    "DynamicMarginCalculationRunError": "Une erreur est survenue lors de l'exécution du calcul de marge dynamique",
+    "DynamicMarginCalculationTabStatus": "Statut",
 
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",

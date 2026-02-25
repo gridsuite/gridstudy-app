@@ -28,7 +28,7 @@ import { useMemo } from 'react';
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
-import { PhaseTapChangerData, PhaseTapChangerPaneProps } from '../../two-windings-transformer.types';
+import { TapChangerMapInfos, TapChangerPaneProps } from '../../two-windings-transformer.types';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -39,7 +39,7 @@ const PhaseTapChangerPane = ({
     previousValues,
     editData,
     isModification = false,
-}: PhaseTapChangerPaneProps) => {
+}: TapChangerPaneProps) => {
     const intl = useIntl();
 
     const phaseTapChangerEnabledWatch = useWatch({
@@ -54,7 +54,7 @@ const PhaseTapChangerPane = ({
         name: `${id}.${REGULATION_TYPE}`,
     });
 
-    const getPhaseTapChangerRegulationModeLabel = (phaseTapChangerFormValues?: PhaseTapChangerData | null) => {
+    const getPhaseTapChangerRegulationModeLabel = (phaseTapChangerFormValues?: TapChangerMapInfos | null) => {
         const computedRegulationMode = getComputedPhaseTapChangerRegulationMode(phaseTapChangerFormValues ?? undefined);
         if (computedRegulationMode) {
             return intl.formatMessage({
@@ -63,7 +63,7 @@ const PhaseTapChangerPane = ({
         }
     };
 
-    const getRegulatingPreviousValue = (field: string, tap?: PhaseTapChangerData) => {
+    const getRegulatingPreviousValue = (field: string, tap?: TapChangerMapInfos) => {
         if (
             (tap?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                 field === FLOW_SET_POINT_REGULATING_VALUE) ||

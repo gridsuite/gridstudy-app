@@ -346,11 +346,20 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
                 skipEmptyLines: true,
-                dynamicTyping: true,
+                dynamicTyping: (fieldName: string) => {
+                    // "property_*" (user added property) columns should remain as strings
+                    return !fieldName.startsWith(PROPERTY_CSV_COLUMN_PREFIX);
+                },
                 comments: '#',
                 delimiter: language === LANG_FRENCH ? ';' : ',',
                 complete: handleComplete,
-                transform: (value) => transformIfFrenchNumber(value, language),
+                transform: (value: string, field: string | number) => {
+                    if (typeof field === 'string' && field.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
+                        // don't transform property_* columns (user added property), keep them string
+                        return value;
+                    }
+                    return transformIfFrenchNumber(value, language);
+                },
             });
         }
     }, [clearErrors, handleComplete, intl, selectedFile, selectedFileError, setValue, language, csvFields]);

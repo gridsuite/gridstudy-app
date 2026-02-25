@@ -11,7 +11,10 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
+    EquipmentType,
+    EquipmentWithProperties,
     FieldType,
     getPropertiesFromModification,
     sanitizeString,
@@ -20,7 +23,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid } from '@mui/material';
+import { Breakpoint, Grid } from '@mui/material';
 import {
     B,
     BUS_OR_BUSBAR_SECTION,
@@ -63,10 +66,8 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { FetchStatus } from '../../../../../services/utils';
+import { Resolver, useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
@@ -84,11 +85,13 @@ import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerValidationSchema,
+    PhaseTapChangerFormSchema,
 } from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerValidationSchema,
+    RatioTapChangerFormSchema,
 } from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import TwoWindingsTransformerCreationDialogTabs from './two-windings-transformer-creation-dialog-tabs';
 import TwoWindingsTransformerCreationCharacteristicsPane from './characteristics-pane/two-windings-transformer-creation-characteristics-pane';
@@ -101,6 +104,7 @@ import {
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
+    LimitsFormSchema,
     sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -108,7 +112,24 @@ import TwoWindingsTransformerCreationDialogHeader from './two-windings-transform
 import { addSelectedFieldToRows, computeHighTapPosition, formatCompleteCurrentLimit } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-utils';
-
+import { UUID } from 'node:crypto';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { FetchStatus } from 'services/utils.type';
+import {
+    CharacteristicsCreationFormSchema,
+    ConnectivityFormSchema,
+    TapChangerMapInfos,
+    TwoWindingsTransformerMapInfos,
+} from '../two-windings-transformer.types';
+import {
+    OperationalLimitsGroupInfos,
+    PhaseTapChangerCreationInfos,
+    RatioTapChangerCreationInfos,
+    TapChangerCreationInfos,
+    TwoWindingsTransformerCreationInfo,
+} from 'services/network-modification-types';
+import { CurrentLimitsData } from 'services/study/network-map.type';
+import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
 /**
  * Dialog to create a two windings transformer in the network
  * @param studyUuid the study we are currently working on
@@ -143,6 +164,25 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
+type BaseFormValues = yup.InferType<typeof formSchema>;
+
+export type TwoWindingsTransformerCreationFormValues = BaseFormValues & {
+    [CHARACTERISTICS]: CharacteristicsCreationFormSchema;
+    [LIMITS]: LimitsFormSchema;
+    [RATIO_TAP_CHANGER]: RatioTapChangerFormSchema;
+    [PHASE_TAP_CHANGER]: PhaseTapChangerFormSchema;
+};
+
+export interface TwoWindingsTransformerCreationDialogProps {
+    editData?: TwoWindingsTransformerCreationInfo;
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    isUpdate?: boolean;
+    editDataFetchStatus?: FetchStatus;
+    onClose: () => void;
+    onValidated?: () => void;
+}
 const TwoWindingsTransformerCreationDialog = ({
     editData,
     studyUuid,
@@ -151,22 +191,26 @@ const TwoWindingsTransformerCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: TwoWindingsTransformerCreationDialogProps) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<TwoWindingsTransformerCreationFormValues>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver(formSchema) as unknown as Resolver<
+            DeepNullable<TwoWindingsTransformerCreationFormValues>
+        >,
     });
 
     const { reset } = formMethods;
 
     const [tabIndex, setTabIndex] = useState(TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
-    const [dialogWidth, setDialogWidth] = useState('xl');
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
+    const [dialogWidth, setDialogWidth] = useState<Breakpoint>('xl');
 
-    const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
+    const computeRatioTapChangerRegulationMode = (
+        ratioTapChangerFormValues?: RatioTapChangerCreationInfos | TapChangerMapInfos | null
+    ) => {
         if (ratioTapChangerFormValues?.[REGULATING]) {
             return RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id;
         } else {
@@ -174,40 +218,70 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const getTapSideForEdit = (twt, tap) => {
-        return tap?.terminalRefConnectableId === twt.equipmentId
-            ? tap?.terminalRefConnectableVlId === twt?.voltageLevelId1
-                ? SIDE.SIDE1.id
-                : SIDE.SIDE2.id
-            : null;
+    const getTapSideForEdit = (
+        twt: TwoWindingsTransformerCreationInfo,
+        tap: TapChangerCreationInfos | null | undefined
+    ) => {
+        if (tap?.terminalRefConnectableId !== twt.equipmentId) {
+            return null;
+        }
+        return tap?.terminalRefConnectableVlId === twt?.voltageLevelId1 ? SIDE.SIDE1.id : SIDE.SIDE2.id;
     };
 
-    const getTapSideForCopy = (twt, tap) => {
-        return tap?.regulatingTerminalConnectableId === twt.id
-            ? tap?.terminalRefConnectableVlId === twt?.voltageLevelId1
-                ? SIDE.SIDE1.id
-                : SIDE.SIDE2.id
-            : null;
+    const getTapSideForCopy = (twt: TwoWindingsTransformerMapInfos, tap: TapChangerMapInfos | null | undefined) => {
+        if (tap?.regulatingTerminalConnectableId !== twt.id) {
+            return null;
+        }
+        return tap?.regulatingTerminalVlId === twt?.voltageLevelId1 ? SIDE.SIDE1.id : SIDE.SIDE2.id;
     };
 
-    const getRegulationTypeForEdit = (twt, tap) => {
-        return tap?.terminalRefConnectableId != null
-            ? tap?.terminalRefConnectableId === twt.equipmentId
-                ? REGULATION_TYPES.LOCAL.id
-                : REGULATION_TYPES.DISTANT.id
-            : null;
+    const getRegulationTypeForEdit = (twt: TwoWindingsTransformerCreationInfo, tap: TapChangerCreationInfos | null) => {
+        if (tap?.terminalRefConnectableId == null) {
+            return null;
+        }
+        return tap.terminalRefConnectableId === twt.equipmentId
+            ? REGULATION_TYPES.LOCAL.id
+            : REGULATION_TYPES.DISTANT.id;
     };
 
-    const getRegulationTypeForCopy = (twt, tap) => {
-        return tap?.regulatingTerminalConnectableId != null
-            ? tap?.regulatingTerminalConnectableId === twt.id
-                ? REGULATION_TYPES.LOCAL.id
-                : REGULATION_TYPES.DISTANT.id
-            : null;
+    const getRegulationTypeForCopy = (
+        twt: TwoWindingsTransformerMapInfos,
+        tap: TapChangerMapInfos | null | undefined
+    ) => {
+        if (tap?.regulatingTerminalConnectableId == null) {
+            return null;
+        }
+        return tap.regulatingTerminalConnectableId === twt.id ? REGULATION_TYPES.LOCAL.id : REGULATION_TYPES.DISTANT.id;
+    };
+
+    /**
+     * Transforms operational limits groups from dto info form format
+     */
+    const transformOperationalLimitsGroupsForForm = (operationalLimitsGroups: OperationalLimitsGroupInfos[] | null) => {
+        return operationalLimitsGroups
+            ?.filter(
+                (group): group is OperationalLimitsGroupInfos & { id: string; applicability: string } =>
+                    group.id != null && group.applicability != null
+            )
+            .map(({ id, currentLimits, applicability, limitsProperties }) => ({
+                id: id + applicability,
+                name: id,
+                applicability,
+                limitsProperties: limitsProperties ?? undefined,
+                currentLimits: {
+                    permanentLimit: currentLimits?.permanentLimit ?? null,
+                    temporaryLimits:
+                        currentLimits?.temporaryLimits?.map((tl) => ({
+                            name: tl.name ?? undefined,
+                            value: tl.value ?? undefined,
+                            acceptableDuration: tl.acceptableDuration ?? undefined,
+                        })) ?? [],
+                },
+            }));
     };
 
     const fromEditDataToFormValues = useCallback(
-        (twt) => {
+        (twt: TwoWindingsTransformerCreationInfo) => {
             reset({
                 [EQUIPMENT_ID]: twt.equipmentId,
                 [EQUIPMENT_NAME]: twt.equipmentName,
@@ -222,7 +296,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId1,
-                            connectionDirection: twt.connectionDirection1,
+                            connectionDirection: twt.connectionDirection1 ?? null,
                             connectionName: twt.connectionName1,
                             connectionPosition: twt.connectionPosition1,
                             voltageLevelId: twt.voltageLevelId1,
@@ -233,7 +307,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId2,
-                            connectionDirection: twt.connectionDirection2,
+                            connectionDirection: twt.connectionDirection2 ?? null,
                             connectionName: twt.connectionName2,
                             connectionPosition: twt.connectionPosition2,
                             voltageLevelId: twt.voltageLevelId2,
@@ -243,11 +317,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData(
-                    twt?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
-                        ...baseData,
-                        name: id,
-                        id: id + baseData.applicability,
-                    })),
+                    transformOperationalLimitsGroupsForForm(twt?.operationalLimitsGroups),
                     twt?.selectedOperationalLimitsGroupId1 ?? null,
                     twt?.selectedOperationalLimitsGroupId2 ?? null
                 ),
@@ -268,12 +338,12 @@ const TwoWindingsTransformerCreationDialog = ({
                             : null,
                     targetDeadband: twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
                     lowTapPosition: twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
-                    highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
+                    highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS] ?? []),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
-                    equipmentId: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableId,
-                    equipmentType: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableType,
-                    voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableVlId,
+                    steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS] ?? []),
+                    equipmentId: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableId ?? undefined,
+                    equipmentType: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableType ?? undefined,
+                    voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableVlId ?? undefined,
                 }),
                 ...getRatioTapChangerFormData({
                     enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -284,21 +354,21 @@ const TwoWindingsTransformerCreationDialog = ({
                     targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
                     targetDeadband: twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
                     lowTapPosition: twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION],
-                    highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
+                    highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS] ?? []),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
-                    equipmentId: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableId,
-                    equipmentType: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableType,
-                    voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableVlId,
+                    steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS] ?? []),
+                    equipmentId: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableId ?? undefined,
+                    equipmentType: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableType ?? undefined,
+                    voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableVlId ?? undefined,
                 }),
                 ...getPropertiesFromModification(twt.properties),
-            });
+            } as DeepNullable<TwoWindingsTransformerCreationFormValues>);
         },
         [reset]
     );
 
     const fromSearchCopyToFormValues = useCallback(
-        (twt) => {
+        (twt: TwoWindingsTransformerMapInfos) => {
             reset(
                 {
                     [EQUIPMENT_ID]: twt.id + '(1)',
@@ -310,11 +380,11 @@ const TwoWindingsTransformerCreationDialog = ({
                         b: convertInputValue(FieldType.B, twt.b),
                         ratedU1: twt.ratedU1,
                         ratedU2: twt.ratedU2,
-                        ratedS: twt.ratedS,
+                        ratedS: twt.ratedS ?? null,
                         ...getConnectivityFormData(
                             {
                                 busbarSectionId: twt.busOrBusbarSectionId1,
-                                connectionDirection: twt.connectablePosition1?.connectionDirection,
+                                connectionDirection: twt.connectablePosition1?.connectionDirection ?? null,
                                 connectionName: twt.connectablePosition1?.connectionName,
                                 voltageLevelId: twt.voltageLevelId1,
                             },
@@ -323,7 +393,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         ...getConnectivityFormData(
                             {
                                 busbarSectionId: twt.busOrBusbarSectionId2,
-                                connectionDirection: twt.connectablePosition2?.connectionDirection,
+                                connectionDirection: twt.connectablePosition2?.connectionDirection ?? null,
                                 connectionName: twt.connectablePosition2?.connectionName,
                                 voltageLevelId: twt.voltageLevelId2,
                             },
@@ -331,7 +401,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         ),
                     }),
                     ...getAllLimitsFormData(
-                        formatCompleteCurrentLimit(twt.currentLimits),
+                        formatCompleteCurrentLimit(twt.currentLimits as CurrentLimitsData[]),
                         twt.selectedOperationalLimitsGroupId1 ?? null,
                         twt.selectedOperationalLimitsGroupId2 ?? null
                     ),
@@ -342,16 +412,16 @@ const TwoWindingsTransformerCreationDialog = ({
                         regulationType: getRegulationTypeForCopy(twt, twt?.[RATIO_TAP_CHANGER]),
                         regulationSide: getTapSideForCopy(twt, twt?.[RATIO_TAP_CHANGER]),
                         targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
-                        targetDeadband: isNaN(twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND])
+                        targetDeadband: Number.isNaN(twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND] ?? Number.NaN)
                             ? null
                             : twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
                         lowTapPosition: twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION],
-                        highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
+                        highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS] ?? []),
                         tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                        steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
+                        steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS] ?? []),
                         equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId,
                         equipmentType: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableType,
-                        voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableVlId,
+                        voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
                     }),
                     ...getPhaseTapChangerFormData({
                         enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -369,19 +439,19 @@ const TwoWindingsTransformerCreationDialog = ({
                             PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
                                 ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
                                 : null,
-                        targetDeadband: isNaN(twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND])
+                        targetDeadband: Number.isNaN(twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND] ?? Number.NaN)
                             ? null
                             : twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
                         lowTapPosition: twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
-                        highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
+                        highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS] ?? []),
                         tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                        steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
-                        voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableVlId,
+                        steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS] ?? []),
+                        voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
                         equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId,
                         equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableType,
                     }),
-                    ...copyEquipmentPropertiesForCreation(twt),
-                },
+                    ...copyEquipmentPropertiesForCreation(twt as EquipmentWithProperties),
+                } as DeepNullable<TwoWindingsTransformerCreationFormValues>,
                 { keepDefaultValues: true }
             );
         },
@@ -408,18 +478,18 @@ const TwoWindingsTransformerCreationDialog = ({
         </Grid>
     );
 
-    const computeRatioTapChangerRegulating = (ratioTapChangerFormValues) => {
+    const computeRatioTapChangerRegulating = (ratioTapChangerFormValues: RatioTapChangerFormSchema) => {
         return ratioTapChangerFormValues?.[REGULATION_MODE] === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id;
     };
 
-    const computePhaseTapChangerRegulating = (phaseTapChangerFormValues) => {
+    const computePhaseTapChangerRegulating = (phaseTapChangerFormValues: PhaseTapChangerFormSchema) => {
         return (
             phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
             phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
         );
     };
 
-    const computeRegulationModeValue = (phaseTapChangerFormValues) => {
+    const computeRegulationModeValue = (phaseTapChangerFormValues: PhaseTapChangerFormSchema) => {
         if (phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.OFF.id) {
             return null;
         }
@@ -427,18 +497,18 @@ const TwoWindingsTransformerCreationDialog = ({
         return phaseTapChangerFormValues?.[REGULATION_MODE];
     };
 
-    const computePhaseTapChangerRegulationValue = (phaseTapChangerFormValues) => {
+    const computePhaseTapChangerRegulationValue = (phaseTapChangerFormValues: PhaseTapChangerFormSchema) => {
         switch (phaseTapChangerFormValues?.[REGULATION_MODE]) {
             case PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id:
-                return phaseTapChangerFormValues?.[FLOW_SET_POINT_REGULATING_VALUE];
+                return phaseTapChangerFormValues?.[FLOW_SET_POINT_REGULATING_VALUE] ?? undefined;
             case PHASE_REGULATION_MODES.CURRENT_LIMITER.id:
-                return phaseTapChangerFormValues?.[CURRENT_LIMITER_REGULATING_VALUE];
+                return phaseTapChangerFormValues?.[CURRENT_LIMITER_REGULATING_VALUE] ?? undefined;
             default:
                 return undefined;
         }
     };
 
-    const computeRegulatingTerminalType = (tapChangerValue) => {
+    const computeRegulatingTerminalType = (tapChangerValue: RatioTapChangerFormSchema | PhaseTapChangerFormSchema) => {
         if (tapChangerValue?.[EQUIPMENT]?.type) {
             return tapChangerValue?.[EQUIPMENT]?.type;
         }
@@ -450,7 +520,11 @@ const TwoWindingsTransformerCreationDialog = ({
         return undefined;
     };
 
-    const computeTapTerminalVlId = (tapChangerValue, connectivity1, connectivity2) => {
+    const computeTapTerminalVlId = (
+        tapChangerValue: RatioTapChangerFormSchema | PhaseTapChangerFormSchema,
+        connectivity1: ConnectivityFormSchema,
+        connectivity2: ConnectivityFormSchema
+    ) => {
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
             if (tapChangerValue?.[REGULATION_SIDE] === SIDE.SIDE1.id) {
                 return connectivity1?.[VOLTAGE_LEVEL]?.[ID];
@@ -462,7 +536,10 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const computeRegulatingTerminalId = (tapChangerValue, currentTwtId) => {
+    const computeRegulatingTerminalId = (
+        tapChangerValue: RatioTapChangerFormSchema | PhaseTapChangerFormSchema,
+        currentTwtId: string
+    ) => {
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
             return currentTwtId;
         } else {
@@ -471,7 +548,7 @@ const TwoWindingsTransformerCreationDialog = ({
     };
 
     const onSubmit = useCallback(
-        (twt) => {
+        (twt: TwoWindingsTransformerCreationFormValues) => {
             const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
             const enableRatioTapChanger = twt[RATIO_TAP_CHANGER]?.[ENABLED];
             const characteristics = twt[CHARACTERISTICS];
@@ -485,35 +562,28 @@ const TwoWindingsTransformerCreationDialog = ({
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
                 const hasLoadTapCapabilities = ratioTapChangerFormValues[LOAD_TAP_CHANGING_CAPABILITIES];
 
-                const getRegulatingValue = (computeFunc, ...args) => {
-                    return hasLoadTapCapabilities ? computeFunc(...args) : null;
-                };
-
-                const getValueOrDefault = (key) => {
+                const getValueOrDefault = (key: keyof RatioTapChangerFormSchema) => {
                     return hasLoadTapCapabilities ? ratioTapChangerFormValues[key] : null;
                 };
 
                 ratioTap = {
                     ...ratioTapChangerFormValues,
                     isRegulating: computeRatioTapChangerRegulating(ratioTapChangerFormValues),
-                    terminalRefConnectableId: getRegulatingValue(
-                        computeRegulatingTerminalId,
-                        ratioTapChangerFormValues,
-                        twt[EQUIPMENT_ID]
-                    ),
-                    terminalRefConnectableType: getRegulatingValue(
-                        computeRegulatingTerminalType,
-                        ratioTapChangerFormValues
-                    ),
-                    terminalRefConnectableVlId: getRegulatingValue(
-                        computeTapTerminalVlId,
-                        ratioTapChangerFormValues,
-                        characteristics[CONNECTIVITY_1],
-                        characteristics[CONNECTIVITY_2]
-                    ),
+                    terminalRefConnectableId: hasLoadTapCapabilities
+                        ? computeRegulatingTerminalId(ratioTapChangerFormValues, twt[EQUIPMENT_ID])
+                        : null,
+                    terminalRefConnectableType: hasLoadTapCapabilities
+                        ? computeRegulatingTerminalType(ratioTapChangerFormValues)
+                        : null,
+                    terminalRefConnectableVlId: hasLoadTapCapabilities
+                        ? computeTapTerminalVlId(
+                              ratioTapChangerFormValues,
+                              characteristics[CONNECTIVITY_1],
+                              characteristics[CONNECTIVITY_2]
+                          )
+                        : null,
                     targetV: getValueOrDefault(TARGET_V),
                     targetDeadband: getValueOrDefault(TARGET_DEADBAND),
-                    regulationType: getValueOrDefault(REGULATION_TYPE),
                 };
             }
             let phaseTap = undefined;
@@ -538,37 +608,39 @@ const TwoWindingsTransformerCreationDialog = ({
             createTwoWindingsTransformer({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                twoWindingsTransformerId: twt[EQUIPMENT_ID],
-                twoWindingsTransformerName: sanitizeString(twt[EQUIPMENT_NAME]),
+                equipmentId: twt[EQUIPMENT_ID],
+                equipmentName: sanitizeString(twt[EQUIPMENT_NAME]),
                 r: characteristics[R],
-                x: characteristics[X],
-                g: characteristics[G],
-                b: characteristics[B],
-                ratedS: characteristics[RATED_S] ?? '',
-                ratedU1: characteristics[RATED_U1],
-                ratedU2: characteristics[RATED_U2],
-                limitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
-                selectedLimitsGroup1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1],
-                selectedLimitsGroup2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2],
-                voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
-                busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID],
-                busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                ratioTapChanger: ratioTap,
-                phaseTapChanger: phaseTap,
+                x: Number(characteristics[X]),
+                g: Number(characteristics[G]),
+                b: Number(characteristics[B]),
+                ratedS: characteristics[RATED_S],
+                ratedU1: Number(characteristics[RATED_U1]),
+                ratedU2: Number(characteristics[RATED_U2]),
+                operationalLimitsGroups: sanitizeLimitsGroups(
+                    limits[OPERATIONAL_LIMITS_GROUPS] as OperationalLimitsGroupFormSchema[]
+                ) as OperationalLimitsGroupInfos[],
+                selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1] ?? null,
+                selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2] ?? null,
+                voltageLevelId1: String(characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID]),
+                busOrBusbarSectionId1: String(characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
+                voltageLevelId2: String(characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID]),
+                busOrBusbarSectionId2: String(characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
+                ratioTapChanger: (ratioTap as RatioTapChangerCreationInfos) ?? null,
+                phaseTapChanger: (phaseTap as PhaseTapChangerCreationInfos) ?? null,
                 isUpdate: !!editData,
-                modificationUuid: editData ? editData.uuid : undefined,
+                uuid: editData ? editData.uuid : '',
                 connectionName1: sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),
                 connectionDirection1:
                     characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
                 connectionName2: sanitizeString(characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]),
                 connectionDirection2:
                     characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                connectionPosition1: characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
-                connectionPosition2: characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
-                connected1: characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
-                connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
-                properties: toModificationProperties(twt),
+                connectionPosition1: characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION],
+                connectionPosition2: characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION],
+                connected1: Boolean(characteristics[CONNECTIVITY_1]?.[CONNECTED]),
+                connected2: Boolean(characteristics[CONNECTIVITY_2]?.[CONNECTED]),
+                properties: toModificationProperties(twt as unknown as Record<string, unknown>),
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'TwoWindingsTransformerCreationError' });
             });
@@ -577,7 +649,7 @@ const TwoWindingsTransformerCreationDialog = ({
     );
 
     const onValidationError = useCallback(
-        (errors) => {
+        (errors: Record<string, unknown>) => {
             const tabsInError = [];
             if (errors?.[PHASE_TAP_CHANGER] !== undefined) {
                 tabsInError.push(TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB);
@@ -615,7 +687,7 @@ const TwoWindingsTransformerCreationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema as any} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -644,7 +716,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
+                    equipmentType={EquipmentType.TWO_WINDINGS_TRANSFORMER}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
@@ -652,15 +724,6 @@ const TwoWindingsTransformerCreationDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-TwoWindingsTransformerCreationDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
 };
 
 export default TwoWindingsTransformerCreationDialog;

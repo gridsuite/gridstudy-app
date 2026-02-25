@@ -31,7 +31,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
-import { updateComputationColumnsFilters } from '../common/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
@@ -45,7 +45,7 @@ function sanitizeObject(record: Object): Object {
 }
 
 type SensitivityAnalysisResultProps = CustomAGGridProps & {
-    result: Sensitivity[];
+    result: Sensitivity[] | undefined;
     nOrNkIndex: number;
     sensiKind: SensiKind;
     filtersDef: { field: string; options: string[] }[];
@@ -205,7 +205,13 @@ function SensitivityAnalysisResult({
         return returnedTable;
     }, [makeColumn, nOrNkIndex, sensiKind]);
 
-    const rows = useMemo(() => makeRows(result), [result]);
+    const rows = useMemo(() => {
+        if (result) {
+            return makeRows(result);
+        } else {
+            return undefined;
+        }
+    }, [result]);
 
     const defaultColDef = useMemo(
         () => ({

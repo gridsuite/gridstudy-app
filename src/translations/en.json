@@ -333,6 +333,7 @@
     "FetchCountryError": "An error occurred while fetching countries",
     "FetchNominalVoltagesError": "An error occurred while fetching nominal voltages",
     "FetchVoltageLevelsError": "An error occurred while fetching voltage levels",
+    "FetchHvdcLineWithShuntCompensatorsError": "An error occurred while fetching HVDC lines and related shunt compensators",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
@@ -361,6 +362,11 @@
     "DynamicSecurityAnalysisScenarioDuration": "Scenario duration",
     "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
     "DynamicSecurityAnalysisTabStatus": "Status",
+
+    "startDynamicMarginCalculationError": "An error occurred while starting the dynamic margin calculation",
+    "DynamicMarginCalculation": "Dynamic margin calculation",
+    "DynamicMarginCalculationRunError": "An error occurred while executing the dynamic margin calculation",
+    "DynamicMarginCalculationTabStatus": "Status",
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",

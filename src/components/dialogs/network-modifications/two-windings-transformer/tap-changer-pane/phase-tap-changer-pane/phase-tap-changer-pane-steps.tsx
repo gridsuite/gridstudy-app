@@ -20,12 +20,13 @@ import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { DndColumn, DndColumnType, parseIntData } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { PHASE_TAP, PhaseTapChangerData } from '../../two-windings-transformer.types';
+import { PHASE_TAP, TapChangerMapInfos } from '../../two-windings-transformer.types';
+import { TwoWindingsTransformerModificationInfo } from 'services/network-modification-types';
 
 export interface PhaseTapChangerPaneStepsProps {
     disabled?: boolean;
-    previousValues?: PhaseTapChangerData;
-    editData?: Record<string, unknown>;
+    previousValues?: TapChangerMapInfos;
+    editData?: TwoWindingsTransformerModificationInfo;
     currentNode: CurrentTreeNode;
     isModification?: boolean;
 }
