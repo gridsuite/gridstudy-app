@@ -6,7 +6,13 @@
  */
 
 import { FunctionComponent } from 'react';
-import { AutocompleteInput, DirectoryItemsInput, ElementType, useFormatLabelWithUnit } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    DirectoryItemsInput,
+    ElementType,
+    EquipmentType,
+    useFormatLabelWithUnit,
+} from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -22,7 +28,6 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { Grid } from '@mui/material';
 import GridItem from '../../../../commons/grid-item';
-import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 
 interface FormulaProps {
     name: string;
@@ -43,7 +48,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
     });
     const equipmentFields = EQUIPMENTS_FIELDS[equipmentTypeWatch] ?? [];
     const editableEquipmentFields =
-        equipmentTypeWatch === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
+        equipmentTypeWatch === EquipmentType.TWO_WINDINGS_TRANSFORMER
             ? (EQUIPMENTS_FIELDS[equipmentTypeWatch].filter(
                   (field) => field.id !== 'RATIO_HIGH_TAP_POSITION' && field.id !== 'PHASE_HIGH_TAP_POSITION'
               ) ?? [])
