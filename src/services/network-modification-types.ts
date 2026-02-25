@@ -843,18 +843,20 @@ export interface FilterInfos {
     name: string;
 }
 
+export interface FormulaInfos {
+    id?: UUID;
+    fieldOrValue1: ReferenceFieldOrValue;
+    fieldOrValue2: ReferenceFieldOrValue;
+    filters: FilterInfos[];
+    editedField: string;
+    operator: string;
+}
+
 export interface ByFormulaModificationInfos {
     type: ModificationType;
     uuid?: UUID;
     identifiableType: string;
-    formulaInfosList: {
-        id?: UUID;
-        fieldOrValue1: ReferenceFieldOrValue;
-        fieldOrValue2: ReferenceFieldOrValue;
-        filters: FilterInfos[];
-        editedField: string;
-        operator: string;
-    };
+    formulaInfosList: FormulaInfos[];
 }
 
 export interface LCCCreationInfo {
