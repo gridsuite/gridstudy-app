@@ -19,6 +19,7 @@ import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
 import { positionToRelative, sizeToRelative, calculatePanelDimensions } from './utils/coordinate-utils';
+import PanelErrorBoundary from './panel-error-boundary';
 
 const RESIZE_HANDLE_SIZE = 12;
 
@@ -176,14 +177,16 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
                         border: getBorder(theme, isFocused, panel.maximized),
                     })}
                 >
-                    {studyUuid && currentRootNetworkUuid && currentNode
-                        ? PANEL_CONTENT_REGISTRY[panel.type]({
-                              panelId,
-                              studyUuid,
-                              currentRootNetworkUuid,
-                              currentNode,
-                          })
-                        : null}
+                    {studyUuid && currentRootNetworkUuid && currentNode ? (
+                        <PanelErrorBoundary key={`${panelId}-${panel.type}`}>
+                            {PANEL_CONTENT_REGISTRY[panel.type]({
+                                panelId,
+                                studyUuid,
+                                currentRootNetworkUuid,
+                                currentNode,
+                            })}
+                        </PanelErrorBoundary>
+                    ) : null}
                 </Box>
             </Box>
         </Rnd>
