@@ -5,16 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    Dispatch,
-    FunctionComponent,
-    RefObject,
-    SetStateAction,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -37,11 +28,6 @@ import { createDynamicColumns, createStaticColumns } from './columns-definition'
 import ModificationRow from './row/modification-row';
 import { useTheme } from '@mui/material/styles';
 import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
-
-export interface TableMeta {
-    lastClickedIndex: RefObject<number | null>;
-    onRowSelected: (selectedRows: NetworkModificationMetadata[]) => void;
-}
 
 export const MODIFICATION_ROW_HEIGHT = 41;
 

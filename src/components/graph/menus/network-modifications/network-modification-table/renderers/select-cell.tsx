@@ -9,7 +9,6 @@ import React, { FunctionComponent, useCallback } from 'react';
 import { Checkbox } from '@mui/material';
 import { Row, Table } from '@tanstack/react-table';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import { TableMeta } from '../network-modifications-table';
 
 interface SelectCellRendererProps {
     row: Row<NetworkModificationMetadata>;
@@ -17,7 +16,7 @@ interface SelectCellRendererProps {
 }
 
 const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) => {
-    const meta = table.options.meta as TableMeta;
+    const meta = table.options.meta;
 
     const handleChange = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
