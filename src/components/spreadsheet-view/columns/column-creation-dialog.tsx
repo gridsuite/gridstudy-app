@@ -31,7 +31,7 @@ import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useFilterSelector } from 'hooks/use-filter-selector';
-import { FilterType } from 'types/custom-aggrid-types';
+import { TableType } from 'types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import {
@@ -226,7 +226,7 @@ export default function ColumnCreationDialog({
         />
     );
 
-    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
+    const { filters, dispatchFilters } = useFilterSelector(TableType.Spreadsheet, spreadsheetConfigUuid);
 
     const validateParams = (
         columnsDefinitions: ColumnDefinition[],
