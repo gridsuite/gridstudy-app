@@ -7,6 +7,7 @@
 
 import {
     LIMIT_SET_NAME,
+    LIMIT_VALUE,
     PERMANENT_LIMIT,
     SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
@@ -15,7 +16,9 @@ import {
     SEGMENT_SUSCEPTANCE,
     SEGMENT_TYPE_ID,
     SEGMENT_TYPE_VALUE,
-    TEMPORARY_LIMIT,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
 
@@ -36,7 +39,16 @@ export const SegmentSchema = yup.object().shape({
         yup.object().shape({
             [LIMIT_SET_NAME]: yup.string().required(),
             [PERMANENT_LIMIT]: yup.number().required(),
-            [TEMPORARY_LIMIT]: yup.number().nullable(),
+            [TEMPORARY_LIMITS]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [LIMIT_VALUE]: yup.number().required(),
+                        [TEMPORARY_LIMIT_DURATION]: yup.number().required(),
+                        [TEMPORARY_LIMIT_NAME]: yup.string().required(),
+                    })
+                )
+                .nullable(),
         })
     ),
 });
