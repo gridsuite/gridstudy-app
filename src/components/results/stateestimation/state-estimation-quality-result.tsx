@@ -23,7 +23,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
-import { FilterType } from 'types/custom-aggrid-types';
+import { TableType } from 'types/custom-aggrid-types';
 
 export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
     result,
@@ -105,7 +105,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}
-                    computationType={FilterType.StateEstimation}
+                    computationType={TableType.StateEstimation}
                     computationSubType={tableName}
                 />
             </>

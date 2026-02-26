@@ -19,7 +19,7 @@ import { snackWithFallback, UseStateBooleanReturn } from '@gridsuite/commons-ui'
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
-    saveSpreadsheetGlobalFilters,
+    initOrUpdateSpreadsheetGlobalFilters,
     setAddedSpreadsheetTab,
     updateTableDefinition,
 } from 'redux/actions';
@@ -27,7 +27,7 @@ import { FilterConfig, SortConfig, SortWay } from 'types/custom-aggrid-types';
 import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
-import { GlobalFilterSpreadsheetState, SpreadsheetFilterState, TableSortConfig } from 'redux/reducer';
+import { SpreadsheetFilterState, TableSortConfig } from 'redux/reducer';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
 import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
 import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
@@ -143,7 +143,7 @@ const handleSuccess = (
             const formattedGlobalFilters = model.globalFilters ?? [];
             dispatch(updateTableDefinition(newTableDefinition));
             dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
-            dispatch(saveSpreadsheetGlobalFilters(uuid, formattedGlobalFilters));
+            dispatch(initOrUpdateSpreadsheetGlobalFilters(uuid, formattedGlobalFilters));
             dispatch(
                 addSortForNewSpreadsheet(uuid, [
                     {
@@ -214,7 +214,7 @@ export const addNewSpreadsheet = ({
 export interface ProcessedCollectionData {
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters: SpreadsheetFilterState;
-    tableGlobalFilters: GlobalFilterSpreadsheetState;
+    tableGlobalFilters: Record<UUID, GlobalFilter[]>;
     tablesSorts: TableSortConfig;
 }
 
