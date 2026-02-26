@@ -38,7 +38,7 @@ import ModificationRow from './row/modification-row';
 import { useTheme } from '@mui/material/styles';
 import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
 
-export interface RangeSelectionTableMeta {
+export interface TableMeta {
     lastClickedIndex: RefObject<number | null>;
     onRowSelected?: (selectedRows: NetworkModificationMetadata[]) => void;
 }
@@ -121,7 +121,7 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
         getCoreRowModel: getCoreRowModel(),
         getRowId: (row) => row.uuid,
         enableRowSelection: true,
-        meta: { lastClickedIndex, onRowSelected } satisfies RangeSelectionTableMeta,
+        meta: { lastClickedIndex, onRowSelected },
     });
 
     const { rows } = table.getRowModel();

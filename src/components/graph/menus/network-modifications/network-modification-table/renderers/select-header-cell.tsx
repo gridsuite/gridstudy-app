@@ -9,7 +9,7 @@ import React, { FunctionComponent, useCallback } from 'react';
 import { Checkbox } from '@mui/material';
 import { Table } from '@tanstack/react-table';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import { RangeSelectionTableMeta } from './select-cell';
+import { TableMeta } from '../network-modifications-table';
 
 interface SelectHeaderCellProps {
     table: Table<NetworkModificationMetadata>;
@@ -17,7 +17,7 @@ interface SelectHeaderCellProps {
 
 const SelectHeaderCell: FunctionComponent<SelectHeaderCellProps> = ({ table }) => {
     const handleClick = useCallback(() => {
-        const meta = table.options.meta as RangeSelectionTableMeta | undefined;
+        const meta = table.options.meta as TableMeta;
         const willSelectAll = !table.getIsAllRowsSelected();
         table.toggleAllRowsSelected();
         if (meta) {
