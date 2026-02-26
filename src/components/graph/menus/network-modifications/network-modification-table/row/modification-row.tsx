@@ -28,7 +28,7 @@ const ModificationRow = memo<ModificationRowProps>(
 
         const handleCellClickCallback = useCallback(
             (columnId: string) => {
-                if (columnId === STATIC_MODIFICATION_TABLE_COLUMNS.MODIFICATION_NAME.id) {
+                if (columnId === STATIC_MODIFICATION_TABLE_COLUMNS.NAME.id) {
                     handleCellClick?.(row.original);
                 }
             },
@@ -43,7 +43,7 @@ const ModificationRow = memo<ModificationRowProps>(
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         data-row-id={row.original.uuid}
-                        sx={mergeSx(styles.tr, createRowSx(isHighlighted, snapshot.isDragging))}
+                        sx={mergeSx(styles.tableRow, createRowSx(isHighlighted, snapshot.isDragging))}
                         style={createRowStyle(provided, snapshot, virtualRow)}
                     >
                         {row.getVisibleCells().map((cell) => (

@@ -8,11 +8,12 @@
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box } from '@mui/material';
 import { styles } from '../styles';
+import { FunctionComponent } from 'react';
 
-const DragHandleCell = ({ isRowDragDisabled }: { isRowDragDisabled: boolean }) => {
+const DragHandleCell: FunctionComponent<{ isRowDragDisabled: boolean }> = ({ isRowDragDisabled }) => {
     return (
         <Box sx={styles.dragHandle} className={'dragHandle'}>
-            {!isRowDragDisabled && <DragIndicatorIcon fontSize="small" style={styles.dragIndicatorIcon} />}
+            {!isRowDragDisabled && <DragIndicatorIcon fontSize="small" sx={styles.dragIndicatorIcon} />}
         </Box>
     );
 };

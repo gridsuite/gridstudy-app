@@ -6,21 +6,22 @@
  */
 
 import React, { SetStateAction } from 'react';
-import { Badge, Box, Checkbox } from '@mui/material';
+import { Badge, Box } from '@mui/material';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { ColumnDef } from '@tanstack/react-table';
-import DragHandleCell from './renderers/drag-handle-cell-renderer';
+import DragHandleCell from './renderers/drag-handle-cell';
 import {
     NetworkModificationEditorNameHeader,
     NetworkModificationEditorNameHeaderProps,
 } from './renderers/network-modification-node-editor-name-header';
-import NetworkModificationNameCell from './renderers/network-modification-name-cell-renderer';
-import DescriptionCellRenderer from './renderers/description-cell-renderer';
-import SwitchCellRenderer from './renderers/switch-cell-renderer';
+import NameCell from './renderers/name-cell';
+import DescriptionCell from './renderers/description-cell';
+import SwitchCell from './renderers/switch-cell';
 import { ExcludedNetworkModifications, RootNetworkMetadata } from '../network-modification-menu.type';
-import RootNetworkChipCellRenderer from './renderers/root-network-chip-cell-renderer';
+import RootNetworkChipCell from './renderers/root-network-chip-cell';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
-import SelectCellRenderer from './renderers/select-cell-renderer';
+import SelectCell from './renderers/select-cell';
+import SelectHeaderCell from './renderers/select-header-cell';
 import { createRootNetworkChipCellSx, styles } from './styles';
 
 const CHIP_PADDING_PX = 24;
@@ -42,7 +43,7 @@ export const STATIC_MODIFICATION_TABLE_COLUMNS = {
         id: 'dragHandle',
         autoExtensible: false,
     },
-    MODIFICATION_NAME: {
+    NAME: {
         id: 'modificationName',
         autoExtensible: true,
     },
@@ -64,7 +65,7 @@ type NameHeaderProps = Omit<NetworkModificationEditorNameHeaderProps, 'modificat
 
 export const createStaticColumns = (
     isRowDragDisabled: boolean,
-    modifications: NetworkModificationMetadata[],
+    modificationsCount: number,
     nameHeaderProps: NameHeaderProps,
     setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>
 ): ColumnDef<NetworkModificationMetadata>[] => [
@@ -76,15 +77,8 @@ export const createStaticColumns = (
     },
     {
         id: STATIC_MODIFICATION_TABLE_COLUMNS.SELECT.id,
-        header: ({ table }) => (
-            <Checkbox
-                size="small"
-                checked={table.getIsAllRowsSelected()}
-                indeterminate={table.getIsSomeRowsSelected()}
-                onChange={table.getToggleAllRowsSelectedHandler()}
-            />
-        ),
-        cell: ({ row, table }) => <SelectCellRenderer row={row} table={table} />,
+        header: ({ table }) => <SelectHeaderCell table={table} />,
+        cell: ({ row, table }) => <SelectCell row={row} table={table} />,
         size: 40,
         minSize: 40,
         meta: {
@@ -92,11 +86,11 @@ export const createStaticColumns = (
         },
     },
     {
-        id: STATIC_MODIFICATION_TABLE_COLUMNS.MODIFICATION_NAME.id,
+        id: STATIC_MODIFICATION_TABLE_COLUMNS.NAME.id,
         header: () => (
-            <NetworkModificationEditorNameHeader modificationCount={modifications?.length} {...nameHeaderProps} />
+            <NetworkModificationEditorNameHeader modificationCount={modificationsCount} {...nameHeaderProps} />
         ),
-        cell: ({ row }) => <NetworkModificationNameCell row={row} />,
+        cell: ({ row }) => <NameCell row={row} />,
         meta: {
             cellStyle: styles.columnCell.modificationName,
         },
@@ -104,13 +98,13 @@ export const createStaticColumns = (
     },
     {
         id: STATIC_MODIFICATION_TABLE_COLUMNS.DESCRIPTION.id,
-        cell: ({ row }) => <DescriptionCellRenderer data={row.original} />,
+        cell: ({ row }) => <DescriptionCell data={row.original} />,
         size: 40,
         minSize: 32,
     },
     {
         id: STATIC_MODIFICATION_TABLE_COLUMNS.SWITCH.id,
-        cell: ({ row }) => <SwitchCellRenderer data={row.original} setModifications={setModifications} />,
+        cell: ({ row }) => <SwitchCell data={row.original} setModifications={setModifications} />,
         size: 64,
         minSize: 40,
     },
@@ -143,7 +137,7 @@ export const createDynamicColumns = (
                 ) : null,
             cell: ({ row }) => (
                 <Box sx={createRootNetworkChipCellSx(row.original.activated)}>
-                    <RootNetworkChipCellRenderer
+                    <RootNetworkChipCell
                         data={row.original}
                         rootNetwork={rootNetwork}
                         modificationsToExclude={modificationsToExclude}

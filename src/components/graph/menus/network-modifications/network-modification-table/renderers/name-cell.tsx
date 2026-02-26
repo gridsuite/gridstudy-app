@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { Row } from '@tanstack/react-table';
-import { NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import { mergeSx, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, Tooltip } from '@mui/material';
 import { createModificationNameCellStyle, styles } from '../styles';
 
-const NetworkModificationNameCell = ({ row }: { row: Row<NetworkModificationMetadata> }) => {
+const NameCell: FunctionComponent<{ row: Row<NetworkModificationMetadata> }> = ({ row }) => {
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
 
@@ -29,7 +29,7 @@ const NetworkModificationNameCell = ({ row }: { row: Row<NetworkModificationMeta
     const label = useMemo(() => getModificationLabel(row.original), [getModificationLabel, row.original]);
 
     return (
-        <Box sx={styles.tableCell} style={createModificationNameCellStyle(row.original.activated)}>
+        <Box sx={mergeSx(styles.tableCell, createModificationNameCellStyle(row.original.activated))}>
             <Tooltip disableFocusListener disableTouchListener title={label}>
                 <span style={styles.modificationLabel}>{label}</span>
             </Tooltip>
@@ -37,4 +37,4 @@ const NetworkModificationNameCell = ({ row }: { row: Row<NetworkModificationMeta
     );
 };
 
-export default NetworkModificationNameCell;
+export default NameCell;

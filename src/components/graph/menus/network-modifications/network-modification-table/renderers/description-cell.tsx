@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import { useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useSelector } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
@@ -14,11 +14,7 @@ import { useIsAnyNodeBuilding } from '../../../../../utils/is-any-node-building-
 import { createEditDescriptionStyle } from '../styles';
 import { setModificationMetadata } from '../../../../../../services/study/network-modifications';
 
-export interface DescriptionRendererProps {
-    data: NetworkModificationMetadata;
-}
-
-const DescriptionCellRenderer = (props: DescriptionRendererProps) => {
+const DescriptionCell: FunctionComponent<{ data: NetworkModificationMetadata }> = (props) => {
     const { data } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -77,4 +73,4 @@ const DescriptionCellRenderer = (props: DescriptionRendererProps) => {
     );
 };
 
-export default DescriptionCellRenderer;
+export default DescriptionCell;

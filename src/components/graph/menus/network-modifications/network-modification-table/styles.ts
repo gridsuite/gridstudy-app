@@ -53,7 +53,7 @@ export const styles = {
             backgroundColor: 'transparent',
         },
     }),
-    tr: {
+    tableRow: {
         display: 'flex',
         alignItems: 'center',
         '.dragHandle': {
@@ -201,7 +201,7 @@ export const createHeaderCellStyle = (header: any, theme: Theme) => {
         flex: isAutoExtensible ? `1 1 ${size}px` : `0 1 ${size}px`,
         minWidth: minSize ? `${minSize}px` : undefined,
         height: `${MODIFICATION_ROW_HEIGHT}px`,
-        padding: 2,
+        padding: '2px',
         textAlign: 'left',
         fontWeight: 600,
         display: 'flex',

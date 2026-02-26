@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { SetStateAction, useCallback, useState } from 'react';
+import React, { FunctionComponent, SetStateAction, useCallback, useState } from 'react';
 import { Switch, Tooltip } from '@mui/material';
 import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationMetadata } from 'services/study/network-modifications';
@@ -19,7 +19,7 @@ export interface SwitchCellRendererProps {
     setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
 }
 
-const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
+const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
     const { data, setModifications } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -84,4 +84,4 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
     );
 };
 
-export default SwitchCellRenderer;
+export default SwitchCell;

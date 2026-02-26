@@ -16,10 +16,9 @@ const DragCloneRow = ({ row }: { row: Row<NetworkModificationMetadata> }) => (
         {row
             .getVisibleCells()
             .filter((cell) =>
-                [
-                    STATIC_MODIFICATION_TABLE_COLUMNS.MODIFICATION_NAME.id,
-                    STATIC_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
-                ].includes(cell.column.columnDef.id!)
+                [STATIC_MODIFICATION_TABLE_COLUMNS.NAME.id, STATIC_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id].includes(
+                    cell.column.columnDef.id!
+                )
             )
             .map((cell) => (
                 <Box key={cell.id} sx={createCellStyle(cell)}>

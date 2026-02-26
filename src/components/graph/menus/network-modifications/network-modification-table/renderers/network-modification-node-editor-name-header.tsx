@@ -8,6 +8,7 @@
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { styles } from '../../network-modification-node-editor-utils';
+import { FunctionComponent } from 'react';
 
 export interface NetworkModificationEditorNameHeaderProps {
     modificationCount?: number;
@@ -17,7 +18,9 @@ export interface NetworkModificationEditorNameHeaderProps {
     pendingState: boolean;
 }
 
-export const NetworkModificationEditorNameHeader = (props: NetworkModificationEditorNameHeaderProps) => {
+export const NetworkModificationEditorNameHeader: FunctionComponent<NetworkModificationEditorNameHeaderProps> = (
+    props
+) => {
     const {
         modificationCount,
         isFetchingModifications,

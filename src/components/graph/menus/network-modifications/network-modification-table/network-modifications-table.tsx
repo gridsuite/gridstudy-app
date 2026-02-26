@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { Dispatch, FC, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -27,7 +27,7 @@ import { createHeaderCellStyle, styles } from './styles';
 import { createDynamicColumns, createStaticColumns } from './columns-definition';
 import ModificationRow from './row/modification-row';
 import { useTheme } from '@mui/material/styles';
-import { RangeSelectionTableMeta } from './renderers/select-cell-renderer';
+import { RangeSelectionTableMeta } from './renderers/select-cell';
 import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
 
 export const MODIFICATION_ROW_HEIGHT = 41;
@@ -35,16 +35,16 @@ export const MODIFICATION_ROW_HEIGHT = 41;
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];
     setModifications: Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
-    handleCellClick?: (modification: NetworkModificationMetadata) => void;
+    handleCellClick: (modification: NetworkModificationMetadata) => void;
     isRowDragDisabled?: boolean;
-    onRowDragStart?: (event: DragStart) => void;
-    onRowDragEnd?: (event: DropResult) => void;
-    onRowSelected?: (selectedRows: NetworkModificationMetadata[]) => void;
+    onRowDragStart: (event: DragStart) => void;
+    onRowDragEnd: (event: DropResult) => void;
+    onRowSelected: (selectedRows: NetworkModificationMetadata[]) => void;
     modificationsToExclude: ExcludedNetworkModifications[];
     setModificationsToExclude: Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
 }
 
-const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
+const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProps> = ({
     modifications,
     setModifications,
     handleCellClick,
@@ -70,7 +70,12 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
     const lastClickedIndex = useRef<number | null>(null);
 
     const columns = useMemo<ColumnDef<NetworkModificationMetadata>[]>(() => {
-        const staticColumns = createStaticColumns(isRowDragDisabled, modifications, nameHeaderProps, setModifications);
+        const staticColumns = createStaticColumns(
+            isRowDragDisabled,
+            modifications.length,
+            nameHeaderProps,
+            setModifications
+        );
         const dynamicColumns = !isMonoRootStudy
             ? createDynamicColumns(
                   rootNetworks,
@@ -103,7 +108,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
         getCoreRowModel: getCoreRowModel(),
         getRowId: (row) => row.uuid,
         enableRowSelection: true,
-        meta: { lastClickedIndex } satisfies RangeSelectionTableMeta,
+        meta: { lastClickedIndex, onRowSelected } satisfies RangeSelectionTableMeta,
     });
 
     const { rows } = table.getRowModel();
@@ -128,13 +133,6 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
     }, [currentTreeNodeId]);
 
     useEffect(() => {
-        if (onRowSelected) {
-            const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
-            onRowSelected(selectedRows);
-        }
-    }, [rowSelection, onRowSelected, table]);
-
-    useEffect(() => {
         if (highlightedModificationUuid && containerRef.current) {
             const rowIndex = rows.findIndex((row) => row.original.uuid === highlightedModificationUuid);
             if (rowIndex !== -1) {
@@ -152,9 +150,9 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
                             <Table sx={styles.table}>
                                 <TableHead sx={styles.thead}>
                                     {table.getHeaderGroups().map((headerGroup) => (
-                                        <TableRow key={headerGroup.id} sx={styles.tr}>
+                                        <TableRow key={headerGroup.id} sx={styles.tableRow}>
                                             {headerGroup.headers.map((header) => (
-                                                <TableCell key={header.id} style={createHeaderCellStyle(header, theme)}>
+                                                <TableCell key={header.id} sx={createHeaderCellStyle(header, theme)}>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </TableCell>
                                             ))}
@@ -164,7 +162,7 @@ const NetworkModificationsTable: FC<NetworkModificationsTableProps> = ({
                                 <TableBody
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    style={{ ...styles.tableBody, height: `${virtualizer.getTotalSize()}px` }}
+                                    sx={{ ...styles.tableBody, height: `${virtualizer.getTotalSize()}px` }}
                                 >
                                     {virtualItems.map((virtualRow) => {
                                         const row = rows[virtualRow.index];
