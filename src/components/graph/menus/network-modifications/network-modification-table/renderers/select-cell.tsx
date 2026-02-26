@@ -22,11 +22,10 @@ const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) 
         (event: React.MouseEvent<HTMLButtonElement>) => {
             const rows = table.getRowModel().rows;
             const currentIndex = row.index;
-
-            // Build the next selection state manually so we can derive
-            // selectedRows immediately, without waiting for React to re-render
             const nextSelection = { ...table.getState().rowSelection };
 
+            // When shift is held and a previous click exists, select or deselect the contiguous range between
+            // the two clicks instead of toggling a single row.
             if (
                 event.shiftKey &&
                 meta?.lastClickedIndex.current !== null &&
