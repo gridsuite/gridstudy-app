@@ -315,24 +315,47 @@ export const LineTypeSegmentForm = () => {
             });
         });
         fetchStudyMetadata().then((studyMetadata) => {
-            // metadata order makes order of temporary limits columns
-            if (studyMetadata?.temporaryLimitsNamesForCatalog) {
-                studyMetadata?.temporaryLimitsNamesForCatalog.forEach((limitName) => {
-                    if (limitNamesSet.has(limitName)) {
-                        base.push({
-                            headerName: `${limitName} [A]`,
-                            field: limitName,
-                            cellRenderer: DefaultCellRenderer,
-                        });
-                    }
-                });
-            }
-            setLimitsColumnDefs(base);
+            manageHeader(base, limitNamesSet, studyMetadata?.temporaryLimitsNamesForCatalog);
         });
     }, [intl, currentLimitResult]);
 
+    const manageHeader = (base: ColDef[], limitNamesSet: Set<string>, temporaryLimitsNamesForCatalog?: string[]) => {
+        // metadata order makes order of temporary limits columns
+        if (temporaryLimitsNamesForCatalog) {
+            temporaryLimitsNamesForCatalog.forEach((limitName) => {
+                if (limitNamesSet.has(limitName)) {
+                    base.push({
+                        headerName: `${limitName} [A]`,
+                        field: limitName,
+                        cellRenderer: DefaultCellRenderer,
+                    });
+                }
+            });
+            // limits that are in catalog and not in metadata are added at the end
+            limitNamesSet.forEach((limitName) => {
+                if (!temporaryLimitsNamesForCatalog.includes(limitName)) {
+                    base.push({
+                        headerName: `${limitName} [A]`,
+                        field: limitName,
+                        cellRenderer: DefaultCellRenderer,
+                    });
+                }
+            });
+        } else {
+            // no metadata, all limits are added (no order)
+            limitNamesSet.forEach((limitName) => {
+                base.push({
+                    headerName: `${limitName} [A]`,
+                    field: limitName,
+                    cellRenderer: DefaultCellRenderer,
+                });
+            });
+        }
+        setLimitsColumnDefs(base);
+    };
+
     const rowData = useMemo(() => {
-        const testArray: LimitSelectedRowData[] = [];
+        const finalDataArray: LimitSelectedRowData[] = [];
         currentLimitResult.forEach((currentLimit) => {
             const limitData: LimitSelectedRowData = {
                 limitSetName: currentLimit.limitSetName,
@@ -341,9 +364,9 @@ export const LineTypeSegmentForm = () => {
             currentLimit.temporaryLimits.forEach((temporaryLimit) => {
                 limitData[temporaryLimit.name] = temporaryLimit.limitValue;
             });
-            testArray.push(limitData);
+            finalDataArray.push(limitData);
         });
-        return testArray;
+        return finalDataArray;
     }, [currentLimitResult]);
 
     return (

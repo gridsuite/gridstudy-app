@@ -40,7 +40,7 @@ export type ComputedLineCharacteristics = {
 export type CurrentLimitHeader = {
     limitSetName: string;
     permanentLimit: number;
-}
+};
 
 export type CurrentLimitsInfo = CurrentLimitHeader & {
     temporaryLimits: TemporaryLimitsInfo[];
