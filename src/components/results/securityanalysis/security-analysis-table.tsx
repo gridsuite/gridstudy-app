@@ -56,6 +56,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
             columnDefs={columnDefs}
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
+            loading={isLoadingResult}
             overlayNoRowsTemplate={overlayNoRowsTemplate}
             overrideLocales={AGGRID_LOCALES}
             {...agGridProps}

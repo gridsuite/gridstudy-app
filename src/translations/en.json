@@ -363,6 +363,11 @@
     "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
     "DynamicSecurityAnalysisTabStatus": "Status",
 
+    "startDynamicMarginCalculationError": "An error occurred while starting the dynamic margin calculation",
+    "DynamicMarginCalculation": "Dynamic margin calculation",
+    "DynamicMarginCalculationRunError": "An error occurred while executing the dynamic margin calculation",
+    "DynamicMarginCalculationTabStatus": "Status",
+
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
 
@@ -1763,5 +1768,9 @@
     "unbuildAllNodesError": "An error occurred while unbuilding all nodes",
     "uuidCopiedToClipboard": "Uuid copied to system clipboard",
     "uuidCopiedToClipboardError": "Uuid could not be copied to system clipboard",
-    "uuid": "UUID"
+    "uuid": "UUID",
+    "PanelError": "Something went wrong in this panel",
+    "Reload": "Reload",
+    "CopyError": "Copy Error",
+    "Copied": "Copied"
 }

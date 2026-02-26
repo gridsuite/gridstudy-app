@@ -47,6 +47,8 @@ import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputatio
 import type { UUID } from 'node:crypto';
 import {
     ComputingType,
+    DynamicMarginCalculationInline,
+    fetchDynamicMarginCalculationProviders,
     fetchSecurityAnalysisProviders,
     getSecurityAnalysisDefaultLimitReductions,
     LoadFlowParametersInline,
@@ -70,6 +72,12 @@ import {
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
 import { isNodeBuilt } from './graph/util/model-functions';
+import { fetchContingencyCount } from '../services/study';
+import { fetchDefaultDynamicSecurityAnalysisProvider } from '../services/study/dynamic-security-analysis';
+import {
+    fetchDynamicMarginCalculationParameters,
+    updateDynamicMarginCalculationParameters,
+} from '../services/study/dynamic-margin-calculation';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -78,6 +86,7 @@ enum TAB_VALUES {
     shortCircuitParamsTabValue = 'SHORT_CIRCUIT',
     dynamicSimulationParamsTabValue = 'DYNAMIC_SIMULATION',
     dynamicSecurityAnalysisParamsTabValue = 'DYNAMIC_SECURITY_ANALYSIS',
+    dynamicMarginCalculationParamsTabValue = 'DYNAMIC_MARGIN_CALCULATION',
     voltageInitParamsTabValue = 'VOLTAGE_INITIALIZATION',
     stateEstimationTabValue = 'STATE_ESTIMATION',
     pccMinTabValue = 'PCC_MIN',
@@ -108,6 +117,9 @@ const ParametersTabs: FunctionComponent = () => {
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
+    const dynamicMarginCalculationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.DynamicMarginCalculation
+    );
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
@@ -194,7 +206,7 @@ const ParametersTabs: FunctionComponent = () => {
         ComputingType.SHORT_CIRCUIT,
         OptionalServicesStatus.Up,
         null,
-        null,
+        fetchDefaultDynamicSecurityAnalysisProvider,
         null,
         null,
         getShortCircuitParameters,
@@ -202,6 +214,24 @@ const ParametersTabs: FunctionComponent = () => {
         getShortCircuitSpecificParametersDescription
     );
     useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
+
+    const dynamicMarginCalculationParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.DYNAMIC_MARGIN_CALCULATION,
+        dynamicMarginCalculationAvailability,
+        fetchDynamicMarginCalculationProviders,
+        null,
+        null,
+        null,
+        fetchDynamicMarginCalculationParameters,
+        updateDynamicMarginCalculationParameters
+    );
+    useParametersNotification(
+        ComputingType.DYNAMIC_MARGIN_CALCULATION,
+        dynamicMarginCalculationAvailability,
+        dynamicMarginCalculationParametersBackend
+    );
 
     const pccMinParameters = useGetPccMinParameters();
     const voltageInitParameters = useGetVoltageInitParameters();
@@ -271,7 +301,8 @@ const ParametersTabs: FunctionComponent = () => {
                         oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
                         oldValue === TAB_VALUES.pccMinTabValue ||
                         oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
-                        oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue)) ||
+                        oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue ||
+                        oldValue === TAB_VALUES.dynamicMarginCalculationParamsTabValue)) ||
                 oldValue === TAB_VALUES.stateEstimationTabValue
             ) {
                 return TAB_VALUES.securityAnalysisParamsTabValue;
@@ -297,6 +328,9 @@ const ParametersTabs: FunctionComponent = () => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
+                        fetchContingencyCount={(contingencyLists: UUID[] | null) =>
+                            fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
+                        }
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
                     />
@@ -334,6 +368,15 @@ const ParametersTabs: FunctionComponent = () => {
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setDirtyFields} />;
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
                 return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setDirtyFields} />;
+            case TAB_VALUES.dynamicMarginCalculationParamsTabValue:
+                return (
+                    <DynamicMarginCalculationInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        parametersBackend={dynamicMarginCalculationParametersBackend}
+                    />
+                );
+
             case TAB_VALUES.voltageInitParamsTabValue:
                 return (
                     <VoltageInitParametersInLine
@@ -373,6 +416,7 @@ const ParametersTabs: FunctionComponent = () => {
         shortCircuitParametersBackend,
         pccMinParameters,
         user,
+        dynamicMarginCalculationParametersBackend,
         voltageInitParameters,
         useStateEstimationParameters,
         networkVisualizationsParameters,
@@ -436,6 +480,13 @@ const ParametersTabs: FunctionComponent = () => {
                                     disabled={dynamicSecurityAnalysisAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="DynamicSecurityAnalysis" />}
                                     value={TAB_VALUES.dynamicSecurityAnalysisParamsTabValue}
+                                />
+                            ) : null}
+                            {isDeveloperMode ? (
+                                <Tab
+                                    disabled={dynamicMarginCalculationAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="DynamicMarginCalculation" />}
+                                    value={TAB_VALUES.dynamicMarginCalculationParamsTabValue}
                                 />
                             ) : null}
                             <Tab
