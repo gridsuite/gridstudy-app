@@ -40,7 +40,7 @@ import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
 
 export interface TableMeta {
     lastClickedIndex: RefObject<number | null>;
-    onRowSelected?: (selectedRows: NetworkModificationMetadata[]) => void;
+    onRowSelected: (selectedRows: NetworkModificationMetadata[]) => void;
 }
 
 export const MODIFICATION_ROW_HEIGHT = 41;
