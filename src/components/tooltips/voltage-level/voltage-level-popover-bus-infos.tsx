@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, TableRow } from '@mui/material';
+import { Grid, Table, TableBody, TableContainer, TableRow } from '@mui/material';
 import { VoltageLevelTooltipBusInfos } from '../equipment-popover-type';
 import { CellRender } from '../cell-render';
 import { formatValue, styles as genericStyles } from '../generic-equipment-popover-utils';
@@ -51,39 +51,57 @@ export const VoltageLevelPopoverBusInfos = ({ buses }: { buses?: VoltageLevelToo
 
     return (
         <Grid item sx={genericStyles.grid}>
-            <TableRow>
-                <CellRender isLabel={true} label="" colStyle={{ ...genericStyles.cell, fontWeight: 'bold' }} />
-                {buses?.map((b) => (
-                    <CellRender key={b.id} value={`${b.id}`} colStyle={{ ...genericStyles.cell, fontWeight: 'bold' }} />
-                ))}
-            </TableRow>
+            <TableContainer>
+                <Table>
+                    <TableBody>
+                        <TableRow>
+                            <CellRender
+                                isLabel={true}
+                                label=""
+                                colStyle={{ ...genericStyles.cell, fontWeight: 'bold' }}
+                            />
+                            {buses?.map((b) => (
+                                <CellRender
+                                    key={b.id}
+                                    value={`${b.id}`}
+                                    colStyle={{ ...genericStyles.cell, fontWeight: 'bold' }}
+                                />
+                            ))}
+                        </TableRow>
 
-            {renderSpecificRow('tooltip.u', (bus) => bus.u, isLoadflowInvalid ? styles.invalidComputation : undefined)}
-            {renderSpecificRow(
-                'tooltip.angle',
-                (bus) => bus.angle,
-                isLoadflowInvalid ? styles.invalidComputation : undefined
-            )}
-            {renderSpecificRow(
-                'tooltip.generation',
-                (bus) => bus.generation,
-                isLoadflowInvalid ? styles.invalidComputation : undefined
-            )}
-            {renderSpecificRow(
-                'tooltip.load',
-                (bus) => bus.load,
-                isLoadflowInvalid ? styles.invalidComputation : undefined
-            )}
-            {renderSpecificRow(
-                'tooltip.balance',
-                (bus) => bus.balance,
-                isLoadflowInvalid ? styles.invalidComputation : undefined
-            )}
-            {renderSpecificRow(
-                'tooltip.icc',
-                (bus) => bus.icc / 1000,
-                isShortcircuitInvalid ? styles.invalidComputation : undefined
-            )}
+                        {renderSpecificRow(
+                            'tooltip.u',
+                            (bus) => bus.u,
+                            isLoadflowInvalid ? styles.invalidComputation : undefined
+                        )}
+                        {renderSpecificRow(
+                            'tooltip.angle',
+                            (bus) => bus.angle,
+                            isLoadflowInvalid ? styles.invalidComputation : undefined
+                        )}
+                        {renderSpecificRow(
+                            'tooltip.generation',
+                            (bus) => bus.generation,
+                            isLoadflowInvalid ? styles.invalidComputation : undefined
+                        )}
+                        {renderSpecificRow(
+                            'tooltip.load',
+                            (bus) => bus.load,
+                            isLoadflowInvalid ? styles.invalidComputation : undefined
+                        )}
+                        {renderSpecificRow(
+                            'tooltip.balance',
+                            (bus) => bus.balance,
+                            isLoadflowInvalid ? styles.invalidComputation : undefined
+                        )}
+                        {renderSpecificRow(
+                            'tooltip.icc',
+                            (bus) => bus.icc / 1000,
+                            isShortcircuitInvalid ? styles.invalidComputation : undefined
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Grid>
     );
 };

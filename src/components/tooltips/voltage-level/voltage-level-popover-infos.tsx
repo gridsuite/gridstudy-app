@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Table, TableContainer, TableRow } from '@mui/material';
+import { Grid, Table, TableBody, TableContainer, TableRow } from '@mui/material';
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { VoltageLevelTooltipInfos } from '../equipment-popover-type';
@@ -15,28 +15,30 @@ export const VoltageLevelPopoverInfos = ({ equipmentInfos }: { equipmentInfos?: 
         <Grid item sx={styles.grid}>
             <TableContainer>
                 <Table size="small" sx={styles.layout}>
-                    <TableRow>
-                        <CellRender
-                            isLabel={true}
-                            label="tooltip.umin"
-                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                        />
-                        <CellRender
-                            value={formatValue(equipmentInfos?.umin, 2)}
-                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                        />
-                    </TableRow>
-                    <TableRow>
-                        <CellRender
-                            isLabel={true}
-                            label="tooltip.umax"
-                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                        />
-                        <CellRender
-                            value={formatValue(equipmentInfos?.umax, 2)}
-                            colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                        />
-                    </TableRow>
+                    <TableBody>
+                        <TableRow>
+                            <CellRender
+                                isLabel={true}
+                                label="tooltip.umin"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
+                            <CellRender
+                                value={formatValue(equipmentInfos?.umin, 2)}
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
+                        </TableRow>
+                        <TableRow>
+                            <CellRender
+                                isLabel={true}
+                                label="tooltip.umax"
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
+                            <CellRender
+                                value={formatValue(equipmentInfos?.umax, 2)}
+                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                            />
+                        </TableRow>
+                    </TableBody>
                 </Table>
             </TableContainer>
         </Grid>
