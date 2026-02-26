@@ -63,6 +63,13 @@ export const AUTO_EXTENSIBLE_COLUMNS = Object.values(STATIC_MODIFICATION_TABLE_C
 
 type NameHeaderProps = Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'>;
 
+/**
+ * Column definition is broken up in 2 parts : static columns which are always on display and dynamic columns which are
+ * linked to the notion of root networks. Since the amount of root network is inbetween 1-4 and we want to be able to
+ * control the status of a modification for each individual root network they all have a dedicated column generated
+ * on the fly
+ */
+
 export const createStaticColumns = (
     isRowDragDisabled: boolean,
     modificationsCount: number,
