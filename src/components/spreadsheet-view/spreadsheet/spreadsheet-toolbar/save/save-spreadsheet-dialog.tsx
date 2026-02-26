@@ -22,6 +22,9 @@ import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 import { SaveSpreadsheetModelDialog } from './save-spreadsheet-model-dialog';
+
+import { getSelectedGlobalFilters } from '../../../../results/common/global-filter/global-filter-utils';
+
 export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
@@ -32,9 +35,6 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
     const { nodeAliases } = useNodeAliases();
     const tableFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD][tableDefinition.uuid]);
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition.uuid]);
-    const tableGlobalFilters = useSelector(
-        (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
-    );
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [includeFilters, setIncludeFilters] = useState(false);
@@ -86,6 +86,7 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
         folderName,
         folderId,
     }: IElementCreationDialog) => {
+        const tableGlobalFilters = getSelectedGlobalFilters(tableDefinition.uuid);
         const spreadsheetConfig: SpreadsheetConfig = {
             name: tableDefinition?.name,
             sheetType: tableDefinition?.type,
@@ -115,6 +116,7 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
         description,
         elementFullPath,
     }: IElementUpdateDialog) => {
+        const tableGlobalFilters = getSelectedGlobalFilters(tableDefinition.uuid);
         const spreadsheetConfig: SpreadsheetConfig = {
             name: tableDefinition?.name,
             sheetType: tableDefinition?.type,

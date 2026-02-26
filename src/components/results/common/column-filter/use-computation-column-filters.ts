@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterConfig, FilterType } from '../../../../types/custom-aggrid-types';
+import { FilterConfig, TableType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useEffect } from 'react';
@@ -31,18 +31,18 @@ function toFilterConfig(infos: ComputationResultColumnFilterInfos[] | null): Fil
 }
 
 const EMPTY_ARRAY: FilterConfig[] = [];
-export function useComputationColumnFilters(filterType: FilterType, computationSubType: string) {
+export function useComputationColumnFilters(tableType: TableType, computationSubType: string) {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     useEffect(() => {
         studyUuid &&
-            getComputationResultColumnFilters(studyUuid, filterType, computationSubType).then((infos) => {
+            getComputationResultColumnFilters(studyUuid, tableType, computationSubType).then((infos) => {
                 const filters = toFilterConfig(infos);
-                dispatch(updateColumnFiltersAction(filterType, computationSubType, filters));
+                dispatch(updateColumnFiltersAction(tableType, computationSubType, filters));
             });
-    }, [dispatch, studyUuid, filterType, computationSubType]);
+    }, [dispatch, studyUuid, tableType, computationSubType]);
     const filters = useSelector<AppState, FilterConfig[]>(
-        (state) => state.computationFilters?.[filterType]?.columnsFilters?.[computationSubType]?.columns ?? EMPTY_ARRAY
+        (state) => state.tableFilters.columnsFilters?.[tableType]?.[computationSubType]?.columns ?? EMPTY_ARRAY
     );
     return {
         filters,

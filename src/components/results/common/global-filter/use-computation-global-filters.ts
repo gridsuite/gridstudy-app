@@ -4,42 +4,44 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterType } from '../../../../types/custom-aggrid-types';
+import { TableType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { GlobalFilter } from './global-filter-types';
-import { useCallback, useEffect } from 'react';
-import {
-    getComputationResultGlobalFilters,
-    updateComputationResultFilters,
-} from '../../../../services/study/study-config';
-import { updateGlobalFiltersAction } from '../../../../redux/actions';
+import { useEffect } from 'react';
+import { getComputationResultGlobalFilters } from '../../../../services/study/study-config';
+import { addToGlobalFilterOptions, addToSelectedGlobalFilters } from '../../../../redux/actions';
+import { isCriteriaFilter } from '../utils';
+import { addGlobalFilterId, getGlobalFilterId } from './global-filter-utils';
+import { useSelectedGlobalFilters } from './use-selected-global-filters';
 
-const EMPTY_ARRAY: GlobalFilter[] = [];
-export function useComputationGlobalFilters(filterType: FilterType) {
+// Get the global filters for a given table from the server and store them in the Redux store
+export function useFetchComputationGlobalFilters(tableType: TableType) {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+
     useEffect(() => {
         studyUuid &&
-            getComputationResultGlobalFilters(studyUuid, filterType).then(
+            getComputationResultGlobalFilters(studyUuid, tableType).then(
                 (globalFiltersInfos: GlobalFilter[] | null) => {
-                    const globalFilters = Array.isArray(globalFiltersInfos) ? globalFiltersInfos : EMPTY_ARRAY;
-                    dispatch(updateGlobalFiltersAction(filterType, globalFilters));
+                    const globalFilters = Array.isArray(globalFiltersInfos) ? globalFiltersInfos : [];
+                    const criteriaFilters = globalFilters.filter(isCriteriaFilter).map(addGlobalFilterId);
+                    // Store full criteria filters in globalFilterOptions
+                    if (criteriaFilters.length > 0) dispatch(addToGlobalFilterOptions(criteriaFilters));
+                    // Store only IDs in globalFilters
+                    dispatch(addToSelectedGlobalFilters(tableType, tableType, globalFilters.map(getGlobalFilterId)));
                 }
             );
-    }, [dispatch, studyUuid, filterType]);
-    const updateGlobalFilters = useCallback(
-        (rawGlobalFilters: GlobalFilter[]) => {
-            dispatch(updateGlobalFiltersAction(filterType, rawGlobalFilters));
-            studyUuid && updateComputationResultFilters(studyUuid, filterType, rawGlobalFilters).then();
-        },
-        [dispatch, filterType, studyUuid]
-    );
-    const globalFiltersFromState = useSelector<AppState, GlobalFilter[]>(
-        (state) => state.computationFilters?.[filterType]?.globalFilters ?? EMPTY_ARRAY
-    );
-    return {
-        globalFiltersFromState,
-        updateGlobalFilters,
-    };
+    }, [dispatch, studyUuid, tableType]);
+}
+
+export function useComputationGlobalFilters(tableType: TableType, onGlobalFiltersChange?: () => void) {
+    useFetchComputationGlobalFilters(tableType);
+    const selectedGlobalFilters = useSelectedGlobalFilters(tableType);
+
+    useEffect(() => {
+        onGlobalFiltersChange?.();
+    }, [onGlobalFiltersChange, selectedGlobalFilters]);
+
+    return selectedGlobalFilters;
 }

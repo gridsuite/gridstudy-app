@@ -9,10 +9,41 @@ import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
+import { UUID } from 'node:crypto';
+import { store } from '../../../../redux/store';
+import { AppState } from '../../../../redux/reducer';
+
+export type GlobalFilterWithoutId = Omit<GlobalFilter, 'id'>;
 
 export const RECENT_FILTER: string = 'recent';
 
-export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) => string, intl: IntlShape): string => {
+// Add an ID to each filter object saved in the server so that it can be used as a key in the globalFiltersOptions object.
+export const addGlobalFilterId = (filter: GlobalFilterWithoutId): GlobalFilter => {
+    switch (filter.filterType) {
+        case FilterType.GENERIC_FILTER:
+        case FilterType.SUBSTATION_OR_VL:
+            return { ...filter, id: filter.uuid as UUID };
+        default:
+            return { ...filter, id: filter.label };
+    }
+};
+
+// Returns an ID for a given filter without modifying it
+export const getGlobalFilterId = (filter: GlobalFilterWithoutId): string => {
+    switch (filter.filterType) {
+        case FilterType.GENERIC_FILTER:
+        case FilterType.SUBSTATION_OR_VL:
+            return filter.uuid as UUID;
+        default:
+            return filter.label;
+    }
+};
+
+export const getOptionLabel = (
+    option: GlobalFilterWithoutId,
+    translate: (arg: string) => string,
+    intl: IntlShape
+): string => {
     switch (option.filterType) {
         case FilterType.COUNTRY:
             return translate(option.label);
@@ -36,4 +67,17 @@ export async function fetchSubstationPropertiesGlobalFilters(): Promise<{
     return {
         substationPropertiesGlobalFilters: definedSubstationPropertiesGlobalFilters,
     };
+}
+
+/**
+ * Reads the selected global filter IDs for the given table key from the store,
+ * joins them with the global filter options, and returns the resolved `GlobalFilter[]`.
+ * Use this when you need the selected filters at a T time, e.g. when fetching the data.
+ * Otherwise, use `useSelectedGlobalFilters` which subscribes to the store.
+ */
+export function getSelectedGlobalFilters(tableKey: string): GlobalFilter[] {
+    const state = store.getState() as AppState;
+    const filterIds = state.tableFilters.globalFilters[tableKey] ?? [];
+    const globalFilterOptions = state.globalFilterOptions;
+    return filterIds.map((id) => globalFilterOptions.find((opt) => opt.id === id)).filter((f) => f !== undefined);
 }
