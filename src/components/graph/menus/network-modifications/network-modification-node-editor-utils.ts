@@ -75,7 +75,7 @@ export const styles = {
         color: theme.palette.primary.main,
     }),
     icon: (theme) => ({
-        width: theme.spacing(3),
+        width: theme.spacing(1),
     }),
     iconEdit: (theme) => ({
         marginRight: theme.spacing(1),
@@ -85,6 +85,16 @@ export const styles = {
         justifyContent: 'center',
         alignItems: 'center',
         height: '20%',
+    },
+    modificationNameHeader: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        minWidth: 0,
+        gap: 2,
+        '& .MuiTypography-root': {
+            fontSize: 'inherit',
+        },
     },
 } as const satisfies MuiStyles;
 

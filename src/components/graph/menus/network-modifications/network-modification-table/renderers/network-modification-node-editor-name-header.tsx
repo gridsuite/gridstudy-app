@@ -7,7 +7,8 @@
 
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { styles } from './network-modification-node-editor-utils';
+import { styles } from '../../network-modification-node-editor-utils';
+import { FunctionComponent } from 'react';
 
 export interface NetworkModificationEditorNameHeaderProps {
     modificationCount?: number;
@@ -17,7 +18,9 @@ export interface NetworkModificationEditorNameHeaderProps {
     pendingState: boolean;
 }
 
-export const NetworkModificationEditorNameHeader = (props: NetworkModificationEditorNameHeaderProps) => {
+export const NetworkModificationEditorNameHeader: FunctionComponent<NetworkModificationEditorNameHeaderProps> = (
+    props
+) => {
     const {
         modificationCount,
         isFetchingModifications,
@@ -25,34 +28,35 @@ export const NetworkModificationEditorNameHeader = (props: NetworkModificationEd
         notificationMessageId,
         pendingState,
     } = props;
+
     if (isImpactedByNotification() && notificationMessageId) {
         return (
-            <>
+            <Box sx={styles.modificationNameHeader}>
                 <Box sx={styles.icon}>
                     <CircularProgress size={'1em'} sx={styles.modificationCircularProgress} />
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage id={notificationMessageId} />
                 </Typography>
-            </>
+            </Box>
         );
     }
 
     if (isFetchingModifications) {
         return (
-            <>
+            <Box sx={styles.modificationNameHeader}>
                 <Box sx={styles.icon}>
                     <CircularProgress size={'1em'} sx={styles.modificationCircularProgress} />
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage id={'network_modifications.modifications'} />
                 </Typography>
-            </>
+            </Box>
         );
     }
 
     return (
-        <>
+        <Box sx={styles.modificationNameHeader}>
             {pendingState && (
                 <Box sx={styles.icon}>
                     <CircularProgress size={'1em'} sx={styles.modificationCircularProgress} />
@@ -67,6 +71,6 @@ export const NetworkModificationEditorNameHeader = (props: NetworkModificationEd
                     }}
                 />
             </Typography>
-        </>
+        </Box>
     );
 };

@@ -4,33 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ICellRendererParams } from 'ag-grid-community';
-import {
-    DescriptionModificationDialog,
-    EditNoteIcon,
-    MuiStyles,
-    NetworkModificationMetadata,
-} from '@gridsuite/commons-ui';
-import { useCallback, useState } from 'react';
+import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
-import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
 import IconButton from '@mui/material/IconButton';
-import { setModificationMetadata } from '../../../../services/study/network-modifications';
+import { AppState } from '../../../../../../redux/reducer';
+import { useIsAnyNodeBuilding } from '../../../../../utils/is-any-node-building-hook';
+import { createEditDescriptionStyle } from '../styles';
+import { setModificationMetadata } from '../../../../../../services/study/network-modifications';
 
-const styles = {
-    coloredButton: (theme) => ({
-        color: theme.palette.text.primary,
-    }),
-} as const satisfies MuiStyles;
-
-export interface DescriptionRendererProps extends ICellRendererParams<NetworkModificationMetadata> {
-    hoveredRowIndex: number;
-}
-
-const DescriptionRenderer = (props: DescriptionRendererProps) => {
-    const { hoveredRowIndex, data, api, node } = props;
+const DescriptionCell: FunctionComponent<{ data: NetworkModificationMetadata }> = (props) => {
+    const { data } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -58,12 +43,11 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
 
     const handleDescDialogClose = useCallback(() => {
         setOpenDescModificationDialog(false);
-        api.stopEditing();
-    }, [api, setOpenDescModificationDialog]);
+    }, []);
 
     const handleModifyDescription = useCallback(() => {
         setOpenDescModificationDialog(true);
-    }, [setOpenDescModificationDialog]);
+    }, []);
 
     return (
         <>
@@ -77,15 +61,16 @@ const DescriptionRenderer = (props: DescriptionRendererProps) => {
             )}
             <Tooltip title={description} arrow placement="right">
                 <IconButton
+                    className="editDescription"
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
-                    sx={styles.coloredButton}
+                    sx={createEditDescriptionStyle(data.description)}
                 >
-                    <EditNoteIcon empty={empty} visibility={hoveredRowIndex === node.rowIndex ? 'visible' : 'hidden'} />
+                    <EditNoteIcon empty={empty} />
                 </IconButton>
             </Tooltip>
         </>
     );
 };
 
-export default DescriptionRenderer;
+export default DescriptionCell;

@@ -5,22 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback, SetStateAction } from 'react';
+import React, { FunctionComponent, SetStateAction, useCallback, useState } from 'react';
 import { Switch, Tooltip } from '@mui/material';
 import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationMetadata } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { AppState } from 'redux/reducer';
-import { ICellRendererParams } from 'ag-grid-community';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
-export interface SwitchCellRendererProps extends ICellRendererParams<NetworkModificationMetadata> {
+export interface SwitchCellRendererProps {
+    data: NetworkModificationMetadata;
     setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
 }
 
-const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
-    const { data, api, setModifications } = props;
+const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
+    const { data, setModifications } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -68,8 +68,7 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
             updateModification(newStatus);
             return newModifications;
         });
-        api.stopEditing();
-    }, [modificationUuid, updateModification, setModifications, api]);
+    }, [modificationUuid, updateModification, setModifications]);
 
     return (
         <Tooltip title={<FormattedMessage id={modificationActivated ? 'disable' : 'enable'} />} arrow>
@@ -85,4 +84,4 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
     );
 };
 
-export default SwitchCellRenderer;
+export default SwitchCell;

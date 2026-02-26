@@ -14,13 +14,13 @@ import {
     IElementUpdateDialog,
     MODIFICATION_TYPES,
     ModificationType,
-    NetworkModificationMetadata,
     removeNullFields,
     NotificationsUrlKeys,
     snackWithFallback,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
+    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -96,8 +96,7 @@ import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
-import NetworkModificationsTable from './network-modifications-table';
-import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
+import NetworkModificationsTable from './network-modification-table/network-modifications-table';
 import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
@@ -122,6 +121,7 @@ import { LimitSetsModificationDialog } from '../../../dialogs/network-modificati
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
+import { DragStart, DropResult } from '@hello-pangea/dnd';
 import { FetchStatus } from '../../../../services/utils.type';
 import { EquipmentDeletionInfos } from '../../../dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
@@ -1041,10 +1041,10 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-    const handleRowSelected = (event: any) => {
-        const selectedRows = event.api.getSelectedRows(); // Get selected rows
+    const handleRowSelected = useCallback((selectedRows: NetworkModificationMetadata[]) => {
+        console.log('HMA', selectedRows);
         setSelectedNetworkModifications(selectedRows);
-    };
+    }, []);
 
     const renderDialog = () => {
         const menuItem = subMenuItemsList.find(
@@ -1089,7 +1089,6 @@ const NetworkModificationNodeEditor = () => {
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
-                isDragging
                 isRowDragDisabled={isImpactedByNotification() || isAnyNodeBuilding || mapDataLoading}
                 isImpactedByNotification={isImpactedByNotification}
                 notificationMessageId={notificationMessageId}
@@ -1133,23 +1132,29 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleCellClick = useCallback(
-        (event: CellClickedEvent) => {
-            const { colDef, data } = event;
-            if (colDef.colId === 'modificationName' && isModificationClickable(data)) {
+        (modification: NetworkModificationMetadata) => {
+            if (isModificationClickable(modification)) {
                 // Check if the clicked column is the 'modificationName' column
-                doEditModification(data.uuid, data.type);
+                doEditModification(modification.uuid, modification.type);
             }
         },
         [doEditModification, isModificationClickable]
     );
 
-    const onRowDragStart = (event: RowDragEnterEvent<NetworkModificationMetadata>) => {
+    const onRowDragStart = (event: DragStart) => {
         setIsDragging(true);
-        setInitialPosition(event.overIndex);
+        setInitialPosition(event.source.index);
     };
-    const onRowDragEnd = (event: RowDragEndEvent<NetworkModificationMetadata>) => {
-        let newPosition = event.overIndex;
+
+    const onRowDragEnd = (event: DropResult) => {
+        if (!event.destination) {
+            setIsDragging(false);
+            return;
+        }
+
+        let newPosition = event.destination.index;
         const oldPosition = initialPosition;
+
         if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
             setIsDragging(false);
             return;
@@ -1162,7 +1167,6 @@ const NetworkModificationNodeEditor = () => {
         const updatedModifications = [...modifications];
 
         const [movedItem] = updatedModifications.splice(oldPosition, 1);
-
         updatedModifications.splice(newPosition, 0, movedItem);
 
         setModifications(updatedModifications);
@@ -1174,7 +1178,9 @@ const NetworkModificationNodeEditor = () => {
                 snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
                 setModifications(previousModifications);
             })
-            .finally(() => setIsDragging(false));
+            .finally(() => {
+                setIsDragging(false);
+            });
     };
 
     const isPasteButtonDisabled = useMemo(() => {

@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback, useMemo, SetStateAction } from 'react';
+import { useState, useCallback, useMemo, SetStateAction, FunctionComponent } from 'react';
 import { ActivableChip, NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { ExcludedNetworkModifications, RootNetworkMetadata } from './network-modification-menu.type';
+import { ExcludedNetworkModifications, RootNetworkMetadata } from '../../network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import type { UUID } from 'node:crypto';
 
@@ -60,12 +60,12 @@ interface RootNetworkChipCellRendererProps {
     rootNetwork: RootNetworkMetadata;
 }
 
-const RootNetworkChipCellRenderer = ({
+const RootNetworkChipCell: FunctionComponent<RootNetworkChipCellRendererProps> = ({
     data,
     rootNetwork,
     modificationsToExclude,
     setModificationsToExclude,
-}: RootNetworkChipCellRendererProps) => {
+}) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -136,4 +136,4 @@ const RootNetworkChipCellRenderer = ({
     );
 };
 
-export default RootNetworkChipCellRenderer;
+export default RootNetworkChipCell;

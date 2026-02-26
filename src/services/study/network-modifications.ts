@@ -13,8 +13,8 @@ import {
     EquipmentType,
     MODIFICATION_TYPES,
     ModificationType,
-    NetworkModificationMetadata,
     safeEncodeURIComponent,
+    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
