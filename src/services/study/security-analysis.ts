@@ -6,29 +6,24 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
-import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
-import { UUID } from 'crypto';
-import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
-import { GsLang } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
+import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, GsLangUser } from '@gridsuite/commons-ui';
+import { SecurityAnalysisQueryParams } from '../../components/results/securityanalysis/security-analysis.type';
 
 export function startSecurityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    contingencyListUuids: UUID[]
-): Promise<void> {
+    currentRootNetworkUuid: UUID
+): Promise<Response> {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
-    // Add params to Url
-    const contingencyListsQueryParams = getRequestParamFromList(contingencyListUuids, 'contingencyListName');
-    const urlSearchParams = new URLSearchParams(contingencyListsQueryParams);
 
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/security-analysis/run?${urlSearchParams}`;
+    )}/security-analysis/run`;
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
@@ -47,7 +42,7 @@ export function fetchSecurityAnalysisResult(
     studyUuid: string,
     currentNodeUuid: string,
     currentRootNetworkUuid: string,
-    queryParams: any
+    queryParams: SecurityAnalysisQueryParams
 ) {
     console.info(`Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
@@ -55,21 +50,10 @@ export function fetchSecurityAnalysisResult(
         currentNodeUuid,
         currentRootNetworkUuid
     )}/security-analysis/result`;
+    const params = getSecurityAnalysisQueryParams(queryParams);
 
-    const { resultType, page, size, sort, filters, globalFilters } = queryParams || {};
-
-    const params = new URLSearchParams({ resultType });
-
-    sort?.map((value: any) => params.append('sort', `${value.colId},${value.sort}`));
-
-    if (filters?.length) {
-        params.append('filters', JSON.stringify(filters));
-    }
-    if (globalFilters && Object.keys(globalFilters).length > 0) {
-        params.append('globalFilters', JSON.stringify(globalFilters));
-    }
-
-    if (typeof page === 'number') {
+    const { page, size } = queryParams || {};
+    if (typeof page === 'number' && typeof size === 'number') {
         params.append('page', page.toString());
         params.append('size', size.toString());
     }
@@ -83,10 +67,10 @@ export function downloadSecurityAnalysisResultZippedCsv(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    queryParams: { resultType: RESULT_TYPE },
+    queryParams: SecurityAnalysisQueryParams,
     headers: string[] | undefined,
     enumValueTranslations: Record<string, string>,
-    language: GsLang
+    language: GsLangUser
 ) {
     console.info(
         `Fetching security analysis zipped csv on ${studyUuid} on root network  ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
@@ -96,10 +80,7 @@ export function downloadSecurityAnalysisResultZippedCsv(
         currentNodeUuid,
         currentRootNetworkUuid
     )}/security-analysis/result/csv`;
-
-    const { resultType } = queryParams || {};
-
-    const params = new URLSearchParams({ resultType });
+    const params = getSecurityAnalysisQueryParams(queryParams);
 
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
@@ -168,4 +149,19 @@ export function setSecurityAnalysisParameters(studyUuid: UUID, newParams: any) {
         },
         body: newParams ? JSON.stringify(newParams) : null,
     });
+}
+
+function getSecurityAnalysisQueryParams(queryParams: SecurityAnalysisQueryParams) {
+    const { resultType, globalFilters, filters, sort } = queryParams;
+    const params = new URLSearchParams({ resultType });
+
+    sort?.forEach((value: any) => params.append('sort', `${value.colId},${value.sort}`));
+    if (filters?.length) {
+        params.append('filters', JSON.stringify(filters));
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        params.append('globalFilters', JSON.stringify(globalFilters));
+    }
+
+    return params;
 }

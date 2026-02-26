@@ -5,14 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, RefObject } from 'react';
-import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
-import { CustomAGGrid, CsvExport } from '@gridsuite/commons-ui';
+import { FunctionComponent, RefObject, useCallback } from 'react';
+import { ColDef, RowClassParams, RowStyle } from 'ag-grid-community';
+import { CsvExport, CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { Box } from '@mui/material';
+import { Box, LinearProgress } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
+import { TableType } from '../../types/custom-aggrid-types';
+import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
 
 const styles = {
     gridContainer: {
@@ -28,19 +30,20 @@ const styles = {
     grid: {
         flexGrow: '1',
     },
-};
+} as const satisfies MuiStyles;
 
 interface RenderTableAndExportCsvProps {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     columns: any[];
     defaultColDef: ColDef;
     tableName: string;
     rows: any[];
-    onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
-    onGridReady: ((event: GridReadyEvent) => void) | undefined;
-    getRowStyle: (params: RowClassParams) => RowStyle | undefined;
+    showLinearProgress?: boolean;
+    getRowStyle?: (params: RowClassParams) => RowStyle | undefined;
     overlayNoRowsTemplate: string | undefined;
     skipColumnHeaders: boolean;
+    computationType: TableType;
+    computationSubType: string;
 }
 
 export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvProps> = ({
@@ -49,15 +52,21 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     defaultColDef,
     tableName,
     rows,
-    onRowDataUpdated,
-    onGridReady,
     getRowStyle,
     overlayNoRowsTemplate,
+    computationType,
+    computationSubType,
     skipColumnHeaders = false,
+    showLinearProgress = false,
 }) => {
     const isRowsEmpty = !rows || rows.length === 0;
     const language = useSelector((state: AppState) => state.computedLanguage);
-
+    const onRowDataUpdated = useCallback((params: any) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+    const onGridReady = useAgGridInitialColumnFilters(computationType, computationSubType);
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
@@ -68,9 +77,12 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
                     disabled={isRowsEmpty}
                     skipColumnHeaders={skipColumnHeaders}
                     language={language}
-                    exportDataAsCsv={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
+                    getData={(params: any) => gridRef.current?.api?.exportDataAsCsv(params)}
                 />
             </Box>
+
+            {showLinearProgress && <LinearProgress sx={{ height: 4 }} />}
+
             {rows && (
                 <Box sx={styles.grid}>
                     <CustomAGGrid

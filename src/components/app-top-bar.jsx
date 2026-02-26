@@ -6,13 +6,19 @@
  */
 
 import { useEffect, useState } from 'react';
-import { fetchAppsMetadata, LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
+import {
+    fetchAppsMetadata,
+    LIGHT_THEME,
+    logout,
+    TopBar,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
+} from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
-import { Badge, Box, Tab, Tabs } from '@mui/material';
-import { Settings } from '@mui/icons-material';
-import { FormattedMessage } from 'react-intl';
-import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
+import { Box } from '@mui/material';
+import { PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
@@ -20,50 +26,44 @@ import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { getServersInfos } from '../services/study';
 import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
-import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { STUDY_VIEWS, StudyView } from './utils/utils';
 import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
+import { WorkspaceToolbar } from './workspace/core/workspace-toolbar';
+import { WorkspaceSwitcher } from './workspace/core/workspace-switcher';
 
 const styles = {
-    boxContent: (theme) => ({ display: 'flex', overflow: 'hidden', width: '100%', marginLeft: theme.spacing(4) }),
-    tabs: {},
-    searchButton: {
-        marginTop: 'auto',
-        marginBottom: 'auto',
-        marginLeft: 1,
-        marginRight: 1,
-    },
+    boxContent: (theme) => ({
+        display: 'flex',
+        overflow: 'hidden',
+        alignItems: 'center',
+        width: '100%',
+        marginLeft: theme.spacing(1),
+    }),
     runButtonContainer: {
-        marginTop: 'auto',
-        marginBottom: 'auto',
-        marginRight: '10%',
-        marginLeft: 'auto',
+        display: 'flex',
+        alignItems: 'center',
+        marginRight: 1.5,
     },
     syncToggleContainer: {
-        marginTop: 'auto',
-        marginBottom: 'auto',
-        marginLeft: -4,
-        marginRight: 1,
+        display: 'flex',
+        alignItems: 'center',
+        marginRight: 1.5,
     },
 };
 
-const AppTopBar = ({ user, onChangeTab, userManager }) => {
+const AppTopBar = ({ user, userManager }) => {
     const dispatch = useDispatch();
     const theme = useSelector((state) => state[PARAM_THEME]);
-    const appTabIndex = useSelector((state) => state.appTabIndex);
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
-    const notificationsCount = useComputationResultsCount();
-
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
     const [useNameLocal, handleChangeUseName] = useParameterState(PARAM_USE_NAME);
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
-    const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     useEffect(() => {
         if (user !== null) {
@@ -88,42 +88,21 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
             additionalModulesPromise={getServersInfos}
             theme={themeLocal}
             onDeveloperModeClick={handleChangeDeveloperMode}
-            developerMode={enableDeveloperModeLocal}
+            developerMode={isDeveloperMode}
             onEquipmentLabellingClick={handleChangeUseName}
             equipmentLabelling={useNameLocal}
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
+            dense
         >
             {user && studyUuid && currentRootNetworkUuid && (
                 <Box sx={styles.boxContent}>
-                    <Tabs
-                        value={appTabIndex}
-                        variant="scrollable"
-                        onChange={(event, newTabIndex) => {
-                            onChangeTab(newTabIndex);
-                        }}
-                        aria-label="views"
-                        sx={styles.tabs}
-                    >
-                        {STUDY_VIEWS.map((tabName) => {
-                            let label;
-                            let style;
-                            if (tabName === StudyView.RESULTS && notificationsCount > 0) {
-                                label = (
-                                    <Badge badgeContent={notificationsCount} color="secondary">
-                                        <FormattedMessage id={tabName} />
-                                    </Badge>
-                                );
-                            } else if (tabName === StudyView.PARAMETERS) {
-                                label = <Settings />;
-                                style = { minWidth: 'initial' };
-                            } else {
-                                label = <FormattedMessage id={tabName} />;
-                            }
-                            return <Tab sx={style} key={tabName} label={label} />;
-                        })}
-                    </Tabs>
-
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1.5, marginRight: 'auto' }}>
+                        <WorkspaceToolbar />
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1.5, marginLeft: 'auto' }}>
+                        <WorkspaceSwitcher />
+                    </Box>
                     <Box sx={styles.runButtonContainer}>
                         <RunButtonContainer
                             studyUuid={studyUuid}
@@ -143,7 +122,6 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
 
 AppTopBar.propTypes = {
     user: PropTypes.object,
-    onChangeTab: PropTypes.func.isRequired,
     userManager: PropTypes.object.isRequired,
 };
 

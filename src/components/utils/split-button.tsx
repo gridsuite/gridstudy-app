@@ -5,18 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
+import {
+    Button,
+    ButtonGroup,
+    ClickAwayListener,
+    Grow,
+    ListItemIcon,
+    ListItemText,
+    MenuItem,
+    MenuList,
+    Paper,
+    Popper,
+} from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import StopIcon from '@mui/icons-material/Stop';
-import ListItemText from '@mui/material/ListItemText';
 import LoopIcon from '@mui/icons-material/Loop';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
@@ -25,11 +27,10 @@ import RunningStatus from './running-status';
 import { useSelector } from 'react-redux';
 import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
 import { AppState } from 'redux/reducer';
-import { Theme } from '@mui/material';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    expand: (theme: Theme) => ({
+    expand: (theme) => ({
         marginLeft: 'auto',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
@@ -38,7 +39,7 @@ const styles = {
     expandOpen: {
         transform: 'rotate(180deg)',
     },
-    listOptions: (theme: Theme) => ({
+    listOptions: (theme) => ({
         minWidth: '270px',
         marginRight: '43px',
         position: 'relative',
@@ -90,7 +91,7 @@ const styles = {
             color: '#fdfdfd',
         },
     },
-    running: (theme: Theme) => ({
+    running: (theme) => ({
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         border: '1px solid #808080',
@@ -106,7 +107,7 @@ const styles = {
             color: theme.palette.text.primary,
         },
     }),
-    idle: (theme: Theme) => ({
+    idle: (theme) => ({
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         borderColor: '#808080',
@@ -127,7 +128,7 @@ const styles = {
     runMenuButton: {
         zIndex: 99,
     },
-};
+} as const satisfies MuiStyles;
 
 interface SplitButtonProps {
     runningStatus: RunningStatus;
@@ -189,11 +190,11 @@ const SplitButton = ({
     const getRunningIcon = (status: RunningStatus) => {
         switch (status) {
             case RunningStatus.RUNNING:
-                return <LoopIcon sx={styles.rotate} />;
+                return <LoopIcon sx={styles.rotate} data-testid="ModelExecutionRunning" />;
             case RunningStatus.SUCCEED:
-                return <DoneIcon />;
+                return <DoneIcon data-testid="ModelExecutionDone" />;
             case RunningStatus.FAILED:
-                return <ErrorOutlineIcon />;
+                return <ErrorOutlineIcon data-testid="ModelExecutionFail" />;
             case RunningStatus.IDLE:
             default:
                 return <PlayIcon />;
@@ -231,6 +232,7 @@ const SplitButton = ({
                     sx={getStyle(runningStatus)}
                     disabled={buttonDisabled}
                     onClick={handleClick}
+                    data-testid="RunModelButton"
                 >
                     <span style={{ marginTop: '2px' }}>{breakText(text)}</span>
                 </Button>
@@ -240,6 +242,7 @@ const SplitButton = ({
                     onClick={handleToggle}
                     sx={getStyle(runningStatus)}
                     disabled={selectionDisabled}
+                    data-testid="RunnableModelsButton"
                 >
                     <ArrowDropDownIcon sx={mergeSx(styles.expand, open ? styles.expandOpen : undefined)} />
                 </Button>

@@ -7,10 +7,9 @@
 
 import * as React from 'react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
-import { alpha, Checkbox, SxProps, Theme, useTheme } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { treeItemClasses, SimpleTreeView, TreeItem } from '@mui/x-tree-view';
-
+import { alpha, Checkbox, styled, useTheme } from '@mui/material';
+import { SimpleTreeView, TreeItem, treeItemClasses } from '@mui/x-tree-view';
+import { type SxStyle } from '@gridsuite/commons-ui';
 import { ModelVariable } from '../../dynamic-simulation.type';
 
 enum CheckState {
@@ -38,6 +37,10 @@ const BorderedTreeItem = styled(TreeItem)(({ root }: { root: boolean }) => {
             paddingLeft: 18,
             borderLeft: border,
         },
+        [`& .${treeItemClasses.content}`]: {
+            paddingLeft: 8,
+            width: 'max-content',
+        },
         [`& .${treeItemClasses.label}`]: {
             whiteSpace: 'nowrap',
         },
@@ -55,7 +58,7 @@ interface CheckBoxTreeViewProps {
     checkAll: boolean;
     onSelectionChanged?: (newSelection: ModelVariable[]) => void;
     getLabel: (element: ModelVariable) => string;
-    sx: SxProps<Theme>;
+    sx: SxStyle;
 }
 
 interface ItemState {
@@ -64,7 +67,7 @@ interface ItemState {
 }
 
 const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProps>(
-    ({ data: items, checkAll, onSelectionChanged, getLabel, ...rest }, ref) => {
+    ({ data: items, checkAll, onSelectionChanged, getLabel, sx }, ref) => {
         const initialItemStates = useMemo(() => {
             return items.map((elem) => ({
                 id: elem.id,
@@ -176,20 +179,21 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             [itemStates]
         );
 
+        const getSelectedItems = useCallback(() => {
+            return items.filter(
+                (item) => getState(item.id) === CheckState.CHECKED && !items.some((elem) => elem.parentId === item.id) // no children
+            );
+        }, [items, getState]);
+
         // expose some api for the component by using ref
         useImperativeHandle(
             ref,
             () => ({
                 api: {
-                    getSelectedItems: () =>
-                        items.filter(
-                            (item) =>
-                                getState(item.id) === CheckState.CHECKED &&
-                                !items.find((elem) => elem.parentId === item.id) // no children
-                        ),
+                    getSelectedItems,
                 },
             }),
-            [items, getState]
+            [getSelectedItems]
         );
 
         // render functions (recursive rendering)
@@ -226,7 +230,7 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             ));
         };
 
-        return <SimpleTreeView {...rest}>{renderItems(items)}</SimpleTreeView>;
+        return <SimpleTreeView sx={sx}>{renderItems(items)}</SimpleTreeView>;
     }
 );
 

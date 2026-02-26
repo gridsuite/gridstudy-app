@@ -5,20 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson } from './utils';
-import { UUID } from 'crypto';
+import { backendFetchJson } from '@gridsuite/commons-ui';
 import { LineTypeInfo } from '../components/dialogs/line-types-catalog/line-catalog.type';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
-
-export function fetchNetworkModification(modificationUuid: UUID) {
-    const modificationFetchUrl = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/${encodeURIComponent(
-        modificationUuid
-    )}`;
-
-    console.debug(modificationFetchUrl);
-    return backendFetch(modificationFetchUrl);
-}
 
 export function getLineTypesCatalog(): Promise<LineTypeInfo[]> {
     console.info(`get line types catalog`);

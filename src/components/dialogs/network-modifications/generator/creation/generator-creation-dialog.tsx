@@ -10,7 +10,20 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    CustomFormProvider,
+    emptyProperties,
+    EquipmentType,
+    getPropertiesFromModification,
+    MODIFICATION_TYPES,
+    snackWithFallback,
+    toModificationProperties,
+    useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -36,7 +49,6 @@ import {
     PLANNED_OUTAGE_RATE,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
@@ -54,7 +66,6 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { sanitizeString } from '../../../dialog-utils';
 import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,
@@ -65,13 +76,6 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { createGenerator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils.type';
 import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
-import {
     getVoltageRegulationEmptyFormData,
     getVoltageRegulationSchema,
 } from '../../../voltage-regulation/voltage-regulation-utils';
@@ -80,10 +84,19 @@ import {
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
-import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
+import {
+    getSetPointsEmptyFormData,
+    getSetPointsSchema,
+    testValueWithinPowerInterval,
+} from '../../../set-points/set-points-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import {
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormData,
+    getShortCircuitFormSchema,
+} from '../../../short-circuit/short-circuit-utils';
+import { toReactiveCapabilityCurveChoiceForGeneratorCreation } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -92,8 +105,7 @@ const emptyFormData = {
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
     [RATED_NOMINAL_POWER]: null,
-    [TRANSIENT_REACTANCE]: null,
-    [TRANSFORMER_REACTANCE]: null,
+    ...getShortCircuitEmptyFormData(),
     [PLANNED_ACTIVE_POWER_SET_POINT]: null,
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
@@ -113,17 +125,22 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [ENERGY_SOURCE]: yup.string().nullable().required(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-        [TRANSIENT_REACTANCE]: yup
+        [MINIMUM_ACTIVE_POWER]: yup
             .number()
             .nullable()
-            .when([TRANSFORMER_REACTANCE], {
-                is: (transformerReactance: number) => transformerReactance != null,
-                then: (schema) => schema.required(),
-            }),
-        [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            .max(yup.ref(MAXIMUM_ACTIVE_POWER), 'generatorMinimumActivePowerMaxValueError')
+            .required(),
+        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        ...getShortCircuitFormSchema(),
+        [PLANNED_ACTIVE_POWER_SET_POINT]: yup
+            .number()
+            .nullable()
+            .default(null)
+            .test(
+                'activePowerSetPoint',
+                'PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower',
+                testValueWithinPowerInterval
+            ),
         [MARGINAL_COST]: yup.number().nullable(),
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
@@ -177,8 +194,10 @@ export default function GeneratorCreationDialog({
                 [FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
                 [FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
                 [DROOP]: generator.activePowerControl?.droop,
-                [TRANSIENT_REACTANCE]: generator.generatorShortCircuit?.directTransX,
-                [TRANSFORMER_REACTANCE]: generator.generatorShortCircuit?.stepUpTransformerX,
+                ...getShortCircuitFormData({
+                    directTransX: generator.generatorShortCircuit?.directTransX,
+                    stepUpTransformerX: generator.generatorShortCircuit?.stepUpTransformerX,
+                }),
                 [VOLTAGE_REGULATION_TYPE]:
                     generator?.regulatingTerminalId || generator?.regulatingTerminalConnectableId
                         ? REGULATION_TYPES.DISTANT.id
@@ -231,8 +250,10 @@ export default function GeneratorCreationDialog({
                 [FORCED_OUTAGE_RATE]: editData.forcedOutageRate,
                 [FREQUENCY_REGULATION]: editData.participate,
                 [DROOP]: editData.droop,
-                [TRANSIENT_REACTANCE]: editData.directTransX,
-                [TRANSFORMER_REACTANCE]: editData.stepUpTransformerX,
+                ...getShortCircuitFormData({
+                    directTransX: editData.directTransX,
+                    stepUpTransformerX: editData.stepUpTransformerX,
+                }),
                 [VOLTAGE_REGULATION_TYPE]: editData?.regulatingTerminalId
                     ? REGULATION_TYPES.DISTANT.id
                     : REGULATION_TYPES.LOCAL.id,
@@ -270,7 +291,8 @@ export default function GeneratorCreationDialog({
     const onSubmit = useCallback(
         (generator: GeneratorCreationDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn =
+                toReactiveCapabilityCurveChoiceForGeneratorCreation(reactiveLimits, editData) === 'CURVE';
             const isDistantRegulation = generator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
 
             const generatorCreationInfos = {
@@ -319,10 +341,7 @@ export default function GeneratorCreationDialog({
                 modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'GeneratorCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'GeneratorCreationError' });
             });
         },
         [currentNodeUuid, editData, studyUuid, snackError]

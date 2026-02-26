@@ -10,34 +10,70 @@ import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const instance = create(all);
 
-export const limitedEvaluate = instance.evaluate;
+// Custom error class for MathJS validation errors
+export class MathJsValidationError extends Error {
+    constructor(public error: string) {
+        super(error);
+        this.name = 'MathJsValidationError';
+    }
+}
+
+const originalEvaluate = instance.evaluate;
+export const limitedEvaluate = (expr: string | string[], scope?: object) => {
+    const result = originalEvaluate(expr, scope);
+    if (typeof result === 'function') {
+        throw new MathJsValidationError('spreadsheet/formula/function-reference/disabled');
+    }
+    return result;
+};
 
 instance.import(
     {
-        import: function () {
-            throw new Error('Function import is disabled');
+        import: () => {
+            throw new MathJsValidationError('spreadsheet/formula/import/disabled');
         },
-        createUnit: function () {
-            throw new Error('Function createUnit is disabled');
+        createUnit: () => {
+            throw new MathJsValidationError('spreadsheet/formula/createUnit/disabled');
         },
-        evaluate: function () {
-            throw new Error('Function evaluate is disabled');
+        evaluate: () => {
+            throw new MathJsValidationError('spreadsheet/formula/evaluate/disabled');
         },
-        parse: function () {
-            throw new Error('Function parse is disabled');
+        parse: () => {
+            throw new MathJsValidationError('spreadsheet/formula/parse/disabled');
         },
-        simplify: function () {
-            throw new Error('Function simplify is disabled');
+        simplify: () => {
+            throw new MathJsValidationError('spreadsheet/formula/simplify/disabled');
         },
-        derivative: function () {
-            throw new Error('Function derivative is disabled');
+        derivative: () => {
+            throw new MathJsValidationError('spreadsheet/formula/derivative/disabled');
+        },
+        compile: () => {
+            throw new MathJsValidationError('spreadsheet/formula/compile/disabled');
+        },
+        help: () => {
+            throw new MathJsValidationError('spreadsheet/formula/help/disabled');
+        },
+        parser: () => {
+            throw new MathJsValidationError('spreadsheet/formula/parser/disabled');
         },
         equal: function (a: any, b: any) {
             // == instead of === to be able to compare strings to numbers
             return a === b;
         },
+        unequal: function (a: any, b: any) {
+            // != instead of !== to be able to compare strings to numbers
+            return a !== b;
+        },
         match: function (expr: string, variable: string, flags: string = '') {
             return RegExp(expr, flags).test(variable);
+        },
+        length: function (obj: unknown) {
+            if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+                return Object.keys(obj).length;
+            } else if (Array.isArray(obj)) {
+                return obj.length;
+            }
+            throw new MathJsValidationError('spreadsheet/formula/length/error');
         },
         unitToKiloUnit,
         unitToMicroUnit,

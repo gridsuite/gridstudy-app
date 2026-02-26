@@ -6,14 +6,14 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from 'components/network/constants.js';
 import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, CSV_FILENAME, TYPE } from 'components/utils/field-constants.js';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
-import { createTabularCreation, createTabularModification } from 'services/study/network-modifications.js';
+import { createTabularModification } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.type';
 import {
     convertGeneratorOrBatteryModificationFromBackToFront,
@@ -32,9 +32,7 @@ import {
     Modification,
     tabularFormSchema,
     TabularFormType,
-    TabularModificationCreationType,
     TabularModificationEditDataType,
-    TabularModificationModificationType,
     TabularModificationType,
     transformProperties,
 } from './tabular-common.js';
@@ -47,6 +45,20 @@ import {
     TABULAR_CREATION_TYPES,
 } from './tabular-creation-utils';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
+
+function convertCreations(creations: Modification[]): Modification[] {
+    return creations.map((creat: Modification) => {
+        let creation: Modification = {};
+        for (const key of Object.keys(formatModification(creat))) {
+            const entry = convertCreationFieldFromBackToFront(key, creat[key]);
+            for (const item of Array.isArray(entry) ? entry : [entry]) {
+                creation[item.key] = item.value;
+            }
+        }
+        creation = addPropertiesFromBack(creation, creat?.[TABULAR_PROPERTIES]);
+        return creation;
+    });
+}
 
 type TabularDialogProps = NetworkModificationDialogProps & {
     editData: TabularModificationEditDataType;
@@ -84,7 +96,7 @@ export function TabularDialog({
     const disableSave = Object.keys(errors).length > 0;
 
     const initTabularModificationData = useCallback(
-        (editData: TabularModificationModificationType) => {
+        (editData: TabularModificationEditDataType) => {
             const modificationType = editData.modificationType;
             const modifications = editData.modifications.map((modif: Modification) => {
                 let modification = formatModification(modif);
@@ -94,9 +106,9 @@ export function TabularDialog({
                 ) {
                     modification = convertGeneratorOrBatteryModificationFromBackToFront(modification);
                 } else {
-                    Object.keys(modification).forEach((key) => {
+                    for (const key of Object.keys(modification)) {
                         modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
-                    });
+                    }
                 }
                 modification = addPropertiesFromBack(modification, modif?.[TABULAR_PROPERTIES]);
                 return modification;
@@ -112,19 +124,9 @@ export function TabularDialog({
     );
 
     const initTabularCreationData = useCallback(
-        (editData: TabularModificationCreationType) => {
-            const equipmentType = getEquipmentTypeFromCreationType(editData?.creationType);
-            const creations = editData?.creations.map((creat: Modification) => {
-                let creation: Modification = {};
-                Object.keys(formatModification(creat)).forEach((key) => {
-                    const entry = convertCreationFieldFromBackToFront(key, creat[key]);
-                    (Array.isArray(entry) ? entry : [entry]).forEach((item) => {
-                        creation[item.key] = item.value;
-                    });
-                });
-                creation = addPropertiesFromBack(creation, creat?.[TABULAR_PROPERTIES]);
-                return creation;
-            });
+        (editData: TabularModificationEditDataType) => {
+            const equipmentType = getEquipmentTypeFromCreationType(editData?.modificationType);
+            const creations = convertCreations(editData?.modifications);
             reset({
                 [TYPE]: equipmentType,
                 [MODIFICATIONS_TABLE]: creations,
@@ -138,9 +140,9 @@ export function TabularDialog({
     useEffect(() => {
         if (editData) {
             if (dialogMode === TabularModificationType.CREATION) {
-                initTabularCreationData(editData as TabularModificationCreationType);
+                initTabularCreationData(editData);
             } else {
-                initTabularModificationData(editData as TabularModificationModificationType);
+                initTabularModificationData(editData);
             }
         }
     }, [editData, dialogMode, initTabularCreationData, initTabularModificationData]);
@@ -158,14 +160,11 @@ export function TabularDialog({
                 modificationType,
                 modifications,
                 modificationUuid: editData?.uuid,
-                type: ModificationType.TABULAR_MODIFICATION,
+                tabularType: ModificationType.TABULAR_MODIFICATION,
                 csvFilename: formData[CSV_FILENAME],
                 properties: formData[TABULAR_PROPERTIES],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TabularModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TabularModificationError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]
@@ -173,21 +172,24 @@ export function TabularDialog({
 
     const submitTabularCreation = useCallback(
         (formData: TabularFormType) => {
-            const creationType = TABULAR_CREATION_TYPES[formData[TYPE]];
-            const creations = formData[MODIFICATIONS_TABLE]?.map((row) => {
+            const modificationType = TABULAR_CREATION_TYPES[formData[TYPE]];
+            const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
                 const creation: Modification = {
-                    type: creationType,
+                    type: modificationType,
                 };
                 // first transform and clean "property_*" fields
                 const propertiesModifications = transformProperties(row);
 
                 // then transform all other fields
-                Object.keys(row).forEach((key) => {
+                for (const key of Object.keys(row)) {
                     const entry = convertCreationFieldFromFrontToBack(key, row[key]);
                     creation[entry.key] = entry.value;
-                });
+                }
                 // For now, we do not manage reactive limits by diagram
-                if (creationType === 'GENERATOR_CREATION' || creationType === 'BATTERY_CREATION') {
+                if (
+                    modificationType === ModificationType.GENERATOR_CREATION ||
+                    modificationType === ModificationType.BATTERY_CREATION
+                ) {
                     convertReactiveCapabilityCurvePointsFromFrontToBack(creation);
                 }
 
@@ -196,19 +198,17 @@ export function TabularDialog({
                 }
                 return creation;
             });
-            createTabularCreation({
+            createTabularModification({
                 studyUuid,
                 nodeUuid: currentNodeUuid,
-                creationType,
-                creations,
+                modificationType,
+                modifications,
                 modificationUuid: editData?.uuid,
+                tabularType: ModificationType.TABULAR_CREATION,
                 csvFilename: formData[CSV_FILENAME],
                 properties: formData[TABULAR_PROPERTIES],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TabularCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TabularCreationError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]

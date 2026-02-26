@@ -54,19 +54,6 @@ export function getSensitivityAnalysisRunningStatus(sensitivityAnalysisStatus: s
             return RunningStatus.RUNNING;
         case 'NOT_DONE':
             return RunningStatus.IDLE;
-        default:
-            return RunningStatus.IDLE;
-    }
-}
-
-export function getNonEvacuatedEnergyRunningStatus(nonEvacuatedEnergyStatus: string | null): RunningStatus {
-    switch (nonEvacuatedEnergyStatus) {
-        case 'COMPLETED':
-            return RunningStatus.SUCCEED;
-        case 'RUNNING':
-            return RunningStatus.RUNNING;
-        case 'NOT_DONE':
-            return RunningStatus.IDLE;
         case 'FAILED':
             return RunningStatus.FAILED;
         default:
@@ -119,6 +106,21 @@ export function getDynamicSecurityAnalysisRunningStatus(dynamicSecurityAnalysisS
     }
 }
 
+export function getDynamicMarginCalculationRunningStatus(dynamicMarginCalculationStatus: string | null): RunningStatus {
+    switch (dynamicMarginCalculationStatus) {
+        case 'SUCCEED':
+            return RunningStatus.SUCCEED;
+        case 'FAILED':
+            return RunningStatus.FAILED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
 export function getVoltageInitRunningStatus(voltageInitStatus: string | null): RunningStatus {
     switch (voltageInitStatus) {
         case 'OK':
@@ -136,6 +138,19 @@ export function getVoltageInitRunningStatus(voltageInitStatus: string | null): R
 
 export function getStateEstimationRunningStatus(stateEstimationStatus: string | null): RunningStatus {
     switch (stateEstimationStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
+export function getPccMinRunningStatus(pccMinStatus: string | null): RunningStatus {
+    switch (pccMinStatus) {
         case 'COMPLETED':
             return RunningStatus.SUCCEED;
         case 'RUNNING':

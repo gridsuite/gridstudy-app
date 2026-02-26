@@ -6,7 +6,6 @@
  */
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     CONNECTIVITY,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
@@ -26,18 +25,25 @@ import {
 import yup from '../../../../../utils/yup-config';
 import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
-import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from '../common/lcc-type';
-import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
-import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    ExtendedEquipmentType,
+    Property,
+    snackWithFallback,
+    toModificationProperties,
+    useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import { useCallback, useEffect, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { createLcc } from '../../../../../../services/study/network-modifications';
-import { sanitizeString } from '../../../../dialog-utils';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { Grid } from '@mui/material';
 import LccCreationDialogHeader from './lcc-creation-dialog-header';
@@ -66,7 +72,7 @@ export type LccCreationSchemaForm = {
         [MAX_P]: number;
         [CONVERTERS_MODE]: string;
         [ACTIVE_POWER_SETPOINT]: number;
-        [ADDITIONAL_PROPERTIES]?: Property[];
+        [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
     };
     [CONVERTER_STATION_1]: {
         [CONVERTER_STATION_ID]: string;
@@ -179,10 +185,7 @@ export function LccCreationDialog({
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LccCreationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'LccCreationError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError]

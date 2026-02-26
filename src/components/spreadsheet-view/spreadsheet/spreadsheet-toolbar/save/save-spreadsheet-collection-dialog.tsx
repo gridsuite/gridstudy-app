@@ -7,44 +7,58 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Theme } from '@mui/material';
+import {
+    Checkbox,
+    Divider,
+    FormLabel,
+    IconButton,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+} from '@mui/material';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
 import {
-    ElementType,
-    UseStateBooleanReturn,
-    useSnackMessage,
-    IElementCreationDialog,
     ElementSaveDialog,
-    IElementUpdateDialog,
+    ElementType,
+    type IElementCreationDialog,
+    type IElementUpdateDialog,
+    type MuiStyles,
+    snackWithFallback,
+    useSnackMessage,
+    type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../../redux/reducer';
 import { SelectOptionsDialog } from '../../../../../utils/dialogs';
 import {
-    SpreadsheetConfig,
-    SpreadsheetCollection,
     ColumnDefinitionDto,
+    SpreadsheetCollection,
+    SpreadsheetConfig,
     SpreadsheetEquipmentType,
 } from '../../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
-import { NodeAlias } from '../../../types/node-alias.type';
-import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import { useNodeAliases } from '../../../hooks/use-node-aliases';
+import { SortConfig } from '../../../../../types/custom-aggrid-types';
 
 interface SaveSpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
-    nodeAliases: NodeAlias[] | undefined;
 }
 
 const styles = {
-    checkboxForFilters: (theme: Theme) => ({
-        padding: theme.spacing(0, 3, 0, 2),
+    includeLabel: (theme) => ({
+        margin: theme.spacing(2, 0, 0, 3),
         fontWeight: 'bold',
+    }),
+    includeCheckboxes: (theme) => ({
+        padding: theme.spacing(0, 0, 0, 2),
         cursor: 'pointer',
     }),
-    checkboxSelectAll: (theme: Theme) => ({
+    checkboxSelectAll: (theme) => ({
         padding: theme.spacing(0, 3, 2, 2),
         fontWeight: 'bold',
         cursor: 'pointer',
@@ -53,7 +67,7 @@ const styles = {
         cursor: 'pointer',
         padding: '0 16px',
     },
-};
+} as const satisfies MuiStyles;
 
 interface TableState {
     name: string;
@@ -62,21 +76,23 @@ interface TableState {
     index: number;
 }
 
-export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetCollectionDialogProps> = ({
-    open,
-    nodeAliases,
-}) => {
+export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetCollectionDialogProps> = ({ open }) => {
     const { snackError, snackInfo } = useSnackMessage();
+    const { nodeAliases } = useNodeAliases();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
     const tablesFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD]);
-    const tablesFiltersState = useSelector((state: AppState) => state.globalFilterSpreadsheetState);
+    const tablesGlobalFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters);
+    const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
+    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [localTablesState, setLocalTablesState] = useState<TableState[]>([]);
     const [selectedConfigs, setSelectedConfigs] = useState<SpreadsheetConfig[]>([]);
     const [showElementCreationDialog, setShowElementCreationDialog] = useState(false);
-    const [areFiltersIncluded, setAreFiltersIncluded] = useState(false);
+    const [includeFilters, setIncludeFilters] = useState(false);
+    const [includeVisibility, setIncludeVisibility] = useState(false);
+    const [includeSorting, setIncludeSorting] = useState(false);
 
     // Initialize local state when dialog opens
     useEffect(() => {
@@ -89,7 +105,9 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                     index,
                 }))
             );
-            setAreFiltersIncluded(false);
+            setIncludeFilters(false);
+            setIncludeVisibility(false);
+            setIncludeSorting(false);
         }
     }, [open.value, tables]);
 
@@ -118,7 +136,15 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     }, []);
 
     const handleToggleFilters = useCallback(() => {
-        setAreFiltersIncluded((prev) => !prev);
+        setIncludeFilters((prev) => !prev);
+    }, []);
+
+    const handleToggleVisibility = useCallback(() => {
+        setIncludeVisibility((prev) => !prev);
+    }, []);
+
+    const handleToggleSorting = useCallback(() => {
+        setIncludeSorting((prev) => !prev);
     }, []);
 
     const handleDrag = useCallback(({ source, destination }: DropResult) => {
@@ -142,14 +168,14 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                     if (!column) {
                         return null;
                     }
-                    const columnFilter: Partial<ColumnDefinitionDto> = {};
-                    if (areFiltersIncluded) {
+                    const columnFilterInfos: ColumnDefinitionDto['columnFilterInfos'] = {};
+                    if (includeFilters) {
                         const filter = tablesFilters[table.uuid]?.find((f) => f.column === column.id);
                         if (filter) {
-                            columnFilter.filterDataType = filter.dataType;
-                            columnFilter.filterTolerance = filter.tolerance;
-                            columnFilter.filterType = filter.type;
-                            columnFilter.filterValue = JSON.stringify(filter.value);
+                            columnFilterInfos.filterDataType = filter.dataType;
+                            columnFilterInfos.filterTolerance = filter.tolerance;
+                            columnFilterInfos.filterType = filter.type;
+                            columnFilterInfos.filterValue = JSON.stringify(filter.value);
                         }
                     }
                     const dto: ColumnDefinitionDto = {
@@ -160,22 +186,31 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                         precision: column.precision,
                         formula: column.formula || '',
                         dependencies: column.dependencies?.length ? JSON.stringify(column.dependencies) : undefined,
-                        ...columnFilter,
-                        visible: true,
+                        columnFilterInfos,
+                        visible: includeVisibility ? column.visible : true,
                     };
                     return dto;
                 })
                 .filter((col): col is ColumnDefinitionDto => col !== null);
         },
-        [areFiltersIncluded, tables, tablesFilters]
+        [includeFilters, includeVisibility, tables, tablesFilters]
     );
 
     const getTableGlobalFilters = useCallback(
         (tableIndex: number): GlobalFilter[] => {
             const tableUuid = tables[tableIndex].uuid;
-            return tablesFiltersState[tableUuid] ?? [];
+            const ids = tablesGlobalFilterIds[tableUuid] ?? [];
+            return ids.map((id) => globalFilterOptions.find((opt) => opt.id === id)).filter((f) => f !== undefined);
         },
-        [tablesFiltersState, tables]
+        [tablesGlobalFilterIds, globalFilterOptions, tables]
+    );
+
+    const getTableSorting = useCallback(
+        (tableIndex: number): SortConfig | undefined => {
+            const tableUuid = tables[tableIndex].uuid;
+            return sortConfig[tableUuid]?.[0] ?? undefined;
+        },
+        [sortConfig, tables]
     );
 
     const handleNext = useCallback(() => {
@@ -185,13 +220,22 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                 name: table.name,
                 sheetType: table.type,
                 columns: getReorderedColumns(table.index),
-                globalFilters: areFiltersIncluded ? getTableGlobalFilters(table.index) : undefined,
+                globalFilters: includeFilters ? getTableGlobalFilters(table.index) : undefined,
+                sortConfig: includeSorting ? getTableSorting(table.index) : undefined,
             }));
 
         setSelectedConfigs(configs);
         handleClose();
         setShowElementCreationDialog(true);
-    }, [localTablesState, handleClose, getReorderedColumns, areFiltersIncluded, getTableGlobalFilters]);
+    }, [
+        localTablesState,
+        handleClose,
+        getReorderedColumns,
+        includeSorting,
+        getTableSorting,
+        includeFilters,
+        getTableGlobalFilters,
+    ]);
 
     const handleSaveCollection = useCallback(
         async (element: IElementCreationDialog) => {
@@ -200,7 +244,6 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                     spreadsheetConfigs: selectedConfigs,
                     nodeAliases: nodeAliases?.map((n) => n.alias),
                 };
-
                 await saveSpreadsheetCollection(collection, element.name, element.description, element.folderId);
                 snackInfo({
                     headerId: 'spreadsheet/collection/save/success',
@@ -210,10 +253,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                 });
                 setShowElementCreationDialog(false);
             } catch (error) {
-                snackError({
-                    headerId: 'spreadsheet/collection/save/error',
-                    messageTxt: error instanceof Error ? error.message : String(error),
-                });
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/collection/save/error' });
             }
         },
         [selectedConfigs, snackInfo, snackError, nodeAliases]
@@ -236,12 +276,11 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                 });
                 setShowElementCreationDialog(false);
             } catch (error) {
-                snackError({
+                snackWithFallback(snackError, error, {
                     headerId: 'spreadsheet/collection/update/error',
                     headerValues: {
                         item: elementFullPath,
                     },
-                    messageTxt: error instanceof Error ? error.message : String(error),
                 });
             }
         },
@@ -253,12 +292,33 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
 
     const checkListContent = (
         <>
-            <ListItem sx={styles.checkboxForFilters}>
+            <FormLabel sx={styles.includeLabel}>
+                {intl.formatMessage({ id: 'spreadsheet/save-dialog/include' })}
+            </FormLabel>
+            <ListItem sx={styles.includeCheckboxes}>
                 <ListItemButton role={undefined} onClick={handleToggleFilters} dense>
-                    <Checkbox style={{ marginLeft: '21px' }} checked={areFiltersIncluded} />
-                    <FormattedMessage id="spreadsheet/column/dialog/include_filters" />
+                    <Checkbox style={{ marginLeft: '21px' }} checked={includeFilters} />
+                    <FormattedMessage id="spreadsheet/save-dialog/filters" />
                 </ListItemButton>
             </ListItem>
+            <ListItem sx={styles.includeCheckboxes}>
+                <ListItemButton role={undefined} onClick={handleToggleVisibility} dense>
+                    <Checkbox style={{ marginLeft: '21px' }} checked={includeVisibility} />
+                    <FormattedMessage id="spreadsheet/save-dialog/columns_visibility" />
+                </ListItemButton>
+            </ListItem>
+            <ListItem sx={styles.includeCheckboxes}>
+                <ListItemButton role={undefined} onClick={handleToggleSorting} dense>
+                    <Checkbox style={{ marginLeft: '21px' }} checked={includeSorting} />
+                    <FormattedMessage id="spreadsheet/save-dialog/columns_sorting" />
+                </ListItemButton>
+            </ListItem>
+
+            <Divider sx={{ mb: 2, mt: 1 }} />
+
+            <FormLabel sx={styles.includeLabel}>
+                {intl.formatMessage({ id: 'spreadsheet/save-dialog/spreadsheet' })}
+            </FormLabel>
             <ListItem sx={styles.checkboxSelectAll}>
                 <ListItemButton role={undefined} onClick={handleToggleAll} dense>
                     <Checkbox

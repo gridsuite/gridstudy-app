@@ -5,34 +5,45 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { MAX_FORMULA_CHARACTERS } from '../../constants';
+import { type CustomAggridValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
-interface ValidationResult {
-    isValid: boolean;
-    error?: string;
+export interface ValidationError {
+    error: string;
 }
 
-export const validateFormulaResult = (value: any, type: COLUMN_TYPES): ValidationResult => {
+export function isValidationError(value: unknown): value is ValidationError {
+    return !!(typeof value === 'object' && value?.hasOwnProperty('error'));
+}
+
+export const validateFormulaResult = (value: CustomAggridValue, type: COLUMN_TYPES): CustomAggridValue => {
     switch (type) {
         case COLUMN_TYPES.NUMBER:
-            return {
-                isValid:
-                    (typeof value === 'number' && !isNaN(value)) ||
-                    (typeof value !== 'boolean' && !isNaN(Number(value))),
-                error: 'Formula must evaluate to a number',
-            };
+            if (typeof value === 'boolean') {
+                return { error: 'spreadsheet/formula/type/number' };
+            }
+            try {
+                return Number(value);
+            } catch {
+                return { error: 'spreadsheet/formula/type/number' };
+            }
         case COLUMN_TYPES.BOOLEAN:
-            return {
-                isValid: typeof value === 'boolean',
-                error: 'Formula must evaluate to a boolean',
-            };
+            return typeof value === 'boolean'
+                ? value
+                : {
+                      error: 'spreadsheet/formula/type/boolean',
+                  };
         case COLUMN_TYPES.ENUM:
-            return {
-                isValid: typeof value === 'string' || typeof value === 'number',
-                error: 'Formula must evaluate to a string',
-            };
+            return typeof value === 'string' || typeof value === 'number'
+                ? value
+                : { error: 'spreadsheet/formula/type/enum' };
         case COLUMN_TYPES.TEXT:
-            return { isValid: true }; // Text accepts any type
+            return value; // Text accepts any type
         default:
-            return { isValid: false, error: 'Unknown column type' };
+            return { error: 'spreadsheet/formula/type/unknown' };
     }
+};
+
+export const isFormulaContentSizeOk = (val: string) => {
+    return val?.length <= MAX_FORMULA_CHARACTERS;
 };

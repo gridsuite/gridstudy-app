@@ -11,7 +11,8 @@ import React, { ComponentType } from 'react';
 import { ColumnMenuProps } from '../../spreadsheet-view/columns/column-menu';
 import { SortParams } from '../hooks/use-custom-aggrid-sort';
 import { COLUMN_TYPES, CustomCellType } from '../custom-aggrid-header.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
+import { type ValidationError } from '../../spreadsheet-view/columns/utils/formula-validator';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -23,6 +24,8 @@ export enum FILTER_TEXT_COMPARATORS {
     EQUALS = 'equals',
     CONTAINS = 'contains',
     STARTS_WITH = 'startsWith',
+    IS_EMPTY = 'blank',
+    IS_NOT_EMPTY = 'notBlank',
 }
 
 export enum FILTER_NUMBER_COMPARATORS {
@@ -30,6 +33,15 @@ export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
     GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
+}
+
+export enum SPREADSHEET_FILTER_NUMBER_COMPARATORS {
+    EQUALS = 'equals',
+    NOT_EQUAL = 'notEqual',
+    LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
+    GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
+    IS_EMPTY = 'blank',
+    IS_NOT_EMPTY = 'notBlank',
 }
 
 // not visible in the base interface :
@@ -66,8 +78,10 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
     sortParams?: SortParams;
 }
 
+export type CustomAggridValue = boolean | string | number | CustomCellType | ValidationError;
+
 export interface CustomColDef<TData = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
-    extends ColDef<TData, boolean | string | number | CustomCellType> {
+    extends ColDef<TData, CustomAggridValue> {
     colId: string;
     context?: ColumnContext<F>;
 }

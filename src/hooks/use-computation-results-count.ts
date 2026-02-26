@@ -6,9 +6,8 @@
  */
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import RunningStatus from 'components/utils/running-status';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 /**
@@ -27,10 +26,6 @@ export const useComputationResultsCount = () => {
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const nonEvacuateEnergyAnalysisStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
-    );
-
     const oneBusallBusesShortCircuitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
@@ -47,6 +42,10 @@ export const useComputationResultsCount = () => {
         (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SECURITY_ANALYSIS]
     );
 
+    const dynamicMarginComputationStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_MARGIN_CALCULATION]
+    );
+
     const voltageInitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
@@ -54,8 +53,9 @@ export const useComputationResultsCount = () => {
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
+    const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     // we dont distinguish between technical errors and computation errors
@@ -66,7 +66,6 @@ export const useComputationResultsCount = () => {
     const saResutPresent =
         securityAnalysisStatus === RunningStatus.SUCCEED || securityAnalysisStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     const sensiResultPresent = sensitivityAnalysisStatus === RunningStatus.SUCCEED;
-    const nonEvacuatedEnergyResultPresent = nonEvacuateEnergyAnalysisStatus === RunningStatus.SUCCEED;
     const allBusesshortCircuitResultPresent = allBusesShortCircuitStatus === RunningStatus.SUCCEED;
 
     const oneBusShortCircuitResultPresent = oneBusallBusesShortCircuitStatus === RunningStatus.SUCCEED;
@@ -80,20 +79,27 @@ export const useComputationResultsCount = () => {
         dynamicSecurityAnalysisStatus === RunningStatus.SUCCEED ||
         dynamicSecurityAnalysisStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
+    const dynamicMarginComputationResultPresent =
+        dynamicMarginComputationStatus === RunningStatus.SUCCEED ||
+        dynamicMarginComputationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+
     const stateEstimationResultPresent =
-        enableDeveloperMode &&
+        isDeveloperMode &&
         (stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+
+    const pccMinResultPresent = pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     return [
         loadflowResultPresent,
         saResutPresent,
         sensiResultPresent,
-        nonEvacuatedEnergyResultPresent,
         allBusesshortCircuitResultPresent,
         oneBusShortCircuitResultPresent,
         voltageInitResultPresent,
         dynamicSimulationResultPresent,
         dynamicSecurityAnalysisResultPresent,
+        dynamicMarginComputationResultPresent,
         stateEstimationResultPresent,
+        pccMinResultPresent,
     ].filter(Boolean).length;
 };

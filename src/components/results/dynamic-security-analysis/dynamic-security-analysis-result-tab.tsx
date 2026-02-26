@@ -9,7 +9,8 @@ import { SyntheticEvent, useState } from 'react';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
 import TabPanelLazy from '../common/tab-panel-lazy';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import DynamicSecurityAnalysisResultSynthesis from './dynamic-security-analysis-result-synthesis';
 import DynamicSecurityAnalysisResultLogs from './dynamic-security-analysis-result-logs';
 
@@ -17,7 +18,7 @@ const styles = {
     resultContainer: {
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 const TAB_INDEX_STATUS = 'DynamicSecurityAnalysisTabStatus';
 const TAB_INDEX_LOGS = 'ComputationResultsLogs';
@@ -50,12 +51,14 @@ function DynamicSecurityAnalysisResultTab({
                             id: TAB_INDEX_STATUS,
                         })}
                         value={TAB_INDEX_STATUS}
+                        data-testid={'DynamicSecurityAnalysisStatusTab'}
                     />
                     <Tab
                         label={intl.formatMessage({
                             id: TAB_INDEX_LOGS,
                         })}
                         value={TAB_INDEX_LOGS}
+                        data-testid={'DynamicSecurityAnalysisLogsTab'}
                     />
                 </Tabs>
             </Box>

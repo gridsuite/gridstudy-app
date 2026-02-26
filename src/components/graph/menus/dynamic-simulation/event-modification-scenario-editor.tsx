@@ -5,8 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+    CheckBoxList,
+    type MuiStyles,
+    NotificationsUrlKeys,
+    snackWithFallback,
+    useNotificationsListener,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -14,7 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
@@ -31,13 +38,24 @@ import {
     isEventCrudFinishedNotification,
     isEventNotification,
     NotificationType,
+    parseEventData,
+    StudyUpdateEventData,
 } from 'types/notification-types';
 import {
     deleteDynamicSimulationEvents,
     fetchDynamicSimulationEvents,
 } from '../../../../services/study/dynamic-simulation';
 
-const EventModificationScenarioEditor = () => {
+const paperStyles = {
+    paper: (theme) => ({
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: theme.palette.background.paper,
+    }),
+} as const satisfies MuiStyles;
+
+const EventModificationScenarioEditor = memo(() => {
     const intl = useIntl();
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -45,7 +63,7 @@ const EventModificationScenarioEditor = () => {
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
+    const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState<Event[]>([]);
@@ -60,7 +78,6 @@ const EventModificationScenarioEditor = () => {
     >();
 
     const dispatch = useDispatch<AppDispatch>();
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
@@ -128,9 +145,7 @@ const EventModificationScenarioEditor = () => {
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                snackWithFallback(snackError, error);
             })
             .finally(() => {
                 setPendingState(false);
@@ -151,33 +166,33 @@ const EventModificationScenarioEditor = () => {
         }
     }, [currentNode, doFetchEvents]);
 
-    useEffect(() => {
-        if (isEventNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce?.eventData;
+    const handleEvent = useCallback(
+        (event: MessageEvent) => {
+            const eventData = parseEventData<StudyUpdateEventData>(event);
+            if (isEventNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
 
-            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
-                return;
+                dispatch(setModificationsInProgress(true));
+                setPendingState(true);
+                manageNotification(eventData);
+            } else if (isEventCrudFinishedNotification(eventData)) {
+                // notify  finished action (success or error => we remove the loader)
+                // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
+                // fetch events because it must have changed
+                // Do not clear the events list, because currentNode is the concerned one
+                // this allows to append new events to the existing list.
+                doFetchEvents();
+                dispatch(removeNotificationByNode([eventData.headers.parentNode, ...(eventData.headers.nodes ?? [])]));
             }
+        },
+        [dispatch, doFetchEvents, manageNotification]
+    );
 
-            dispatch(setModificationsInProgress(true));
-            setPendingState(true);
-            manageNotification(studyUpdatedEventData);
-        } else if (isEventCrudFinishedNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce?.eventData;
-            // notify  finished action (success or error => we remove the loader)
-            // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-            // fetch events because it must have changed
-            // Do not clear the events list, because currentNode is the concerned one
-            // this allows to append new events to the existing list.
-            doFetchEvents();
-            dispatch(
-                removeNotificationByNode([
-                    studyUpdatedEventData.headers.parentNode,
-                    ...(studyUpdatedEventData.headers.nodes ?? []),
-                ])
-            );
-        }
-    }, [dispatch, doFetchEvents, manageNotification, studyUpdatedForce]);
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleEvent,
+    });
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
@@ -186,11 +201,8 @@ const EventModificationScenarioEditor = () => {
             return;
         }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((errMsg) => {
-            snackError({
-                messageTxt: errMsg,
-                headerId: 'DynamicSimulationEventDeleteError',
-            });
+        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((error) => {
+            snackWithFallback(snackError, error, { headerId: 'DynamicSimulationEventDeleteError' });
         });
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
@@ -331,7 +343,7 @@ const EventModificationScenarioEditor = () => {
     };
 
     return (
-        <>
+        <Box sx={paperStyles.paper}>
             <Toolbar sx={styles.toolbar}>
                 <Checkbox
                     sx={styles.toolbarCheckbox}
@@ -370,8 +382,8 @@ const EventModificationScenarioEditor = () => {
                     )}
                 />
             )}
-        </>
+        </Box>
     );
-};
+});
 
 export default EventModificationScenarioEditor;

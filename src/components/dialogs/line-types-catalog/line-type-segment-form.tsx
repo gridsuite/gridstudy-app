@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { ExpandableInput } from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
     FINAL_CURRENT_LIMITS,
@@ -29,13 +28,19 @@ import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
 import { calculateReactance, calculateResistance, calculateSusceptance } from '../../utils/utils';
-import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomAGGrid,
+    DefaultCellRenderer,
+    ExpandableInput,
+    type MuiStyles,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
 import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import { emptyLineSegment, SegmentFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import GridSection from '../commons/grid-section';
 
 const styles = {
@@ -51,7 +56,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'end',
     },
-};
+} as const satisfies MuiStyles;
 
 export const LineTypeSegmentForm = () => {
     const { setValue, getValues, clearErrors } = useFormContext();
@@ -68,8 +73,7 @@ export const LineTypeSegmentForm = () => {
                 setLineTypesCatalog(values);
             })
             .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
+                snackWithFallback(snackError, error, {
                     headerId: 'LineTypesCatalogFetchingError',
                 })
             );

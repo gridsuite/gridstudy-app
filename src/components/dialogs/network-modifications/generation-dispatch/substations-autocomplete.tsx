@@ -4,14 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AutocompleteInputProps, genHelperError } from '@gridsuite/commons-ui';
-
+import { type AutocompleteInputProps, genHelperError, type MuiStyles } from '@gridsuite/commons-ui';
 import { useController } from 'react-hook-form';
 import { SyntheticEvent } from 'react';
-import { Autocomplete, AutocompleteProps, TextField, TextFieldProps, Theme } from '@mui/material';
+import { Autocomplete, type AutocompleteProps, TextField, type TextFieldProps } from '@mui/material';
 
 const styles = {
-    autocomplete: (theme: Theme) => ({
+    autocomplete: (theme) => ({
         '.MuiAutocomplete-inputRoot': {
             display: 'flex',
             alignItems: 'flex-start',
@@ -26,7 +25,7 @@ const styles = {
             flexWrap: 'wrap',
         },
     }),
-};
+} as const satisfies MuiStyles;
 
 type SubstationsAutocompleteProps = Pick<AutocompleteProps<string, true, false, false>, 'disabled'> & {
     name: AutocompleteInputProps['name'];
@@ -59,6 +58,7 @@ export default function SubstationsAutocomplete({
             onChange={handleChange}
             options={substations}
             size={'small'}
+            freeSolo
             sx={styles.autocomplete}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField

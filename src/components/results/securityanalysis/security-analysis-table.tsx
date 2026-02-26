@@ -5,22 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { SecurityAnalysisResultProps } from './security-analysis.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { GridReadyEvent } from 'ag-grid-community';
 import { IntlShape, useIntl } from 'react-intl';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { ComputingType, CustomAGGrid, DefaultCellRenderer } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { TableType } from '../../../types/custom-aggrid-types';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
     rows,
     columnDefs,
     isLoadingResult,
     agGridProps,
+    computationSubType,
 }) => {
     const intl: IntlShape = useIntl();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
@@ -34,10 +35,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
         securityAnalysisStatus,
         !isLoadingResult
     );
-
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
+    const onGridReady = useAgGridInitialColumnFilters(TableType.SecurityAnalysis, computationSubType);
 
     const defaultColDef = useMemo(
         () => ({
@@ -58,6 +56,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
             columnDefs={columnDefs}
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
+            loading={isLoadingResult}
             overlayNoRowsTemplate={overlayNoRowsTemplate}
             overrideLocales={AGGRID_LOCALES}
             {...agGridProps}

@@ -6,9 +6,8 @@
  */
 
 import { ContingencyList } from './study/contingency-list';
-import { backendFetch } from './utils';
-import { UUID } from 'crypto';
-import { ElementType } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
+import { backendFetch, ElementType } from '@gridsuite/commons-ui';
 import { SpreadsheetCollection, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
@@ -261,4 +260,34 @@ export function updateDiagramConfig(id: UUID, diagramConfig: DiagramConfig, name
         body: JSON.stringify(diagramConfig),
         headers: { 'Content-Type': 'application/json' },
     });
+}
+
+export function saveWorkspaceConfig(name: string, description: string, parentDirectoryUuid: UUID, workspaceId: UUID) {
+    console.info('Creating a new workspace...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    urlSearchParams.append('workspaceId', workspaceId);
+
+    return backendFetch(PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/workspaces?' + urlSearchParams.toString(), {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
+export function updateWorkspaceConfig(id: UUID, name: string, description: string, workspaceId: UUID) {
+    console.info('Updating workspace ' + name);
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('workspaceId', workspaceId);
+
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/workspaces/' + id + '?' + urlSearchParams.toString(),
+        {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+        }
+    );
 }

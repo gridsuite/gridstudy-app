@@ -8,6 +8,7 @@ import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from
 import { Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
@@ -33,7 +34,7 @@ const styles = {
             MozAppearance: 'textfield',
         },
     },
-};
+} as const satisfies MuiStyles;
 
 const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ api, colId, filterParams }) => {
     const intl = useIntl();
@@ -149,7 +150,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                         placeholder={intl.formatMessage({ id: 'filter.filterOoo' })}
                         InputProps={{
                             type: 'number',
-                            endAdornment: <InputAdornment position="end">mn</InputAdornment>,
+                            endAdornment: <InputAdornment position="end">min</InputAdornment>,
                             inputProps: { min: 0 },
                         }}
                         sx={styles.noArrows}

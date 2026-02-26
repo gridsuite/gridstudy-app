@@ -11,7 +11,7 @@ import withOperatingStatusMenu, { MenuBranchProps } from '../components/menus/op
 import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../components/menus/base-equipment-menu';
 import withEquipmentMenu from '../components/menus/equipment-menu';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 type EquipmentMenuProps = {
     position?: [number, number] | null;
@@ -36,11 +36,11 @@ interface UseEquipmentMenuProps {
     studyUuid: UUID;
     disabled: boolean;
     onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => void;
-    onDeleteEquipment: (equipmentType: EquipmentType | null, equipmentId: string) => void;
-    onOpenModificationDialog: (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => void;
+    onDeleteEquipment: (equipmentType: EquipmentType, equipmentId: string) => void;
+    onOpenModificationDialog: (id: string, type: EquipmentType, subtype: ExtendedEquipmentType | null) => void;
     onOpenDynamicSimulationEventDialog?: (
         equipmentId: string,
-        equipmentType: EquipmentType | null,
+        equipmentType: EquipmentType,
         dialogTitle: string
     ) => void;
     modificationInProgress?: boolean;
@@ -152,7 +152,7 @@ export const useEquipmentMenu = ({
     );
 
     const handleDeleteEquipment = useCallback(
-        (equipmentType: EquipmentType | null, equipmentId: string) => {
+        (equipmentType: EquipmentType, equipmentId: string) => {
             onDeleteEquipment(equipmentType, equipmentId);
             closeEquipmentMenu();
         },
@@ -160,7 +160,7 @@ export const useEquipmentMenu = ({
     );
 
     const handleOpenModificationDialog = useCallback(
-        (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => {
+        (id: string, type: EquipmentType, subtype: ExtendedEquipmentType | null) => {
             onOpenModificationDialog(id, type, subtype);
             closeEquipmentMenu();
         },
@@ -168,7 +168,7 @@ export const useEquipmentMenu = ({
     );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId: string, equipmentType: EquipmentType | null, dialogTitle: string) => {
+        (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
             if (onOpenDynamicSimulationEventDialog) {
                 onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);
             }

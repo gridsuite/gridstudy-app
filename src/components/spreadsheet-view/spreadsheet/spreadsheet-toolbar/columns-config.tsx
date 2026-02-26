@@ -5,20 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { Theme } from '@mui/material/styles';
+import { Button, Checkbox, ListItem, ListItemButton } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { DropResult } from '@hello-pangea/dnd';
 import { updateTableDefinition } from 'redux/actions';
-import { UUID } from 'crypto';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
+import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';
 import { updateColumnStates } from 'services/study/study-config';
@@ -26,11 +22,12 @@ import { AppState } from 'redux/reducer';
 import { ColumnState } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_STATE } from '../../constants';
+import { DroppableColumnsList } from './droppable-columns-list';
 
 const MAX_LOCKS_PER_TAB = 5;
 
 const styles = {
-    checkboxSelectAll: (theme: Theme) => ({
+    checkboxSelectAll: (theme) => ({
         padding: theme.spacing(0, 3, 2, 2),
         fontWeight: 'bold',
         cursor: 'pointer',
@@ -38,18 +35,18 @@ const styles = {
     checkboxItem: {
         cursor: 'pointer',
     },
-    columnConfigClosedLock: (theme: Theme) => ({
+    columnConfigClosedLock: (theme) => ({
         fontSize: '1.2em',
         color: theme.palette.action.active,
     }),
-    columnConfigOpenLock: (theme: Theme) => ({
+    columnConfigOpenLock: (theme) => ({
         fontSize: '1.2em',
         color: theme.palette.action.disabled,
     }),
-};
+} as const satisfies MuiStyles;
 
 interface ColumnsConfigProps {
-    gridRef: React.RefObject<AgGridReact>;
+    gridRef: React.RefObject<AgGridReact | null>;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
 }
@@ -143,10 +140,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
             })
             .catch((error) => {
                 resetColumnState();
-                snackError({
-                    messageTxt: error,
-                    headerId: 'spreadsheet/reorder_columns/error',
-                });
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/reorder_columns/error' });
             });
 
         handleCloseColumnsSettingDialog();
@@ -161,7 +155,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         snackError,
     ]);
 
-    const handleToggle = (value: UUID) => () => {
+    const handleToggle = (value: UUID) => {
         const newLocalColumns = localColumns.map((col) => {
             if (col.uuid === value) {
                 gridRef.current?.api.setColumnsVisible([col.id], !col.visible);
@@ -191,7 +185,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         applyColumnState(newLocalColumns);
     };
 
-    const handleClickOnLock = (value: UUID) => () => {
+    const handleClickOnLock = (value: UUID) => {
         // Early return if column is not visible
         const targetColumn = localColumns?.find((col) => col.uuid === value);
         if (!targetColumn?.visible) {
@@ -221,7 +215,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         applyColumnState(newLocalColumns);
     };
 
-    const handleDrag = useCallback(
+    const handleDragEnd = useCallback(
         ({ source, destination }: DropResult) => {
             if (destination) {
                 let reorderedTableDefinitionIndexesTemp = [...localColumns];
@@ -240,13 +234,6 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         [applyColumnState, gridRef, localColumns]
     );
 
-    const renderColumnConfigLockIcon = (value: UUID) => {
-        if (localColumns?.find((col) => col.uuid === value)?.locked) {
-            return <LockIcon sx={styles.columnConfigClosedLock} />;
-        }
-        return <LockOpenIcon sx={styles.columnConfigOpenLock} />;
-    };
-
     const checkListColumnsNames = () => {
         let isAllChecked = localColumns?.filter((col) => !col.visible).length === 0;
         let isSomeChecked = localColumns?.filter((col) => col.visible).length !== 0;
@@ -259,52 +246,14 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
                         <FormattedMessage id="spreadsheet/column/dialog/check_all" />
                     </ListItemButton>
                 </ListItem>
-
-                <DragDropContext onDragEnd={handleDrag}>
-                    <Droppable droppableId="network-table-columns-list">
-                        {(provided) => (
-                            <div ref={provided.innerRef} {...provided.droppableProps}>
-                                {[...localColumns].map(({ uuid, name, visible }, index) => (
-                                    <Draggable
-                                        draggableId={tableDefinition.uuid + '-' + index}
-                                        index={index}
-                                        key={tableDefinition.uuid + '-' + index}
-                                    >
-                                        {(provided) => (
-                                            <div ref={provided.innerRef} {...provided.draggableProps}>
-                                                <ListItem
-                                                    sx={styles.checkboxItem}
-                                                    style={{
-                                                        padding: '0 16px',
-                                                    }}
-                                                >
-                                                    <IconButton {...provided.dragHandleProps} size={'small'}>
-                                                        <DragIndicatorIcon spacing={0} edgeMode={'start'} />
-                                                    </IconButton>
-
-                                                    <ListItemIcon
-                                                        onClick={handleClickOnLock(uuid)}
-                                                        style={{
-                                                            minWidth: 0,
-                                                            width: '20px',
-                                                        }}
-                                                    >
-                                                        {renderColumnConfigLockIcon(uuid)}
-                                                    </ListItemIcon>
-                                                    <ListItemIcon onClick={handleToggle(uuid)}>
-                                                        <Checkbox checked={visible} />
-                                                    </ListItemIcon>
-                                                    <ListItemText onClick={handleToggle(uuid)} primary={name} />
-                                                </ListItem>
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
+                <DroppableColumnsList
+                    tableDefinition={tableDefinition}
+                    columns={localColumns}
+                    onDragEnd={handleDragEnd}
+                    onToggle={handleToggle}
+                    onClickOnLock={handleClickOnLock}
+                    isLocked={(uuid: UUID) => localColumns?.find((col) => col.uuid === uuid)?.locked || false}
+                />
             </>
         );
     };

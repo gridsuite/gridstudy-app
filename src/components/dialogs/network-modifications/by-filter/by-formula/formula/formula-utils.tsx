@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -21,6 +20,7 @@ import {
 import yup from 'components/utils/yup-config';
 import { AnyObject, TestContext, TestFunction } from 'yup';
 import {
+    EquipmentType,
     KILO_AMPERE,
     KILO_VOLT,
     MEGA_VAR,
@@ -38,19 +38,19 @@ export type EquipmentField = {
     unit?: string;
 };
 type EquipmentFieldsKeys =
-    | EQUIPMENT_TYPES.GENERATOR
-    | EQUIPMENT_TYPES.BATTERY
-    | EQUIPMENT_TYPES.SHUNT_COMPENSATOR
-    | EQUIPMENT_TYPES.VOLTAGE_LEVEL
-    | EQUIPMENT_TYPES.LOAD
-    | EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
-    | EQUIPMENT_TYPES.LINE;
+    | EquipmentType.GENERATOR
+    | EquipmentType.BATTERY
+    | EquipmentType.SHUNT_COMPENSATOR
+    | EquipmentType.VOLTAGE_LEVEL
+    | EquipmentType.LOAD
+    | EquipmentType.TWO_WINDINGS_TRANSFORMER
+    | EquipmentType.LINE;
 type EquipmentFields = {
     [key in EquipmentFieldsKeys]: EquipmentField[];
 };
 
 export const EQUIPMENTS_FIELDS: EquipmentFields = {
-    [EQUIPMENT_TYPES.GENERATOR]: [
+    [EquipmentType.GENERATOR]: [
         { id: 'RATED_NOMINAL_POWER', label: 'RatedNominalPowerText', unit: MEGA_WATT },
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText', unit: MEGA_WATT },
         { id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText', unit: MEGA_WATT },
@@ -74,20 +74,26 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         },
         { id: 'Q_PERCENT', label: 'ReactivePercentageVoltageRegulation', unit: PERCENTAGE },
     ],
-    [EQUIPMENT_TYPES.BATTERY]: [
+    [EquipmentType.BATTERY]: [
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText', unit: MEGA_WATT },
         { id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText', unit: MEGA_WATT },
         { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerSetPointText', unit: MEGA_WATT },
         { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerSetPointText', unit: MEGA_VAR },
         { id: 'DROOP', label: 'Droop', unit: PERCENTAGE },
+        { id: 'TRANSIENT_REACTANCE', label: 'TransientReactanceForm', unit: OHM },
+        {
+            id: 'STEP_UP_TRANSFORMER_REACTANCE',
+            label: 'TransformerReactanceForm',
+            unit: OHM,
+        },
     ],
-    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [
+    [EquipmentType.SHUNT_COMPENSATOR]: [
         { id: 'MAXIMUM_SECTION_COUNT', label: 'maximumSectionCount' },
         { id: 'SECTION_COUNT', label: 'sectionCount' },
         { id: 'MAX_SUSCEPTANCE', label: 'maxSusceptance', unit: SIEMENS },
         { id: 'MAX_Q_AT_NOMINAL_V', label: 'maxQAtNominalV', unit: MEGA_VAR },
     ],
-    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [
+    [EquipmentType.VOLTAGE_LEVEL]: [
         { id: 'NOMINAL_VOLTAGE', label: 'NominalVoltage', unit: KILO_VOLT },
         { id: 'LOW_VOLTAGE_LIMIT', label: 'LowVoltageLimit', unit: KILO_VOLT },
         { id: 'HIGH_VOLTAGE_LIMIT', label: 'HighVoltageLimit', unit: KILO_VOLT },
@@ -102,11 +108,11 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
             unit: KILO_AMPERE,
         },
     ],
-    [EQUIPMENT_TYPES.LOAD]: [
+    [EquipmentType.LOAD]: [
         { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerSetPointText', unit: MEGA_WATT },
         { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerSetPointText', unit: MEGA_VAR },
     ],
-    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [
+    [EquipmentType.TWO_WINDINGS_TRANSFORMER]: [
         { id: 'R', label: 'SeriesResistanceText', unit: OHM },
         { id: 'X', label: 'SeriesReactanceText', unit: OHM },
         { id: 'G', label: 'G', unit: MICRO_SIEMENS },
@@ -116,14 +122,16 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'RATED_S', label: 'RatedNominalPowerText', unit: MEGA_VOLT_AMPERE },
         { id: 'TARGET_V', label: 'RatioTargetV', unit: KILO_VOLT },
         { id: 'RATIO_LOW_TAP_POSITION', label: 'RatioLowTapPosition' },
+        { id: 'RATIO_HIGH_TAP_POSITION', label: 'RatioHighTapPosition' },
         { id: 'RATIO_TAP_POSITION', label: 'RatioTapPosition' },
         { id: 'RATIO_TARGET_DEADBAND', label: 'RatioDeadBand', unit: KILO_VOLT },
         { id: 'REGULATION_VALUE', label: 'PhaseRegulatingValue' },
         { id: 'PHASE_LOW_TAP_POSITION', label: 'PhaseLowTapPosition' },
+        { id: 'PHASE_HIGH_TAP_POSITION', label: 'PhaseHighTapPosition' },
         { id: 'PHASE_TAP_POSITION', label: 'PhaseTapPosition' },
         { id: 'PHASE_TARGET_DEADBAND', label: 'PhaseDeadBand' },
     ],
-    [EQUIPMENT_TYPES.LINE]: [
+    [EquipmentType.LINE]: [
         { id: 'R', label: 'SeriesResistanceText', unit: OHM },
         { id: 'X', label: 'SeriesReactanceText', unit: OHM },
         { id: 'G1', label: 'ShuntConductanceText1', unit: MICRO_SIEMENS },
@@ -132,6 +140,8 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'B2', label: 'ShuntSusceptanceText2', unit: MICRO_SIEMENS },
     ],
 };
+
+export type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;
 
 function isValueInEquipmentFields(context: TestContext<AnyObject>, value: string) {
     // this will return the highest level parent, so we can get the equipment type
@@ -145,7 +155,7 @@ function isValueInEquipmentFields(context: TestContext<AnyObject>, value: string
 
 const checkValueInEquipmentFieldsOrNumeric: TestFunction<any, AnyObject> = (value, context) => {
     const newValue = value.replace(',', '.');
-    if (!isNaN(parseFloat(newValue))) {
+    if (!Number.isNaN(Number.parseFloat(newValue))) {
         return true;
     }
 
@@ -164,52 +174,50 @@ export const getFormulaInitialValue = () => ({
     [REFERENCE_FIELD_OR_VALUE_2]: null,
 });
 
-export function getFormulaSchema(id: string) {
-    return {
-        [id]: yup.array().of(
-            yup.object().shape({
-                [FILTERS]: yup
-                    .array()
-                    .of(
-                        yup.object().shape({
-                            [ID]: yup.string().required(),
-                            [NAME]: yup.string().required(),
-                            [SPECIFIC_METADATA]: yup.object().shape({
-                                [TYPE]: yup.string(),
-                            }),
-                        })
-                    )
-                    .required()
-                    .min(1, 'FieldIsRequired'),
-                [EDITED_FIELD]: yup.string().required(),
-                [OPERATOR]: yup.string().required(),
-                [REFERENCE_FIELD_OR_VALUE_1]: yup
-                    .mixed()
-                    .required()
-                    .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
-                    .when([OPERATOR], {
-                        is: 'PERCENTAGE',
-                        then: (schema) =>
-                            schema.test(
-                                'checkValueIsReference',
-                                'ValueMustBeNumericWhenPercentageError',
-                                (value: any) => !isNaN(parseFloat(value)) && parseFloat(value) >= 0
-                            ),
-                    }),
-                [REFERENCE_FIELD_OR_VALUE_2]: yup
-                    .mixed()
-                    .required()
-                    .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
-                    .when([OPERATOR], {
-                        is: 'PERCENTAGE',
-                        then: (schema) =>
-                            schema.test(
-                                'checkValueIsReference',
-                                'ValueMustBeRefWhenPercentageError',
-                                checkValueInEquipmentFields
-                            ),
-                    }),
-            })
-        ),
-    };
+export function getFormulaSchema() {
+    return yup.array().of(
+        yup.object().shape({
+            [FILTERS]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [ID]: yup.string().required(),
+                        [NAME]: yup.string().required(),
+                        [SPECIFIC_METADATA]: yup.object().shape({
+                            [TYPE]: yup.string(),
+                        }),
+                    })
+                )
+                .required()
+                .min(1, 'FieldIsRequired'),
+            [EDITED_FIELD]: yup.string().required(),
+            [OPERATOR]: yup.string().required(),
+            [REFERENCE_FIELD_OR_VALUE_1]: yup
+                .mixed()
+                .required()
+                .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
+                .when([OPERATOR], {
+                    is: 'PERCENTAGE',
+                    then: (schema) =>
+                        schema.test(
+                            'checkValueIsReference',
+                            'ValueMustBeNumericWhenPercentageError',
+                            (value: any) => !Number.isNaN(Number.parseFloat(value)) && Number.parseFloat(value) >= 0
+                        ),
+                }),
+            [REFERENCE_FIELD_OR_VALUE_2]: yup
+                .mixed()
+                .required()
+                .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
+                .when([OPERATOR], {
+                    is: 'PERCENTAGE',
+                    then: (schema) =>
+                        schema.test(
+                            'checkValueIsReference',
+                            'ValueMustBeRefWhenPercentageError',
+                            checkValueInEquipmentFields
+                        ),
+                }),
+        })
+    );
 }

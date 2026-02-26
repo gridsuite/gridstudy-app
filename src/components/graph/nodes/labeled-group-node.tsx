@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Theme } from '@mui/material';
+import { Box } from '@mui/material';
 import { NodeProps, ReactFlowState, useStore } from '@xyflow/react';
 import { nodeHeight as nodeLayoutHeight, nodeWidth as nodeLayoutWidth } from '../layout';
 import SecurityIcon from '@mui/icons-material/Security';
 import { FormattedMessage } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { LabeledGroupNodeType } from './labeled-group-node.type';
 import { NODE_HEIGHT, NODE_WIDTH } from './constants';
 
@@ -18,7 +19,7 @@ const styles = {
         border: 'dashed 3px #8B8F8F',
         borderRadius: '8px',
     },
-    label: (theme: Theme) => ({
+    label: (theme) => ({
         position: 'absolute',
         top: -13,
         right: 8,
@@ -31,7 +32,7 @@ const styles = {
         gap: '10px',
         alignItems: 'center',
     }),
-};
+} as const satisfies MuiStyles;
 
 export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
     // Vertically, the border is halfway between the node and the edge above,
@@ -51,20 +52,29 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
 
     return (
         <Box
-            position={'absolute'}
-            visibility={'visible'} // react-flow sometimes hides nodes for obscure reasons
-            top={labeledGroupTopPosition}
-            left={labeledGroupLeftPosition}
-            height={labeledGroupHeight}
-            width={labeledGroupWidth}
-            sx={styles.border}
+            // react-flow needs a non-absolute, non-empty node with height and width to calculate
+            // the global size of the tree for its fitView function.
+            height="0"
+            width="0"
+            visibility="hidden"
         >
-            {zoom >= 0.5 && (
-                <Box sx={styles.label}>
-                    <SecurityIcon sx={{ fontSize: '12px' }} />
-                    <FormattedMessage id="labeledGroupSecurity" />
-                </Box>
-            )}
+            &nbsp;
+            <Box
+                position={'absolute'}
+                visibility={'visible'}
+                top={labeledGroupTopPosition}
+                left={labeledGroupLeftPosition}
+                height={labeledGroupHeight}
+                width={labeledGroupWidth}
+                sx={styles.border}
+            >
+                {zoom >= 0.5 && (
+                    <Box sx={styles.label}>
+                        <SecurityIcon sx={{ fontSize: '12px' }} />
+                        <FormattedMessage id="labeledGroupSecurity" />
+                    </Box>
+                )}
+            </Box>
         </Box>
     );
 }

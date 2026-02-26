@@ -13,6 +13,7 @@ import {
     EquipmentType,
     fetchDirectoryElementPath,
     Identifiable,
+    Nullable,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -25,12 +26,10 @@ import {
     FOLDER_NAME,
 } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
-import { openNadList } from 'redux/actions';
-import { Nullable } from 'components/utils/ts-utils';
 import { AppState } from 'redux/reducer';
 import { SelectionCreationPanelForm } from './selection-creation-panel-form';
 import {
@@ -39,11 +38,11 @@ import {
     getSelectionCreationSchema,
 } from './selection-creation-schema';
 import { VoltageLevel } from '../../utils/equipment-types';
+import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
 
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
     onCancel: () => void;
-    onNADCreation: () => void;
     nominalVoltages: number[];
 };
 
@@ -63,20 +62,18 @@ function isVoltageLevel(obj: Identifiable): obj is VoltageLevel {
 const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     getEquipments,
     onCancel,
-    onNADCreation,
     nominalVoltages,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const { pendingState, onSaveSelection } = useSaveMap();
+    const { openNAD } = useWorkspacePanelActions();
     const formMethods = useForm<Nullable<SelectionCreationPanelFormSchema>>({
         defaultValues: emptyFormData,
         // "Nullable" to allow null values as default values for required values
         // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
         resolver: yupResolver<Nullable<SelectionCreationPanelFormSchema>>(formSchema),
     });
-
-    const dispatch = useDispatch();
 
     const { setValue } = formMethods;
 
@@ -100,24 +97,18 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
 
     const handleValidate = (formData: SelectionCreationPaneFields) => {
         if (formData.selectionType === SELECTION_TYPES.NAD) {
-            const selectedSubstationsWithVl = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-network-viewer is migrated to TS
-
-            onNADCreation();
-            dispatch(
-                openNadList(
-                    formData.name,
-                    selectedSubstationsWithVl
-                        .flatMap((selectedSubstation) =>
-                            selectedSubstation.voltageLevels
-                                ?.filter(
-                                    (vl): vl is VoltageLevel =>
-                                        isVoltageLevel(vl) && nominalVoltages.includes(vl.nominalV)
-                                )
-                                .map((vl) => vl.id)
+            const selectedSubstationsWithVl = getEquipments(EquipmentType.VOLTAGE_LEVEL);
+            const voltageLevelIds = selectedSubstationsWithVl
+                .flatMap((selectedSubstation) =>
+                    selectedSubstation.voltageLevels
+                        ?.filter(
+                            (vl): vl is VoltageLevel => isVoltageLevel(vl) && nominalVoltages.includes(vl.nominalV)
                         )
-                        .filter((id): id is string => !!id)
+                        .map((vl) => vl.id)
                 )
-            );
+                .filter((id): id is string => !!id);
+
+            openNAD({ title: formData.name, initialVoltageLevelIds: voltageLevelIds });
             return;
         }
 

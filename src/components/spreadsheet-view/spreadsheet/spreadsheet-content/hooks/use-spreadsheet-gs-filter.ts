@@ -5,126 +5,47 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { type RefObject, useCallback, useEffect, useState } from 'react';
-import { type FilterChangedEvent, type IRowNode } from 'ag-grid-community';
-import type { UUID } from 'crypto';
-import { useSelector } from 'react-redux';
-import { type AppState } from '../../../../../redux/reducer';
-import { evaluateFilters, evaluateJsonFilter } from '../../../../../services/study/filter';
-import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulation/curve/dialog/curve-selector-utils';
+import { type RefObject, useCallback, useEffect, useMemo } from 'react';
+import type { FilterChangedEvent, GridOptions } from 'ag-grid-community';
+import type { UUID } from 'node:crypto';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
-import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
+import { useGlobalFilterResults } from '../../../../results/common/global-filter/use-global-filter-results';
+import { FilterEquipmentType } from '../../../../../types/filter-lib/filter';
+import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
     event.api.refreshCells({ columns: [ROW_INDEX_COLUMN_ID], force: true });
 };
 
-export const useSpreadsheetGlobalFilter = (
-    gridRef: RefObject<AgGridReact>,
+type ObjWithId<T extends string = string> = { id: T };
+export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
+    gridRef: RefObject<AgGridReact<TData> | null>,
     tabUuid: UUID,
     equipmentType: SpreadsheetEquipmentType
-) => {
-    const [filterIds, setFilterIds] = useState<string[]>([]);
-    const globalFilterSpreadsheetState = useSelector((state: AppState) => state.globalFilterSpreadsheetState[tabUuid]);
+) {
+    const selectedGlobalFilters = useSelectedGlobalFilters(tabUuid);
 
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-
-    const applyGlobalFilter = useCallback(
-        async (globalFilters: GlobalFilter[]) => {
-            if (studyUuid && currentNode && currentRootNetworkUuid) {
-                const countries = globalFilters
-                    ?.filter((filter) => filter.filterType === 'country')
-                    .map((filter) => filter.label);
-                const nominalVoltages = globalFilters
-                    ?.filter((filter) => filter.filterType === 'voltageLevel')
-                    .map((filter) => Number(filter.label));
-                const substationProperties = globalFilters
-                    ?.filter((filter) => filter.filterType === 'substationProperty')
-                    .reduce<Record<string, string[]>>((acc, item) => {
-                        if (item.filterSubtype) {
-                            if (!acc[item.filterSubtype]) {
-                                acc[item.filterSubtype] = [];
-                            }
-                            acc[item.filterSubtype].push(item.label);
-                        }
-                        return acc;
-                    }, {});
-                const genericFilters = globalFilters?.filter((filter) => filter.filterType === 'genericFilter');
-
-                let idsByEqType: Record<string, string[]> = {};
-                let firstInitByEqType: Record<string, boolean> = {};
-
-                if (genericFilters?.length > 0) {
-                    // We currently pre evaluate generic filters because expert filters can't be referenced by other expert filters as of now
-                    const filtersUuids = genericFilters
-                        .flatMap((filter) => filter.uuid)
-                        .filter((uuid): uuid is UUID => uuid !== undefined);
-                    const response = await evaluateFilters(
-                        studyUuid,
-                        currentNode.id,
-                        currentRootNetworkUuid,
-                        filtersUuids
-                    );
-                    response.forEach((filterEq) => {
-                        if (filterEq.identifiableAttributes.length > 0) {
-                            const eqType = filterEq.identifiableAttributes[0].type;
-                            if (!idsByEqType[eqType]) {
-                                idsByEqType[eqType] = [];
-                                firstInitByEqType[eqType] = true;
-                            }
-                            const equipIds = filterEq.identifiableAttributes.map((identifiable) => identifiable.id);
-                            if (idsByEqType[eqType].length === 0 && firstInitByEqType[eqType]) {
-                                idsByEqType[eqType] = equipIds;
-                                firstInitByEqType[eqType] = false;
-                            } else if (idsByEqType[eqType].length > 0 && equipIds.length > 0) {
-                                // intersection here because it is a AND
-                                idsByEqType[eqType] = idsByEqType[eqType].filter((id) => equipIds.includes(id));
-                            }
-                        }
-                    });
-                }
-
-                const computedFilter = buildExpertFilter(
-                    //@ts-expect-error TODO: what to do with BRANCH type?
-                    equipmentType,
-                    undefined,
-                    countries,
-                    nominalVoltages,
-                    substationProperties,
-                    idsByEqType
-                );
-
-                if (computedFilter.rules.rules && computedFilter.rules.rules.length > 0) {
-                    const identifiables = await evaluateJsonFilter(
-                        studyUuid,
-                        currentNode?.id,
-                        currentRootNetworkUuid,
-                        computedFilter
-                    );
-                    setFilterIds(identifiables.map((identifiable) => identifiable.id));
-                } else {
-                    setFilterIds([]);
-                }
-            }
-        },
-        [currentNode, currentRootNetworkUuid, equipmentType, studyUuid]
+    const equipmentTypes = useMemo(
+        () =>
+            equipmentType === SpreadsheetEquipmentType.BRANCH
+                ? ([FilterEquipmentType.LINE, FilterEquipmentType.TWO_WINDINGS_TRANSFORMER] as const)
+                : ([equipmentType as unknown as FilterEquipmentType] as const),
+        [equipmentType]
     );
-
+    const filteredEquipmentIds = useGlobalFilterResults(selectedGlobalFilters, equipmentTypes);
     useEffect(() => {
-        applyGlobalFilter(globalFilterSpreadsheetState);
         gridRef.current?.api?.onFilterChanged();
-    }, [applyGlobalFilter, tabUuid, globalFilterSpreadsheetState, gridRef]);
-
-    const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
-
-    const isExternalFilterPresent = useCallback(
-        () => globalFilterSpreadsheetState?.length > 0,
-        [globalFilterSpreadsheetState]
+    }, [filteredEquipmentIds, gridRef]);
+    // Check if the equipment of the row belongs to the filtered equipments
+    const doesFormulaFilteringPass = useCallback<NonNullable<GridOptions<TData>['doesExternalFilterPass']>>(
+        (node) => node.data?.id !== undefined && (filteredEquipmentIds?.includes(node.data?.id) ?? true),
+        [filteredEquipmentIds]
     );
-
+    const isExternalFilterPresent = useCallback<NonNullable<GridOptions<TData>['isExternalFilterPresent']>>(
+        () => selectedGlobalFilters.length > 0,
+        [selectedGlobalFilters]
+    );
     return { doesFormulaFilteringPass, isExternalFilterPresent };
-};
+}

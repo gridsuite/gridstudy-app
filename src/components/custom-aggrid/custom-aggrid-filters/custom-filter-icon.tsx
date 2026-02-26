@@ -7,36 +7,43 @@
 import React, { MouseEventHandler } from 'react';
 import { Badge, Grid, IconButton } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
+import { FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
 
 const styles = {
-    iconSize: {
-        fontSize: '1rem',
-    },
-};
+    iconSize: { fontSize: '1rem' },
+    gridRoot: { overflow: 'visible' },
+} as const satisfies MuiStyles;
 
 interface CustomFilterIconProps {
     handleShowFilter: MouseEventHandler<HTMLButtonElement> | undefined;
     selectedFilterData: unknown;
+    selectedFilterComparator?: string;
 }
 
-export const CustomFilterIcon = ({ handleShowFilter, selectedFilterData }: CustomFilterIconProps) => (
-    <Grid
-        item
-        sx={{
-            overflow: 'visible',
-        }}
-    >
-        <Grid item>
-            <IconButton size={'small'} onClick={handleShowFilter}>
-                <Badge
-                    color="secondary"
-                    variant={isNonEmptyStringOrArray(selectedFilterData) ? 'dot' : undefined}
-                    invisible={!selectedFilterData}
-                >
-                    <FilterAlt sx={styles.iconSize} />
-                </Badge>
-            </IconButton>
+export const CustomFilterIcon = ({
+    handleShowFilter,
+    selectedFilterData,
+    selectedFilterComparator,
+}: CustomFilterIconProps) => {
+    // a filter is active if it has data or if it's using IS_EMPTY or IS_NOT_EMPTY comparators
+    const isFilterActive =
+        selectedFilterData !== undefined &&
+        selectedFilterData !== null &&
+        (isNonEmptyStringOrArray(selectedFilterData) ||
+            selectedFilterComparator === FILTER_TEXT_COMPARATORS.IS_EMPTY ||
+            selectedFilterComparator === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY);
+
+    return (
+        <Grid item sx={styles.gridRoot}>
+            <Grid item>
+                <IconButton size={'small'} onClick={handleShowFilter}>
+                    <Badge color="secondary" variant={isFilterActive ? 'dot' : undefined} invisible={!isFilterActive}>
+                        <FilterAlt sx={styles.iconSize} />
+                    </Badge>
+                </IconButton>
+            </Grid>
         </Grid>
-    </Grid>
-);
+    );
+};

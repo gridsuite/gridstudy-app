@@ -6,44 +6,36 @@
  */
 
 import GlobalFilterProvider from './global-filter-provider';
-import GlobalFilterAutocomplete, { GlobalFilterAutocompleteProps } from './global-filter-autocomplete';
-import { GlobalFilter } from './global-filter-types';
-import { useMemo } from 'react';
+import GlobalFilterAutocomplete from './global-filter-autocomplete';
 import { FilterType } from '../utils';
+import { TableType } from '../../../../types/custom-aggrid-types';
+import type { UUID } from 'node:crypto';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
-export type GlobalFilterSelectorProps = GlobalFilterAutocompleteProps & {
-    onChange: (globalFilters: GlobalFilter[]) => void;
-    preloadedGlobalFilters?: GlobalFilter[];
+export type GlobalFilterSelectorProps = {
+    filterCategories?: FilterType[];
+    filterableEquipmentTypes: EQUIPMENT_TYPES[];
     genericFiltersStrictMode?: boolean;
-    disableGenericFilters?: boolean;
+    tableType: TableType;
+    tableUuid?: UUID;
 };
 export default function GlobalFilterSelector({
-    onChange,
+    filterCategories = Object.values(FilterType) as FilterType[],
     filterableEquipmentTypes,
-    preloadedGlobalFilters,
-    filters,
     //If this parameter is enabled, only generic filters of the same type as those provided in filterableEquipmentTypes will be available
     genericFiltersStrictMode = false,
-    disableGenericFilters = false,
+    tableType,
+    tableUuid,
 }: Readonly<GlobalFilterSelectorProps>) {
-    // Global filter autocomplete displayed categories are dynamically provided from the on hand filters, GENERIC_FILTER gets manually added
-    const filterCategories = useMemo(() => {
-        let categories: string[] = filters.map((filter) => filter.filterType);
-        if (!categories.includes(FilterType.GENERIC_FILTER) && !disableGenericFilters) {
-            categories.push(FilterType.GENERIC_FILTER);
-        }
-        return categories;
-    }, [filters, disableGenericFilters]);
-
     return (
         <GlobalFilterProvider
-            onChange={onChange}
             filterCategories={filterCategories}
-            preloadedGlobalFilters={preloadedGlobalFilters}
             genericFiltersStrictMode={genericFiltersStrictMode}
-            equipmentTypes={filterableEquipmentTypes}
+            filterableEquipmentTypes={filterableEquipmentTypes}
+            tableType={tableType}
+            tableUuid={tableUuid ?? tableType}
         >
-            <GlobalFilterAutocomplete filters={filters} filterableEquipmentTypes={filterableEquipmentTypes} />
+            <GlobalFilterAutocomplete />
         </GlobalFilterProvider>
     );
 }

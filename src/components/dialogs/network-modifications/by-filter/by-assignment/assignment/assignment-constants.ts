@@ -22,7 +22,7 @@ import {
     SIEMENS,
 } from '@gridsuite/commons-ui';
 
-export const FIELD_OPTIONS = {
+export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
     PROPERTY: {
         id: FieldType.FREE_PROPERTIES,
         label: 'Property',
@@ -33,6 +33,7 @@ export const FIELD_OPTIONS = {
         label: 'RatedNominalPowerText',
         unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
+        settableToNone: true,
     },
     MINIMUM_ACTIVE_POWER: {
         id: FieldType.MINIMUM_ACTIVE_POWER,
@@ -102,6 +103,7 @@ export const FIELD_OPTIONS = {
         label: 'TransformerReactanceForm',
         unit: OHM,
         dataType: DataType.DOUBLE,
+        settableToNone: true,
     },
     Q_PERCENT: {
         id: FieldType.Q_PERCENT,
@@ -146,24 +148,28 @@ export const FIELD_OPTIONS = {
         id: FieldType.LOW_VOLTAGE_LIMIT,
         label: 'LowVoltageLimit',
         unit: KILO_VOLT,
+        settableToNone: true,
         dataType: DataType.DOUBLE,
     },
     HIGH_VOLTAGE_LIMIT: {
         id: FieldType.HIGH_VOLTAGE_LIMIT,
         label: 'HighVoltageLimit',
         unit: KILO_VOLT,
+        settableToNone: true,
         dataType: DataType.DOUBLE,
     },
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'LowShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
+        settableToNone: true,
         dataType: DataType.DOUBLE,
     },
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'HighShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
+        settableToNone: true,
         dataType: DataType.DOUBLE,
     },
     ACTIVE_POWER: {
@@ -243,6 +249,7 @@ export const FIELD_OPTIONS = {
         label: 'RatedNominalPowerText',
         unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
+        settableToNone: true,
     },
     TARGET_V: {
         id: FieldType.TARGET_V,
@@ -292,15 +299,27 @@ export const FIELD_OPTIONS = {
         dataType: DataType.ENUM,
         values: LOAD_TYPES,
     },
-    SELECTED_OPERATIONAL_LIMITS_GROUP_1: {
-        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
-        label: 'selectedOperationalLimitsGroup1',
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1: {
+        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+        label: 'selectedOperationalLimitsGroupId1',
         dataType: DataType.STRING,
+        settableToNone: true,
     },
-    SELECTED_OPERATIONAL_LIMITS_GROUP_2: {
-        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
-        label: 'selectedOperationalLimitsGroup2',
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2: {
+        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
+        label: 'selectedOperationalLimitsGroupId2',
         dataType: DataType.STRING,
+        settableToNone: true,
+    },
+    OPERATIONAL_LIMITS_GROUP_1_WITH_PROPERTIES: {
+        id: FieldType.OPERATIONAL_LIMITS_GROUP_1_WITH_PROPERTIES,
+        label: 'operationalLimitsGroup1WithProperties',
+        dataType: DataType.PROPERTY,
+    },
+    OPERATIONAL_LIMITS_GROUP_2_WITH_PROPERTIES: {
+        id: FieldType.OPERATIONAL_LIMITS_GROUP_2_WITH_PROPERTIES,
+        label: 'operationalLimitsGroup2WithProperties',
+        dataType: DataType.PROPERTY,
     },
 } as const satisfies Record<string, ReadonlyDeep<FieldOptionType>>;
 
@@ -322,8 +341,10 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.G2,
         FIELD_OPTIONS.B1,
         FIELD_OPTIONS.B2,
-        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
-        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
+        FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_1_WITH_PROPERTIES,
+        FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_2_WITH_PROPERTIES,
     ],
     [EquipmentType.TWO_WINDINGS_TRANSFORMER]: [
         FIELD_OPTIONS.PROPERTY,
@@ -342,8 +363,10 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.PHASE_LOW_TAP_POSITION,
         FIELD_OPTIONS.PHASE_TAP_POSITION,
         FIELD_OPTIONS.PHASE_TARGET_DEADBAND,
-        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
-        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
+        FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_1_WITH_PROPERTIES,
+        FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_2_WITH_PROPERTIES,
     ],
     [EquipmentType.THREE_WINDINGS_TRANSFORMER]: [FIELD_OPTIONS.PROPERTY],
     [EquipmentType.GENERATOR]: [
@@ -371,6 +394,8 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.ACTIVE_POWER_SET_POINT,
         FIELD_OPTIONS.REACTIVE_POWER_SET_POINT,
         FIELD_OPTIONS.DROOP,
+        FIELD_OPTIONS.TRANSIENT_REACTANCE,
+        FIELD_OPTIONS.STEP_UP_TRANSFORMER_REACTANCE,
     ],
     [EquipmentType.LOAD]: [
         FIELD_OPTIONS.PROPERTY,
@@ -388,3 +413,5 @@ export const EQUIPMENTS_FIELDS = {
     [EquipmentType.STATIC_VAR_COMPENSATOR]: [FIELD_OPTIONS.PROPERTY],
     [EquipmentType.HVDC_LINE]: [FIELD_OPTIONS.PROPERTY],
 } as const;
+
+export type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;

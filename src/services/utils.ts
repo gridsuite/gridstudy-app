@@ -16,75 +16,11 @@ export const FetchStatus = {
 
 export const MAX_INT32: number = 2147483647;
 
-type ErrorType = Error & {
-    status?: number;
-};
 type DefaultParameters = StudyMetadata['defaultParametersValues'];
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
 export const getRequestParamFromList = (params: any[], paramName: string) => {
     return new URLSearchParams(params?.length ? params.map((param) => [paramName, param]) : []);
-};
-
-const parseError = (text: string) => {
-    try {
-        return JSON.parse(text);
-    } catch (err) {
-        return null;
-    }
-};
-
-const handleError = (response: Response) => {
-    return response.text().then((text) => {
-        const errorName = 'HttpResponseError : ';
-        let error: ErrorType;
-        const errorJson = parseError(text);
-        if (errorJson?.status && errorJson.error && errorJson.message) {
-            error = new Error(
-                errorName + errorJson.status + ' ' + errorJson.error + ', message : ' + errorJson.message
-            );
-            error.status = errorJson.status;
-        } else {
-            error = new Error(errorName + response.status + ' ' + response.statusText + ', message : ' + text);
-            error.status = response.status;
-        }
-        throw error;
-    });
-};
-
-const prepareRequest = (init: RequestInit | undefined, token: string | undefined) => {
-    if (!(typeof init == 'undefined' || typeof init == 'object')) {
-        throw new TypeError('Argument 2 of backendFetch is not an object' + typeof init);
-    }
-    const initCopy = { ...init };
-    initCopy.headers = new Headers(initCopy.headers || {});
-    const tokenCopy = token ?? getUserToken();
-    initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
-    return initCopy;
-};
-
-const safeFetch = (url: string, initCopy: RequestInit) => {
-    return fetch(url, initCopy).then((response: any) => (response.ok ? response : handleError(response)));
-};
-
-export const backendFetch = (url: string, init?: RequestInit, token?: string) => {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy);
-};
-
-export const backendFetchText = (url: string, init?: RequestInit, token?: string) => {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
-};
-
-export const backendFetchJson = (url: string, init?: RequestInit, token?: string) => {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) => (safeResponse.status === 204 ? null : safeResponse.json()));
-};
-
-export const backendFetchFile = (url: string, init: RequestInit, token?: string) => {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.blob());
 };
 
 const FILE_TYPE = {
@@ -133,7 +69,7 @@ export function fetchVersion() {
 export const fetchDefaultParametersValues = () => {
     console.info('fetching study default parameters values from apps-metadata file');
     const defaultValues: DefaultParameters = {
-        enableDeveloperMode: false,
+        isDeveloperMode: false,
     };
     return fetchStudyMetadata()
         .then((studyMetadata) => {

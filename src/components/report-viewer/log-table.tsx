@@ -6,7 +6,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, MessageLogCellRenderer, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
@@ -28,10 +28,9 @@ import { ComputingAndNetworkModificationType, Log, SelectedReportLog, SeverityLe
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { MessageLogCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
-import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
+import { FilterConfig, TableType } from '../../types/custom-aggrid-types';
 import {
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
@@ -40,13 +39,14 @@ import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
 import { reportStyles } from './report.styles';
 import { useLogsPagination } from './use-logs-pagination';
+import { useStableComputedArray } from '../../hooks/use-stable-computed-array';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
 };
 
-const styles = {
-    chip: (severity: string, severityFilter: string[], theme: Theme) => ({
+const chipStyle = (severity: string, severityFilter: string[], theme: Theme) =>
+    ({
         backgroundColor: severityFilter.includes(severity)
             ? REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode
             : theme.severityChip.disabledColor,
@@ -63,23 +63,21 @@ const styles = {
             color: theme.palette.text.primary,
         },
         padding: 0.5,
+    }) as const satisfies SxStyle;
+
+const styles = {
+    chipContainer: (theme) => ({
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: theme.spacing(1),
     }),
-    chipContainer: (theme: Theme) => {
-        return {
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: theme.spacing(1),
-        };
-    },
-    toolContainer: (theme: Theme) => {
-        return {
-            display: 'flex',
-            flexDirection: 'column',
-            gap: theme.spacing(1),
-            mb: theme.spacing(2),
-        };
-    },
-};
+    toolContainer: (theme) => ({
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(1),
+        mb: theme.spacing(2),
+    }),
+} as const satisfies MuiStyles;
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 const PAGE_OPTIONS = [15, 30, 50, 100];
@@ -110,7 +108,7 @@ const LogTable = ({
     const [, , , fetchLogs, fetchLogMatches] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
-    const { filters } = useFilterSelector(FilterType.Logs, reportType);
+    const { filters } = useFilterSelector(TableType.Logs, reportType);
     const { pagination, setPagination } = useLogsPagination(reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
@@ -132,7 +130,10 @@ const LogTable = ({
         setFiltersInitialized(false);
     }, [reportType, severities]);
 
-    const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
+    const severityFilter = useStableComputedArray<string>(
+        () => getColumnFilterValue(filters, 'severity') ?? [],
+        [filters]
+    );
     const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
 
     const resetSearch = useCallback(() => {
@@ -172,9 +173,14 @@ const LogTable = ({
     useEffect(() => {
         if (severities && severities.length > 0) {
             // Reset filters will trigger initialization regardless of current filter state
-            // Otherwise, only initialize if not already done and no filters present :
+            // Otherwise, only initialize if not already done and no filters present, or if not already done
+            // and severity not already in current filter state
             // This is to avoid overwriting filters when user unchecks all severities manually
-            const needsInitialization = resetFilters || (!filtersInitialized && severityFilter.length === 0);
+            const severityNotAlreadyInFilter = severities.some((severity) => !severityFilter.includes(severity));
+            const needsInitialization =
+                resetFilters ||
+                (!filtersInitialized && severityFilter.length === 0) ||
+                (!filtersInitialized && severityNotAlreadyInFilter);
 
             if (needsInitialization) {
                 dispatch(
@@ -190,7 +196,7 @@ const LogTable = ({
                 setFiltersInitialized(true);
             }
         }
-    }, [severities, dispatch, reportType, resetFilters, filtersInitialized, severityFilter.length]);
+    }, [severities, dispatch, reportType, resetFilters, filtersInitialized, severityFilter]);
 
     useEffect(() => {
         if (selectedReport.id && selectedReport.type) {
@@ -222,7 +228,7 @@ const LogTable = ({
                     filterComponent: CustomAggridComparatorFilter,
                     filterComponentParams: {
                         filterParams: {
-                            type: FilterType.Logs,
+                            type: TableType.Logs,
                             tab: reportType,
                             dataType: FILTER_DATA_TYPES.TEXT,
                             comparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
@@ -433,7 +439,7 @@ const LogTable = ({
                             deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
                             onClick={() => handleChipClick(severity)}
                             onDelete={() => handleChipClick(severity)}
-                            sx={styles.chip(severity, severityFilter, theme)}
+                            sx={chipStyle(severity, severityFilter, theme) /*TODO memoize that*/}
                         />
                     ))}
                 </Box>

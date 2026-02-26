@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { PREFIX_STUDY_QUERIES, getStudyUrl } from '.';
-import { backendFetch, backendFetchJson } from '../utils';
+import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 
 interface BasicStudyInfos {
     uniqueId: string;
@@ -35,7 +35,7 @@ export const recreateStudyNetworkFromExistingCase = (
     studyUuid: UUID,
     currentRootNetworkUuid: UUID,
     importParameters: Record<string, any>
-): Promise<BasicStudyInfos> => {
+): Promise<Response> => {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('caseUuid', caseUuid);
 
@@ -57,7 +57,7 @@ export const recreateStudyNetworkFromExistingCase = (
     });
 };
 
-export const recreateStudyNetwork = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<BasicStudyInfos> => {
+export const recreateStudyNetwork = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> => {
     const recreateStudyNetworkUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -74,7 +74,7 @@ export const recreateStudyNetwork = (studyUuid: UUID, currentRootNetworkUuid: UU
     });
 };
 
-export const reindexAllRootNetwork = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<void> => {
+export const reindexAllRootNetwork = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> => {
     const reindexAllRootNetworkUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -90,3 +90,10 @@ export const reindexAllRootNetwork = (studyUuid: UUID, currentRootNetworkUuid: U
         headers: { 'Content-Type': 'application/json' },
     });
 };
+
+export function unbuildAllStudyNodes(studyUuid: UUID) {
+    console.info('Unbuild all nodes in study ' + studyUuid + ' ...');
+    const url = getStudyUrl(studyUuid) + '/nodes/unbuild-all';
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+}

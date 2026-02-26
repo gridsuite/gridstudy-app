@@ -7,39 +7,56 @@
 
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { Box, useTheme } from '@mui/material';
+import { Box, Button, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
-import { GridReadyEvent, RowClassParams, RowDataUpdatedEvent, ValueGetterParams } from 'ag-grid-community';
+import {
+    GridApi,
+    GridReadyEvent,
+    ICellRendererParams,
+    RowClassParams,
+    RowDataUpdatedEvent,
+    ValueFormatterParams,
+    ValueGetterParams,
+} from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import {
+    ComputingType,
+    CustomAGGrid,
+    DefaultCellRenderer,
+    OverflowableText,
+    unitToKiloUnit,
+} from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { CustomAGGrid, unitToKiloUnit, ComputingType } from '@gridsuite/commons-ui';
-import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterType as AgGridFilterType, FilterConfig } from '../../../types/custom-aggrid-types';
+import { FilterConfig, TableType, numericFilterParams, textFilterParams } from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
+import { resultsStyles } from '../common/utils';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
+import { PanelType } from '../../workspace/types/workspace.types';
+import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
+import type { UUID } from 'node:crypto';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
+import { createMultiEnumFilterParams } from '../common/column-filter/utilis';
 
 interface ShortCircuitAnalysisResultProps {
-    result: SCAFaultResult[];
+    result: SCAFaultResult[] | undefined;
     analysisType: ShortCircuitAnalysisType;
     isFetching: boolean;
     filterEnums: FilterEnumsType;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
-    onFilter: () => void;
-    filters: FilterConfig[];
+    goToFirstPage: () => void;
+    computationSubType: string;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -50,6 +67,7 @@ type ShortCircuitAnalysisAGGridResult =
 interface ShortCircuitAnalysisResultsFaultHeader {
     faultId: string;
     elementId: string;
+    voltageLevel: string;
     faultType: string;
     shortCircuitPower: number;
     current: number;
@@ -81,18 +99,42 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     filterEnums,
     onGridColumnsChanged,
     onRowDataUpdated,
-    onFilter,
-    filters,
+    goToFirstPage,
+    computationSubType,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
+    const { openSLD } = useWorkspacePanelActions();
+
+    const filters = useSelector(
+        (state: AppState) =>
+            state.tableFilters.columnsFilters?.[TableType.ShortcircuitAnalysis]?.[computationSubType]?.columns
+    );
+    const voltageLevelIdRenderer = useCallback(
+        (props: ICellRendererParams) => {
+            const { value } = props || {};
+            const onClick = () => {
+                openSLD({ equipmentId: value, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+            };
+            if (value) {
+                return (
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
+                );
+            }
+        },
+        [openSLD]
+    );
 
     const getEnumLabel = useCallback(
         (value: string) =>
-            intl.formatMessage({
-                id: value,
-                defaultMessage: value,
-            }),
+            value
+                ? intl.formatMessage({
+                      id: value,
+                      defaultMessage: value,
+                  })
+                : '',
         [intl]
     );
 
@@ -111,22 +153,29 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         };
 
         const filterParams = {
-            type: AgGridFilterType.ShortcircuitAnalysis,
+            type: TableType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
-            updateFilterCallback: onFilter,
-        };
-
-        const textFilterParams = {
-            dataType: FILTER_DATA_TYPES.TEXT,
-            comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-        };
-
-        const numericFilterParams = {
-            dataType: FILTER_DATA_TYPES.NUMBER,
-            comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            updateFilterCallback: (
+                agGridApi?: GridApi,
+                filters?: FilterConfig[],
+                colId?: string,
+                studyUuid?: UUID,
+                filterType?: TableType,
+                filterSubType?: string
+            ) =>
+                updateComputationColumnsFilters(
+                    agGridApi,
+                    filters,
+                    colId,
+                    studyUuid,
+                    filterType,
+                    filterSubType,
+                    goToFirstPage
+                ),
         };
 
         const inputFilterParams = (
+            field: string,
             filterDefinition: Pick<
                 Required<ColumnContext>['filterComponentParams']['filterParams'],
                 'dataType' | 'comparators'
@@ -158,21 +207,36 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         };
 
         return [
+            {
+                ...makeAgGridCustomHeaderColumn({
+                    headerName: intl.formatMessage({ id: 'IDNode' }),
+                    colId: 'elementId',
+                    field: 'elementId',
+                    context: {
+                        ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('elementId', textFilterParams) }),
+                    },
+                }),
+                minWidth: 180,
+            },
             makeAgGridCustomHeaderColumn({
-                headerName: intl.formatMessage({ id: 'IDNode' }),
-                colId: 'elementId',
-                field: 'elementId',
+                headerName: intl.formatMessage({ id: 'busVoltageLevel' }),
+                colId: 'voltageLevel',
+                field: 'voltageLevel',
+                cellRenderer: voltageLevelIdRenderer,
                 context: {
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(textFilterParams) }),
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('voltageLevel', textFilterParams) }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Type' }),
                 colId: 'faultType',
                 field: 'faultType',
+                filterParams: createMultiEnumFilterParams,
                 context: {
                     ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('faultType') }),
                 },
+                valueGetter: (value: ValueGetterParams) => value.data.faultType,
+                valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
@@ -180,7 +244,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 field: 'connectableId',
                 context: {
                     sortParams: onlyIfIsAllBuses({ ...sortParams, isChildren: true }, sortParams),
-                    ...inputFilterParams(textFilterParams),
+                    ...inputFilterParams('connectableId', textFilterParams),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -191,7 +255,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     numeric: true,
                     fractionDigits: 2,
                     sortParams,
-                    ...inputFilterParams(numericFilterParams),
+                    ...inputFilterParams('current', numericFilterParams),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.current),
             }),
@@ -200,18 +264,27 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 colId: 'side',
                 field: 'side',
                 hide: isAllBusesAnalysisType,
+                filterParams: createMultiEnumFilterParams,
                 context: {
                     ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams('side') }),
                 },
+                valueGetter: (value: ValueGetterParams) => value.data.side,
+                valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
             }),
-            makeAgGridCustomHeaderColumn({
-                headerName: intl.formatMessage({ id: 'LimitType' }),
-                colId: 'limitType',
-                field: 'limitType',
-                context: {
-                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('limitType') }),
-                },
-            }),
+            {
+                ...makeAgGridCustomHeaderColumn({
+                    headerName: intl.formatMessage({ id: 'LimitType' }),
+                    colId: 'limitType',
+                    field: 'limitType',
+                    filterParams: createMultiEnumFilterParams,
+                    context: {
+                        ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('limitType') }),
+                    },
+                    valueGetter: (value: ValueGetterParams) => value.data.limitType,
+                    valueFormatter: (params: ValueFormatterParams) => getEnumLabel(params.value),
+                }),
+                minWidth: 150,
+            },
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 colId: 'limitMin',
@@ -219,7 +292,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('limitMin', numericFilterParams) }),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMin),
             }),
@@ -230,7 +303,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('limitMax', numericFilterParams) }),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMax),
             }),
@@ -241,37 +314,49 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams('shortCircuitPower', numericFilterParams) }),
                 },
             }),
-            makeAgGridCustomHeaderColumn({
-                headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
-                colId: 'deltaCurrentIpMin',
-                field: 'deltaCurrentIpMin',
-                context: {
-                    numeric: true,
-                    fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
-                },
-                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMin),
-            }),
-            makeAgGridCustomHeaderColumn({
-                headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
-                colId: 'deltaCurrentIpMax',
-                field: 'deltaCurrentIpMax',
-                context: {
-                    numeric: true,
-                    fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
-                },
-                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMax),
-            }),
+            {
+                ...makeAgGridCustomHeaderColumn({
+                    headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
+                    colId: 'deltaCurrentIpMin',
+                    field: 'deltaCurrentIpMin',
+                    context: {
+                        numeric: true,
+                        fractionDigits: 2,
+                        ...onlyIfIsAllBuses({
+                            sortParams,
+                            ...inputFilterParams('deltaCurrentIpMin', numericFilterParams),
+                        }),
+                    },
+                    valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMin),
+                }),
+                minWidth: 180,
+            },
+            {
+                ...makeAgGridCustomHeaderColumn({
+                    headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
+                    colId: 'deltaCurrentIpMax',
+                    field: 'deltaCurrentIpMax',
+                    context: {
+                        numeric: true,
+                        fractionDigits: 2,
+                        ...onlyIfIsAllBuses({
+                            sortParams,
+                            ...inputFilterParams('deltaCurrentIpMax', numericFilterParams),
+                        }),
+                    },
+                    valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMax),
+                }),
+                minWidth: 180,
+            },
             {
                 field: 'linkedElementId',
                 hide: true,
             },
         ];
-    }, [analysisType, onFilter, filterEnums, intl, getEnumLabel]);
+    }, [analysisType, goToFirstPage, intl, voltageLevelIdRenderer, filterEnums, getEnumLabel]);
 
     const shortCircuitAnalysisStatus = useSelector(
         (state: AppState) =>
@@ -282,7 +367,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             ]
     );
 
-    const messages = useIntlResultStatusMessages(intl, true, filters.length > 0);
+    const messages = useIntlResultStatusMessages(intl, true, filters?.length > 0);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
@@ -305,16 +390,11 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         []
     );
 
-    const onGridReady = useCallback(
-        (params: GridReadyEvent) => {
-            if (params?.api) {
-                params.api.sizeColumnsToFit();
-                onGridColumnsChanged && onGridColumnsChanged(params);
-            }
-        },
-        [onGridColumnsChanged]
+    const onGridReady = useAgGridInitialColumnFilters(
+        TableType.ShortcircuitAnalysis,
+        computationSubType,
+        onGridColumnsChanged
     );
-
     const handleRowDataUpdated = useCallback(
         (event: RowDataUpdatedEvent) => {
             if (event?.api) {
@@ -348,9 +428,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 if (limitViolations.length > 0) {
                     let lv = limitViolations[0];
                     firstLimitViolation = {
-                        limitType: intl.formatMessage({
-                            id: lv.limitType,
-                        }),
+                        limitType: lv.limitType,
                     };
                 }
 
@@ -361,7 +439,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 rows.push({
                     faultId: fault.id,
                     elementId: fault.elementId,
-                    faultType: intl.formatMessage({ id: fault.faultType }),
+                    voltageLevel: fault.voltageLevelId,
+                    faultType: fault.faultType,
                     shortCircuitPower: faultResult.shortCircuitPower,
                     limitMin: faultResult.shortCircuitLimits.ipMin,
                     limitMax: faultResult.shortCircuitLimits.ipMax,
@@ -373,13 +452,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 });
                 limitViolations.slice(1).forEach((lv) => {
                     rows.push({
-                        limitType: intl.formatMessage({
-                            id: lv.limitType,
-                        }),
+                        limitType: lv.limitType,
                         limitMin: lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT' ? lv.limit : null,
                         limitMax: lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT' ? lv.limit : null,
                         current: lv.value,
                         elementId: '', // we have to add this otherwise it's automatically filtered
+                        voltageLevel: '', // we have to add this otherwise it's automatically filtered
                         faultType: '', // we have to add this otherwise it's automatically filtered
                         connectableId: '', // we have to add this otherwise it's automatically filtered
                     });
@@ -394,17 +472,24 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         linkedElementId: fault.id,
                         current: current,
                         elementId: '', // we have to add this otherwise it's automatically filtered
+                        voltageLevel: '', // we have to add this otherwise it's automatically filtered
                         faultType: '', // we have to add this otherwise it's automatically filtered
                         limitType: '', // we have to add this otherwise it's automatically filtered
-                        side: convertSide(side, intl),
+                        side: side,
                     });
                 });
             });
             return rows;
         },
-        [getCurrent, intl, analysisType]
+        [getCurrent, analysisType]
     );
-    const rows = useMemo(() => flattenResult(result), [flattenResult, result]);
+    const rows = useMemo(() => {
+        if (result) {
+            return flattenResult(result);
+        } else {
+            return undefined;
+        }
+    }, [flattenResult, result]);
 
     const message = getNoRowsMessage(messages, rows, shortCircuitAnalysisStatus, !isFetching);
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);

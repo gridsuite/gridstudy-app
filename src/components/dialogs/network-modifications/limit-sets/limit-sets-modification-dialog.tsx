@@ -4,16 +4,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AMOUNT_TEMPORARY_LIMITS, CSV_FILENAME, MODIFICATIONS_TABLE, TYPE } from '../../../utils/field-constants';
+import {
+    AMOUNT_TEMPORARY_LIMITS,
+    CSV_FILENAME,
+    MODIFICATIONS_TABLE,
+    OLGS_MODIFICATION_TYPE,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
+    TYPE,
+} from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
-import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { ModificationDialog } from '../../commons/modificationDialog';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from 'services/utils.type';
 import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modification-form';
@@ -80,7 +87,7 @@ export function LimitSetsModificationDialog({
     const onSubmit = useCallback<SubmitHandler<SchemaType>>(
         (formData) => {
             const amountMaxTemporaryLimits = getValues(AMOUNT_TEMPORARY_LIMITS);
-            const modificationType = LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS[formData[TYPE]];
+            const equipmentModificationType = LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS[formData[TYPE]];
             const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
                 let modification = formatModification(row);
                 Object.keys(modification).forEach((key) => {
@@ -90,23 +97,25 @@ export function LimitSetsModificationDialog({
                     formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits),
                 ];
                 formatSelectedOperationalGroupId(modification);
-                modification.type = modificationType;
+                modification.type = equipmentModificationType; // ex: LINE_MODIFICATION
+                if (row.modificationType === OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE) {
+                    // when 'modificationType' CSV column is REPLACE : activate the 'replace' back-end mode to delete
+                    // all existing limit sets before adding a new one.
+                    modification[OLGS_MODIFICATION_TYPE] = OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE;
+                }
                 return modification;
             });
 
             createTabularModification({
                 studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationType,
+                modificationType: equipmentModificationType,
                 modifications,
                 modificationUuid: editData?.uuid,
-                type: ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
+                tabularType: ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
                 csvFilename: formData[CSV_FILENAME],
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'TabularModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'TabularModificationError' });
             });
         },
         [currentNodeUuid, editData, getValues, snackError, studyUuid]

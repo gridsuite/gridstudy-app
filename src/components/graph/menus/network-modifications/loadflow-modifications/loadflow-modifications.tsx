@@ -9,7 +9,7 @@ import { Box, Button, Dialog, DialogContent, DialogProps, DialogTitle, Tab, Tabs
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useLoadflowModifications } from './use-loadflow-modifications';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 import { GridReadyEvent, RowDataUpdatedEvent, ValueFormatterParams } from 'ag-grid-community';
 import { SortWay } from 'types/custom-aggrid-types';
@@ -24,13 +24,13 @@ const styles = {
         top: 0,
         left: 0,
     },
-};
+} as const satisfies MuiStyles;
 
 interface LoadflowModificationsProps extends DialogProps {
     onClose: () => void;
 }
 
-export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps> = ({ open, onClose }) => {
+export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps> = ({ onClose }) => {
     const intl = useIntl();
     const [tabIndex, setTabIndex] = useState(0);
     const [data, isLoading] = useLoadflowModifications();

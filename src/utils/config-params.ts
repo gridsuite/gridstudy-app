@@ -7,17 +7,11 @@
 
 export const APP_NAME = 'study';
 
-// Commons config names
-export const PARAM_THEME = 'theme';
-export const PARAM_LANGUAGE = 'language';
-
 // App config names
 export const PARAM_USE_NAME = 'useName';
 export const PARAM_LIMIT_REDUCTION = 'limitReduction';
 export const PARAM_COMPUTED_LANGUAGE = 'computedLanguage';
-export const PARAM_DEVELOPER_MODE = 'enableDeveloperMode';
 export const PARAMS_LOADED = 'paramsLoaded';
-export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
 
 // SA Param names
 export const PARAM_SA_PROVIDER = 'provider';
@@ -30,5 +24,6 @@ export const PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD = 'highVoltageAbsoluteThre
 // Param values
 export const PARAM_PROVIDER_OPENLOADFLOW = 'OpenLoadFlow';
 export const PARAM_PROVIDER_DYNAFLOW = 'DynaFlow';
+export const PARAM_PROVIDER_DYNAWO = 'Dynawo';
 
 export const basemap_style_theme_key = (basemap: string) => basemap + 'Style';

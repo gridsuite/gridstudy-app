@@ -12,7 +12,7 @@ export const RESULTS_LOADING_DELAY = 500;
 export const LOAD_TYPES = [
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },
-] as const;
+];
 // and the undefined/default one (not displayed)
 export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 
@@ -76,13 +76,13 @@ export const APPLICABILITY = {
     SIDE2: { id: 'SIDE2', label: 'Side2' },
 };
 
+export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 // Relevant ConnectablePosition.Direction Powsybl enum values
 export const CONNECTION_DIRECTIONS = [
     { id: 'TOP', label: 'Top' },
     { id: 'BOTTOM', label: 'Bottom' },
+    { id: UNDEFINED_CONNECTION_DIRECTION, label: 'Undefined' },
 ] as const;
-// and the undefined/default one (not displayed)
-export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 
 export function getEnergySourceLabel(energySourceId?: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;

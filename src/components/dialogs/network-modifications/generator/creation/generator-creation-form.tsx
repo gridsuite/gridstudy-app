@@ -5,7 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    filledTextField,
+    FloatInput,
+    italicFontTextField,
+    MVAPowerAdornment,
+    PropertiesForm,
+    SelectInput,
+    SwitchInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -17,23 +27,13 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
-import {
-    ActivePowerAdornment,
-    filledTextField,
-    italicFontTextField,
-    MVAPowerAdornment,
-    OhmAdornment,
-} from '../../../dialog-utils';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import { Box, Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { SetPointsForm } from '../../../set-points/set-points-form';
-import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
@@ -41,8 +41,9 @@ import { FormattedMessage } from 'react-intl';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import { useWatch } from 'react-hook-form';
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 
 export interface GeneratorCreationFormProps {
     studyUuid: UUID;
@@ -99,14 +100,6 @@ export default function GeneratorCreationForm({
 
     const ratedNominalPowerField = (
         <FloatInput name={RATED_NOMINAL_POWER} label={'RatedNominalPowerText'} adornment={MVAPowerAdornment} />
-    );
-
-    const transientReactanceField = (
-        <FloatInput name={TRANSIENT_REACTANCE} label={'TransientReactanceForm'} adornment={OhmAdornment} />
-    );
-
-    const transformerReactanceField = (
-        <FloatInput name={TRANSFORMER_REACTANCE} label={'TransformerReactanceForm'} adornment={OhmAdornment} />
     );
 
     const plannedActivePowerSetPointField = (
@@ -179,12 +172,9 @@ export default function GeneratorCreationForm({
                 <ActivePowerControlForm />
             </Grid>
 
-            {/* Short Circuit of start part */}
+            {/* Short Circuit part */}
             <GridSection title="ShortCircuit" />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{transientReactanceField}</GridItem>
-                <GridItem size={4}>{transformerReactanceField}</GridItem>
-            </Grid>
+            <ShortCircuitForm />
 
             {/* Cost of start part */}
             <GridSection title="GenerationDispatch" />

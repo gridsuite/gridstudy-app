@@ -5,77 +5,71 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    PARAM_DEVELOPER_MODE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LANGUAGE,
-    PARAM_THEME,
-    PARAM_USE_NAME,
-    PARAMS_LOADED,
-} from '../utils/config-params';
+import { PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import type { Action } from 'redux';
 import {
+    BaseVoltage,
     ComputingType,
     type GsLang,
     type GsLangUser,
     type GsTheme,
     type Identifiable,
     type NetworkVisualizationParameters,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
 } from '@gridsuite/commons-ui';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { UnknownArray } from 'type-fest';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
     ComputingStatusParameters,
-    DiagramGridLayoutConfig,
-    GlobalFilterSpreadsheetState,
+    CopiedNetworkModifications,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
+    TableSortConfig,
     TableSortKeysType,
 } from './reducer';
 import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-    LOADFLOW_RESULT_STORE_FIELD,
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
+    PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
-    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
-    STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
-import { StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
-    type SpreadsheetTabDefinition,
     type SpreadsheetOptionalLoadingParameters,
+    type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
+    PccminTab,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
     SortConfig,
+    TableType,
 } from '../types/custom-aggrid-types';
-import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
+import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -105,43 +99,35 @@ export type AppActions =
     | CloseStudyAction
     | UseNameAction
     | EnableDeveloperModeAction
-    | StudyUpdatedAction
     | MapDataLoadingAction
     | MapEquipmentsInitializedAction
-    | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
+    | StoreNadViewBoxAction
+    | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
     | RemoveNotificationByNodeAction
     | SetModificationsInProgressAction
-    | OpenDiagramAction
-    | OpenNadListAction
     | SetComputingStatusAction
     | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
-    | AddToRecentGlobalFiltersAction
-    | RemoveFromRecentGlobalFiltersAction
+    | ResetOneBusShortcircuitAnalysisDiagramAction
+    | AddToGlobalFilterOptionsAction
+    | RemoveFromGlobalFilterOptionsAction
     | SetLastCompletedComputationAction
-    | LoadflowResultFilterAction
-    | SecurityAnalysisResultFilterAction
-    | SensitivityAnalysisResultFilterAction
-    | ShortcircuitAnalysisResultFilterAction
-    | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
     | UpdateSpreadsheetPartialDataAction
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
-    | StateEstimationResultFilterAction
     | AddFilterForNewSpreadsheetAction
-    | SaveSpreadSheetGlobalFilterAction
-    | ResetAllSpreadsheetGlobalFiltersAction
+    | InitOrUpdateSpreadSheetGlobalFilterAction
     | RemoveTableDefinitionAction
     | SetCalculationSelectionsAction
     | ReorderTableDefinitionsAction
@@ -150,7 +136,6 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | DeletedOrRenamedNodesAction
     | RemoveEquipmentDataAction
     | SetOpenMapAction
     | SecurityAnalysisResultPaginationAction
@@ -162,7 +147,11 @@ export type AppActions =
     | LogsResultPaginationAction
     | ResetLogsPaginationAction
     | SetActiveSpreadsheetTabAction
-    | SetAddedSpreadsheetTabAction;
+    | SetAddedSpreadsheetTabAction
+    | UpdateColumnFiltersAction
+    | AddGlobalFiltersAction
+    | RemoveGlobalFiltersAction
+    | ClearGlobalFiltersAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -206,15 +195,51 @@ export function cancelLeaveParametersTab(): CancelLeaveParametersTabAction {
     };
 }
 
+export const SET_DIRTY_COMPUTATION_PARAMETERS = 'SET_DIRTY_COMPUTATION_PARAMETERS';
+export type SetDirtyComputationParametersAction = Readonly<Action<typeof SET_DIRTY_COMPUTATION_PARAMETERS>> & {
+    isDirty: boolean;
+};
+
+export function setDirtyComputationParameters(isDirty: boolean): SetDirtyComputationParametersAction {
+    return {
+        type: SET_DIRTY_COMPUTATION_PARAMETERS,
+        isDirty,
+    };
+}
+
+export const ADD_SPREADSHEET_LOADED_NODES_IDS = 'ADD_SPREADSHEET_LOADED_NODES_IDS';
+export type AddSpreadsheetLoadedNodesIdsAction = Readonly<Action<typeof ADD_SPREADSHEET_LOADED_NODES_IDS>> & {
+    nodesIds: UUID[];
+};
+
+export function addSpreadsheetLoadedNodesIds(nodesIds: UUID[]): AddSpreadsheetLoadedNodesIdsAction {
+    return {
+        type: ADD_SPREADSHEET_LOADED_NODES_IDS,
+        nodesIds,
+    };
+}
+
+export const REMOVE_SPREADSHEET_LOADED_NODES_IDS = 'REMOVE_SPREADSHEET_LOADED_NODES_IDS';
+export type RemoveSpreadsheetLoadedNodesIdsAction = Readonly<Action<typeof REMOVE_SPREADSHEET_LOADED_NODES_IDS>> & {
+    nodesIds: UUID[];
+};
+
+export function removeSpreadsheetLoadedNodesIds(nodesIds: UUID[]): RemoveSpreadsheetLoadedNodesIdsAction {
+    return {
+        type: REMOVE_SPREADSHEET_LOADED_NODES_IDS,
+        nodesIds,
+    };
+}
+
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
     equipmentType: SpreadsheetEquipmentType;
-    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes;
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes['equipmentsByNodeId'];
 };
 
 export function loadEquipments(
     equipmentType: SpreadsheetEquipmentType,
-    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes['equipmentsByNodeId']
 ): LoadEquipmentsAction {
     return {
         type: LOAD_EQUIPMENTS,
@@ -225,12 +250,14 @@ export function loadEquipments(
 
 export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
 export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
+    spreadsheetEquipmentType: SpreadsheetEquipmentType;
     nodesIdToRemove: string[];
 };
 
-export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction {
+export function removeNodeData(type: SpreadsheetEquipmentType, nodesIdToRemove: string[]): RemoveNodeDataAction {
     return {
         type: REMOVE_NODE_DATA,
+        spreadsheetEquipmentType: type,
         nodesIdToRemove,
     };
 }
@@ -321,6 +348,23 @@ export function cleanEquipments(equipmentType: SpreadsheetEquipmentType): CleanE
     return {
         type: CLEAN_EQUIPMENTS,
         equipmentType,
+    };
+}
+
+export const SET_SPREADSHEET_FETCHING = 'SET_SPREADSHEET_FETCHING';
+export type SetSpreadsheetFetchingAction = Readonly<Action<typeof SET_SPREADSHEET_FETCHING>> & {
+    spreadsheetEquipmentType: SpreadsheetEquipmentType;
+    isFetching: boolean;
+};
+
+export function setSpreadsheetFetching(
+    type: SpreadsheetEquipmentType,
+    isFetching: boolean
+): SetSpreadsheetFetchingAction {
+    return {
+        type: SET_SPREADSHEET_FETCHING,
+        spreadsheetEquipmentType: type,
+        isFetching,
     };
 }
 
@@ -589,20 +633,11 @@ export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_
     [PARAM_DEVELOPER_MODE]: boolean;
 };
 
-export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableDeveloperModeAction {
+export function selectIsDeveloperMode(isDeveloperMode: boolean): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
-        [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
+        [PARAM_DEVELOPER_MODE]: isDeveloperMode,
     };
-}
-
-export const STUDY_UPDATED = 'STUDY_UPDATED';
-export type StudyUpdatedAction = Readonly<Action<typeof STUDY_UPDATED>> & {
-    eventData: StudyUpdateEventData;
-};
-
-export function studyUpdated(eventData: StudyUpdateEventData): StudyUpdatedAction {
-    return { type: STUDY_UPDATED, eventData };
 }
 
 export const MAP_DATA_LOADING = 'MAP_DATA_LOADING';
@@ -641,15 +676,15 @@ export function setMapEquipementsInitialized(newValue: boolean): MapEquipmentsIn
     };
 }
 
-export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
-export type FavoriteContingencyListsAction = Readonly<Action<typeof FAVORITE_CONTINGENCY_LISTS>> & {
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
+export const SET_BASE_VOLTAGE_LIST = 'SET_BASE_VOLTAGE_LIST';
+export type SetBaseVoltageListAction = Readonly<Action<typeof SET_BASE_VOLTAGE_LIST>> & {
+    baseVoltages: BaseVoltage[];
 };
 
-export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[]): FavoriteContingencyListsAction {
+export function setBaseVoltageList(baseVoltageList: BaseVoltage[]): SetBaseVoltageListAction {
     return {
-        type: FAVORITE_CONTINGENCY_LISTS,
-        [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
+        type: SET_BASE_VOLTAGE_LIST,
+        baseVoltages: baseVoltageList,
     };
 }
 
@@ -662,6 +697,18 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     return {
         type: CURRENT_TREE_NODE,
         currentTreeNode: currentTreeNode,
+    };
+}
+
+export const HIGHLIGHT_MODIFICATION = 'HIGHLIGHT_MODIFICATION';
+export type HighlightModificationAction = Readonly<Action<typeof HIGHLIGHT_MODIFICATION>> & {
+    highlightedModificationUuid: UUID | null;
+};
+
+export function setHighlightModification(modificationUuid: UUID | null): HighlightModificationAction {
+    return {
+        type: HIGHLIGHT_MODIFICATION,
+        highlightedModificationUuid: modificationUuid,
     };
 }
 
@@ -703,23 +750,38 @@ export function setNodeSelectionForCopy(
     };
 }
 
-export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
-export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
-export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
+export const STORE_NAD_VIEW_BOX = 'STORE_NAD_VIEW_BOX';
+
+export type StoreNadViewBoxAction = {
+    type: typeof STORE_NAD_VIEW_BOX;
+    nadViewBox: { nadUuid: UUID; viewBox: ViewBoxLike | null };
+};
+
+export const StoreNadViewBox = (nadUuid: UUID, viewBox: ViewBoxLike | null): StoreNadViewBoxAction => ({
+    type: STORE_NAD_VIEW_BOX,
+    nadViewBox: { nadUuid, viewBox },
+});
+
+export const COPIED_NETWORK_MODIFICATIONS = 'COPIED_NETWORK_MODIFICATIONS';
+export type CopiedNetworkModificationsAction = Readonly<Action<typeof COPIED_NETWORK_MODIFICATIONS>> & {
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>;
+};
+
+export function setCopiedNetworkModifications(
+    copiedNetworkModifications: NonNullable<CopiedNetworkModifications>
+): CopiedNetworkModificationsAction {
     return {
-        type: SET_MODIFICATIONS_DRAWER_OPEN,
+        type: COPIED_NETWORK_MODIFICATIONS,
+        copiedNetworkModifications: copiedNetworkModifications,
     };
 }
 
-export const SET_TOGGLE_OPTIONS = 'SET_TOGGLE_OPTIONS';
-export type SetToggleOptionsAction = Readonly<Action<typeof SET_TOGGLE_OPTIONS>> & {
-    toggleOptions: StudyDisplayMode[];
-};
+export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
+export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
 
-export function setToggleOptions(toggleOptions: StudyDisplayMode[]): SetToggleOptionsAction {
+export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     return {
-        type: SET_TOGGLE_OPTIONS,
-        toggleOptions: toggleOptions,
+        type: SET_MODIFICATIONS_DRAWER_OPEN,
     };
 }
 
@@ -780,34 +842,6 @@ export function setModificationsInProgress(isModificationsInProgress: boolean): 
     return {
         type: SET_MODIFICATIONS_IN_PROGRESS,
         isModificationsInProgress: isModificationsInProgress,
-    };
-}
-
-export const OPEN_DIAGRAM = 'OPEN_DIAGRAM';
-export type OpenDiagramAction = Readonly<Action<typeof OPEN_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction {
-    return {
-        type: OPEN_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
-export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
-    name: string;
-    ids: string[];
-};
-
-export function openNadList(name: string, ids: string[]): OpenNadListAction {
-    return {
-        type: OPEN_NAD_LIST,
-        name: name,
-        ids: ids,
     };
 }
 
@@ -888,49 +922,58 @@ export function setOptionalServices(optionalServices: IOptionalService[]): SetOp
 }
 
 export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type SetOneBusShortcircuitAnalysisDiagramAction = Readonly<
-    Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
-> &
-    (OneBusShortCircuitAnalysisDiagram | { diagramId: null });
-
-export function setOneBusShortcircuitAnalysisDiagram(diagramId: null): SetOneBusShortcircuitAnalysisDiagramAction;
+export type SetOneBusShortcircuitAnalysisDiagramAction = Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM> &
+    OneBusShortCircuitAnalysisDiagram & {
+        [key: string]: any;
+    };
 export function setOneBusShortcircuitAnalysisDiagram(
     diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'],
+    studyUuid: OneBusShortCircuitAnalysisDiagram['studyUuid'],
+    rootNetworkUuid: OneBusShortCircuitAnalysisDiagram['rootNetworkUuid'],
     nodeId: OneBusShortCircuitAnalysisDiagram['nodeId']
-): SetOneBusShortcircuitAnalysisDiagramAction;
-export function setOneBusShortcircuitAnalysisDiagram(
-    diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'] | null,
-    nodeId?: OneBusShortCircuitAnalysisDiagram['nodeId']
 ): SetOneBusShortcircuitAnalysisDiagramAction {
     return {
         type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         diagramId: diagramId,
-        // @ts-expect-error: function overload protect call
+        studyUuid: studyUuid,
+        rootNetworkUuid: rootNetworkUuid,
         nodeId: nodeId,
     };
 }
 
-export const ADD_TO_RECENT_GLOBAL_FILTERS = 'ADD_TO_RECENT_GLOBAL_FILTERS';
-export type AddToRecentGlobalFiltersAction = Readonly<Action<typeof ADD_TO_RECENT_GLOBAL_FILTERS>> & {
+export const RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
+export type ResetOneBusShortcircuitAnalysisDiagramAction = Action<
+    typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM
+> & {
+    [key: string]: any;
+};
+export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircuitAnalysisDiagramAction {
+    return {
+        type: RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    };
+}
+
+export const ADD_TO_GLOBAL_FILTER_OPTIONS = 'ADD_TO_GLOBAL_FILTER_OPTIONS';
+export type AddToGlobalFilterOptionsAction = Readonly<Action<typeof ADD_TO_GLOBAL_FILTER_OPTIONS>> & {
     globalFilters: GlobalFilter[];
 };
 
-export function addToRecentGlobalFilters(globalFilters: GlobalFilter[]): AddToRecentGlobalFiltersAction {
+export function addToGlobalFilterOptions(globalFilters: GlobalFilter[]): AddToGlobalFilterOptionsAction {
     return {
-        type: ADD_TO_RECENT_GLOBAL_FILTERS,
+        type: ADD_TO_GLOBAL_FILTER_OPTIONS,
         globalFilters: globalFilters,
     };
 }
 
-export const REMOVE_FROM_RECENT_GLOBAL_FILTERS = 'REMOVE_FROM_RECENT_GLOBAL_FILTERS';
-export type RemoveFromRecentGlobalFiltersAction = Readonly<Action<typeof REMOVE_FROM_RECENT_GLOBAL_FILTERS>> & {
-    uuid: UUID;
+export const REMOVE_FROM_GLOBAL_FILTER_OPTIONS = 'REMOVE_FROM_GLOBAL_FILTER_OPTIONS';
+export type RemoveFromGlobalFilterOptionsAction = Readonly<Action<typeof REMOVE_FROM_GLOBAL_FILTER_OPTIONS>> & {
+    id: string;
 };
 
-export function removeFromRecentGlobalFilters(uuid: UUID): RemoveFromRecentGlobalFiltersAction {
+export function removeFromGlobalFilterOptions(id: string): RemoveFromGlobalFilterOptionsAction {
     return {
-        type: REMOVE_FROM_RECENT_GLOBAL_FILTERS,
-        uuid: uuid,
+        type: REMOVE_FROM_GLOBAL_FILTER_OPTIONS,
+        id,
     };
 }
 
@@ -945,91 +988,6 @@ export function setLastCompletedComputation(
     return {
         type: SET_LAST_COMPLETED_COMPUTATION,
         lastCompletedComputation: lastCompletedComputation ?? null,
-    };
-}
-
-export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
-export type LoadflowResultFilterAction = Readonly<Action<typeof LOADFLOW_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD];
-    [LOADFLOW_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setLoadflowResultFilter(
-    filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD],
-    loadflowResultFilter: FilterConfig[]
-): LoadflowResultFilterAction {
-    return {
-        type: LOADFLOW_RESULT_FILTER,
-        filterTab: filterTab,
-        [LOADFLOW_RESULT_STORE_FIELD]: loadflowResultFilter,
-    };
-}
-
-export const SECURITY_ANALYSIS_RESULT_FILTER = 'SECURITY_ANALYSIS_RESULT_FILTER';
-export type SecurityAnalysisResultFilterAction = Readonly<Action<typeof SECURITY_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setSecurityAnalysisResultFilter(
-    filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD],
-    securityAnalysisResultFilter: FilterConfig[]
-): SecurityAnalysisResultFilterAction {
-    return {
-        type: SECURITY_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: securityAnalysisResultFilter,
-    };
-}
-
-export const SENSITIVITY_ANALYSIS_RESULT_FILTER = 'SENSITIVITY_ANALYSIS_RESULT_FILTER';
-export type SensitivityAnalysisResultFilterAction = Readonly<Action<typeof SENSITIVITY_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setSensitivityAnalysisResultFilter(
-    filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD],
-    sensitivityAnalysisResultFilter: FilterConfig[]
-): SensitivityAnalysisResultFilterAction {
-    return {
-        type: SENSITIVITY_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: sensitivityAnalysisResultFilter,
-    };
-}
-
-export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER = 'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
-export type ShortcircuitAnalysisResultFilterAction = Readonly<Action<typeof SHORTCIRCUIT_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setShortcircuitAnalysisResultFilter(
-    filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD],
-    shortcircuitAnalysisResultFilter: FilterConfig[]
-): ShortcircuitAnalysisResultFilterAction {
-    return {
-        type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: shortcircuitAnalysisResultFilter,
-    };
-}
-
-export const DYNAMIC_SIMULATION_RESULT_FILTER = 'DYNAMIC_SIMULATION_RESULT_FILTER';
-export type DynamicSimulationResultFilterAction = Readonly<Action<typeof DYNAMIC_SIMULATION_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setDynamicSimulationResultFilter(
-    filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD],
-    dynamicSimulationResultFilter: FilterConfig[]
-): DynamicSimulationResultFilterAction {
-    return {
-        type: DYNAMIC_SIMULATION_RESULT_FILTER,
-        filterTab: filterTab,
-        [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: dynamicSimulationResultFilter,
     };
 }
 
@@ -1115,22 +1073,108 @@ export function resetShortcircuitAnalysisPagination(): ResetShortcircuitAnalysis
     };
 }
 
+export const RESET_PCCMIN_ANALYSIS_PAGINATION = 'RESET_PCCMIN_ANALYSIS_PAGINATION';
+export type ResetPccminAnalysisPaginationAction = Readonly<Action<typeof RESET_PCCMIN_ANALYSIS_PAGINATION>>;
+
+export function resetPccminAnalysisPagination(): ResetPccminAnalysisPaginationAction {
+    return {
+        type: RESET_PCCMIN_ANALYSIS_PAGINATION,
+    };
+}
+
+export const PCCMIN_ANALYSIS_RESULT_PAGINATION = 'PCCMIN_ANALYSIS_RESULT_PAGINATION';
+export type PccminAnalysisResultPaginationAction = Readonly<Action<typeof PCCMIN_ANALYSIS_RESULT_PAGINATION>> & {
+    paginationTab: PccminTab;
+    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: PaginationConfig;
+};
+
+export function setPccminAnalysisResultPagination(
+    paginationTab: PccminTab,
+    pccminAnalysisPagination: PaginationConfig
+): PccminAnalysisResultPaginationAction {
+    return {
+        type: PCCMIN_ANALYSIS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: pccminAnalysisPagination,
+    };
+}
+
 export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
 export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>> & {
     filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD];
     [SPREADSHEET_STORE_FIELD]: FilterConfig[];
 };
 
-export function setSpreadsheetFilter(
-    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
-    spreadsheetFilter: FilterConfig[]
-): SpreadsheetFilterAction {
-    return {
-        type: SPREADSHEET_FILTER,
-        filterTab: filterTab,
-        [SPREADSHEET_STORE_FIELD]: spreadsheetFilter,
-    };
-}
+export const UPDATE_COLUMN_FILTERS = 'UPDATE_COLUMN_FILTERS';
+export const ADD_GLOBAL_FILTERS = 'ADD_GLOBAL_FILTERS';
+export const CLEAR_GLOBAL_FILTERS = 'CLEAR_GLOBAL_FILTERS';
+export const REMOVE_GLOBAL_FILTERS = 'REMOVE_GLOBAL_FILTERS';
+
+export type UpdateColumnFiltersAction = {
+    type: typeof UPDATE_COLUMN_FILTERS;
+    filterType: TableType;
+    filterSubType: string;
+    filters: FilterConfig[];
+};
+export type GlobalFilterAction = {
+    type: typeof ADD_GLOBAL_FILTERS | typeof CLEAR_GLOBAL_FILTERS | typeof REMOVE_GLOBAL_FILTERS;
+    tableType: TableType;
+    tableId: string;
+};
+
+export type AddGlobalFiltersAction = GlobalFilterAction & {
+    type: typeof ADD_GLOBAL_FILTERS;
+    filterIds: string[];
+};
+
+export type ClearGlobalFiltersAction = GlobalFilterAction & {
+    type: typeof CLEAR_GLOBAL_FILTERS;
+};
+
+export type RemoveGlobalFiltersAction = GlobalFilterAction & {
+    type: typeof REMOVE_GLOBAL_FILTERS;
+    filterIds: string[];
+};
+
+export const updateColumnFiltersAction = (
+    filterType: TableType,
+    filterSubType: string,
+    filters: FilterConfig[]
+): UpdateColumnFiltersAction => ({
+    type: UPDATE_COLUMN_FILTERS,
+    filterType,
+    filterSubType,
+    filters,
+});
+
+export const addToSelectedGlobalFilters = (
+    tableType: TableType,
+    tableId: string,
+    filterIds: string[]
+): AddGlobalFiltersAction => ({
+    type: ADD_GLOBAL_FILTERS,
+    tableType,
+    tableId,
+    filterIds,
+});
+
+// Clears all selected global filter IDs for a given table.
+export const clearSelectedGlobalFilters = (tableType: TableType, tableId: string): ClearGlobalFiltersAction => ({
+    type: CLEAR_GLOBAL_FILTERS,
+    tableType,
+    tableId,
+});
+
+export const removeFromSelectedGlobalFilters = (
+    tableType: TableType,
+    tableId: string,
+    filterIds: string[]
+): RemoveGlobalFiltersAction => ({
+    type: REMOVE_GLOBAL_FILTERS,
+    tableType,
+    tableId,
+    filterIds,
+});
 
 export const LOGS_FILTER = 'LOGS_FILTER';
 export type LogsFilterAction = Readonly<Action<typeof LOGS_FILTER>> & {
@@ -1211,6 +1255,17 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
         table,
         tab,
         sort,
+    };
+}
+
+export function setSpreadsheetFilter(
+    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
+    spreadsheetFilter: FilterConfig[]
+): SpreadsheetFilterAction {
+    return {
+        type: SPREADSHEET_FILTER,
+        filterTab: filterTab,
+        [SPREADSHEET_STORE_FIELD]: spreadsheetFilter,
     };
 }
 
@@ -1324,20 +1379,23 @@ export type InitTableDefinitionsAction = {
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters?: SpreadsheetFilterState;
-    globalFilterSpreadsheetState?: GlobalFilterSpreadsheetState;
+    globalFilters?: Record<UUID, GlobalFilter[]>;
+    tablesSorts?: TableSortConfig;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
     tablesFilters: SpreadsheetFilterState = {},
-    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {}
+    globalFilters: Record<UUID, GlobalFilter[]> = {},
+    tablesSorts: TableSortConfig = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
     tablesFilters,
-    globalFilterSpreadsheetState,
+    globalFilters,
+    tablesSorts,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
@@ -1381,35 +1439,20 @@ export const addSortForNewSpreadsheet = (tabUuid: UUID, value: SortConfig[]): Ad
     },
 });
 
-export const STATEESTIMATION_RESULT_FILTER = 'STATEESTIMATION_RESULT_FILTER';
-export type StateEstimationResultFilterAction = Readonly<Action<typeof STATEESTIMATION_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD];
-    [STATEESTIMATION_RESULT_STORE_FIELD]: FilterConfig[];
-};
-
-export function setStateEstimationResultFilter(
-    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD],
-    stateEstimationResultFilter: FilterConfig[]
-): StateEstimationResultFilterAction {
-    return {
-        type: STATEESTIMATION_RESULT_FILTER,
-        filterTab: filterTab,
-        [STATEESTIMATION_RESULT_STORE_FIELD]: stateEstimationResultFilter,
-    };
-}
-
-export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
-export type SaveSpreadSheetGlobalFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
+export const INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER = 'INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER';
+export type InitOrUpdateSpreadSheetGlobalFilterAction = Readonly<
+    Action<typeof INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER>
+> & {
     tabUuid: UUID;
     filters: GlobalFilter[];
 };
 
-export function saveSpreadsheetGlobalFilters(
+export function initOrUpdateSpreadsheetGlobalFilters(
     tabUuid: UUID,
     filters: GlobalFilter[]
-): SaveSpreadSheetGlobalFilterAction {
+): InitOrUpdateSpreadSheetGlobalFilterAction {
     return {
-        type: SAVE_SPREADSHEET_GS_FILTER,
+        type: INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER,
         tabUuid: tabUuid,
         filters: filters,
     };
@@ -1429,48 +1472,6 @@ export function setCalculationSelections(tabUuid: UUID, selections: string[]): S
     };
 }
 
-export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
-export type ResetAllSpreadsheetGlobalFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
-
-export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFiltersAction {
-    return {
-        type: RESET_ALL_SPREADSHEET_GS_FILTERS,
-    };
-}
-
-export const DELETED_OR_RENAMED_NODES = 'DELETED_OR_RENAMED_NODES';
-export type DeletedOrRenamedNodesAction = Readonly<Action<typeof DELETED_OR_RENAMED_NODES>> & {
-    deletedOrRenamedNodes: UUID[];
-};
-
-export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrRenamedNodesAction {
-    return {
-        type: DELETED_OR_RENAMED_NODES,
-        deletedOrRenamedNodes,
-    };
-}
-
-export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
-export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
-
-export function resetDiagramEvent(): ResetDiagramEventAction {
-    return {
-        type: RESET_DIAGRAM_EVENT,
-    };
-}
-
-export const SET_DIAGRAM_GRID_LAYOUT = 'SET_DIAGRAM_GRID_LAYOUT';
-export type SetDiagramGridLayoutAction = Readonly<Action<typeof SET_DIAGRAM_GRID_LAYOUT>> & {
-    diagramGridLayout: DiagramGridLayoutConfig;
-};
-
-export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig): SetDiagramGridLayoutAction {
-    return {
-        type: SET_DIAGRAM_GRID_LAYOUT,
-        diagramGridLayout: diagramGridLayout,
-    };
-}
-
 export const SELECT_SYNC_ENABLED = 'SELECT_SYNC_ENABLED';
 export type SelectSyncEnabledAction = Readonly<Action<typeof SELECT_SYNC_ENABLED>> & {
     syncEnabled: boolean;
@@ -1480,5 +1481,17 @@ export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction
     return {
         type: SELECT_SYNC_ENABLED,
         syncEnabled,
+    };
+}
+
+export const UPDATE_NODE_ALIASES = 'UPDATE_NODE_ALIASES';
+export type UpdateNodeAliasesAction = Readonly<Action<typeof UPDATE_NODE_ALIASES>> & {
+    nodeAliases: NodeAlias[];
+};
+
+export function updateNodeAliases(nodeAliases: NodeAlias[]): UpdateNodeAliasesAction {
+    return {
+        type: UPDATE_NODE_ALIASES,
+        nodeAliases,
     };
 }

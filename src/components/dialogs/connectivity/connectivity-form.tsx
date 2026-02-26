@@ -19,7 +19,7 @@ import {
     ID,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
@@ -38,7 +38,7 @@ import { fetchBusesOrBusbarSectionsForVoltageLevel } from 'services/study/networ
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input';
 import { areIdsEqual, getObjectId } from '../../utils/utils';
 import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from './connectivity-form-utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ConnectablePositionFormInfos } from './connectivity.type';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 
@@ -67,7 +67,7 @@ interface ConnectivityFormProps {
     withDirectionsInfos?: boolean;
     withPosition: boolean;
     voltageLevelOptions?: Identifiable[];
-    newBusOrBusbarSectionOptions?: [];
+    newBusOrBusbarSectionOptions?: Option[];
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
@@ -101,6 +101,7 @@ export function ConnectivityForm({
 
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
 
+    const lastFetchedBusesVlIds = useRef<string | null>(null);
     const intl = useIntl();
 
     const { setValue, getValues } = useFormContext();
@@ -128,6 +129,7 @@ export function ConnectivityForm({
                     currentRootNetworkUuid,
                     watchVoltageLevelId
                 ).then((busesOrbusbarSections) => {
+                    lastFetchedBusesVlIds.current = watchVoltageLevelId;
                     setBusOrBusbarSectionOptions(
                         busesOrbusbarSections?.map((busesOrbusbarSection) => ({
                             id: busesOrbusbarSection.id,
@@ -135,9 +137,12 @@ export function ConnectivityForm({
                         })) || []
                     );
                 });
-            } else {
+            }
+            if (watchVoltageLevelId !== lastFetchedBusesVlIds.current) {
                 setBusOrBusbarSectionOptions([]);
             }
+        } else {
+            setBusOrBusbarSectionOptions([]);
         }
     }, [watchVoltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelOptions, id]);
 
@@ -149,7 +154,6 @@ export function ConnectivityForm({
 
     const handleChangeVoltageLevel = useCallback(() => {
         onVoltageLevelChangeCallback?.();
-        setBusOrBusbarSectionOptions([]);
         setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
     }, [id, onVoltageLevelChangeCallback, setValue]);
 

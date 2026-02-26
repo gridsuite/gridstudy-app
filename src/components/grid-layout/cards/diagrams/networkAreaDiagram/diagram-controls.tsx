@@ -14,11 +14,12 @@ import {
     DirectoryItemSelector,
     ElementSaveDialog,
     ElementType,
-    EquipmentInfos,
+    type EquipmentInfos,
     EquipmentType,
-    IElementCreationDialog,
-    IElementUpdateDialog,
-    TreeViewFinderNodeProps,
+    type IElementCreationDialog,
+    type IElementUpdateDialog,
+    type MuiStyles,
+    type TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
@@ -27,21 +28,24 @@ import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import SpeakerNotesOffOutlinedIcon from '@mui/icons-material/SpeakerNotesOffOutlined';
 import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
-import { Theme, Tooltip } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
+import { Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import VoltageLevelSearchMenu from './voltage-level-search-menu';
 
 const styles = {
-    actionIcon: (theme: Theme) => ({
+    actionIcon: (theme) => ({
         width: theme.spacing(3),
         height: theme.spacing(3),
     }),
-    panel: (theme: Theme) => ({
+    panel: (theme) => ({
         backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.background.default,
         borderRadius: theme.spacing(1),
         padding: theme.spacing(0.5),
@@ -50,7 +54,7 @@ const styles = {
         top: theme.spacing(1),
         left: theme.spacing(1),
     }),
-    buttonPanel: (theme: Theme) => ({
+    buttonPanel: (theme) => ({
         borderRadius: theme.spacing(1),
         padding: theme.spacing(0.5),
         display: 'block',
@@ -64,11 +68,11 @@ const styles = {
     button: {
         minWidth: 'auto',
     },
-    divider: (theme: Theme) => ({
+    divider: (theme) => ({
         borderColor: theme.palette.grey[600],
         margin: '2px 4px',
     }),
-};
+} as const satisfies MuiStyles;
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
@@ -78,9 +82,13 @@ interface DiagramControlsProps {
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     onExpandAllVoltageLevels?: () => void;
     onAddVoltageLevel: (vlId: string) => void;
+    onAddVoltageLevelsFromFilter: (elementUuid: UUID) => void;
     onToggleShowLabels?: () => void;
     isShowLabels?: boolean;
     isDiagramLoading?: boolean;
+    isNadCreationFromFilter: boolean;
+    svgVoltageLevels?: string[];
+    onFocusVoltageLevel?: (vlId: string) => void;
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({
@@ -91,13 +99,18 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     onToggleEditNadMode,
     onExpandAllVoltageLevels,
     onAddVoltageLevel,
+    onAddVoltageLevelsFromFilter,
     onToggleShowLabels,
     isShowLabels,
     isDiagramLoading,
+    isNadCreationFromFilter,
+    svgVoltageLevels,
+    onFocusVoltageLevel,
 }) => {
     const intl = useIntl();
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
+    const [isFilterSelectorOpen, setIsFilterSelectorOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -118,6 +131,14 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         setIsLoadSelectorOpen(true);
     };
 
+    const handleClickAddVoltageLevelSIcon = () => {
+        setIsFilterSelectorOpen(true);
+    };
+
+    const handleCloseFilterSelector = () => {
+        setIsFilterSelectorOpen(false);
+    };
+
     const handleToggleShowLabels = () => {
         if (onToggleShowLabels && !isDiagramLoading) {
             onToggleShowLabels();
@@ -130,8 +151,18 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         }
     };
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const [searchAnchorEl, setSearchAnchorEl] = useState<HTMLElement | null>(null);
+
     const handleClickAddVoltageLevelIcon = () => {
         setIsDialogSearchOpen(true);
+    };
+
+    const handleClickSearchVoltageLevelIcon = (event: React.MouseEvent<HTMLElement>) => {
+        setSearchAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseSearch = () => {
+        setSearchAnchorEl(null);
     };
     const handleSave = (data: IElementCreationDialog) => {
         if (onSave) {
@@ -158,12 +189,31 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         handleCloseLoadSelector();
     };
 
+    const handleSelectFilter = (selectedElements: TreeViewFinderNodeProps[]) => {
+        if (onAddVoltageLevelsFromFilter && selectedElements.length > 0) {
+            onAddVoltageLevelsFromFilter(selectedElements[0].id);
+        }
+        handleCloseFilterSelector();
+    };
+
     const handleToggleEditMode = () => {
         onToggleEditNadMode?.(!isEditNadMode);
     };
+
+    const handleVoltageLevelSelect = useCallback(
+        (voltageLevelId: string) => {
+            if (onFocusVoltageLevel) {
+                onFocusVoltageLevel(voltageLevelId);
+            }
+            handleCloseSearch();
+        },
+        [onFocusVoltageLevel]
+    );
+
     const handleCloseSearchDialog = useCallback(() => {
         setIsDialogSearchOpen(false);
     }, []);
+
     const { snackWarning } = useSnackMessage();
 
     const onSelectionChange = useCallback(
@@ -232,9 +282,31 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             <UploadIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
+                    <Tooltip title={<FormattedMessage id={'searchVoltageLevelInNad'} />}>
+                        <span>
+                            <IconButton
+                                sx={styles.actionIcon}
+                                onClick={handleClickSearchVoltageLevelIcon}
+                                disabled={isDiagramLoading || !svgVoltageLevels || svgVoltageLevels.length === 0}
+                            >
+                                <SearchIcon sx={styles.icon} />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
                     {isEditNadMode && (
                         <>
                             <Divider orientation="vertical" flexItem sx={styles.divider} />
+                            <Tooltip title={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}>
+                                <span>
+                                    <IconButton
+                                        sx={styles.actionIcon}
+                                        onClick={handleClickAddVoltageLevelSIcon}
+                                        disabled={isDiagramLoading || isNadCreationFromFilter}
+                                    >
+                                        <AddLocationAltOutlinedIcon sx={styles.icon} />
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
                             <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
                                 <span>
                                     <IconButton
@@ -309,7 +381,28 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             multiSelect={false}
                         />
                     </Box>
+                    <Box minWidth="12em">
+                        <DirectoryItemSelector
+                            open={isFilterSelectorOpen}
+                            onClose={handleSelectFilter}
+                            types={[ElementType.FILTER]}
+                            equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            title={intl.formatMessage({
+                                id: 'elementSelection',
+                            })}
+                            multiSelect={false}
+                        />
+                    </Box>
                     {renderSearchEquipment()}
+                    {svgVoltageLevels && (
+                        <VoltageLevelSearchMenu
+                            open={Boolean(searchAnchorEl)}
+                            anchorEl={searchAnchorEl}
+                            onClose={handleCloseSearch}
+                            voltageLevels={svgVoltageLevels}
+                            onSelect={handleVoltageLevelSelect}
+                        />
+                    )}
                 </>
             )}
         </>

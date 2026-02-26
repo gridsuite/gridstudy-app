@@ -25,6 +25,9 @@ export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
 export const FOLDER_ID = 'folderId';
+export const DIRECTORY_ITEM = 'directoryItem';
+export const DIRECTORY_ITEM_ID = 'directoryItemId';
+export const DIRECTORY_ITEM_FULL_PATH = 'directoryItemFullPath';
 export const DESCRIPTION = 'description';
 export const CASE_NAME = 'caseName';
 export const CASE_ID = 'caseId';
@@ -46,6 +49,12 @@ export const CONNECTED2 = 'terminal2Connected';
 export const CONNECTION_DIRECTION2 = 'connectionDirection2';
 export const CONNECTION_NAME2 = 'connectionName2';
 export const CONNECTION_POSITION2 = 'connectionPosition2';
+export const IS_REMOVED = 'isRemoved';
+export const IS_SEPARATOR = 'isSeparator';
+export const FILE_NAME = 'fileName';
+export const EXPORT_FORMAT = 'exportFormat';
+export const EXPORT_PARAMETERS = 'exportParameters';
+export const EXPORT_DESTINATION = 'exportDestination';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -56,13 +65,14 @@ export const LIMIT_SETS_MODIFICATION_TYPE = {
     MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
     ADD: 'ADD',
     REPLACE: 'REPLACE',
+    DELETE: 'DELETE',
 } as const;
 export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const IS_ACTIVE = 'isActive';
-export const SELECTED_OPERATIONAL_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
-export const SELECTED_OPERATIONAL_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_ID1 = 'selectedOperationalLimitsGroupId1';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_ID2 = 'selectedOperationalLimitsGroupId2';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
 export const CSV_FILENAME = 'csvFilename';
 
@@ -77,8 +87,10 @@ export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';
 export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
-export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
-export const SELECTED_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
+export const LIMITS_PROPERTIES = 'limitsProperties';
+export const OLG_IS_DUPLICATE = 'operationalLimitsGroupsIsDuplicate';
+export const ENABLE_OLG_MODIFICATION = 'enableOLGModification';
+export const OLGS_MODIFICATION_TYPE = 'operationalLimitsGroupsModificationType';
 export const PERMANENT_LIMIT = 'permanentLimit';
 export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
@@ -162,8 +174,11 @@ export const TARGET_V = 'targetV';
 //tab phase_tap_changer
 export const PHASE_TAP_CHANGER = 'phaseTapChanger';
 export const REGULATION_MODE = 'regulationMode';
+export const REGULATION_VALUE = 'regulationValue';
 export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
+export const REGULATING_TERMINAL_CONNECTABLE_ID = 'regulatingTerminalConnectableId';
+export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectableType';
 
 //ShuntCompensator
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
@@ -204,9 +219,17 @@ export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
 export const TEMPORARY_LIMIT_VALUE = 'value';
 export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFY: 'MODIFY',
+    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the limit exists it is modified, if not it is created
     ADD: 'ADD',
     DELETE: 'DELETE',
     REPLACE: 'REPLACE',
+} as const;
+// Determines how all the operational limits groups will be modified as a group
+export const OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE = {
+    // Modification types for Tabular modifications :
+    MODIFY: 'MODIFY', // standard mode : the olg modifications are applied. The unspecified olg are not changed at all
+    // Modification type for simple form modifications :
+    REPLACE: 'REPLACE', // All the olg are removed, then the olg modification/add etc are applied
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
@@ -224,7 +247,7 @@ export const AERIAL_TEMPERATURES = 'aerialTemperatures';
 export const UNDERGROUND_AREAS = 'undergroundAreas';
 export const UNDERGROUND_SHAPE_FACTORS = 'undergroundShapeFactors';
 export const FINAL_CURRENT_LIMITS = 'finalCurrentLimits';
-export const APPLICABIlITY = 'applicability';
+export const APPLICABILITY_FIELD = 'applicability';
 export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
 
 // Voltage level
@@ -232,6 +255,7 @@ export const BUS_BAR_SECTIONS = 'busbarSections';
 export const BUS_BAR_SECTION_ID1 = 'busbarSectionId1';
 export const BUS_BAR_SECTION_ID2 = 'busbarSectionId2';
 export const SWITCH_KIND = 'switchKind';
+export const IDENTIFIABLE_SHORT_CIRCUIT = 'identifiableShortCircuit';
 export const HIGH_VOLTAGE_LIMIT = 'highVoltageLimit';
 export const LOW_VOLTAGE_LIMIT = 'lowVoltageLimit';
 export const LOW_SHORT_CIRCUIT_CURRENT_LIMIT = 'lowShortCircuitCurrentLimit';
@@ -252,6 +276,8 @@ export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 export const IP_MIN = 'ipMin';
 export const IP_MAX = 'ipMax';
+export const IS_ATTACHMENT_POINT_CREATION = 'isAttachmentPointCreation';
+
 // dnd table
 export const SELECTED = 'selected';
 export const ACTIVATED = 'activated';
@@ -300,14 +326,6 @@ export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
 export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
 
-// substation
-export const COUNTRY = 'country';
-export const VALUE = 'value';
-export const PREVIOUS_VALUE = 'previousValue';
-export const ADDED = 'added';
-export const DELETION_MARK = 'deletionMark';
-export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
-
 // generation dispatch
 export const LOSS_COEFFICIENT = 'lossCoefficient';
 export const DEFAULT_OUTAGE_RATE = 'defaultOutageRate';
@@ -339,8 +357,6 @@ export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const SHUNT_COMPENSATOR_SELECTED = 'connectedToHvdc';
 export const PREVIOUS_SHUNT_COMPENSATOR_SELECTED = 'previousConnectedToHvdc';
 export const PROVIDER = 'provider';
-export const CONTINGENCIES = 'contingencies';
-export const MONITORED_BRANCHES = 'monitoredBranches';
 
 // VSC
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
@@ -373,32 +389,6 @@ export const ASSIGNMENTS = 'assignments';
 export const PROPERTY_NAME_FIELD = 'propertyName';
 export const VALUE_FIELD = 'value';
 
-// non evacuated energy
-export const GENERATION_STAGES_KIND = 'energySource';
-export const GENERATION_STAGES_PERCENT_MAXP_1 = 'percentMaxP1';
-export const GENERATION_STAGES_PERCENT_MAXP_2 = 'percentMaxP2';
-export const GENERATION_STAGES_PERCENT_MAXP_3 = 'percentMaxP3';
-export const STAGES_DEFINITION_INDEX = 'stagesDefinitionIndex';
-export const PMAX_PERCENTS_INDEX = 'pMaxPercentsIndex';
-
-export const SENSITIVITY_THRESHOLD = 'sensitivityThreshold';
-export const GENERATORS_CAPPINGS_KIND = 'energySource';
-export const GENERATORS_CAPPINGS_FILTER = 'generators';
-
-export const BRANCHES = 'branches';
-export const MONITORED_BRANCHES_IST_N = 'istN';
-export const MONITORED_BRANCHES_LIMIT_NAME_N = 'limitNameN';
-export const MONITORED_BRANCHES_COEFF_N = 'nCoefficient';
-export const MONITORED_BRANCHES_IST_N_1 = 'istNm1';
-export const MONITORED_BRANCHES_LIMIT_NAME_N_1 = 'limitNameNm1';
-export const MONITORED_BRANCHES_COEFF_N_1 = 'nm1Coefficient';
-
-export const GENERATORS_CAPPINGS = 'generatorsCappings';
-export const STAGES_SELECTION = 'stagesSelection';
-export const STAGES_DEFINITION = 'stagesDefinition';
-export const STAGES_DEFINITION_GENERATORS = 'generators';
-export const PMAX_PERCENTS = 'pMaxPercents';
-export const GENERATORS_LIMIT = 'generatorsCappings';
 export const ADD_STAND_BY_AUTOMATON = 'addStandbyAutomaton';
 export const LOW_VOLTAGE_SET_POINT = 'lowVoltageSetpoint';
 export const HIGH_VOLTAGE_SET_POINT = 'highVoltageSetpoint';
@@ -494,3 +484,9 @@ export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
 export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
 export const BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS = 'balancesAdjustmentWithRatioTapChangers';
 export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustmentSubtractLoadFlowBalancing';
+
+// move connections
+export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
+export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
+export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
+export const CONNECTION_SIDE = 'connectionSide';

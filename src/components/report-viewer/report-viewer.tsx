@@ -21,15 +21,16 @@ import {
 import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
 import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { Box, Theme } from '@mui/material';
+import { Box } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    panelHandlerContainer: (theme: Theme) => ({
+    panelHandlerContainer: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         borderRight: `1px solid ${theme.palette.divider}`,
     }),
-};
+} as const satisfies MuiStyles;
 
 type ReportViewerProps = {
     report: Report;
@@ -65,8 +66,14 @@ export default function ReportViewer({
     }, [reportTree]);
 
     useEffect(() => {
-        setExpandedTreeReports([reportTree.id]);
-        setSelectedReport({ id: reportTree.id, type: reportTreeMap[reportTree.id]?.type });
+        const newType = reportTreeMap[reportTree.id]?.type;
+        setSelectedReport((currentSelected) => {
+            if (currentSelected.id !== reportTree.id || currentSelected.type !== newType) {
+                setExpandedTreeReports([reportTree.id]);
+                return { id: reportTree.id, type: newType };
+            }
+            return currentSelected;
+        });
     }, [reportTree, reportTreeMap]);
 
     const onLogRowClick = useCallback(

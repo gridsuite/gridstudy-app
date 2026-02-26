@@ -4,11 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CustomFormProvider,
     mergeSx,
     PopupConfirmationDialog,
+    snackWithFallback,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -40,7 +41,7 @@ export const StateEstimationParameters = ({
     setHaveDirtyFields,
 }: {
     useStateEstimationParameters: UseGetStateEstimationParametersProps;
-    setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
+    setHaveDirtyFields: (isDirty: boolean) => void;
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [stateEstimationParams, setStateEstimationParams] = useStateEstimationParameters;
@@ -90,10 +91,7 @@ export const StateEstimationParameters = ({
 
     const resetStateEstimationParameters = useCallback(() => {
         updateStateEstimationParameters(studyUuid, null).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'paramsChangingError',
-            });
+            snackWithFallback(snackError, error, { headerId: 'paramsChangingError' });
         });
     }, [studyUuid, snackError]);
 
@@ -118,10 +116,7 @@ export const StateEstimationParameters = ({
                     setStateEstimationParams(fromStateEstimationParametersFormToParamValues(newParams));
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
-                        headerId: 'updateStateEstimationParametersError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'updateStateEstimationParametersError' });
                 });
             onValidationError();
         },

@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import type { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
+import { SortConfig } from '../../../types/custom-aggrid-types';
 
 // The order of the enum values is important, do not change it without checking the usage (e.g. in select options in AddEmptySpreadsheetDialog)
 export enum SpreadsheetEquipmentType {
@@ -68,10 +69,12 @@ export type ColumnDefinition = {
 
 export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {
     dependencies?: string;
-    filterDataType?: string;
-    filterTolerance?: number;
-    filterType?: string;
-    filterValue?: string;
+    columnFilterInfos?: {
+        filterDataType?: string;
+        filterTolerance?: number;
+        filterType?: string;
+        filterValue?: string;
+    };
     visible?: boolean;
 };
 
@@ -82,8 +85,8 @@ export type ColumnStateDto = {
 };
 
 export type SpreadsheetEquipmentsByNodes = {
-    nodesId: UUID[];
     equipmentsByNodeId: Record<UUID, Record<string, Identifiable>>;
+    isFetching: boolean;
 };
 
 export type SpreadsheetConfig = {
@@ -92,6 +95,7 @@ export type SpreadsheetConfig = {
     columns: ColumnDefinitionDto[];
     globalFilters?: GlobalFilter[];
     nodeAliases?: string[];
+    sortConfig?: SortConfig | undefined;
 };
 
 export type SpreadsheetConfigDto = SpreadsheetConfig & {
@@ -121,5 +125,8 @@ export type SpreadsheetOptionalLoadingParameters = {
     [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: BranchOptionalLoadingParameters;
     [SpreadsheetEquipmentType.GENERATOR]: {
         regulatingTerminal: boolean;
+    };
+    [SpreadsheetEquipmentType.BUS]: {
+        networkComponents: boolean;
     };
 };

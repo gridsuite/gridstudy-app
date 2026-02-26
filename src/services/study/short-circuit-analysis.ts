@@ -5,16 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
-import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
+import { GsLangUser, backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
 import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
-import { GsLang } from '@gridsuite/commons-ui';
+import { Selector } from 'components/results/common/utils';
+
+const PREFIX_SHORTCIRCUIT_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';
+
+export function getShortCircuitUrl() {
+    return `${PREFIX_SHORTCIRCUIT_SERVER_QUERIES}/v1/`;
+}
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
@@ -23,14 +28,19 @@ interface ShortCircuitAnalysisResult {
     type: ShortCircuitAnalysisType;
     globalFilters?: GlobalFilters;
 }
-interface Selector {
-    page: number;
-    size: number;
-    filter: FilterConfig[] | null;
-    sort: SortConfig[];
-}
 interface ShortCircuitAnalysisPagedResults extends ShortCircuitAnalysisResult {
     selector: Partial<Selector>;
+}
+
+// Matches CsvExportParams in short-circuit-server
+export type ShortCircuitCsvExportParams = {
+    csvHeader: string[] | undefined;
+    enumValueTranslations: Record<string, string>;
+    language: GsLangUser;
+    oneBusCase: boolean;
+};
+interface ShortCircuitAnalysisResultCsv extends ShortCircuitAnalysisPagedResults {
+    csvParams: ShortCircuitCsvExportParams;
 }
 
 export function startShortCircuitAnalysis(
@@ -39,7 +49,7 @@ export function startShortCircuitAnalysis(
     currentRootNetworkUuid: UUID | null,
     busId: string,
     debug?: boolean
-): Promise<void> {
+): Promise<Response> {
     console.info(
         `Running short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
@@ -141,36 +151,18 @@ export function fetchShortCircuitAnalysisPagedResults({
     type = ShortCircuitAnalysisType.ALL_BUSES,
     globalFilters,
 }: ShortCircuitAnalysisPagedResults) {
+    const { page = 0, size } = selector;
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
+    const urlSearchParams = getShortCircuitResultUrlParams(analysisType, selector, globalFilters);
 
     console.info(
         `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
     );
 
-    const urlSearchParams = new URLSearchParams();
-
     urlSearchParams.append('paged', 'true');
-
-    if (analysisType) {
-        urlSearchParams.append('type', analysisType);
-    }
-
-    const { page = 0, sort, size, filter } = selector;
-
     urlSearchParams.append('page', String(page));
-
-    sort?.map((value) => urlSearchParams.append('sort', `${value.colId},${value.sort}`));
-
     if (size) {
         urlSearchParams.append('size', String(size));
-    }
-
-    if (filter?.length) {
-        urlSearchParams.append('filters', JSON.stringify(filter));
-    }
-
-    if (globalFilters && Object.keys(globalFilters).length > 0) {
-        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     const url =
@@ -181,29 +173,29 @@ export function fetchShortCircuitAnalysisPagedResults({
     return backendFetchJson(url);
 }
 
-export function downloadShortCircuitResultZippedCsv(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    analysisType: number,
-    headersCsv: string[] | undefined,
-    enumValueTranslations: Record<string, string>,
-    language: GsLang
-) {
+export function downloadShortCircuitResultZippedCsv({
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    type,
+    globalFilters,
+    selector,
+    csvParams,
+}: ShortCircuitAnalysisResultCsv) {
+    const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
+    const urlSearchParams = getShortCircuitResultUrlParams(analysisType, selector, globalFilters);
+
     console.info(
         `Fetching short-circuit analysis export csv on ${studyUuid} , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
     );
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid
-    )}/shortcircuit/result/csv`;
-    const type = getShortCircuitAnalysisTypeFromEnum(analysisType);
-    const param = new URLSearchParams();
-    if (type) {
-        param.append('type', type);
-    }
-    const urlWithParam = `${url}?${param.toString()}`;
+
+    const urlWithParam =
+        `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid
+        )}/shortcircuit/result/csv?` + urlSearchParams.toString();
+
     console.debug(urlWithParam);
     return backendFetch(urlWithParam, {
         method: 'POST',
@@ -211,6 +203,58 @@ export function downloadShortCircuitResultZippedCsv(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ headersCsv, enumValueTranslations, language }),
+        body: JSON.stringify(csvParams),
     });
+}
+
+function getShortCircuitResultUrlParams(
+    analysisType: string | null,
+    selector: Partial<Selector>,
+    globalFilters: GlobalFilters | undefined
+) {
+    const urlSearchParams = new URLSearchParams();
+    const { sort, filter } = selector;
+
+    if (analysisType) {
+        urlSearchParams.append('type', analysisType);
+    }
+
+    sort?.map((value) => urlSearchParams.append('sort', `${value.colId},${value.sort}`));
+
+    if (filter?.length) {
+        urlSearchParams.append('filters', JSON.stringify(filter));
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
+    }
+
+    return urlSearchParams;
+}
+
+export function setShortCircuitParameters(studyUuid: UUID, newParams: any) {
+    console.info('set short circuit parameters');
+    const setShortCircuitParametersUrl = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(setShortCircuitParametersUrl);
+    return backendFetch(setShortCircuitParametersUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newParams ? JSON.stringify(newParams) : null,
+    });
+}
+
+export function getShortCircuitParameters(studyUuid: UUID) {
+    console.info('get short circuit parameters');
+    const getScParams = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(getScParams);
+    return backendFetchJson(getScParams);
+}
+
+export function getShortCircuitSpecificParametersDescription() {
+    console.info('get short circuit specific parameters description');
+    const getShortCircuitSpecificParametersUrl = getShortCircuitUrl() + 'parameters/specific-parameters';
+    console.debug(getShortCircuitSpecificParametersUrl);
+    return backendFetchJson(getShortCircuitSpecificParametersUrl);
 }

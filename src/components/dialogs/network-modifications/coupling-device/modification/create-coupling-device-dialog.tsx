@@ -15,14 +15,21 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createCouplingDevice } from '../../../../../services/study/network-modifications';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, Option, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    Option,
+    snackWithFallback,
+    useSnackMessage,
+    DeepNullable,
+} from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 import CreateCouplingDeviceForm from './create-coupling-device-form';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateCouplingDeviceInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { CreateCouplingDeviceDialogSchemaForm } from '../coupling-device-dialog.type';
 
 const emptyFormData = {
@@ -61,18 +68,24 @@ export default function CreateCouplingDeviceDialog({
         resolver: yupResolver<DeepNullable<CreateCouplingDeviceDialogSchemaForm>>(formSchema),
     });
 
-    const { reset, watch, trigger, getValues } = formMethods;
+    const { reset, trigger, getValues, subscribe } = formMethods;
 
     // Watch BUS_BAR_SECTION_ID1 changed
     useEffect(() => {
-        const subscription = watch((value, { name }) => {
-            // force trigger validation on BUS_BAR_SECTION_ID2 if it has a value
-            if (name === BUS_BAR_SECTION_ID1 && getValues(BUS_BAR_SECTION_ID2)) {
-                trigger(BUS_BAR_SECTION_ID2);
-            }
+        const unsubscribe = subscribe({
+            name: [BUS_BAR_SECTION_ID1],
+            formState: {
+                values: true,
+            },
+            callback: () => {
+                // force trigger validation on BUS_BAR_SECTION_ID2 if it has a value
+                if (getValues(BUS_BAR_SECTION_ID2)) {
+                    trigger(BUS_BAR_SECTION_ID2);
+                }
+            },
         });
-        return () => subscription.unsubscribe();
-    }, [watch, trigger, getValues]);
+        return () => unsubscribe();
+    }, [subscribe, trigger, getValues]);
 
     useEffect(() => {
         if (editData) {
@@ -115,10 +128,7 @@ export default function CreateCouplingDeviceDialog({
                 modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'CreateCouplingDeviceError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'CreateCouplingDeviceError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError, selectedId]
@@ -140,7 +150,7 @@ export default function CreateCouplingDeviceDialog({
                         );
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
-                    .catch((error: Error) => {
+                    .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
                     });
             } else {

@@ -7,19 +7,21 @@
 
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { AppState } from '../../../redux/reducer';
-
 import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
-import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
+import {
+    downloadSecurityAnalysisResultZippedCsv,
+    fetchSecurityAnalysisResult,
+} from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, GsLangUser, type MuiStyles, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { QueryParamsType, SecurityAnalysisTabProps } from './security-analysis.type';
+import { SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
 import {
     convertFilterValues,
     getStoreFields,
@@ -28,27 +30,22 @@ import {
     RESULT_TYPE,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
-import {
-    FilterType as AgGridFilterType,
-    PaginationType,
-    SecurityAnalysisTab,
-} from '../../../types/custom-aggrid-types';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+import { PaginationType, SecurityAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { useIntl } from 'react-intl/lib';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { UUID } from 'node:crypto';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { FilterType, isCriteriaFilterType } from '../common/utils';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -75,7 +72,8 @@ const styles = {
     resultContainer: {
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
+
 const N_RESULTS_TAB_INDEX = 0;
 const NMK_RESULTS_TAB_INDEX = 1;
 const LOGS_TAB_INDEX = 2;
@@ -84,106 +82,96 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [tabIndex, setTabIndex] = useState(enableDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
-    const tabIndexRef = useRef<number>();
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [tabIndex, setTabIndex] = useState(isDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
+    const tabIndexRef = useRef<number>(null);
     tabIndexRef.current = tabIndex;
     const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
 
     useEffect(() => {
-        if (!enableDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
+        if (!isDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
             // handle tabIndex when dev mode is disabled
             setTabIndex(NMK_RESULTS_TAB_INDEX);
         }
-    }, [enableDeveloperMode]);
+    }, [isDeveloperMode]);
     const securityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     const resultType = useMemo(() => {
-        if (enableDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
+        if (isDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
             return RESULT_TYPE.N;
         } else if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
             return RESULT_TYPE.NMK_CONTINGENCIES;
         } else {
             return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
         }
-    }, [tabIndex, nmkType, enableDeveloperMode]);
+    }, [tabIndex, nmkType, isDeveloperMode]);
 
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][getStoreFields(tabIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SecurityAnalysis,
         getStoreFields(tabIndex) as SecurityAnalysisTab
     );
     const { page, rowsPerPage } = pagination;
-    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
-    const globalFilterOptions = useMemo(
-        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
-        [voltageLevelsFilter, countriesFilter, propertiesFilter]
-    );
+    const { filters } = useComputationColumnFilters(TableType.SecurityAnalysis, getStoreFields(tabIndex));
 
-    const memoizedSetPageCallback = useCallback(() => {
+    const goToFirstPage = useCallback(() => {
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
+
+    const resetPaginationIfNKResults = useCallback(() => {
+        if (tabIndex === NMK_RESULTS_TAB_INDEX) {
+            dispatchPagination({ page: 0, rowsPerPage });
+        }
+    }, [dispatchPagination, tabIndex, rowsPerPage]);
+
+    const globalFiltersFromState = useComputationGlobalFilters(TableType.SecurityAnalysis, resetPaginationIfNKResults);
+
+    const queryParams: SecurityAnalysisQueryParams = useMemo(() => {
+        const params: SecurityAnalysisQueryParams = {
+            resultType,
+        };
+        if (tabIndex === NMK_RESULTS_TAB_INDEX) {
+            params['page'] = page;
+            params['size'] = rowsPerPage as number;
+        }
+
+        if (sortConfig?.length) {
+            const columnToFieldMapping = mappingColumnToField(resultType);
+            params['sort'] = sortConfig.map((sort) => ({
+                ...sort,
+                colId: columnToFieldMapping[sort.colId],
+            }));
+        }
+
+        if (filters) {
+            const updatedFilters = convertFilterValues(intl, filters);
+            const columnToFieldMapping = mappingColumnToField(resultType);
+            params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
+        }
+        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
+        if (globalFilters) {
+            params['globalFilters'] = globalFilters;
+        }
+        return params;
+    }, [resultType, tabIndex, sortConfig, filters, globalFiltersFromState, page, rowsPerPage, intl]);
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
             if (tabIndex === LOGS_TAB_INDEX) {
                 return Promise.resolve();
             }
-
-            const queryParams: QueryParamsType = {
-                resultType,
-            };
-
-            if (tabIndex === NMK_RESULTS_TAB_INDEX) {
-                queryParams['page'] = page;
-                queryParams['size'] = rowsPerPage as number;
-            }
-
-            if (sortConfig?.length) {
-                const columnToFieldMapping = mappingColumnToField(resultType);
-                queryParams['sort'] = sortConfig.map((sort) => ({
-                    ...sort,
-                    colId: columnToFieldMapping[sort.colId],
-                }));
-            }
-
-            if (filters) {
-                const updatedFilters = convertFilterValues(intl, filters);
-                const columnToFieldMapping = mappingColumnToField(resultType);
-                queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
-            }
-
-            if (globalFilters !== undefined && getGlobalFilterParameter(globalFilters) !== undefined) {
-                queryParams['globalFilters'] = globalFilters;
-            }
-
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
-
-        [
-            tabIndex,
-            resultType,
-            sortConfig,
-            filters,
-            getGlobalFilterParameter,
-            globalFilters,
-            currentRootNetworkUuid,
-            page,
-            rowsPerPage,
-            intl,
-        ]
+        [tabIndex, queryParams, currentRootNetworkUuid]
     );
 
     const {
@@ -203,7 +191,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setCount(0);
     }, [setResult]);
 
-    const handleChangeNmkType = (event: SelectChangeEvent) => {
+    const handleChangeNmkType = () => {
         dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
         setNmkType(
@@ -247,15 +235,28 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const columnDefs = useSecurityAnalysisColumnsDefs(
-        filterEnums,
-        resultType,
-        openVoltageLevelDiagram,
-        tabIndex,
-        memoizedSetPageCallback
-    );
+    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex, goToFirstPage);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
+    const downloadZipResult = useCallback(
+        (
+            studyUuid: UUID,
+            nodeUuid: UUID,
+            rootNetworkUuid: UUID,
+            enumValueTranslations: Record<string, string>,
+            language: GsLangUser
+        ) =>
+            downloadSecurityAnalysisResultZippedCsv(
+                studyUuid,
+                nodeUuid,
+                rootNetworkUuid,
+                queryParams,
+                csvHeaders,
+                enumValueTranslations,
+                language
+            ),
+        [csvHeaders, queryParams]
+    );
 
     const isExportButtonDisabled =
         // results not ready yet
@@ -275,24 +276,38 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         return [];
     }, [tabIndex]);
 
+    const filterTypes: FilterType[] = useMemo(() => {
+        const allFilterTypes = Object.values(FilterType);
+        if (tabIndex === N_RESULTS_TAB_INDEX) {
+            // in this case we disable generic filters
+            return allFilterTypes.filter((filterType) => !isCriteriaFilterType(filterType));
+        }
+        return allFilterTypes;
+    }, [tabIndex]);
+
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>
                 <Box sx={styles.tabs}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
-                        {enableDeveloperMode && <Tab label="N" value={N_RESULTS_TAB_INDEX} />}
-                        <Tab label="N-K" value={NMK_RESULTS_TAB_INDEX} />
-                        <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} value={LOGS_TAB_INDEX} />
+                        {isDeveloperMode && (
+                            <Tab label="N" value={N_RESULTS_TAB_INDEX} data-testid={'SecurityAnalysisNTab'} />
+                        )}
+                        <Tab label="N-K" value={NMK_RESULTS_TAB_INDEX} data-testid={'SecurityAnalysisN-KTab'} />
+                        <Tab
+                            label={<FormattedMessage id={'ComputationResultsLogs'} />}
+                            value={LOGS_TAB_INDEX}
+                            data-testid={'SecurityAnalysisLogsTab'}
+                        />
                     </Tabs>
                 </Box>
-                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode)) && (
+                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                     <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
-                            filters={globalFilterOptions}
+                            filterCategories={filterTypes}
                             filterableEquipmentTypes={filterableEquipmentTypes}
-                            disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}
                             genericFiltersStrictMode={true}
+                            tableType={TableType.SecurityAnalysis}
                         />
                     </Box>
                 )}
@@ -313,14 +328,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             </MenuItem>
                         </Select>
                     )}
-                    {(tabIndex === NMK_RESULTS_TAB_INDEX ||
-                        (tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode)) && (
+                    {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             rootNetworkUuid={currentRootNetworkUuid}
-                            csvHeaders={csvHeaders}
                             resultType={resultType}
+                            downloadZipResult={downloadZipResult}
                             disabled={isExportButtonDisabled}
                         />
                     )}
@@ -328,11 +342,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             </Box>
             <Box sx={styles.loader}>{shouldOpenLoader && <LinearProgress />}</Box>
             <Box sx={styles.resultContainer}>
-                {tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode && (
+                {tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode && (
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
                         columnDefs={columnDefs}
+                        computationSubType={getStoreFields(tabIndex)}
                     />
                 )}
                 {tabIndex === NMK_RESULTS_TAB_INDEX && (
@@ -348,6 +363,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             onRowsPerPageChange: handleChangeRowsPerPage,
                         }}
                         columnDefs={columnDefs}
+                        computationSubType={getStoreFields(tabIndex)}
                     />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&

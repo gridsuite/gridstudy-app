@@ -6,24 +6,23 @@
  */
 
 import EditIcon from '@mui/icons-material/Edit';
-
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import DeleteIcon from '@mui/icons-material/Delete';
-
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 import {
-    Equipment,
-    EquipmentType,
     CustomMenuItem,
     CustomNestedMenuItem,
-    ExtendedEquipmentType,
+    type Equipment,
+    EquipmentType,
+    type ExtendedEquipmentType,
+    type MuiStyles,
 } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 
@@ -34,13 +33,13 @@ const styles = {
         // to justify menu items texts
         paddingLeft: '12px',
     },
-};
+} as const satisfies MuiStyles;
 
 type HandleViewInSpreadsheet = (equipmentType: EquipmentType, equipmentId: string) => void;
-type HandleDeleteEquipment = (equipmentType: EquipmentType | null, equipmentId: string) => void;
+type HandleDeleteEquipment = (equipmentType: EquipmentType, equipmentId: string) => void;
 type HandleOpenModificationDialog = (
     equipmentId: string,
-    equipmentType: EquipmentType | null,
+    equipmentType: EquipmentType,
     equipmentSubtype: ExtendedEquipmentType | null
 ) => void;
 
@@ -86,7 +85,12 @@ const DeleteEquipmentItem = ({
     return (
         <CustomMenuItem
             sx={styles.menuItem}
-            onClick={() => handleDeleteEquipment(getCommonEquipmentType(equipmentType), equipmentId)}
+            onClick={() => {
+                const commonType = getCommonEquipmentType(equipmentType);
+                if (commonType) {
+                    handleDeleteEquipment(commonType, equipmentId);
+                }
+            }}
             selected={false}
             disabled={isNodeReadOnly(currentNode)}
         >
@@ -116,9 +120,12 @@ const ModifyEquipmentItem = ({
     return (
         <CustomMenuItem
             sx={styles.menuItem}
-            onClick={() =>
-                handleOpenModificationDialog(equipmentId, getCommonEquipmentType(equipmentType), equipmentSubtype)
-            }
+            onClick={() => {
+                const commonType = getCommonEquipmentType(equipmentType);
+                if (commonType) {
+                    handleOpenModificationDialog(equipmentId, commonType, equipmentSubtype);
+                }
+            }}
             selected={false}
             disabled={isNodeReadOnly(currentNode)}
         >

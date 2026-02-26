@@ -6,7 +6,7 @@
  */
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { catchErrorHandler, CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -249,12 +249,9 @@ export function BalancesAdjustmentDialog({
                     }),
                 });
             } catch (error) {
-                catchErrorHandler(error, (message) =>
-                    snackError({
-                        messageTxt: message,
-                        headerId: 'GenerationDispatchError',
-                    })
-                );
+                snackWithFallback(snackError, error, {
+                    headerId: 'BalancesAdjustmentError',
+                });
             }
         },
         [editData, studyUuid, currentNodeUuid, snackError]

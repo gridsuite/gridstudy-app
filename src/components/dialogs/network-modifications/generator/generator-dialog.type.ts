@@ -7,7 +7,6 @@
 
 import {
     ACTIVE_POWER_SET_POINT,
-    ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -47,13 +46,14 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import { Property } from '../common/properties/property-utils';
 import { ConnectablePositionFormInfos } from '../../connectivity/connectivity.type';
 import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '../../reactive-limits/reactive-limits.type';
 import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
+import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
+import { FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type GeneratorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -106,7 +106,7 @@ export type GeneratorDialogSchemaBaseForm = {
         [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
     };
     // Properties
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 export type GeneratorCreationDialogSchemaForm = { [EQUIPMENT_ID]: string } & GeneratorDialogSchemaBaseForm;
@@ -127,7 +127,7 @@ export interface GeneratorFormInfos {
     generatorStartup: GeneratorStartUpFormInfos;
     connectablePosition: ConnectablePositionFormInfos;
     activePowerControl: ActivePowerControlInfos;
-    generatorShortCircuit: GeneratorShortCircuitFormInfos;
+    generatorShortCircuit: ShortCircuitFormInfos;
     regulatingTerminalId: string;
     regulatingTerminalVlId: string;
     regulatingTerminalConnectableId: string;
@@ -153,9 +153,4 @@ interface GeneratorStartUpFormInfos {
     marginalCost?: number | null;
     plannedOutageRate?: number | null;
     forcedOutageRate?: number | null;
-}
-
-interface GeneratorShortCircuitFormInfos {
-    directTransX?: number | null;
-    stepUpTransformerX?: number | null;
 }

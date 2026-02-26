@@ -6,26 +6,18 @@
  */
 
 import { useCallback, useState } from 'react';
-import { Button, type ButtonProps, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
+import { Button, type ButtonProps, Menu, MenuItem, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
-import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
 import AddEmptySpreadsheetDialog from './dialogs/add-empty-spreadsheet-dialog';
 import AddSpreadsheetFromModelDialog from './dialogs/add-spreadsheet-from-model-dialog';
 import AddSpreadsheetsFromCollectionDialog from './dialogs/add-spreadsheets-from-collection-dialog';
 import type { DialogComponent } from './types';
+import { spreadsheetStyles } from '../spreadsheet.style';
 
 export type AddSpreadsheetButtonProps = {
     disabled: boolean;
-    resetNodeAliases: ResetNodeAliasCallback;
-};
-
-const styles = {
-    addButton: (theme: Theme) => ({
-        color: theme.palette.primary.main,
-        minWidth: '100%',
-    }),
 };
 
 export interface SpreadsheetOption {
@@ -55,7 +47,7 @@ const NEW_SPREADSHEET_CREATION_OPTIONS = {
     },
 } as const satisfies Record<string, SpreadsheetOption>;
 
-export default function AddSpreadsheetButton({ disabled, resetNodeAliases }: Readonly<AddSpreadsheetButtonProps>) {
+export default function AddSpreadsheetButton({ disabled }: Readonly<AddSpreadsheetButtonProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const dialogOpen = useStateBoolean(false);
     const [selectedOption, setSelectedOption] = useState<SpreadsheetOption | undefined>();
@@ -82,7 +74,12 @@ export default function AddSpreadsheetButton({ disabled, resetNodeAliases }: Rea
         <>
             <Tooltip title={<FormattedMessage id="spreadsheet/create_new_spreadsheet/add_button_tooltip" />}>
                 <span>
-                    <Button onClick={handleClick} disabled={disabled} sx={styles.addButton} size={'small'}>
+                    <Button
+                        onClick={handleClick}
+                        disabled={disabled}
+                        sx={spreadsheetStyles.toolbarButton}
+                        size={'small'}
+                    >
                         <AddIcon />
                     </Button>
                 </span>
@@ -94,7 +91,7 @@ export default function AddSpreadsheetButton({ disabled, resetNodeAliases }: Rea
                     </MenuItem>
                 ))}
             </Menu>
-            {SelectedDialog && <SelectedDialog open={dialogOpen} resetNodeAliases={resetNodeAliases} />}
+            {SelectedDialog && <SelectedDialog open={dialogOpen} />}
         </>
     );
 }

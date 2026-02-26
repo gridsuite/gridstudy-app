@@ -8,13 +8,14 @@
 import Dialog from '@mui/material/Dialog';
 import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../../../utils/config-params';
+import { PARAM_USE_NAME } from '../../../../../../utils/config-params';
 import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../../../../network/constants';
-import { getVoltageLevelSingleLineDiagram } from '../../../../../../services/study/network';
+import { getVoltageLevelSingleLineDiagramUrl } from '../../../../../../services/study/network';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
+import { PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 
 interface PositionDiagramPaneProps {
     open: boolean;
@@ -36,34 +37,31 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
-
     const voltageLevelSingleLineDiagramUrl = useMemo(() => {
         if (!voltageLevelId) {
             return '';
         }
-        return getVoltageLevelSingleLineDiagram({
+        return getVoltageLevelSingleLineDiagramUrl({
             studyUuid: studyUuid,
             currentNodeUuid: currentNodeUuid,
             currentRootNetworkUuid: currentRootNetworkUuid,
             voltageLevelId: voltageLevelId,
-            useName: useName,
-            centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-            diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-            componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
-            sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
-            language: language,
         });
-    }, [
-        voltageLevelId,
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        useName,
-        networkVisuParams.singleLineDiagramParameters.centerLabel,
-        networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-        networkVisuParams.singleLineDiagramParameters.componentLibrary,
-        language,
-    ]);
+    }, [voltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+    const sldRequestInfos = {
+        useName: useName,
+        centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,
+        diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
+        componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
+        sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
+        topologicalColoring: true,
+        language: language,
+    };
+    const fetchOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sldRequestInfos),
+    };
 
     return (
         <Dialog onClose={onClose} open={open} maxWidth="md" scroll="body">
@@ -73,6 +71,7 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
                     diagramTitle={voltageLevelId}
                     svgUrl={voltageLevelSingleLineDiagramUrl}
                     svgType={DiagramType.VOLTAGE_LEVEL}
+                    fetchOptions={fetchOptions}
                 />
             )}
         </Dialog>

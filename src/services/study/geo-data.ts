@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { GeoDataLine, GeoDataSubstation } from '@powsybl/network-viewer';
-import { backendFetchJson } from '../utils';
+import { backendFetchJson } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 
 export function fetchSubstationPositions(

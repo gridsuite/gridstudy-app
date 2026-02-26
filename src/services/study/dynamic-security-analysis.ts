@@ -7,8 +7,8 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
+import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
 import {
     DynamicSecurityAnalysisParametersFetchReturn,
     DynamicSecurityAnalysisParametersInfos,
@@ -20,7 +20,7 @@ export function startDynamicSecurityAnalysis(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     debug: boolean
-): Promise<void> {
+): Promise<Response> {
     console.info(
         `Running dynamic security analysis on study '${studyUuid}', on root network '${currentRootNetworkUuid}'  and node '${currentNodeUuid}' ...`
     );
@@ -71,7 +71,14 @@ export function fetchDynamicSecurityAnalysisStatus(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/dynamic-security-analysis/status';
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchText(url);
+}
+
+export function fetchDynamicSecurityAnalysisProvider(studyUuid: UUID) {
+    console.info(`Fetching dynamic security analysis provider on study '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/provider';
+    console.debug(url);
+    return backendFetchText(url);
 }
 
 export function fetchDefaultDynamicSecurityAnalysisProvider() {
@@ -128,7 +135,7 @@ export function fetchDynamicSecurityAnalysisParameters(
 export function updateDynamicSecurityAnalysisParameters(
     studyUuid: UUID,
     newParams: DynamicSecurityAnalysisParametersFetchReturn | null
-): Promise<void> {
+): Promise<Response> {
     console.info(`Setting dynamic security analysis parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/parameters';
     console.debug(url);

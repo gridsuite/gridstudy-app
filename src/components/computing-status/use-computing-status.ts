@@ -6,16 +6,15 @@
  */
 
 import { RunningStatus } from 'components/utils/running-status';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ComputingType } from '@gridsuite/commons-ui';
-import { AppState, StudyUpdated } from 'redux/reducer';
+import { useDispatch } from 'react-redux';
+import { ComputingType, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 import { isParameterizedComputingType, toComputingStatusParameters } from './computing-status-utils';
-import { StudyUpdatedEventData } from 'types/notification-types';
+import { parseEventData, StudyUpdatedEventData } from '../../types/notification-types';
 
 interface UseComputingStatusProps {
     (
@@ -41,22 +40,21 @@ interface UseComputingStatusProps {
 }
 
 interface LastUpdateProps {
-    studyUpdatedForce: StudyUpdated;
+    eventData: StudyUpdatedEventData | null;
     computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>;
 }
 
 function isWorthUpdate(
-    studyUpdatedForce: StudyUpdated,
+    eventData: StudyUpdatedEventData | null,
     computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
-    lastUpdateRef: RefObject<LastUpdateProps>,
-    nodeUuidRef: RefObject<UUID>,
-    rootNetworkUuidRef: RefObject<UUID>,
+    lastUpdateRef: RefObject<LastUpdateProps | null>,
+    nodeUuidRef: RefObject<UUID | null>,
+    rootNetworkUuidRef: RefObject<UUID | null>,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     invalidations: string[]
 ): boolean {
-    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData; // TODO narrowing by predicate
-    const headers = studyUpdatedEventData?.headers;
+    const headers = eventData?.headers;
     const updateType = headers?.updateType;
     const node = headers?.node;
     const nodes = headers?.nodes;
@@ -73,7 +71,7 @@ function isWorthUpdate(
     if (computingStatusFetcher && lastUpdateRef.current?.computingStatusFetcher !== computingStatusFetcher) {
         return true;
     }
-    if (studyUpdatedForce && lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce) {
+    if (eventData && lastUpdateRef.current?.eventData === eventData) {
         return false;
     }
     if (!updateType) {
@@ -129,17 +127,19 @@ export const useComputingStatus: UseComputingStatusProps = (
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
-
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch<AppDispatch>();
 
     //the callback crosschecks the computation status and the content of the last update reference
     //in order to determine which computation just ended
     const isComputationCompleted = useCallback(
-        (status: RunningStatus) =>
-            [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
-            completions.includes(lastUpdateRef.current?.studyUpdatedForce.eventData?.headers?.updateType ?? ''),
+        (status: RunningStatus) => {
+            const eventData = lastUpdateRef.current?.eventData;
+            return (
+                [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
+                completions.includes(eventData?.headers?.updateType ?? '')
+            );
+        },
         [completions]
     );
 
@@ -237,38 +237,49 @@ export const useComputingStatus: UseComputingStatusProps = (
         isComputationCompleted,
     ]);
 
+    const evaluateUpdate = useCallback(
+        (event?: MessageEvent) => {
+            if (
+                !studyUuid ||
+                !nodeUuid ||
+                !currentRootNetworkUuid ||
+                optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up
+            ) {
+                return;
+            }
+            const eventData = parseEventData<StudyUpdatedEventData>(event ?? null);
+            const isUpdateForUs = isWorthUpdate(
+                eventData,
+                computingStatusFetcher,
+                lastUpdateRef,
+                nodeUuidRef,
+                rootNetworkUuidRef,
+                nodeUuid,
+                currentRootNetworkUuid,
+                invalidations
+            );
+            lastUpdateRef.current = { eventData, computingStatusFetcher };
+            if (isUpdateForUs) {
+                update();
+            }
+        },
+        [
+            computingStatusFetcher,
+            currentRootNetworkUuid,
+            invalidations,
+            nodeUuid,
+            optionalServiceAvailabilityStatus,
+            studyUuid,
+            update,
+        ]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: evaluateUpdate,
+    });
+
     /* initial fetch and update */
     useEffect(() => {
-        if (
-            !studyUuid ||
-            !nodeUuid ||
-            !currentRootNetworkUuid ||
-            optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up
-        ) {
-            return;
-        }
-        const isUpdateForUs = isWorthUpdate(
-            studyUpdatedForce,
-            computingStatusFetcher,
-            lastUpdateRef,
-            nodeUuidRef,
-            rootNetworkUuidRef,
-            nodeUuid,
-            currentRootNetworkUuid,
-            invalidations
-        );
-        lastUpdateRef.current = { studyUpdatedForce, computingStatusFetcher };
-        if (isUpdateForUs) {
-            update();
-        }
-    }, [
-        update,
-        computingStatusFetcher,
-        nodeUuid,
-        invalidations,
-        currentRootNetworkUuid,
-        studyUpdatedForce,
-        studyUuid,
-        optionalServiceAvailabilityStatus,
-    ]);
+        evaluateUpdate();
+    }, [evaluateUpdate]);
 };

@@ -8,15 +8,50 @@ import { useIntl } from 'react-intl';
 import { useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { Modification } from './root-network.types';
-import { Typography } from '@mui/material';
+import { Box, Theme, Typography } from '@mui/material';
+import type { UUID } from 'node:crypto';
+import { AppState } from 'redux/reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHighlightModification } from 'redux/actions';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
+import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
+import { PanelType } from 'components/workspace/types/workspace.types';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 
 interface ModificationResultsProps {
     modifications: Modification[];
+    nodeUuid: UUID;
 }
 
-export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications }) => {
+const styles = {
+    itemHover: (theme: Theme) => ({
+        borderRadius: 1,
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: theme.aggrid.highlightColor,
+        },
+    }),
+    modifiedEquipmentLabel: (theme: Theme) => ({
+        cursor: 'pointer',
+        pt: theme.spacing(0.5),
+        pb: theme.spacing(0.5),
+        pl: theme.spacing(1.5),
+    }),
+    modificationLabel: (theme: Theme) => ({
+        cursor: 'pointer',
+        pt: theme.spacing(1.5),
+        pb: theme.spacing(0.5),
+        pl: theme.spacing(0.5),
+    }),
+};
+export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications, nodeUuid }) => {
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
+    const triggerTreeNodeFocus = useTreeNodeFocus();
+    const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
+    const dispatch = useDispatch();
+    const { openToolPanel } = useWorkspacePanelActions();
 
     const getModificationLabel = useCallback(
         (modification?: Modification): React.ReactNode => {
@@ -28,18 +63,51 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
                 { id: 'network_modifications.' + modification.messageType },
                 {
                     // @ts-ignore
-                    ...computeLabel(modification),
+                    ...computeLabel(modification, false),
                 }
             );
         },
         [computeLabel, intl]
     );
+
+    const handleClick = useCallback(
+        (modification: Modification) => {
+            const node = treeNodes?.find((node) => node.id === nodeUuid);
+            if (node) {
+                setCurrentTreeNodeWithSync({ ...node });
+                triggerTreeNodeFocus();
+            }
+            openToolPanel(PanelType.MODIFICATIONS);
+            dispatch(setHighlightModification(modification.modificationUuid));
+        },
+        [dispatch, nodeUuid, setCurrentTreeNodeWithSync, treeNodes, triggerTreeNodeFocus, openToolPanel]
+    );
+
     return (
         <>
             {modifications.map((modification) => (
-                <Typography key={modification.impactedEquipmentId + modification.modificationUuid} variant="body2">
-                    <strong>{modification.impactedEquipmentId + ' - '}</strong> {getModificationLabel(modification)}
-                </Typography>
+                <Box key={modification.modificationUuid}>
+                    <Typography
+                        variant="body2"
+                        onClick={() => handleClick(modification)}
+                        sx={[styles.itemHover, styles.modificationLabel]}
+                    >
+                        {getModificationLabel(modification)}
+                        {` (${modification.impactedEquipmentIds.length})`}
+                    </Typography>
+                    <Box key={modification.modificationUuid}>
+                        {modification.impactedEquipmentIds.map((equipmentId) => (
+                            <Typography
+                                key={equipmentId}
+                                variant="body2"
+                                onClick={() => handleClick(modification)}
+                                sx={[styles.itemHover, styles.modifiedEquipmentLabel]}
+                            >
+                                <strong>{equipmentId}</strong>
+                            </Typography>
+                        ))}
+                    </Box>
+                </Box>
             ))}
         </>
     );

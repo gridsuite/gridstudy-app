@@ -7,11 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    getOptionalServiceByServerName,
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from './utils/optional-services';
+import { retrieveOptionalServices } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
     AnnouncementNotification,
@@ -20,48 +16,42 @@ import {
     COMMON_APP_NAME,
     fetchConfigParameter,
     fetchConfigParameters,
+    getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
     LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
+    snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
-    getComputedLanguage,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
-import {
-    APP_NAME,
-    PARAM_DEVELOPER_MODE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LANGUAGE,
-    PARAM_THEME,
-    PARAM_USE_NAME,
-} from '../utils/config-params';
+import { APP_NAME, PARAM_USE_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
-    attemptLeaveParametersTab,
+    addSortForNewSpreadsheet,
+    initOrUpdateSpreadsheetGlobalFilters,
     initTableDefinitions,
     renameTableDefinition,
-    saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
-    selectEnableDeveloperMode,
-    selectFavoriteContingencyLists,
+    selectIsDeveloperMode,
     selectLanguage,
     selectTheme,
     selectUseName,
-    setAppTabIndex,
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
     updateTableColumns,
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
-import { STUDY_VIEWS, StudyView } from './utils/utils';
 import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
@@ -74,13 +64,15 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
+import { SortWay } from '../types/custom-aggrid-types.ts';
+import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
+import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
 
 const noUserManager = { instance: null, error: null };
 
 const App = () => {
     const { snackError } = useSnackMessage();
 
-    const appTabIndex = useSelector((state) => state.appTabIndex);
     const user = useSelector((state) => state.user);
     const studyUuid = useSelector((state) => state.studyUuid);
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
@@ -106,8 +98,22 @@ const App = () => {
     );
 
     const updateParams = useCallback(
-        (params) => {
+        (params, defaultValues = null) => {
             console.debug('received UI parameters : ', params);
+            if (defaultValues) {
+                // Browsing defaultParametersValues entries
+                Object.entries(defaultValues).forEach(([key, defaultValue]) => {
+                    // Checking if keys defined in defaultParametersValues file are already defined in config server
+                    // If they are not defined, values are taken from default values file
+                    if (!params.find((param) => param.name === key)) {
+                        params.push({
+                            name: key,
+                            value: defaultValue,
+                        });
+                    }
+                });
+                console.debug('UI parameters filled with default values when undefined : ', params);
+            }
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAM_THEME:
@@ -118,13 +124,10 @@ const App = () => {
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
                         break;
                     case PARAM_DEVELOPER_MODE:
-                        dispatch(selectEnableDeveloperMode(param.value === 'true'));
+                        dispatch(selectIsDeveloperMode(param.value === 'true'));
                         break;
                     case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));
-                        break;
-                    case PARAM_FAVORITE_CONTINGENCY_LISTS:
-                        dispatch(selectFavoriteContingencyLists(param.value.split(',').filter((list) => list)));
                         break;
                     case LAST_SELECTED_DIRECTORY:
                         localStorage.setItem(LAST_SELECTED_DIRECTORY, param.value);
@@ -145,12 +148,7 @@ const App = () => {
                     .then((param) => {
                         updateParams([param]);
                     })
-                    .catch((error) =>
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        })
-                    );
+                    .catch((error) => snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' }));
             }
         },
         [snackError, updateParams]
@@ -161,6 +159,10 @@ const App = () => {
     });
 
     useStudyNavigationSync();
+
+    useBaseVoltages();
+
+    useGlobalFilterOptions();
 
     const networkVisuParamsUpdated = useCallback(
         (event) => {
@@ -180,9 +182,11 @@ const App = () => {
 
     const resetTableDefinitions = useCallback(
         (collection) => {
-            const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+            const { tablesFilters, tableGlobalFilters, tableDefinitions, tablesSorts } =
                 processSpreadsheetsCollectionData(collection);
-            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters));
+            dispatch(
+                initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters, tablesSorts)
+            );
         },
         [dispatch]
     );
@@ -199,12 +203,18 @@ const App = () => {
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
-                    dispatch(saveSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
+                    dispatch(initOrUpdateSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
+                    dispatch(
+                        addSortForNewSpreadsheet(tabUuid, [
+                            {
+                                colId: model.sortConfig ? model.sortConfig.colId : 'id',
+                                sort: model.sortConfig ? model.sortConfig.sort : SortWay.ASC,
+                            },
+                        ])
+                    );
                 })
                 .catch((error) => {
-                    console.error(error);
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
                     });
                 });
@@ -220,8 +230,7 @@ const App = () => {
                     resetTableDefinitions(collection);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_collection',
                     });
                 });
@@ -306,18 +315,7 @@ const App = () => {
 
             const fetchAppConfigPromise = fetchConfigParameters(APP_NAME).then((params) => {
                 fetchDefaultParametersValues().then((defaultValues) => {
-                    // Browsing defaultParametersValues entries
-                    Object.entries(defaultValues).forEach(([key, defaultValue]) => {
-                        // Checking if keys defined in defaultParametersValues file are already defined in config server
-                        // If they are not defined, values are taken from default values file
-                        if (!params.find((param) => param.name === key)) {
-                            params.push({
-                                name: key,
-                                value: defaultValue,
-                            });
-                        }
-                    });
-                    updateParams(params);
+                    updateParams(params, defaultValues);
                 });
             });
 
@@ -327,35 +325,10 @@ const App = () => {
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
-                    const retrieveOptionalServices = services.map((service) => {
-                        return {
-                            ...service,
-                            name: getOptionalServiceByServerName(service.name),
-                        };
-                    });
-                    // get all potentially optional services
-                    const optionalServicesNames = Object.keys(OptionalServicesNames);
-
-                    // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
-                    // in that case, we consider it is UP
-                    optionalServicesNames
-                        .filter(
-                            (serviceName) =>
-                                !retrieveOptionalServices.map((service) => service.name).includes(serviceName)
-                        )
-                        .forEach((serviceName) =>
-                            retrieveOptionalServices.push({
-                                name: serviceName,
-                                status: OptionalServicesStatus.Up,
-                            })
-                        );
-                    dispatch(setOptionalServices(retrieveOptionalServices));
+                    dispatch(setOptionalServices(retrieveOptionalServices(services)));
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'optionalServicesRetrievingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'optionalServicesRetrievingError' });
                 });
 
             // Dispatch globally when all params are loaded to allow easy waiting.
@@ -372,28 +345,9 @@ const App = () => {
                 .then(() => {
                     dispatch(setParamsLoaded());
                 })
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    })
-                );
+                .catch((error) => snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' }));
         }
     }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams, resetTableDefinitions]);
-
-    const onChangeTab = useCallback(
-        (newTabIndex) => {
-            const parametersTabIndex = STUDY_VIEWS.indexOf(StudyView.PARAMETERS);
-
-            //check if we are leaving the parameters tab
-            if (appTabIndex === parametersTabIndex && newTabIndex !== parametersTabIndex) {
-                dispatch(attemptLeaveParametersTab(newTabIndex));
-            } else {
-                dispatch(setAppTabIndex(newTabIndex));
-            }
-        },
-        [dispatch, appTabIndex]
-    );
 
     return (
         <div
@@ -403,7 +357,7 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
+            <AppTopBar user={user} userManager={userManager} />
             <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div
@@ -423,10 +377,7 @@ const App = () => {
                 >
                     {user !== null ? (
                         <Routes>
-                            <Route
-                                path="/studies/:studyUuid"
-                                element={<StudyContainer view={STUDY_VIEWS[appTabIndex]} onChangeTab={onChangeTab} />}
-                            />
+                            <Route path="/studies/:studyUuid" element={<StudyContainer />} />
                             <Route
                                 path="/sign-in-callback"
                                 element={<Navigate replace to={getPreLoginPath() || '/'} />}
