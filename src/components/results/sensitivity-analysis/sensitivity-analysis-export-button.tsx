@@ -28,7 +28,7 @@ import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
-import { getSelectedGlobalFilters } from '../common/global-filter/global-filter-utils';
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 
 interface SensitivityExportButtonProps {
     studyUuid: UUID;
