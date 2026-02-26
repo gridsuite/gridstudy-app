@@ -9,20 +9,20 @@ import { LOGS_STORE_FIELD, SPREADSHEET_STORE_FIELD } from '../utils/store-sort-f
 import { setLogsFilter, setSpreadsheetFilter, updateColumnFiltersAction } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
-import { FilterConfig, FilterType } from '../types/custom-aggrid-types';
+import { FilterConfig, TableType } from '../types/custom-aggrid-types';
 import { useCallback } from 'react';
 
 const FILTER_ACTIONS: Partial<
     Record<
-        FilterType,
+        TableType,
         { filterType: string; filterStoreAction: (filterTab: any, filter: FilterConfig[]) => UnknownAction }
     >
 > = {
-    [FilterType.Spreadsheet]: {
+    [TableType.Spreadsheet]: {
         filterType: SPREADSHEET_STORE_FIELD,
         filterStoreAction: setSpreadsheetFilter,
     },
-    [FilterType.Logs]: {
+    [TableType.Logs]: {
         filterType: LOGS_STORE_FIELD,
         filterStoreAction: setLogsFilter,
     },
@@ -34,7 +34,7 @@ const getFilterFromState = (state: AppState, storeField: string, filterTab: stri
     return (state as Record<string, any>)[storeField]?.[filterTab] || [];
 };
 
-export const useFilterSelector = (filterType: FilterType, filterTab: string) => {
+export const useFilterSelector = (filterType: TableType, filterTab: string) => {
     const filterAction = FILTER_ACTIONS[filterType];
 
     const selectFilters = useCallback(
@@ -42,7 +42,7 @@ export const useFilterSelector = (filterType: FilterType, filterTab: string) => 
             if (filterAction) {
                 return getFilterFromState(state, filterAction.filterType, filterTab);
             }
-            const columnsFilter = state.computationFilters?.[filterType]?.columnsFilters?.[filterTab];
+            const columnsFilter = state.tableFilters.columnsFilters?.[filterType]?.[filterTab];
             if (Array.isArray(columnsFilter)) return columnsFilter;
             return columnsFilter?.columns ?? EMPTY_ARRAY;
         },

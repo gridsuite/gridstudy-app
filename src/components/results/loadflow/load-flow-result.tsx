@@ -25,7 +25,7 @@ import { formatComponentResult, formatCountryAdequaciesResult, formatExchangesRe
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from 'redux/reducer';
 import GridSection from '../../dialogs/commons/grid-section';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { TableType } from '../../../types/custom-aggrid-types';
 
 const styles = {
     gridContainer: {
@@ -122,7 +122,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={message}
                         skipColumnHeaders={false}
-                        computationType={AgGridFilterType.Loadflow}
+                        computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
                     />
                 </div>
@@ -144,7 +144,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={message}
                         skipColumnHeaders={false}
-                        computationType={AgGridFilterType.Loadflow}
+                        computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
                     />
                 </div>
@@ -166,7 +166,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={message}
                         skipColumnHeaders={false}
-                        computationType={AgGridFilterType.Loadflow}
+                        computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
                     />
                 </div>

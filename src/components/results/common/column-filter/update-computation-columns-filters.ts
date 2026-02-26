@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterConfig, FilterType } from '../../../../types/custom-aggrid-types';
+import { FilterConfig, TableType } from '../../../../types/custom-aggrid-types';
 import { updateComputationResultFiltersColumn } from '../../../../services/study/study-config';
 import { GridApi } from 'ag-grid-community';
 import { UUID } from 'node:crypto';
@@ -14,11 +14,11 @@ export const updateComputationColumnsFilters = (
     filters?: FilterConfig[],
     colId?: string,
     studyUuid?: UUID,
-    filterType?: FilterType,
+    tableType?: TableType,
     filterSubType?: string,
     onBeforePersist?: () => void
 ) => {
-    if (!agGridApi || !studyUuid || !colId || !filterSubType || !filterType) {
+    if (!agGridApi || !studyUuid || !colId || !filterSubType || !tableType) {
         return;
     }
     const filter = filters?.find((f) => f.column === colId);
@@ -34,5 +34,5 @@ export const updateComputationColumnsFilters = (
               }
             : null,
     };
-    updateComputationResultFiltersColumn(studyUuid, filterType, filterSubType, columnFilterInfos).then();
+    updateComputationResultFiltersColumn(studyUuid, tableType, filterSubType, columnFilterInfos).then();
 };

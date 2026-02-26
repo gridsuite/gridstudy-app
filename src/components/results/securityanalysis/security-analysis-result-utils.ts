@@ -32,7 +32,7 @@ import RunningStatus from 'components/utils/running-status';
 import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
-import { FilterConfig, FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterConfig, TableType } from '../../../types/custom-aggrid-types';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
@@ -50,7 +50,7 @@ import { createEnumColumn } from '../common/column-filter/utilis';
 interface TableParams {
     sortParams: SortParams;
     filterParams: {
-        type: AgGridFilterType;
+        type: TableType;
         tab: string;
         updateFilterCallback: typeof updateComputationColumnsFilters;
     };
@@ -64,14 +64,14 @@ const createTableParams = (tabIndex: number, goToFirstPage: () => void): TablePa
             tab,
         },
         filterParams: {
-            type: AgGridFilterType.SecurityAnalysis,
+            type: TableType.SecurityAnalysis,
             tab,
             updateFilterCallback: (
                 agGridApi?: GridApi,
                 filters?: FilterConfig[],
                 colId?: string,
                 studyUuid?: UUID,
-                filterType?: FilterType,
+                filterType?: TableType,
                 filterSubType?: string
             ) =>
                 updateComputationColumnsFilters(
@@ -183,7 +183,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
 };
 
 interface AgGridFilterParams {
-    type: AgGridFilterType;
+    type: TableType;
     tab: string;
     updateFilterCallback: () => void;
 }

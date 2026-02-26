@@ -58,20 +58,20 @@ function createPaginationSelector(paginationType: PaginationType, paginationTab:
     };
 }
 
-function createPaginationDispatcher(paginationType: PaginationType, paginationTab: PaginationTab) {
+function createPaginationDispatcher(
+    paginationType: PaginationType,
+    paginationTab: PaginationTab,
+    paginationConfig: PaginationConfig
+) {
     switch (paginationType) {
         case PaginationType.SecurityAnalysis:
-            return (pagination: PaginationConfig) =>
-                setSecurityAnalysisResultPagination(paginationTab as SecurityAnalysisTab, pagination);
+            return setSecurityAnalysisResultPagination(paginationTab as SecurityAnalysisTab, paginationConfig);
         case PaginationType.SensitivityAnalysis:
-            return (pagination: PaginationConfig) =>
-                setSensitivityAnalysisResultPagination(paginationTab as SensitivityAnalysisTab, pagination);
+            return setSensitivityAnalysisResultPagination(paginationTab as SensitivityAnalysisTab, paginationConfig);
         case PaginationType.ShortcircuitAnalysis:
-            return (pagination: PaginationConfig) =>
-                setShortcircuitAnalysisResultPagination(paginationTab as ShortcircuitAnalysisTab, pagination);
+            return setShortcircuitAnalysisResultPagination(paginationTab as ShortcircuitAnalysisTab, paginationConfig);
         case PaginationType.PccMin:
-            return (pagination: PaginationConfig) =>
-                setPccminAnalysisResultPagination(paginationTab as PccminTab, pagination);
+            return setPccminAnalysisResultPagination(paginationTab as PccminTab, paginationConfig);
         default:
             throw new Error(`Unknown pagination type: ${paginationType}`);
     }
@@ -82,13 +82,12 @@ export const usePaginationSelector = (paginationType: PaginationType, pagination
     const pagination = useSelector(selector);
 
     const dispatch = useDispatch();
-    const actionCreator = createPaginationDispatcher(paginationType, paginationTab);
 
     const dispatchPagination = useCallback(
         (newPagination: PaginationConfig) => {
-            dispatch(actionCreator(newPagination));
+            dispatch(createPaginationDispatcher(paginationType, paginationTab, newPagination));
         },
-        [dispatch, actionCreator]
+        [dispatch, paginationType, paginationTab]
     );
 
     return { pagination, dispatchPagination };

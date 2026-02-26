@@ -13,7 +13,7 @@ import { Box, LinearProgress } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
-import { FilterType as AgGridFilterType } from '../../types/custom-aggrid-types';
+import { TableType } from '../../types/custom-aggrid-types';
 import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
 
 const styles = {
@@ -42,7 +42,7 @@ interface RenderTableAndExportCsvProps {
     getRowStyle?: (params: RowClassParams) => RowStyle | undefined;
     overlayNoRowsTemplate: string | undefined;
     skipColumnHeaders: boolean;
-    computationType: AgGridFilterType;
+    computationType: TableType;
     computationSubType: string;
 }
 
