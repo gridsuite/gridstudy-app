@@ -151,7 +151,15 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
                                     {table.getHeaderGroups().map((headerGroup) => (
                                         <TableRow key={headerGroup.id} sx={styles.tableRow}>
                                             {headerGroup.headers.map((header) => (
-                                                <TableCell key={header.id} sx={createHeaderCellStyle(header, theme)}>
+                                                <TableCell
+                                                    key={header.id}
+                                                    sx={createHeaderCellStyle(
+                                                        header,
+                                                        theme,
+                                                        header.index === 0,
+                                                        header.index === headerGroup.headers.length - 1
+                                                    )}
+                                                >
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </TableCell>
                                             ))}

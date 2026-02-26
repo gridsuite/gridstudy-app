@@ -12,6 +12,7 @@ import { MODIFICATION_ROW_HEIGHT } from './network-modifications-table';
 import { AUTO_EXTENSIBLE_COLUMNS } from './columns-definition';
 import { CSSProperties } from 'react';
 import { SxProps, Theme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 
 const HIGHLIGHT_COLOR_BASE = 'rgba(144, 202, 249, 0.16)';
 const HIGHLIGHT_COLOR_HOVER = 'rgba(144, 202, 249, 0.24)';
@@ -191,7 +192,8 @@ export const createCellStyle = (cell: any) => {
     };
 };
 
-export const createHeaderCellStyle = (header: any, theme: Theme) => {
+export const createHeaderCellStyle = (header: any, theme: Theme, isFirst: boolean, isLast: boolean) => {
+    const darkBorder = `1px solid ${alpha(theme.palette.text.secondary, 0.4)}`;
     const isAutoExtensible = AUTO_EXTENSIBLE_COLUMNS.includes(header.column.id);
     const size = header.column.getSize();
     const minSize = header.column.columnDef.minSize;
@@ -209,5 +211,9 @@ export const createHeaderCellStyle = (header: any, theme: Theme) => {
         paddingTop: '1.5vh',
         paddingBottom: '1.5vh',
         backgroundColor: theme.palette.background.paper,
+        borderBottom: darkBorder,
+        borderTop: darkBorder,
+        ...(isFirst && { borderLeft: darkBorder }),
+        ...(isLast && { borderRight: darkBorder }),
     };
 };

@@ -112,8 +112,14 @@ export const createStaticColumns = (
     {
         id: STATIC_MODIFICATION_TABLE_COLUMNS.SWITCH.id,
         cell: ({ row }) => <SwitchCell data={row.original} setModifications={setModifications} />,
-        size: 64,
+        size: 40,
         minSize: 40,
+        meta: {
+            cellStyle: {
+                justifyContent: 'end',
+                paddingRight: '5px',
+            },
+        },
     },
 ];
 
