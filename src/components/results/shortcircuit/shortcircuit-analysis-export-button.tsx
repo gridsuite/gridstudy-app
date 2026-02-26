@@ -30,7 +30,8 @@ import {
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { getSelectedGlobalFilters } from '../common/global-filter/global-filter-utils';
+
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 
 interface ShortCircuitExportButtonProps {
     studyUuid: UUID;
