@@ -7,8 +7,8 @@
 
 import React, { useState, useCallback, SetStateAction } from 'react';
 import { Switch, Tooltip } from '@mui/material';
-import { NetworkModificationMetadata, useSnackMessage } from '@gridsuite/commons-ui';
-import { setModificationActivated } from 'services/study/network-modifications';
+import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { setModificationMetadata } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { AppState } from 'redux/reducer';
@@ -37,15 +37,18 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
             if (!modificationUuid) {
                 return;
             }
-            setModificationActivated(studyUuid, currentNode?.id, modificationUuid, activated)
-                .catch((err) => {
-                    snackError({ messageTxt: err.message, messageId: 'networkModificationActivationError' });
+            setModificationMetadata(studyUuid, currentNode?.id, modificationUuid, {
+                activated: activated,
+                type: data?.type,
+            })
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'networkModificationActivationError' });
                 })
                 .finally(() => {
                     setIsLoading(false);
                 });
         },
-        [studyUuid, currentNode?.id, modificationUuid, snackError]
+        [modificationUuid, studyUuid, currentNode?.id, data?.type, snackError]
     );
 
     const toggleModificationActive = useCallback(() => {

@@ -10,18 +10,16 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
-import { StudyView } from 'components/utils/utils';
 import { IService } from '../result-view-tab.type';
 
 export enum ResultsTabsRootLevel {
     LOAD_FLOW = 0,
     SECURITY_ANALYSIS = 1,
     SENSITIVITY_ANALYSIS = 2,
-    NON_EVACUATED_ENERGY = 3,
-    SHORTCIRCUIT_ANALYSIS = 4,
-    DYNAMIC_SIMULATION = 5,
-    VOLTAGE_INITIALIZATION = 6,
-    STATE_ESTIMATION = 7,
+    SHORTCIRCUIT_ANALYSIS = 3,
+    DYNAMIC_SIMULATION = 4,
+    VOLTAGE_INITIALIZATION = 5,
+    STATE_ESTIMATION = 6,
 }
 
 // to fill with other first level tabs when needed (ex : ShortcircuitAnalysisResultTabs | SensitivityAnalysisResultTabs | ...)
@@ -33,20 +31,18 @@ export type ResultTabIndexRedirection = ResultsTabsRootLevel | ResultsTabsLevelO
  * handles redirection to specific tab
  * @param resultTabIndexRedirection array holding the desired tabs to be redirected to [2, 1] would redirect to tab number 2, subtab number 1
  * @param setTabIndex setter allowing to set the tab in the current component
- * @param view display context (cf StudyView)
  */
 export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
-    setTabIndex: React.Dispatch<React.SetStateAction<number>>,
-    view: string
+    setTabIndex: React.Dispatch<React.SetStateAction<number>>
 ): Dispatch<SetStateAction<boolean>> => {
     const [redirectionLock, setRedirectionLock] = useResultsTabRedirectionLock();
 
     useEffect(() => {
-        if (view !== StudyView.RESULTS && !redirectionLock) {
+        if (!redirectionLock) {
             setTabIndex(resultTabIndexRedirection);
         }
-    }, [resultTabIndexRedirection, setTabIndex, view, redirectionLock]);
+    }, [resultTabIndexRedirection, setTabIndex, redirectionLock]);
 
     return setRedirectionLock;
 };

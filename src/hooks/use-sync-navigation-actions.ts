@@ -9,7 +9,7 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentRootNetworkUuid, setCurrentTreeNode } from 'redux/actions';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { useStudyScopedNavigationKeys } from './use-study-scoped-navigation-keys';
 

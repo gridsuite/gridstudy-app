@@ -19,7 +19,6 @@ import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-an
 import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from 'components/utils/running-status';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
-
 interface ShortCircuitAnalysisOneBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
@@ -41,7 +40,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
 
     const [faultResult, setFaultResult] = useState<SCAFaultResult>();
     const [feederResults, setFeederResults] = useState<SCAFeederResult[]>();
-    const [result, setResult] = useState<SCAFaultResult[]>([]);
+    const [result, setResult] = useState<SCAFaultResult[] | undefined>(undefined);
 
     useEffect(() => {
         if (oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED) {

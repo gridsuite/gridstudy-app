@@ -14,7 +14,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
 import { MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, NoSvg, MIN_WIDTH } from '../../diagram-utils';
 
-import { mergeSx, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { mergeSx, snackWithFallback, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from './diagram-header';
 import { fetchSvg } from '../../../../../../services/study';
@@ -28,6 +28,7 @@ interface PositionDiagramProps {
     onClose: () => void;
     svgType: string;
     disabled?: boolean;
+    fetchOptions?: RequestInit;
 }
 
 const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDivElement>) => {
@@ -42,7 +43,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
     const svgDraw = useRef<SingleLineDiagramViewer | null>(null);
     const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
-    const svgRef = useRef<HTMLDivElement>();
+    const svgRef = useRef<HTMLDivElement>(null);
     const { svgType, disabled } = props;
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -59,7 +60,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
     useEffect(() => {
         if (props.svgUrl) {
             updateLoadingState(true);
-            fetchSvg(props.svgUrl)
+            fetchSvg(props.svgUrl, props.fetchOptions)
                 .then((data) => {
                     if (data !== null) {
                         setSvg({
@@ -69,27 +70,25 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
                         });
                     } else {
                         setSvg(NoSvg);
+                        props.onClose();
                     }
                     updateLoadingState(false);
                 })
-                .catch((errorMessage) => {
-                    console.error(errorMessage);
+                .catch((error) => {
                     setSvg({
                         svg: null,
                         metadata: null,
                         additionalMetadata: null,
-                        error: errorMessage,
+                        error,
                         svgUrl: props.svgUrl,
                     });
-                    snackError({
-                        messageTxt: errorMessage,
-                    });
+                    snackWithFallback(snackError, error);
                     updateLoadingState(false);
                 });
         } else {
             setSvg(NoSvg);
         }
-    }, [props.svgUrl, snackError, intlRef]);
+    }, [props.svgUrl, snackError, intlRef, props]);
 
     useLayoutEffect(() => {
         if (disabled) {
@@ -162,7 +161,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
             ref={ref}
             elevation={4}
             square={true}
-            sx={mergeSx(styles.paperBorders, styles.divDiagramInvalid)}
+            sx={mergeSx(styles.paperBorders, styles.divDiagramLoadflowInvalid)}
             style={{
                 pointerEvents: 'auto',
                 width: serverWidth,

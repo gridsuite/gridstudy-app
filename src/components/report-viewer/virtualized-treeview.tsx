@@ -5,24 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FixedSizeList } from 'react-window';
+import { List, useListRef } from 'react-window';
 import { ReportItem, TreeviewItem } from './treeview-item';
 import { ReportTree } from '../../utils/report/report.type';
 import Label from '@mui/icons-material/Label';
 import { useTreeViewScroll } from './use-treeview-scroll';
 import { QuickSearch } from './QuickSearch';
-import { Box, Theme } from '@mui/material';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import { Box } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { reportStyles } from './report.styles';
 
 const styles = {
     treeItem: {
         whiteSpace: 'nowrap',
+        minHeight: '100%',
     },
-    labelIcon: (theme: Theme) => ({
+    labelIcon: (theme) => ({
         marginRight: theme.spacing(1),
     }),
-};
+    listContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
+    treeviewContainer: {
+        flex: 1,
+        position: 'relative',
+    },
+} as const satisfies MuiStyles;
 
 export interface TreeViewProps {
     expandedTreeReports: string[];
@@ -41,7 +53,7 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
     highlightedReportId,
     reportTree,
 }) => {
-    const listRef = useRef<FixedSizeList>(null);
+    const listRef = useListRef(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
@@ -130,9 +142,9 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
 
     useEffect(() => {
         if (currentResultIndex >= 0 && searchResults.length > 0) {
-            listRef.current?.scrollToItem(searchResults[currentResultIndex], 'end');
+            listRef.current?.scrollToRow({ index: searchResults[currentResultIndex], align: 'end' });
         }
-    }, [currentResultIndex, searchResults]);
+    }, [currentResultIndex, listRef, searchResults]);
 
     const handleNavigate = useCallback(
         (direction: 'next' | 'previous') => {
@@ -170,31 +182,25 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
                 placeholder="searchPlaceholderLogsTreeStructure"
                 inputRef={inputRef}
             />
-            <Box sx={{ flex: 1 }}>
-                <AutoSizer>
-                    {({ height, width }) => (
-                        <FixedSizeList
-                            ref={listRef}
-                            height={height}
-                            width={width}
-                            style={styles.treeItem}
-                            itemCount={nodes.length}
-                            itemSize={32}
-                            itemKey={(index) => nodes[index].id}
-                            itemData={{
-                                nodes,
-                                onSelectedItem,
-                                onExpandItem,
-                                highlightedReportId,
-                                searchTerm,
-                                currentResultIndex,
-                                searchResults,
-                            }}
-                        >
-                            {TreeviewItem}
-                        </FixedSizeList>
-                    )}
-                </AutoSizer>
+            <Box sx={styles.treeviewContainer}>
+                <Box sx={styles.listContainer}>
+                    <List
+                        listRef={listRef}
+                        style={styles.treeItem}
+                        rowCount={nodes.length}
+                        rowHeight={32}
+                        rowProps={{
+                            nodes,
+                            onSelectedItem,
+                            onExpandItem,
+                            highlightedReportId,
+                            searchTerm,
+                            currentResultIndex,
+                            searchResults,
+                        }}
+                        rowComponent={TreeviewItem}
+                    />
+                </Box>
             </Box>
         </Box>
     );

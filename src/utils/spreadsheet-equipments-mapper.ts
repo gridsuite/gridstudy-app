@@ -24,7 +24,7 @@ import { SpreadsheetEquipmentType } from '../components/spreadsheet-view/types/s
  * This function is used to format the data of the table to be able to display it in the table
  * and resolve the issue of the calculated fields
  */
-const mapRatioTapChanger = (twt: any) => {
+export const mapRatioTapChanger = (twt: any) => {
     if (!twt?.ratioTapChanger) {
         return twt;
     }
@@ -48,7 +48,7 @@ const mapRatioTapChanger = (twt: any) => {
     };
 };
 
-const mapPhaseTapChanger = (twt: any) => {
+export const mapPhaseTapChanger = (twt: any) => {
     if (!twt?.phaseTapChanger) {
         return twt;
     }
@@ -72,19 +72,9 @@ const mapPhaseTapChanger = (twt: any) => {
     };
 };
 
-const mapTwtDataForTable = (twt: any) => mapPhaseTapChanger(mapRatioTapChanger(twt));
+export const mapTwtDataForTable = (twt: any) => mapPhaseTapChanger(mapRatioTapChanger(twt));
 
-const mapGeneratorDataForTable = (generator: any) => {
-    const formattedGenerator = { ...generator };
-    const hasDistantRegulation =
-        formattedGenerator.regulatingTerminalVlId || formattedGenerator.regulatingTerminalConnectableId;
-    formattedGenerator.RegulationTypeText =
-        formattedGenerator.RegulationTypeText ||
-        (hasDistantRegulation ? REGULATION_TYPES.DISTANT.id : REGULATION_TYPES.LOCAL.id);
-    return formattedGenerator;
-};
-
-const mapShuntCompensatorDataForTable = (shuntCompensator: any) => {
+export const mapShuntCompensatorDataForTable = (shuntCompensator: any) => {
     const formattedCompensator = { ...shuntCompensator };
 
     if (formattedCompensator.type === undefined) {
@@ -102,8 +92,6 @@ const mapSpreadsheetEquipment = (equipmentType: SpreadsheetEquipmentType, equipm
         case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
         case SpreadsheetEquipmentType.BRANCH: // can do it because mappers test if field present before modifying
             return mapTwtDataForTable(equipment);
-        case SpreadsheetEquipmentType.GENERATOR:
-            return mapGeneratorDataForTable(equipment);
         case SpreadsheetEquipmentType.SHUNT_COMPENSATOR:
             return mapShuntCompensatorDataForTable(equipment);
         default:

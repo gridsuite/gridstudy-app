@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, MenuItem, Select, type SelectChangeEvent, type Theme, Typography } from '@mui/material';
+import { Box, Grid, MenuItem, Select, type SelectChangeEvent, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomAGGrid, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
 import { evaluateJsonFilter, type IdentifiableAttributes } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
@@ -45,10 +45,10 @@ const styles = {
         width: '100%',
         flexGrow: 1,
     },
-    equipmentTitle: (theme: Theme) => ({
+    equipmentTitle: (theme) => ({
         marginBottom: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterProps>(
     ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
@@ -107,20 +107,14 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                     setVoltageLevelIds([...vlMap.keys()]);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchVoltageLevelsError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'FetchVoltageLevelsError' });
                 });
 
             // load countries
             fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
                 .then((countryCodes) => setCountries(countryCodes))
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchCountryError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
                 });
         }, [studyUuid, currentNode?.id, snackError, currentRootNetworkUuid]);
 
@@ -161,10 +155,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                         }
                     })
                     .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'FilterEvaluationError',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'FilterEvaluationError' });
                     })
                     .finally(() => {
                         setIsFetching(false);

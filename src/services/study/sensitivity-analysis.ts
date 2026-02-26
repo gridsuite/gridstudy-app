@@ -6,12 +6,11 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
+import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
 import {
     CsvConfig,
     SelectorFilterOptions,
-    SensitivityAnalysisFactorsCountParameters,
     SensitivityAnalysisParametersInfos,
     SensitivityResult,
     SensitivityResultFilterOptions,
@@ -25,7 +24,7 @@ export function startSensitivityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID
-): Promise<void> {
+): Promise<Response> {
     console.info(
         `Running sensi on ${studyUuid} for root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
@@ -155,46 +154,31 @@ export function setSensitivityAnalysisParameters(
     });
 }
 
-export function getSensitivityAnalysisFactorsCount(
-    studyUuid: UUID | null,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    isInjectionsSet: boolean,
-    newParams: SensitivityAnalysisFactorsCountParameters
-) {
-    console.info('get sensitivity analysis parameters computing count');
-    const urlSearchParams = new URLSearchParams();
-    const jsoned = JSON.stringify(isInjectionsSet);
-    urlSearchParams.append('isInjectionsSet', jsoned);
-    Object.keys(newParams)
-        // @ts-ignore
-        .filter((key) => newParams[key])
-        // @ts-ignore
-        .forEach((key) => urlSearchParams.append(`ids[${key}]`, newParams[key]));
-
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}
-      /sensitivity-analysis/factors-count?${urlSearchParams}`;
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'GET',
-    });
-}
-
 export function exportSensitivityResultsAsCsv(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    csvConfig: CsvConfig
+    csvConfig: CsvConfig,
+    selector: any,
+    filters: FilterConfig[],
+    globalFilters: GlobalFilters | undefined
 ) {
     console.info(
         `Exporting sensitivity analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} as CSV ...`
     );
-
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('selector', JSON.stringify(selector));
+    if (filters?.length) {
+        urlSearchParams.append('filters', JSON.stringify(filters));
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
+    }
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/sensitivity-analysis/result/csv`;
+    )}/sensitivity-analysis/result/csv?${urlSearchParams}`;
     console.debug(url);
     return backendFetch(url, {
         method: 'POST',

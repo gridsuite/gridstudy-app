@@ -6,21 +6,24 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
+import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
 import { StateEstimationParameters } from '../../components/dialogs/parameters/state-estimation/state-estimation-parameters-utils';
 
 export function startStateEstimation(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID
-): Promise<void> {
+    currentRootNetworkUuid: UUID,
+    debug?: boolean
+): Promise<Response> {
     console.info(
         `Running state estimation on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
-    const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/state-estimation/run';
+    const urlSearchParams = new URLSearchParams();
+    if (debug) {
+        urlSearchParams.append('debug', `${debug}`);
+    }
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/state-estimation/run?${urlSearchParams}`;
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });

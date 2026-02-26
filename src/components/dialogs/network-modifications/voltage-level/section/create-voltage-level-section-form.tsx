@@ -10,27 +10,27 @@ import {
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     IS_AFTER_BUSBAR_SECTION_ID,
+    NEW_SWITCH_STATES,
     SWITCH_AFTER_NOT_REQUIRED,
     SWITCH_BEFORE_NOT_REQUIRED,
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
 import { Box, Button, Grid, Slider, TextField, Tooltip, Typography } from '@mui/material';
-import { filledTextField } from '../../../dialog-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { AutocompleteInput, Option, SelectInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, filledTextField, Option, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import GridSection from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { POSITION_NEW_SECTION_SIDE, SWITCH_TYPE } from '../../../../network/constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { BusBarSectionInfos } from './voltage-level-section.type';
 import { areIdsEqual, getObjectId } from '../../../../utils/utils';
+import { BusBarSections } from './voltage-level-section.type';
 
-const getArrayPosition = (data: BusBarSectionInfos[], selectedOptionId: string) => {
+const getArrayPosition = (data: BusBarSections, selectedOptionId: string) => {
     if (!selectedOptionId || !data) {
         return { position: -1, length: 0 };
     }
@@ -49,7 +49,7 @@ const getArrayPosition = (data: BusBarSectionInfos[], selectedOptionId: string) 
 type OptionWithDisabled = Option & { disabled?: boolean };
 
 interface VoltageLevelSectionsCreationFormProps {
-    busBarSectionInfos?: BusBarSectionInfos[];
+    busBarSectionInfos?: BusBarSections;
     voltageLevelId: string;
     allBusbarSectionsList: string[];
     studyUuid: UUID;
@@ -93,6 +93,7 @@ export function CreateVoltageLevelSectionForm({
             {...filledTextField}
         />
     );
+    const switchValue = useWatch({ name: NEW_SWITCH_STATES });
 
     useEffect(() => {
         if (busBarSectionInfos && busbarIndex) {
@@ -280,6 +281,9 @@ export function CreateVoltageLevelSectionForm({
             disabled={!busbarIndex || isNotRequiredSwitchAfter || isNotFoundOrNotSupported}
         />
     );
+    const newSwitchState = (
+        <SwitchInput name={NEW_SWITCH_STATES} label={switchValue ? 'areSwitchesClosed' : 'areSwitchesOpen'} />
+    );
     const getLabelDescription = useCallback(() => {
         return intl.formatMessage({ id: 'newSection' });
     }, [intl]);
@@ -371,6 +375,9 @@ export function CreateVoltageLevelSectionForm({
                 </Grid>
                 <Grid item xs={12} sm={4}>
                     {switchAfterField}
+                </Grid>
+                <Grid item xs={12}>
+                    {newSwitchState}
                 </Grid>
             </Grid>
             <PositionDiagramPane

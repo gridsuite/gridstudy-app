@@ -12,16 +12,21 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { AutocompleteInput, CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    CustomFormProvider,
+    getIdOrSelf,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     fetchDynamicSimulationParameters,
     updateDynamicSimulationParameters,
 } from '../../../services/study/dynamic-simulation';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getIdOrSelf } from '../dialog-utils';
 import GridItem from '../commons/grid-item';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { DynamicSimulationParametersInfos } from '../../../services/study/dynamic-simulation.type';
 
 const MAPPING_SELECTION_LABEL = 'DynamicSimulationMappingSelection';
@@ -90,8 +95,7 @@ export function DynamicSimulationParametersSelector({
                 reset({ ...emptyFormData, [MAPPING]: paramsPlusMappings.mapping });
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
+                snackWithFallback(snackError, error, {
                     headerId: 'DynamicSimulationGetMappingError',
                 });
             });
@@ -115,8 +119,7 @@ export function DynamicSimulationParametersSelector({
                         onStart(newDynamicSimulationParams);
                     })
                     .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
+                        snackWithFallback(snackError, error, {
                             headerId: 'DynamicSimulationParametersChangeError',
                         });
                     });

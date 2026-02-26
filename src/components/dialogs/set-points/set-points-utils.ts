@@ -13,8 +13,9 @@ import {
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
+import { TestContext } from 'yup';
 
-export const getSetPointsEmptyFormData = (isEquipmentModification = false) => ({
+export const getSetPointsEmptyFormData = (_isEquipmentModification = false) => ({
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
 });
@@ -34,6 +35,25 @@ export const getReactivePowerSetPointSchema = (isEquipmentModification = false) 
         }),
 });
 
+const testValueWithinPowerIntervalOrEqualToZero = (value: number, context: TestContext) => {
+    if (value === 0) {
+        return true;
+    }
+    return testValueWithinPowerInterval(value, context);
+};
+
+export const testValueWithinPowerInterval = (value: number | null, context: TestContext) => {
+    const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
+    const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
+    if (value === null || value === undefined) {
+        return true;
+    }
+    if (minActivePower === null || maxActivePower === null) {
+        return false;
+    }
+    return value >= minActivePower && value <= maxActivePower;
+};
+
 export const getActivePowerSetPointSchema = (isEquipmentModification = false) => ({
     [ACTIVE_POWER_SET_POINT]: yup
         .number()
@@ -52,17 +72,7 @@ export const getActivePowerSetPointSchema = (isEquipmentModification = false) =>
                     .test(
                         'activePowerSetPoint',
                         'ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower',
-                        (value, context) => {
-                            const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
-                            const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
-                            if (value === 0) {
-                                return true;
-                            }
-                            if (minActivePower === null || maxActivePower === null) {
-                                return false;
-                            }
-                            return value >= minActivePower && value <= maxActivePower;
-                        }
+                        testValueWithinPowerIntervalOrEqualToZero
                     );
             },
         }),

@@ -6,16 +6,14 @@
  */
 
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { UUID } from 'crypto';
-import { AppState, StudyUpdated } from '../redux/reducer';
-import { identity, useDebounce } from '@gridsuite/commons-ui';
-import { StudyUpdatedEventData } from 'types/notification-types';
+import type { UUID } from 'node:crypto';
+import { identity, NotificationsUrlKeys, useDebounce, useNotificationsListener } from '@gridsuite/commons-ui';
+import { parseEventData, StudyUpdatedEventData } from '../types/notification-types';
 
 export type ResultFetcher<T> = (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
 
 type LastUpdateParams<T> = {
-    studyUpdatedForce: StudyUpdated;
+    eventData: StudyUpdatedEventData | null;
     fetcher: ResultFetcher<T>;
 };
 
@@ -25,7 +23,7 @@ type LastUpdateParams<T> = {
  * @template T - The type of result returned by the fetch.
  */
 type ShouldUpdateParams<T> = {
-    studyUpdatedForce: StudyUpdated;
+    eventData: StudyUpdatedEventData | null;
     nodeUuid: UUID;
     rootNetworkUuid: UUID;
     fetcher: ResultFetcher<T>;
@@ -36,7 +34,7 @@ type ShouldUpdateParams<T> = {
 };
 
 function shouldUpdate<T>({
-    studyUpdatedForce,
+    eventData,
     nodeUuid,
     rootNetworkUuid,
     fetcher,
@@ -45,8 +43,7 @@ function shouldUpdate<T>({
     nodeUuidRef,
     rootNetworkUuidRef,
 }: ShouldUpdateParams<T>) {
-    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData; // TODO narrowing by predicate
-    const headers = studyUpdatedEventData?.headers;
+    const headers = eventData?.headers;
     const updateType = headers?.updateType;
     const nodeUuidFromNotif = headers?.node;
     const nodeUuidsFromNotif = headers?.nodes;
@@ -64,7 +61,7 @@ function shouldUpdate<T>({
     if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
         return true;
     }
-    if (studyUpdatedForce && lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce) {
+    if (eventData && lastUpdateRef.current?.eventData === eventData) {
         return false;
     }
     if (!updateType) {
@@ -111,10 +108,9 @@ export function useNodeData<T, R = T>({
     const [result, setResult] = useState<R | undefined>(defaultValue);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
-    const nodeUuidRef = useRef<UUID>();
-    const rootNetworkUuidRef = useRef<UUID>();
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const lastUpdateRef = useRef<LastUpdateParams<T>>();
+    const nodeUuidRef = useRef<UUID>(undefined);
+    const rootNetworkUuidRef = useRef<UUID>(undefined);
+    const lastUpdateRef = useRef<LastUpdateParams<T>>(undefined);
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
@@ -136,26 +132,38 @@ export function useNodeData<T, R = T>({
     // Debounce the update to avoid excessive calls
     const debouncedUpdate = useDebounce(update, 1000);
 
+    const evaluateUpdate = useCallback(
+        (event?: MessageEvent) => {
+            if (!studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
+                return;
+            }
+            const eventData = parseEventData<StudyUpdatedEventData>(event ?? null);
+            const isUpdateForUs = shouldUpdate({
+                eventData,
+                rootNetworkUuid,
+                nodeUuid,
+                fetcher,
+                invalidations,
+                lastUpdateRef,
+                nodeUuidRef,
+                rootNetworkUuidRef,
+            });
+            lastUpdateRef.current = { eventData, fetcher };
+            if (nodeUuidRef.current !== nodeUuid || rootNetworkUuidRef.current !== rootNetworkUuid || isUpdateForUs) {
+                debouncedUpdate();
+            }
+        },
+        [debouncedUpdate, fetcher, invalidations, nodeUuid, rootNetworkUuid, studyUuid]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: evaluateUpdate,
+    });
+
     /* initial fetch and update */
     useEffect(() => {
-        if (!studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
-            return;
-        }
-        const isUpdateForUs = shouldUpdate({
-            studyUpdatedForce,
-            rootNetworkUuid,
-            nodeUuid,
-            fetcher,
-            invalidations,
-            lastUpdateRef,
-            nodeUuidRef,
-            rootNetworkUuidRef,
-        });
-        lastUpdateRef.current = { studyUpdatedForce, fetcher };
-        if (nodeUuidRef.current !== nodeUuid || rootNetworkUuidRef.current !== rootNetworkUuid || isUpdateForUs) {
-            debouncedUpdate();
-        }
-    }, [debouncedUpdate, fetcher, nodeUuid, invalidations, rootNetworkUuid, studyUpdatedForce, studyUuid]);
+        evaluateUpdate();
+    }, [evaluateUpdate]);
 
     return { result, isLoading, setResult, errorMessage, update };
 }

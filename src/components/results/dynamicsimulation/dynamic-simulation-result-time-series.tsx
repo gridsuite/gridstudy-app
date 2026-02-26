@@ -7,7 +7,7 @@
 
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Grid, LinearProgress, Theme } from '@mui/material';
+import { Box, Grid, LinearProgress } from '@mui/material';
 import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
 import { memo, SyntheticEvent, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -17,10 +17,10 @@ import VisibilityBox from './common/visibility-box';
 import TooltipIconButton from '../../common/tooltip-icon-button';
 import useResultTimeSeries from './hooks/useResultTimeSeries';
 import { useSelector } from 'react-redux';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import Overlay from '../common/Overlay';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from '../../../redux/reducer';
 import { DropResult } from '@hello-pangea/dnd';
 
@@ -29,7 +29,7 @@ const styles = {
         height: '100%',
         maxWidth: '100vw',
     },
-    addButton: (theme: Theme) => ({
+    addButton: (theme) => ({
         borderRadius: '50%',
         marginRight: theme.spacing(2),
         color: theme.palette.primary.main,
@@ -37,7 +37,7 @@ const styles = {
     loader: {
         height: '4px',
     },
-};
+} as const satisfies MuiStyles;
 
 export type DynamicSimulationResultTimeSeriesProps = {
     studyUuid: UUID;

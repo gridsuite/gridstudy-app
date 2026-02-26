@@ -8,13 +8,12 @@
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { RunningStatus } from 'components/utils/running-status';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
@@ -22,13 +21,21 @@ import { useOptionalServiceStatus } from '../../hooks/use-optional-service-statu
 import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional-services';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { tripEquipment } from '../../services/study/network-modifications';
-import { EquipmentType, useSnackMessage, CustomMenuItem, ComputingType } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    CustomMenuItem,
+    type EquipmentType,
+    type MuiStyles,
+    PARAM_DEVELOPER_MODE,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 interface BusMenuProps {
     busId: string;
-    handleRunShortcircuitAnalysis: (busId: string) => void;
+    handleRunShortcircuitAnalysis: (busId: string, debug: boolean) => void;
     onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
         equipmentType: EquipmentType,
@@ -51,7 +58,7 @@ const styles = {
         // to justify menu items texts
         paddingLeft: '12px',
     },
-};
+} as const satisfies MuiStyles;
 
 type EquipmentInfo = {
     id: string;
@@ -67,7 +74,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     onClose,
     setModificationInProgress,
 }) => {
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const { snackError } = useSnackMessage();
     const [equipmentInfos, setEquipmentInfos] = useState<EquipmentInfo>();
 
@@ -105,10 +112,13 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
-    const handleClickRunShortcircuitAnalysis = useCallback(() => {
-        onClose();
-        handleRunShortcircuitAnalysis(busId);
-    }, [busId, onClose, handleRunShortcircuitAnalysis]);
+    const handleClickRunShortcircuitAnalysis = useCallback(
+        (event: ReactMouseEvent<HTMLLIElement>) => {
+            onClose();
+            handleRunShortcircuitAnalysis(busId, event.ctrlKey);
+        },
+        [busId, onClose, handleRunShortcircuitAnalysis]
+    );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
         (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
@@ -125,10 +135,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         }
         const equipmentInfos = { id: busId };
         tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'UnableToTripBusbarSection',
-            });
+            snackWithFallback(snackError, error, { headerId: 'UnableToTripBusbarSection' });
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(false);
             }
@@ -170,7 +177,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     />
                 </CustomMenuItem>
             )}
-            {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
+            {isDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}
                     equipmentType={convertToEquipmentType(EQUIPMENT_TYPES.BUS)}

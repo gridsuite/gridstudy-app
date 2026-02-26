@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { convertInputValue, convertOutputValue, FieldType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    FieldConstants,
+    FieldType,
+    MODIFICATION_TYPES,
+} from '@gridsuite/commons-ui';
 import {
     B,
     B1,
@@ -22,11 +28,9 @@ import {
     CONNECTION_POSITION,
     CONNECTION_POSITION1,
     CONNECTION_POSITION2,
-    COUNTRY,
     DROOP,
     ENERGY_SOURCE,
     EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     G,
     G1,
@@ -166,7 +170,7 @@ export const LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS: TabularField[] = [
         options: Object.values(APPLICABILITY).map((applicability) => applicability.id),
     },
     { id: LIMIT_GROUP_NAME, required: true },
-    { id: IS_ACTIVE, required: true, type: BOOLEAN },
+    { id: IS_ACTIVE, required: false, type: BOOLEAN },
     { id: PERMANENT_LIMIT, required: false, type: NUMBER },
     {
         id: MODIFICATION_TYPE,
@@ -189,10 +193,10 @@ export const LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS: TabularField[] =
 ];
 
 export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
-    SUBSTATION: [{ id: EQUIPMENT_ID }, { id: EQUIPMENT_NAME }, { id: COUNTRY }],
+    SUBSTATION: [{ id: EQUIPMENT_ID }, { id: FieldConstants.EQUIPMENT_NAME }, { id: FieldConstants.COUNTRY }],
     VOLTAGE_LEVEL: [
         { id: EQUIPMENT_ID },
-        { id: EQUIPMENT_NAME },
+        { id: FieldConstants.EQUIPMENT_NAME },
         { id: NOMINAL_V, type: NUMBER },
         { id: LOW_VOLTAGE_LIMIT, type: NUMBER },
         { id: HIGH_VOLTAGE_LIMIT, type: NUMBER },
@@ -201,7 +205,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
     ],
     LINE: [
         { id: EQUIPMENT_ID },
-        { id: EQUIPMENT_NAME },
+        { id: FieldConstants.EQUIPMENT_NAME },
         { id: R, type: NUMBER },
         { id: X, type: NUMBER },
         { id: G1, type: NUMBER },
@@ -212,7 +216,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
     ],
     TWO_WINDINGS_TRANSFORMER: [
         { id: EQUIPMENT_ID },
-        { id: EQUIPMENT_NAME },
+        { id: FieldConstants.EQUIPMENT_NAME },
         { id: R, type: NUMBER },
         { id: X, type: NUMBER },
         { id: G, type: NUMBER },
@@ -230,7 +234,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
     ],
     GENERATOR: [
         { id: EQUIPMENT_ID },
-        { id: EQUIPMENT_NAME },
+        { id: FieldConstants.EQUIPMENT_NAME },
         { id: ENERGY_SOURCE, type: ENUM, options: ENERGY_SOURCES.map((energy) => energy.id) },
         ...CONNECTION_FIELDS,
         { id: MIN_P, type: NUMBER },
@@ -258,7 +262,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
     ],
     LOAD: [
         { id: EQUIPMENT_ID },
-        { id: EQUIPMENT_NAME },
+        { id: FieldConstants.EQUIPMENT_NAME },
         {
             id: LOAD_TYPE,
             type: ENUM,
@@ -270,7 +274,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
     ],
     BATTERY: [
         { id: EQUIPMENT_ID },
-        { id: EQUIPMENT_NAME },
+        { id: FieldConstants.EQUIPMENT_NAME },
         ...CONNECTION_FIELDS,
         { id: MIN_P, type: NUMBER },
         { id: MAX_P, type: NUMBER },
@@ -284,7 +288,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
     ],
     SHUNT_COMPENSATOR: [
         { id: EQUIPMENT_ID },
-        { id: EQUIPMENT_NAME },
+        { id: FieldConstants.EQUIPMENT_NAME },
         ...CONNECTION_FIELDS,
         { id: MAXIMUM_SECTION_COUNT, type: NUMBER },
         { id: SECTION_COUNT, type: NUMBER },

@@ -116,6 +116,10 @@ code {
     stroke: var(--vl-color, blue);
     fill: none;
 }
+.sld-battery {
+    stroke: var(--vl-color, blue);
+    fill: none;
+}
 .sld-two-wt {
     stroke: var(--vl-color, blue);
     fill: none;
@@ -156,12 +160,13 @@ code {
 }
 .sld-node-infos {
     stroke: none;
-    fill: var(--vl-color, black);
+    background-color: var(--vl-color, black);
 }
 .sld-label {
     stroke: none;
     fill: black;
     font: 11px 'Verdana';
+    cursor: default !important;
 }
 .sld-graph-label {
     stroke: none;
@@ -240,6 +245,12 @@ code {
 .sld-reactive-power .sld-label {
     dominant-baseline: middle;
 }
+.sld-current-value .sld-label {
+    dominant-baseline: middle;
+}
+.sld-permanent-limit-percentage {
+    dominant-baseline: middle;
+}
 
 @keyframes sld-overload-blink-animation {
     50% {
@@ -269,23 +280,54 @@ code {
     animation: sld-undervoltage-blink-animation 0.75s infinite steps(1, start);
 }
 
-/* topologicalBaseVoltages.css */
-
-.sld-disconnected {
-    --vl-color: #808080;
+.sld-feeder-disconnected.sld-wire {
+    stroke-dasharray: 3, 3;
+    stroke: #808080;
 }
-
-/* highlightLineStates.css */
-
-.sld-feeder-disconnected {
-    stroke: black;
-}
+.sld-feeder-disconnected-connected,
 .sld-feeder-connected-disconnected {
+    stroke: var(--vl-color, #c80000);
     stroke-dasharray: 3, 3;
 }
-.sld-feeder-disconnected-connected {
-    stroke: black;
-    stroke-dasharray: 3, 3;
+
+/* SLD Highlight Classes */
+.sld-voltage-level:has(.bus-circle.sld-bus-0:hover:not(.sld-winding), .sld-bus-0.sld-busbar-section:hover) .sld-bus-0.sld-busbar-section,
+.sld-voltage-level:has(.bus-circle.sld-bus-1:hover:not(.sld-winding), .sld-bus-1.sld-busbar-section:hover) .sld-bus-1.sld-busbar-section,
+.sld-voltage-level:has(.bus-circle.sld-bus-2:hover:not(.sld-winding), .sld-bus-2.sld-busbar-section:hover) .sld-bus-2.sld-busbar-section,
+.sld-voltage-level:has(.bus-circle.sld-bus-3:hover:not(.sld-winding), .sld-bus-3.sld-busbar-section:hover) .sld-bus-3.sld-busbar-section,
+.sld-voltage-level:has(.bus-circle.sld-bus-4:hover:not(.sld-winding), .sld-bus-4.sld-busbar-section:hover) .sld-bus-4.sld-busbar-section,
+.sld-voltage-level:has(.bus-circle.sld-bus-5:hover:not(.sld-winding), .sld-bus-5.sld-busbar-section:hover) .sld-bus-5.sld-busbar-section,
+.sld-voltage-level:has(.bus-circle.sld-bus-6:hover:not(.sld-winding), .sld-bus-6.sld-busbar-section:hover) .sld-bus-6.sld-busbar-section,
+.sld-voltage-level:has(.bus-circle.sld-bus-7:hover:not(.sld-winding), .sld-bus-7.sld-busbar-section:hover) .sld-bus-7.sld-busbar-section,
+.sld-voltage-level:has(.bus-circle.sld-bus-8:hover:not(.sld-winding), .sld-bus-8.sld-busbar-section:hover) .sld-bus-8.sld-busbar-section,
+.sld-voltage-level:has(.bus-circle.sld-bus-9:hover:not(.sld-winding), .sld-bus-9.sld-busbar-section:hover) .sld-bus-9.sld-busbar-section {
+    stroke-width: 5px;
+    cursor: default !important;
+}
+.sld-voltage-level:has(.bus-circle.sld-bus-0:hover:not(.sld-winding), .sld-bus-0.sld-busbar-section:hover) .sld-bus-0.sld-wire,
+.sld-voltage-level:has(.bus-circle.sld-bus-1:hover:not(.sld-winding), .sld-bus-1.sld-busbar-section:hover) .sld-bus-1.sld-wire,
+.sld-voltage-level:has(.bus-circle.sld-bus-2:hover:not(.sld-winding), .sld-bus-2.sld-busbar-section:hover) .sld-bus-2.sld-wire,
+.sld-voltage-level:has(.bus-circle.sld-bus-3:hover:not(.sld-winding), .sld-bus-3.sld-busbar-section:hover) .sld-bus-3.sld-wire,
+.sld-voltage-level:has(.bus-circle.sld-bus-4:hover:not(.sld-winding), .sld-bus-4.sld-busbar-section:hover) .sld-bus-4.sld-wire,
+.sld-voltage-level:has(.bus-circle.sld-bus-5:hover:not(.sld-winding), .sld-bus-5.sld-busbar-section:hover) .sld-bus-5.sld-wire,
+.sld-voltage-level:has(.bus-circle.sld-bus-6:hover:not(.sld-winding), .sld-bus-6.sld-busbar-section:hover) .sld-bus-6.sld-wire,
+.sld-voltage-level:has(.bus-circle.sld-bus-7:hover:not(.sld-winding), .sld-bus-7.sld-busbar-section:hover) .sld-bus-7.sld-wire,
+.sld-voltage-level:has(.bus-circle.sld-bus-8:hover:not(.sld-winding), .sld-bus-8.sld-busbar-section:hover) .sld-bus-8.sld-wire,
+.sld-voltage-level:has(.bus-circle.sld-bus-9:hover:not(.sld-winding), .sld-bus-9.sld-busbar-section:hover) .sld-bus-9.sld-wire {
+    stroke-width: 3px;
+}
+.sld-voltage-level:has(.bus-circle.sld-bus-0:hover:not(.sld-winding), .sld-bus-0.sld-busbar-section:hover) .bus-circle.sld-bus-0.sld-node-infos,
+.sld-voltage-level:has(.bus-circle.sld-bus-1:hover:not(.sld-winding), .sld-bus-1.sld-busbar-section:hover) .bus-circle.sld-bus-1.sld-node-infos,
+.sld-voltage-level:has(.bus-circle.sld-bus-2:hover:not(.sld-winding), .sld-bus-2.sld-busbar-section:hover) .bus-circle.sld-bus-2.sld-node-infos,
+.sld-voltage-level:has(.bus-circle.sld-bus-3:hover:not(.sld-winding), .sld-bus-3.sld-busbar-section:hover) .bus-circle.sld-bus-3.sld-node-infos,
+.sld-voltage-level:has(.bus-circle.sld-bus-4:hover:not(.sld-winding), .sld-bus-4.sld-busbar-section:hover) .bus-circle.sld-bus-4.sld-node-infos,
+.sld-voltage-level:has(.bus-circle.sld-bus-5:hover:not(.sld-winding), .sld-bus-5.sld-busbar-section:hover) .bus-circle.sld-bus-5.sld-node-infos,
+.sld-voltage-level:has(.bus-circle.sld-bus-6:hover:not(.sld-winding), .sld-bus-6.sld-busbar-section:hover) .bus-circle.sld-bus-6.sld-node-infos,
+.sld-voltage-level:has(.bus-circle.sld-bus-7:hover:not(.sld-winding), .sld-bus-7.sld-busbar-section:hover) .bus-circle.sld-bus-7.sld-node-infos,
+.sld-voltage-level:has(.bus-circle.sld-bus-8:hover:not(.sld-winding), .sld-bus-8.sld-busbar-section:hover) .bus-circle.sld-bus-8.sld-node-infos,
+.sld-voltage-level:has(.bus-circle.sld-bus-9:hover:not(.sld-winding), .sld-bus-9.sld-busbar-section:hover) .bus-circle.sld-bus-9.sld-node-infos {
+    stroke-width: 3px;
+    stroke: var(--vl-color, black);
 }
 
 /* Network modification tree */

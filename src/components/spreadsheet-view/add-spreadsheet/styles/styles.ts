@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SxProps, Theme } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 /**
  * Shared styles for dialog components
@@ -14,4 +14,4 @@ export const dialogStyles = {
     dialogContent: {
         minWidth: '45%',
     },
-} as const satisfies Record<string, SxProps<Theme>>;
+} as const satisfies MuiStyles;

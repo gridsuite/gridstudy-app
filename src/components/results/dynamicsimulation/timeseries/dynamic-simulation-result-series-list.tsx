@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, List, ListSubheader, Theme, Typography } from '@mui/material';
+import { Grid, List, ListSubheader, Typography } from '@mui/material';
 import { Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     root: {
@@ -15,11 +16,11 @@ const styles = {
         height: '100%',
         overflow: 'auto',
     },
-    headerItem: (theme: Theme) => ({
+    headerItem: (theme) => ({
         textAlign: 'center',
         background: theme.palette.background.paper,
     }),
-};
+} as const satisfies MuiStyles;
 
 export type DynamicSimulationResultSeriesListProps = {
     index: number;
@@ -96,7 +97,7 @@ function DynamicSimulationResultSeriesList({
     };
     return (
         <List sx={styles.root} subheader={renderHeaders()}>
-            {items.map((item, index) => (
+            {items.map((item) => (
                 <DynamicSimulationResultSeriesItem
                     key={item.id}
                     item={item}

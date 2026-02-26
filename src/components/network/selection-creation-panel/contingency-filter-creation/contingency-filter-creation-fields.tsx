@@ -11,6 +11,7 @@ import {
     FILTER_EQUIPMENTS,
     SelectInput,
     UniqueNameInput,
+    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
@@ -20,7 +21,6 @@ import { SelectionCreationPanelDirectorySelector } from './contingency-filter-cr
 import { SelectionCreationPanelFormSchema } from '../selection-creation-schema';
 import { useWatch } from 'react-hook-form';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 interface ContingencyFilterCreationListProps {
     pendingState: boolean;
@@ -41,7 +41,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
         name: `${DESTINATION_FOLDER}`,
     });
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE = [EquipmentType.DANGLING_LINE, EquipmentType.THREE_WINDINGS_TRANSFORMER];
 
@@ -51,7 +51,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
         )
     );
 
-    const filteredContingencyEquipments = enableDeveloperMode
+    const filteredContingencyEquipments = isDeveloperMode
         ? CONTINGENCY_LIST_EQUIPMENTS
         : CONTINGENCY_EQUIPMENTS_FOR_NON_DEV_MODE;
     const equipmentTypesOptions = useMemo(() => {

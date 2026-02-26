@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     DirectoryItemsInput,
     ElementType,
+    snackWithFallback,
     TextInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -26,22 +27,21 @@ import {
 } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
 import { getSpreadsheetModel } from 'services/study-config';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
 import type { DialogComponentProps } from '../types';
+import { useNodeAliases } from '../../hooks/use-node-aliases';
 
-export type AddSpreadsheetFromModelDialogProps = Pick<DialogComponentProps, 'open' | 'resetNodeAliases'>;
+export type AddSpreadsheetFromModelDialogProps = Pick<DialogComponentProps, 'open'>;
 
 /**
  * Dialog for creating a spreadsheet from an existing model
  */
-export default function AddSpreadsheetFromModelDialog({
-    open,
-    resetNodeAliases,
-}: Readonly<AddSpreadsheetFromModelDialogProps>) {
+export default function AddSpreadsheetFromModelDialog({ open }: Readonly<AddSpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const { resetNodeAliases } = useNodeAliases();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
@@ -83,16 +83,16 @@ export default function AddSpreadsheetFromModelDialog({
             const tabIndex = tablesDefinitions.length;
             const tabName = formData[SPREADSHEET_NAME];
             const modelId = formData[SPREADSHEET_MODEL][0].id;
-
             getSpreadsheetModel(modelId)
                 .then((selectedModel) => {
                     addNewSpreadsheet({
                         studyUuid,
                         columns: selectedModel.columns,
                         globalFilters: selectedModel.globalFilters,
+                        sortConfig: selectedModel.sortConfig,
                         sheetType: selectedModel.sheetType,
                         nodeAliases: selectedModel.nodeAliases,
-                        resetNodeAliases: resetNodeAliases,
+                        resetNodeAliases,
                         tabIndex,
                         tabName,
                         spreadsheetsCollectionUuid: spreadsheetsCollectionUuid as UUID,
@@ -102,8 +102,7 @@ export default function AddSpreadsheetFromModelDialog({
                     });
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
                     });
                 });

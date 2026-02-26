@@ -19,11 +19,13 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/column_precision': 'Précision',
     'spreadsheet/custom_column/column_content': 'Entrer la formule',
     'spreadsheet/custom_column/column_dependencies': 'Entrer les dépendances de la formule',
-    'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau), des IDs de colonnes (pour faire référence au contenu d'une autre colonne) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau). Exemple : maxP - p pour afficher la réserve de puissance active dans le tableur des groupes.`,
+    'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau), des IDs de colonnes (pour faire référence au contenu d'une autre colonne) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau).\n\nExemple : maxP - targetP pour afficher la réserve de puissance active dans le tableur des groupes.`,
     'spreadsheet/custom_column/error/id_not_conform':
         'Un ID de colonne ne doit contenir ni espace ni caractère spécial et ne doit pas commencer par un chiffre',
     'spreadsheet/custom_column/error/id_le_60': 'Un ID de colonne ne peut dépasser 60 caractères',
     'spreadsheet/custom_column/error/name_le_60': 'Un nom de colonne ne peut dépasser 60 caractères',
+    'spreadsheet/custom_column/error/precision_0': 'La précision de la colonne doit être au moins 0',
+    'spreadsheet/custom_column/error/precision_100': 'La précision de la colonne ne peut dépasser 100',
     'spreadsheet/custom_column/update_custom_column': 'Modifier',
     'spreadsheet/custom_column/delete_custom_column': 'Supprimer',
     'spreadsheet/custom_column/duplicate_custom_column': 'Dupliquer',
@@ -45,7 +47,12 @@ const spreadsheetFr = {
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/filter': 'En tant que filtre',
     'spreadsheet/save/options/collection': 'Collection',
-    'spreadsheet/save/options/csv': 'Export CSV',
+    'spreadsheet/save/options/csv/export': 'Export CSV',
+    'spreadsheet/save/options/csv/clipboard': 'Copie',
+    'spreadsheet/save/options/csv/clipboard/success':
+        'Le contenu de la feuille a été copié dans le presse-papier système',
+    'spreadsheet/save/options/csv/clipboard/error':
+        "Le contenu de la feuille n'a pas pu être copié dans le presse-papier système",
     'spreadsheet/save/dialog_title': 'Enregistrer un modèle de tableur',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Enregistrer une collection de tableurs',
     'spreadsheet/save/error_message': 'Une erreur est survenue lors de la création du modèle de tableur',
@@ -72,7 +79,7 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Remplacer',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Ajouter',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
-        "Vous êtes sur le point de remplacer le contenu actuel de l'onglet 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
+        "Vous êtes sur le point de remplacer le contenu actuel du panneau 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Ajouter feuille de calcul',
     'spreadsheet/create_new_spreadsheet/empty_spreadsheet_option': 'Ajouter une feuille',
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Choisir un modèle',
@@ -126,6 +133,7 @@ const spreadsheetFr = {
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Inclure données supplémentaires',
     'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Sets de limites inactifs',
     'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Terminaux distants réglés',
+    'spreadsheet/tabs/lazy_loading/labels/networkComponentsInformation': 'Composantes de réseau',
 
     'spreadsheet/global-model-edition/edit': 'Éditer le modèle',
     'spreadsheet/global-model-edition/column_id': 'ID',
@@ -137,6 +145,11 @@ const spreadsheetFr = {
     'spreadsheet/global-model-edition/update_confirmation_message': 'Modèle de tableur mis à jour',
     'spreadsheet/global-model-edition/update_error_message':
         'Une erreur est survenue lors de la mise à jour du modèle de tableur',
+    'spreadsheet/global-model-edition/search_replace_button': 'Chercher et remplacer dans formule',
+    'spreadsheet/global-model-edition/hide_search_button': 'Replier la recherche de formule',
+    'spreadsheet/global-model-edition/search': 'Rechercher dans formule',
+    'spreadsheet/global-model-edition/replace': 'Remplacer dans formule',
+    'spreadsheet/global-model-edition/replace_all': 'Tout remplacer',
 
     // calculations
     'spreadsheet/calculation/sum': 'Somme',
@@ -147,6 +160,32 @@ const spreadsheetFr = {
     'spreadsheet/calculation/average_abbrev': 'Moy',
     'spreadsheet/calculation/min_abbrev': 'Min',
     'spreadsheet/calculation/max_abbrev': 'Max',
+
+    //Formula errors
+    'spreadsheet/formula/error': '#ERREUR',
+    'spreadsheet/formula/error/generic': 'La formule renvoie une erreur',
+    'spreadsheet/formula/import/disabled': 'La fonction import est désactivée',
+    'spreadsheet/formula/createUnit/disabled': 'La fonction createUnit est désactivée',
+    'spreadsheet/formula/evaluate/disabled': 'La fonction evaluate est désactivée',
+    'spreadsheet/formula/parse/disabled': 'La fonction parse est désactivée',
+    'spreadsheet/formula/simplify/disabled': 'La fonction simplify est désactivée',
+    'spreadsheet/formula/derivative/disabled': 'La fonction derivative est désactivée',
+    'spreadsheet/formula/compile/disabled': 'La fonction compile est désactivée',
+    'spreadsheet/formula/help/disabled': 'La fonction help est désactivée',
+    'spreadsheet/formula/length/error': 'La fonction length attend une donnée de type tableau ou objet',
+    'spreadsheet/formula/type/number': 'La formule doit exprimer une donnée numérique',
+    'spreadsheet/formula/type/boolean': 'La formule doit exprimer une donnée booléenne',
+    'spreadsheet/formula/type/enum': 'La formule doit exprimer une donnée textuelle ou numérique',
+    'spreadsheet/formula/type/unknown': 'Type de donnée inconnu',
+    'spreadsheet/formula/function-reference/disabled':
+        'Les références de fonctions sont désactivées, elles doivent être appelées avec des paramètres',
+
+    // Save dialog
+    'spreadsheet/save-dialog/spreadsheet': 'Tableur',
+    'spreadsheet/save-dialog/include': 'Inclure',
+    'spreadsheet/save-dialog/filters': 'Filtres',
+    'spreadsheet/save-dialog/columns_visibility': 'Visibilité des colonnes',
+    'spreadsheet/save-dialog/columns_sorting': 'Tri des colonnes',
 
     // Column types
     TEXT: 'Texte',

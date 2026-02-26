@@ -4,8 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AutocompleteInputProps, genHelperError } from '@gridsuite/commons-ui';
-
+import { type AutocompleteInputProps, genHelperError, type MuiStyles } from '@gridsuite/commons-ui';
 import { useController } from 'react-hook-form';
 import { SyntheticEvent } from 'react';
 import { Autocomplete, AutocompleteProps, TextField } from '@mui/material';
@@ -14,7 +13,7 @@ const styles = {
     autocomplete: {
         maxWidth: '100%',
     },
-};
+} as const satisfies MuiStyles;
 
 type DependenciesEditorProps = Pick<AutocompleteProps<string, true, false, false>, 'disabled'> & {
     name: AutocompleteInputProps['name'];

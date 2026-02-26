@@ -6,10 +6,10 @@
  */
 
 import {
-    ElementSaveDialog,
     ElementType,
     IElementCreationDialog,
     IElementUpdateDialog,
+    snackWithFallback,
     useSnackMessage,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
@@ -19,51 +19,32 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
 import { v4 as uuid4 } from 'uuid';
 import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
-import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
-import { SaveFilterConfirmationDialog } from './save-filter-confirmation-dialog';
-import { NodeAlias } from '../../../types/node-alias.type';
+import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { useNodeAliases } from '../../../hooks/use-node-aliases';
+import { SaveSpreadsheetModelDialog } from './save-spreadsheet-model-dialog';
+
+import { getSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
 
 export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
-    nodeAliases: NodeAlias[] | undefined;
 };
 
-export default function SaveSpreadsheetDialog({
-    tableDefinition,
-    open,
-    nodeAliases,
-}: Readonly<SaveSpreadsheetDialogProps>) {
+export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonly<SaveSpreadsheetDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
+    const { nodeAliases } = useNodeAliases();
     const tableFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD][tableDefinition.uuid]);
-    const tableGlobalFilters = useSelector(
-        (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
-    );
+    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition.uuid]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [includeFilters, setIncludeFilters] = useState(false);
-    const [showFilterConfirmation, setShowFilterConfirmation] = useState(false);
+    const [includeVisibility, setIncludeVisibility] = useState(false);
+    const [includeSorting, setIncludeSorting] = useState(false);
     const [showSaveDialog, setShowSaveDialog] = useState(false);
 
-    const hasFilters = useMemo(() => {
-        return (tableFilters && tableFilters.length > 0) || (tableGlobalFilters && tableGlobalFilters.length > 0);
-    }, [tableFilters, tableGlobalFilters]);
-
-    // When the dialog is opened, decide which dialog to show first
     useEffect(() => {
-        if (open.value) {
-            if (hasFilters) {
-                setShowFilterConfirmation(true);
-                setShowSaveDialog(false);
-            } else {
-                setShowFilterConfirmation(false);
-                setShowSaveDialog(true);
-            }
-        } else {
-            setShowFilterConfirmation(false);
-            setShowSaveDialog(false);
-        }
-    }, [open.value, hasFilters]);
+        setShowSaveDialog(open.value);
+    }, [open.value]);
 
     const customColumns = useMemo(() => {
         return tableDefinition?.columns.reduce(
@@ -79,17 +60,19 @@ export default function SaveSpreadsheetDialog({
                     precision: item.precision,
                     formula: item.formula,
                     dependencies: item.dependencies?.length ? JSON.stringify(item.dependencies) : undefined,
-                    filterDataType: columnFilter?.dataType,
-                    filterTolerance: columnFilter?.tolerance,
-                    filterType: columnFilter?.type,
-                    filterValue: JSON.stringify(columnFilter?.value) ?? undefined,
-                    visible: true,
+                    columnFilterInfos: {
+                        filterDataType: columnFilter?.dataType,
+                        filterTolerance: columnFilter?.tolerance,
+                        filterType: columnFilter?.type,
+                        filterValue: JSON.stringify(columnFilter?.value) ?? undefined,
+                    },
+                    visible: includeVisibility ? item.visible : true,
                 };
                 return acc;
             },
             {} as Record<string, ColumnDefinitionDto>
         );
-    }, [includeFilters, tableDefinition?.columns, tableFilters]);
+    }, [includeFilters, includeVisibility, tableDefinition?.columns, tableFilters]);
 
     const reorderedColumns = useMemo(() => {
         return tableDefinition?.columns && customColumns
@@ -103,12 +86,14 @@ export default function SaveSpreadsheetDialog({
         folderName,
         folderId,
     }: IElementCreationDialog) => {
+        const tableGlobalFilters = getSelectedGlobalFilters(tableDefinition.uuid);
         const spreadsheetConfig: SpreadsheetConfig = {
             name: tableDefinition?.name,
             sheetType: tableDefinition?.type,
             columns: reorderedColumns,
             globalFilters: includeFilters ? (tableGlobalFilters ?? []) : [],
             nodeAliases: nodeAliases?.map((n) => n.alias),
+            sortConfig: includeSorting ? (sortConfig[0] ?? undefined) : undefined,
         };
 
         createSpreadsheetModel(name, description, folderId, spreadsheetConfig)
@@ -120,11 +105,8 @@ export default function SaveSpreadsheetDialog({
                     },
                 });
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'spreadsheet/save/error_message',
-                });
+            .catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/save/error_message' });
             });
     };
 
@@ -134,12 +116,14 @@ export default function SaveSpreadsheetDialog({
         description,
         elementFullPath,
     }: IElementUpdateDialog) => {
+        const tableGlobalFilters = getSelectedGlobalFilters(tableDefinition.uuid);
         const spreadsheetConfig: SpreadsheetConfig = {
             name: tableDefinition?.name,
             sheetType: tableDefinition?.type,
             columns: reorderedColumns,
             globalFilters: includeFilters ? (tableGlobalFilters ?? []) : [],
             nodeAliases: nodeAliases?.map((n) => n.alias),
+            sortConfig: includeSorting ? (sortConfig[0] ?? undefined) : undefined,
         };
 
         updateSpreadsheetModel(id, name, description, spreadsheetConfig)
@@ -151,9 +135,8 @@ export default function SaveSpreadsheetDialog({
                     },
                 });
             })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
+            .catch((error) => {
+                snackWithFallback(snackError, error, {
                     headerId: 'spreadsheet/save/update_error_message',
                     headerValues: {
                         item: elementFullPath,
@@ -162,12 +145,6 @@ export default function SaveSpreadsheetDialog({
             });
     };
 
-    const handleFilterConfirmation = useCallback((include: boolean) => {
-        setIncludeFilters(include);
-        setShowFilterConfirmation(false);
-        setShowSaveDialog(true);
-    }, []);
-
     const handleSaveDialogClose = useCallback(() => {
         setShowSaveDialog(false);
         open.setFalse();
@@ -175,22 +152,24 @@ export default function SaveSpreadsheetDialog({
 
     return (
         <>
-            {showFilterConfirmation && (
-                <SaveFilterConfirmationDialog open={showFilterConfirmation} onConfirm={handleFilterConfirmation} />
-            )}
-
             {showSaveDialog && studyUuid && (
-                <ElementSaveDialog
+                <SaveSpreadsheetModelDialog
                     open={showSaveDialog}
                     onClose={handleSaveDialogClose}
                     onSave={saveSpreadsheetColumnsConfiguration}
-                    OnUpdate={updateSpreadsheetColumnsConfiguration}
+                    onUpdate={updateSpreadsheetColumnsConfiguration}
                     type={ElementType.SPREADSHEET_CONFIG}
                     titleId={'spreadsheet/save/dialog_title'}
                     studyUuid={studyUuid}
                     selectorTitleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
                     createLabelId="spreadsheet/save/create_new_model"
                     updateLabelId="spreadsheet/save/replace_existing_model"
+                    includeFilters={includeFilters}
+                    setIncludeFilters={setIncludeFilters}
+                    includeVisibility={includeVisibility}
+                    setIncludeVisibility={setIncludeVisibility}
+                    includeSorting={includeSorting}
+                    setIncludeSorting={setIncludeSorting}
                 />
             )}
         </>

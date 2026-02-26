@@ -19,11 +19,13 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/column_type': 'Column type',
     'spreadsheet/custom_column/column_precision': 'Column precision',
     'spreadsheet/custom_column/column_content': 'Enter the formula',
-    'spreadsheet/custom_column/column_content_description': `Column content is described with variable names (in order to reference grid data), column IDs (in order to reference the content of another column) and operators provided by <Link>MathJS</Link> library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet.`,
+    'spreadsheet/custom_column/column_content_description': `Column content is described with variable names (in order to reference grid data), column IDs (in order to reference the content of another column) and operators provided by <Link>MathJS</Link> library (in order to transform grid data).\n\nExample: maxP - targetP in order to display active power reserve within the generator spreadsheet.`,
     'spreadsheet/custom_column/error/id_not_conform':
         'Column ID must not contain spaces, special characters or start with a number',
     'spreadsheet/custom_column/error/id_le_60': 'Column ID must be at most 60 characters',
     'spreadsheet/custom_column/error/name_le_60': 'Column name must be at most 60 characters',
+    'spreadsheet/custom_column/error/precision_0': 'Column precision must be at least 0',
+    'spreadsheet/custom_column/error/precision_100': 'Column precision must be at most 100',
     'spreadsheet/custom_column/update_custom_column': 'Update',
     'spreadsheet/custom_column/delete_custom_column': 'Delete',
     'spreadsheet/custom_column/duplicate_custom_column': 'Duplicate',
@@ -43,7 +45,10 @@ const spreadsheetEn = {
     'spreadsheet/save/options/model': 'As a model',
     'spreadsheet/save/options/filter': 'As a filter',
     'spreadsheet/save/options/collection': 'Collection',
-    'spreadsheet/save/options/csv': 'Export CSV',
+    'spreadsheet/save/options/csv/export': 'Export CSV',
+    'spreadsheet/save/options/csv/clipboard': 'Copy',
+    'spreadsheet/save/options/csv/clipboard/success': 'Sheet content copied to system clipboard',
+    'spreadsheet/save/options/csv/clipboard/error': 'Could not copy sheet content to system clipboard',
     'spreadsheet/save/dialog_title': 'Save a spreadsheet model',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Save a spreadsheet collection',
     'spreadsheet/collection/save/button_tooltip': 'Save collection',
@@ -69,7 +74,7 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Replace',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Append',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
-        "You are about to replace the current content of the 'Spreadsheet' tab. This content will be lost if you do not save it to GridExplore first. Would you like to pursue without saving the current content?",
+        "You are about to replace the current content of the 'Spreadsheet' panel. This content will be lost if you do not save it to GridExplore first. Would you like to pursue without saving the current content?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Add spreadsheet',
     'spreadsheet/create_new_spreadsheet/empty_spreadsheet_option': 'Add a sheet',
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Select a model',
@@ -122,6 +127,7 @@ const spreadsheetEn = {
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Include additional data',
     'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Inactive limit sets',
     'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Regulated terminals',
+    'spreadsheet/tabs/lazy_loading/labels/networkComponentsInformation': 'Network components',
 
     'spreadsheet/global-model-edition/edit': 'Model edition',
     'spreadsheet/global-model-edition/column_id': 'ID',
@@ -132,6 +138,11 @@ const spreadsheetEn = {
     'spreadsheet/global-model-edition/column_dependencies': 'Dependencies',
     'spreadsheet/global-model-edition/update_confirmation_message': 'Spreadsheet model updated',
     'spreadsheet/global-model-edition/update_error_message': 'Error while updating spreadsheet model',
+    'spreadsheet/global-model-edition/search_replace_button': 'Search and replace in formula',
+    'spreadsheet/global-model-edition/hide_search_button': 'Hide formula search',
+    'spreadsheet/global-model-edition/search': 'Search in formula',
+    'spreadsheet/global-model-edition/replace': 'Replace in formula',
+    'spreadsheet/global-model-edition/replace_all': 'Replace all',
 
     // calculations
     'spreadsheet/calculation/sum': 'Sum',
@@ -142,6 +153,32 @@ const spreadsheetEn = {
     'spreadsheet/calculation/average_abbrev': 'Avg',
     'spreadsheet/calculation/min_abbrev': 'Min',
     'spreadsheet/calculation/max_abbrev': 'Max',
+
+    //Formula errors
+    'spreadsheet/formula/error': '#ERROR',
+    'spreadsheet/formula/error/generic': 'Formula returns an error',
+    'spreadsheet/formula/import/disabled': 'Function import is disabled',
+    'spreadsheet/formula/createUnit/disabled': 'Function createUnit is disabled',
+    'spreadsheet/formula/evaluate/disabled': 'Function evaluate is disabled',
+    'spreadsheet/formula/parse/disabled': 'Function parse is disabled',
+    'spreadsheet/formula/simplify/disabled': 'Function simplify is disabled',
+    'spreadsheet/formula/derivative/disabled': 'Function derivative is disabled',
+    'spreadsheet/formula/compile/disabled': 'Function compile is disabled',
+    'spreadsheet/formula/help/disabled': 'Function help is disabled',
+    'spreadsheet/formula/length/error': 'Function length expects an array or object',
+    'spreadsheet/formula/type/number': 'Formula must evaluate to a number',
+    'spreadsheet/formula/type/boolean': 'Formula must evaluate to a boolean',
+    'spreadsheet/formula/type/enum': 'Formula must evaluate to a string or a number',
+    'spreadsheet/formula/type/unknown': 'Unknown column type',
+    'spreadsheet/formula/function-reference/disabled':
+        'Function references are disabled. Functions must be called with parameters',
+
+    //save dialog
+    'spreadsheet/save-dialog/include': 'Include',
+    'spreadsheet/save-dialog/spreadsheet': 'Spreadsheet',
+    'spreadsheet/save-dialog/filters': 'Filters',
+    'spreadsheet/save-dialog/columns_visibility': 'Columns visibility',
+    'spreadsheet/save-dialog/columns_sorting': 'Columns sorting',
 
     // Column types
     TEXT: 'Text',

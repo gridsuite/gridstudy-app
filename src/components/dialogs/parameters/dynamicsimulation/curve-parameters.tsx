@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
 import { GlobalFilter } from './global-filter';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { Curve as CurveType } from './curve/dialog/curve-preview';
 import { ValueFormatterParams } from 'ag-grid-community';
@@ -24,7 +24,7 @@ const styles = {
         width: 'auto',
         height: '100%',
     },
-};
+} as const satisfies MuiStyles;
 
 const CurveParameters = ({ path }: { path: string }) => {
     const intl = useIntl();
@@ -86,7 +86,7 @@ const CurveParameters = ({ path }: { path: string }) => {
         setSelectedRowsLength(0);
     }, [remove, rowData]);
 
-    const quickFilterRef = useRef();
+    const quickFilterRef = useRef(null);
 
     // curve grid configuration
     const theme = useTheme();

@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useState, useCallback, RefObject } from 'react';
-import { TextField, InputAdornment, IconButton, Box, SxProps } from '@mui/material';
-import { Clear, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
+import { RefObject, useCallback, useState } from 'react';
+import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Clear, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
-import { useDebounce } from '@gridsuite/commons-ui';
+import { type MuiStyles, type SxStyle, useDebounce } from '@gridsuite/commons-ui';
 
 interface QuickSearchProps {
     currentResultIndex: number;
@@ -17,15 +17,15 @@ interface QuickSearchProps {
     resultCount: number;
     resetSearch: () => void;
     placeholder?: string;
-    inputRef: RefObject<HTMLDivElement>;
-    sx?: SxProps;
+    inputRef: RefObject<HTMLDivElement | null>;
+    sx?: SxStyle;
 }
 
 const styles = {
     adornmentItem: {
         padding: '2px',
     },
-};
+} as const satisfies MuiStyles;
 
 export const QuickSearch: React.FC<QuickSearchProps> = ({
     currentResultIndex,

@@ -6,28 +6,34 @@
  */
 
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
-import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
 import { EquipmentTable } from './equipment-table';
-import { type Identifiable } from '@gridsuite/commons-ui';
+import { type Identifiable, type MuiStyles } from '@gridsuite/commons-ui';
 import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
-import { Alert, Box, type Theme } from '@mui/material';
+import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
-import { type NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
-import { useFilterSelector } from 'hooks/use-filter-selector';
-import { FilterType } from 'types/custom-aggrid-types';
-import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { TableType } from 'types/custom-aggrid-types';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
-import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
+import { PanelType } from 'components/workspace/types/workspace.types';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
+import { useNodeAliases } from '../../hooks/use-node-aliases';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
+import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
+import type { RootState } from '../../../../redux/store';
+import { selectPanelTargetEquipment } from '../../../../redux/slices/workspace-selectors';
+import type { UUID } from 'node:crypto';
+import { useWorkspacePanelActions } from '../../../workspace/hooks/use-workspace-panel-actions';
+import { useFilterSelector } from '../../../../hooks/use-filter-selector';
+import { updateAgGridFilters } from '../../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 const styles = {
-    table: (theme: Theme) => ({
+    table: (theme) => ({
         marginTop: theme.spacing(2.5),
         lineHeight: 'unset',
         flexGrow: 1,
@@ -41,66 +47,44 @@ const styles = {
         top: '30%',
         left: '43%',
     },
-};
+} as const satisfies MuiStyles;
 
 interface SpreadsheetContentProps {
-    gridRef: RefObject<AgGridReact>;
+    panelId: UUID;
+    gridRef: RefObject<AgGridReact | null>;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
-    nodeAliases: NodeAlias[] | undefined;
     disabled: boolean;
-    equipmentId: string | null;
-    onEquipmentScrolled: () => void;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
-    openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
 
 export const SpreadsheetContent = memo(
     ({
+        panelId,
         gridRef,
         currentNode,
         tableDefinition,
         columns,
-        nodeAliases,
         disabled,
-        equipmentId,
-        onEquipmentScrolled,
         registerRowCounterEvents,
-        openDiagram,
         active,
     }: SpreadsheetContentProps) => {
-        const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
         const [isGridReady, setIsGridReady] = useState(false);
+        const targetEquipment = useSelector((state: RootState) => selectPanelTargetEquipment(state, panelId));
+        const { nodeAliases } = useNodeAliases();
+        const { openSLD, clearTargetEquipment } = useWorkspacePanelActions();
+        const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
+        const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
+        const { fetchNodesEquipmentData } = useFetchEquipment();
 
-        const highlightUpdatedEquipment = useCallback(() => {
-            if (!equipmentToUpdateId) {
-                return;
+        // Initial data loading for this type when the tab is opened
+        useEffect(() => {
+            if (active && nodesIds.length > 0 && Object.keys(equipments.equipmentsByNodeId).length === 0) {
+                fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
             }
-
-            const api = gridRef.current?.api;
-            const rowNode = api?.getRowNode(equipmentToUpdateId);
-
-            if (rowNode && api) {
-                api.flashCells({
-                    rowNodes: [rowNode],
-                    flashDuration: 1000,
-                });
-                api.setNodesSelected({ nodes: [rowNode], newValue: false });
-            }
-
-            setEquipmentToUpdateId(null);
-        }, [equipmentToUpdateId, gridRef]);
-
-        // Only fetch when active
-        const { equipments, isFetching } = useSpreadsheetEquipments(
-            tableDefinition?.type,
-            equipmentToUpdateId,
-            highlightUpdatedEquipment,
-            nodeAliases,
-            active
-        );
+        }, [active, nodesIds, equipments.equipmentsByNodeId, fetchNodesEquipmentData, tableDefinition?.type]);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
@@ -121,19 +105,21 @@ export const SpreadsheetContent = memo(
             });
 
         const handleEquipmentScroll = useCallback(() => {
-            if (equipmentId && gridRef.current?.api && isGridReady) {
-                const selectedRow = gridRef.current.api.getRowNode(equipmentId);
+            const targetEquipmentId = targetEquipment?.targetEquipmentId;
+            if (targetEquipmentId && gridRef.current?.api && isGridReady) {
+                const selectedRow = gridRef.current.api.getRowNode(targetEquipmentId);
                 if (selectedRow) {
                     gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
                     selectedRow.setSelected(true, true);
-                    onEquipmentScrolled();
+                    // Clear the target equipment after successfully scrolling
+                    clearTargetEquipment(panelId);
                 }
             }
-        }, [equipmentId, gridRef, isGridReady, onEquipmentScrolled]);
+        }, [targetEquipment, gridRef, isGridReady, clearTargetEquipment, panelId]);
 
         useEffect(() => {
             handleEquipmentScroll();
-        }, [handleEquipmentScroll, equipmentId]);
+        }, [handleEquipmentScroll]);
 
         const onFirstDataRendered = useCallback(() => {
             handleEquipmentScroll();
@@ -152,28 +138,20 @@ export const SpreadsheetContent = memo(
         );
 
         const transformedRowData = useMemo(() => {
-            if (
-                !nodeAliases ||
-                !equipments?.nodesId.includes(currentNode.id) ||
-                !equipments.equipmentsByNodeId[currentNode.id]
-            ) {
-                return undefined;
-            }
-
             const currentNodeData: Record<string, Identifiable> = equipments.equipmentsByNodeId[currentNode.id];
             return Object.values(
                 Object.entries(equipments.equipmentsByNodeId).reduce(
                     (prev, [nodeId, nodeEquipments]) => {
-                        if (nodeId === currentNode.id) {
-                            return prev;
-                        }
                         const nodeAlias = nodeAliases.find((value) => value.id === nodeId);
                         if (nodeAlias) {
                             Object.values(nodeEquipments).forEach((eq) => {
-                                prev[eq.id] = {
-                                    ...prev[eq.id],
-                                    [nodeAlias.alias]: eq,
-                                };
+                                // To avoid empty lines in case of deleted equipments in current node but defined in another one
+                                if (prev[eq.id] !== undefined) {
+                                    prev[eq.id] = {
+                                        ...prev[eq.id],
+                                        [nodeAlias.alias]: eq,
+                                    };
+                                }
                             });
                         }
                         return prev;
@@ -189,7 +167,7 @@ export const SpreadsheetContent = memo(
             }
         }, [transformedRowData, gridRef, isGridReady]);
 
-        const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
+        const { filters } = useFilterSelector(TableType.Spreadsheet, tableDefinition?.uuid);
 
         useEffect(() => {
             const api = gridRef.current?.api;
@@ -205,12 +183,11 @@ export const SpreadsheetContent = memo(
             if (!api || !isGridReady) {
                 return;
             }
-            updateFilters(api, filters);
+            updateAgGridFilters(api, filters);
         }, [filters, gridRef, isGridReady, equipments, tableDefinition?.columns]);
 
         const handleModify = useCallback(
             (equipmentId: string) => {
-                setEquipmentToUpdateId(equipmentId);
                 handleOpenModificationDialog(equipmentId);
             },
             [handleOpenModificationDialog]
@@ -218,13 +195,13 @@ export const SpreadsheetContent = memo(
 
         const handleOpenDiagram = useCallback(
             (equipmentId: string) => {
-                const diagramType =
+                const panelType =
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
-                        ? DiagramType.SUBSTATION
-                        : DiagramType.VOLTAGE_LEVEL;
-                openDiagram?.(equipmentId, diagramType);
+                        ? PanelType.SLD_SUBSTATION
+                        : PanelType.SLD_VOLTAGE_LEVEL;
+                openSLD({ equipmentId: equipmentId, panelType });
             },
-            [openDiagram, tableDefinition?.type]
+            [openSLD, tableDefinition?.type]
         );
 
         return (
@@ -240,7 +217,7 @@ export const SpreadsheetContent = memo(
                             rowData={transformedRowData}
                             currentNode={currentNode}
                             columnData={columns}
-                            isFetching={isFetching}
+                            isFetching={equipments.isFetching}
                             isDataEditable={isModificationDialogForEquipmentType}
                             handleColumnDrag={handleColumnDrag}
                             isExternalFilterPresent={isExternalFilterPresent}

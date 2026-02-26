@@ -4,13 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CSSProperties, FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
-import { Box, Stack, Typography, styled, Theme, useTheme } from '@mui/material';
 import * as React from 'react';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { ReactNode, useCallback, useMemo } from 'react';
+import { Box, Stack, styled, Typography, useTheme } from '@mui/material';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { ListChildComponentProps } from 'react-window';
+import { type RowComponentProps } from 'react-window';
+import { escapeRegExp } from '../utils/utils';
 
 export interface ReportItem {
     id: string;
@@ -24,31 +25,31 @@ export interface ReportItem {
 }
 
 const styles = {
-    content: (theme: Theme) => ({
+    content: (theme) => ({
         color: theme.palette.text.secondary,
         borderRadius: theme.spacing(2),
         width: 'fit-content',
         paddingRight: theme.spacing(1),
         fontWeight: theme.typography.fontWeightMedium,
     }),
-    labelText: (theme: Theme) => ({
+    labelText: (theme) => ({
         fontWeight: 'inherit',
         marginRight: theme.spacing(2),
     }),
-    labelRoot: (theme: Theme) => ({
+    labelRoot: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0.5, 0),
     }),
-    root: (theme: Theme) => ({
+    root: (theme) => ({
         '&:hover': {
             backgroundColor: theme.palette.action.hover,
         },
     }),
-    highlighted: (theme: Theme) => ({
+    highlighted: (theme) => ({
         backgroundColor: theme.palette.action.hover,
     }),
-};
+} as const satisfies MuiStyles;
 
 const TreeViewItemBox = styled(Box)(() => {
     return {
@@ -78,8 +79,19 @@ const TreeViewItemStack = styled(Stack)<{ left: number; node: ReportItem }>((pro
         },
     };
 });
+const ITEM_DEPTH_OFFSET = 12;
 
-export interface TreeViewItemData {
+export function TreeviewItem({
+    index,
+    nodes,
+    onSelectedItem,
+    onExpandItem,
+    highlightedReportId,
+    searchTerm,
+    currentResultIndex,
+    searchResults,
+    style,
+}: RowComponentProps<{
     nodes: ReportItem[];
     onSelectedItem: (node: ReportItem) => void;
     onExpandItem: (node: ReportItem) => void;
@@ -87,20 +99,7 @@ export interface TreeViewItemData {
     searchTerm: string;
     currentResultIndex: number;
     searchResults: number[];
-}
-
-export interface TreeViewItemProps extends ListChildComponentProps {
-    data: TreeViewItemData;
-    index: number;
-    style: CSSProperties;
-}
-
-const ITEM_DEPTH_OFFSET = 12;
-
-export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
-    const { data, index } = props;
-    const { nodes, onSelectedItem, onExpandItem, highlightedReportId, searchTerm, currentResultIndex, searchResults } =
-        data;
+}>) {
     const currentNode = nodes[index];
     const left = currentNode.depth * ITEM_DEPTH_OFFSET;
     const isCollapsable = currentNode.isCollapsable ?? true;
@@ -119,9 +118,10 @@ export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
             if (!highlight) {
                 return text;
             }
-            const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+            const safeInput = escapeRegExp(highlight);
+            const parts = text.split(new RegExp(`(${safeInput})`, 'gi'));
             return parts.map((part, partIndex) => {
-                if (part.toLowerCase() === highlight.toLowerCase()) {
+                if (part.toLowerCase() === safeInput.toLowerCase()) {
                     const isCurrentOccurrence = searchResults[currentResultIndex] === index;
                     return (
                         <span
@@ -143,7 +143,7 @@ export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
     );
 
     return (
-        <TreeViewItemBox sx={mergeSx(styles.content, styles.labelRoot)} style={props.style}>
+        <TreeViewItemBox sx={mergeSx(styles.content, styles.labelRoot)} style={style}>
             <TreeViewItemStack
                 direction="row"
                 left={left}
@@ -164,4 +164,4 @@ export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
             </TreeViewItemStack>
         </TreeViewItemBox>
     );
-};
+}

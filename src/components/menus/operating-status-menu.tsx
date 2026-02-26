@@ -7,7 +7,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Menu from '@mui/material/Menu';
-
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -22,11 +21,14 @@ import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import {
     CustomMenuItem,
-    EquipmentInfos,
+    type EquipmentInfos,
     EquipmentType,
-    ExtendedEquipmentType,
+    type ExtendedEquipmentType,
+    type MuiStyles,
     OperatingStatus,
+    snackWithFallback,
     useSnackMessage,
+    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
@@ -39,13 +41,12 @@ import {
     tripEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
 import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { CurrentTreeNode } from '../graph/tree-node.type';
 
@@ -56,7 +57,8 @@ const styles = {
         // to justify menu items texts
         paddingLeft: '12px',
     },
-};
+} as const satisfies MuiStyles;
+
 export type MenuBranchProps = {
     equipment: MapEquipment;
     equipmentType: EquipmentType;
@@ -64,13 +66,9 @@ export type MenuBranchProps = {
     position: [number, number] | null;
     handleClose: () => void;
     handleViewInSpreadsheet: (type: EquipmentType, id: string) => void;
-    handleDeleteEquipment: (type: EquipmentType | null, id: string) => void;
-    handleOpenModificationDialog: (
-        id: string,
-        type: EquipmentType | null,
-        subtype: ExtendedEquipmentType | null
-    ) => void;
-    onOpenDynamicSimulationEventDialog?: (id: string, type: EquipmentType | null, dialogTitle: string) => void;
+    handleDeleteEquipment: (type: EquipmentType, id: string) => void;
+    handleOpenModificationDialog: (id: string, type: EquipmentType, subtype: ExtendedEquipmentType | null) => void;
+    onOpenDynamicSimulationEventDialog?: (id: string, type: EquipmentType, dialogTitle: string) => void;
     currentNode?: CurrentTreeNode;
     studyUuid?: UUID;
     currentRootNetworkUuid?: UUID | null;
@@ -103,7 +101,7 @@ const withOperatingStatusMenu =
         const { getNameOrId } = useNameOrId();
         const [equipmentInfos, setEquipmentInfos] = useState<EquipmentInfos | null>(null);
 
-        const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+        const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
         const getTranslationKey = (key: string) => {
             if (equipmentType) {
@@ -145,10 +143,7 @@ const withOperatingStatusMenu =
         );
 
         function handleError(error: Error, translationKey: string) {
-            snackError({
-                messageTxt: error.message,
-                headerId: getTranslationKey(translationKey),
-            });
+            snackWithFallback(snackError, error, { headerId: getTranslationKey(translationKey) });
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(false);
             }
@@ -263,7 +258,7 @@ const withOperatingStatusMenu =
                             }
                         />
                     </CustomMenuItem>
-                    {enableDeveloperMode && getEventType(equipmentType) && (
+                    {isDeveloperMode && getEventType(equipmentType) && (
                         <DynamicSimulationEventMenuItem
                             equipmentId={equipment.id}
                             equipmentType={equipmentType}
@@ -363,7 +358,12 @@ const withOperatingStatusMenu =
                     )}
                     <CustomMenuItem
                         sx={styles.menuItem}
-                        onClick={() => handleDeleteEquipment(getCommonEquipmentType(equipmentType), equipment.id)}
+                        onClick={() => {
+                            const commonType = getCommonEquipmentType(equipmentType);
+                            if (commonType) {
+                                handleDeleteEquipment(commonType, equipment.id);
+                            }
+                        }}
                         disabled={!isNodeEditable}
                     >
                         <ListItemIcon>

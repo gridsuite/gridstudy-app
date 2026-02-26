@@ -7,16 +7,26 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import {
-    AttributeModification,
-    CurrentLimits,
-    OperationalLimitsGroup,
-    OperationType,
-    TemporaryLimit,
-} from 'services/network-modification-types';
+import { AttributeModification, OperationType, TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
-import { APPLICABIlITY, CURRENT_LIMITS, ID, NAME, SELECTED } from './field-constants';
+import {
+    APPLICABILITY_FIELD,
+    CURRENT_LIMITS,
+    ID,
+    LIMITS_PROPERTIES,
+    NAME,
+    SELECTED,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_VALUE,
+} from './field-constants';
+import {
+    OperationalLimitsGroupFormSchema,
+    TemporaryLimitFormSchema,
+} from '../dialogs/limits/operational-limits-groups-types';
+import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
+import { TapChangerStep } from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -87,12 +97,12 @@ export const getObjectId = (object: string | { id: string }) => {
 };
 
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
-    const newBusbarSections = [];
+    const newBusbarSections: Option[] = [];
     for (let i = 0; i < busbarCount; i++) {
         for (let j = 0; j < sectionCount; j++) {
             newBusbarSections.push({
                 id: equipmentId + '_' + (i + 1) + '_' + (j + 1),
-                name: '',
+                label: '',
             });
         }
     }
@@ -118,48 +128,59 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): TemporaryLimit[] =>
+export const formatTemporaryLimitsModificationToFormSchema = (
+    temporaryLimits: TemporaryLimit[]
+): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
-            name: limit?.name ?? '',
-            value: limit?.value ?? null,
-            acceptableDuration: limit?.acceptableDuration ?? null,
-            modificationType: limit?.modificationType ?? null,
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME]?.value ?? '',
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE]?.value ?? null,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION]?.value ?? null,
         };
     });
 
-export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimits[]) => {
-    const formattedCompleteLimitsGroups: OperationalLimitsGroup[] = [];
+export const formatMapInfosToTemporaryLimitsFormSchema = (
+    temporaryLimits: TemporaryLimitsData[]
+): TemporaryLimitFormSchema[] =>
+    temporaryLimits?.map((limit: TemporaryLimitsData) => {
+        return {
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+        };
+    });
+
+export const formatCompleteCurrentLimit = (
+    completeLimitsGroups: CurrentLimitsData[]
+): OperationalLimitsGroupFormSchema[] => {
+    const formattedCompleteLimitsGroups = [];
     if (completeLimitsGroups) {
-        completeLimitsGroups.forEach((elt) => {
+        for (const elt of completeLimitsGroups) {
             if (isNotBlankOrEmpty(elt.id)) {
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id + elt.applicability,
                     [NAME]: elt.id,
-                    [APPLICABIlITY]: elt.applicability,
+                    [APPLICABILITY_FIELD]: elt.applicability,
+                    [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
-                        [ID]: elt.id,
                         permanentLimit: elt.permanentLimit,
-                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
+                        temporaryLimits: addSelectedFieldToRows(elt.temporaryLimits),
                     },
                 });
             }
-        });
+        }
     }
     return formattedCompleteLimitsGroups;
 };
 
 export const richTypeEquals = (a: unknown, b: unknown) => a === b;
 
-export const computeHighTapPosition = (steps: { index: number }[]) => {
-    const values = steps?.map((step) => step['index']);
+export const computeHighTapPosition = (steps: TapChangerStep[]) => {
+    const values = steps?.map((step) => step['index']).filter((v): v is number => v !== undefined);
     return values?.length > 0 ? Math.max(...values) : null;
 };
 
-export const compareStepsWithPreviousValues = (
-    tapSteps: Record<string, number>[],
-    previousValues: Record<string, number>[]
-) => {
+export const compareStepsWithPreviousValues = (tapSteps: TapChangerStep[], previousValues?: TapChangerStep[]) => {
     if (previousValues === undefined) {
         return false;
     }
@@ -168,7 +189,7 @@ export const compareStepsWithPreviousValues = (
     }
     return tapSteps.every((step, index) => {
         const previousStep = previousValues[index];
-        return Object.getOwnPropertyNames(previousStep).every((key) => {
+        return (Object.keys(previousStep) as (keyof TapChangerStep)[]).every((key) => {
             return step[key] === previousStep[key];
         });
     });
@@ -239,7 +260,7 @@ export function calculateSusceptance(distance: number, linearCapacity: number) {
 
 export function getNewVoltageLevelOptions(
     formattedVoltageLevel: VoltageLevel,
-    oldVoltageLevelId: string,
+    oldVoltageLevelId: string | undefined,
     voltageLevelOptions: VoltageLevel[]
 ) {
     const newVoltageLevelOptions =
@@ -273,26 +294,15 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
     return Array.from({ length }, (_, index) => start + index * step);
 }
 
-export const StudyView = {
-    TREE: 'Tree',
-    SPREADSHEET: 'Spreadsheet',
-    RESULTS: 'Results',
-    LOGS: 'Logs',
-    PARAMETERS: 'Parameters',
+export const addSelectedFieldToRows = <T>(rows?: T[]): (T & { selected: boolean })[] => {
+    return (
+        rows?.map((row) => {
+            return { ...row, [SELECTED]: false };
+        }) ?? []
+    );
 };
 
-export const STUDY_VIEWS = [
-    StudyView.TREE,
-    StudyView.SPREADSHEET,
-    StudyView.RESULTS,
-    StudyView.LOGS,
-    StudyView.PARAMETERS,
-];
-
-export type StudyViewType = (typeof StudyView)[keyof typeof StudyView];
-
-export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
-    return rows?.map((row) => {
-        return { ...row, [SELECTED]: false };
-    });
-};
+//Escapes regex special characters to avoid misinterpreting user prompts
+export function escapeRegExp(string: string): string {
+    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}

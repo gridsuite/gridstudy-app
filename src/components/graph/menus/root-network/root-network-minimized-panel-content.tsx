@@ -5,29 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
-
-import { Box, Theme, Badge, Stack, Chip } from '@mui/material';
+import { Badge, Box, Chip, Stack } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
 const styles = {
-    panel: (theme: Theme) => ({
+    panel: (theme) => ({
         flexGrow: 1,
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(1),
+        padding: theme.spacing(0.5),
     }),
-    minimizedPanel: (theme: Theme) => ({
-        marginLeft: theme.spacing(2),
+    minimizedPanel: (theme) => ({
+        marginLeft: theme.spacing(0.5),
     }),
     icon: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
     },
-};
+} as const satisfies MuiStyles;
+
 interface RootNetworkMinimizedPanelContentProps {
     isRootNetworkPanelMinimized: boolean;
 }
@@ -48,7 +48,7 @@ const RootNetworkMinimizedPanelContent: React.FC<RootNetworkMinimizedPanelConten
                 <Chip size="small" label={currentRootNetwork?.tag} color="primary" />
                 <Box sx={styles.icon}>
                     <Badge overlap="circular" color="primary" variant="dot">
-                        <RemoveRedEyeIcon />
+                        <RemoveRedEyeIcon fontSize="small" />
                     </Badge>
                 </Box>
             </Stack>

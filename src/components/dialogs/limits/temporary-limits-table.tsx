@@ -9,11 +9,12 @@ import { useState } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import {
-    ColumnNumeric,
-    ColumnText,
+    type ColumnNumeric,
+    type ColumnText,
     DndColumnType,
     ErrorInput,
     FieldErrorAlert,
+    type MuiStyles,
     TableNumericalInput,
     TableTextInput,
 } from '@gridsuite/commons-ui';
@@ -21,7 +22,7 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { SELECTED } from '../../utils/field-constants';
-import { TemporaryLimit } from '../../../services/network-modification-types';
+import { TemporaryLimitsData } from '../../../services/study/network-map.type';
 
 const styles = {
     columnsStyle: {
@@ -31,7 +32,7 @@ const styles = {
         margin: 1,
         textTransform: 'none',
     },
-};
+} as const satisfies MuiStyles;
 
 interface CustomTableCellProps {
     name: string;
@@ -63,18 +64,12 @@ interface TemporaryLimitsTableProps {
     columnsDefinition: (ColumnText | ColumnNumeric)[];
     createRow: () => any[];
     disabled?: boolean;
-    previousValues: TemporaryLimit[];
-    disableTableCell: (
-        rowIndex: number,
-        column: ColumnText | ColumnNumeric,
-        arrayFormName: string,
-        temporaryLimits: TemporaryLimit[]
-    ) => boolean;
+    previousValues: TemporaryLimitsData[];
     getPreviousValue: (
         rowIndex: number,
         column: ColumnText | ColumnNumeric,
         arrayFormName: string,
-        temporaryLimits: TemporaryLimit[]
+        temporaryLimits: TemporaryLimitsData[]
     ) => number | undefined;
     isValueModified: (rowIndex: number, arrayFormName: string) => boolean;
     disableAddingRows?: boolean;
@@ -86,7 +81,6 @@ function TemporaryLimitsTable({
     createRow,
     disabled = false,
     previousValues,
-    disableTableCell,
     getPreviousValue,
     isValueModified,
     disableAddingRows = false,
@@ -101,9 +95,7 @@ function TemporaryLimitsTable({
                 key={rowId + column.dataKey}
                 name={name}
                 column={column}
-                disabled={
-                    disableTableCell ? disableTableCell(rowIndex, column, arrayFormName, previousValues) : disabled
-                }
+                disabled={disabled}
                 previousValue={
                     getPreviousValue ? getPreviousValue(rowIndex, column, arrayFormName, previousValues) : undefined
                 }
@@ -147,7 +139,7 @@ function TemporaryLimitsTable({
         <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
             {columnsDefinition.map((column) => renderTableCell(rowId, index, column))}
             <TableCell key={rowId + 'delete'}>
-                <IconButton color="primary" onClick={() => remove(index)}>
+                <IconButton color="primary" disabled={disabled} onClick={() => remove(index)}>
                     <DeleteIcon visibility={index === hoveredRowIndex ? 'visible' : 'hidden'} />
                 </IconButton>
             </TableCell>
@@ -165,12 +157,7 @@ function TemporaryLimitsTable({
     return (
         <Grid item container spacing={1}>
             <Grid item container>
-                <TableContainer
-                    sx={{
-                        height: 400,
-                        border: 'solid 1px rgba(0,0,0,0.1)',
-                    }}
-                >
+                <TableContainer>
                     <Table stickyHeader size="small" padding="none">
                         {renderTableHead()}
                         {renderTableBody()}

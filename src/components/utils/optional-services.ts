@@ -10,9 +10,11 @@ export enum OptionalServicesNames {
     SensitivityAnalysis = 'SensitivityAnalysis',
     DynamicSimulation = 'DynamicSimulation',
     DynamicSecurityAnalysis = 'DynamicSecurityAnalysis',
+    DynamicMarginCalculation = 'DynamicMarginCalculation',
     ShortCircuit = 'ShortCircuit',
     VoltageInit = 'VoltageInit',
     StateEstimation = 'StateEstimation',
+    PccMin = 'PccMin',
 }
 export enum OptionalServicesStatus {
     Up = 'UP',
@@ -24,7 +26,7 @@ export interface IOptionalService {
     name: OptionalServicesNames;
     status: OptionalServicesStatus;
 }
-export const getOptionalServiceByServerName = (serverName: string): OptionalServicesNames | undefined => {
+const getOptionalServiceByServerName = (serverName: string): OptionalServicesNames | undefined => {
     switch (serverName) {
         case 'security-analysis-server':
             return OptionalServicesNames.SecurityAnalysis;
@@ -40,7 +42,34 @@ export const getOptionalServiceByServerName = (serverName: string): OptionalServ
             return OptionalServicesNames.VoltageInit;
         case 'state-estimation-server':
             return OptionalServicesNames.StateEstimation;
+        case 'pcc-min-server':
+            return OptionalServicesNames.PccMin;
         default:
             return;
     }
+};
+
+export const retrieveOptionalServices = (services: IOptionalService[]): IOptionalService[] => {
+    const retrievedOptionalServices = services.map((service) => {
+        return {
+            ...service,
+            name: getOptionalServiceByServerName(service.name) ?? service.name,
+        };
+    });
+    // get all potentially optional services
+    const optionalServicesNames = Object.keys(OptionalServicesNames);
+
+    // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
+    // in that case, we consider it is UP
+    const filteredOptionalServicesNames = optionalServicesNames.filter(
+        (serviceName) =>
+            !retrievedOptionalServices.map((service) => service.name).includes(serviceName as OptionalServicesNames)
+    );
+    for (const serviceName of filteredOptionalServicesNames) {
+        retrievedOptionalServices.push({
+            name: serviceName as OptionalServicesNames,
+            status: OptionalServicesStatus.Up,
+        });
+    }
+    return retrievedOptionalServices;
 };

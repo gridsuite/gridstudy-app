@@ -11,8 +11,8 @@ import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Button, Tooltip } from '@mui/material';
+import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
+import { Button } from '@mui/material';
 import {
     RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,
@@ -21,13 +21,10 @@ import {
 } from './security-analysis-result-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-
-const styles = {
-    button: {
-        color: 'node.background',
-    },
-};
+import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
+import { PanelType } from '../../workspace/types/workspace.types';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -37,20 +34,19 @@ export interface SecurityAnalysisFilterEnumsType {
 type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
-    openVoltageLevelDiagram: (id: string) => void,
     tabIndex: number,
-    onFilter: () => void
+    goToFirstPage: () => void
 ) => ColDef[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
-    openVoltageLevelDiagram,
     tabIndex,
-    onFilter
+    goToFirstPage
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const { openSLD } = useWorkspacePanelActions();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -58,10 +54,12 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
 
     const getEnumLabel = useCallback(
         (value: string) =>
-            intl.formatMessage({
-                id: value,
-                defaultMessage: value,
-            }),
+            value
+                ? intl.formatMessage({
+                      id: value,
+                      defaultMessage: value,
+                  })
+                : '',
         [intl]
     );
 
@@ -90,32 +88,31 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                         getBranchSide(side) ?? BranchSide.ONE
                     )
                         .then((voltageLevelId) => {
-                            if (!voltageLevelId) {
+                            if (voltageLevelId) {
+                                vlId = voltageLevelId;
+                            } else {
                                 // if we didnt find a line or transformer, it's a voltage level
                                 vlId = subjectId;
-                            } else {
-                                vlId = voltageLevelId;
                             }
                         })
                         .finally(() => {
-                            if (!vlId) {
-                                console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);
-                                snackError({
-                                    messageId: 'NetworkEquipmentNotFound',
-                                    messageValues: {
-                                        equipmentId: row.subjectId || '',
-                                    },
-                                });
-                            } else {
-                                if (openVoltageLevelDiagram) {
-                                    openVoltageLevelDiagram(vlId);
-                                }
+                            if (vlId) {
+                                openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+                                return;
                             }
+                            console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);
+                            snackError({
+                                messageId: 'NetworkEquipmentNotFound',
+                                messageValues: {
+                                    equipmentId: row.subjectId || '',
+                                },
+                            });
                         });
                 }
             }
         },
-        [nodeUuid, currentRootNetworkUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [nodeUuid, currentRootNetworkUuid, snackError, studyUuid, intl]
     );
 
     // for nmk views, custom view for subjectId cell
@@ -128,11 +125,9 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
             };
             if (value) {
                 return (
-                    <Tooltip title={value}>
-                        <Button sx={styles.button} onClick={onClick}>
-                            {value}
-                        </Button>
-                    </Tooltip>
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
                 );
             }
         },
@@ -148,7 +143,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    onFilter
+                    goToFirstPage
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -157,12 +152,18 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex,
-                    onFilter
+                    goToFirstPage
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex, onFilter);
+                return securityAnalysisTableNColumnsDefinition(
+                    intl,
+                    filterEnums.n,
+                    getEnumLabel,
+                    tabIndex,
+                    goToFirstPage
+                );
         }
-    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, onFilter]);
+    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, goToFirstPage]);
 
     return columnDefs;
 };

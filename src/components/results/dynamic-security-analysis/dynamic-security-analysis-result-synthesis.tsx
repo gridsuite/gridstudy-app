@@ -11,11 +11,10 @@ import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
 import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from '../../../redux/reducer';
-import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
 import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dynamic-security-analysis';
 import { MEDIUM_COLUMN_WIDTH } from '../dynamicsimulation/utils/dynamic-simulation-result-utils';
 import { dynamicSecurityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
@@ -26,7 +25,7 @@ const styles = {
     loader: {
         height: '4px',
     },
-};
+} as const satisfies MuiStyles;
 
 const defaultColDef = {
     filter: true,

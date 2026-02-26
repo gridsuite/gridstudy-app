@@ -5,9 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { Page } from '../common/utils';
+
 export interface SCAFault {
     id: string;
     elementId: string;
+    voltageLevelId: string;
     faultType: string;
 }
 
@@ -43,19 +46,6 @@ export interface SCAFaultResult {
     feederResults?: SCAFeederResult[];
 }
 
-type Pageable = {
-    sort: {
-        sorted: boolean;
-        empty: boolean;
-        unsorted: boolean;
-    };
-    pageNumber: number;
-    pageSize: number;
-    offset: number;
-    paged: boolean;
-    unpaged: boolean;
-};
-
 export type SCAResult = {
     resultUuid: string;
     writeTimeStamp: any;
@@ -63,24 +53,6 @@ export type SCAResult = {
 };
 
 export type SCAPagedResults = Page<SCAFaultResult> | Page<SCAFeederResult>;
-
-interface Page<ResultType> {
-    content: ResultType[];
-    pageable: Pageable;
-    last: boolean;
-    totalPages: number;
-    totalElements: number;
-    first: boolean;
-    size: number;
-    number: number;
-    sort: {
-        sorted: boolean;
-        empty: boolean;
-        unsorted: boolean;
-    };
-    numberOfElements: number;
-    empty: boolean;
-}
 
 export enum ShortCircuitAnalysisResultTabs {
     ALL_BUSES = 0,

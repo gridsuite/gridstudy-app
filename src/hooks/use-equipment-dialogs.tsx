@@ -6,12 +6,18 @@
  */
 
 import { useCallback, useState } from 'react';
-import { EquipmentType, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    EquipmentType,
+    ExtendedEquipmentType,
+    HvdcType,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 import { deleteEquipment } from '../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../services/study/network';
 import { CurrentTreeNode } from '../components/graph/tree-node.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 import BatteryModificationDialog from '../components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import GeneratorModificationDialog from '../components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
@@ -28,7 +34,7 @@ import { LccModificationDialog } from '../components/dialogs/network-modificatio
 
 type EquipmentToModify = {
     equipmentId: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     equipmentSubtype?: ExtendedEquipmentType | null;
 };
 
@@ -50,12 +56,11 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
 
     // Handlers
     const handleOpenModificationDialog = useCallback(
-        (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => {
+        (id: string, type: EquipmentType, subtype: ExtendedEquipmentType | null) => {
             if (type) {
-                const equipmentEnumType = EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES];
                 setEquipmentToModify({
                     equipmentId: id,
-                    equipmentType: equipmentEnumType,
+                    equipmentType: type,
                     equipmentSubtype: subtype,
                 });
             }
@@ -63,16 +68,16 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
         []
     );
 
-    const handleOpenDeletionDialog = useCallback((equipmentId: string, equipmentType: EQUIPMENT_TYPES) => {
+    const handleOpenDeletionDialog = useCallback((equipmentId: string, equipmentType: EquipmentType) => {
         setEquipmentToDelete({ equipmentId, equipmentType });
     }, []);
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId: string, equipmentType: EquipmentType | null, dialogTitle: string) => {
+        (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
             setDynamicSimulationEventDialogTitle(dialogTitle);
             setEquipmentToConfigDynamicSimulationEvent({
                 equipmentId,
-                equipmentType: EQUIPMENT_TYPES[equipmentType as keyof typeof EQUIPMENT_TYPES],
+                equipmentType: equipmentType,
             });
         },
         []
@@ -92,13 +97,15 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
     }, []);
 
     const removeEquipment = useCallback(
-        (equipmentType: string, equipmentId: string) => {
+        (equipmentType: EquipmentType, equipmentId: string) => {
             if (studyUuid) {
-                deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'UnableToDeleteEquipment',
-                    });
+                deleteEquipment({
+                    studyUuid,
+                    nodeUuid: currentNode?.id,
+                    equipmentId: equipmentId as UUID,
+                    equipmentType,
+                }).catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
                 });
             }
         },
@@ -106,27 +113,24 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
     );
 
     const handleDeleteEquipment = useCallback(
-        (equipmentType: EquipmentType | null, equipmentId: string) => {
-            const equipmentEnumType = EQUIPMENT_TYPES[equipmentType as keyof typeof EQUIPMENT_TYPES];
-            if (equipmentEnumType !== EQUIPMENT_TYPES.HVDC_LINE) {
-                removeEquipment(equipmentEnumType, equipmentId);
-            } else {
+        (equipmentType: EquipmentType, equipmentId: string) => {
+            if (equipmentType === EquipmentType.HVDC_LINE) {
                 // need a query to know the HVDC converters type (LCC vs VSC)
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.HVDC_LINE,
+                    EquipmentType.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.MAP.type,
                     equipmentId,
                     false
                 )
                     .then((hvdcInfos) => {
-                        if (hvdcInfos?.hvdcType === 'LCC') {
+                        if (hvdcInfos?.hvdcType === HvdcType.LCC) {
                             // only hvdc line with LCC requires a Dialog (to select MCS)
-                            handleOpenDeletionDialog(equipmentId, EQUIPMENT_TYPES.HVDC_LINE);
+                            handleOpenDeletionDialog(equipmentId, EquipmentType.HVDC_LINE);
                         } else {
-                            removeEquipment(equipmentEnumType, equipmentId);
+                            removeEquipment(equipmentType, equipmentId);
                         }
                     })
                     .catch(() => {
@@ -135,6 +139,8 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                             messageValues: { equipmentId: equipmentId },
                         });
                     });
+            } else {
+                removeEquipment(equipmentType, equipmentId);
             }
         },
         [studyUuid, currentNode?.id, currentRootNetworkUuid, snackError, handleOpenDeletionDialog, removeEquipment]
@@ -148,28 +154,28 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
 
         let CurrentModificationDialog;
         switch (equipmentToModify.equipmentType) {
-            case EQUIPMENT_TYPES.SUBSTATION:
+            case EquipmentType.SUBSTATION:
                 CurrentModificationDialog = SubstationModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+            case EquipmentType.VOLTAGE_LEVEL:
                 CurrentModificationDialog = VoltageLevelModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.BATTERY:
+            case EquipmentType.BATTERY:
                 CurrentModificationDialog = BatteryModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.GENERATOR:
+            case EquipmentType.GENERATOR:
                 CurrentModificationDialog = GeneratorModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.LOAD:
+            case EquipmentType.LOAD:
                 CurrentModificationDialog = LoadModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+            case EquipmentType.TWO_WINDINGS_TRANSFORMER:
                 CurrentModificationDialog = TwoWindingsTransformerModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.LINE:
+            case EquipmentType.LINE:
                 CurrentModificationDialog = LineModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.HVDC_LINE:
+            case EquipmentType.HVDC_LINE:
                 if (equipmentToModify?.equipmentSubtype === ExtendedEquipmentType.HVDC_LINE_LCC) {
                     CurrentModificationDialog = LccModificationDialog;
                 } else if (equipmentToModify.equipmentSubtype === ExtendedEquipmentType.HVDC_LINE_VSC) {
@@ -178,7 +184,7 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                     return null;
                 }
                 break;
-            case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+            case EquipmentType.SHUNT_COMPENSATOR:
                 CurrentModificationDialog = ShuntCompensatorModificationDialog;
                 break;
             default:
@@ -208,19 +214,18 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
             return null;
         }
 
-        if (equipmentToDelete.equipmentType === EQUIPMENT_TYPES.HVDC_LINE) {
+        if (equipmentToDelete.equipmentType === EquipmentType.HVDC_LINE) {
             return (
                 <EquipmentDeletionDialog
-                    open={true}
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    defaultIdValue={equipmentToDelete.equipmentId}
+                    defaultIdValue={equipmentToDelete.equipmentId as UUID}
                     isUpdate={true}
                     onClose={closeDeletionDialog}
                     editData={undefined}
                     editDataFetchStatus={undefined}
-                    equipmentType={undefined}
+                    equipmentType={equipmentToDelete.equipmentType}
                 />
             );
         } else {
@@ -236,7 +241,7 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
         return (
             <DynamicSimulationEventDialog
                 equipmentId={equipmentToConfigDynamicSimulationEvent.equipmentId}
-                equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType}
+                equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType as unknown as EQUIPMENT_TYPES}
                 onClose={handleCloseDynamicSimulationEventDialog}
                 title={dynamicSimulationEventDialogTitle}
             />

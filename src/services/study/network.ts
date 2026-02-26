@@ -1,31 +1,36 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023-2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * SPDX-License-Identifier: MPL-2.0
  */
 
-import type { UUID } from 'crypto';
-import { EquipmentType, ExtendedEquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    EquipmentType,
+    ExtendedEquipmentType,
+    type Identifiable,
+    safeEncodeURIComponent,
+} from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
-import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
-import { SwitchInfos } from './network-map.type';
+import { getQueryParamsList } from '../utils';
+import { BusBarSectionsInfos, FeederBaysInfos, SwitchInfos } from './network-map.type';
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
+import { isBlankOrEmpty } from '../../components/utils/validation-functions';
+import { NetworkExportInfos } from '../study-types';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     voltageLevelId: string;
-    useName: boolean;
-    centerLabel: boolean;
-    diagonalLabel: boolean;
-    componentLibrary: string;
-    sldDisplayMode: string;
-    language: GsLang;
 }
 
 interface SubstationSingleLineDiagram {
@@ -33,44 +38,23 @@ interface SubstationSingleLineDiagram {
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     substationId: string;
-    useName: boolean;
-    centerLabel: boolean;
-    diagonalLabel: boolean;
-    substationLayout: string;
-    componentLibrary: string;
-    language: GsLang;
 }
 
 export const PREFIX_SCHEMAS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-map';
 
 /* voltage-levels */
-export function getVoltageLevelSingleLineDiagram({
+export function getVoltageLevelSingleLineDiagramUrl({
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
     voltageLevelId,
-    useName,
-    centerLabel,
-    diagonalLabel,
-    componentLibrary,
-    sldDisplayMode,
-    language,
 }: VoltageLevelSingleLineDiagram) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
     const queryParams = new URLSearchParams({
-        useName: String(useName),
-        centerLabel: String(centerLabel),
-        diagonalLabel: String(diagonalLabel),
-        topologicalColoring: 'true',
-        sldDisplayMode: sldDisplayMode,
-        language: language,
         inUpstreamBuiltParentNode: 'true',
     });
-    if (componentLibrary !== null) {
-        queryParams.append('componentLibrary', String(componentLibrary));
-    }
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/voltage-levels/' +
@@ -153,39 +137,69 @@ export function fetchSwitchesOfVoltageLevel(
     return backendFetchJson(fetchSwitchesUrl);
 }
 
+export function fetchVoltageLevelBusBarSectionsInfos(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: string
+): Promise<BusBarSectionsInfos> {
+    console.info(
+        `Fetching bus bar sections information of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
+
+    const fetchTopologyUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network/voltage-levels/' +
+        encodeURIComponent(voltageLevelId) +
+        '/bus-bar-sections' +
+        '?' +
+        urlSearchParams.toString();
+
+    console.debug(fetchTopologyUrl);
+    return backendFetchJson(fetchTopologyUrl);
+}
+
+export function fetchVoltageLevelFeederBaysInfos(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: string
+): Promise<FeederBaysInfos> {
+    console.info(
+        `Fetching feeder bays infos of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
+
+    const fetchTopologyUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network/voltage-levels/' +
+        encodeURIComponent(voltageLevelId) +
+        '/feeder-bays' +
+        '?' +
+        urlSearchParams.toString();
+
+    console.debug(fetchTopologyUrl);
+    return backendFetchJson(fetchTopologyUrl);
+}
+
 /* substations */
-export function getSubstationSingleLineDiagram({
+export function getSubstationSingleLineDiagramUrl({
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
     substationId,
-    useName,
-    centerLabel,
-    diagonalLabel,
-    substationLayout,
-    componentLibrary,
-    language,
 }: SubstationSingleLineDiagram) {
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
     );
-    const queryParams = new URLSearchParams({
-        useName: String(useName),
-        centerLabel: String(centerLabel),
-        diagonalLabel: String(diagonalLabel),
-        topologicalColoring: 'true',
-        substationLayout: substationLayout,
-        language: language,
-    });
-    if (componentLibrary !== null) {
-        queryParams.append('componentLibrary', String(componentLibrary));
-    }
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/substations/' +
         encodeURIComponent(substationId) +
-        '/svg-and-metadata?' +
-        queryParams.toString()
+        '/svg-and-metadata'
     );
 }
 
@@ -388,14 +402,46 @@ export const fetchRootNetworkIndexationStatus = (studyUuid: UUID, rootNetworkUui
     return backendFetchText(fetchRootNetworkIndexationUrl);
 };
 
-/* export-network */
-
-export function getExportUrl(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID, exportFormat: string) {
+export function exportNetworkFile(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    rootNetworkUuid: UUID,
+    params: Record<string, any>,
+    exportInfos: NetworkExportInfos
+): Promise<UUID> {
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
         '/export-network/' +
-        exportFormat;
-    return getUrlWithToken(url);
+        exportInfos.selectedFormat;
+
+    const urlSearchParams = new URLSearchParams();
+    if (Object.keys(params).length > 0) {
+        const paramsJson = JSON.stringify(params);
+        urlSearchParams.append('formatParameters', paramsJson);
+    }
+    if (!isBlankOrEmpty(exportInfos.fileName)) {
+        urlSearchParams.append('fileName', exportInfos.fileName);
+    }
+
+    urlSearchParams.append('exportToGridExplore', String(exportInfos.exportToGridExplore));
+    if (exportInfos?.parentDirectoryUuid && !isBlankOrEmpty(exportInfos.parentDirectoryUuid)) {
+        urlSearchParams.append('parentDirectoryUuid', exportInfos.parentDirectoryUuid);
+    }
+    if (exportInfos?.description && !isBlankOrEmpty(exportInfos.description)) {
+        urlSearchParams.append('description', exportInfos.description);
+    }
+
+    const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';
+
+    return backendFetchJson(url + suffix, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
+export function fetchExportNetworkFile(exportUuid: UUID) {
+    const url = PREFIX_STUDY_QUERIES + '/v1/download-file/' + exportUuid;
+    return backendFetch(url);
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {

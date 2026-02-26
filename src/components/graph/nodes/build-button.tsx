@@ -8,35 +8,42 @@
 import { BUILD_STATUS } from 'components/network/constants';
 import React, { useCallback, useState } from 'react';
 import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
-import { Button, CircularProgress, Theme } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
-import { UUID } from 'crypto';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE } from 'components/network-modification-tree-pane';
+import type { UUID } from 'node:crypto';
+import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 
 type BuildButtonProps = {
     buildStatus?: BUILD_STATUS;
     studyUuid: UUID | null;
     currentRootNetworkUuid: UUID | null;
     nodeUuid: UUID;
+    onClick?: () => void;
 };
 
 const styles = {
     button: {
         minWidth: '40px',
     },
-    playColor: (theme: Theme) => ({
+    playColor: (theme) => ({
         color: theme.palette.mode === 'light' ? 'grey' : 'white',
     }),
-};
+} as const satisfies MuiStyles;
 
-export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, nodeUuid }: BuildButtonProps) => {
+export const BuildButton = ({
+    buildStatus,
+    studyUuid,
+    currentRootNetworkUuid,
+    nodeUuid,
+    onClick,
+}: BuildButtonProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
             event.stopPropagation();
+            onClick?.();
             if (!studyUuid || !currentRootNetworkUuid || isLoading) {
                 return;
             }
@@ -45,38 +52,21 @@ export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, no
 
             if (!buildStatus || buildStatus === BUILD_STATUS.NOT_BUILT) {
                 buildNode(studyUuid, nodeUuid, currentRootNetworkUuid)
-                    .catch((error) => {
-                        if (error.status === 403 && error.message.includes(HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE)) {
-                            // retrieve last word of the message (ex: "MAX_NODE_BUILDS_EXCEEDED max allowed built nodes : 2" -> 2)
-                            let limit = error.message.split(/[: ]+/).pop();
-                            snackError({
-                                messageId: 'maxBuiltNodeExceededError',
-                                messageValues: { limit: limit },
-                            });
-                        } else {
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'NodeBuildingError',
-                            });
-                        }
-                    })
+                    .catch((error) => snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' }))
                     .finally(() => {
                         setIsLoading(false);
                     });
             } else {
                 unbuildNode(studyUuid, nodeUuid, currentRootNetworkUuid)
                     .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'NodeUnbuildingError',
-                        });
+                        snackWithFallback(snackError, error, { headerId: 'NodeUnbuildingError' });
                     })
                     .finally(() => {
                         setIsLoading(false);
                     });
             }
         },
-        [studyUuid, currentRootNetworkUuid, nodeUuid, buildStatus, isLoading, snackError]
+        [onClick, studyUuid, currentRootNetworkUuid, isLoading, buildStatus, nodeUuid, snackError]
     );
 
     const getIcon = () => {

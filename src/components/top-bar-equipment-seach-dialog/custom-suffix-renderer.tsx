@@ -10,26 +10,25 @@ import { equipmentStyles, TagRenderer, TagRendererProps } from '@gridsuite/commo
 import { IconButton } from '@mui/material';
 import { GpsFixed as GpsFixedIcon, Timeline as TimelineIcon } from '@mui/icons-material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
-import { centerOnSubstation, openDiagram } from '../../redux/actions';
+import { centerOnSubstation } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
-import { DiagramType } from '../grid-layout/cards/diagrams/diagram.type';
+import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
     disablCenterSubstation: boolean;
-    onOpenNetworkAreaDiagram?: (elementId?: string) => void;
 }
 
 export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> = ({
     element,
     onClose,
     disablCenterSubstation,
-    onOpenNetworkAreaDiagram,
     ...tagRendererProps
 }) => {
     const dispatch = useDispatch<AppDispatch>();
+    const { openNAD } = useWorkspacePanelActions();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -63,12 +62,11 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
 
     const openNetworkAreaDiagramCB = useCallback(
         (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
-            dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
-            onClose?.();
             e.stopPropagation();
-            onOpenNetworkAreaDiagram?.(element.id);
+            onClose?.();
+            openNAD({ title: element.id, initialVoltageLevelIds: [element.id] });
         },
-        [dispatch, element.id, onClose, onOpenNetworkAreaDiagram]
+        [openNAD, element.id, onClose]
     );
 
     if (

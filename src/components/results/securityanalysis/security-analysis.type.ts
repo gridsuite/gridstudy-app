@@ -8,14 +8,17 @@
 import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { Page } from '../common/utils';
+import { RESULT_TYPE } from './security-analysis-result-utils';
 
 export interface LimitViolation {
     subjectId?: string;
     acceptableDuration?: number;
+    upcomingAcceptableDuration?: number;
     limit?: number;
     patlLimit?: number;
     limitName?: string;
@@ -49,6 +52,7 @@ export interface SecurityAnalysisNmkTableRow {
     subjectId?: string;
     locationId?: string;
     acceptableDuration?: number | null;
+    upcomingAcceptableDuration?: number | null;
     status?: string;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
@@ -86,51 +90,33 @@ export interface PreContingencyResult {
     limitViolation?: LimitViolation;
 }
 
-export type QueryParamsType = Record<string, string | number | SortConfig[] | FilterConfig[] | GlobalFilters>;
-
-type Sort = {
-    empty?: boolean;
-    sorted?: boolean;
-    unsorted?: boolean;
-};
-
-type Pageable = {
-    offset?: number;
-    pageNumber?: number;
-    pageSize?: number;
-    paged?: boolean;
-    sort?: Sort;
-    unpaged?: boolean;
+export type SecurityAnalysisQueryParams = {
+    resultType: RESULT_TYPE;
+    globalFilters?: GlobalFilters;
+    filters?: FilterConfig[];
+    sort?: SortConfig[];
+    page?: number;
+    size?: number;
 };
 
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
-export interface SecurityAnalysisNmkResult {
-    content?: ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null;
-    empty?: boolean;
-    first?: boolean;
-    last?: boolean;
-    number?: number;
-    numberOfElements?: number;
-    pageable?: Pageable;
-    size?: number;
-    sort?: Sort;
-    totalElements?: number;
-    totalPages?: number;
-}
+export type SecurityAnalysisNmkResult = Page<
+    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null
+>;
 
 // Components props interfaces
 export interface SecurityAnalysisTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    openVoltageLevelDiagram: (id: string) => void;
 }
 
 export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
     columnDefs: ColDef<any>[];
+    computationSubType: string;
 }
 
 export interface SecurityAnalysisResultNmkProps {
@@ -139,19 +125,29 @@ export interface SecurityAnalysisResultNmkProps {
     isLoadingResult: boolean;
     isFromContingency: boolean;
     paginationProps: TablePaginationProps;
+    computationSubType: string;
 }
 
 export interface SecurityAnalysisNTableRow {
-    limit?: number;
-    limitType?: string;
-    loading?: number;
     subjectId?: string;
+    locationId?: string;
+    limit?: number;
+    limitName?: string | null;
+    limitType?: string;
+    nextLimitName?: string | null;
     value?: number;
+    loading?: number;
+    patlLoading?: number;
+    patlLimit?: number;
+    acceptableDuration?: number | null;
+    upcomingAcceptableDuration?: number | null;
+    side?: string;
 }
 
 export interface SecurityAnalysisResultProps {
-    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[];
+    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[] | undefined;
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
+    computationSubType: string;
 }

@@ -10,23 +10,25 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
     AutocompleteInput,
+    BooleanNullableCellRenderer,
     CustomAGGrid,
+    DefaultCellRenderer,
     ErrorInput,
     FieldErrorAlert,
     IntegerInput,
     LANG_FRENCH,
+    type MuiStyles,
 } from '@gridsuite/commons-ui';
 import {
     AMOUNT_TEMPORARY_LIMITS,
-    EQUIPMENT_ID,
     CSV_FILENAME,
+    EQUIPMENT_ID,
     MODIFICATIONS_TABLE,
     TYPE,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
@@ -34,7 +36,7 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { isFieldTypeOk, setFieldTypeError, transformIfFrenchNumber, TabularField } from '../tabular/tabular-common';
+import { isFieldTypeOk, setFieldTypeError, TabularField, transformIfFrenchNumber } from '../tabular/tabular-common';
 import {
     LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
@@ -44,7 +46,7 @@ import { BOOLEAN } from '../../../network/constants';
 
 const styles = {
     grid: { height: 500, width: '100%' },
-};
+} as const satisfies MuiStyles;
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;

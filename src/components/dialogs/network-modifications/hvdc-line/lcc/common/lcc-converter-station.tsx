@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, PercentageAdornment, TextInput } from '@gridsuite/commons-ui';
 import {
     CONNECTIVITY,
     CONVERTER_STATION_ID,
@@ -13,8 +13,7 @@ import {
     LOSS_FACTOR,
     POWER_FACTOR,
 } from '../../../../../utils/field-constants';
-import { percentageTextField } from '../../../../dialog-utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
@@ -120,7 +119,7 @@ export default function LccConverterStation({
                     <FloatInput
                         name={`${id}.${LOSS_FACTOR}`}
                         label={'lossFactorLabel'}
-                        adornment={percentageTextField}
+                        adornment={PercentageAdornment}
                         previousValue={previousValues?.lossFactor}
                         clearable={isModification}
                     />

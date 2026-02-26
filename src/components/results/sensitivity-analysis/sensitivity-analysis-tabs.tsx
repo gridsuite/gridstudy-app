@@ -8,7 +8,6 @@
 import { FormattedMessage } from 'react-intl/lib';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import {
     COMPUTATION_RESULTS_LOGS,
@@ -17,25 +16,31 @@ import {
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
+import { PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 
 export type SensitivityAnalysisTabsProps = {
     sensiTab: SensiTab;
     setSensiTab: (sensiTab: SensiTab) => void;
 };
 function SensitivityAnalysisTabs({ sensiTab, setSensiTab }: Readonly<SensitivityAnalysisTabsProps>) {
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const sensiTabs = [
         SENSITIVITY_IN_DELTA_MW,
         SENSITIVITY_IN_DELTA_A,
-        ...((enableDeveloperMode && ([SENSITIVITY_AT_NODE] as const satisfies Partial<SensiTab>[])) || []),
+        ...((isDeveloperMode && ([SENSITIVITY_AT_NODE] as const satisfies Partial<SensiTab>[])) || []),
         COMPUTATION_RESULTS_LOGS,
     ] as const satisfies Partial<SensiTab>[];
 
     return (
         <Tabs value={sensiTab} onChange={(_, newSensiTab) => setSensiTab(newSensiTab)}>
             {sensiTabs.map((sensiTab) => (
-                <Tab label={<FormattedMessage id={sensiTab} />} value={sensiTab} key={sensiTab} />
+                <Tab
+                    label={<FormattedMessage id={sensiTab} />}
+                    value={sensiTab}
+                    key={sensiTab}
+                    data-testid={`SensitivityAnalysis${sensiTab}Tab`}
+                />
             ))}
         </Tabs>
     );

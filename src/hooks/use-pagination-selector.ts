@@ -10,19 +10,23 @@ import {
     PaginationConfig,
     PaginationTab,
     PaginationType,
+    PccminTab,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
 } from '../types/custom-aggrid-types';
 import {
+    resetPccminAnalysisPagination,
     resetSecurityAnalysisPagination,
     resetSensitivityAnalysisPagination,
     resetShortcircuitAnalysisPagination,
+    setPccminAnalysisResultPagination,
     setSecurityAnalysisResultPagination,
     setSensitivityAnalysisResultPagination,
     setShortcircuitAnalysisResultPagination,
 } from '../redux/actions';
 import {
+    PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
@@ -44,23 +48,30 @@ function createPaginationSelector(paginationType: PaginationType, paginationTab:
                 const paginationState = state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD];
                 return paginationState[paginationTab as ShortcircuitAnalysisTab] || DEFAULT_PAGINATION;
             }
+            case PaginationType.PccMin: {
+                const paginationState = state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD];
+                return paginationState[paginationTab as PccminTab] || DEFAULT_PAGINATION;
+            }
             default:
                 return DEFAULT_PAGINATION;
         }
     };
 }
 
-function createPaginationDispatcher(paginationType: PaginationType, paginationTab: PaginationTab) {
+function createPaginationDispatcher(
+    paginationType: PaginationType,
+    paginationTab: PaginationTab,
+    paginationConfig: PaginationConfig
+) {
     switch (paginationType) {
         case PaginationType.SecurityAnalysis:
-            return (pagination: PaginationConfig) =>
-                setSecurityAnalysisResultPagination(paginationTab as SecurityAnalysisTab, pagination);
+            return setSecurityAnalysisResultPagination(paginationTab as SecurityAnalysisTab, paginationConfig);
         case PaginationType.SensitivityAnalysis:
-            return (pagination: PaginationConfig) =>
-                setSensitivityAnalysisResultPagination(paginationTab as SensitivityAnalysisTab, pagination);
+            return setSensitivityAnalysisResultPagination(paginationTab as SensitivityAnalysisTab, paginationConfig);
         case PaginationType.ShortcircuitAnalysis:
-            return (pagination: PaginationConfig) =>
-                setShortcircuitAnalysisResultPagination(paginationTab as ShortcircuitAnalysisTab, pagination);
+            return setShortcircuitAnalysisResultPagination(paginationTab as ShortcircuitAnalysisTab, paginationConfig);
+        case PaginationType.PccMin:
+            return setPccminAnalysisResultPagination(paginationTab as PccminTab, paginationConfig);
         default:
             throw new Error(`Unknown pagination type: ${paginationType}`);
     }
@@ -71,13 +82,12 @@ export const usePaginationSelector = (paginationType: PaginationType, pagination
     const pagination = useSelector(selector);
 
     const dispatch = useDispatch();
-    const actionCreator = createPaginationDispatcher(paginationType, paginationTab);
 
     const dispatchPagination = useCallback(
         (newPagination: PaginationConfig) => {
-            dispatch(actionCreator(newPagination));
+            dispatch(createPaginationDispatcher(paginationType, paginationTab, newPagination));
         },
-        [dispatch, actionCreator]
+        [dispatch, paginationType, paginationTab]
     );
 
     return { pagination, dispatchPagination };
@@ -87,6 +97,7 @@ const PAGINATION_RESET_DISPATCHERS = {
     [PaginationType.SecurityAnalysis]: resetSecurityAnalysisPagination,
     [PaginationType.SensitivityAnalysis]: resetSensitivityAnalysisPagination,
     [PaginationType.ShortcircuitAnalysis]: resetShortcircuitAnalysisPagination,
+    [PaginationType.PccMin]: resetPccminAnalysisPagination,
 } as const;
 
 export const usePaginationReset = (paginationType: PaginationType) => {

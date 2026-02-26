@@ -25,6 +25,7 @@ declare module '@mui/material/styles' {
             overlay: {
                 background: string;
             };
+            highlightColor: string;
         };
         networkModificationPanel: {
             backgroundColor: string;
@@ -95,6 +96,10 @@ declare module '@mui/material/styles' {
         };
         formFiller: {
             background: string;
+        };
+        sld: {
+            backgroundColor: string;
+            border: string;
         };
     }
     export interface Theme extends MuiTheme, Required<ThemeExtension> {}

@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    filledTextField,
+    FloatInput,
+    MVAPowerAdornment,
+    SelectInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_NAME,
@@ -16,16 +23,13 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField, MVAPowerAdornment, OhmAdornment } from '../../../dialog-utils';
 import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constants';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, TextField } from '@mui/material';
-import PropertiesForm from '../../common/properties/properties-form';
+import { PropertiesForm } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
@@ -35,9 +39,10 @@ import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import { useWatch } from 'react-hook-form';
 import { SetPointsForm } from '../../../set-points/set-points-form';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { GeneratorFormInfos } from '../generator-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 
 export interface GeneratorModificationFormProps {
     studyUuid: UUID;
@@ -174,30 +179,6 @@ export default function GeneratorModificationForm({
         />
     );
 
-    const transientReactanceField = (
-        <FloatInput
-            name={TRANSIENT_REACTANCE}
-            label={'TransientReactanceForm'}
-            adornment={OhmAdornment}
-            previousValue={generatorToModify?.generatorShortCircuit?.directTransX ?? undefined}
-            clearable={true}
-        />
-    );
-
-    const transformerReactanceField = (
-        <FloatInput
-            name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactanceForm'}
-            adornment={OhmAdornment}
-            previousValue={
-                !isNaN(Number(generatorToModify?.generatorShortCircuit?.stepUpTransformerX))
-                    ? (generatorToModify?.generatorShortCircuit?.stepUpTransformerX ?? undefined)
-                    : undefined
-            }
-            clearable={true}
-        />
-    );
-
     const plannedActivePowerSetPointField = (
         <FloatInput
             name={PLANNED_ACTIVE_POWER_SET_POINT}
@@ -319,12 +300,9 @@ export default function GeneratorModificationForm({
                 />
             </Grid>
 
-            {/* Short Circuit of start part */}
+            {/* Short Circuit part */}
             <GridSection title="ShortCircuit" />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{transientReactanceField}</GridItem>
-                <GridItem size={4}>{transformerReactanceField}</GridItem>
-            </Grid>
+            <ShortCircuitForm previousValues={generatorToModify?.generatorShortCircuit} />
 
             {/* Cost of start part */}
             <GridSection title="GenerationDispatch" />

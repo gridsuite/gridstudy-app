@@ -5,16 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ListChildComponentProps } from 'react-window';
 import CheckboxItem from './checkbox-item';
+import type { RowComponentProps } from 'react-window';
+import { ReactElement } from 'react';
 
 // VirtualizedListItem component is customized from renderRow in the MUI example
 // https://mui.com/material-ui/react-autocomplete/#virtualization
 
-export const LISTBOX_PADDING = 8; // px
+export type VirtualizedItem = [
+    option: string,
+    selected: boolean,
+    getOptionLabel: (option: string) => string,
+    itemProps?: ReactElement,
+];
 
-const VirtualizedListItem = ({ data, index, style }: ListChildComponentProps) => {
-    const [option, selected, getOptionLabel, itemProps] = data[index];
+const VirtualizedListItem = ({
+    index,
+    itemData,
+    style,
+}: RowComponentProps & {
+    itemData: VirtualizedItem[];
+}) => {
+    const [option, selected, getOptionLabel, itemProps] = itemData[index];
+
+    const { key, ...restItemProps } = itemProps ?? {};
     return (
         <CheckboxItem
             option={option}
@@ -22,9 +36,9 @@ const VirtualizedListItem = ({ data, index, style }: ListChildComponentProps) =>
             getOptionLabel={getOptionLabel}
             style={{
                 ...style,
-                top: Number(style.top) + LISTBOX_PADDING,
             }}
-            {...itemProps}
+            key={itemProps?.key}
+            {...restItemProps}
         />
     );
 };

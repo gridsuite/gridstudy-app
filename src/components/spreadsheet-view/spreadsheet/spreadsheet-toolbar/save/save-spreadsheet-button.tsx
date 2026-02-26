@@ -10,10 +10,17 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
-import { EquipmentType, FILTER_EQUIPMENTS, useCsvExport, useStateBoolean } from '@gridsuite/commons-ui';
-import type { NodeAlias } from '../../../types/node-alias.type';
+import {
+    copyToClipboard,
+    CsvDownloadProps,
+    EquipmentType,
+    FILTER_EQUIPMENTS,
+    useCsvExport,
+    useSnackMessage,
+    useStateBoolean,
+} from '@gridsuite/commons-ui';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
-import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
+import { type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import type { AgGridReact } from 'ag-grid-react';
 import type { ColDef } from 'ag-grid-community';
 import { spreadsheetStyles } from '../../../spreadsheet.style';
@@ -23,6 +30,7 @@ import SaveNamingFilterDialog from './save-naming-filter-dialog';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
+    COPY_CSV = 'COPY_CSV',
     EXPORT_CSV = 'EXPORT_CSV',
     SAVE_FILTER = 'SAVE_FILTER',
 }
@@ -35,12 +43,11 @@ interface SpreadsheetSaveOption {
 }
 
 interface SaveSpreadsheetButtonProps {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     columns: ColDef[];
     disabled: boolean;
     tableDefinition: SpreadsheetTabDefinition;
-    dataSize?: number;
-    nodeAliases: NodeAlias[] | undefined;
+    dataSize: number;
 }
 
 export default function SaveSpreadsheetButton({
@@ -49,16 +56,49 @@ export default function SaveSpreadsheetButton({
     columns,
     disabled,
     dataSize,
-    nodeAliases,
 }: Readonly<SaveSpreadsheetButtonProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const customSaveDialogOpen = useStateBoolean(false);
     const saveFilterDialogOpen = useStateBoolean(false);
-    const { downloadCSVData } = useCsvExport();
     const language = useSelector((state: AppState) => state.computedLanguage);
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget), []);
     const handleClose = useCallback(() => setAnchorEl(null), []);
+
+    const { snackInfo, snackError } = useSnackMessage();
+    const { getData } = useCsvExport();
+
+    const onClipboardCopy = useCallback(() => {
+        snackInfo({ headerId: 'spreadsheet/save/options/csv/clipboard/success' });
+    }, [snackInfo]);
+
+    const onClipboardError = useCallback(() => {
+        snackError({ headerId: 'spreadsheet/save/options/csv/clipboard/error' });
+    }, [snackError]);
+
+    const getCsvProps = useCallback(
+        (csvCase: SpreadsheetSaveOptionId.COPY_CSV | SpreadsheetSaveOptionId.EXPORT_CSV) => {
+            const gridCsvFunction =
+                csvCase === SpreadsheetSaveOptionId.COPY_CSV
+                    ? gridRef.current?.api.getDataAsCsv
+                    : gridRef.current?.api.exportDataAsCsv;
+            if (!gridCsvFunction) {
+                console.error('Csv API is not available.');
+                return;
+            }
+            // No active calculation: 1 pinned row (default empty line); some calculations: > 1 pinned rows
+            const calculationRowNumber = gridRef.current?.api.getGridOption('pinnedBottomRowData')?.length ?? 0;
+            return {
+                // Filter out the rowIndex column and the hidden columns before exporting to CSV
+                columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
+                tableName: tableDefinition.name,
+                language: language,
+                getData: gridCsvFunction,
+                skipPinnedBottom: calculationRowNumber === 1,
+            } as CsvDownloadProps;
+        },
+        [columns, gridRef, language, tableDefinition.name]
+    );
 
     const spreadsheetOptions = useMemo<Record<SpreadsheetSaveOptionId, SpreadsheetSaveOption>>(
         () => ({
@@ -67,22 +107,33 @@ export default function SaveSpreadsheetButton({
                 label: 'spreadsheet/save/options/model',
                 action: customSaveDialogOpen.setTrue,
             },
+            [SpreadsheetSaveOptionId.COPY_CSV]: {
+                id: SpreadsheetSaveOptionId.COPY_CSV,
+                label: 'spreadsheet/save/options/csv/clipboard',
+                // fix sonnar issue : Promise-returning function provided to property where a void return was expected.
+                action: () => {
+                    (async () => {
+                        const csvProps = getCsvProps(SpreadsheetSaveOptionId.COPY_CSV);
+                        if (csvProps) {
+                            csvProps.isCopyCsv = true;
+                            let data = await getData(csvProps);
+                            copyToClipboard(data ?? '', onClipboardCopy, onClipboardError);
+                        }
+                    })();
+                },
+                disabled: dataSize === 0,
+            },
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
-                label: 'spreadsheet/save/options/csv',
+                label: 'spreadsheet/save/options/csv/export',
+                // fix sonnar issue : Promise-returning function provided to property where a void return was expected.
                 action: () => {
-                    const exportDataAsCsv = gridRef.current?.api.exportDataAsCsv;
-                    if (!exportDataAsCsv) {
-                        console.error('Export API is not available.');
-                        return;
-                    }
-                    downloadCSVData({
-                        // Filter out the rowIndex column and the hidden columns before exporting to CSV
-                        columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
-                        tableName: tableDefinition.name,
-                        language: language,
-                        exportDataAsCsv,
-                    });
+                    (async () => {
+                        const csvProps = getCsvProps(SpreadsheetSaveOptionId.EXPORT_CSV);
+                        if (csvProps) {
+                            await getData(csvProps);
+                        }
+                    })();
                 },
                 disabled: dataSize === 0,
             },
@@ -90,24 +141,18 @@ export default function SaveSpreadsheetButton({
                 id: SpreadsheetSaveOptionId.SAVE_FILTER,
                 label: 'spreadsheet/save/options/filter',
                 action: saveFilterDialogOpen.setTrue,
-                disabled:
-                    dataSize === 0 ||
-                    (tableDefinition.type === SpreadsheetEquipmentType.BRANCH
-                        ? !FILTER_EQUIPMENTS[EquipmentType.LINE] ||
-                          !FILTER_EQUIPMENTS[EquipmentType.TWO_WINDINGS_TRANSFORMER]
-                        : !FILTER_EQUIPMENTS[tableDefinition.type as unknown as EquipmentType]),
+                disabled: dataSize === 0 || !FILTER_EQUIPMENTS[tableDefinition.type as unknown as EquipmentType],
             },
         }),
         [
             customSaveDialogOpen.setTrue,
-            saveFilterDialogOpen.setTrue,
             dataSize,
-            columns,
-            downloadCSVData,
-            gridRef,
-            tableDefinition.name,
+            saveFilterDialogOpen.setTrue,
             tableDefinition.type,
-            language,
+            getCsvProps,
+            getData,
+            onClipboardCopy,
+            onClipboardError,
         ]
     );
 
@@ -136,11 +181,7 @@ export default function SaveSpreadsheetButton({
                     </MenuItem>
                 ))}
             </Menu>
-            <SaveSpreadsheetDialog
-                tableDefinition={tableDefinition}
-                open={customSaveDialogOpen}
-                nodeAliases={nodeAliases}
-            />
+            <SaveSpreadsheetDialog tableDefinition={tableDefinition} open={customSaveDialogOpen} />
             <SaveNamingFilterDialog open={saveFilterDialogOpen} gridRef={gridRef} tableDefinition={tableDefinition} />
         </>
     );

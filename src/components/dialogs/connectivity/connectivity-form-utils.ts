@@ -165,7 +165,7 @@ export const getNewVoltageLevelData = (newVoltageLevel: VoltageLevelFormInfos) =
 });
 
 export const getConnectivityData = (
-    { voltageLevelId, busbarSectionId }: { voltageLevelId: string; busbarSectionId: string },
+    { voltageLevelId, busbarSectionId }: { voltageLevelId?: string | null; busbarSectionId?: string | null },
     id = CONNECTIVITY
 ) => {
     return {
@@ -188,7 +188,7 @@ export const getConnectivityFormData = (
     }: {
         voltageLevelId?: string | null;
         busbarSectionId?: string | null;
-        connectionDirection: string | null;
+        connectionDirection?: string | null;
         connectionName?: string | null;
         connectionPosition?: number | null;
         terminalConnected?: boolean | null;

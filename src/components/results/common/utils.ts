@@ -6,6 +6,9 @@
  */
 import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
+import type { MuiStyles } from '@gridsuite/commons-ui';
+import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
+import { GlobalFilter } from './global-filter/global-filter-types';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -31,9 +34,68 @@ export const translateLimitNameFrontToBack = (limitName: string, intl: IntlShape
     }
 };
 
+/**
+ * Global filters types
+ * the order of those enum values is the default order for global filter displays : do not move them around
+ */
 export enum FilterType {
     VOLTAGE_LEVEL = 'voltageLevel',
     COUNTRY = 'country',
-    GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library
     SUBSTATION_PROPERTY = 'substationProperty',
+    SUBSTATION_OR_VL = 'substationOrVoltageLevelFilter', // voltage levels and substation generic filters which uses the filter library
+    GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library (except voltage level and substation filters)
+}
+
+export function isCriteriaFilter(filter: GlobalFilter): boolean {
+    return isCriteriaFilterType(filter.filterType);
+}
+
+export function isCriteriaFilterType(filterType: string | undefined): boolean {
+    return (
+        filterType !== undefined &&
+        (filterType === FilterType.GENERIC_FILTER || filterType === FilterType.SUBSTATION_OR_VL)
+    );
+}
+
+export interface Selector {
+    page: number;
+    size: number;
+    filter: FilterConfig[] | null;
+    sort: SortConfig[];
+}
+
+export const resultsStyles = {
+    sldLink: {
+        color: 'node.background',
+        maxWidth: '100%',
+    },
+} as const satisfies MuiStyles;
+
+export type Pageable = {
+    offset?: number;
+    pageNumber?: number;
+    pageSize?: number;
+    paged?: boolean;
+    sort?: Sort;
+    unpaged?: boolean;
+};
+
+export type Sort = {
+    empty?: boolean;
+    sorted?: boolean;
+    unsorted?: boolean;
+};
+
+export interface Page<ResultType> {
+    content?: ResultType[];
+    pageable?: Pageable;
+    last?: boolean;
+    totalPages?: number;
+    totalElements?: number;
+    first?: boolean;
+    size?: number;
+    number?: number;
+    sort?: Sort;
+    numberOfElements?: number;
+    empty?: boolean;
 }

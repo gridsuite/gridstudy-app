@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Theme } from '@mui/material';
-import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
+import { type MuiStyles } from '@gridsuite/commons-ui';
+import { INVALID_COMPUTATION_OPACITY } from 'utils/colors';
 
 export const styles = {
     divDiagram: {
@@ -24,14 +24,18 @@ export const styles = {
         },
         overflow: 'hidden',
     },
-    divNetworkAreaDiagram: (theme: Theme) => ({
+    divNetworkAreaDiagram: (theme) => ({
         height: '100%',
         '& .nad-label-box': {
             color: theme.palette.text.primary,
             fontFamily: theme.typography.fontFamily,
         },
+        '& .nad-pst-arrow': {
+            stroke: theme.palette.text.primary,
+            strokeWidth: 3,
+        },
     }),
-    divSingleLineDiagram: (theme: Theme) => ({
+    divSingleLineDiagram: (theme) => ({
         '& polyline': {
             pointerEvents: 'none',
         },
@@ -50,12 +54,58 @@ export const styles = {
         '& .arrow': {
             fill: theme.palette.text.primary,
         },
+        '& .sld-pst-arrow': {
+            stroke: theme.palette.text.primary,
+        },
+        '.legend-root': {
+            display: 'inline-flex',
+            gap: '8px',
+            padding: '8px',
+            margin: '4px',
+            boxShadow: theme.shadows[2],
+            borderRadius: '2px',
+            backgroundColor: theme.sld.backgroundColor,
+        },
+        '& .legend-table td': {
+            padding: '2px 16px',
+        },
+        '& .legend-block': {
+            minWidth: '100px',
+        },
+        '& .legend-table': {
+            width: '100%',
+            borderCollapse: 'collapse',
+        },
+        '& .legend-title': {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '600',
+            fontSize: '14px',
+            margin: '0 16px 4px 16px',
+        },
+        '& .bus-circle': {
+            width: '18px',
+            height: '18px',
+            borderRadius: '50%',
+            display: 'inline-block',
+        },
+        '& .bus-circle:hover': {
+            transform: 'scale(1.2)',
+        },
+        '& .legend-table tr': {
+            borderBlock: theme.sld.border,
+        },
+        '& .vl-title-icon': {
+            fontSize: '20px',
+            lineHeight: '18px',
+        },
     }),
-    divSingleLineDiagramHideLockAndBolt: (_theme: Theme) => ({
+    divSingleLineDiagramHideLockAndBolt: {
         '& .sld-flash, .sld-lock': {
             display: 'none',
         },
-    }),
+    },
     divDiagramReadOnly: {
         '& .sld-in .sld-label': {
             display: 'none',
@@ -73,13 +123,10 @@ export const styles = {
             pointerEvents: 'none',
         },
     },
-    divDiagramInvalid: {
-        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-voltage polygon, & .sld-angle polygon': {
-            opacity: INVALID_LOADFLOW_OPACITY,
-        },
-        '& .sld-active-power text, & .sld-reactive-power text, & .sld-voltage text, & .sld-angle text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info':
+    divDiagramLoadflowInvalid: {
+        '& .sld-active-power, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum, & .sld-balance':
             {
-                fill: '#787F81',
+                opacity: INVALID_COMPUTATION_OPACITY,
             },
         '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
             animation: 'none !important',
@@ -95,14 +142,28 @@ export const styles = {
                 animation: 'none !important',
             },
     },
+    divDiagramShortCircuitInvalid: {
+        '& .sld-icc': {
+            opacity: INVALID_COMPUTATION_OPACITY,
+        },
+    },
     hideLabels: {
         '& .nad-text-nodes': {
             display: 'none',
         },
+        '& .nad-busnode-highlight': {
+            filter: 'unset !important',
+            transform: 'unset !important',
+        },
     },
-    paperBorders: (theme: Theme) => ({
+    nadEditModeCursors: {
+        '& .nad-label-box, & .nad-vl-nodes .nad-busnode': {
+            cursor: 'grab',
+        },
+    },
+    paperBorders: (theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
         borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
         borderRight: '1px solid ' + theme.palette.action.hover,
     }),
-};
+} as const satisfies MuiStyles;

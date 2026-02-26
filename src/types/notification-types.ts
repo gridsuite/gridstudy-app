@@ -6,7 +6,7 @@
  */
 import type { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
 import type { ComputingType } from '@gridsuite/commons-ui';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export enum NotificationType {
     // Study status
@@ -36,6 +36,7 @@ export enum NotificationType {
     SUBTREE_MOVED = 'subtreeMoved',
     SUBTREE_CREATED = 'subtreeCreated',
     NODES_COLUMN_POSITION_CHANGED = 'nodesColumnPositionsChanged',
+    NETWORK_EXPORT_FINISHED = 'networkExportFinished',
     // Modifications
     MODIFICATIONS_CREATION_IN_PROGRESS = 'creatingInProgress',
     MODIFICATIONS_UPDATING_IN_PROGRESS = 'updatingInProgress',
@@ -60,9 +61,6 @@ export enum NotificationType {
     SENSITIVITY_ANALYSIS_RESULT = 'sensitivityAnalysisResult',
     SENSITIVITY_ANALYSIS_FAILED = 'sensitivityAnalysis_failed',
     SENSITIVITY_ANALYSIS_STATUS = 'sensitivityAnalysis_status',
-    NON_EVACUATED_ENERGY_ANALYSIS_RESULT = 'nonEvacuatedEnergyResult',
-    NON_EVACUATED_ENERGY_ANALYSIS_FAILED = 'nonEvacuatedEnergy_failed',
-    NON_EVACUATED_ENERGY_ANALYSIS_STATUS = 'nonEvacuatedEnergy_status',
     SHORTCIRCUIT_ANALYSIS_RESULT = 'shortCircuitAnalysisResult',
     SHORTCIRCUIT_ANALYSIS_FAILED = 'shortCircuitAnalysis_failed',
     SHORTCIRCUIT_ANALYSIS_STATUS = 'shortCircuitAnalysis_status',
@@ -75,6 +73,9 @@ export enum NotificationType {
     DYNAMIC_SECURITY_ANALYSIS_RESULT = 'dynamicSecurityAnalysisResult',
     DYNAMIC_SECURITY_ANALYSIS_FAILED = 'dynamicSecurityAnalysis_failed',
     DYNAMIC_SECURITY_ANALYSIS_STATUS = 'dynamicSecurityAnalysis_status',
+    DYNAMIC_MARGIN_CALCULATION_RESULT = 'dynamicMarginCalculationResult',
+    DYNAMIC_MARGIN_CALCULATION_FAILED = 'dynamicMarginCalculation_failed',
+    DYNAMIC_MARGIN_CALCULATION_STATUS = 'dynamicMarginCalculation_status',
     VOLTAGE_INIT_RESULT = 'voltageInitResult',
     VOLTAGE_INIT_FAILED = 'voltageInit_failed',
     VOLTAGE_INIT_CANCEL_FAILED = 'voltageInit_cancel_failed',
@@ -82,12 +83,21 @@ export enum NotificationType {
     STATE_ESTIMATION_RESULT = 'stateEstimationResult',
     STATE_ESTIMATION_FAILED = 'stateEstimation_failed',
     STATE_ESTIMATION_STATUS = 'stateEstimation_status',
+    PCC_MIN_RESULT = 'pccMinResult',
+    PCC_MIN_FAILED = 'pccMin_failed',
+    PCC_MIN_STATUS = 'pccMin_status',
 
     // spreadsheets
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
     SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
     SPREADSHEET_PARAMETERS_UPDATED = 'spreadsheetParametersUpdated',
+
+    // workspaces
+    WORKSPACE_RENAMED = 'workspaceRenamed',
+    WORKSPACE_PANELS_UPDATED = 'workspacePanelsUpdated',
+    WORKSPACE_PANELS_DELETED = 'workspacePanelsDeleted',
+    WORKSPACE_NAD_CONFIG_UPDATED = 'workspaceNadConfigUpdated',
 }
 
 export const PENDING_MODIFICATION_NOTIFICATION_TYPES = [
@@ -129,7 +139,7 @@ export const MODIFYING_NODE_NOTIFICATION_TYPES = [
     NotificationType.NODE_BUILD_FAILED,
 ] as NotificationType[];
 
-export const COMPUTATION_NOTIFIACTION_TYPES = [
+export const COMPUTATION_NOTIFICATION_TYPES = [
     NotificationType.LOADFLOW_RESULT,
     NotificationType.LOADFLOW_FAILED,
     NotificationType.LOADFLOW_STATUS,
@@ -139,9 +149,6 @@ export const COMPUTATION_NOTIFIACTION_TYPES = [
     NotificationType.SENSITIVITY_ANALYSIS_RESULT,
     NotificationType.SENSITIVITY_ANALYSIS_FAILED,
     NotificationType.SENSITIVITY_ANALYSIS_STATUS,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_STATUS,
     NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT,
     NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED,
     NotificationType.SHORTCIRCUIT_ANALYSIS_STATUS,
@@ -161,6 +168,9 @@ export const COMPUTATION_NOTIFIACTION_TYPES = [
     NotificationType.STATE_ESTIMATION_RESULT,
     NotificationType.STATE_ESTIMATION_FAILED,
     NotificationType.STATE_ESTIMATION_STATUS,
+    NotificationType.PCC_MIN_RESULT,
+    NotificationType.PCC_MIN_FAILED,
+    NotificationType.PCC_MIN_STATUS,
 ] as NotificationType[];
 
 export enum RootNetworkIndexationStatus {
@@ -316,6 +326,29 @@ interface SpreadsheetParametersUpdatedDataHeaders extends CommonStudyEventDataHe
     updateType: NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
 }
 
+interface WorkspaceRenamedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_RENAMED;
+}
+
+interface WorkspacePanelsUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_PANELS_UPDATED;
+    workspaceUuid: UUID;
+    clientId?: UUID;
+}
+
+interface WorkspacePanelsDeletedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_PANELS_DELETED;
+    workspaceUuid: UUID;
+    clientId?: UUID;
+}
+
+interface WorkspaceNadConfigUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_NAD_CONFIG_UPDATED;
+    workspaceUuid: UUID;
+    panelId: UUID;
+    clientId?: UUID;
+}
+
 interface ModificationsCreationInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
     updateType: NotificationType.MODIFICATIONS_CREATION_IN_PROGRESS;
 }
@@ -425,18 +458,6 @@ interface SensitivityAnalysisStatusEventDataHeaders extends ComputationStatusEve
     updateType: NotificationType.SENSITIVITY_ANALYSIS_STATUS;
 }
 
-interface NonEvacuatedEnergyAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
-    updateType: NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT;
-}
-
-interface NonEvacuatedEnergyAnalysisFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED;
-}
-
-interface NonEvacuatedEnergyAnalysisStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_STATUS;
-}
-
 interface ShortCircuitAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
     updateType: NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT;
 }
@@ -511,6 +532,24 @@ interface StateEstimationFailedEventDataHeaders extends ComputationFailedEventDa
 
 interface StateEstimationStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
     updateType: NotificationType.STATE_ESTIMATION_STATUS;
+}
+interface PccMinStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
+    updateType: NotificationType.PCC_MIN_STATUS;
+}
+interface PccMinResultEventDataHeaders extends ComputationResultEventDataHeaders {
+    updateType: NotificationType.PCC_MIN_RESULT;
+}
+
+interface PccMinFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
+    updateType: NotificationType.PCC_MIN_FAILED;
+}
+interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NETWORK_EXPORT_FINISHED;
+    userId: string;
+    exportUuid: UUID;
+    exportToGridExplore?: boolean;
+    fileName: string;
+    error: string | null;
 }
 
 // Payloads
@@ -743,21 +782,6 @@ export interface SensitivityAnalysisStatusEventData {
     payload: undefined;
 }
 
-export interface NonEvacuatedEnergyAnalysisResultEventData {
-    headers: NonEvacuatedEnergyAnalysisResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface NonEvacuatedEnergyAnalysisFailedEventData {
-    headers: NonEvacuatedEnergyAnalysisFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface NonEvacuatedEnergyAnalysisStatusEventData {
-    headers: NonEvacuatedEnergyAnalysisStatusEventDataHeaders;
-    payload: undefined;
-}
-
 export interface ShortCircuitAnalysisResultEventData {
     headers: ShortCircuitAnalysisResultEventDataHeaders;
     payload: undefined;
@@ -853,6 +877,24 @@ export interface StateEstimationStatusEventData {
     payload: undefined;
 }
 
+export interface PccMinResultEventData {
+    headers: PccMinResultEventDataHeaders;
+    payload: undefined;
+}
+export interface PccMinFailedEventData {
+    headers: PccMinFailedEventDataHeaders;
+    payload: undefined;
+}
+
+export interface PccMinStatusEventData {
+    headers: PccMinStatusEventDataHeaders;
+    payload: undefined;
+}
+export interface ExportNetworkEventData {
+    headers: ExportNetworkEventDataHeaders;
+    payload: undefined;
+}
+
 export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyEventData, 'payload'> {
     headers: SpreadsheetParametersUpdatedDataHeaders;
     /**
@@ -860,6 +902,26 @@ export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyE
      * @see SpreadsheetOptionalLoadingParameters
      */
     payload: string;
+}
+
+export interface WorkspaceRenamedEventData {
+    headers: WorkspaceRenamedEventDataHeaders;
+    payload: string; // workspace ID
+}
+
+export interface WorkspacePanelsUpdatedEventData {
+    headers: WorkspacePanelsUpdatedEventDataHeaders;
+    payload: string; // panel IDs (JSON array)
+}
+
+export interface WorkspacePanelsDeletedEventData {
+    headers: WorkspacePanelsDeletedEventDataHeaders;
+    payload: string; // panel IDs (JSON array)
+}
+
+export interface WorkspaceNadConfigUpdatedEventData {
+    headers: WorkspaceNadConfigUpdatedEventDataHeaders;
+    payload: string; // config UUID
 }
 
 export function isComputationParametersUpdatedNotification(
@@ -881,6 +943,10 @@ export function isLoadflowResultNotification(notif: unknown): notif is LoadflowR
 
 export function isStateEstimationResultNotification(notif: unknown): notif is StateEstimationResultEventData {
     return (notif as StateEstimationResultEventData).headers?.updateType === NotificationType.STATE_ESTIMATION_RESULT;
+}
+
+export function isPccMinResultNotification(notif: unknown): notif is PccMinResultEventData {
+    return (notif as PccMinResultEventData).headers?.updateType === NotificationType.PCC_MIN_RESULT;
 }
 
 export function isRootNetworkDeletionStartedNotification(notif: unknown): notif is RootNetworkDeletionStartedEventData {
@@ -907,6 +973,13 @@ export function isNodeBuildCompletedNotification(notif: unknown): notif is NodeB
 export function isNodeBuildStatusUpdatedNotification(notif: unknown): notif is NodesBuildStatusUpdatedEventData {
     return (
         (notif as NodesBuildStatusUpdatedEventData).headers?.updateType === NotificationType.NODE_BUILD_STATUS_UPDATED
+    );
+}
+
+export function isShortCircuitResultNotification(notif: unknown): notif is ShortCircuitAnalysisResultEventData {
+    return (
+        (notif as ShortCircuitAnalysisResultEventData).headers?.updateType ===
+        NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT
     );
 }
 
@@ -959,6 +1032,10 @@ export function isNodeEditedNotification(notif: unknown): notif is NodeEditedEve
 }
 export function isNodSubTreeCreatedNotification(notif: unknown): notif is SubtreeCreatedEventData {
     return (notif as SubtreeCreatedEventData).headers?.updateType === NotificationType.SUBTREE_CREATED;
+}
+
+export function isExportNetworkNotification(notif: unknown): notif is ExportNetworkEventData {
+    return (notif as ExportNetworkEventData).headers?.updateType === NotificationType.NETWORK_EXPORT_FINISHED;
 }
 
 export function isContainingNodesInformationNotification(notif: unknown): notif is
@@ -1027,9 +1104,6 @@ export type ComputationEventData =
     | SensitivityAnalysisResultEventData
     | SensitivityAnalysisFailedEventData
     | SensitivityAnalysisStatusEventData
-    | NonEvacuatedEnergyAnalysisResultEventData
-    | NonEvacuatedEnergyAnalysisFailedEventData
-    | NonEvacuatedEnergyAnalysisStatusEventData
     | ShortCircuitAnalysisResultEventData
     | ShortCircuitAnalysisFailedEventData
     | ShortCircuitAnalysisStatusEventData
@@ -1048,10 +1122,13 @@ export type ComputationEventData =
     | VoltageInitStatusEventData
     | StateEstimationResultEventData
     | StateEstimationFailedEventData
-    | StateEstimationStatusEventData;
+    | StateEstimationStatusEventData
+    | PccMinResultEventData
+    | PccMinFailedEventData
+    | PccMinStatusEventData;
 
 export function isComputationNotification(notif: unknown): notif is ComputationEventData {
-    return COMPUTATION_NOTIFIACTION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
+    return COMPUTATION_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
 }
 
 export function isIndexationStatusNotification(notif: unknown): notif is IndexationStatusEventData {
@@ -1074,6 +1151,33 @@ export function isSpreadsheetParametersUpdatedNotification(
     notif: unknown
 ): notif is SpreadsheetParametersUpdatedEventData {
     return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
+}
+
+export function isWorkspaceRenamedNotification(notif: unknown): notif is WorkspaceRenamedEventData {
+    return (notif as WorkspaceRenamedEventData).headers?.updateType === NotificationType.WORKSPACE_RENAMED;
+}
+
+export function isWorkspacePanelsUpdatedNotification(notif: unknown): notif is WorkspacePanelsUpdatedEventData {
+    return (notif as WorkspacePanelsUpdatedEventData).headers?.updateType === NotificationType.WORKSPACE_PANELS_UPDATED;
+}
+
+export function isWorkspacePanelsDeletedNotification(notif: unknown): notif is WorkspacePanelsDeletedEventData {
+    return (notif as WorkspacePanelsDeletedEventData).headers?.updateType === NotificationType.WORKSPACE_PANELS_DELETED;
+}
+
+export function isWorkspaceNadConfigUpdatedNotification(notif: unknown): notif is WorkspaceNadConfigUpdatedEventData {
+    return (
+        (notif as WorkspaceNadConfigUpdatedEventData).headers?.updateType ===
+        NotificationType.WORKSPACE_NAD_CONFIG_UPDATED
+    );
+}
+
+export function parseEventData<T>(event: MessageEvent | null): T | null {
+    try {
+        return JSON.parse(event?.data);
+    } catch {
+        return null;
+    }
 }
 
 // Notification types
@@ -1118,9 +1222,6 @@ export type StudyUpdateEventData =
     | SensitivityAnalysisResultEventData
     | SensitivityAnalysisFailedEventData
     | SensitivityAnalysisStatusEventData
-    | NonEvacuatedEnergyAnalysisResultEventData
-    | NonEvacuatedEnergyAnalysisFailedEventData
-    | NonEvacuatedEnergyAnalysisStatusEventData
     | ShortCircuitAnalysisResultEventData
     | ShortCircuitAnalysisFailedEventData
     | ShortCircuitAnalysisStatusEventData
@@ -1139,11 +1240,11 @@ export type StudyUpdateEventData =
     | VoltageInitStatusEventData
     | StateEstimationResultEventData
     | StateEstimationFailedEventData
-    | StateEstimationStatusEventData;
-
-export type StudyUpdateNotification = {
-    eventData: StudyUpdateEventData;
-};
+    | StateEstimationStatusEventData
+    | PccMinResultEventData
+    | PccMinFailedEventData
+    | PccMinStatusEventData
+    | ExportNetworkEventData;
 
 /******************* TO REMOVE LATER ****************/
 // Headers

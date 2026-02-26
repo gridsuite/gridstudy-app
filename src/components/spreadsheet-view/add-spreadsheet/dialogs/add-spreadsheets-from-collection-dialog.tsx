@@ -13,6 +13,7 @@ import {
     ElementType,
     PopupConfirmationDialog,
     RadioInput,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -22,7 +23,7 @@ import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
 import { updateStudySpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions } from 'redux/actions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
 import { SpreadsheetCollectionDto } from 'components/spreadsheet-view/types/spreadsheet.type';
@@ -36,17 +37,16 @@ import {
 } from './add-spreadsheet-form';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet-utils';
 import type { DialogComponentProps } from '../types';
+import { useNodeAliases } from '../../hooks/use-node-aliases';
 
 /**
  * Dialog for importing a spreadsheet collection
  */
-export default function AddSpreadsheetsFromCollectionDialog({
-    open,
-    resetNodeAliases,
-}: Readonly<DialogComponentProps>) {
+export default function AddSpreadsheetsFromCollectionDialog({ open }: Readonly<DialogComponentProps>) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const { resetNodeAliases } = useNodeAliases();
 
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
     const [collectionToImport, setCollectionToImport] = useState<SpreadsheetCollectionForm>();
@@ -77,16 +77,21 @@ export default function AddSpreadsheetsFromCollectionDialog({
             const appendMode = formData.spreadsheetCollectionMode === SpreadsheetCollectionImportMode.APPEND;
             updateStudySpreadsheetConfigCollection(studyUuid, collectionId, appendMode)
                 .then((collectionData: SpreadsheetCollectionDto) => {
-                    const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                    const { tablesFilters, tableGlobalFilters, tableDefinitions, tablesSorts } =
                         processSpreadsheetsCollectionData(collectionData);
                     resetNodeAliases(appendMode, collectionData.nodeAliases);
                     dispatch(
-                        initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters)
+                        initTableDefinitions(
+                            collectionData.id,
+                            tableDefinitions,
+                            tablesFilters,
+                            tableGlobalFilters,
+                            tablesSorts
+                        )
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error,
+                    snackWithFallback(snackError, error, {
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_collection',
                     });
                 });
@@ -119,15 +124,11 @@ export default function AddSpreadsheetsFromCollectionDialog({
             options={[
                 {
                     id: SpreadsheetCollectionImportMode.REPLACE,
-                    label: intl.formatMessage({
-                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace',
-                    }),
+                    label: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace',
                 },
                 {
                     id: SpreadsheetCollectionImportMode.APPEND,
-                    label: intl.formatMessage({
-                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append',
-                    }),
+                    label: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append',
                 },
             ]}
         />

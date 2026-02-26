@@ -9,16 +9,14 @@ import { useIntl } from 'react-intl';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
 import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResultsTab } from './results/use-results-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
-import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from '../redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
@@ -26,10 +24,12 @@ import { useSelector } from 'react-redux';
 import { Box, Paper, Tab, Tabs } from '@mui/material';
 import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
 import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
-import { usePrevious, ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, type MuiStyles, PARAM_DEVELOPER_MODE, usePrevious } from '@gridsuite/commons-ui';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { IService } from './result-view-tab.type';
 import { CurrentTreeNode } from './graph/tree-node.type';
+import { PccMinResultTab } from './results/pccmin/pcc-min-result-tab';
+import DynamicMarginCalculationResultTab from './results/dynamic-margin-calculation/dynamic-margin-calculation-result-tab';
 
 const styles = {
     table: {
@@ -43,15 +43,13 @@ const styles = {
         flexDirection: 'column',
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 interface IResultViewTabProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    openVoltageLevelDiagram: (voltageLevelId: string) => void;
     disabled: boolean;
-    view: string;
 }
 
 /**
@@ -59,7 +57,6 @@ interface IResultViewTabProps {
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
  * @param currentRootNetworkUuid : uuid of current root network
- * @param openVoltageLevelDiagram : function
  * @param resultTabIndexRedirection : ResultTabIndexRedirection to specific tab [RootTab, LevelOneTab, ...]
  * @param disabled
  * @returns {JSX.Element}
@@ -69,24 +66,25 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
-    openVoltageLevelDiagram,
     disabled,
-    view,
 }) => {
     const intl = useIntl();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
-    const nonEvacuatedEnergyUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
+    const dynamicMarginCalculationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.DynamicMarginCalculation
+    );
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+    const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
 
     const renderLoadFlowResult = useMemo(() => {
         return (
@@ -107,11 +105,10 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, currentRootNetworkUuid, openVoltageLevelDiagram]);
+    }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
     const renderVoltageInitResult = useMemo(() => {
         return (
@@ -137,18 +134,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
-    const renderNonEvacuatedEnergyResult = useMemo(() => {
-        return (
-            <Paper sx={styles.analysisResult}>
-                <NonEvacuatedEnergyResultTab
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id!}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
-            </Paper>
-        );
-    }, [studyUuid, currentNode, currentRootNetworkUuid]);
-
     const renderShortCircuitAnalysisResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
@@ -156,11 +141,10 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    view={view}
                 />
             </Paper>
         );
-    }, [view, currentNode?.id, studyUuid, currentRootNetworkUuid]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (
@@ -186,6 +170,18 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
+    const renderDynamicMarginCalculationResult = useMemo(() => {
+        return (
+            <Paper sx={styles.analysisResult}>
+                <DynamicMarginCalculationResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
+            </Paper>
+        );
+    }, [studyUuid, currentNode, currentRootNetworkUuid]);
+
     const renderStateEstimationResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
@@ -197,6 +193,18 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             </Paper>
         );
     }, [studyUuid, currentNode, currentRootNetworkUuid]);
+
+    const renderPccMinResult = useMemo(() => {
+        return (
+            <Paper sx={styles.analysisResult}>
+                <PccMinResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
+            </Paper>
+        );
+    }, [currentNode?.id, currentRootNetworkUuid, studyUuid]);
 
     const services: IService[] = useMemo(() => {
         return [
@@ -219,12 +227,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 renderResult: renderSensitivityAnalysisResult,
             },
             {
-                id: 'NonEvacuatedEnergyAnalysis',
-                computingType: [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS],
-                displayed: enableDeveloperMode && nonEvacuatedEnergyUnavailability === OptionalServicesStatus.Up,
-                renderResult: renderNonEvacuatedEnergyResult,
-            },
-            {
                 id: 'ShortCircuitAnalysis',
                 computingType: [ComputingType.SHORT_CIRCUIT, ComputingType.SHORT_CIRCUIT_ONE_BUS],
                 displayed: shortCircuitAvailability === OptionalServicesStatus.Up,
@@ -233,14 +235,20 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'DynamicSimulation',
                 computingType: [ComputingType.DYNAMIC_SIMULATION],
-                displayed: enableDeveloperMode && dynamicSimulationAvailability === OptionalServicesStatus.Up,
+                displayed: isDeveloperMode && dynamicSimulationAvailability === OptionalServicesStatus.Up,
                 renderResult: renderDynamicSimulationResult,
             },
             {
                 id: 'DynamicSecurityAnalysis',
                 computingType: [ComputingType.DYNAMIC_SECURITY_ANALYSIS],
-                displayed: enableDeveloperMode && dynamicSecurityAnalysisAvailability === OptionalServicesStatus.Up,
+                displayed: isDeveloperMode && dynamicSecurityAnalysisAvailability === OptionalServicesStatus.Up,
                 renderResult: renderDynamicSecurityAnalysisResult,
+            },
+            {
+                id: 'DynamicMarginCalculation',
+                computingType: [ComputingType.DYNAMIC_MARGIN_CALCULATION],
+                displayed: isDeveloperMode && dynamicMarginCalculationAvailability === OptionalServicesStatus.Up,
+                renderResult: renderDynamicMarginCalculationResult,
             },
             {
                 id: 'VoltageInit',
@@ -251,29 +259,37 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'StateEstimation',
                 computingType: [ComputingType.STATE_ESTIMATION],
-                displayed: enableDeveloperMode && stateEstimationAvailability === OptionalServicesStatus.Up,
+                displayed: isDeveloperMode && stateEstimationAvailability === OptionalServicesStatus.Up,
                 renderResult: renderStateEstimationResult,
+            },
+            {
+                id: 'PccMin',
+                computingType: [ComputingType.PCC_MIN],
+                displayed: pccMinAvailability === OptionalServicesStatus.Up,
+                renderResult: renderPccMinResult,
             },
         ].filter(({ displayed }: IService) => displayed);
     }, [
-        sensitivityAnalysisUnavailability,
-        nonEvacuatedEnergyUnavailability,
-        securityAnalysisAvailability,
-        dynamicSimulationAvailability,
-        dynamicSecurityAnalysisAvailability,
-        voltageInitAvailability,
-        shortCircuitAvailability,
-        stateEstimationAvailability,
-        enableDeveloperMode,
-        renderDynamicSimulationResult,
-        renderDynamicSecurityAnalysisResult,
-        renderSecurityAnalysisResult,
-        renderSensitivityAnalysisResult,
-        renderNonEvacuatedEnergyResult,
-        renderShortCircuitAnalysisResult,
-        renderVoltageInitResult,
         renderLoadFlowResult,
+        securityAnalysisAvailability,
+        renderSecurityAnalysisResult,
+        sensitivityAnalysisUnavailability,
+        renderSensitivityAnalysisResult,
+        shortCircuitAvailability,
+        renderShortCircuitAnalysisResult,
+        isDeveloperMode,
+        dynamicSimulationAvailability,
+        renderDynamicSimulationResult,
+        dynamicSecurityAnalysisAvailability,
+        renderDynamicSecurityAnalysisResult,
+        dynamicMarginCalculationAvailability,
+        renderDynamicMarginCalculationResult,
+        voltageInitAvailability,
+        renderVoltageInitResult,
+        stateEstimationAvailability,
         renderStateEstimationResult,
+        pccMinAvailability,
+        renderPccMinResult,
     ]);
 
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
@@ -283,7 +299,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
 
-    const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex, view);
+    const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex);
 
     const renderTab = (service: IService) => {
         return (
@@ -293,6 +309,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     id: service.id,
                 })}
                 disabled={disabled}
+                data-testid={service.id + 'ResTab'}
             />
         );
     };
@@ -304,12 +321,12 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     };
 
-    const previousEnableDeveloperMode = usePrevious(enableDeveloperMode);
+    const previousIsDeveloperMode = usePrevious(isDeveloperMode);
     useEffect(() => {
-        if (!enableDeveloperMode && previousEnableDeveloperMode !== enableDeveloperMode) {
+        if (!isDeveloperMode && previousIsDeveloperMode !== isDeveloperMode) {
             setTabIndex(0);
         }
-    }, [enableDeveloperMode, previousEnableDeveloperMode, lastCompletedComputation]);
+    }, [isDeveloperMode, previousIsDeveloperMode, lastCompletedComputation]);
 
     const handleChangeTab = useCallback(
         (event: React.SyntheticEvent, newTabIndex: number) => {
@@ -326,7 +343,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <Tabs value={tabIndex} variant="scrollable" onChange={handleChangeTab} TabIndicatorProps={{}}>
                     {services.map((service) => renderTab(service))}
                 </Tabs>
-                {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
+                {disabled && <AlertCustomMessageNode message={{ descriptor: { id: 'InvalidNode' } }} />}
             </Box>
             {services.map((service, index) => renderTabPanelLazy(service, index))}
         </Paper>

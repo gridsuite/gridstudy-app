@@ -5,17 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, Identifiable, SelectInput } from '@gridsuite/commons-ui';
+import { FloatInput, Identifiable, PercentageAdornment, SelectInput, VoltageAdornment } from '@gridsuite/commons-ui';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { Q_PERCENT, VOLTAGE_REGULATION_TYPE, VOLTAGE_SET_POINT } from 'components/utils/field-constants';
 import { useMemo } from 'react';
-import { percentageTextField, VoltageAdornment } from '../dialog-utils';
 import { RegulatingTerminalForm } from '../regulating-terminal/regulating-terminal-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useWatch } from 'react-hook-form';
 import GridItem from '../commons/grid-item';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 interface VoltageRegulationFormProps {
     studyUuid: UUID;
@@ -111,7 +110,7 @@ export function VoltageRegulationForm({
         <FloatInput
             name={Q_PERCENT}
             label={'QPercentText'}
-            adornment={percentageTextField}
+            adornment={PercentageAdornment}
             previousValue={
                 !Number.isNaN(Number(previousValues?.qPercent)) ? (previousValues?.qPercent ?? undefined) : undefined
             }

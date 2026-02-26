@@ -5,25 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import { ActivePowerAdornment, filledTextField, FloatInput, PropertiesForm, TextInput } from '@gridsuite/commons-ui';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField } from '../../../dialog-utils';
 import { Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
-import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { SetPointsForm } from '../../../set-points/set-points-form';
+import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 
 export interface BatteryCreationFormProps {
     studyUuid: UUID;
@@ -88,9 +87,16 @@ export default function BatteryCreationForm({
 
             {/* Set points part */}
             <SetPointsForm />
+
+            {/* Active power control part */}
             <Grid container spacing={2} paddingTop={2}>
                 <ActivePowerControlForm />
             </Grid>
+
+            {/* Short Circuit part */}
+            <GridSection title="ShortCircuit" />
+            <ShortCircuitForm />
+
             <PropertiesForm networkElementType={'battery'} />
         </>
     );

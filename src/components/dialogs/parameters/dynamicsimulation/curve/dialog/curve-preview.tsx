@@ -7,8 +7,8 @@
 
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Box, Typography, Theme } from '@mui/material';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { Box, Grid, Typography } from '@mui/material';
+import { CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -19,10 +19,10 @@ const styles = {
         width: 'auto',
         height: '100%',
     },
-    h6: (theme: Theme) => ({
+    h6: (theme) => ({
         marginBottom: theme.spacing(2),
     }),
-};
+} as const satisfies MuiStyles;
 
 export interface Curve {
     equipmentType: EQUIPMENT_TYPES;
@@ -36,6 +36,16 @@ export interface CurveHandler {
         removeCurves: () => void;
         getCurves: () => Curve[];
     };
+}
+
+function isCurveAlreadyAdded(curves: Curve[], curve: Curve): boolean {
+    return curves.some((elem) => elem.equipmentId === curve.equipmentId && elem.variableId === curve.variableId);
+}
+
+function isRowSelected(elem: Curve, selectedRows: Curve[]): boolean {
+    return selectedRows.some(
+        (selectedElem) => elem.equipmentId === selectedElem.equipmentId && elem.variableId === selectedElem.variableId
+    );
 }
 
 const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
@@ -88,50 +98,41 @@ const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
         setSelectedRowsLength(selectedRows.length);
     }, []);
 
+    const addCurves = useCallback((curves: Curve[]) => {
+        setRowData((prev) => {
+            const notYetAddedCurves = curves.filter((curve) => !isCurveAlreadyAdded(prev, curve));
+            return [...prev, ...notYetAddedCurves];
+        });
+    }, []);
+
+    const removeCurves = useCallback(() => {
+        if (!gridRef.current) {
+            return;
+        }
+        const selectedRows = gridRef.current.api.getSelectedRows();
+
+        // reset selected rows length
+        setSelectedRowsLength(0);
+
+        setRowData((prev) => {
+            const remainingRows = prev.filter((elem) => !isRowSelected(elem, selectedRows));
+            return remainingRows;
+        });
+    }, []);
+
     // expose some api for the component by using ref
     useImperativeHandle(
         ref,
         () => ({
             api: {
-                addCurves: (curves) => {
-                    setRowData((prev) => {
-                        const notYetAddedCurves = curves.filter(
-                            (curve) =>
-                                !prev.find(
-                                    (elem) =>
-                                        elem.equipmentId === curve.equipmentId && elem.variableId === curve.variableId
-                                )
-                        );
-                        return [...prev, ...notYetAddedCurves];
-                    });
-                },
-                removeCurves: () => {
-                    if (!gridRef.current) {
-                        return;
-                    }
-                    const selectedRows = gridRef.current.api.getSelectedRows();
-
-                    // reset selected rows length
-                    setSelectedRowsLength(0);
-
-                    setRowData((prev) => {
-                        const remainingRows = prev.filter(
-                            (elem) =>
-                                !selectedRows.find(
-                                    (selectedElem) =>
-                                        elem.equipmentId === selectedElem.equipmentId &&
-                                        elem.variableId === selectedElem.variableId
-                                )
-                        );
-                        return remainingRows;
-                    });
-                },
+                addCurves,
+                removeCurves,
                 getCurves: () => {
                     return rowData;
                 },
             },
         }),
-        [rowData]
+        [addCurves, removeCurves, rowData]
     );
 
     return (

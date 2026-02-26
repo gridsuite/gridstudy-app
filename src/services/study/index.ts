@@ -5,16 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
-import { UUID } from 'crypto';
+import { getRequestParamFromList } from '../utils';
+import type { UUID } from 'node:crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { EquipmentType, ExtendedEquipmentType, Parameter, ComputingType } from '@gridsuite/commons-ui';
-import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    ComputingType,
+    EquipmentType,
+    ExtendedEquipmentType,
+    Parameter,
+    safeEncodeURIComponent,
+} from '@gridsuite/commons-ui';
+import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
-
-export function safeEncodeURIComponent(value: string | null | undefined): string {
-    return value != null ? encodeURIComponent(value) : '';
-}
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
@@ -23,7 +28,7 @@ export const getStudyUrl = (studyUuid: UUID | null) =>
 
 export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (
     studyUuid: string | null | undefined,
-    nodeUuid: string | undefined,
+    nodeUuid: string | null | undefined,
     rootNetworkUuid: string | undefined | null
 ) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
@@ -192,16 +197,16 @@ export function searchEquipmentsInfos(
 }
 
 export function fetchContingencyCount(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    contingencyListNames: string[]
+    studyUuid: UUID | null,
+    currentNodeUuid: UUID | null,
+    currentRootNetworkUuid: UUID | null,
+    contingencyListIds: UUID[] | null
 ): Promise<number> {
     console.info(
-        `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
+        `Fetching contingency count for ${contingencyListIds} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
 
-    const contingencyListNamesParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
+    const contingencyListNamesParams = getRequestParamFromList(contingencyListIds ?? [], 'contingencyListIds');
     const urlSearchParams = new URLSearchParams(contingencyListNamesParams);
 
     const url =
@@ -216,8 +221,8 @@ export function fetchContingencyCount(
 export function copyOrMoveModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
-    modificationToCutUuidList: string[],
-    copyInfos: NetworkModificationCopyInfo
+    modificationToCutUuidList: UUID[],
+    copyInfos: NetworkModificationCopyInfos
 ) {
     console.info(copyInfos.copyType + ' modifications');
     const copyOrMoveModificationUrl =
@@ -229,8 +234,14 @@ export function copyOrMoveModifications(
         '?' +
         new URLSearchParams({
             action: copyInfos.copyType,
+            originStudyUuid: copyInfos.originStudyUuid ?? '',
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
+
+    // TODO : conversion to a ModificationsToCopyInfos dto => this will be useful and improved when INSERT_COMPOSITE action will be made available from the front
+    const modifications = modificationToCutUuidList.map((modificationUuid) => {
+        return { uuid: modificationUuid };
+    });
 
     return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
@@ -238,7 +249,7 @@ export function copyOrMoveModifications(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modificationToCutUuidList),
+        body: JSON.stringify(modifications),
     });
 }
 

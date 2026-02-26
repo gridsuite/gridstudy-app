@@ -6,16 +6,13 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
-import { sanitizeString } from '../../../../dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
@@ -60,16 +57,22 @@ import {
     setCurrentReactiveCapabilityCurveTable,
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import {
+    CustomFormProvider,
     emptyProperties,
+    ExtendedEquipmentType,
+    FieldConstants,
     getConcatenatedProperties,
     getPropertiesFromModification,
     modificationPropertiesSchema,
+    sanitizeString,
+    snackWithFallback,
     toModificationProperties,
-} from '../../../common/properties/property-utils';
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const formSchema = yup
     .object()
@@ -85,9 +88,9 @@ const formSchema = yup
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1, true),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2, true),
+    [HVDC_LINE_TAB]: getVscHvdcLinePaneEmptyFormData(true),
+    [CONVERTER_STATION_1]: getVscConverterStationEmptyFormData(true),
+    [CONVERTER_STATION_2]: getVscConverterStationEmptyFormData(true),
     ...emptyProperties,
 };
 
@@ -112,7 +115,7 @@ const VscModificationDialog: React.FC<any> = ({
     const [equipmentId, setEquipmentId] = useState<string | null>(defaultIdValue ?? null);
     const [vscToModify, setVscToModify] = useState<VscModificationInfo | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -216,10 +219,15 @@ const VscModificationDialog: React.FC<any> = ({
                                     reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable2,
                                 },
                             });
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
+                                }),
+                                {
+                                    keepDirty: true,
+                                }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -227,7 +235,6 @@ const VscModificationDialog: React.FC<any> = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setVscToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             }
@@ -282,10 +289,7 @@ const VscModificationDialog: React.FC<any> = ({
             isUpdate: !!editData,
             modificationUuid: editData?.uuid ?? null,
         }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'VscModificationError',
-            });
+            snackWithFallback(snackError, error, { headerId: 'VscModificationError' });
         });
     };
 
