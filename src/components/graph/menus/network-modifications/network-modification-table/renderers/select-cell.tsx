@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, RefObject, useCallback } from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 import { Checkbox } from '@mui/material';
 import { Row, Table } from '@tanstack/react-table';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { RangeSelectionTableMeta } from '../network-modifications-table';
 
 interface SelectCellRendererProps {
     row: Row<NetworkModificationMetadata>;
@@ -75,8 +76,3 @@ const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) 
 };
 
 export default SelectCell;
-
-export interface RangeSelectionTableMeta {
-    lastClickedIndex: RefObject<number | null>;
-    onRowSelected?: (selectedRows: NetworkModificationMetadata[]) => void;
-}
