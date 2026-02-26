@@ -27,6 +27,7 @@ export interface GlobalFilters {
 
 // complete individual global filter
 export interface GlobalFilter {
+    id: string;
     label: string;
     filterType: string;
     filterSubtype?: string; // when filterType needs more precise subcategories
