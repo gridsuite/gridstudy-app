@@ -15,6 +15,9 @@ export const darkThemeCssVars = {
     '.nad-reactive': {
         fill: 'white',
     },
+    '.nad-permanent-limit-percentage': {
+        fill: 'white',
+    },
     '.nad-label-box': {
         backgroundColor: '#6c6c6c20',
     },

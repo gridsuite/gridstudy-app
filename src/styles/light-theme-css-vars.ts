@@ -13,6 +13,9 @@ export const lightThemeCssVars = {
         fill: '#212121', // Text color of the values and arrows on lines.
     },
     '.nad-reactive': {
+        fill: 'blue',
+    },
+    '.nad-permanent-limit-percentage': {
         fill: '#212121',
     },
     '.nad-label-box': {

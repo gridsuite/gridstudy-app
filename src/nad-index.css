@@ -36,7 +36,7 @@
     fill: #787F81;
 }
 .nad-reactive {
-    fill: #0277bd;
+    fill: blue;
 }
 .nad-current {
     fill: #bd4802;
@@ -156,25 +156,25 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 }
 
 /* NETWORK AREA DIAGRAM LEVEL OF DETAIL */
-/* default hide */
+/* default hide nad edge infos*/
 .nad-edge-infos .nad-active,
 .nad-edge-infos .nad-reactive,
 .nad-edge-infos .nad-permanent-limit-percentage {
     display:none;
 }
-
-/* zoom 2000 → active + permanent */
-/* Afficher seulement pour les zooms 3500 et 6000 */
+/* zoom 3500 → active + permanent */
 .nad-zoom-3500 .nad-active,
-.nad-zoom-3500 .nad-reactive,
-.nad-zoom-3500 .nad-permanent-limit-percentage,
-.nad-zoom-6000 .nad-active,
-.nad-zoom-6000 .nad-reactive,
-.nad-zoom-6000 .nad-permanent-limit-percentage {
+.nad-zoom-3500 .nad-permanent-limit-percentage {
+    display: inline;
+}
+/* zoom 2000 → active + permanent */
+.nad-zoom-2000 .nad-active,
+.nad-zoom-2000 .nad-permanent-limit-percentage {
     display: inline;
 }
 /* zoom 500 → + reactive */
 .nad-zoom-500 .nad-active,
+.nad-zoom-500 .nad-reactive,
 .nad-zoom-500 .nad-permanent-limit-percentage {
     display:inline;
 }
@@ -290,4 +290,10 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 }
 :is(.nad-zoom-2000) .nad-textnode-highlight {
     transform: scale(1.3);
+}
+
+.nad-edge-infos path.nad-reactive,
+.nad-reactive path {
+    fill: blue !important;
+    stroke: blue !important;
 }
