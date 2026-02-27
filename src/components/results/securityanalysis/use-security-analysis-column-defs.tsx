@@ -7,24 +7,23 @@
 
 import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
+import { RESULT_TYPE, SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button } from '@mui/material';
 import {
-    RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { resultsStyles } from '../common/utils';
-import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from '../../workspace/types/workspace.types';
+import { FilterEnumsType } from '../../../types/custom-aggrid-types';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;

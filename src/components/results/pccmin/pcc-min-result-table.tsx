@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, Button, LinearProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, OverflowableText } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';

@@ -11,7 +11,7 @@ import { IconButton } from '@mui/material';
 import { GpsFixed as GpsFixedIcon, Timeline as TimelineIcon } from '@mui/icons-material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { centerOnSubstation } from '../../redux/actions';
-import { AppState } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer.type';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
 import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';

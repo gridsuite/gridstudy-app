@@ -13,7 +13,7 @@ import {
     useNotificationsListener,
     UseParametersBackendReturnProps,
 } from '@gridsuite/commons-ui';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import {

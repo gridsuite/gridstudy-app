@@ -9,7 +9,7 @@ import { Badge, Grid, IconButton } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
-import { FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
+import { FILTER_TEXT_COMPARATORS } from '../../../types/custom-aggrid-types';
 
 const styles = {
     iconSize: { fontSize: '1rem' },

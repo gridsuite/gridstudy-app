@@ -5,31 +5,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useLayoutEffect, useRef, useCallback, useState, useEffect, memo } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RunningStatus from 'components/utils/running-status';
 import {
     buildPositionsFromNadMetadata,
-    MIN_HEIGHT,
-    MIN_WIDTH,
+    equipmentsWithContextualMenu,
+    equipmentsWithPopover,
+    getEquipmentTypeFromFeederType,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
+    MIN_HEIGHT,
+    MIN_WIDTH,
     NAD_ZOOM_LEVELS,
-    getEquipmentTypeFromFeederType,
-    equipmentsWithPopover,
-    equipmentsWithContextualMenu,
 } from '../diagram-utils';
 import {
-    NetworkAreaDiagramViewer,
     DiagramMetadata,
-    OnToggleNadHoverCallbackType,
-    OnSelectNodeCallbackType,
-    NadViewerParametersOptions,
     EQUIPMENT_TYPES,
+    NadViewerParametersOptions,
+    NetworkAreaDiagramViewer,
+    OnSelectNodeCallbackType,
+    OnToggleNadHoverCallbackType,
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { Point } from '@svgdotjs/svg.js';
 import {
@@ -45,7 +45,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
-import { createDiagramConfig, updateDiagramConfig, type DiagramConfigPosition } from 'services/explore';
+import { createDiagramConfig, type DiagramConfigPosition, updateDiagramConfig } from 'services/explore';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';

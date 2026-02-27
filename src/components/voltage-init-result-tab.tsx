@@ -11,7 +11,7 @@ import RunningStatus from './utils/running-status';
 import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';
 import { useNodeData } from './use-node-data';
 import type { UUID } from 'node:crypto';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 import { VoltageInitResult } from './voltage-init-result';
 import { useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';

@@ -30,9 +30,19 @@ import type {
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
-    TableSortConfig,
-    TableSortKeysType,
-} from './reducer';
+} from './reducer.type';
+import type { TableSortConfig, TableSortKeysType } from '../types/custom-aggrid-types';
+import {
+    FilterConfig,
+    LogsPaginationConfig,
+    PaginationConfig,
+    PccminTab,
+    SecurityAnalysisTab,
+    SensitivityAnalysisTab,
+    ShortcircuitAnalysisTab,
+    SortConfig,
+    TableType,
+} from '../types/custom-aggrid-types';
 import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
@@ -54,17 +64,6 @@ import {
     type SpreadsheetOptionalLoadingParameters,
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
-import {
-    FilterConfig,
-    LogsPaginationConfig,
-    PaginationConfig,
-    PccminTab,
-    SecurityAnalysisTab,
-    SensitivityAnalysisTab,
-    ShortcircuitAnalysisTab,
-    SortConfig,
-    TableType,
-} from '../types/custom-aggrid-types';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';

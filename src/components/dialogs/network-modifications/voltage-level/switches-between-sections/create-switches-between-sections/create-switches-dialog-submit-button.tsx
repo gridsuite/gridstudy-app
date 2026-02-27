@@ -8,7 +8,8 @@
 import { Button } from '@mui/material';
 import { FieldValues, SubmitHandler, useFormContext } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { CreateSwitchesFormData } from '../switches-between-sections';
+
+import { CreateSwitchesFormData } from './create-switches-dialog-utils';
 
 interface CreateSwitchesDialogSubmitButtonProps {
     handleSave: (data: CreateSwitchesFormData) => void | Promise<void>;

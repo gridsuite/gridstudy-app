@@ -29,7 +29,7 @@ import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sor
 import { PaginationType, SensitivityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';

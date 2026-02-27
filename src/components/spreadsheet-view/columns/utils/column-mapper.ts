@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ColumnMenu } from '../column-menu';
-import { COLUMN_TYPES } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { limitedEvaluate, MathJsValidationError } from './math';
 import { ColDef, ValueGetterParams } from 'ag-grid-community';
 import {
@@ -16,12 +15,9 @@ import {
 } from '../common-column-definitions';
 import { isValidationError, validateFormulaResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
-import {
-    type CustomAggridValue,
-    type CustomColDef,
-} from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer, SnackInputs } from '@gridsuite/commons-ui';
+import { COLUMN_TYPES, CustomAggridValue, CustomColDef } from '../../../../types/custom-aggrid-types';
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>

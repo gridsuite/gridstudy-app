@@ -7,7 +7,7 @@
 
 import { ComputingType } from '@gridsuite/commons-ui';
 import { ParameterizedComputingType } from 'redux/actions';
-import { ComputingStatusParameters } from 'redux/reducer';
+import { ComputingStatusParameters } from 'redux/reducer.type';
 
 export const isParameterizedComputingType = (
     computingType: ComputingType

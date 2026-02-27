@@ -18,7 +18,7 @@ import {
 import { useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
     getSpreadsheetFromModelFormSchema,
     initialSpreadsheetFromModelForm,

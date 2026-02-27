@@ -6,7 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import type { AppState } from '../../../../../redux/reducer';
+import type { AppState } from '../../../../../redux/reducer.type';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { useCallback, useEffect, useState } from 'react';
 

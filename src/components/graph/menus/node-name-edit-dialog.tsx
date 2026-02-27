@@ -13,7 +13,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../utils/yup-config';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { isNodeExists } from 'services/study';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';

@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, memo } from 'react';
+import { memo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { NavigationSidebar } from '../common/navigation-sidebar';
 

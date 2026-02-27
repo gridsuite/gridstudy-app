@@ -7,7 +7,7 @@
 
 import { memo } from 'react';
 import { Box, IconButton, Theme } from '@mui/material';
-import { Close, Minimize, PushPin, PushPinOutlined, Fullscreen, FullscreenExit } from '@mui/icons-material';
+import { Close, Fullscreen, FullscreenExit, Minimize, PushPin, PushPinOutlined } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
@@ -16,7 +16,7 @@ import type { UUID } from 'node:crypto';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
-import type { AppState } from '../../../redux/reducer';
+import type { AppState } from '../../../redux/reducer.type';
 import { SldAssociationButton } from './sld-association-button';
 
 const getHeaderStyles = (theme: Theme, isFocused: boolean, maximized: boolean) => {

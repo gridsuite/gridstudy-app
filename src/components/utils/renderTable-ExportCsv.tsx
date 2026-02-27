@@ -12,7 +12,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { Box, LinearProgress } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer.type';
 import { TableType } from '../../types/custom-aggrid-types';
 import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
 

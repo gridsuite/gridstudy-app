@@ -12,7 +12,7 @@ import { Box, useTheme } from '@mui/material';
 import { RowClassParams } from 'ag-grid-community';
 
 import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 

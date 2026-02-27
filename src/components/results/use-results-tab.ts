@@ -8,7 +8,7 @@
 import { ComputingType } from '@gridsuite/commons-ui';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
 import { IService } from '../result-view-tab.type';
 

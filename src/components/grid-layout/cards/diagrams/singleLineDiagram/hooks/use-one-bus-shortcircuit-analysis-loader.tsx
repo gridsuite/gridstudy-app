@@ -8,7 +8,7 @@
 import { ReactElement, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { Chip, darken, lighten } from '@mui/material';
 import { type MuiStyles, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { resetOneBusShortcircuitAnalysisDiagram, setOneBusShortcircuitAnalysisDiagram } from 'redux/actions';

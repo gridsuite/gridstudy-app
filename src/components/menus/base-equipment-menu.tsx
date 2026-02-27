@@ -24,7 +24,7 @@ import {
     type ExtendedEquipmentType,
     type MuiStyles,
 } from '@gridsuite/commons-ui';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 
 const styles = {
     menuItem: {

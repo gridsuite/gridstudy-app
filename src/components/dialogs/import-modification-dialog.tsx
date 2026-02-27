@@ -7,16 +7,16 @@
 
 import { useIntl } from 'react-intl';
 import {
-    ElementType,
-    useSnackMessage,
     DirectoryItemSelector,
-    TreeViewFinderNodeProps,
+    ElementType,
     snackWithFallback,
+    TreeViewFinderNodeProps,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { copyOrMoveModifications } from '../../services/study';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { NetworkModificationCopyType } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 /**

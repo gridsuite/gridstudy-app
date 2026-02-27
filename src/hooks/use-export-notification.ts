@@ -14,7 +14,7 @@ import {
 import { useCallback } from 'react';
 import { useExportDownload } from './use-export-download';
 import { useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 import { isExportNetworkNotification } from '../types/notification-types';
 import { buildExportIdentifier, isExportSubscribed, unsetExportSubscription } from '../utils/export-network-utils';
 import { useIntl } from 'react-intl/lib';

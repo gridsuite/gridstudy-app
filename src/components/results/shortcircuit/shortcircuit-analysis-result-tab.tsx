@@ -17,7 +17,7 @@ import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';

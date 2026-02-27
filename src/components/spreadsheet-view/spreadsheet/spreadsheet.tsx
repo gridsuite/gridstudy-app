@@ -6,7 +6,6 @@
  */
 
 import { memo, useMemo, useRef } from 'react';
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { rowIndexColumnDefinition } from '../columns/common-column-definitions';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
@@ -17,6 +16,7 @@ import { mapColumns } from '../columns/utils/column-mapper';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
 import type { UUID } from 'node:crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomColDef } from '../../../types/custom-aggrid-types';
 
 interface SpreadsheetProps {
     panelId: UUID;

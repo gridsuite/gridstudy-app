@@ -6,7 +6,7 @@
  */
 import { TableType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { GlobalFilter } from './global-filter-types';
 import { useEffect } from 'react';
 import { getComputationResultGlobalFilters } from '../../../../services/study/study-config';

@@ -8,8 +8,13 @@
 import type { UUID } from 'node:crypto';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
-import { FilterConfig, numericFilterParams, TableType, textFilterParams } from 'types/custom-aggrid-types';
-import { ColumnContext } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import {
+    ColumnContext,
+    FilterConfig,
+    numericFilterParams,
+    TableType,
+    textFilterParams,
+} from 'types/custom-aggrid-types';
 import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';

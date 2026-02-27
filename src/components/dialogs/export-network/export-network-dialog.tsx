@@ -23,7 +23,7 @@ import { ExportFormatProperties, getAvailableExportFormats } from '../../../serv
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import { useParameterState } from '../parameters/use-parameters-state';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 
 import {
     DESCRIPTION,

@@ -10,7 +10,7 @@ import { VoltageLevelTooltipBusInfos } from '../equipment-popover-type';
 import { CellRender } from '../cell-render';
 import { formatValue, styles as genericStyles } from '../generic-equipment-popover-utils';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import RunningStatus from 'components/utils/running-status';
 import { CSSProperties } from 'react';
 import { INVALID_COMPUTATION_OPACITY } from 'utils/colors';

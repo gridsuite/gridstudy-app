@@ -30,11 +30,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
-import { FilterConfig, TableType } from '../../types/custom-aggrid-types';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-} from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS, FilterConfig, TableType } from '../../types/custom-aggrid-types';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
 import { reportStyles } from './report.styles';

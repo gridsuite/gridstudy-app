@@ -21,7 +21,7 @@ import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import Overlay from '../common/Overlay';
 import type { UUID } from 'node:crypto';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { DropResult } from '@hello-pangea/dnd';
 
 const styles = {

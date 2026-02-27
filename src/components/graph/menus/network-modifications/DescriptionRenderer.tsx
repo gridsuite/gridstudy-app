@@ -15,7 +15,7 @@ import { useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import IconButton from '@mui/material/IconButton';
 import { setModificationMetadata } from '../../../../services/study/network-modifications';
 

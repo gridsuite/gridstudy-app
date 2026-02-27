@@ -19,7 +19,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { type RefObject, useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { isCalculationRow } from '../../../utils/calculation-utils';

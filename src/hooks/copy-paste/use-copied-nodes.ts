@@ -11,7 +11,7 @@ import { UUID } from 'node:crypto';
 import { useCallback, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNodeSelectionForCopy } from 'redux/actions';
-import { AppState, NodeSelectionForCopy } from 'redux/reducer';
+import { AppState, NodeSelectionForCopy } from 'redux/reducer.type';
 
 export const nodeCopyChannel = new BroadcastChannel('NodeCopyChannel');
 

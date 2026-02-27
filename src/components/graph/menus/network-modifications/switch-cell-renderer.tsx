@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback, SetStateAction } from 'react';
+import React, { SetStateAction, useCallback, useState } from 'react';
 import { Switch, Tooltip } from '@mui/material';
 import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationMetadata } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { ICellRendererParams } from 'ag-grid-community';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 

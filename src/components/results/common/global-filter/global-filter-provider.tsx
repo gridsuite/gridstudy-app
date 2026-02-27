@@ -22,7 +22,7 @@ import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
 import { HttpStatusCode } from '../../../../utils/http-status-code';
 import { TableType } from '../../../../types/custom-aggrid-types';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 
 export default function GlobalFilterProvider({
     children,

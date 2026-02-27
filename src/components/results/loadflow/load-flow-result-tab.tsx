@@ -14,7 +14,7 @@ import { LimitTypes, LoadFlowTabProps, OverloadedEquipment } from './load-flow-r
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import {
@@ -35,14 +35,10 @@ import { StatusCellRender } from '../common/result-cell-renderers';
 import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
-import { TableType } from '../../../types/custom-aggrid-types';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS, TableType } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';

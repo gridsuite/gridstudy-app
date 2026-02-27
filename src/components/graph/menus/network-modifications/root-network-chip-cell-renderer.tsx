@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback, useMemo, SetStateAction } from 'react';
+import { SetStateAction, useCallback, useMemo, useState } from 'react';
 import { ActivableChip, NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { ExcludedNetworkModifications, RootNetworkMetadata } from './network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import type { UUID } from 'node:crypto';
