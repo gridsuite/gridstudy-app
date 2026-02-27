@@ -11,6 +11,7 @@ import {
     FieldConstants,
     FieldType,
     MODIFICATION_TYPES,
+    toModificationOperation,
 } from '@gridsuite/commons-ui';
 import {
     B,
@@ -102,7 +103,6 @@ import {
     VOLTAGE_REGULATION_ON,
     X,
 } from 'components/utils/field-constants';
-import { toModificationOperation } from '../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import {
     APPLICABILITY,

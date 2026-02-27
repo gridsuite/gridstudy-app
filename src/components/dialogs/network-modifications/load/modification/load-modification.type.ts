@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AttributeModification } from 'services/network-modification-types';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import {
     ACTIVE_POWER_SETPOINT,
@@ -25,7 +24,7 @@ import {
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
 import { MeasurementInfo } from '../../common/measurements/measurement.type';
-import { FieldConstants, Property } from '@gridsuite/commons-ui';
+import { AttributeModification, FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type LoadModificationSchemaForm = {
     [EQUIPMENT_NAME]?: string;

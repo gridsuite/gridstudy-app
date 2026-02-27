@@ -29,15 +29,12 @@ import {
     areArrayElementsUnique,
     formatMapInfosToTemporaryLimitsFormSchema,
     formatTemporaryLimitsModificationToFormSchema,
-    toModificationOperation,
 } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import {
-    AttributeModification,
     CurrentLimits,
     OperationalLimitsGroup,
     OperationalLimitsGroupModificationInfos,
-    OperationType,
     TemporaryLimit,
 } from '../../../services/network-modification-types';
 import { CurrentLimitsData } from '../../../services/study/network-map.type';
@@ -45,7 +42,13 @@ import { LineModificationFormSchema } from '../network-modifications/line/modifi
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
 import { TestContext } from 'yup';
 import { APPLICABILITY } from 'components/network/constants';
-import { FieldConstants, sanitizeString } from '@gridsuite/commons-ui';
+import {
+    AttributeModification,
+    FieldConstants,
+    OperationType,
+    sanitizeString,
+    toModificationOperation,
+} from '@gridsuite/commons-ui';
 
 const limitsGroupValidationSchema = () => ({
     [ID]: yup.string().nonNullable().required(),
