@@ -337,9 +337,11 @@ export function SaveSpreadsheetModelDialog({
             onClose={onCancel}
             titleId={titleId}
             onSave={onSubmit}
+            formContext={{
+                ...formMethods,
+                validationSchema: schema,
+            }}
             disabledSave={disableSave}
-            formSchema={schema}
-            formMethods={formMethods}
         >
             <Grid container spacing={2} marginTop="auto" direction="column">
                 <Grid item>

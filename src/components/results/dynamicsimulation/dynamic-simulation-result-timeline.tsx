@@ -19,7 +19,7 @@ import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { AgGridReact } from 'ag-grid-react';
-import { FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { TableType } from '../../../types/custom-aggrid-types';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
 import {
@@ -89,7 +89,7 @@ const DynamicSimulationResultTimeline = memo(
                         filterComponent: CustomAggridComparatorFilter,
                         filterComponentParams: {
                             filterParams: {
-                                type: FilterType.DynamicSimulation,
+                                type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
                                 updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.NUMBER,
@@ -114,7 +114,7 @@ const DynamicSimulationResultTimeline = memo(
                         filterComponent: CustomAggridComparatorFilter,
                         filterComponentParams: {
                             filterParams: {
-                                type: FilterType.DynamicSimulation,
+                                type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
                                 updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
@@ -138,7 +138,7 @@ const DynamicSimulationResultTimeline = memo(
                         filterComponent: CustomAggridComparatorFilter,
                         filterComponentParams: {
                             filterParams: {
-                                type: FilterType.DynamicSimulation,
+                                type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
                                 updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
@@ -166,7 +166,7 @@ const DynamicSimulationResultTimeline = memo(
         );
 
         const rowDataToShow = useMemo(() => (overlayMessage ? [] : timelines), [timelines, overlayMessage]);
-        const onGridReady = useAgGridInitialColumnFilters(AgGridFilterType.DynamicSimulation, TIMELINE);
+        const onGridReady = useAgGridInitialColumnFilters(TableType.DynamicSimulation, TIMELINE);
         return (
             <>
                 {isLoading && (

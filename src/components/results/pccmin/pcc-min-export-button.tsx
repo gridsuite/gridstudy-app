@@ -12,14 +12,15 @@ import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { TableType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN } from './pcc-min-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 
 interface PccMinExportButtonProps {
     studyUuid: UUID;
@@ -36,8 +37,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
-    const { filters } = useFilterSelector(FilterType.PccMin, PCCMIN_RESULT);
-    const { globalFiltersFromState } = useComputationGlobalFilters(AgGridFilterType.PccMin);
+    const { filters } = useFilterSelector(TableType.PccMin, PCCMIN_RESULT);
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
@@ -60,7 +60,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
         const filter = filters ? mapFieldsToColumnsFilter(filters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null;
-        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
+        const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.PccMin));
         exportPccMinResultsAsCsv(
             studyUuid,
             nodeUuid,
@@ -85,17 +85,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [
-        filters,
-        studyUuid,
-        nodeUuid,
-        currentRootNetworkUuid,
-        sortConfig,
-        globalFiltersFromState,
-        csvHeaders,
-        language,
-        snackError,
-    ]);
+    }, [filters, studyUuid, nodeUuid, currentRootNetworkUuid, sortConfig, csvHeaders, language, snackError]);
 
     return (
         <ExportCsvButton
