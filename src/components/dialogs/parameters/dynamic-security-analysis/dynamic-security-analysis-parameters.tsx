@@ -120,8 +120,6 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
 
     const { providers, params: parameters, updateParameters, resetParameters } = dynamicSecurityParametersBackend;
 
-    const provider = parameters?.provider;
-
     const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
 
     const formattedProviders = useMemo(
@@ -197,9 +195,9 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
     );
 
     useEffect(() => {
-        if (parameters && provider) {
+        if (parameters) {
             reset({
-                [PROVIDER]: parameters.provider ?? provider,
+                [PROVIDER]: parameters.provider,
                 [TAB_VALUES.SCENARIO]: {
                     [SCENARIO_DURATION]: parameters.scenarioDuration,
                 },
@@ -209,7 +207,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                 },
             });
         }
-    }, [reset, parameters, provider]);
+    }, [reset, parameters]);
 
     const handleTabChange = useCallback((event: SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabIndex(newValue);

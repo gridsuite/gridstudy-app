@@ -96,8 +96,6 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
 
     const { providers, params: parameters, updateParameters, resetParameters } = dynamicSimulationParametersBackend;
 
-    const provider = parameters?.provider;
-
     const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
 
     const formattedProviders = useMemo(
@@ -194,9 +192,9 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     );
 
     useEffect(() => {
-        if (parameters && provider) {
+        if (parameters) {
             reset({
-                [PROVIDER]: parameters.provider ?? provider,
+                [PROVIDER]: parameters.provider,
                 [TAB_VALUES.TIME_DELAY]: {
                     [TimeDelay.START_TIME]: parameters.startTime,
                     [TimeDelay.STOP_TIME]: parameters.stopTime,
@@ -216,7 +214,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                 },
             });
         }
-    }, [reset, parameters, provider]);
+    }, [reset, parameters]);
 
     const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabIndex(newValue);
