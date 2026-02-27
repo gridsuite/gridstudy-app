@@ -58,6 +58,11 @@ function formatSpecialCases(nodeId: string): string {
         return nodeId.replace(/(operationalLimitsGroup\w*)(\.\w*)/, '$1[]$2');
     }
 
+    // Handle ratioTapChanger and PhaseTapChanger groups with array notation
+    if (wildcardMatch('*TapChanger.stepsByTapPosition*', nodeId)) {
+        return nodeId.replace(/((?:phase|ratio)TapChanger.stepsByTapPosition)(\.\w*)/, '$1[]$2');
+    }
+
     return nodeId;
 }
 
@@ -80,6 +85,8 @@ function formatSpecialTypes(nodeId: string, primaryType: string): string {
         [
             'operationalLimitsGroup1',
             'operationalLimitsGroup2',
+            'ratioTapChanger.stepsByTapPosition',
+            'phaseTapChanger.stepsByTapPosition',
             'operationalLimitsGroup1.temporaryLimitsByName',
             'operationalLimitsGroup2.temporaryLimitsByName',
             'selectedOperationalLimitsGroup1.temporaryLimitsByName',
