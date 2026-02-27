@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useState, useRef, useEffect, useMemo } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { shallowEqual, useSelector } from 'react-redux';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
-import { Box, IconButton, Paper, Typography, useTheme, alpha } from '@mui/material';
+import { alpha, Box, IconButton, Paper, Typography, useTheme } from '@mui/material';
 import { Close, LinkOff, MinimizeOutlined } from '@mui/icons-material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
-import type { AppState } from '../../../../../redux/reducer';
+import type { AppState } from '../../../../../redux/reducer.type';
 import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { VoltageLevelPanelContent } from '../sld/voltage-level-panel-content';

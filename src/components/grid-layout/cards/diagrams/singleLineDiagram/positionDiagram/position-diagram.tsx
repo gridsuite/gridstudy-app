@@ -5,20 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { forwardRef, useEffect, useLayoutEffect, useRef, useState, Ref } from 'react';
+import { forwardRef, Ref, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
-import { MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, NoSvg, MIN_WIDTH } from '../../diagram-utils';
+import { MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, MIN_WIDTH, NoSvg } from '../../diagram-utils';
 
 import { mergeSx, snackWithFallback, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from './diagram-header';
 import { fetchSvg } from '../../../../../../services/study';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { Svg } from '../../diagram.type';
 import { styles } from '../../diagram-styles';
 

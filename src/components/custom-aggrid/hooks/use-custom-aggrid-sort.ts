@@ -6,18 +6,11 @@
  */
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, TableSortKeysType } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { setTableSort } from '../../../redux/actions';
-import { SortConfig, SortWay } from '../../../types/custom-aggrid-types';
+import { SortParams, SortWay } from '../../../types/custom-aggrid-types';
 import { GridApi } from 'ag-grid-community';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-
-export type SortParams = {
-    table: TableSortKeysType;
-    tab: string;
-    isChildren?: boolean;
-    persistSort?: (api: GridApi, sort: SortConfig) => Promise<void>;
-};
 
 export const useCustomAggridSort = (colId: string, sortParams?: SortParams, api?: GridApi) => {
     const sortConfig = useSelector((state: AppState) =>

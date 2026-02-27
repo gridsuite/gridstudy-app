@@ -20,14 +20,14 @@ import {
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import {
+    ComputingType,
     CustomFormProvider,
     isObjectEmpty,
     mergeSx,
+    PopupConfirmationDialog,
     ProviderParam,
     SubmitButton,
     useParametersBackend,
-    ComputingType,
-    PopupConfirmationDialog,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
@@ -38,7 +38,7 @@ import { LabelledButton, TabPanel } from '../parameters';
 import ContingencyParameters, { CONTINGENCIES_LIST_INFOS, CONTINGENCIES_START_TIME } from './contingency-parameters';
 import { ID, NAME, PROVIDER } from '../../../utils/field-constants';
 import { useSelector } from 'react-redux';
-import type { AppState } from '../../../../redux/reducer';
+import type { AppState } from '../../../../redux/reducer.type';
 import { useParametersNotification } from '../use-parameters-notification';
 import { parametersStyles } from '../util/styles';
 import { fetchDynamicSecurityAnalysisProviders } from '../../../../services/dynamic-security-analysis';

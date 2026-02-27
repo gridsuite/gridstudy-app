@@ -10,10 +10,10 @@ import { useDebounce } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { CalculationRowData, generateCalculationRows } from 'components/spreadsheet-view/utils/calculation-utils';
 import type { UUID } from 'node:crypto';
-import { useSelector, shallowEqual } from 'react-redux';
-import { AppState } from 'redux/reducer';
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { shallowEqual, useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer.type';
 import { CalculationRowType } from 'components/spreadsheet-view/types/calculation.type';
+import { CustomColDef } from '../../../../../types/custom-aggrid-types';
 
 // Default calculation button row
 const DEFAULT_ROWS = [{ rowType: CalculationRowType.CALCULATION_BUTTON }];

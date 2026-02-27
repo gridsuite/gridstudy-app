@@ -15,7 +15,7 @@ import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputingType } from '@gridsuite/commons-ui';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import {
     COMPUTATION_RESULTS_LOGS,

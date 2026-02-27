@@ -16,12 +16,12 @@ import {
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
-import { CASE_NAME, CASE_ID, NAME, TAG, DESCRIPTION } from '../../utils/field-constants';
+import { CASE_ID, CASE_NAME, DESCRIPTION, NAME, TAG } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../utils/yup-config';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
 import { RootNetworkCaseSelection } from './root-network-case-selection';

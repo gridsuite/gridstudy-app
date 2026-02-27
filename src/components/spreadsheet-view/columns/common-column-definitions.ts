@@ -10,8 +10,8 @@ import {
     BooleanCellRenderer,
     DefaultCellRenderer,
     NumericCellRenderer,
-    snackWithFallback,
     SnackInputs,
+    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
 import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
@@ -19,14 +19,16 @@ import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { BooleanFilterValue } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { FilterConfig, TableType, SortConfig } from '../../../types/custom-aggrid-types';
-import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
     CustomColDef,
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
+    FilterConfig,
+    SortConfig,
     SPREADSHEET_FILTER_NUMBER_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    TableType,
+} from '../../../types/custom-aggrid-types';
+import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import type { UUID } from 'node:crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
 import { ROW_INDEX_COLUMN_ID } from '../constants';

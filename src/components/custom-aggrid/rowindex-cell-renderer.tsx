@@ -10,7 +10,7 @@ import { useState } from 'react';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCalculationSelections } from '../../redux/actions';
-import { AppState } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer.type';
 import { CustomCellRendererProps } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
 import { type MuiStyles } from '@gridsuite/commons-ui';

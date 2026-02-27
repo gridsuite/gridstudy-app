@@ -9,17 +9,10 @@ import { createReducer, type Draft } from '@reduxjs/toolkit';
 import {
     type AuthenticationActions,
     type AuthenticationRouterErrorAction,
-    type AuthenticationRouterErrorState,
-    BaseVoltage,
-    type CommonStoreState,
     ComputingType,
-    type GsLang,
-    type GsLangUser,
-    type GsTheme,
     type Identifiable,
     LOGOUT_ERROR,
     type LogoutErrorAction,
-    type NetworkVisualizationParameters,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
@@ -236,15 +229,11 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import { PARAM_COMPUTED_LANGUAGE, PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
+import { PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
 import { RunningStatus } from 'components/utils/running-status';
-import {
-    type IOptionalService,
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from '../components/utils/optional-services';
+import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import {
     ALL_BUSES,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
@@ -281,76 +270,43 @@ import {
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import type { UUID } from 'node:crypto';
-import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import type { Entries, ValueOf } from 'type-fest';
+import type { Entries } from 'type-fest';
 import { CopyType } from '../components/network-modification.type';
-import {
-    CurrentTreeNode,
-    NetworkModificationNodeData,
-    NetworkModificationNodeInfos,
-    NetworkModificationNodeType,
-    RootNodeData,
-} from '../components/graph/tree-node.type';
+import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
-import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
-    type SpreadsheetOptionalLoadingParameters,
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
-    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PCCMIN_ANALYSIS_TABS,
-    PccminTab,
     SECURITY_ANALYSIS_TABS,
-    SecurityAnalysisTab,
     SENSITIVITY_ANALYSIS_TABS,
-    SensitivityAnalysisTab,
     SHORTCIRCUIT_ANALYSIS_TABS,
-    ShortcircuitAnalysisTab,
-    SortConfig,
     SortWay,
+    TableSortConfig,
 } from '../types/custom-aggrid-types';
-import {
-    NetworkModificationCopyInfos,
-    RootNetworkMetadata,
-} from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
-import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
-import { ViewBoxLike } from '@svgdotjs/svg.js';
 import { isCriteriaFilter } from '../components/results/common/utils';
 import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
 
-// Redux state
-export type NadViewBox = Record<UUID, ViewBoxLike | null>;
-export enum EquipmentUpdateType {
-    LINES = 'lines',
-    TIE_LINES = 'tieLines',
-    TWO_WINDINGS_TRANSFORMERS = 'twoWindingsTransformers',
-    THREE_WINDINGS_TRANSFORMERS = 'threeWindingsTransformers',
-    GENERATORS = 'generators',
-    LOADS = 'loads',
-    BATTERIES = 'batteries',
-    DANGLING_LINES = 'danglingLines',
-    HVDC_LINES = 'hvdcLines',
-    LCC_CONVERTER_STATIONS = 'lccConverterStations',
-    VSC_CONVERTER_STATIONS = 'vscConverterStations',
-    SHUNT_COMPENSATORS = 'shuntCompensators',
-    STATIC_VAR_COMPENSATORS = 'staticVarCompensators',
-    VOLTAGE_LEVELS = 'voltageLevels',
-    SUBSTATIONS = 'substations',
-    BUSES = 'buses',
-    BUSBAR_SECTIONS = 'busbarSections',
-    BRANCHES = 'branches', // LINE + TWO_WINDINGS_TRANSFORMER
-}
+// Types are defined in reducer.type.ts — import them directly from there
+import {
+    type AppState,
+    type Bus,
+    EquipmentUpdateType,
+    type LogsFilterState,
+    type LogsPaginationState,
+    type SpreadsheetNetworkState,
+    type Substation,
+} from './reducer.type';
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
     switch (updateType) {
@@ -407,170 +363,8 @@ export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
     rowsPerPage: DEFAULT_LOGS_PAGE_COUNT,
 };
 
-export interface OneBusShortCircuitAnalysisDiagram {
-    diagramId: string;
-    studyUuid: UUID;
-    rootNetworkUuid: UUID;
-    nodeId: UUID;
-}
-
-export interface ComputingStatus {
-    [ComputingType.LOAD_FLOW]: RunningStatus;
-    [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
-    [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
-    [ComputingType.SHORT_CIRCUIT]: RunningStatus;
-    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
-    [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
-    [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
-    [ComputingType.DYNAMIC_MARGIN_CALCULATION]: RunningStatus;
-    [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
-    [ComputingType.STATE_ESTIMATION]: RunningStatus;
-    [ComputingType.PCC_MIN]: RunningStatus;
-}
-
-export interface LoadFlowStatusParameters {
-    withRatioTapChangers: boolean;
-}
-
-export interface ComputingStatusParameters {
-    [ComputingType.LOAD_FLOW]: LoadFlowStatusParameters | null;
-}
-
-export type TableSortConfig = Record<string, SortConfig[]>;
-export type TableSort = {
-    [SPREADSHEET_SORT_STORE]: TableSortConfig;
-    [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
-    [SECURITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
-    [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
-    [PCCMIN_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-};
-export type TableSortKeysType = keyof TableSort;
-
-export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
-
-export type NadNodeMovement = {
-    diagramId: UUID;
-    equipmentId: string;
-    x: number;
-    y: number;
-    scalingFactor: number;
-};
-
-export type NadTextMovement = {
-    diagramId: UUID;
-    equipmentId: string;
-    shiftX: number;
-    shiftY: number;
-    connectionShiftX: number;
-    connectionShiftY: number;
-};
-
-/**
- * Represent a node in the network modifications tree that is selected.
- */
-export type NodeSelectionForCopy = {
-    sourceStudyUuid: UUID | null;
-    nodeId: UUID | null;
-    nodeType?: NetworkModificationNodeType | null;
-    copyType: ValueOf<typeof CopyType> | null;
-    allChildren?: NetworkModificationNodeInfos[] | null;
-};
-
-export type CopiedNetworkModifications = {
-    networkModificationUuids: UUID[];
-    copyInfos: NetworkModificationCopyInfos | null;
-};
-
 export type Actions = AppActions | AuthenticationActions;
 
-export interface AppConfigState {
-    [PARAM_THEME]: GsTheme;
-    [PARAM_LANGUAGE]: GsLang;
-    [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
-    [PARAM_LIMIT_REDUCTION]: number;
-    [PARAM_USE_NAME]: boolean;
-    [PARAM_DEVELOPER_MODE]: boolean;
-    [PARAMS_LOADED]: boolean;
-}
-
-export type ComputationResultColumnFilter = {
-    columns: FilterConfig[];
-};
-
-export type TableFiltersState = {
-    columnsFilters: Record<string, Record<string, ComputationResultColumnFilter>>;
-    globalFilters: Record<string, string[]>; // filter IDs
-};
-
-export type LogsPaginationState = Record<string, LogsPaginationConfig>;
-export interface AppState extends CommonStoreState, AppConfigState {
-    signInCallbackError: Error | null;
-    authenticationRouterError: AuthenticationRouterErrorState | null;
-    showAuthenticationRouterLogin: boolean;
-    appTabIndex: number;
-    attemptedLeaveParametersTabIndex: number | null;
-    isDirtyComputationParameters: boolean;
-    studyUuid: UUID | null;
-    currentTreeNode: CurrentTreeNode | null;
-    currentRootNetworkUuid: UUID | null;
-    rootNetworks: RootNetworkMetadata[];
-    computingStatus: ComputingStatus;
-    computingStatusParameters: ComputingStatusParameters;
-    lastCompletedComputation: ComputingType | null;
-    computationStarting: boolean;
-    optionalServices: IOptionalService[];
-    oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
-    notificationIdList: UUID[];
-    globalFilterOptions: GlobalFilter[];
-    mapEquipments: GSMapEquipments | undefined;
-    networkAreaDiagramDepth: number;
-    rootNetworkIndexationStatus: RootNetworkIndexationStatus;
-    tableSort: TableSort;
-    tables: TablesState;
-    nodeAliases: NodeAlias[];
-
-    nodeSelectionForCopy: NodeSelectionForCopy;
-    nadViewBox: NadViewBox;
-    copiedNetworkModifications: CopiedNetworkModifications;
-    geoData: null;
-    networkModificationTreeModel: NetworkModificationTreeModel | null;
-    isNetworkModificationTreeModelUpToDate: boolean;
-    mapDataLoading: boolean;
-    nadNodeMovements: NadNodeMovement[];
-    nadTextNodeMovements: NadTextMovement[];
-    isExplorerDrawerOpen: boolean;
-    centerOnSubstation: undefined | { to: string };
-    isModificationsInProgress: boolean;
-    isMonoRootStudy: boolean;
-    reloadMapNeeded: boolean;
-    isEditMode: boolean;
-    freezeMapUpdates: boolean;
-    isMapEquipmentsInitialized: boolean;
-    spreadsheetNetwork: SpreadsheetNetworkState;
-
-    spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
-    networkVisualizationsParameters: NetworkVisualizationParameters | null;
-    syncEnabled: boolean;
-    baseVoltages: BaseVoltage[] | null;
-    [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SecurityAnalysisTab, PaginationConfig>;
-    [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SensitivityAnalysisTab, PaginationConfig>;
-    [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
-    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: Record<PccminTab, PaginationConfig>;
-
-    [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
-
-    [LOGS_STORE_FIELD]: LogsFilterState;
-    [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationState;
-
-    calculationSelections: Record<UUID, CalculationType[]>;
-    highlightedModificationUuid: UUID | null;
-    tableFilters: TableFiltersState;
-}
-
-export type LogsFilterState = Record<string, FilterConfig[]>;
 const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
@@ -604,11 +398,6 @@ const initialLogsPaginationState: LogsPaginationState = {
 const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: {},
     isFetching: false,
-};
-
-export type SpreadsheetNetworkState = {
-    nodesIds: UUID[];
-    equipments: Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
 };
 
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
@@ -1912,12 +1701,6 @@ function updateBusesAfterVLDeletion(currentBuses: Record<string, Bus>, VLToDelet
     }
     return currentBuses;
 }
-
-export type Substation = Identifiable & {
-    voltageLevels: Identifiable[];
-};
-
-export type Bus = Identifiable & { [VOLTAGE_LEVEL_ID]: string };
 
 function updateSubstationsAndVoltageLevels(
     currentSubstations: Record<string, Substation>,

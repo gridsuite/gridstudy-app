@@ -12,21 +12,21 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-a
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { AgGridReact } from 'ag-grid-react';
-import { TableType } from '../../../types/custom-aggrid-types';
-import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
-import { useNodeData } from 'components/use-node-data';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    TableType,
+} from '../../../types/custom-aggrid-types';
+import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/study/dynamic-simulation';
 import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';

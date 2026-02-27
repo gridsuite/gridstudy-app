@@ -45,7 +45,7 @@ import {
     initialColumnCreationForm,
     PRECISION,
 } from './column-creation-form';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
 import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floating-popover-treeview-wrapper';
 import { isFormulaContentSizeOk } from './utils/formula-validator';

@@ -11,7 +11,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { darken, lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import NetworkModificationNodeDialog from './network-modification-node-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
 import { useIntl } from 'react-intl';

@@ -16,10 +16,10 @@ import {
     Theme,
     Tooltip,
 } from '@mui/material';
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { unbuildAllStudyNodes } from 'services/study/study';
 import { NETWORK_MODIFICATION } from '../../../../utils/report/report.constant';
 import { BUILD_STATUS } from '../../../network/constants';

@@ -9,8 +9,13 @@ import { debounce } from '@mui/material';
 import { GridApi } from 'ag-grid-community';
 import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
-import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
-import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-filter.type';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+    FilterConfig,
+    FilterData,
+    FilterParams,
+} from '../../../../types/custom-aggrid-types';
 import { updateAgGridFilters } from '../utils/aggrid-filters-utils';
 import { useSelector } from 'react-redux';
 

@@ -39,7 +39,7 @@ import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import DefinePropertiesDialog from './properties/define-properties-dialog';
 import { PropertiesFormType, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from './properties/property-utils';
 import {

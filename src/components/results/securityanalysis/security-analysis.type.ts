@@ -13,7 +13,12 @@ import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page } from '../common/utils';
-import { RESULT_TYPE } from './security-analysis-result-utils';
+
+export enum RESULT_TYPE {
+    N = 'N',
+    NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
+    NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
+}
 
 export interface LimitViolation {
     subjectId?: string;

@@ -20,7 +20,7 @@ import {
 } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import {
     ComputingType,
     CustomAGGrid,
@@ -32,14 +32,17 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-a
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterConfig, TableType, numericFilterParams, textFilterParams } from '../../../types/custom-aggrid-types';
-import { mappingTabs } from './shortcircuit-analysis-result-content';
-import { resultsStyles } from '../common/utils';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
+    FilterConfig,
     FilterEnumsType,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    numericFilterParams,
+    TableType,
+    textFilterParams,
+} from '../../../types/custom-aggrid-types';
+import { mappingTabs } from './shortcircuit-analysis-result-content';
+import { resultsStyles } from '../common/utils';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from '../../workspace/types/workspace.types';

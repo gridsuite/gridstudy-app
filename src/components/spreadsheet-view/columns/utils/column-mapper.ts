@@ -16,12 +16,9 @@ import {
 } from '../common-column-definitions';
 import { isValidationError, validateFormulaResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
-import {
-    type CustomAggridValue,
-    type CustomColDef,
-} from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer, SnackInputs } from '@gridsuite/commons-ui';
+import { CustomAggridValue, CustomColDef } from '../../../../types/custom-aggrid-types';
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>

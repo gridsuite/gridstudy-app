@@ -21,7 +21,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { TableType } from '../../../types/custom-aggrid-types';
 
 export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> = ({

@@ -6,19 +6,19 @@
  */
 import { useCallback, useMemo } from 'react';
 import {
-    FilterType,
-    FILTER_EQUIPMENTS_ATTRIBUTES,
     fetchElementsInfos,
-    TreeViewFinderNodeProps,
+    FILTER_EQUIPMENTS_ATTRIBUTES,
+    FilterType,
     LANG_FRENCH,
-    useSnackMessage,
     snackWithFallback,
+    TreeViewFinderNodeProps,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { EquipmentsFilter, evaluateFilters } from 'services/study/filter';
 import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import { TabularModificationType } from './tabular-common';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 
 interface FileDownloadParams {

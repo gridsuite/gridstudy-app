@@ -6,13 +6,13 @@
  */
 
 import { FunctionComponent, useCallback, useMemo } from 'react';
-import { useTheme, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { ListItemIcon, ListItemText, Menu, MenuItem, useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { ColDef, ColumnMovedEvent, GetRowIdParams, GridOptions, RowClassParams, RowStyle } from 'ag-grid-community';
 import { useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { suppressEventsToPreventEditMode } from '../../../dialogs/commons/utils';
 import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
 import { CalculationRowType } from '../../types/calculation.type';

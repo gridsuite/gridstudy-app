@@ -9,7 +9,7 @@ import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSyncEnabled, setCurrentRootNetworkUuid, setCurrentTreeNode } from 'redux/actions';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useStudyScopedNavigationKeys } from './use-study-scoped-navigation-keys';
 
 /**

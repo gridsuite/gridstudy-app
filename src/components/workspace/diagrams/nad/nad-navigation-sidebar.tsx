@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, memo, useMemo, useCallback } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { shallowEqual, useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import {
-    selectNadNavigationHistory,
     selectAssociatedVoltageLevelIds,
+    selectNadNavigationHistory,
 } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';

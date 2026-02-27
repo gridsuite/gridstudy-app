@@ -7,7 +7,7 @@
 import { Box, Divider, Theme } from '@mui/material';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { DeviceHub } from '@mui/icons-material';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';

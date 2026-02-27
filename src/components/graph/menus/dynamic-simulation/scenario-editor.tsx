@@ -9,7 +9,7 @@ import { EditableTitle } from '../network-modifications/editable-title';
 import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import EventModificationScenarioEditor from './event-modification-scenario-editor';
 import { Box } from '@mui/material';
 

@@ -14,7 +14,11 @@ import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { BooleanFilterValue } from './utils/aggrid-filters-utils';
-import { CustomAggridFilterParams, FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
+import {
+    CustomAggridFilterParams,
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+} from '../../../types/custom-aggrid-types';
 
 const styles = {
     input: {

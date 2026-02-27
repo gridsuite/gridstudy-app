@@ -11,7 +11,7 @@ import { type ReactElement, type RefObject, useCallback, useEffect, useMemo, use
 import { useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer.type';
 import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
 import { isCriteriaFilterType } from '../../../../results/common/utils';

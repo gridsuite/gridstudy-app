@@ -29,7 +29,7 @@ import type {
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import { Badge, Box, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useIntl } from 'react-intl';
 import {
     NetworkModificationEditorNameHeader,

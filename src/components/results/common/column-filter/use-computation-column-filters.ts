@@ -6,7 +6,7 @@
  */
 import { FilterConfig, TableType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { useEffect } from 'react';
 import { getComputationResultColumnFilters } from '../../../../services/study/study-config';
 import { updateColumnFiltersAction } from '../../../../redux/actions';

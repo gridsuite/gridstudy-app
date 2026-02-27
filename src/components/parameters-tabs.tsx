@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
     getLoadFlowDefaultLimitReductions,
     getLoadFlowProviders,

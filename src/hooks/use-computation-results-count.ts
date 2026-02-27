@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 import { ComputingType, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import RunningStatus from 'components/utils/running-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
