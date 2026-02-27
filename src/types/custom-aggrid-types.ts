@@ -27,12 +27,7 @@ import {
     STATEESTIMATION_RESULT_SORT_STORE,
 } from 'utils/store-sort-filter-fields';
 import { UUID } from 'node:crypto';
-import { COLUMN_TYPES, CustomCellType } from '../components/custom-aggrid/custom-aggrid-header.type';
 import React, { ComponentType } from 'react';
-
-export interface ValidationError {
-    error: string;
-}
 
 export type SortConfig = {
     colId: string;
@@ -200,6 +195,13 @@ export interface CustomAggridFilterParams {
     filterParams: FilterParams;
 }
 
+export enum COLUMN_TYPES {
+    TEXT = 'TEXT',
+    ENUM = 'ENUM',
+    NUMBER = 'NUMBER',
+    BOOLEAN = 'BOOLEAN',
+}
+
 export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggridFilterParams> {
     agGridFilterParams?: {
         filterOptions: IFilterOptionDef[];
@@ -220,6 +222,14 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
     sortParams?: SortParams;
 }
 
+export type CustomCellType = {
+    cellValue: number;
+    tooltipValue: number;
+};
+
+export interface ValidationError {
+    error: string;
+}
 export type CustomAggridValue = boolean | string | number | CustomCellType | ValidationError;
 
 export interface CustomColDef<TData = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>

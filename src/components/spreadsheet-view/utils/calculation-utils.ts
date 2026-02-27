@@ -6,9 +6,8 @@
  */
 
 import { GridApi } from 'ag-grid-community';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { CalculationRowType, CalculationType } from '../types/calculation.type';
-import { CustomColDef } from '../../../types/custom-aggrid-types';
+import { COLUMN_TYPES, CustomColDef } from '../../../types/custom-aggrid-types';
 
 // Types for calculation data
 export interface CalculationRowData {

@@ -29,9 +29,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
 import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useFilterSelector } from 'hooks/use-filter-selector';
-import { TableType } from 'types/custom-aggrid-types';
+import { COLUMN_TYPES, TableType } from 'types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import {

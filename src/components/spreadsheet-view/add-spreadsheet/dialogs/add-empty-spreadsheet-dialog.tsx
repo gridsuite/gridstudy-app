@@ -23,10 +23,10 @@ import {
     SPREADSHEET_NAME,
 } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { ColumnDefinitionDto, SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import type { DialogComponentProps } from '../types';
+import { COLUMN_TYPES } from '../../../../types/custom-aggrid-types';
 
 export type AddEmptySpreadsheetDialogProps = Pick<DialogComponentProps, 'open'>;
 

@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import {
     BooleanCellRenderer,
@@ -20,6 +19,7 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { BooleanFilterValue } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import {
+    COLUMN_TYPES,
     CustomColDef,
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
