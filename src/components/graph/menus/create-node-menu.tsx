@@ -57,6 +57,8 @@ interface CreateNodeMenuProps {
     handleBuildNode: (element: CurrentTreeNode) => void;
     handleUnbuildNode: (element: CurrentTreeNode) => void;
     handleExportCaseOnNode: (node: CurrentTreeNode) => void;
+    handleExportNodeInfos: (node: CurrentTreeNode) => void;
+
     activeNode: CurrentTreeNode;
     nodeSelectionForCopy: NodeSelectionForCopy;
     handleCopyNode: (nodeId: string) => void;
@@ -115,6 +117,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleSecuritySequenceCreation,
     handleNodeRemoval,
     handleExportCaseOnNode,
+    handleExportNodeInfos,
     activeNode,
     nodeSelectionForCopy,
     handleCopyNode,
@@ -183,6 +186,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
 
     function exportCaseOnNode() {
         handleExportCaseOnNode(activeNode);
+        handleClose();
+    }
+
+    function exportNodeInfos() {
+        handleExportNodeInfos(activeNode);
         handleClose();
     }
 
@@ -475,7 +483,12 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             subMenuItems: SUBTREE_SUBMENU_ITEMS,
             withDivider: true,
         },
-
+        EXPORT_NODE: {
+            onRoot: false,
+            action: () => exportNodeInfos(),
+            id: 'exportNodeMInfos',
+            disabled: false,
+        },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,
             action: () => exportCaseOnNode(),

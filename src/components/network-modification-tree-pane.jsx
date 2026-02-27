@@ -54,6 +54,7 @@ import {
 import useExportSubscription from '../hooks/use-export-subscription';
 import { exportNetworkFile } from '../services/study/network.js';
 import { useCopiedNodes } from 'hooks/copy-paste/use-copied-nodes';
+import { fetchNetworkModificationsToExport } from 'services/study/network-modifications';
 
 export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
@@ -422,7 +423,35 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         console.info('node with id ' + nodeId + ' from study ' + studyUuid + ' selected for copy');
         copyNode(studyUuid, nodeId, CopyType.SUBTREE_COPY);
     };
+    const treeNodes = useSelector((state) => state.networkModificationTreeModel?.treeNodes);
 
+    const handleExportNodeInfos = async (node) => {
+        try {
+            const data = await fetchNetworkModificationsToExport(studyUuid, node.id);
+            let nodeName = treeNodes?.find((n) => n.id === node.id)?.data.label;
+            const exportNodeInfos = {
+                nodeName: nodeName,
+                modifications: data.modifications,
+                unexported: data.unexported,
+            };
+
+            const blob = new Blob([JSON.stringify(exportNodeInfos, null, 2)], { type: 'application/json' });
+
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'export-node-' + nodeName + '-modifications.json';
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error while exporting node Infos:', error);
+        }
+    };
     const handleCutSubtree = (nodeId) => {
         if (nodeId) {
             cutNode(studyUuid, nodeId, CopyType.SUBTREE_CUT);
@@ -467,6 +496,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     handleSecuritySequenceCreation={handleCreateSecuritySequence}
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
+                    handleExportNodeInfos={handleExportNodeInfos}
                     handleClose={closeCreateNodeMenu}
                     nodeSelectionForCopy={nodeSelectionForCopyRef.current}
                     handleCopyNode={handleCopyNode}
