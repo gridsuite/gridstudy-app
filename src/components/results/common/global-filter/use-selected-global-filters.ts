@@ -23,7 +23,7 @@ export function useSelectedGlobalFilters(tableKey: string): GlobalFilter[] {
         () =>
             selectedFilterIds
                 ? selectedFilterIds
-                      .map((id) => globalFilterOptions.find((opt) => opt.id === id))
+                      .map((id, uuid) => globalFilterOptions.find((opt) => opt.id === id && uuid !== undefined))
                       .filter((f) => f !== undefined)
                 : [],
         [selectedFilterIds, globalFilterOptions]
@@ -40,5 +40,7 @@ export function getSelectedGlobalFilters(tableKey: string): GlobalFilter[] {
     const state = store.getState() as RootState;
     const filterIds = state.tableFilters.globalFilters[tableKey] ?? [];
     const globalFilterOptions = state.globalFilterOptions;
-    return filterIds.map((id) => globalFilterOptions.find((opt) => opt.id === id)).filter((f) => f !== undefined);
+    return filterIds
+        .map((id) => globalFilterOptions.find((opt) => opt.id === id && opt.uuid !== undefined))
+        .filter((f) => f !== undefined);
 }
