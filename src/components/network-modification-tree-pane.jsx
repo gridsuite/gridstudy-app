@@ -106,7 +106,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const isClipboardImpacted = useCallback(
         (nodes) =>
-            nodes.some((nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId) ||
+            nodes.includes(nodeSelectionForCopyRef.current.nodeId) ||
             ((nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_COPY ||
                 nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_CUT) &&
                 nodes.some((nodeId) =>
