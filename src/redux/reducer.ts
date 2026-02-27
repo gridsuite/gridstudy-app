@@ -1732,9 +1732,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_LOGS_PAGINATION, (state, _action: ResetLogsPaginationAction) => {
         // Reset all logs tabs to page 0 but keep their rowsPerPage
-        Object.keys(COMPUTING_AND_NETWORK_MODIFICATION_TYPE).forEach((key) => {
-            const reportType =
-                COMPUTING_AND_NETWORK_MODIFICATION_TYPE[key as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE];
+        Object.keys(state[LOGS_PAGINATION_STORE_FIELD]).forEach((reportType) => {
             const currentPagination = state[LOGS_PAGINATION_STORE_FIELD][reportType];
             state[LOGS_PAGINATION_STORE_FIELD][reportType] = {
                 page: 0,
