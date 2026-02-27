@@ -11,14 +11,12 @@ import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { copyToClipboard, LIGHT_THEME, type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
-import { BUILD_STATUS } from '../../network/constants';
 import { AppState } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
 import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
-import BuildStatusChip from './build-status-chip';
 
 import { BuildButton } from './build-button';
 import { Tooltip, Typography } from '@mui/material';
@@ -27,6 +25,8 @@ import { useCallback, useMemo } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import ForwardRefBox from 'components/utils/forwardRefBox';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import BuildStatusChip from '@gridsuite/commons-ui/components/node/build-status-chip';
+import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 
 const styles = {
     networkModificationSelected: (theme) => ({
@@ -189,13 +189,13 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     </Box>
 
                     <Box sx={styles.footerBox}>
-                        {props.data.globalBuildStatus !== BUILD_STATUS.BUILDING && (
+                        {props.data.globalBuildStatus !== BuildStatus.BUILDING && (
                             <BuildStatusChip buildStatus={props.data.localBuildStatus} />
                         )}
                     </Box>
 
                     <Box sx={styles.buildBox}>
-                        {props.data.localBuildStatus !== BUILD_STATUS.BUILDING && (
+                        {props.data.localBuildStatus !== BuildStatus.BUILDING && (
                             <BuildButton
                                 buildStatus={props.data.localBuildStatus}
                                 studyUuid={studyUuid}
@@ -205,7 +205,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                         )}
                     </Box>
 
-                    {props.data.localBuildStatus === BUILD_STATUS.BUILDING && <NodeOverlaySpinner />}
+                    {props.data.localBuildStatus === BuildStatus.BUILDING && <NodeOverlaySpinner />}
                 </ForwardRefBox>
             </Tooltip>
         </>

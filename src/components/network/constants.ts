@@ -155,14 +155,6 @@ export const VARIATION_TYPES = {
     TARGET_P: { id: 'TARGET_P', label: 'TargetPText' },
 } as const;
 
-export enum BUILD_STATUS {
-    NOT_BUILT = 'NOT_BUILT',
-    BUILDING = 'BUILDING',
-    BUILT = 'BUILT',
-    BUILT_WITH_WARNING = 'BUILT_WITH_WARNING',
-    BUILT_WITH_ERROR = 'BUILT_WITH_ERROR',
-}
-
 export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
