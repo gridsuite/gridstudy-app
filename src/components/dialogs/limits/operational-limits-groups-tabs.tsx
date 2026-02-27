@@ -131,7 +131,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         );
 
         return (
-            <Grid>
+            <Grid sx={{ minHeight: '100%', height: '100%', maxHeight: '100%' }}>
                 <Tabs
                     orientation="vertical"
                     variant="scrollable"
