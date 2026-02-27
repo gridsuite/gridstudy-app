@@ -20,7 +20,7 @@ import { CopyType } from 'components/network-modification.type';
 import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { Divider } from '@mui/material';
-import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
+import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 
 type SubMenuItem = {
     onRoot: boolean;
@@ -344,7 +344,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             id: 'buildNode',
             disabled:
                 activeNode?.data?.globalBuildStatus?.startsWith('BUILT') ||
-                activeNode?.data?.globalBuildStatus === BUILD_STATUS.BUILDING,
+                activeNode?.data?.globalBuildStatus === BuildStatus.BUILDING,
         },
         UNBUILD_NODE: {
             onRoot: false,

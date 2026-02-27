@@ -10,13 +10,13 @@ import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { AbstractNode, NodeType, StashedNodeProperties } from '../../components/graph/tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
-import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
+import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 
 interface Node {
     name: string;
     type: NodeType;
-    localBuildStatus: BUILD_STATUS;
-    globalBuildStatus: BUILD_STATUS;
+    localBuildStatus: BuildStatus;
+    globalBuildStatus: BuildStatus;
 }
 export function copySubtree(
     sourceStudyUuid: UUID,

@@ -71,7 +71,6 @@ import {
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
-import { isNodeBuilt } from './graph/util/model-functions';
 import { fetchContingencyCount } from '../services/study';
 import { fetchDefaultDynamicSecurityAnalysisProvider } from '../services/study/dynamic-security-analysis';
 import {
@@ -403,6 +402,7 @@ const ParametersTabs: FunctionComponent = () => {
                 );
         }
     }, [
+        currentNode,
         tabValue,
         studyUuid,
         languageLocal,

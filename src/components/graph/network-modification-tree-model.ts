@@ -6,7 +6,7 @@
  */
 
 import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './util/model-functions';
-import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
+import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 import type { UUID } from 'node:crypto';
 import { Edge } from '@xyflow/react';
 import { AbstractNode, CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';
@@ -273,6 +273,6 @@ export default class NetworkModificationTreeModel {
 
     setBuildingStatus() {
         this.isAnyNodeBuilding =
-            this.treeNodes.find((node) => node?.data?.globalBuildStatus === BUILD_STATUS.BUILDING) !== undefined;
+            this.treeNodes.find((node) => node?.data?.globalBuildStatus === BuildStatus.BUILDING) !== undefined;
     }
 }

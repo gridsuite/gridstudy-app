@@ -26,7 +26,7 @@ import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import ForwardRefBox from 'components/utils/forwardRefBox';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import BuildStatusChip from '@gridsuite/commons-ui/components/node/build-status-chip';
-import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
+import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 
 const styles = {
     networkModificationSelected: (theme) => ({
@@ -189,13 +189,13 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     </Box>
 
                     <Box sx={styles.footerBox}>
-                        {props.data.globalBuildStatus !== BUILD_STATUS.BUILDING && (
+                        {props.data.globalBuildStatus !== BuildStatus.BUILDING && (
                             <BuildStatusChip buildStatus={props.data.localBuildStatus} />
                         )}
                     </Box>
 
                     <Box sx={styles.buildBox}>
-                        {props.data.localBuildStatus !== BUILD_STATUS.BUILDING && (
+                        {props.data.localBuildStatus !== BuildStatus.BUILDING && (
                             <BuildButton
                                 buildStatus={props.data.localBuildStatus}
                                 studyUuid={studyUuid}
@@ -205,7 +205,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                         )}
                     </Box>
 
-                    {props.data.localBuildStatus === BUILD_STATUS.BUILDING && <NodeOverlaySpinner />}
+                    {props.data.localBuildStatus === BuildStatus.BUILDING && <NodeOverlaySpinner />}
                 </ForwardRefBox>
             </Tooltip>
         </>

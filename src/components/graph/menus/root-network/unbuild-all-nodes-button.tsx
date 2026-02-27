@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { unbuildAllStudyNodes } from 'services/study/study';
 import { NETWORK_MODIFICATION } from '../../../../utils/report/report.constant';
-import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
+import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 
 const styles = {
     button: {
@@ -73,7 +73,7 @@ export const UnbuildAllNodesButton = () => {
             .filter((treeNode) => treeNode.type === NETWORK_MODIFICATION)
             .every(
                 (treeNode) =>
-                    treeNode.data.globalBuildStatus === BUILD_STATUS.NOT_BUILT ||
+                    treeNode.data.globalBuildStatus === BuildStatus.NOT_BUILT ||
                     treeNode.data.globalBuildStatus === undefined
             );
     }, [treeModel]);
