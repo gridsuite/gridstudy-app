@@ -13,6 +13,8 @@ import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
 import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
+import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
+import { isCriteriaFilterType } from '../../../../results/common/utils';
 
 type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact | null>;
@@ -43,9 +45,7 @@ export function useFilteredRowCounterInfo({
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const globalFilterSpreadsheetState = useSelector(
-        (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
-    );
+    const globalFilterSpreadsheetState = useSelectedGlobalFilters(tableDefinition.uuid);
     const spreadsheetColumnsFiltersState = useSelector(
         (state: AppState) => state.spreadsheetFilter[tableDefinition?.uuid]
     );
@@ -126,7 +126,9 @@ export function useFilteredRowCounterInfo({
         if (Object.keys(gsFilterByType)?.length > 0) {
             lines.push(`${intl.formatMessage({ id: 'ExternalFilters' })} : `);
             for (const [filterType, labels] of Object.entries(gsFilterByType)) {
-                const formattedLabels = labels.map((label) => intl.formatMessage({ id: label })).join(', ');
+                const formattedLabels = labels
+                    .map((label) => (isCriteriaFilterType(filterType) ? label : intl.formatMessage({ id: label })))
+                    .join(', ');
                 lines.push(`- ${intl.formatMessage({ id: filterType })} : "${formattedLabels}"`);
             }
         }
