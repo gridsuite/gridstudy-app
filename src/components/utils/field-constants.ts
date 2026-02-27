@@ -165,6 +165,7 @@ export const STEPS_CONDUCTANCE = 'g';
 export const STEPS_SUSCEPTANCE = 'b';
 export const STEPS_RATIO = 'rho';
 export const STEPS_ALPHA = 'alpha';
+export const STEPS_BY_TAP_POSITION = 'stepsByTapPosition';
 
 //tab ratio_tap_changer
 export const RATIO_TAP_CHANGER = 'ratioTapChanger';
