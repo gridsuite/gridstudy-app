@@ -16,7 +16,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { removeFromGlobalFilterOptions } from '../../../../redux/actions';
+import { addToGlobalFilterOptions } from '../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
@@ -66,7 +66,7 @@ export default function GlobalFilterProvider({
             const mutableFilters: GlobalFilter[] = selectedGlobalFilters.map((filter) => ({ ...filter }));
 
             const genericFiltersUuids: UUID[] = mutableFilters
-                .filter((globalFilter) => isCriteriaFilter(globalFilter))
+                .filter((globalFilter) => isCriteriaFilter(globalFilter) && globalFilter.label !== 'elementNotFound')
                 .map((globalFilter) => globalFilter.uuid)
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 
@@ -86,11 +86,12 @@ export default function GlobalFilterProvider({
                     const error = responseError as Error & { status: number };
                     if (error.status === HttpStatusCode.NOT_FOUND) {
                         // not found => remove those missing filters from global filters
-                        dispatch(removeFromGlobalFilterOptions(genericFilterUuid));
-                        snackError({
-                            messageTxt: mutableFilters.find((filter) => filter.uuid === genericFilterUuid)?.path,
-                            headerId: 'ComputationFilterResultsError',
-                        });
+                        const notFoundFilter = mutableFilters.find((f) => f.uuid === genericFilterUuid);
+                        if (notFoundFilter) {
+                            notFoundFilter.uuid = undefined;
+                            notFoundFilter.label = 'elementNotFound';
+                            dispatch(addToGlobalFilterOptions([notFoundFilter]));
+                        }
                     } else {
                         // or whatever error => do nothing except showing error message
                         snackWithFallback(snackError, error, {
