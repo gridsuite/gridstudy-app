@@ -343,7 +343,7 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
-                        isNodeBuilt={isNodeBuilt(currentNode)}
+                        globalBuildStatus={currentNode?.data?.globalBuildStatus}
                         isDeveloperMode={isDeveloperMode}
                     />
                 );

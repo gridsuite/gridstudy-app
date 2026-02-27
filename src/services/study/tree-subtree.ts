@@ -9,8 +9,8 @@ import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { AbstractNode, NodeType, StashedNodeProperties } from '../../components/graph/tree-node.type';
-import { BUILD_STATUS } from '../../components/network/constants';
 import { NodeInsertModes } from 'types/notification-types';
+import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
 
 interface Node {
     name: string;

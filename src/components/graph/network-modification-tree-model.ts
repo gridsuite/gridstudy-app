@@ -6,7 +6,7 @@
  */
 
 import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './util/model-functions';
-import { BUILD_STATUS } from '../network/constants';
+import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
 import type { UUID } from 'node:crypto';
 import { Edge } from '@xyflow/react';
 import { AbstractNode, CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';

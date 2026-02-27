@@ -13,7 +13,7 @@ import { ComputingType } from '@gridsuite/commons-ui';
 import WaitingLoader from '../../utils/waiting-loader';
 import { useReportFetcher } from '../../../hooks/use-report-fetcher';
 import { Report, SeverityLevel } from '../../../utils/report/report.type';
-import { BUILD_STATUS } from 'components/network/constants';
+import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
 import { sortSeverityList } from 'utils/report/report-severity';
 
 interface ComputationReportViewerProps {

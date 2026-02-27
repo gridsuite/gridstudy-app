@@ -13,7 +13,6 @@ import { useSelector } from 'react-redux';
 import ChildMenuItem from './create-child-menu-item';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
-import { BUILD_STATUS } from '../../network/constants';
 import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
@@ -21,6 +20,7 @@ import { CopyType } from 'components/network-modification.type';
 import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { Divider } from '@mui/material';
+import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
 
 type SubMenuItem = {
     onRoot: boolean;

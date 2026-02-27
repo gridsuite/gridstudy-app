@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { unbuildAllStudyNodes } from 'services/study/study';
 import { NETWORK_MODIFICATION } from '../../../../utils/report/report.constant';
-import { BUILD_STATUS } from '../../../network/constants';
+import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
 
 const styles = {
     button: {

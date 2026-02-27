@@ -28,7 +28,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog';
-import { BUILD_STATUS } from './network/constants';
+import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
 import {
     copySubtree,
     copyTreeNode,

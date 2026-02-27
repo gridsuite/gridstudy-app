@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { BUILD_STATUS } from '../../network/constants';
+import { BUILD_STATUS } from '@gridsuite/commons-ui/components/node/constant';
 import type NetworkModificationTreeModel from '../network-modification-tree-model';
 import {
     CurrentTreeNode,
