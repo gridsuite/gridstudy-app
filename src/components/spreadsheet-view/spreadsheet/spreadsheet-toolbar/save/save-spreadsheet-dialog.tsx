@@ -23,7 +23,7 @@ import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sor
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 import { SaveSpreadsheetModelDialog } from './save-spreadsheet-model-dialog';
 
-import { getSelectedGlobalFilters } from '../../../../results/common/global-filter/global-filter-utils';
+import { getSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
 
 export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;
