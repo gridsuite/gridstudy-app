@@ -24,6 +24,12 @@ import {
     DeepNullable,
     sanitizeString,
     FieldConstants,
+    VL_SUBSTATION_ID,
+    VL_NOMINAL_V,
+    VL_LOW_VOLTAGE_LIMIT,
+    VL_HIGH_VOLTAGE_LIMIT,
+    VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+    VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -35,18 +41,12 @@ import {
     BUS_BAR_SECTION_ID2,
     COUPLING_OMNIBUS,
     EQUIPMENT_ID,
-    HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-    HIGH_VOLTAGE_LIMIT,
     ID,
     IS_ATTACHMENT_POINT_CREATION,
-    LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-    LOW_VOLTAGE_LIMIT,
     NAME,
-    NOMINAL_V,
     SECTION_COUNT,
     SUBSTATION_CREATION,
     SUBSTATION_CREATION_ID,
-    SUBSTATION_ID,
     SUBSTATION_NAME,
     SWITCH_KIND,
     SWITCH_KINDS,
@@ -58,7 +58,7 @@ import { FC, useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
-import VoltageLevelCreationForm from './voltage-level-creation-form';
+import StudyVoltageLevelCreationForm from './voltage-level-creation-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -82,18 +82,18 @@ interface VoltageLevelCreationFormData {
     [BUS_BAR_COUNT]: number;
     [FieldConstants.COUNTRY]: string | null;
     [COUPLING_OMNIBUS]: CreateCouplingDeviceDialogSchemaForm[];
-    [EQUIPMENT_ID]: string;
+    [FieldConstants.EQUIPMENT_ID]: string;
     [FieldConstants.EQUIPMENT_NAME]: string;
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
-    [HIGH_VOLTAGE_LIMIT]: number | null;
+    [VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
+    [VL_HIGH_VOLTAGE_LIMIT]: number | null;
     [IS_ATTACHMENT_POINT_CREATION]: boolean;
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
-    [LOW_VOLTAGE_LIMIT]: number | null;
-    [NOMINAL_V]: number | null;
+    [VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
+    [VL_LOW_VOLTAGE_LIMIT]: number | null;
+    [VL_NOMINAL_V]: number | null;
     [SECTION_COUNT]: number;
     [SUBSTATION_CREATION]: Properties;
     [SUBSTATION_CREATION_ID]: string | null;
-    [SUBSTATION_ID]: string | null;
+    [VL_SUBSTATION_ID]: string | null;
     [SUBSTATION_NAME]: string | null;
     [SWITCHES_BETWEEN_SECTIONS]: string;
     [SWITCH_KINDS]: SwitchKindFormData[];
@@ -116,7 +116,7 @@ interface VoltageLevelCreationDialogProps {
 }
 
 /**
- * Dialog to create a load in the network
+ * Dialog to create a voltage level in the network
  * @param currentNode The node we are currently working on
  * @param studyUuid the study we are currently working on
  * @param editData the data to edit
@@ -127,14 +127,14 @@ interface VoltageLevelCreationDialogProps {
  */
 
 const emptyFormData: VoltageLevelCreationFormData = {
-    [EQUIPMENT_ID]: '',
+    [FieldConstants.EQUIPMENT_ID]: '',
     [FieldConstants.EQUIPMENT_NAME]: '',
-    [SUBSTATION_ID]: null,
-    [NOMINAL_V]: null,
-    [LOW_VOLTAGE_LIMIT]: null,
-    [HIGH_VOLTAGE_LIMIT]: null,
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+    [VL_SUBSTATION_ID]: null,
+    [VL_NOMINAL_V]: null,
+    [VL_LOW_VOLTAGE_LIMIT]: null,
+    [VL_HIGH_VOLTAGE_LIMIT]: null,
+    [VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+    [VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
     [BUS_BAR_COUNT]: 1,
     [SECTION_COUNT]: 1,
     [SWITCHES_BETWEEN_SECTIONS]: '',
@@ -152,13 +152,16 @@ const emptyFormData: VoltageLevelCreationFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_ID]: yup
+        [FieldConstants.EQUIPMENT_ID]: yup
             .string()
             .required()
             .when([ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation: boolean) => !addSubstationCreation,
                 then: (schema) =>
-                    schema.notOneOf([yup.ref(SUBSTATION_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
+                    schema.notOneOf(
+                        [yup.ref(VL_SUBSTATION_ID), null],
+                        'CreateSubstationInVoltageLevelIdenticalId'
+                    ),
             })
             .when([ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation: boolean) => addSubstationCreation,
@@ -170,7 +173,7 @@ const formSchema = yup
             }),
         [FieldConstants.EQUIPMENT_NAME]: yup.string().nullable(),
         [ADD_SUBSTATION_CREATION]: yup.boolean().required(),
-        [SUBSTATION_ID]: yup
+        [VL_SUBSTATION_ID]: yup
             .string()
             .nullable()
             .when([ADD_SUBSTATION_CREATION], {
@@ -178,7 +181,10 @@ const formSchema = yup
                 then: (schema) =>
                     schema
                         .required()
-                        .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
+                        .notOneOf(
+                            [yup.ref(FieldConstants.EQUIPMENT_ID), null],
+                            'CreateSubstationInVoltageLevelIdenticalId'
+                        ),
             }),
         [SUBSTATION_CREATION_ID]: yup
             .string()
@@ -188,34 +194,37 @@ const formSchema = yup
                 then: (schema) =>
                     schema
                         .required()
-                        .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
+                        .notOneOf(
+                            [yup.ref(FieldConstants.EQUIPMENT_ID), null],
+                            'CreateSubstationInVoltageLevelIdenticalId'
+                        ),
             }),
         [SUBSTATION_NAME]: yup.string().nullable(),
         [FieldConstants.COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
-        [NOMINAL_V]: yup
+        [VL_NOMINAL_V]: yup
             .number()
             .nullable()
             .when([IS_ATTACHMENT_POINT_CREATION], {
                 is: (isAttachmentPointCreation: boolean) => !isAttachmentPointCreation,
                 then: (schema) => schema.min(0, 'mustBeGreaterOrEqualToZero').required(),
             }),
-        [LOW_VOLTAGE_LIMIT]: yup
+        [VL_LOW_VOLTAGE_LIMIT]: yup
             .number()
             .nullable()
             .min(0, 'mustBeGreaterOrEqualToZero')
-            .max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
-        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+            .max(yup.ref(VL_HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
+        [VL_HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
             .nullable()
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-            .max(yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT), 'ShortCircuitCurrentLimitMinMaxError'),
-        [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+            .max(yup.ref(VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT), 'ShortCircuitCurrentLimitMinMaxError'),
+        [VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
             .nullable()
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-            .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
+            .when([VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
                 is: (lowShortCircuitCurrentLimit: number | null) => lowShortCircuitCurrentLimit != null,
                 then: (schema) => schema.required(),
             }),
@@ -298,11 +307,11 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
             const isSubstationCreation =
                 (!fromCopy && voltageLevel.substationCreation?.equipmentId != null) || isAttachmentPointModification;
             const shortCircuitLimits = {
-                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+                [VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
                 ),
-                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+                [VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
                 ),
@@ -316,22 +325,24 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                     ?.map((switchKind: string) => intl.formatMessage({ id: switchKind }))
                     .join(' / ') || '';
 
+            // Read from external data using API field names (equipmentId, id, name)
             const equipmentId = (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : '');
             const equipmentName = voltageLevel[FieldConstants.EQUIPMENT_NAME] ?? voltageLevel[NAME];
-            const substationId = isSubstationCreation ? null : (voltageLevel[SUBSTATION_ID] ?? null);
+            const substationId = isSubstationCreation ? null : (voltageLevel[VL_SUBSTATION_ID] ?? null);
 
             const properties = fromCopy
                 ? copyEquipmentPropertiesForCreation(voltageLevel)
                 : getPropertiesFromModification(voltageLevel.properties);
             reset(
                 {
-                    [EQUIPMENT_ID]: equipmentId,
+                    // Set form fields using commons-ui field names
+                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                     [FieldConstants.EQUIPMENT_NAME]: equipmentName,
                     [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
-                    [SUBSTATION_ID]: substationId,
-                    [NOMINAL_V]: voltageLevel[NOMINAL_V],
-                    [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
-                    [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
+                    [VL_SUBSTATION_ID]: substationId,
+                    [VL_NOMINAL_V]: voltageLevel[VL_NOMINAL_V],
+                    [VL_LOW_VOLTAGE_LIMIT]: voltageLevel[VL_LOW_VOLTAGE_LIMIT],
+                    [VL_HIGH_VOLTAGE_LIMIT]: voltageLevel[VL_HIGH_VOLTAGE_LIMIT],
                     ...shortCircuitLimits,
                     [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
                     [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
@@ -373,26 +384,26 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     useEffect(() => {
         // Watch HIGH_VOLTAGE_LIMIT changed
         const unsubscribeHighVoltageLimit = subscribe({
-            name: [`${HIGH_VOLTAGE_LIMIT}`],
+            name: [VL_HIGH_VOLTAGE_LIMIT],
             formState: {
                 values: true,
             },
             callback: ({ isSubmitted }: { isSubmitted?: boolean }) => {
                 if (isSubmitted) {
-                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
+                    trigger(VL_LOW_VOLTAGE_LIMIT).then();
                 }
             },
         });
 
         // Watch EQUIPMENT_ID changed
         const unsubscribeEquipmentId = subscribe({
-            name: [EQUIPMENT_ID],
+            name: [FieldConstants.EQUIPMENT_ID],
             formState: {
                 values: true,
             },
             callback: () => {
-                if (getValues(SUBSTATION_ID)) {
-                    trigger(SUBSTATION_ID);
+                if (getValues(VL_SUBSTATION_ID)) {
+                    trigger(VL_SUBSTATION_ID);
                 }
                 if (getValues(SUBSTATION_CREATION_ID)) {
                     trigger(SUBSTATION_CREATION_ID);
@@ -402,13 +413,13 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
         // Watch SUBSTATION_ID or SUBSTATION_CREATION_ID changed
         const unsubscribeSubstationIds = subscribe({
-            name: [SUBSTATION_ID, SUBSTATION_CREATION_ID],
+            name: [VL_SUBSTATION_ID, SUBSTATION_CREATION_ID],
             formState: {
                 values: true,
             },
             callback: () => {
-                if (getValues(EQUIPMENT_ID)) {
-                    trigger(EQUIPMENT_ID);
+                if (getValues(FieldConstants.EQUIPMENT_ID)) {
+                    trigger(FieldConstants.EQUIPMENT_ID);
                 }
             },
         });
@@ -442,20 +453,20 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
             onCreateVoltageLevel({
                 studyUuid: studyUuid as UUID,
                 nodeUuid: currentNodeUuid,
-                equipmentId: voltageLevel[EQUIPMENT_ID],
+                equipmentId: voltageLevel[FieldConstants.EQUIPMENT_ID],
                 equipmentName: sanitizeString(voltageLevel[FieldConstants.EQUIPMENT_NAME]) ?? undefined,
-                substationId: substationCreation === null ? voltageLevel[SUBSTATION_ID] : null,
+                substationId: substationCreation === null ? voltageLevel[VL_SUBSTATION_ID] : null,
                 substationCreation: substationCreation,
-                nominalV: voltageLevel[NOMINAL_V],
-                lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
-                highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
+                nominalV: voltageLevel[VL_NOMINAL_V],
+                lowVoltageLimit: voltageLevel[VL_LOW_VOLTAGE_LIMIT],
+                highVoltageLimit: voltageLevel[VL_HIGH_VOLTAGE_LIMIT],
                 ipMin: convertOutputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
+                    voltageLevel[VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
                 ipMax: convertOutputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
+                    voltageLevel[VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
                 busbarCount: voltageLevel[BUS_BAR_COUNT],
                 sectionCount: voltageLevel[SECTION_COUNT],
@@ -496,7 +507,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VoltageLevelCreationForm
+                <StudyVoltageLevelCreationForm
                     currentNodeUuid={currentNodeUuid}
                     studyUuid={studyUuid as UUID}
                     currentRootNetworkUuid={currentRootNetworkUuid}

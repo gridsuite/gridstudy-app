@@ -8,32 +8,23 @@
 import {
     ADD_SUBSTATION_CREATION,
     BUS_BAR_COUNT,
-    EQUIPMENT_ID,
-    HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-    HIGH_VOLTAGE_LIMIT,
     IS_ATTACHMENT_POINT_CREATION,
-    LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-    LOW_VOLTAGE_LIMIT,
-    NOMINAL_V,
     SECTION_COUNT,
     SUBSTATION_CREATION,
     SUBSTATION_CREATION_ID,
-    SUBSTATION_ID,
     SUBSTATION_NAME,
 } from 'components/utils/field-constants';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    AutocompleteInput,
     CountrySelectionInput,
     EquipmentType,
     fetchDefaultCountry,
     FieldConstants,
-    FloatInput,
     IntegerInput,
-    KiloAmpereAdornment,
     PropertiesForm,
     TextInput,
-    VoltageAdornment,
+    VL_SUBSTATION_ID,
+    VoltageLevelCreationForm,
 } from '@gridsuite/commons-ui';
 import { Box, Grid, Paper, Tooltip } from '@mui/material';
 
@@ -49,17 +40,17 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
 import { UUID } from 'node:crypto';
 
-interface VoltageLevelCreationFormProps {
+interface StudyVoltageLevelCreationFormProps {
     currentNodeUuid: UUID;
     studyUuid: UUID;
     currentRootNetworkUuid: UUID;
 }
 
-const VoltageLevelCreationForm = ({
+const StudyVoltageLevelCreationForm = ({
     currentNodeUuid,
     studyUuid,
     currentRootNetworkUuid,
-}: VoltageLevelCreationFormProps) => {
+}: StudyVoltageLevelCreationFormProps) => {
     const intl = useIntl();
     const { setValue, getValues } = useFormContext();
     const [substations, setSubstations] = useState<string[]>([]);
@@ -94,10 +85,6 @@ const VoltageLevelCreationForm = ({
         }
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
-    const voltageLevelIdField = (
-        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
-    );
-
     function getCustomPaper(children: React.ReactNode) {
         return (
             <Paper>
@@ -109,7 +96,7 @@ const VoltageLevelCreationForm = ({
                         sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%', width: '100%' }}
                         onMouseDown={handleAddButton}
                     >
-                        {`${intl.formatMessage({ id: 'CreateSubstation' })} : ${getValues(SUBSTATION_ID)}`}
+                        {`${intl.formatMessage({ id: 'CreateSubstation' })} : ${getValues(VL_SUBSTATION_ID)}`}
                     </IconButton>
                 </Box>
             </Paper>
@@ -117,68 +104,9 @@ const VoltageLevelCreationForm = ({
     }
 
     const handleAddButton = useCallback(() => {
-        setValue(SUBSTATION_CREATION_ID, getValues(SUBSTATION_ID));
+        setValue(SUBSTATION_CREATION_ID, getValues(VL_SUBSTATION_ID));
         setValue(ADD_SUBSTATION_CREATION, true);
     }, [setValue, getValues]);
-    const voltageLevelNameField = (
-        <TextInput name={FieldConstants.EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />
-    );
-
-    const substationField = (
-        <AutocompleteInput
-            openOnFocus
-            forcePopupIcon
-            name={SUBSTATION_ID}
-            label="SUBSTATION"
-            options={substations}
-            size={'small'}
-            formProps={{ margin: 'normal' }}
-            PaperComponent={({ children }) => getCustomPaper(children)}
-            noOptionsText={''}
-            allowNewValue
-        />
-    );
-
-    const nominalVoltageField = <FloatInput name={NOMINAL_V} label={'NominalVoltage'} adornment={VoltageAdornment} />;
-
-    const lowVoltageLimitField = (
-        <FloatInput name={LOW_VOLTAGE_LIMIT} label={'LowVoltageLimit'} adornment={VoltageAdornment} />
-    );
-
-    const highVoltageLimitField = (
-        <FloatInput name={HIGH_VOLTAGE_LIMIT} label={'HighVoltageLimit'} adornment={VoltageAdornment} />
-    );
-
-    const lowShortCircuitCurrentLimitField = (
-        <FloatInput
-            name={LOW_SHORT_CIRCUIT_CURRENT_LIMIT}
-            label={'LowShortCircuitCurrentLimit'}
-            adornment={KiloAmpereAdornment}
-        />
-    );
-
-    const highShortCircuitCurrentLimitField = (
-        <FloatInput
-            name={HIGH_SHORT_CIRCUIT_CURRENT_LIMIT}
-            label={'HighShortCircuitCurrentLimit'}
-            adornment={KiloAmpereAdornment}
-        />
-    );
-
-    const busBarCountField = <IntegerInput name={BUS_BAR_COUNT} label={'BusBarCount'} />;
-
-    const sectionCountField = <IntegerInput name={SECTION_COUNT} label={'numberOfSections'} />;
-
-    const displayOmnibus = watchBusBarCount > 1 || watchSectionCount > 1;
-
-    const couplingOmnibusForm = <CouplingOmnibusForm />;
-
-    const substationCreationIdField = <TextInput name={SUBSTATION_CREATION_ID} label={'SubstationId'} />;
-    const substationCreationNameField = <TextInput name={SUBSTATION_NAME} label={'substationName'} />;
-
-    const substationCreationCountryField = (
-        <CountrySelectionInput name={FieldConstants.COUNTRY} label={'Country'} size={'small'} />
-    );
 
     const handleDeleteButton = useCallback(() => {
         setValue(ADD_SUBSTATION_CREATION, false);
@@ -188,86 +116,81 @@ const VoltageLevelCreationForm = ({
         setValue(FieldConstants.COUNTRY, null);
     }, [setValue]);
 
-    return (
-        <>
+    const customSubstationSection = watchAddSubstationCreation ? (
+        <Grid>
+            <Grid item xs={12} container spacing={2}></Grid>
+            <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
             <Grid container spacing={2}>
-                <GridItem>{voltageLevelIdField}</GridItem>
-                <GridItem>{voltageLevelNameField}</GridItem>
+                <Grid item xs={4}>
+                    <TextInput name={SUBSTATION_CREATION_ID} label={'SubstationId'} />
+                </Grid>
+                <Grid item xs={4}>
+                    <TextInput name={SUBSTATION_NAME} label={'substationName'} />
+                </Grid>
+                <Grid item xs={3}>
+                    <CountrySelectionInput name={FieldConstants.COUNTRY} label={'Country'} size={'small'} />
+                </Grid>
+                {!watchIsAttachmentPointCreation && (
+                    <Grid item xs={1}>
+                        <Tooltip
+                            title={intl.formatMessage({
+                                id: 'DeleteRows',
+                            })}
+                        >
+                            <IconButton onClick={handleDeleteButton}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Grid>
+                )}
             </Grid>
+            <PropertiesForm id={SUBSTATION_CREATION} networkElementType={'substation'} />
+            <Grid item xs={12} paddingTop={2}>
+                <LineSeparator />
+            </Grid>
+        </Grid>
+    ) : undefined;
 
-            {watchAddSubstationCreation ? (
-                <Grid>
-                    <Grid item xs={12} container spacing={2}></Grid>
-                    <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
-                    <Grid container spacing={2}>
-                        <Grid item xs={4}>
-                            {substationCreationIdField}
-                        </Grid>
-                        <Grid item xs={4}>
-                            {substationCreationNameField}
-                        </Grid>
-                        <Grid item xs={3}>
-                            {substationCreationCountryField}
-                        </Grid>
-                        {!watchIsAttachmentPointCreation && (
-                            <Grid item xs={1}>
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DeleteRows',
-                                    })}
-                                >
-                                    <IconButton onClick={handleDeleteButton}>
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            </Grid>
-                        )}
-                    </Grid>
-                    <PropertiesForm id={SUBSTATION_CREATION} networkElementType={'substation'} />
-                    <Grid item xs={12} paddingTop={2}>
-                        <LineSeparator />
-                    </Grid>
-                </Grid>
-            ) : (
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                        {substationField}
-                    </Grid>
-                </Grid>
-            )}
-            <GridSection title={intl.formatMessage({ id: 'VoltageText' })} />
+    const displayOmnibus = watchBusBarCount > 1 || watchSectionCount > 1;
+
+    const topologySection = !watchIsAttachmentPointCreation ? (
+        <>
+            <GridSection title={'BusBarSections'} />
             <Grid container spacing={2}>
-                {!watchIsAttachmentPointCreation && <GridItem size={4}>{nominalVoltageField}</GridItem>}
-                <GridItem size={4}>{lowVoltageLimitField}</GridItem>
-                <GridItem size={4}>{highVoltageLimitField}</GridItem>
+                <GridItem size={4}>
+                    <IntegerInput name={BUS_BAR_COUNT} label={'BusBarCount'} />
+                </GridItem>
+                <GridItem size={4}>
+                    <IntegerInput name={SECTION_COUNT} label={'numberOfSections'} />
+                </GridItem>
+                <SwitchesBetweenSections />
             </Grid>
-            <GridSection title={'ShortCircuit'} />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{lowShortCircuitCurrentLimitField}</GridItem>
-                <GridItem size={4}>{highShortCircuitCurrentLimitField}</GridItem>
-                <Box sx={{ width: '100%' }} />
-            </Grid>
-            {!watchIsAttachmentPointCreation && (
+            {displayOmnibus && (
                 <>
-                    <GridSection title={'BusBarSections'} />
-                    <Grid container spacing={2}>
-                        <GridItem size={4}>{busBarCountField}</GridItem>
-                        <GridItem size={4}>{sectionCountField}</GridItem>
-                        <SwitchesBetweenSections />
+                    <GridSection title={'Coupling_Omnibus'} />
+                    <Grid container>
+                        <GridItem size={12}>
+                            <CouplingOmnibusForm />
+                        </GridItem>
                     </Grid>
-                    {displayOmnibus && (
-                        <>
-                            <GridSection title={'Coupling_Omnibus'} />
-                            <Grid container>
-                                <GridItem size={12}>{couplingOmnibusForm}</GridItem>
-                            </Grid>
-                        </>
-                    )}
                 </>
             )}
-            <PropertiesForm networkElementType={'voltageLevel'} />
         </>
+    ) : null;
+
+    return (
+        <VoltageLevelCreationForm
+            substationOptions={substations}
+            substationFieldAdditionalProps={{
+                PaperComponent: ({ children }: { children: React.ReactNode }) => getCustomPaper(children),
+                noOptionsText: '',
+            }}
+            customSubstationSection={customSubstationSection}
+            hideNominalVoltage={watchIsAttachmentPointCreation}
+        >
+            {topologySection}
+        </VoltageLevelCreationForm>
     );
 };
 
-export default VoltageLevelCreationForm;
+export default StudyVoltageLevelCreationForm;
