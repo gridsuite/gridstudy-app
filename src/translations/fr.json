@@ -1766,5 +1766,5 @@
     "Reload": "Recharger",
     "CopyError": "Copier l'erreur",
     "Copied": "Copiée",
-    "exportNodeInfos" : "Exporter le noeud"
+    "downloadNodeInfos" : "Télécharger le noeud"
 }
