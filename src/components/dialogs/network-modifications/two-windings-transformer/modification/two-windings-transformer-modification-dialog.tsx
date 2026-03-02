@@ -19,6 +19,7 @@ import {
     modificationPropertiesSchema,
     sanitizeString,
     snackWithFallback,
+    toModificationOperation,
     toModificationProperties,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -111,7 +112,6 @@ import {
     addSelectedFieldToRows,
     compareStepsWithPreviousValues,
     computeHighTapPosition,
-    toModificationOperation,
 } from '../../../../utils/utils';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';

@@ -50,6 +50,7 @@ import {
     MODIFICATION_TYPES,
     modificationPropertiesSchema,
     sanitizeString,
+    toModificationOperation,
 } from '@gridsuite/commons-ui';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
@@ -60,7 +61,6 @@ import {
     LccShuntCompensatorInfos,
     LccShuntCompensatorModificationInfos,
 } from '../../../../../../services/network-modification-types';
-import { toModificationOperation } from '../../../../../utils/utils';
 
 export const getLccConverterStationSchema = () =>
     yup.object().shape({
