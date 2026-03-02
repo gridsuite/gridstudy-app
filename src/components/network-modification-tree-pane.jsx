@@ -432,26 +432,26 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
             const exportNodeInfos = {
                 nodeName: nodeName,
                 modifications: data.modifications,
-                unexported: data.unexported,
+                unexportedModifications: data.unexported,
             };
 
             const blob = new Blob([JSON.stringify(exportNodeInfos, null, 2)], { type: 'application/json' });
 
-            const url = window.URL.createObjectURL(blob);
-
+            const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'export-node-' + nodeName + '-modifications.json';
+            link.download = 'exportNode.json';
 
             document.body.appendChild(link);
             link.click();
-            link.remove();
+            document.body.removeChild(link);
 
             window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error while exporting node Infos:', error);
         }
     };
+
     const handleCutSubtree = (nodeId) => {
         if (nodeId) {
             cutNode(studyUuid, nodeId, CopyType.SUBTREE_CUT);

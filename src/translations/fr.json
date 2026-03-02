@@ -1765,5 +1765,6 @@
     "PanelError": "Une erreur est survenue dans ce panneau",
     "Reload": "Recharger",
     "CopyError": "Copier l'erreur",
-    "Copied": "Copiée"
+    "Copied": "Copiée",
+    "exportNodeInfos" : "Exporter le noeud"
 }

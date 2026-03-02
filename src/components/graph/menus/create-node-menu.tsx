@@ -12,7 +12,7 @@ import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import ChildMenuItem from './create-child-menu-item';
 import { CustomDialog } from '../../utils/custom-dialog';
-import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
+import { CustomNestedMenuItem, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import { BUILD_STATUS } from '../../network/constants';
 import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
@@ -21,6 +21,7 @@ import { CopyType } from 'components/network-modification.type';
 import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { Divider } from '@mui/material';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 type SubMenuItem = {
     onRoot: boolean;
@@ -134,6 +135,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
 
@@ -430,7 +432,6 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 },
                 INSERT_NODE_BEFORE: {
                     onRoot: false,
-
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.CONSTRUCTION),
                     id: 'insertNodeAbove',
@@ -486,8 +487,9 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         EXPORT_NODE: {
             onRoot: false,
             action: () => exportNodeInfos(),
-            id: 'exportNodeMInfos',
-            disabled: false,
+            id: 'exportNodeInfos',
+            hidden: !isDeveloperMode,
+            withDivider: true,
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,
