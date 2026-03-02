@@ -17,7 +17,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
+import { SwitchesBetweenSections } from '@gridsuite/commons-ui';
 
 export interface CreateVoltageLevelTopologyFormProps {
     voltageLevelId: string;

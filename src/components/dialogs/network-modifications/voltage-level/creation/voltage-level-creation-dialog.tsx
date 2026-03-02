@@ -11,48 +11,25 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentType,
+    FieldConstants,
     FieldType,
     getPropertiesFromModification,
     MODIFICATION_TYPES,
     Properties,
     Property,
+    sanitizeString,
     snackWithFallback,
+    SwitchKindFormData,
     toModificationProperties,
     useSnackMessage,
-    DeepNullable,
-    sanitizeString,
-    FieldConstants,
-    VL_SUBSTATION_ID,
-    VL_NOMINAL_V,
-    VL_LOW_VOLTAGE_LIMIT,
-    VL_HIGH_VOLTAGE_LIMIT,
-    VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-    VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
-import {
-    ADD_SUBSTATION_CREATION,
-    BUS_BAR_COUNT,
-    BUS_BAR_SECTION_ID1,
-    BUS_BAR_SECTION_ID2,
-    COUPLING_OMNIBUS,
-    EQUIPMENT_ID,
-    ID,
-    IS_ATTACHMENT_POINT_CREATION,
-    NAME,
-    SECTION_COUNT,
-    SUBSTATION_CREATION,
-    SUBSTATION_CREATION_ID,
-    SUBSTATION_NAME,
-    SWITCH_KIND,
-    SWITCH_KINDS,
-    SWITCHES_BETWEEN_SECTIONS,
-    TOPOLOGY_KIND,
-} from 'components/utils/field-constants';
+import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { FC, useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -74,35 +51,33 @@ import {
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { CreateCouplingDeviceDialogSchemaForm } from '../../coupling-device/coupling-device-dialog.type';
 
-export type SwitchKindFormData = { [SWITCH_KIND]: string };
-
-interface VoltageLevelCreationFormData {
+interface StudyVoltageLevelCreationFormData {
     [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
-    [ADD_SUBSTATION_CREATION]: boolean;
-    [BUS_BAR_COUNT]: number;
+    [FieldConstants.ADD_SUBSTATION_CREATION]: boolean;
+    [FieldConstants.BUS_BAR_COUNT]: number;
     [FieldConstants.COUNTRY]: string | null;
-    [COUPLING_OMNIBUS]: CreateCouplingDeviceDialogSchemaForm[];
+    [FieldConstants.COUPLING_OMNIBUS]: CreateCouplingDeviceDialogSchemaForm[];
     [FieldConstants.EQUIPMENT_ID]: string;
     [FieldConstants.EQUIPMENT_NAME]: string;
-    [VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
-    [VL_HIGH_VOLTAGE_LIMIT]: number | null;
-    [IS_ATTACHMENT_POINT_CREATION]: boolean;
-    [VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
-    [VL_LOW_VOLTAGE_LIMIT]: number | null;
-    [VL_NOMINAL_V]: number | null;
-    [SECTION_COUNT]: number;
-    [SUBSTATION_CREATION]: Properties;
-    [SUBSTATION_CREATION_ID]: string | null;
-    [VL_SUBSTATION_ID]: string | null;
-    [SUBSTATION_NAME]: string | null;
-    [SWITCHES_BETWEEN_SECTIONS]: string;
-    [SWITCH_KINDS]: SwitchKindFormData[];
-    [TOPOLOGY_KIND]: string | null;
+    [FieldConstants.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
+    [FieldConstants.HIGH_VOLTAGE_LIMIT]: number | null;
+    [FieldConstants.IS_ATTACHMENT_POINT_CREATION]: boolean;
+    [FieldConstants.LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: number | null;
+    [FieldConstants.LOW_VOLTAGE_LIMIT]: number | null;
+    [FieldConstants.NOMINAL_V]: number | null;
+    [FieldConstants.SECTION_COUNT]: number;
+    [FieldConstants.SUBSTATION_CREATION]: Properties;
+    [FieldConstants.SUBSTATION_CREATION_ID]: string | null;
+    [FieldConstants.SUBSTATION_ID]: string | null;
+    [FieldConstants.SUBSTATION_NAME]: string | null;
+    [FieldConstants.SWITCHES_BETWEEN_SECTIONS]: string;
+    [FieldConstants.SWITCH_KINDS]: SwitchKindFormData[];
+    [FieldConstants.TOPOLOGY_KIND]: string | null;
     uuid?: UUID;
 }
 
 interface VoltageLevelCreationDialogProps {
-    editData?: VoltageLevelCreationFormData;
+    editData?: StudyVoltageLevelCreationFormData;
     currentNode: CurrentTreeNode;
     studyUuid: string;
     currentRootNetworkUuid: UUID;
@@ -126,27 +101,27 @@ interface VoltageLevelCreationDialogProps {
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
 
-const emptyFormData: VoltageLevelCreationFormData = {
+const emptyFormData: StudyVoltageLevelCreationFormData = {
     [FieldConstants.EQUIPMENT_ID]: '',
     [FieldConstants.EQUIPMENT_NAME]: '',
-    [VL_SUBSTATION_ID]: null,
-    [VL_NOMINAL_V]: null,
-    [VL_LOW_VOLTAGE_LIMIT]: null,
-    [VL_HIGH_VOLTAGE_LIMIT]: null,
-    [VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
-    [VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
-    [BUS_BAR_COUNT]: 1,
-    [SECTION_COUNT]: 1,
-    [SWITCHES_BETWEEN_SECTIONS]: '',
-    [COUPLING_OMNIBUS]: [],
-    [SWITCH_KINDS]: [],
-    [ADD_SUBSTATION_CREATION]: false,
-    [SUBSTATION_CREATION_ID]: null,
-    [SUBSTATION_NAME]: null,
+    [FieldConstants.SUBSTATION_ID]: null,
+    [FieldConstants.NOMINAL_V]: null,
+    [FieldConstants.LOW_VOLTAGE_LIMIT]: null,
+    [FieldConstants.HIGH_VOLTAGE_LIMIT]: null,
+    [FieldConstants.LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+    [FieldConstants.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+    [FieldConstants.BUS_BAR_COUNT]: 1,
+    [FieldConstants.SECTION_COUNT]: 1,
+    [FieldConstants.SWITCHES_BETWEEN_SECTIONS]: '',
+    [FieldConstants.COUPLING_OMNIBUS]: [],
+    [FieldConstants.SWITCH_KINDS]: [],
+    [FieldConstants.ADD_SUBSTATION_CREATION]: false,
+    [FieldConstants.SUBSTATION_CREATION_ID]: null,
+    [FieldConstants.SUBSTATION_NAME]: null,
     [FieldConstants.COUNTRY]: null,
-    [IS_ATTACHMENT_POINT_CREATION]: false,
-    [TOPOLOGY_KIND]: null,
-    [SUBSTATION_CREATION]: emptyProperties,
+    [FieldConstants.IS_ATTACHMENT_POINT_CREATION]: false,
+    [FieldConstants.TOPOLOGY_KIND]: null,
+    [FieldConstants.SUBSTATION_CREATION]: emptyProperties,
 };
 
 const formSchema = yup
@@ -155,28 +130,28 @@ const formSchema = yup
         [FieldConstants.EQUIPMENT_ID]: yup
             .string()
             .required()
-            .when([ADD_SUBSTATION_CREATION], {
+            .when([FieldConstants.ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation: boolean) => !addSubstationCreation,
                 then: (schema) =>
                     schema.notOneOf(
-                        [yup.ref(VL_SUBSTATION_ID), null],
+                        [yup.ref(FieldConstants.SUBSTATION_ID), null],
                         'CreateSubstationInVoltageLevelIdenticalId'
                     ),
             })
-            .when([ADD_SUBSTATION_CREATION], {
+            .when([FieldConstants.ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation: boolean) => addSubstationCreation,
                 then: (schema) =>
                     schema.notOneOf(
-                        [yup.ref(SUBSTATION_CREATION_ID), null],
+                        [yup.ref(FieldConstants.SUBSTATION_CREATION_ID), null],
                         'CreateSubstationInVoltageLevelIdenticalId'
                     ),
             }),
         [FieldConstants.EQUIPMENT_NAME]: yup.string().nullable(),
-        [ADD_SUBSTATION_CREATION]: yup.boolean().required(),
-        [VL_SUBSTATION_ID]: yup
+        [FieldConstants.ADD_SUBSTATION_CREATION]: yup.boolean().required(),
+        [FieldConstants.SUBSTATION_ID]: yup
             .string()
             .nullable()
-            .when([ADD_SUBSTATION_CREATION], {
+            .when([FieldConstants.ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation: boolean) => !addSubstationCreation,
                 then: (schema) =>
                     schema
@@ -186,10 +161,10 @@ const formSchema = yup
                             'CreateSubstationInVoltageLevelIdenticalId'
                         ),
             }),
-        [SUBSTATION_CREATION_ID]: yup
+        [FieldConstants.SUBSTATION_CREATION_ID]: yup
             .string()
             .nullable()
-            .when([ADD_SUBSTATION_CREATION], {
+            .when([FieldConstants.ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation: boolean) => addSubstationCreation,
                 then: (schema) =>
                     schema
@@ -199,71 +174,74 @@ const formSchema = yup
                             'CreateSubstationInVoltageLevelIdenticalId'
                         ),
             }),
-        [SUBSTATION_NAME]: yup.string().nullable(),
+        [FieldConstants.SUBSTATION_NAME]: yup.string().nullable(),
         [FieldConstants.COUNTRY]: yup.string().nullable(),
-        [SUBSTATION_CREATION]: creationPropertiesSchema,
-        [VL_NOMINAL_V]: yup
+        [FieldConstants.SUBSTATION_CREATION]: creationPropertiesSchema,
+        [FieldConstants.NOMINAL_V]: yup
             .number()
             .nullable()
-            .when([IS_ATTACHMENT_POINT_CREATION], {
+            .when([FieldConstants.IS_ATTACHMENT_POINT_CREATION], {
                 is: (isAttachmentPointCreation: boolean) => !isAttachmentPointCreation,
                 then: (schema) => schema.min(0, 'mustBeGreaterOrEqualToZero').required(),
             }),
-        [VL_LOW_VOLTAGE_LIMIT]: yup
+        [FieldConstants.LOW_VOLTAGE_LIMIT]: yup
             .number()
             .nullable()
             .min(0, 'mustBeGreaterOrEqualToZero')
-            .max(yup.ref(VL_HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
-        [VL_HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+            .max(yup.ref(FieldConstants.HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
+        [FieldConstants.HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [FieldConstants.LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
             .nullable()
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-            .max(yup.ref(VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT), 'ShortCircuitCurrentLimitMinMaxError'),
-        [VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+            .max(yup.ref(FieldConstants.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT), 'ShortCircuitCurrentLimitMinMaxError'),
+        [FieldConstants.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
             .nullable()
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-            .when([VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
+            .when([FieldConstants.LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
                 is: (lowShortCircuitCurrentLimit: number | null) => lowShortCircuitCurrentLimit != null,
                 then: (schema) => schema.required(),
             }),
-        [BUS_BAR_COUNT]: yup
+        [FieldConstants.BUS_BAR_COUNT]: yup
             .number()
             .nullable()
-            .when([IS_ATTACHMENT_POINT_CREATION], {
+            .when([FieldConstants.IS_ATTACHMENT_POINT_CREATION], {
                 is: (isAttachmentPointCreation: boolean) => !isAttachmentPointCreation,
                 then: (schema) => schema.min(1, 'BusBarCountMustBeGreaterThanOrEqualToOne').required(),
             }),
-        [SECTION_COUNT]: yup
+        [FieldConstants.SECTION_COUNT]: yup
             .number()
             .nullable()
-            .when([IS_ATTACHMENT_POINT_CREATION], {
+            .when([FieldConstants.IS_ATTACHMENT_POINT_CREATION], {
                 is: (isAttachmentPointCreation: boolean) => !isAttachmentPointCreation,
                 then: (schema) => schema.min(1, 'SectionCountMustBeGreaterThanOrEqualToOne').required(),
             }),
-        [SWITCHES_BETWEEN_SECTIONS]: yup
+        [FieldConstants.SWITCHES_BETWEEN_SECTIONS]: yup
             .string()
             .nullable()
-            .when([SECTION_COUNT], {
+            .when([FieldConstants.SECTION_COUNT], {
                 is: (sectionCount: number) => sectionCount > 1,
                 then: (schema) => schema.required(),
             }),
-        [SWITCH_KINDS]: yup.array().of(
+        [FieldConstants.SWITCH_KINDS]: yup.array().of(
             yup.object().shape({
-                [SWITCH_KIND]: yup.string().required(),
+                [FieldConstants.SWITCH_KIND]: yup.string().required(),
             })
         ),
-        [IS_ATTACHMENT_POINT_CREATION]: yup.boolean().required(),
-        [TOPOLOGY_KIND]: yup.string().nullable(),
-        [COUPLING_OMNIBUS]: yup.array().of(
+        [FieldConstants.IS_ATTACHMENT_POINT_CREATION]: yup.boolean().required(),
+        [FieldConstants.TOPOLOGY_KIND]: yup.string().nullable(),
+        [FieldConstants.COUPLING_OMNIBUS]: yup.array().of(
             yup.object().shape({
-                [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
-                [BUS_BAR_SECTION_ID2]: yup
+                [FieldConstants.BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
+                [FieldConstants.BUS_BAR_SECTION_ID2]: yup
                     .string()
                     .nullable()
                     .required()
-                    .notOneOf([yup.ref(BUS_BAR_SECTION_ID1), null], 'CreateCouplingDeviceIdenticalBusBar'),
+                    .notOneOf(
+                        [yup.ref(FieldConstants.BUS_BAR_SECTION_ID1), null],
+                        'CreateCouplingDeviceIdenticalBusBar'
+                    ),
             })
         ),
     })
@@ -286,9 +264,13 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     const currentNodeUuid = currentNode.id;
     const { snackError, snackWarning } = useSnackMessage();
 
-    const defaultValues = useMemo((): VoltageLevelCreationFormData => {
+    const defaultValues = useMemo((): StudyVoltageLevelCreationFormData => {
         if (isAttachmentPointModification) {
-            return { ...emptyFormData, [ADD_SUBSTATION_CREATION]: true, [IS_ATTACHMENT_POINT_CREATION]: true };
+            return {
+                ...emptyFormData,
+                [FieldConstants.ADD_SUBSTATION_CREATION]: true,
+                [FieldConstants.IS_ATTACHMENT_POINT_CREATION]: true,
+            };
         } else {
             return emptyFormData;
         }
@@ -307,69 +289,72 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
             const isSubstationCreation =
                 (!fromCopy && voltageLevel.substationCreation?.equipmentId != null) || isAttachmentPointModification;
             const shortCircuitLimits = {
-                [VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+                [FieldConstants.LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
                 ),
-                [VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+                [FieldConstants.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
                 ),
             };
             const switchKinds: SwitchKindFormData[] =
                 voltageLevel.switchKinds?.map((switchKind: string) => ({
-                    [SWITCH_KIND]: switchKind,
+                    [FieldConstants.SWITCH_KIND]: switchKind,
                 })) || [];
             const switchesBetweenSections =
                 voltageLevel.switchKinds
                     ?.map((switchKind: string) => intl.formatMessage({ id: switchKind }))
                     .join(' / ') || '';
 
-            // Read from external data using API field names (equipmentId, id, name)
-            const equipmentId = (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : '');
-            const equipmentName = voltageLevel[FieldConstants.EQUIPMENT_NAME] ?? voltageLevel[NAME];
-            const substationId = isSubstationCreation ? null : (voltageLevel[VL_SUBSTATION_ID] ?? null);
+            // Read from external data using API field names (equipmentId with lowercase d, id, name)
+            const equipmentId =
+                (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[FieldConstants.ID]) + (fromCopy ? '(1)' : '');
+            const equipmentName =
+                voltageLevel[FieldConstants.EQUIPMENT_NAME] ?? voltageLevel[FieldConstants.NAME];
+            const substationId = isSubstationCreation
+                ? null
+                : (voltageLevel[FieldConstants.SUBSTATION_ID] ?? null);
 
             const properties = fromCopy
                 ? copyEquipmentPropertiesForCreation(voltageLevel)
                 : getPropertiesFromModification(voltageLevel.properties);
             reset(
                 {
-                    // Set form fields using commons-ui field names
                     [FieldConstants.EQUIPMENT_ID]: equipmentId,
                     [FieldConstants.EQUIPMENT_NAME]: equipmentName,
-                    [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
-                    [VL_SUBSTATION_ID]: substationId,
-                    [VL_NOMINAL_V]: voltageLevel[VL_NOMINAL_V],
-                    [VL_LOW_VOLTAGE_LIMIT]: voltageLevel[VL_LOW_VOLTAGE_LIMIT],
-                    [VL_HIGH_VOLTAGE_LIMIT]: voltageLevel[VL_HIGH_VOLTAGE_LIMIT],
+                    [FieldConstants.TOPOLOGY_KIND]: voltageLevel[FieldConstants.TOPOLOGY_KIND],
+                    [FieldConstants.SUBSTATION_ID]: substationId,
+                    [FieldConstants.NOMINAL_V]: voltageLevel[FieldConstants.NOMINAL_V],
+                    [FieldConstants.LOW_VOLTAGE_LIMIT]: voltageLevel[FieldConstants.LOW_VOLTAGE_LIMIT],
+                    [FieldConstants.HIGH_VOLTAGE_LIMIT]: voltageLevel[FieldConstants.HIGH_VOLTAGE_LIMIT],
                     ...shortCircuitLimits,
-                    [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
-                    [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
-                    [SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
-                    [COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
-                    [SWITCH_KINDS]: switchKinds,
-                    [IS_ATTACHMENT_POINT_CREATION]: isAttachmentPointModification,
+                    [FieldConstants.BUS_BAR_COUNT]: voltageLevel[FieldConstants.BUS_BAR_COUNT] ?? 1,
+                    [FieldConstants.SECTION_COUNT]: voltageLevel[FieldConstants.SECTION_COUNT] ?? 1,
+                    [FieldConstants.SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
+                    [FieldConstants.COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
+                    [FieldConstants.SWITCH_KINDS]: switchKinds,
+                    [FieldConstants.IS_ATTACHMENT_POINT_CREATION]: isAttachmentPointModification,
                     ...properties,
                 },
                 { keepDefaultValues: true }
             );
             if (isSubstationCreation) {
                 const substationKeys = [
-                    [SUBSTATION_CREATION_ID, voltageLevel.substationCreation?.equipmentId],
-                    [SUBSTATION_NAME, voltageLevel.substationCreation?.equipmentName],
+                    [FieldConstants.SUBSTATION_CREATION_ID, voltageLevel.substationCreation?.equipmentId],
+                    [FieldConstants.SUBSTATION_NAME, voltageLevel.substationCreation?.equipmentName],
                     [FieldConstants.COUNTRY, voltageLevel.substationCreation?.country],
                 ];
                 substationKeys.forEach(([key, value]) => {
                     setValue(key, value);
                 });
                 setValue(
-                    `${SUBSTATION_CREATION}.${FieldConstants.ADDITIONAL_PROPERTIES}`,
+                    `${FieldConstants.SUBSTATION_CREATION}.${FieldConstants.ADDITIONAL_PROPERTIES}`,
                     voltageLevel.substationCreation?.properties
                 );
-                setValue(ADD_SUBSTATION_CREATION, true);
+                setValue(FieldConstants.ADD_SUBSTATION_CREATION, true);
             } else {
-                setValue(ADD_SUBSTATION_CREATION, false);
+                setValue(FieldConstants.ADD_SUBSTATION_CREATION, false);
             }
             if (!voltageLevel.isSymmetrical && fromCopy) {
                 snackWarning({
@@ -382,38 +367,35 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
     // Supervisor watches to trigger validation for interdependent constraints
     useEffect(() => {
-        // Watch HIGH_VOLTAGE_LIMIT changed
         const unsubscribeHighVoltageLimit = subscribe({
-            name: [VL_HIGH_VOLTAGE_LIMIT],
+            name: [FieldConstants.HIGH_VOLTAGE_LIMIT],
             formState: {
                 values: true,
             },
             callback: ({ isSubmitted }: { isSubmitted?: boolean }) => {
                 if (isSubmitted) {
-                    trigger(VL_LOW_VOLTAGE_LIMIT).then();
+                    trigger(FieldConstants.LOW_VOLTAGE_LIMIT).then();
                 }
             },
         });
 
-        // Watch EQUIPMENT_ID changed
         const unsubscribeEquipmentId = subscribe({
             name: [FieldConstants.EQUIPMENT_ID],
             formState: {
                 values: true,
             },
             callback: () => {
-                if (getValues(VL_SUBSTATION_ID)) {
-                    trigger(VL_SUBSTATION_ID);
+                if (getValues(FieldConstants.SUBSTATION_ID)) {
+                    trigger(FieldConstants.SUBSTATION_ID);
                 }
-                if (getValues(SUBSTATION_CREATION_ID)) {
-                    trigger(SUBSTATION_CREATION_ID);
+                if (getValues(FieldConstants.SUBSTATION_CREATION_ID)) {
+                    trigger(FieldConstants.SUBSTATION_CREATION_ID);
                 }
             },
         });
 
-        // Watch SUBSTATION_ID or SUBSTATION_CREATION_ID changed
         const unsubscribeSubstationIds = subscribe({
-            name: [VL_SUBSTATION_ID, SUBSTATION_CREATION_ID],
+            name: [FieldConstants.SUBSTATION_ID, FieldConstants.SUBSTATION_CREATION_ID],
             formState: {
                 values: true,
             },
@@ -440,14 +422,16 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     }, [fromExternalDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (voltageLevel: VoltageLevelCreationFormData) => {
-            const substationCreation: AttachedSubstationCreationInfo | null = getValues(ADD_SUBSTATION_CREATION)
+        (voltageLevel: StudyVoltageLevelCreationFormData) => {
+            const substationCreation: AttachedSubstationCreationInfo | null = getValues(
+                FieldConstants.ADD_SUBSTATION_CREATION
+            )
                 ? {
                       type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
-                      equipmentId: voltageLevel[SUBSTATION_CREATION_ID],
-                      equipmentName: voltageLevel[SUBSTATION_NAME],
+                      equipmentId: voltageLevel[FieldConstants.SUBSTATION_CREATION_ID],
+                      equipmentName: voltageLevel[FieldConstants.SUBSTATION_NAME],
                       country: voltageLevel[FieldConstants.COUNTRY],
-                      properties: toModificationProperties(voltageLevel[SUBSTATION_CREATION]),
+                      properties: toModificationProperties(voltageLevel[FieldConstants.SUBSTATION_CREATION]),
                   }
                 : null;
             onCreateVoltageLevel({
@@ -455,25 +439,25 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 nodeUuid: currentNodeUuid,
                 equipmentId: voltageLevel[FieldConstants.EQUIPMENT_ID],
                 equipmentName: sanitizeString(voltageLevel[FieldConstants.EQUIPMENT_NAME]) ?? undefined,
-                substationId: substationCreation === null ? voltageLevel[VL_SUBSTATION_ID] : null,
+                substationId: substationCreation === null ? voltageLevel[FieldConstants.SUBSTATION_ID] : null,
                 substationCreation: substationCreation,
-                nominalV: voltageLevel[VL_NOMINAL_V],
-                lowVoltageLimit: voltageLevel[VL_LOW_VOLTAGE_LIMIT],
-                highVoltageLimit: voltageLevel[VL_HIGH_VOLTAGE_LIMIT],
+                nominalV: voltageLevel[FieldConstants.NOMINAL_V],
+                lowVoltageLimit: voltageLevel[FieldConstants.LOW_VOLTAGE_LIMIT],
+                highVoltageLimit: voltageLevel[FieldConstants.HIGH_VOLTAGE_LIMIT],
                 ipMin: convertOutputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    voltageLevel[VL_LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
+                    voltageLevel[FieldConstants.LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
                 ipMax: convertOutputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    voltageLevel[VL_HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
+                    voltageLevel[FieldConstants.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
-                busbarCount: voltageLevel[BUS_BAR_COUNT],
-                sectionCount: voltageLevel[SECTION_COUNT],
-                switchKinds: voltageLevel[SWITCH_KINDS].map((e) => {
+                busbarCount: voltageLevel[FieldConstants.BUS_BAR_COUNT],
+                sectionCount: voltageLevel[FieldConstants.SECTION_COUNT],
+                switchKinds: voltageLevel[FieldConstants.SWITCH_KINDS].map((e) => {
                     return e.switchKind as SwitchKind;
                 }),
-                couplingDevices: voltageLevel[COUPLING_OMNIBUS],
+                couplingDevices: voltageLevel[FieldConstants.COUPLING_OMNIBUS],
                 isUpdate: !!editData,
                 modificationUuid: editData?.uuid,
                 properties: toModificationProperties(voltageLevel),
