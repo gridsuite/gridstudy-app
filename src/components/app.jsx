@@ -38,9 +38,9 @@ import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
+    initOrUpdateSpreadsheetGlobalFilters,
     initTableDefinitions,
     renameTableDefinition,
-    saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
     selectIsDeveloperMode,
     selectLanguage,
@@ -66,6 +66,7 @@ import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
+import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -161,6 +162,8 @@ const App = () => {
 
     useBaseVoltages();
 
+    useGlobalFilterOptions();
+
     const networkVisuParamsUpdated = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
@@ -200,7 +203,7 @@ const App = () => {
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
-                    dispatch(saveSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
+                    dispatch(initOrUpdateSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
                     dispatch(
                         addSortForNewSpreadsheet(tabUuid, [
                             {

@@ -8,13 +8,12 @@
 import { type RefObject, useCallback, useEffect, useMemo } from 'react';
 import type { FilterChangedEvent, GridOptions } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
-import { useSelector } from 'react-redux';
-import { type AppState } from '../../../../../redux/reducer';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 import { useGlobalFilterResults } from '../../../../results/common/global-filter/use-global-filter-results';
 import { FilterEquipmentType } from '../../../../../types/filter-lib/filter';
+import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
     event.api.refreshCells({ columns: [ROW_INDEX_COLUMN_ID], force: true });
@@ -26,7 +25,8 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
     tabUuid: UUID,
     equipmentType: SpreadsheetEquipmentType
 ) {
-    const globalFilterSpreadsheetState = useSelector((state: AppState) => state.globalFilterSpreadsheetState[tabUuid]);
+    const selectedGlobalFilters = useSelectedGlobalFilters(tabUuid);
+
     const equipmentTypes = useMemo(
         () =>
             equipmentType === SpreadsheetEquipmentType.BRANCH
@@ -34,7 +34,7 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
                 : ([equipmentType as unknown as FilterEquipmentType] as const),
         [equipmentType]
     );
-    const filteredEquipmentIds = useGlobalFilterResults(globalFilterSpreadsheetState, equipmentTypes);
+    const filteredEquipmentIds = useGlobalFilterResults(selectedGlobalFilters, equipmentTypes);
     useEffect(() => {
         gridRef.current?.api?.onFilterChanged();
     }, [filteredEquipmentIds, gridRef]);
@@ -44,8 +44,8 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
         [filteredEquipmentIds]
     );
     const isExternalFilterPresent = useCallback<NonNullable<GridOptions<TData>['isExternalFilterPresent']>>(
-        () => globalFilterSpreadsheetState.length > 0,
-        [globalFilterSpreadsheetState]
+        () => selectedGlobalFilters.length > 0,
+        [selectedGlobalFilters]
     );
     return { doesFormulaFilteringPass, isExternalFilterPresent };
 }

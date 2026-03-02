@@ -26,9 +26,8 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     ComputingStatusParameters,
-    GlobalFilterSpreadsheetState,
-    NodeSelectionForCopy,
     CopiedNetworkModifications,
+    NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
     TableSortConfig,
@@ -57,7 +56,6 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
-    FilterType,
     LogsPaginationConfig,
     PaginationConfig,
     PccminTab,
@@ -65,6 +63,7 @@ import {
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
     SortConfig,
+    TableType,
 } from '../types/custom-aggrid-types';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
@@ -118,8 +117,8 @@ export type AppActions =
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
     | ResetOneBusShortcircuitAnalysisDiagramAction
-    | AddToRecentGlobalFiltersAction
-    | RemoveFromRecentGlobalFiltersAction
+    | AddToGlobalFilterOptionsAction
+    | RemoveFromGlobalFilterOptionsAction
     | SetLastCompletedComputationAction
     | SpreadsheetFilterAction
     | UpdateSpreadsheetPartialDataAction
@@ -128,8 +127,7 @@ export type AppActions =
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | AddFilterForNewSpreadsheetAction
-    | SaveSpreadSheetGlobalFilterAction
-    | ResetAllSpreadsheetGlobalFiltersAction
+    | InitOrUpdateSpreadSheetGlobalFilterAction
     | RemoveTableDefinitionAction
     | SetCalculationSelectionsAction
     | ReorderTableDefinitionsAction
@@ -151,7 +149,9 @@ export type AppActions =
     | SetActiveSpreadsheetTabAction
     | SetAddedSpreadsheetTabAction
     | UpdateColumnFiltersAction
-    | UpdateGlobalFiltersAction;
+    | AddGlobalFiltersAction
+    | RemoveGlobalFiltersAction
+    | ClearGlobalFiltersAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -953,27 +953,27 @@ export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircui
     };
 }
 
-export const ADD_TO_RECENT_GLOBAL_FILTERS = 'ADD_TO_RECENT_GLOBAL_FILTERS';
-export type AddToRecentGlobalFiltersAction = Readonly<Action<typeof ADD_TO_RECENT_GLOBAL_FILTERS>> & {
+export const ADD_TO_GLOBAL_FILTER_OPTIONS = 'ADD_TO_GLOBAL_FILTER_OPTIONS';
+export type AddToGlobalFilterOptionsAction = Readonly<Action<typeof ADD_TO_GLOBAL_FILTER_OPTIONS>> & {
     globalFilters: GlobalFilter[];
 };
 
-export function addToRecentGlobalFilters(globalFilters: GlobalFilter[]): AddToRecentGlobalFiltersAction {
+export function addToGlobalFilterOptions(globalFilters: GlobalFilter[]): AddToGlobalFilterOptionsAction {
     return {
-        type: ADD_TO_RECENT_GLOBAL_FILTERS,
+        type: ADD_TO_GLOBAL_FILTER_OPTIONS,
         globalFilters: globalFilters,
     };
 }
 
-export const REMOVE_FROM_RECENT_GLOBAL_FILTERS = 'REMOVE_FROM_RECENT_GLOBAL_FILTERS';
-export type RemoveFromRecentGlobalFiltersAction = Readonly<Action<typeof REMOVE_FROM_RECENT_GLOBAL_FILTERS>> & {
-    uuid: UUID;
+export const REMOVE_FROM_GLOBAL_FILTER_OPTIONS = 'REMOVE_FROM_GLOBAL_FILTER_OPTIONS';
+export type RemoveFromGlobalFilterOptionsAction = Readonly<Action<typeof REMOVE_FROM_GLOBAL_FILTER_OPTIONS>> & {
+    id: string;
 };
 
-export function removeFromRecentGlobalFilters(uuid: UUID): RemoveFromRecentGlobalFiltersAction {
+export function removeFromGlobalFilterOptions(id: string): RemoveFromGlobalFilterOptionsAction {
     return {
-        type: REMOVE_FROM_RECENT_GLOBAL_FILTERS,
-        uuid: uuid,
+        type: REMOVE_FROM_GLOBAL_FILTER_OPTIONS,
+        id,
     };
 }
 
@@ -1106,22 +1106,38 @@ export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>
 };
 
 export const UPDATE_COLUMN_FILTERS = 'UPDATE_COLUMN_FILTERS';
-export const UPDATE_GLOBAL_FILTERS = 'UPDATE_GLOBAL_FILTERS';
+export const ADD_GLOBAL_FILTERS = 'ADD_GLOBAL_FILTERS';
+export const CLEAR_GLOBAL_FILTERS = 'CLEAR_GLOBAL_FILTERS';
+export const REMOVE_GLOBAL_FILTERS = 'REMOVE_GLOBAL_FILTERS';
+
 export type UpdateColumnFiltersAction = {
     type: typeof UPDATE_COLUMN_FILTERS;
-    filterType: FilterType;
+    filterType: TableType;
     filterSubType: string;
     filters: FilterConfig[];
 };
+export type GlobalFilterAction = {
+    type: typeof ADD_GLOBAL_FILTERS | typeof CLEAR_GLOBAL_FILTERS | typeof REMOVE_GLOBAL_FILTERS;
+    tableType: TableType;
+    tableId: string;
+};
 
-export type UpdateGlobalFiltersAction = {
-    type: typeof UPDATE_GLOBAL_FILTERS;
-    filterType: FilterType;
-    globalFilters: GlobalFilter[];
+export type AddGlobalFiltersAction = GlobalFilterAction & {
+    type: typeof ADD_GLOBAL_FILTERS;
+    filterIds: string[];
+};
+
+export type ClearGlobalFiltersAction = GlobalFilterAction & {
+    type: typeof CLEAR_GLOBAL_FILTERS;
+};
+
+export type RemoveGlobalFiltersAction = GlobalFilterAction & {
+    type: typeof REMOVE_GLOBAL_FILTERS;
+    filterIds: string[];
 };
 
 export const updateColumnFiltersAction = (
-    filterType: FilterType,
+    filterType: TableType,
     filterSubType: string,
     filters: FilterConfig[]
 ): UpdateColumnFiltersAction => ({
@@ -1131,13 +1147,33 @@ export const updateColumnFiltersAction = (
     filters,
 });
 
-export const updateGlobalFiltersAction = (
-    filterType: FilterType,
-    globalFilters: GlobalFilter[]
-): UpdateGlobalFiltersAction => ({
-    type: UPDATE_GLOBAL_FILTERS,
-    filterType,
-    globalFilters,
+export const addToSelectedGlobalFilters = (
+    tableType: TableType,
+    tableId: string,
+    filterIds: string[]
+): AddGlobalFiltersAction => ({
+    type: ADD_GLOBAL_FILTERS,
+    tableType,
+    tableId,
+    filterIds,
+});
+
+// Clears all selected global filter IDs for a given table.
+export const clearSelectedGlobalFilters = (tableType: TableType, tableId: string): ClearGlobalFiltersAction => ({
+    type: CLEAR_GLOBAL_FILTERS,
+    tableType,
+    tableId,
+});
+
+export const removeFromSelectedGlobalFilters = (
+    tableType: TableType,
+    tableId: string,
+    filterIds: string[]
+): RemoveGlobalFiltersAction => ({
+    type: REMOVE_GLOBAL_FILTERS,
+    tableType,
+    tableId,
+    filterIds,
 });
 
 export const LOGS_FILTER = 'LOGS_FILTER';
@@ -1343,7 +1379,7 @@ export type InitTableDefinitionsAction = {
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters?: SpreadsheetFilterState;
-    globalFilterSpreadsheetState?: GlobalFilterSpreadsheetState;
+    globalFilters?: Record<UUID, GlobalFilter[]>;
     tablesSorts?: TableSortConfig;
 };
 
@@ -1351,14 +1387,14 @@ export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
     tablesFilters: SpreadsheetFilterState = {},
-    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {},
+    globalFilters: Record<UUID, GlobalFilter[]> = {},
     tablesSorts: TableSortConfig = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
     tablesFilters,
-    globalFilterSpreadsheetState,
+    globalFilters,
     tablesSorts,
 });
 
@@ -1403,18 +1439,20 @@ export const addSortForNewSpreadsheet = (tabUuid: UUID, value: SortConfig[]): Ad
     },
 });
 
-export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
-export type SaveSpreadSheetGlobalFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
+export const INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER = 'INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER';
+export type InitOrUpdateSpreadSheetGlobalFilterAction = Readonly<
+    Action<typeof INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER>
+> & {
     tabUuid: UUID;
     filters: GlobalFilter[];
 };
 
-export function saveSpreadsheetGlobalFilters(
+export function initOrUpdateSpreadsheetGlobalFilters(
     tabUuid: UUID,
     filters: GlobalFilter[]
-): SaveSpreadSheetGlobalFilterAction {
+): InitOrUpdateSpreadSheetGlobalFilterAction {
     return {
-        type: SAVE_SPREADSHEET_GS_FILTER,
+        type: INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER,
         tabUuid: tabUuid,
         filters: filters,
     };
@@ -1431,15 +1469,6 @@ export function setCalculationSelections(tabUuid: UUID, selections: string[]): S
         type: SET_CALCULATION_SELECTIONS,
         tabUuid,
         selections,
-    };
-}
-
-export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
-export type ResetAllSpreadsheetGlobalFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
-
-export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFiltersAction {
-    return {
-        type: RESET_ALL_SPREADSHEET_GS_FILTERS,
     };
 }
 

@@ -36,6 +36,8 @@ const getOptionalServiceByServerName = (serverName: string): OptionalServicesNam
             return OptionalServicesNames.DynamicSimulation;
         case 'dynamic-security-analysis-server':
             return OptionalServicesNames.DynamicSecurityAnalysis;
+        case 'dynamic-margin-calculation-server':
+            return OptionalServicesNames.DynamicMarginCalculation;
         case 'shortcircuit-server':
             return OptionalServicesNames.ShortCircuit;
         case 'voltage-init-server':

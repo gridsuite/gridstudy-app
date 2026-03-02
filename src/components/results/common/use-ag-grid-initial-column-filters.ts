@@ -7,7 +7,7 @@
 import { useCallback } from 'react';
 import { useStore } from 'react-redux';
 import { GridReadyEvent } from 'ag-grid-community';
-import { FilterType } from '../../../types/custom-aggrid-types';
+import { TableType } from '../../../types/custom-aggrid-types';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import type { RootState } from '../../../redux/store';
 
@@ -15,12 +15,12 @@ import type { RootState } from '../../../redux/store';
  * A hook to handle the initialization of AG Grid with saved filters.
  * It applies filters from the store and sizes columns to fit.
  *
- * @param filterType The type of computation (e.g., Short circuitAnalysis, SecurityAnalysis)
+ * @param tableType The type of computation (e.g., Short circuitAnalysis, SecurityAnalysis)
  * @param computationSubType The subtype of computation (e.g., ONE_BUS, ALL_BUSES)
  * @param onGridReady Optional callback to be called at the end of onGridReady
  */
 export const useAgGridInitialColumnFilters = (
-    filterType: FilterType,
+    tableType: TableType,
     computationSubType: string,
     onGridReady?: (params: GridReadyEvent) => void
 ) => {
@@ -30,14 +30,14 @@ export const useAgGridInitialColumnFilters = (
         (params: GridReadyEvent) => {
             const api = params.api;
             if (!api) return;
-            const { computationFilters } = store.getState();
-            const filters = computationFilters?.[filterType]?.columnsFilters?.[computationSubType]?.columns;
+            const { tableFilters } = store.getState();
+            const filters = tableFilters.columnsFilters?.[tableType]?.[computationSubType]?.columns;
             updateAgGridFilters(api, filters);
             requestAnimationFrame(() => {
                 api.sizeColumnsToFit();
             });
             onGridReady?.(params);
         },
-        [filterType, computationSubType, store, onGridReady]
+        [tableType, computationSubType, store, onGridReady]
     );
 };

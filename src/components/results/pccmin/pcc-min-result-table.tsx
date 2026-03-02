@@ -23,7 +23,7 @@ import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
-import { FilterType } from '../../../types/custom-aggrid-types';
+import { TableType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
@@ -42,7 +42,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const filters = useSelector(
-        (state: AppState) => state.computationFilters?.[FilterType.PccMin]?.columnsFilters?.[PCCMIN_RESULT]?.columns
+        (state: AppState) => state.tableFilters.columnsFilters?.[TableType.PccMin]?.[PCCMIN_RESULT]?.columns
     );
     const gridRef = useRef<AgGridReact>(null);
     const { openSLD } = useWorkspacePanelActions();
@@ -101,7 +101,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [setIsCsvButtonDisabled]
     );
 
-    const onGridReady = useAgGridInitialColumnFilters(FilterType.PccMin, PCCMIN_RESULT, ({ api }) =>
+    const onGridReady = useAgGridInitialColumnFilters(TableType.PccMin, PCCMIN_RESULT, ({ api }) =>
         setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 

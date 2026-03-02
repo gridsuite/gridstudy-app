@@ -22,12 +22,13 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { exportSensitivityResultsAsCsv } from 'services/study/sensitivity-analysis';
 import { SensiKind } from './sensitivity-analysis-result.type';
-import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
+import { SortWay, TableType } from '../../../types/custom-aggrid-types';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { GlobalFilter } from '../common/global-filter/global-filter-types';
+
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 
 interface SensitivityExportButtonProps {
     studyUuid: UUID;
@@ -36,21 +37,11 @@ interface SensitivityExportButtonProps {
     csvHeaders: string[];
     nOrNkIndex: number;
     sensiKind: SensiKind;
-    globalFilter: GlobalFilter[];
     disabled?: boolean;
 }
 
 export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonProps> = (props) => {
-    const {
-        studyUuid,
-        nodeUuid,
-        currentRootNetworkUuid,
-        csvHeaders,
-        disabled = false,
-        nOrNkIndex,
-        sensiKind,
-        globalFilter,
-    } = props;
+    const { studyUuid, nodeUuid, currentRootNetworkUuid, csvHeaders, disabled = false, nOrNkIndex, sensiKind } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
@@ -58,13 +49,13 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
 
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
-    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { filters } = useFilterSelector(TableType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
     useEffect(() => {
         setIsCsvExportSuccessful(false);
-    }, [studyUuid, currentRootNetworkUuid, nodeUuid, nOrNkIndex, sensiKind, globalFilter, sortConfig, appTabIndex]);
+    }, [studyUuid, currentRootNetworkUuid, nodeUuid, nOrNkIndex, sensiKind, sortConfig, appTabIndex]);
 
     useEffect(() => {
         if (disabled) {
@@ -100,7 +91,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
             pageSize: -1, // meaning 'All'
             ...sortSelector,
         };
-        const globalFilters = buildValidGlobalFilters(globalFilter);
+        const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.SensitivityAnalysis));
 
         exportSensitivityResultsAsCsv(
             studyUuid,
@@ -137,7 +128,6 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
         currentRootNetworkUuid,
         csvHeaders,
         language,
-        globalFilter,
         snackError,
     ]);
 

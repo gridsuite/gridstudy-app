@@ -36,7 +36,7 @@ export enum SortWay {
     DESC = 'desc',
 }
 
-export enum FilterType {
+export enum TableType {
     Loadflow = 'Loadflow',
     SecurityAnalysis = 'SecurityAnalysis',
     SensitivityAnalysis = 'SensitivityAnalysis',
@@ -62,7 +62,7 @@ export type FilterConfig = FilterData & {
 };
 
 export type FilterParams = {
-    type: FilterType;
+    type: TableType;
     tab: string;
     dataType?: string;
     comparators?: string[];
@@ -72,7 +72,7 @@ export type FilterParams = {
         filters?: FilterConfig[],
         colId?: string,
         studyUuid?: UUID,
-        filterType?: FilterType,
+        filterType?: TableType,
         filterSubType?: string,
         onBeforePersist?: () => void
     ) => void;

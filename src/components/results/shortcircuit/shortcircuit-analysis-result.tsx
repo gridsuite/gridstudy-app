@@ -33,12 +33,12 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import { FilterType, PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
+import { PaginationType, ShortcircuitAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 interface IShortCircuitAnalysisGlobalResultProps {
@@ -49,7 +49,6 @@ interface IShortCircuitAnalysisGlobalResultProps {
     customTablePaginationProps: any;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
-    globalFilter: GlobalFilter[];
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysisGlobalResultProps> = ({
@@ -60,7 +59,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     customTablePaginationProps,
     onGridColumnsChanged,
     onRowDataUpdated,
-    globalFilter,
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -83,7 +81,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
 
-    const { filters } = useComputationColumnFilters(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
+    const { filters } = useComputationColumnFilters(TableType.ShortcircuitAnalysis, mappingTabs(analysisType));
+    const globalFiltersFromState = useSelectedGlobalFilters(TableType.ShortcircuitAnalysis);
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.ShortcircuitAnalysis,
         mappingTabs(analysisType) as ShortcircuitAnalysisTab
@@ -134,7 +133,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
             filter: updatedFilters ? mapFieldsToColumnsFilter(updatedFilters, fromFrontColumnToBackKeys) : null,
             sort: backSortConfig,
         };
-        const globalFilters = buildValidGlobalFilters(globalFilter);
+        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
         fetchShortCircuitAnalysisPagedResults({
             studyUuid,
             currentNodeUuid: currentNode?.id,
@@ -174,7 +173,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         filters,
         sortConfig,
         fromFrontColumnToBackKeys,
-        globalFilter,
+        globalFiltersFromState,
     ]);
 
     useEffect(() => {

@@ -10,12 +10,12 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Checkbox,
     Divider,
+    FormLabel,
     IconButton,
     ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    FormLabel,
 } from '@mui/material';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -82,7 +82,8 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
     const tablesFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD]);
-    const tablesFiltersState = useSelector((state: AppState) => state.globalFilterSpreadsheetState);
+    const tablesGlobalFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters);
+    const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -198,9 +199,10 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     const getTableGlobalFilters = useCallback(
         (tableIndex: number): GlobalFilter[] => {
             const tableUuid = tables[tableIndex].uuid;
-            return tablesFiltersState[tableUuid] ?? [];
+            const ids = tablesGlobalFilterIds[tableUuid] ?? [];
+            return ids.map((id) => globalFilterOptions.find((opt) => opt.id === id)).filter((f) => f !== undefined);
         },
-        [tablesFiltersState, tables]
+        [tablesGlobalFilterIds, globalFilterOptions, tables]
     );
 
     const getTableSorting = useCallback(

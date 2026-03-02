@@ -14,7 +14,7 @@ import {
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
-import { FilterType, SortConfig } from '../../types/custom-aggrid-types';
+import { TableType, SortConfig } from '../../types/custom-aggrid-types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');
@@ -246,7 +246,7 @@ export function getComputationResultGlobalFilters(studyUuid: UUID, computationTy
     return backendFetchJson(url);
 }
 
-export function updateComputationResultFilters(
+export function setComputationResultGlobalFilters(
     studyUuid: UUID,
     filterType: string | undefined,
     filters: GlobalFilter[]
@@ -262,7 +262,7 @@ export function updateComputationResultFilters(
 
 export function updateComputationResultFiltersColumn(
     studyUuid: UUID,
-    filterType: FilterType,
+    filterType: TableType,
     filterSubType: string,
     columnFilterInfos: any
 ) {

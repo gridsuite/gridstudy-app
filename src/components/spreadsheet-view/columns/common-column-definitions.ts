@@ -19,7 +19,7 @@ import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { BooleanFilterValue } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { FilterConfig, FilterType, SortConfig } from '../../../types/custom-aggrid-types';
+import { FilterConfig, TableType, SortConfig } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
     CustomColDef,
@@ -83,7 +83,7 @@ export const textColumnDefinition = (
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    type: FilterType.Spreadsheet,
+                    type: TableType.Spreadsheet,
                     tab,
                     updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     dataType: FILTER_DATA_TYPES.TEXT,
@@ -136,7 +136,7 @@ export const enumColumnDefinition = (
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
                 filterParams: {
-                    type: FilterType.Spreadsheet,
+                    type: TableType.Spreadsheet,
                     tab,
                     updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     dataType: FILTER_DATA_TYPES.TEXT,
@@ -169,7 +169,7 @@ export const numberColumnDefinition = (
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    type: FilterType.Spreadsheet,
+                    type: TableType.Spreadsheet,
                     tab,
                     updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     dataType: FILTER_DATA_TYPES.NUMBER,
@@ -227,7 +227,7 @@ export const booleanColumnDefinition = (
             filterComponent: CustomAggridBooleanFilter,
             filterComponentParams: {
                 filterParams: {
-                    type: FilterType.Spreadsheet,
+                    type: TableType.Spreadsheet,
                     tab,
                     dataType: FILTER_DATA_TYPES.BOOLEAN,
                     updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
