@@ -77,6 +77,7 @@ import {
     fetchDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
 } from '../services/study/dynamic-margin-calculation';
+import { BUILD_STATUS } from './network/constants';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -99,6 +100,7 @@ const ParametersTabs: FunctionComponent = () => {
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
+    const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
@@ -329,6 +331,10 @@ const ParametersTabs: FunctionComponent = () => {
                         fetchContingencyCount={(contingencyLists: UUID[] | null) =>
                             fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
                         }
+                        isBuiltCurrentNode={
+                            currentNodeBuildStatus !== BUILD_STATUS.NOT_BUILT &&
+                            currentNodeBuildStatus !== BUILD_STATUS.BUILDING
+                        }
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
                     />
@@ -407,6 +413,7 @@ const ParametersTabs: FunctionComponent = () => {
         setDirtyFields,
         isDeveloperMode,
         securityAnalysisParametersBackend,
+        currentNodeBuildStatus,
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,

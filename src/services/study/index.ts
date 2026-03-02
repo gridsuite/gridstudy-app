@@ -20,6 +20,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
+import { ContingencyCount } from '@gridsuite/commons-ui/dist/components/parameters/common/contingency-table';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
@@ -201,7 +202,7 @@ export function fetchContingencyCount(
     currentNodeUuid: UUID | null,
     currentRootNetworkUuid: UUID | null,
     contingencyListIds: UUID[] | null
-): Promise<number> {
+): Promise<ContingencyCount> {
     console.info(
         `Fetching contingency count for ${contingencyListIds} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
