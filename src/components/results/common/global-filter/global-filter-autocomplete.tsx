@@ -288,13 +288,7 @@ function GlobalFilterAutocomplete() {
                         label={label}
                         {...getTagsProps({ index })}
                         key={key}
-                        sx={{
-                            ...getResultsGlobalFiltersChipStyle(element.filterType),
-                            ...(element.label === 'elementNotFound' && {
-                                backgroundColor: 'error.main',
-                                color: 'error.contrastText',
-                            }),
-                        }}
+                        sx={getResultsGlobalFiltersChipStyle(element)}
                     />
                 );
             }

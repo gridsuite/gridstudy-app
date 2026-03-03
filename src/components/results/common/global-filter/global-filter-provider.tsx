@@ -16,7 +16,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { addToGlobalFilterOptions } from '../../../../redux/actions';
+import { addToGlobalFilterOptions, addToSelectedGlobalFilters } from '../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
@@ -66,7 +66,7 @@ export default function GlobalFilterProvider({
             const mutableFilters: GlobalFilter[] = selectedGlobalFilters.map((filter) => ({ ...filter }));
 
             const genericFiltersUuids: UUID[] = mutableFilters
-                .filter((globalFilter) => isCriteriaFilter(globalFilter) && globalFilter.label !== 'elementNotFound')
+                .filter((globalFilter) => isCriteriaFilter(globalFilter))
                 .map((globalFilter) => globalFilter.uuid)
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 
@@ -89,8 +89,10 @@ export default function GlobalFilterProvider({
                         const notFoundFilter = mutableFilters.find((f) => f.uuid === genericFilterUuid);
                         if (notFoundFilter) {
                             notFoundFilter.uuid = undefined;
+                            notFoundFilter.path = undefined;
                             notFoundFilter.label = 'elementNotFound';
                             dispatch(addToGlobalFilterOptions([notFoundFilter]));
+                            dispatch(addToSelectedGlobalFilters(tableType, tableUuid, [notFoundFilter.id]));
                         }
                     } else {
                         // or whatever error => do nothing except showing error message
@@ -103,7 +105,7 @@ export default function GlobalFilterProvider({
         };
 
         checkSelectedFilters().catch((error) => console.error(error));
-    }, [selectedGlobalFilters, dispatch, snackError]);
+    }, [selectedGlobalFilters, dispatch, snackError, tableType, tableUuid]);
 
     const value = useMemo(
         () => ({
