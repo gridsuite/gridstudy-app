@@ -4,11 +4,12 @@ on:
   push:
     branches:
       - 'main'
+      - 'use-docker-build-push-action'
   pull_request:
 
 jobs:
   build:
-    uses: powsybl/github-ci/.github/workflows/build-frontend-app-generic.yml@3ed0caeb3395e55868884f466d726ddaee877850
+    uses: powsybl/github-ci/.github/workflows/build-frontend-app-generic.yml@08aedee6a65c73d4eb05a72e37dfb7a538fec0e7
     with:
       dockerImage: gridsuite/gridstudy-app
       dockerUsername: gridsuiteci
