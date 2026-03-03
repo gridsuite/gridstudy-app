@@ -10,7 +10,6 @@ import {
     EquipmentType,
     fetchDefaultCountry,
     FieldConstants,
-    SubstationCreationSection,
     VoltageLevelCreationForm,
 } from '@gridsuite/commons-ui';
 import { Box, Paper } from '@mui/material';
@@ -37,7 +36,6 @@ const StudyVoltageLevelCreationForm = ({
     const { setValue, getValues } = useFormContext();
     const [substations, setSubstations] = useState<string[]>([]);
     const watchAddSubstationCreation = useWatch({ name: FieldConstants.ADD_SUBSTATION_CREATION });
-    const watchIsAttachmentPointCreation = useWatch({ name: FieldConstants.IS_ATTACHMENT_POINT_CREATION });
 
     useEffect(() => {
         if (watchAddSubstationCreation && !getValues(FieldConstants.COUNTRY)) {
@@ -64,6 +62,11 @@ const StudyVoltageLevelCreationForm = ({
         }
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
+    const handleAddButton = useCallback(() => {
+        setValue(FieldConstants.SUBSTATION_CREATION_ID, getValues(FieldConstants.SUBSTATION_ID));
+        setValue(FieldConstants.ADD_SUBSTATION_CREATION, true);
+    }, [setValue, getValues]);
+
     function getCustomPaper(children: React.ReactNode) {
         return (
             <Paper>
@@ -82,25 +85,6 @@ const StudyVoltageLevelCreationForm = ({
         );
     }
 
-    const handleAddButton = useCallback(() => {
-        setValue(FieldConstants.SUBSTATION_CREATION_ID, getValues(FieldConstants.SUBSTATION_ID));
-        setValue(FieldConstants.ADD_SUBSTATION_CREATION, true);
-    }, [setValue, getValues]);
-
-    const handleDeleteButton = useCallback(() => {
-        setValue(FieldConstants.ADD_SUBSTATION_CREATION, false);
-        setValue(FieldConstants.SUBSTATION_CREATION_ID, null);
-        setValue(FieldConstants.SUBSTATION_NAME, null);
-        setValue(FieldConstants.COUNTRY, null);
-    }, [setValue]);
-
-    const customSubstationSection = watchAddSubstationCreation ? (
-        <SubstationCreationSection
-            showDeleteButton={!watchIsAttachmentPointCreation}
-            onDelete={handleDeleteButton}
-        />
-    ) : undefined;
-
     return (
         <VoltageLevelCreationForm
             substationOptions={substations}
@@ -108,9 +92,6 @@ const StudyVoltageLevelCreationForm = ({
                 PaperComponent: ({ children }: { children: React.ReactNode }) => getCustomPaper(children),
                 noOptionsText: '',
             }}
-            customSubstationSection={customSubstationSection}
-            hideNominalVoltage={watchIsAttachmentPointCreation}
-            hideBusBarSection={watchIsAttachmentPointCreation}
         />
     );
 };
