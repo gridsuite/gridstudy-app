@@ -30,6 +30,7 @@ import {
     DeepNullable,
     sanitizeString,
     FieldConstants,
+    toModificationOperation,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccFormInfos, LccModificationSchemaForm } from '../common/lcc-type';
@@ -55,7 +56,6 @@ import { EQUIPMENT_INFOS_TYPES } from '../../../../../utils/equipment-types';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { LccModificationForm } from './lcc-modification-form';
-import { toModificationOperation } from '../../../../../utils/utils';
 import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
