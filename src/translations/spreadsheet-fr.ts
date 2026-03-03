@@ -16,7 +16,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/column_name': 'Nom de la colonne',
     'spreadsheet/custom_column/column_id': 'ID de la colonne',
     'spreadsheet/custom_column/column_type': 'Type de la colonne',
-    'spreadsheet/custom_column/column_precision': 'Précision',
+    'spreadsheet/custom_column/column_precision': 'Nombre de chiffres après la virgule',
     'spreadsheet/custom_column/column_content': 'Entrer la formule',
     'spreadsheet/custom_column/column_dependencies': 'Entrer les dépendances de la formule',
     'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau), des IDs de colonnes (pour faire référence au contenu d'une autre colonne) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau).\n\nExemple : maxP - targetP pour afficher la réserve de puissance active dans le tableur des groupes.`,
