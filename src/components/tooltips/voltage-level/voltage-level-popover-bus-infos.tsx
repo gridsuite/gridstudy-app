@@ -47,9 +47,9 @@ export const VoltageLevelPopoverBusInfos = ({ buses }: { buses?: VoltageLevelToo
     const { getBaseVoltageInterval } = useBaseVoltages();
 
     const voltageLevelThemeColors = useMemo(() => {
-        const firstBusVoltage = buses?.[0]?.u;
-        if (firstBusVoltage) {
-            const voltageLevelInterval = getBaseVoltageInterval(firstBusVoltage);
+        const firstDefinedBusVoltage = buses?.find(({ u }) => u != null)?.u;
+        if (firstDefinedBusVoltage != null) {
+            const voltageLevelInterval = getBaseVoltageInterval(firstDefinedBusVoltage);
             return voltageLevelInterval && getBaseVoltageSldAndNadThemeColors(voltageLevelInterval, theme);
         }
         return undefined;
