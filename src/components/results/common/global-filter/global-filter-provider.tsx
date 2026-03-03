@@ -11,6 +11,7 @@ import { FilterType, isCriteriaFilter } from '../utils';
 import type { UUID } from 'node:crypto';
 import {
     ElementAttributes,
+    ElementType,
     fetchDirectoryElementPath,
     snackWithFallback,
     useSnackMessage,
@@ -75,12 +76,17 @@ export default function GlobalFilterProvider({
                     // checks if the generic filters still exist, and update their path value
                     const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
                     const parentDirectoriesNames = response.map((parent) => parent.elementName);
+                    const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
                     const path = computeFullPath(parentDirectoriesNames);
                     const fetchedFilter: GlobalFilter | undefined = mutableFilters.find(
                         (globalFilter) => globalFilter.uuid === genericFilterUuid
                     );
                     if (fetchedFilter && !fetchedFilter.path) {
                         fetchedFilter.path = path;
+                    }
+                    if (fetchedFilter && label && fetchedFilter.label !== label) {
+                        fetchedFilter.label = label;
+                        dispatch(addToGlobalFilterOptions([fetchedFilter]));
                     }
                 } catch (responseError) {
                     const error = responseError as Error & { status: number };
