@@ -8,14 +8,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     EquipmentType,
-    fetchDefaultCountry,
     FieldConstants,
     VoltageLevelCreationForm,
 } from '@gridsuite/commons-ui';
 import { Box, Paper } from '@mui/material';
 
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import IconButton from '@mui/material/IconButton';
 import { useIntl } from 'react-intl';
 import LineSeparator from '../../../commons/line-separator';
@@ -35,17 +34,6 @@ const StudyVoltageLevelCreationForm = ({
     const intl = useIntl();
     const { setValue, getValues } = useFormContext();
     const [substations, setSubstations] = useState<string[]>([]);
-    const watchAddSubstationCreation = useWatch({ name: FieldConstants.ADD_SUBSTATION_CREATION });
-
-    useEffect(() => {
-        if (watchAddSubstationCreation && !getValues(FieldConstants.COUNTRY)) {
-            fetchDefaultCountry().then((country) => {
-                if (country) {
-                    setValue(FieldConstants.COUNTRY, country);
-                }
-            });
-        }
-    }, [setValue, getValues, watchAddSubstationCreation]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
