@@ -85,25 +85,6 @@ export interface BatteryModificationInfos {
     stepUpTransformerX: AttributeModification<number> | null;
 }
 
-export interface LoadCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name?: string | null;
-    loadType: string;
-    p0: number;
-    q0: number;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    isUpdate: boolean;
-    modificationUuid?: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean;
-    properties?: Property[] | null;
-}
-
 export interface LoadModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;

@@ -11,6 +11,7 @@ import {
     backendFetchText,
     EquipmentInfos,
     EquipmentType,
+    LoadCreationDto,
     MODIFICATION_TYPES,
     ModificationType,
     NetworkModificationMetadata,
@@ -41,7 +42,6 @@ import {
     LineCreationInfos,
     LineModificationInfos,
     LinesAttachToSplitLinesInfo,
-    LoadCreationInfo,
     LoadModificationInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
@@ -399,40 +399,39 @@ export function modifyBattery({
 export function createLoad({
     studyUuid,
     nodeUuid,
-    id,
-    name,
+    uuid,
+    equipmentId,
+    equipmentName,
     loadType,
     p0,
     q0,
     voltageLevelId,
     busOrBusbarSectionId,
-    isUpdate,
-    modificationUuid,
     connectionDirection,
     connectionName,
     connectionPosition,
     terminalConnected,
     properties,
-}: LoadCreationInfo) {
+}: LoadCreationDto & { studyUuid: UUID; nodeUuid: UUID }) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
-        createLoadUrl += '/' + safeEncodeURIComponent(modificationUuid);
+    if (uuid) {
+        createLoadUrl += '/' + safeEncodeURIComponent(uuid);
         console.info('Updating load creation');
     } else {
         console.info('Creating load creation');
     }
 
     return backendFetchText(createLoadUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.LOAD_CREATION.type,
-            equipmentId: id,
-            equipmentName: name,
+            equipmentId,
+            equipmentName,
             loadType: loadType,
             p0: p0,
             q0: q0,
