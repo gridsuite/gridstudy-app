@@ -27,6 +27,7 @@ import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
 import {
     AutocompleteInput,
+    CheckboxNullableInput,
     Identifiable,
     IntegerInput,
     Option,
@@ -35,7 +36,6 @@ import {
     TextInput,
 } from '@gridsuite/commons-ui';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from 'services/study/network';
-import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input';
 import { areIdsEqual, getObjectId } from '../../utils/utils';
 import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from './connectivity-form-utils';
 import type { UUID } from 'node:crypto';

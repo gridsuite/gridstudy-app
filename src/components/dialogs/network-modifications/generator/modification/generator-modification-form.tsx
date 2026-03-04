@@ -7,6 +7,7 @@
 
 import {
     ActivePowerAdornment,
+    CheckboxNullableInput,
     filledTextField,
     FloatInput,
     MVAPowerAdornment,
@@ -35,7 +36,6 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
-import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import { useWatch } from 'react-hook-form';
 import { SetPointsForm } from '../../../set-points/set-points-form';

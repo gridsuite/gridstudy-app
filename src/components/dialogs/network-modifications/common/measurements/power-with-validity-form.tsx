@@ -10,6 +10,7 @@ import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import {
     ActivePowerAdornment,
+    CheckboxNullableInput,
     convertInputValue,
     FieldConstants,
     FieldType,
@@ -17,7 +18,6 @@ import {
     ReactivePowerAdornment,
 } from '@gridsuite/commons-ui';
 import { MeasurementProps } from './measurement.type';
-import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import GridItem from '../../../commons/grid-item';
 import { VALIDITY } from '../../../../utils/field-constants';
 

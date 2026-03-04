@@ -7,6 +7,7 @@
 
 import { FunctionComponent, useEffect } from 'react';
 import {
+    CheckboxNullableInput,
     FloatInput,
     PercentageAdornment,
     ReactivePowerAdornment,
@@ -30,7 +31,6 @@ import { Grid, TextField } from '@mui/material';
 import { ReactiveLimitsForm } from '../../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
-import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
