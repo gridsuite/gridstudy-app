@@ -63,6 +63,7 @@ export const RATIO_TAP = 'ratio';
 export type RuleType = typeof PHASE_TAP | typeof RATIO_TAP;
 
 export interface TapChangerStep extends TapChangerStepMapInfos {
+    [STEPS_TAP]?: number;
     [SELECTED]?: boolean;
 }
 
@@ -157,7 +158,6 @@ export interface TapChangerStepMapInfos {
     [STEPS_SUSCEPTANCE]: number;
     [STEPS_RATIO]: number;
     [STEPS_ALPHA]?: number;
-    [STEPS_TAP]?: number;
 }
 
 export interface TapChangerMapInfos {

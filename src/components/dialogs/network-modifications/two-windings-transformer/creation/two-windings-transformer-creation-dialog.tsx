@@ -111,7 +111,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 import { addSelectedFieldToRows, computeHighTapPosition, formatCompleteCurrentLimit } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
-import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-utils';
+import { toTapChangerStepList, TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FetchStatus } from 'services/utils.type';
@@ -418,9 +418,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         lowTapPosition: twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION],
                         highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS] ?? []),
                         tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                        steps: addSelectedFieldToRows(
-                            twt?.[RATIO_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[RATIO_TAP_CHANGER]?.[STEPS]) : []
-                        ),
+                        steps: addSelectedFieldToRows(toTapChangerStepList(twt?.[RATIO_TAP_CHANGER]?.[STEPS]) ?? []),
                         equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId,
                         equipmentType: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableType,
                         voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
@@ -447,9 +445,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         lowTapPosition: twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
                         highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS] ?? []),
                         tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                        steps: addSelectedFieldToRows(
-                            twt?.[PHASE_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[PHASE_TAP_CHANGER]?.[STEPS]) : []
-                        ),
+                        steps: addSelectedFieldToRows(toTapChangerStepList(twt?.[PHASE_TAP_CHANGER]?.[STEPS]) ?? []),
                         voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
                         equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId,
                         equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableType,

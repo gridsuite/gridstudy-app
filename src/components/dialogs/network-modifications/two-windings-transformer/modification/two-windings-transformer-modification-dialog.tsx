@@ -144,7 +144,7 @@ import {
     getCont1Cont2WithPositionEmptyFormData,
 } from '../../../connectivity/connectivity-form-utils';
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
-import { TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
+import { toTapChangerStepList, TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
 import { ToBeEstimatedForm } from './2wt-to-be-estimated/to-be-estimated-form';
 import {
     getStateEstimationEditData,
@@ -463,9 +463,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTapChangerFormValues?.[ENABLED] !== !!twtToModify?.ratioTapChanger
                     ? ratioTapChangerFormValues?.[ENABLED]
                     : null;
-            const previousRatioTapChangerValues = twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
-                ? Object.values(twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS])
-                : undefined;
+            const previousRatioTapChangerValues = toTapChangerStepList(twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]);
             const areRatioStepsModified =
                 isNodeBuilt(currentNode) && editData?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ? true
@@ -503,9 +501,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 phaseTapChangerFormValues?.[ENABLED] !== !!twtToModify?.phaseTapChanger
                     ? phaseTapChangerFormValues?.[ENABLED]
                     : null;
-            const previousPhaseTapChangerValues = twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
-                ? Object.values(twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS])
-                : undefined;
+            const previousPhaseTapChangerValues = toTapChangerStepList(twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]);
             const arePhaseStepsModified =
                 isNodeBuilt(currentNode) && editData?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ? true
@@ -686,14 +682,14 @@ const TwoWindingsTransformerModificationDialog = ({
     const getPhaseTapChangerSteps = useCallback(
         (twt: TwoWindingsTransformerMapInfos): TapChangerStep[] | undefined => {
             if (editData === undefined) {
-                return twt?.[PHASE_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[PHASE_TAP_CHANGER]?.[STEPS]) : undefined;
+                return toTapChangerStepList(twt?.[PHASE_TAP_CHANGER]?.[STEPS]);
             }
             if (
                 editData?.phaseTapChanger?.steps === null ||
                 editData?.phaseTapChanger?.steps === undefined ||
                 editData?.phaseTapChanger?.enabled?.value === false
             ) {
-                return twt?.[PHASE_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[PHASE_TAP_CHANGER]?.[STEPS]) : undefined;
+                return toTapChangerStepList(twt?.[PHASE_TAP_CHANGER]?.[STEPS]);
             }
             return editData?.phaseTapChanger?.steps ?? undefined;
         },
@@ -703,14 +699,14 @@ const TwoWindingsTransformerModificationDialog = ({
     const getRatioTapChangerSteps = useCallback(
         (twt: TwoWindingsTransformerMapInfos): TapChangerStep[] | undefined => {
             if (editData === undefined) {
-                return twt?.[RATIO_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[RATIO_TAP_CHANGER]?.[STEPS]) : undefined;
+                return toTapChangerStepList(twt?.[RATIO_TAP_CHANGER]?.[STEPS]);
             }
             if (
                 editData?.ratioTapChanger?.steps === null ||
                 editData?.ratioTapChanger?.steps === undefined ||
                 editData?.ratioTapChanger?.enabled?.value === false
             ) {
-                return twt?.[RATIO_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[RATIO_TAP_CHANGER]?.[STEPS]) : undefined;
+                return toTapChangerStepList(twt?.[RATIO_TAP_CHANGER]?.[STEPS]);
             }
             return editData?.ratioTapChanger?.steps ?? undefined;
         },
