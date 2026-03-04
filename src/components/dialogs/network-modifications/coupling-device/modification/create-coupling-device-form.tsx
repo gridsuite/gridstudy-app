@@ -16,24 +16,19 @@ import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import GridSection from '../../../commons/grid-section';
-import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 export interface CreateCouplingDeviceFormProps {
     sectionOptions: Option[];
     voltageLevelId: string;
-    studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
 }
 
 export default function CreateCouplingDeviceForm({
     sectionOptions,
-    studyUuid,
     voltageLevelId,
     currentNode,
-    currentRootNetworkUuid,
 }: Readonly<CreateCouplingDeviceFormProps>) {
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
@@ -116,12 +111,9 @@ export default function CreateCouplingDeviceForm({
             </Grid>
             <Box>
                 <PositionDiagramPane
-                    studyUuid={studyUuid}
                     open={isDiagramPaneOpen}
                     onClose={handleCloseDiagramPane}
                     voltageLevelId={voltageLevelId}
-                    currentNodeUuid={currentNode?.id}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Box>
         </>

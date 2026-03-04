@@ -349,12 +349,9 @@ export function ConnectivityForm({
                 )}
             </Grid>
             <PositionDiagramPane
-                studyUuid={studyUuid}
                 open={isDiagramPaneOpen}
                 onClose={handleCloseDiagramPane}
                 voltageLevelId={watchVoltageLevelId}
-                currentNodeUuid={currentNodeUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
             />
         </>
     );

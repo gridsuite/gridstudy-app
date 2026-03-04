@@ -24,7 +24,6 @@ import GridSection from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
-import type { UUID } from 'node:crypto';
 import { POSITION_NEW_SECTION_SIDE, SWITCH_TYPE } from '../../../../network/constants';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { areIdsEqual, getObjectId } from '../../../../utils/utils';
@@ -52,9 +51,7 @@ interface VoltageLevelSectionsCreationFormProps {
     busBarSectionInfos?: BusBarSections;
     voltageLevelId: string;
     allBusbarSectionsList: string[];
-    studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
     isSymmetricalNbBusBarSections: boolean;
     isNotFoundOrNotSupported: boolean;
@@ -64,9 +61,7 @@ export function CreateVoltageLevelSectionForm({
     busBarSectionInfos,
     voltageLevelId,
     allBusbarSectionsList,
-    studyUuid,
     currentNode,
-    currentRootNetworkUuid,
     isUpdate,
     isSymmetricalNbBusBarSections,
     isNotFoundOrNotSupported,
@@ -381,12 +376,9 @@ export function CreateVoltageLevelSectionForm({
                 </Grid>
             </Grid>
             <PositionDiagramPane
-                studyUuid={studyUuid}
                 open={isDiagramPaneOpen}
                 onClose={handleCloseDiagramPane}
                 voltageLevelId={voltageLevelId}
-                currentNodeUuid={currentNode?.id}
-                currentRootNetworkUuid={currentRootNetworkUuid}
             />
         </Box>
     );
