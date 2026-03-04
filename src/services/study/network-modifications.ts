@@ -15,8 +15,8 @@ import {
     ModificationType,
     NetworkModificationMetadata,
     safeEncodeURIComponent,
+    toModificationOperation,
 } from '@gridsuite/commons-ui';
-import { toModificationOperation } from '../../components/utils/utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
