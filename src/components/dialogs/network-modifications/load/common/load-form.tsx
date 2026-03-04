@@ -46,7 +46,9 @@ export function LoadForm({
             tabsInError.push(LoadDialogTab.CHARACTERISTICS_TAB);
         }
         if (tabsInError.length > 0) {
-            setTabIndex(tabsInError[0]);
+            setTabIndex((currentTabIndex) => {
+                return tabsInError.includes(currentTabIndex) ? currentTabIndex : tabsInError[0];
+            });
         }
         setTabIndexesWithError(tabsInError);
     }, [errors]);
