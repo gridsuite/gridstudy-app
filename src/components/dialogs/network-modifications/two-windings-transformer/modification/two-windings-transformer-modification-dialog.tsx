@@ -463,12 +463,15 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTapChangerFormValues?.[ENABLED] !== !!twtToModify?.ratioTapChanger
                     ? ratioTapChangerFormValues?.[ENABLED]
                     : null;
+            const previousRatioTapChangerValues = twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
+                ? Object.values(twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS])
+                : undefined;
             const areRatioStepsModified =
                 isNodeBuilt(currentNode) && editData?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ? true
                     : !compareStepsWithPreviousValues(
                           ratioTapChangerFormValues?.[STEPS] as TapChangerStep[],
-                          twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
+                          previousRatioTapChangerValues
                       );
             const ratioTapChangerSteps = !areRatioStepsModified ? null : ratioTapChangerFormValues?.[STEPS];
             if (ratioTapChangerFormValues?.[ENABLED]) {
@@ -500,12 +503,15 @@ const TwoWindingsTransformerModificationDialog = ({
                 phaseTapChangerFormValues?.[ENABLED] !== !!twtToModify?.phaseTapChanger
                     ? phaseTapChangerFormValues?.[ENABLED]
                     : null;
+            const previousPhaseTapChangerValues = twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
+                ? Object.values(twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS])
+                : undefined;
             const arePhaseStepsModified =
                 isNodeBuilt(currentNode) && editData?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ? true
                     : !compareStepsWithPreviousValues(
                           phaseTapChangerFormValues?.[STEPS] as TapChangerStep[],
-                          twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
+                          previousPhaseTapChangerValues
                       );
             const phaseTapChangerSteps = !arePhaseStepsModified ? null : phaseTapChangerFormValues?.[STEPS];
             if (phaseTapChangerFormValues?.[ENABLED]) {
@@ -680,14 +686,14 @@ const TwoWindingsTransformerModificationDialog = ({
     const getPhaseTapChangerSteps = useCallback(
         (twt: TwoWindingsTransformerMapInfos): TapChangerStep[] | undefined => {
             if (editData === undefined) {
-                return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
+                return twt?.[PHASE_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[PHASE_TAP_CHANGER]?.[STEPS]) : undefined;
             }
             if (
                 editData?.phaseTapChanger?.steps === null ||
                 editData?.phaseTapChanger?.steps === undefined ||
                 editData?.phaseTapChanger?.enabled?.value === false
             ) {
-                return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
+                return twt?.[PHASE_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[PHASE_TAP_CHANGER]?.[STEPS]) : undefined;
             }
             return editData?.phaseTapChanger?.steps ?? undefined;
         },
@@ -697,14 +703,14 @@ const TwoWindingsTransformerModificationDialog = ({
     const getRatioTapChangerSteps = useCallback(
         (twt: TwoWindingsTransformerMapInfos): TapChangerStep[] | undefined => {
             if (editData === undefined) {
-                return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
+                return twt?.[RATIO_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[RATIO_TAP_CHANGER]?.[STEPS]) : undefined;
             }
             if (
                 editData?.ratioTapChanger?.steps === null ||
                 editData?.ratioTapChanger?.steps === undefined ||
                 editData?.ratioTapChanger?.enabled?.value === false
             ) {
-                return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
+                return twt?.[RATIO_TAP_CHANGER]?.[STEPS] ? Object.values(twt?.[RATIO_TAP_CHANGER]?.[STEPS]) : undefined;
             }
             return editData?.ratioTapChanger?.steps ?? undefined;
         },

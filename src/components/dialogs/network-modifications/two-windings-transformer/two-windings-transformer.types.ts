@@ -39,7 +39,6 @@ import {
     SELECTED,
     STEPS,
     STEPS_ALPHA,
-    STEPS_BY_TAP_POSITION,
     STEPS_CONDUCTANCE,
     STEPS_RATIO,
     STEPS_REACTANCE,
@@ -174,8 +173,7 @@ export interface TapChangerMapInfos {
     [REGULATING_TERMINAL_CONNECTABLE_ID]?: string;
     [REGULATING_TERMINAL_CONNECTABLE_TYPE]?: string;
     [REGULATING_TERMINAL_VOLTAGE_LEVEL_ID]?: string;
-    [STEPS]?: TapChangerStepMapInfos[];
-    [STEPS_BY_TAP_POSITION]?: Record<number, TapChangerStepMapInfos>;
+    [STEPS]?: Record<number, TapChangerStepMapInfos>;
 }
 
 export interface TwoWindingsTransformerMapInfos extends Identifiable {

@@ -141,7 +141,10 @@ const TapChangerSteps = ({
         if (editData?.[STEPS] && isNodeBuilt(currentNode)) {
             return true;
         } else {
-            return !compareStepsWithPreviousValues(tapStepsWatcher, previousValues?.[STEPS]);
+            return !compareStepsWithPreviousValues(
+                tapStepsWatcher,
+                previousValues?.[STEPS] ? Object.values(previousValues?.[STEPS]) : undefined
+            );
         }
     }, [currentNode, editData, previousValues, tapStepsWatcher]);
 
@@ -331,7 +334,7 @@ const TapChangerSteps = ({
                 uploadButtonMessageId={importRuleMessageId}
                 handleResetButton={handleResetButton}
                 resetButtonMessageId={resetButtonMessageId}
-                previousValues={previousValues?.[STEPS]}
+                previousValues={previousValues?.[STEPS] ? Object.values(previousValues?.[STEPS]) : undefined}
                 getPreviousValue={getTapPreviousValue}
                 isValueModified={isTapModified}
                 withResetButton={isModification && areStepsModified}
