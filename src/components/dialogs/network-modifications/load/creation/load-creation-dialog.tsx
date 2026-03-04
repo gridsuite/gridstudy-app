@@ -44,6 +44,7 @@ import { LoadFormInfos } from '../common/load.type';
 import useVoltageLevelsListInfos from 'hooks/use-voltage-levels-list-infos';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
 /**
  * Dialog to create a load in the network
@@ -100,6 +101,17 @@ export function LoadCreationDialog({
     const searchCopy = useFormSearchCopy((data) => {
         reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
     }, EQUIPMENT_TYPES.LOAD);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
 
     useEffect(() => {
         if (editData) {
@@ -160,6 +172,7 @@ export function LoadCreationDialog({
                 <LoadForm
                     voltageLevelOptions={voltageLevelOptions}
                     PositionDiagramPane={PositionDiagramPane}
+                    fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
