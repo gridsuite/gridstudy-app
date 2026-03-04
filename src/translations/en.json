@@ -1768,5 +1768,9 @@
     "unbuildAllNodesError": "An error occurred while unbuilding all nodes",
     "uuidCopiedToClipboard": "Uuid copied to system clipboard",
     "uuidCopiedToClipboardError": "Uuid could not be copied to system clipboard",
-    "uuid": "UUID"
+    "uuid": "UUID",
+    "PanelError": "Something went wrong in this panel",
+    "Reload": "Reload",
+    "CopyError": "Copy Error",
+    "Copied": "Copied"
 }

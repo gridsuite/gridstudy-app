@@ -19,6 +19,7 @@ import {
     DeepNullable,
     sanitizeString,
     FieldConstants,
+    toModificationOperation,
 } from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -64,7 +65,6 @@ import {
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import { toModificationOperation } from '../../../../utils/utils';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 
 const emptyFormData = {

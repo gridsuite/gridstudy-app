@@ -16,8 +16,8 @@ import {
     ModificationType,
     NetworkModificationMetadata,
     safeEncodeURIComponent,
+    toModificationOperation,
 } from '@gridsuite/commons-ui';
-import { toModificationOperation } from '../../components/utils/utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -1900,20 +1900,19 @@ export function modifyByFormula(
     studyUuid: string,
     nodeUuid: UUID,
     byFormulaModificationInfos: ByFormulaModificationInfos,
-    isUpdate: boolean,
-    modificationUuid: UUID
+    uuid?: UUID
 ) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
-        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        modificationUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating by formula modification');
     } else {
         console.info('Creating by formula modification');
     }
 
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',

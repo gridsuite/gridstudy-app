@@ -8,13 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
-import {
-    FilterConfig,
-    FilterType,
-    FilterType as AgGridFilterType,
-    numericFilterParams,
-    textFilterParams,
-} from 'types/custom-aggrid-types';
+import { FilterConfig, numericFilterParams, TableType, textFilterParams } from 'types/custom-aggrid-types';
 import { ColumnContext } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
@@ -79,14 +73,14 @@ export const getPccMinColumns = (
     };
 
     const pccMinFilterParams = {
-        type: AgGridFilterType.PccMin,
+        type: TableType.PccMin,
         tab: PCCMIN_RESULT,
         updateFilterCallback: (
             agGridApi?: GridApi,
             filters?: FilterConfig[],
             colId?: string,
             studyUuid?: UUID,
-            filterType?: FilterType,
+            filterType?: TableType,
             filterSubType?: string
         ) =>
             updateComputationColumnsFilters(

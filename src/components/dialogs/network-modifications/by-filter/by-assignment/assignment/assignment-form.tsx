@@ -35,9 +35,7 @@ import { DataType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import GridItem from '../../../../commons/grid-item';
 import { useIntl } from 'react-intl';
-import { EQUIPMENTS_FIELDS } from './assignment-constants';
-
-type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;
+import { EQUIPMENTS_FIELDS, EquipmentTypeOptionType } from './assignment-constants';
 
 interface AssignmentFormProps {
     name: string;

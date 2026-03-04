@@ -413,3 +413,5 @@ export const EQUIPMENTS_FIELDS = {
     [EquipmentType.STATIC_VAR_COMPENSATOR]: [FIELD_OPTIONS.PROPERTY],
     [EquipmentType.HVDC_LINE]: [FIELD_OPTIONS.PROPERTY],
 } as const;
+
+export type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;

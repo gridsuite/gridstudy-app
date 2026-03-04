@@ -174,8 +174,10 @@ export function ExportNetworkDialog({
         <CustomMuiDialog
             onClose={onClose}
             open={open}
-            formSchema={schema}
-            formMethods={methods}
+            formContext={{
+                ...methods,
+                validationSchema: schema,
+            }}
             disabledSave={disabledSave}
             onSave={onSubmit}
             titleId="exportNetwork"

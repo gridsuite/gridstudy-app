@@ -19,10 +19,7 @@ import {
     LoadCreationFormData,
     loadCreationFormSchema,
     loadCreationDtoToForm,
-    LoadDialogTabsContent,
-    LoadDialogHeader,
-    LoadDialogTab,
-    loadCreationTabsInError,
+    LoadForm,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -31,8 +28,8 @@ import {
     LOAD_TYPE,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import { useCallback, useEffect, useState } from 'react';
-import { FieldErrors, useForm } from 'react-hook-form';
+import { useCallback, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
@@ -72,8 +69,6 @@ export function LoadCreationDialog({
 }: Readonly<LoadCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
-    const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const formMethods = useForm<DeepNullable<LoadCreationFormData>>({
@@ -145,18 +140,6 @@ export function LoadCreationDialog({
 
     const clear = useCallback(() => reset(loadCreationEmptyFormData), [reset]);
 
-    const onValidationError = (errors: FieldErrors) => {
-        const errorTabs = loadCreationTabsInError(errors);
-        if (errorTabs.length > 0) {
-            setTabIndex(errorTabs[0]);
-        }
-        setTabIndexesWithError(errorTabs);
-    };
-
-    const headerAndTabs = (
-        <LoadDialogHeader tabIndexesWithError={tabIndexesWithError} tabIndex={tabIndex} setTabIndex={setTabIndex} />
-    );
-
     return (
         <CustomFormProvider
             validationSchema={loadCreationFormSchema}
@@ -167,8 +150,6 @@ export function LoadCreationDialog({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                onValidationError={onValidationError}
-                subtitle={headerAndTabs}
                 maxWidth={'md'}
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
@@ -176,11 +157,7 @@ export function LoadCreationDialog({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <LoadDialogTabsContent
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode.id}
-                    rootNetworkUuid={currentRootNetworkUuid}
-                    tabIndex={tabIndex}
+                <LoadForm
                     voltageLevelOptions={voltageLevelOptions}
                     PositionDiagramPane={PositionDiagramPane}
                 />
