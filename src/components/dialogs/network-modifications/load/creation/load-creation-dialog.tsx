@@ -14,7 +14,6 @@ import {
     useSnackMessage,
     DeepNullable,
     sanitizeString,
-    FieldConstants,
     LoadCreationDto,
     loadCreationEmptyFormData,
     LoadCreationFormData,
@@ -22,12 +21,12 @@ import {
     loadCreationDtoToForm,
     LoadDialogTabsContent,
     LoadDialogHeader,
-    LoadDialogTab, loadCreationTabsInError,
+    LoadDialogTab,
+    loadCreationTabsInError,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER_SETPOINT,
-    CONNECTIVITY,
     EQUIPMENT_NAME,
     LOAD_TYPE,
     REACTIVE_POWER_SET_POINT,
@@ -38,9 +37,7 @@ import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import {
-    getConnectivityFormData,
-} from '../../../connectivity/connectivity-form-utils';
+import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
