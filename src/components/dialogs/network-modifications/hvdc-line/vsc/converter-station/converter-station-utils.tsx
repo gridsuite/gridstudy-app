@@ -7,6 +7,9 @@
 
 import {
     AttributeModification,
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
     MODIFICATION_TYPES,
     sanitizeString,
     toModificationOperation,
@@ -33,11 +36,6 @@ import {
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
-} from '../../../../connectivity/connectivity-form-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,

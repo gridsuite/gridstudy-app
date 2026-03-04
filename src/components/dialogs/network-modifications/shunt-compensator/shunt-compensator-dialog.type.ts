@@ -24,8 +24,7 @@ import {
     SWITCHED_ON_SUSCEPTANCE,
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
-import { ConnectablePositionFormInfos } from '../../connectivity/connectivity.type';
-import { FieldConstants, Property } from '@gridsuite/commons-ui';
+import { ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type ShuntCompensatorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;

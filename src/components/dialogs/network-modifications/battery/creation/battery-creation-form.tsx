@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ActivePowerAdornment, filledTextField, FloatInput, PropertiesForm, TextInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    ConnectivityForm,
+    filledTextField,
+    FloatInput,
+    PropertiesForm,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -13,7 +20,6 @@ import {
     MINIMUM_ACTIVE_POWER,
 } from 'components/utils/field-constants';
 import { Grid } from '@mui/material';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
@@ -23,6 +29,9 @@ import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { SetPointsForm } from '../../../set-points/set-points-form';
 import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { useCallback } from 'react';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
 export interface BatteryCreationFormProps {
     studyUuid: UUID;
@@ -37,6 +46,17 @@ export default function BatteryCreationForm({
 }: Readonly<BatteryCreationFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
 
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
     const batteryIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
@@ -45,11 +65,10 @@ export default function BatteryCreationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

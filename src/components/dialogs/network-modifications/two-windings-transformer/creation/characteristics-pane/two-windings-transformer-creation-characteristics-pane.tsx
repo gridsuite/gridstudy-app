@@ -6,7 +6,6 @@
  */
 
 import { Box, Grid } from '@mui/material';
-import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pane/two-windings-transformer-characteristics-pane';
 import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
@@ -18,6 +17,10 @@ import { TwoWindingsTransformerCreationDialogTab } from '../../two-windings-tran
 import { LimitsPane } from '../../../../limits/limits-pane';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { ConnectivityForm } from '@gridsuite/commons-ui';
+import PositionDiagramPane from '../../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { useCallback } from 'react';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../../services/study/network';
 
 const styles = {
     h3: {
@@ -43,25 +46,33 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
     tabIndex,
 }: TwoWindingsTransformerCreationCharacteristicsPaneProps) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
     const connectivity1Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_1}`}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 
     const connectivity2Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_2}`}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

@@ -19,6 +19,9 @@ import {
     DeepNullable,
     sanitizeString,
     FieldConstants,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityFormData,
+    getConnectivityWithPositionSchema,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -65,11 +68,6 @@ import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import { createStaticVarCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import StaticVarCompensatorCreationDialogTabs from './static-var-compensator-creation-dialog-tabs';
@@ -87,6 +85,7 @@ import {
     getStandbyAutomatonFormData,
     getStandbyAutomatonFormValidationSchema,
 } from './standby-automaton-form-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 
 export type StaticVarCompensatorCreationSchemaForm = {
@@ -441,7 +440,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'md'}

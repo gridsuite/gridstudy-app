@@ -12,7 +12,12 @@ import {
     EquipmentType,
     FieldConstants,
     getConcatenatedProperties,
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionSchema,
     getPropertiesFromModification,
+    LoadForm,
+    LoadFormInfos,
     modificationPropertiesSchema,
     sanitizeString,
     snackWithFallback,
@@ -47,12 +52,10 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchNetworkElementInfos,
+} from '../../../../../services/study/network';
 import {
     getInjectionActiveReactivePowerEditData,
     getInjectionActiveReactivePowerEmptyFormData,
@@ -61,10 +64,10 @@ import {
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { LoadModificationInfos, LoadModificationSchemaForm } from './load-modification.type';
-import { LoadFormInfos } from '../common/load.type';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import { LoadForm } from '../common/load-form';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -106,6 +109,7 @@ export default function LoadModificationDialog({
     const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
     const [loadToModify, setLoadToModify] = useState<LoadFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const formMethods = useFormWithDirtyTracking<DeepNullable<LoadModificationSchemaForm>>({
         defaultValues: emptyFormData,
@@ -113,6 +117,17 @@ export default function LoadModificationDialog({
     });
 
     const { reset, getValues } = formMethods;
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
 
     const fromEditDataToFormValues = useCallback(
         (load: LoadModificationInfos) => {
@@ -265,12 +280,12 @@ export default function LoadModificationDialog({
                 )}
                 {selectedId != null && (
                     <LoadForm
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         loadToModify={loadToModify}
                         equipmentId={selectedId}
                         isModification={true}
+                        voltageLevelOptions={voltageLevelOptions}
+                        PositionDiagramPane={PositionDiagramPane}
+                        fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                     />
                 )}
             </ModificationDialog>
