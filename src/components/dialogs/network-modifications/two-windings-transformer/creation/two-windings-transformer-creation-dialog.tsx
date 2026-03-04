@@ -15,7 +15,9 @@ import {
     emptyProperties,
     EquipmentType,
     EquipmentWithProperties,
+    FieldConstants,
     FieldType,
+    getConnectivityFormData,
     getPropertiesFromModification,
     sanitizeString,
     snackWithFallback,
@@ -80,7 +82,6 @@ import {
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
@@ -130,6 +131,7 @@ import {
 } from 'services/network-modification-types';
 import { CurrentLimitsData } from 'services/study/network-map.type';
 import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
+
 /**
  * Dialog to create a two windings transformer in the network
  * @param studyUuid the study we are currently working on
@@ -302,7 +304,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             voltageLevelId: twt.voltageLevelId1,
                             terminalConnected: twt.connected1,
                         },
-                        CONNECTIVITY_1
+                        FieldConstants.CONNECTIVITY_1
                     ),
                     ...getConnectivityFormData(
                         {
@@ -313,7 +315,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             voltageLevelId: twt.voltageLevelId2,
                             terminalConnected: twt.connected2,
                         },
-                        CONNECTIVITY_2
+                        FieldConstants.CONNECTIVITY_2
                     ),
                 }),
                 ...getAllLimitsFormData(
@@ -388,7 +390,7 @@ const TwoWindingsTransformerCreationDialog = ({
                                 connectionName: twt.connectablePosition1?.connectionName,
                                 voltageLevelId: twt.voltageLevelId1,
                             },
-                            CONNECTIVITY_1
+                            FieldConstants.CONNECTIVITY_1
                         ),
                         ...getConnectivityFormData(
                             {
@@ -397,7 +399,7 @@ const TwoWindingsTransformerCreationDialog = ({
                                 connectionName: twt.connectablePosition2?.connectionName,
                                 voltageLevelId: twt.voltageLevelId2,
                             },
-                            CONNECTIVITY_2
+                            FieldConstants.CONNECTIVITY_2
                         ),
                     }),
                     ...getAllLimitsFormData(

@@ -23,6 +23,9 @@ import {
     useSnackMessage,
     DeepNullable,
     sanitizeString,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionSchema,
+    getConnectivityFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -51,11 +54,6 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,

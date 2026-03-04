@@ -38,6 +38,7 @@ import {
     DeepNullable,
     sanitizeString,
     FieldConstants,
+    Connectivity,
 } from '@gridsuite/commons-ui';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
@@ -61,7 +62,6 @@ import {
     getLccHvdcLineSchema,
 } from '../common/lcc-utils';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { Connectivity } from '../../../../connectivity/connectivity.type';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;

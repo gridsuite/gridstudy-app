@@ -21,6 +21,9 @@ import {
     sanitizeString,
     FieldConstants,
     toModificationOperation,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityFormData,
+    getConnectivityWithPositionSchema,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -62,11 +65,6 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
 import { FetchStatus } from '../../../../../services/utils.type';

@@ -20,6 +20,8 @@ import {
     loadCreationFormSchema,
     loadCreationDtoToForm,
     LoadForm,
+    getConnectivityFormData,
+    LoadFormInfos,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -34,13 +36,11 @@ import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { LoadFormInfos } from '../common/load.type';
 import useVoltageLevelsListInfos from 'hooks/use-voltage-levels-list-infos';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
