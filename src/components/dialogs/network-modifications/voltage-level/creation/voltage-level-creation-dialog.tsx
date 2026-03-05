@@ -15,7 +15,6 @@ import {
     FieldType,
     getPropertiesFromModification,
     snackWithFallback,
-    SwitchKindFormData,
     useSnackMessage,
     VoltageLevelCreationFormData,
     voltageLevelCreationEmptyFormData,
@@ -102,11 +101,9 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         return voltageLevelCreationEmptyFormData;
     }, [isAttachmentPointModification]);
 
-    type FormSchemaType = ReturnType<typeof voltageLevelCreationFormSchema.validateSync>;
-
-    const formMethods = useForm<DeepNullable<FormSchemaType>>({
+    const formMethods = useForm<DeepNullable<VoltageLevelCreationFormData>>({
         defaultValues: defaultValues,
-        resolver: yupResolver<DeepNullable<FormSchemaType>>(voltageLevelCreationFormSchema),
+        resolver: yupResolver<DeepNullable<VoltageLevelCreationFormData>>(voltageLevelCreationFormSchema),
     });
 
     const { reset, setValue, getValues, trigger, subscribe } = formMethods;
@@ -126,7 +123,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
                 ),
             };
-            const switchKinds: SwitchKindFormData[] =
+            const switchKinds =
                 voltageLevel.switchKinds?.map((switchKind: string) => ({
                     [FieldConstants.SWITCH_KIND]: switchKind,
                 })) || [];
@@ -160,7 +157,13 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                     [FieldConstants.BUS_BAR_COUNT]: voltageLevel[FieldConstants.BUS_BAR_COUNT] ?? 1,
                     [FieldConstants.SECTION_COUNT]: voltageLevel[FieldConstants.SECTION_COUNT] ?? 1,
                     [FieldConstants.SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
-                    [FieldConstants.COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
+                    [FieldConstants.COUPLING_OMNIBUS]:
+                        voltageLevel.couplingDevices?.map(
+                            (device: { busbarSectionId1: string; busbarSectionId2: string }) => ({
+                                [FieldConstants.BUS_BAR_SECTION_ID1]: device.busbarSectionId1,
+                                [FieldConstants.BUS_BAR_SECTION_ID2]: device.busbarSectionId2,
+                            })
+                        ) ?? [],
                     [FieldConstants.SWITCH_KINDS]: switchKinds,
                     [FieldConstants.HIDE_NOMINAL_VOLTAGE]: isAttachmentPointModification,
                     [FieldConstants.HIDE_BUS_BAR_SECTION]: isAttachmentPointModification,
@@ -268,7 +271,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 busbarCount: dto.busbarCount,
                 sectionCount: dto.sectionCount,
                 switchKinds: dto.switchKinds as SwitchKind[],
-                couplingDevices: dto.couplingDevices as unknown as CouplingDeviceInfos[],
+                couplingDevices: dto.couplingDevices as CouplingDeviceInfos[],
                 isUpdate: !!editData,
                 modificationUuid: editData?.uuid,
                 properties: dto.properties,
