@@ -10,6 +10,8 @@ import { AppState } from '../../../../redux/reducer';
 import { useEffect } from 'react';
 import { getComputationResultColumnFilters } from '../../../../services/study/study-config';
 import { updateColumnFiltersAction } from '../../../../redux/actions';
+import { Dispatch } from 'redux';
+import { UUID } from 'node:crypto';
 
 export type ComputationResultColumnFilterInfos = {
     columnId: string;
@@ -30,16 +32,27 @@ function toFilterConfig(infos: ComputationResultColumnFilterInfos[] | null): Fil
     );
 }
 
+export function updateComputationColumnFilters(
+    dispatch: Dispatch,
+    studyUuid: UUID,
+    tableType: TableType,
+    computationSubtype: string
+) {
+    getComputationResultColumnFilters(studyUuid, tableType, computationSubtype).then((infos) => {
+        console.log('HMA', infos);
+        const filters = toFilterConfig(infos);
+        dispatch(updateColumnFiltersAction(tableType, computationSubtype, filters));
+    });
+}
+
 const EMPTY_ARRAY: FilterConfig[] = [];
 export function useComputationColumnFilters(tableType: TableType, computationSubType: string) {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     useEffect(() => {
-        studyUuid &&
-            getComputationResultColumnFilters(studyUuid, tableType, computationSubType).then((infos) => {
-                const filters = toFilterConfig(infos);
-                dispatch(updateColumnFiltersAction(tableType, computationSubType, filters));
-            });
+        if (studyUuid) {
+            updateComputationColumnFilters(dispatch, studyUuid, tableType, computationSubType);
+        }
     }, [dispatch, studyUuid, tableType, computationSubType]);
     const filters = useSelector<AppState, FilterConfig[]>(
         (state) => state.tableFilters.columnsFilters?.[tableType]?.[computationSubType]?.columns ?? EMPTY_ARRAY

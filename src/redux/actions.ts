@@ -1439,20 +1439,18 @@ export const addSortForNewSpreadsheet = (tabUuid: UUID, value: SortConfig[]): Ad
     },
 });
 
-export const INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER = 'INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER';
-export type InitOrUpdateSpreadSheetGlobalFilterAction = Readonly<
-    Action<typeof INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER>
-> & {
-    tabUuid: UUID;
+export const INIT_OR_UPDATE_GLOBAL_FILTER = 'INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER';
+export type InitOrUpdateSpreadSheetGlobalFilterAction = Readonly<Action<typeof INIT_OR_UPDATE_GLOBAL_FILTER>> & {
+    tabUuid: string;
     filters: GlobalFilter[];
 };
 
-export function initOrUpdateSpreadsheetGlobalFilters(
-    tabUuid: UUID,
+export function initOrUpdateGlobalFilters(
+    tabUuid: string,
     filters: GlobalFilter[]
 ): InitOrUpdateSpreadSheetGlobalFilterAction {
     return {
-        type: INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER,
+        type: INIT_OR_UPDATE_GLOBAL_FILTER,
         tabUuid: tabUuid,
         filters: filters,
     };

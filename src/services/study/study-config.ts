@@ -266,6 +266,7 @@ export function updateComputationResultFiltersColumn(
     filterSubType: string,
     columnFilterInfos: any
 ) {
+    console.log('HMA', filterType, filterSubType);
     const url = `${getStudyUrl(studyUuid)}/computation-result-filters/${filterType}/${filterSubType}/columns`;
     return backendFetchJson(url, {
         method: 'PUT',

@@ -51,6 +51,9 @@ export enum NotificationType {
     EVENT_DELETING_IN_PROGRESS = 'eventDeletingInProgress',
     EVENT_CRUD_FINISHED = 'EVENT_CRUD_FINISHED',
 
+    // Computations filters
+    UPDATE_COMPUTATION_RESULT_TAB = 'computationResultTabUpdated',
+
     // Computations
     LOADFLOW_RESULT = 'loadflowResult',
     LOADFLOW_FAILED = 'loadflow_failed',
@@ -189,6 +192,12 @@ interface StudyEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.STUDY;
     rootNetworkUuid: UUID;
     node: UUID;
+}
+
+interface ComputationResultTabUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.UPDATE_COMPUTATION_RESULT_TAB;
+    computationType: ComputingType;
+    computationSubtype: string;
 }
 
 interface ComputationParametersUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
@@ -588,6 +597,11 @@ export interface StudyEventData {
     payload: string;
 }
 
+export interface ComputationResultTabUpdatedEventData {
+    headers: ComputationResultTabUpdatedEventDataHeaders;
+    payload: undefined;
+}
+
 export interface ComputationParametersUpdatedEventData {
     headers: ComputationParametersUpdatedEventDataHeaders;
     payload: undefined;
@@ -924,6 +938,15 @@ export interface WorkspaceNadConfigUpdatedEventData {
     payload: string; // config UUID
 }
 
+export function isComputationResultTabUpdatedNotification(
+    notif: unknown
+): notif is ComputationResultTabUpdatedEventData {
+    return (
+        (notif as ComputationResultTabUpdatedEventData).headers?.updateType ===
+        NotificationType.UPDATE_COMPUTATION_RESULT_TAB
+    );
+}
+
 export function isComputationParametersUpdatedNotification(
     notif: unknown
 ): notif is ComputationParametersUpdatedEventData {
@@ -1184,6 +1207,7 @@ export function parseEventData<T>(event: MessageEvent | null): T | null {
 export type StudyUpdateEventData =
     | StudyEventData
     | ComputationParametersUpdatedEventData
+    | ComputationResultTabUpdatedEventData
     | RootNetworkUpdatedEventData
     | RootNetworkUpdateFailedEventData
     | RootNetworkDeletionStartedEventData
