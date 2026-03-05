@@ -6,13 +6,12 @@
  */
 
 import { MuiStyles } from '@gridsuite/commons-ui';
-import { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { MODIFICATION_ROW_HEIGHT } from './network-modifications-table';
 import { AUTO_EXTENSIBLE_COLUMNS } from './columns-definition';
-import { CSSProperties } from 'react';
 import { SxProps, Theme } from '@mui/material';
 import { alpha } from '@mui/material/styles';
+import { CSSProperties } from 'react';
 
 const HIGHLIGHT_COLOR_BASE = 'rgba(144, 202, 249, 0.16)';
 const HIGHLIGHT_COLOR_HOVER = 'rgba(144, 202, 249, 0.24)';
@@ -57,19 +56,8 @@ export const styles = {
     tableRow: {
         display: 'flex',
         alignItems: 'center',
-        '.dragHandle': {
-            opacity: 0,
-        },
-        '&:hover': {
-            backgroundColor: ROW_HOVER_COLOR,
-            '& .editDescription': {
-                opacity: 1,
-                cursor: 'pointer',
-            },
-            '& .dragHandle': {
-                opacity: 1,
-            },
-        },
+        transition: 'none',
+        opacity: 1,
     },
     tableBody: {
         position: 'relative',
@@ -98,7 +86,8 @@ export const styles = {
         alignItems: 'center',
         cursor: 'grab',
         paddingLeft: 0.5,
-        opacity: 1,
+        opacity: 0,
+        'tr:hover &': { opacity: 1 },
     },
     dragIndicatorIcon: {
         width: '16px',
@@ -126,12 +115,20 @@ export const styles = {
 export const DROP_INDICATOR_TOP = 'inset 0 2px 0 #90caf9';
 export const DROP_INDICATOR_BOTTOM = 'inset 0 -2px 0 #90caf9';
 
-export const createRowSx = (isHighlighted: boolean, isDragging: boolean): SxProps => ({
+export const createRowSx = (isHighlighted: boolean, isDragging: boolean, virtualRow: VirtualItem): SxProps => ({
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    width: '100%',
+    height: `${virtualRow.size}px`,
+    transform: `translateY(${virtualRow.start}px)`,
     backgroundColor: isHighlighted ? HIGHLIGHT_COLOR_BASE : 'transparent',
     opacity: isDragging ? DRAG_OPACITY : 1,
     '&:hover': {
         backgroundColor: isHighlighted ? HIGHLIGHT_COLOR_HOVER : ROW_HOVER_COLOR,
     },
+    ...(isDragging && { zIndex: 1, transform: 'none' }),
 });
 
 export const createModificationNameCellStyle = (activated: boolean): CSSProperties => ({
@@ -145,36 +142,11 @@ export const createRootNetworkChipCellSx = (activated: boolean): SxProps => ({
     opacity: activated ? 1 : DEACTIVATED_OPACITY,
 });
 
-export const createEditDescriptionStyle = (description: string | undefined): CSSProperties => ({
+export const createEditDescriptionStyle = (description: string | undefined): SxProps => ({
     opacity: description ? 1 : 0,
     cursor: description ? 'pointer' : 'default',
+    'tr:hover &': { opacity: 1 },
 });
-
-export const createRowStyle = (
-    provided: DraggableProvided,
-    snapshot: DraggableStateSnapshot,
-    virtualRow: VirtualItem
-): CSSProperties => {
-    if (snapshot.isDragging) {
-        return {
-            ...provided.draggableProps.style,
-            height: `${virtualRow.size}px`,
-            transition: 'none',
-            zIndex: 1,
-        };
-    }
-    return {
-        ...provided.draggableProps.style,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        width: '100%',
-        height: `${virtualRow.size}px`,
-        transform: `translateY(${virtualRow.start}px)`,
-        transition: 'none',
-    };
-};
 
 export const createCellStyle = (cell: any) => {
     const isAutoExtensible = AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id);

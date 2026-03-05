@@ -5,26 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo, useRef } from 'react';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import {
-    ColumnDef,
-    ExpandedState,
-    flexRender,
-    getCoreRowModel,
-    RowSelectionState,
-    useReactTable,
-} from '@tanstack/react-table';
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { DragDropContext, DragStart, Droppable, DroppableProvided, DropResult } from '@hello-pangea/dnd';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';
 import { createHeaderCellStyle, styles } from './styles';
-import { createDynamicColumns, createStaticColumns } from './columns-definition';
+import { createBaseColumns, createRootNetworksColumns } from './columns-definition';
 import ModificationRow from './row/modification-row';
 import { useTheme } from '@mui/material/styles';
 import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
@@ -62,21 +55,18 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentTreeNodeId = useSelector((state: AppState) => state.currentTreeNode?.id);
 
-    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-    const [expanded, setExpanded] = useState<ExpandedState>({});
-
     const containerRef = useRef<HTMLDivElement>(null);
     const lastClickedIndex = useRef<number | null>(null);
 
     const columns = useMemo<ColumnDef<NetworkModificationMetadata>[]>(() => {
-        const staticColumns = createStaticColumns(
+        const staticColumns = createBaseColumns(
             isRowDragDisabled,
             modifications.length,
             nameHeaderProps,
             setModifications
         );
         const dynamicColumns = !isMonoRootStudy
-            ? createDynamicColumns(
+            ? createRootNetworksColumns(
                   rootNetworks,
                   currentRootNetworkUuid!,
                   modifications.length,
@@ -101,9 +91,6 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     const table = useReactTable({
         data: modifications,
         columns,
-        state: { rowSelection, expanded },
-        onRowSelectionChange: setRowSelection,
-        onExpandedChange: setExpanded,
         getCoreRowModel: getCoreRowModel(),
         getRowId: (row) => row.uuid,
         enableRowSelection: true,
@@ -127,9 +114,9 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     });
 
     useEffect(() => {
-        setRowSelection({});
+        table.resetRowSelection();
         lastClickedIndex.current = null;
-    }, [currentTreeNodeId]);
+    }, [currentTreeNodeId, table]);
 
     useEffect(() => {
         if (highlightedModificationUuid && containerRef.current) {

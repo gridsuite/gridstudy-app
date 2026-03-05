@@ -1042,7 +1042,6 @@ const NetworkModificationNodeEditor = () => {
         setIsUpdate(false);
     };
     const handleRowSelected = useCallback((selectedRows: NetworkModificationMetadata[]) => {
-        console.log('HMA', selectedRows);
         setSelectedNetworkModifications(selectedRows);
     }, []);
 

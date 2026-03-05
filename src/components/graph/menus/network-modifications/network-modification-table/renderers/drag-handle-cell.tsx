@@ -12,7 +12,7 @@ import { FunctionComponent } from 'react';
 
 const DragHandleCell: FunctionComponent<{ isRowDragDisabled: boolean }> = ({ isRowDragDisabled }) => {
     return (
-        <Box sx={styles.dragHandle} className={'dragHandle'}>
+        <Box sx={styles.dragHandle}>
             {!isRowDragDisabled && <DragIndicatorIcon fontSize="small" sx={styles.dragIndicatorIcon} />}
         </Box>
     );

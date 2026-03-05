@@ -31,7 +31,7 @@ const NameCell: FunctionComponent<{ row: Row<NetworkModificationMetadata> }> = (
     return (
         <Box sx={mergeSx(styles.tableCell, createModificationNameCellStyle(row.original.activated))}>
             <Tooltip disableFocusListener disableTouchListener title={label}>
-                <span style={styles.modificationLabel}>{label}</span>
+                <Box sx={styles.modificationLabel}>{label}</Box>
             </Tooltip>
         </Box>
     );

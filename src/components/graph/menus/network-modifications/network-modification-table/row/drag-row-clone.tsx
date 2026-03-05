@@ -9,14 +9,14 @@ import { Box } from '@mui/material';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { createCellStyle, styles } from '../styles';
 import { flexRender, Row } from '@tanstack/react-table';
-import { STATIC_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
+import { BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
 
 const DragCloneRow = ({ row }: { row: Row<NetworkModificationMetadata> }) => (
     <Box sx={styles.dragRowClone}>
         {row
             .getVisibleCells()
             .filter((cell) =>
-                [STATIC_MODIFICATION_TABLE_COLUMNS.NAME.id, STATIC_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id].includes(
+                [BASE_MODIFICATION_TABLE_COLUMNS.NAME.id, BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id].includes(
                     cell.column.columnDef.id!
                 )
             )

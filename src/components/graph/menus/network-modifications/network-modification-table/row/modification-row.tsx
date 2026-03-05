@@ -9,10 +9,10 @@ import React, { memo, useCallback } from 'react';
 import { flexRender, Row } from '@tanstack/react-table';
 import { mergeSx, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { TableCell, TableRow } from '@mui/material';
-import { createCellStyle, createRowStyle, createRowSx, styles } from '../styles';
+import { createCellStyle, createRowSx, styles } from '../styles';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
-import { STATIC_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
+import { BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
 
 interface ModificationRowProps {
     virtualRow: VirtualItem;
@@ -28,7 +28,7 @@ const ModificationRow = memo<ModificationRowProps>(
 
         const handleCellClickCallback = useCallback(
             (columnId: string) => {
-                if (columnId === STATIC_MODIFICATION_TABLE_COLUMNS.NAME.id) {
+                if (columnId === BASE_MODIFICATION_TABLE_COLUMNS.NAME.id) {
                     handleCellClick?.(row.original);
                 }
             },
@@ -37,29 +37,30 @@ const ModificationRow = memo<ModificationRowProps>(
 
         return (
             <Draggable draggableId={row.id} index={virtualRow.index} isDragDisabled={isRowDragDisabled}>
-                {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
-                    <TableRow
-                        className={'modificationRow'}
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        data-row-id={row.original.uuid}
-                        sx={mergeSx(styles.tableRow, createRowSx(isHighlighted, snapshot.isDragging))}
-                        style={createRowStyle(provided, snapshot, virtualRow)}
-                    >
-                        {row.getVisibleCells().map((cell) => (
-                            <TableCell
-                                key={cell.id}
-                                style={createCellStyle(cell)}
-                                onClick={() => handleCellClickCallback(cell.column.id)}
-                                {...(cell.column.id === STATIC_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
-                                    ? provided.dragHandleProps
-                                    : undefined)}
-                            >
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </TableCell>
-                        ))}
-                    </TableRow>
-                )}
+                {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => {
+                    const { style, ...draggablePropsWithoutStyle } = provided.draggableProps;
+                    return (
+                        <TableRow
+                            ref={provided.innerRef}
+                            {...draggablePropsWithoutStyle}
+                            data-row-id={row.original.uuid}
+                            sx={mergeSx(styles.tableRow, createRowSx(isHighlighted, snapshot.isDragging, virtualRow))}
+                        >
+                            {row.getVisibleCells().map((cell) => (
+                                <TableCell
+                                    key={cell.id}
+                                    sx={createCellStyle(cell)}
+                                    onClick={() => handleCellClickCallback(cell.column.id)}
+                                    {...(cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
+                                        ? provided.dragHandleProps
+                                        : undefined)}
+                                >
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    );
+                }}
             </Draggable>
         );
     }

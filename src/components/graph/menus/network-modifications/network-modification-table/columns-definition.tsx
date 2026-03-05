@@ -34,13 +34,13 @@ const computeTagMinSize = (tag: string): number => {
     return Math.max(chipContentWidth + COLUMN_PADDING_PX, MIN_COLUMN_SIZE);
 };
 
-export const STATIC_MODIFICATION_TABLE_COLUMNS = {
-    SELECT: {
-        id: 'select',
-        autoExtensible: false,
-    },
+export const BASE_MODIFICATION_TABLE_COLUMNS = {
     DRAG_HANDLE: {
         id: 'dragHandle',
+        autoExtensible: false,
+    },
+    SELECT: {
+        id: 'select',
         autoExtensible: false,
     },
     NAME: {
@@ -57,33 +57,37 @@ export const STATIC_MODIFICATION_TABLE_COLUMNS = {
     },
 };
 
-export const AUTO_EXTENSIBLE_COLUMNS = Object.values(STATIC_MODIFICATION_TABLE_COLUMNS)
+export const AUTO_EXTENSIBLE_COLUMNS = Object.values(BASE_MODIFICATION_TABLE_COLUMNS)
     .filter((column) => column.autoExtensible)
     .map((column) => column.id);
 
 type NameHeaderProps = Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'>;
 
 /**
- * Column definition is broken up in 2 parts : static columns which are always on display and dynamic columns which are
- * linked to the notion of root networks. Since the amount of root network is inbetween 1-4 and we want to be able to
- * control the status of a modification for each individual root network they all have a dedicated column generated
- * on the fly
+ * Column definition is broken up in 2 parts : base columns which are always on display and root networks columns.
+ * Since the amount of root network is inbetween 1-4 and we want to be able to control the status of a modification
+ * for each individual root network hence they all have a dedicated column generated on the fly
  */
 
-export const createStaticColumns = (
+export const createBaseColumns = (
     isRowDragDisabled: boolean,
     modificationsCount: number,
     nameHeaderProps: NameHeaderProps,
     setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>
 ): ColumnDef<NetworkModificationMetadata>[] => [
     {
-        id: STATIC_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
+        id: BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
         cell: () => <DragHandleCell isRowDragDisabled={isRowDragDisabled} />,
         size: 24,
         minSize: 24,
+        meta: {
+            cellStyle: {
+                justifyContent: 'end',
+            }
+        }
     },
     {
-        id: STATIC_MODIFICATION_TABLE_COLUMNS.SELECT.id,
+        id: BASE_MODIFICATION_TABLE_COLUMNS.SELECT.id,
         header: ({ table }) => <SelectHeaderCell table={table} />,
         cell: ({ row, table }) => <SelectCell row={row} table={table} />,
         size: 40,
@@ -93,7 +97,7 @@ export const createStaticColumns = (
         },
     },
     {
-        id: STATIC_MODIFICATION_TABLE_COLUMNS.NAME.id,
+        id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
         header: () => (
             <NetworkModificationEditorNameHeader modificationCount={modificationsCount} {...nameHeaderProps} />
         ),
@@ -104,13 +108,13 @@ export const createStaticColumns = (
         minSize: 160,
     },
     {
-        id: STATIC_MODIFICATION_TABLE_COLUMNS.DESCRIPTION.id,
+        id: BASE_MODIFICATION_TABLE_COLUMNS.DESCRIPTION.id,
         cell: ({ row }) => <DescriptionCell data={row.original} />,
         size: 40,
         minSize: 32,
     },
     {
-        id: STATIC_MODIFICATION_TABLE_COLUMNS.SWITCH.id,
+        id: BASE_MODIFICATION_TABLE_COLUMNS.SWITCH.id,
         cell: ({ row }) => <SwitchCell data={row.original} setModifications={setModifications} />,
         size: 40,
         minSize: 40,
@@ -123,7 +127,7 @@ export const createStaticColumns = (
     },
 ];
 
-export const createDynamicColumns = (
+export const createRootNetworksColumns = (
     rootNetworks: RootNetworkMetadata[],
     currentRootNetworkUuid: string,
     modificationsCount: number,

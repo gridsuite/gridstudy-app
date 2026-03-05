@@ -29,7 +29,7 @@ interface UseModificationsDragAndDropReturn {
 }
 
 const clearRowDragIndicators = (container: HTMLDivElement | null): void => {
-    container?.querySelectorAll<HTMLElement>('.modificationRow').forEach((el) => {
+    container?.querySelectorAll<HTMLElement>('[data-row-id]').forEach((el) => {
         el.style.boxShadow = '';
     });
 };
