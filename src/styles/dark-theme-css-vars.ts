@@ -18,4 +18,10 @@ export const darkThemeCssVars = {
     '.nad-textnode-highlight': {
         backgroundColor: '#32373bd9', // same displayed color as #6c6c6c20 but with 0.85 opacity
     },
+    '.sld-active-power': {
+        fill: 'black',
+    },
+    '.sld-reactive-power': {
+        fill: '#77b5fe',
+    },
 };
