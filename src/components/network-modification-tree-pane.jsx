@@ -444,8 +444,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-
+            link.remove();
             URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error while exporting node Infos:', error);
