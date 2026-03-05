@@ -7,17 +7,17 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentType,
+    FieldConstants,
     getConcatenatedProperties,
     getPropertiesFromModification,
     modificationPropertiesSchema,
+    sanitizeString,
     snackWithFallback,
     toModificationProperties,
     useSnackMessage,
-    DeepNullable,
-    sanitizeString,
-    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -41,7 +41,6 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
-import { FieldErrors } from 'react-hook-form';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -60,15 +59,12 @@ import {
     getInjectionActiveReactivePowerValidationSchemaProperties,
 } from '../../common/measurements/injection-active-reactive-power-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import { LoadDialogTab } from '../common/load-utils';
 import { EquipmentModificationDialogProps } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { LoadModificationInfos, LoadModificationSchemaForm } from './load-modification.type';
-import LoadDialogHeader from '../common/load-dialog-header';
-import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
-import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { LoadForm } from '../common/load-form';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -108,11 +104,8 @@ export default function LoadModificationDialog({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
-    const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
     const [loadToModify, setLoadToModify] = useState<LoadFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const formMethods = useFormWithDirtyTracking<DeepNullable<LoadModificationSchemaForm>>({
         defaultValues: emptyFormData,
@@ -241,38 +234,6 @@ export default function LoadModificationDialog({
         reset(emptyFormData);
     }, [reset]);
 
-    const onValidationError = (errors: FieldErrors) => {
-        let tabsInError: number[] = [];
-        if (
-            errors?.[ACTIVE_POWER_SETPOINT] !== undefined ||
-            errors?.[REACTIVE_POWER_SET_POINT] !== undefined ||
-            errors?.[FieldConstants.ADDITIONAL_PROPERTIES] !== undefined
-        ) {
-            tabsInError.push(LoadDialogTab.CHARACTERISTICS_TAB);
-        }
-        if (errors?.[CONNECTIVITY] !== undefined) {
-            tabsInError.push(LoadDialogTab.CONNECTIVITY_TAB);
-        }
-        if (errors?.[STATE_ESTIMATION] !== undefined) {
-            tabsInError.push(LoadDialogTab.STATE_ESTIMATION_TAB);
-        }
-        if (tabsInError.length > 0) {
-            setTabIndex(tabsInError[0]);
-        }
-        setTabIndexesWithError(tabsInError);
-    };
-
-    const headerAndTabs = (
-        <LoadDialogHeader
-            loadToModify={loadToModify}
-            tabIndexesWithError={tabIndexesWithError}
-            tabIndex={tabIndex}
-            setTabIndex={setTabIndex}
-            equipmentId={selectedId}
-            isModification={true}
-        />
-    );
-
     return (
         <CustomFormProvider
             validationSchema={formSchema}
@@ -285,8 +246,6 @@ export default function LoadModificationDialog({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                onValidationError={onValidationError}
-                subtitle={selectedId != null ? headerAndTabs : undefined}
                 maxWidth={'md'}
                 titleId="ModifyLoad"
                 open={open}
@@ -305,13 +264,12 @@ export default function LoadModificationDialog({
                     />
                 )}
                 {selectedId != null && (
-                    <LoadDialogTabsContent
+                    <LoadForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         loadToModify={loadToModify}
-                        tabIndex={tabIndex}
-                        voltageLevelOptions={voltageLevelOptions}
+                        equipmentId={selectedId}
                         isModification={true}
                     />
                 )}

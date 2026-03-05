@@ -49,7 +49,7 @@ const styles = {
             },
         },
     },
-    content: (theme: any) => ({
+    content: (theme: Theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
         position: 'relative',
@@ -119,7 +119,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
         [updatePanelGeometry, panelId, containerRect]
     );
 
-    const handleFocus = useCallback(() => {
+    const ensureFocused = useCallback(() => {
         if (!isFocused) {
             focusPanel(panelId);
         }
@@ -144,11 +144,12 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
             size={{ width: dimensions.width, height: dimensions.height }}
             onDrag={handleDrag as any}
             onDragStop={handleDragStop}
-            onResizeStart={handleFocus}
+            onResizeStart={ensureFocused}
             onResizeStop={handleResizeStop}
             dragHandleClassName="panel-header"
             disableDragging={panel.maximized || panel.pinned}
             enableResizing={!panel.maximized && !panel.pinned}
+            enableUserSelectHack={false}
             bounds="parent"
             minWidth={minWidth}
             minHeight={minHeight}
@@ -159,7 +160,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
             }}
         >
             <Box
-                onPointerDown={handleFocus}
+                onPointerDown={ensureFocused}
                 sx={(theme) => ({ ...styles.panel, boxShadow: isFocused ? theme.shadows[18] : 'none' })}
             >
                 <PanelHeader

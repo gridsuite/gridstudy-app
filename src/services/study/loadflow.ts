@@ -5,17 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
-
-export function getDefaultLoadFlowProvider() {
-    console.info('get default load flow provier');
-    const getDefaultLoadFlowProviderUrl = PREFIX_STUDY_QUERIES + '/v1/loadflow-default-provider';
-    console.debug(getDefaultLoadFlowProviderUrl);
-    return backendFetchText(getDefaultLoadFlowProviderUrl);
-}
 
 export function setLoadFlowParameters(studyUuid: UUID, newParams: any) {
     console.info('set load flow parameters');
@@ -52,20 +45,6 @@ export function getLoadFlowParametersId(studyUuid: UUID) {
     return backendFetchText(getLoadFlowParametersIdUrl).then((response) => {
         // Remove quotes if present to return clean UUID string
         return response.replace(/(^"|"$)/g, '');
-    });
-}
-
-export function setLoadFlowProvider(studyUuid: UUID, newProvider: string) {
-    console.info('set load flow provider');
-    const setLoadFlowProviderUrl = getStudyUrl(studyUuid) + '/loadflow/provider';
-    console.debug(setLoadFlowProviderUrl);
-    return backendFetch(setLoadFlowProviderUrl, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newProvider,
     });
 }
 
