@@ -64,7 +64,7 @@ export function LimitsSidePane({
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { getValues, subscribe, trigger } = useFormContext();
-    const limitsGroupFormName = useMemo((): string => `${name}.${CURRENT_LIMITS}`, [name]);
+    const limitsGroupFormName = `${name}.${CURRENT_LIMITS}`;
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
@@ -182,20 +182,6 @@ export function LimitsSidePane({
         [currentNode, getValues]
     );
 
-    const PermanentLimitBox = useMemo(
-        () => (
-            <FloatInput
-                name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
-                label="PermanentCurrentLimitText"
-                adornment={AmpereAdornment}
-                previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                clearable={!disabled && clearableFields}
-                disabled={disabled}
-            />
-        ),
-        [clearableFields, disabled, limitsGroupFormName, permanentCurrentLimitPreviousValue]
-    );
-
     // Trigger all OLG_IS_DUPLICATE fields when change on applicability or name field
     useEffect(() => {
         const unsubscribeCallBack = subscribe({
@@ -258,7 +244,14 @@ export function LimitsSidePane({
                             />
                         </Grid>
                         <Grid item xs={4}>
-                            {PermanentLimitBox}
+                            <FloatInput
+                                name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
+                                label="PermanentCurrentLimitText"
+                                adornment={AmpereAdornment}
+                                previousValue={permanentCurrentLimitPreviousValue ?? undefined}
+                                clearable={!disabled && clearableFields}
+                                disabled={disabled}
+                            />
                         </Grid>
                     </Grid>
                     <ErrorInput InputField={FieldErrorAlert} name={`${name}.${OLG_IS_DUPLICATE}`} />
