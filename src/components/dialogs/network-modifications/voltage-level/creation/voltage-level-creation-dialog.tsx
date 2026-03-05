@@ -16,6 +16,7 @@ import {
     VoltageLevelCreationFormData,
     VoltageLevelFormInfos,
     voltageLevelCreationDtoToForm,
+    voltageLevelInfosToForm,
     voltageLevelCreationEmptyFormData,
     voltageLevelCreationFormSchema,
     voltageLevelCreationFormToDto,
@@ -103,16 +104,10 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         resolver: yupResolver<DeepNullable<VoltageLevelCreationFormData>>(voltageLevelCreationFormSchema),
     });
 
-    const { reset, setValue, getValues, trigger, subscribe } = formMethods;
+    const { reset, getValues, trigger, subscribe } = formMethods;
 
-    const fromExternalDataToFormValues = useCallback(
-        (voltageLevel: VoltageLevelFormInfos | VoltageLevelCreationDto, fromCopy = true) => {
-            const formData = voltageLevelCreationDtoToForm(voltageLevel);
-
-            if (fromCopy) {
-                formData[FieldConstants.EQUIPMENT_ID] += '(1)';
-            }
-
+    const applyAttachmentPointOverrides = useCallback(
+        (formData: Record<string, any>) => {
             if (isAttachmentPointModification) {
                 formData[FieldConstants.HIDE_NOMINAL_VOLTAGE] = true;
                 formData[FieldConstants.HIDE_BUS_BAR_SECTION] = true;
@@ -120,16 +115,33 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                     formData[FieldConstants.ADD_SUBSTATION_CREATION] = true;
                 }
             }
+        },
+        [isAttachmentPointModification]
+    );
 
+    const fromSearchCopyToFormValues = useCallback(
+        (voltageLevel: VoltageLevelFormInfos) => {
+            const formData = voltageLevelInfosToForm(voltageLevel);
+            formData[FieldConstants.EQUIPMENT_ID] += '(1)';
+            applyAttachmentPointOverrides(formData);
             reset(formData, { keepDefaultValues: true });
 
-            if (fromCopy && !('equipmentId' in voltageLevel) && !voltageLevel.isSymmetrical) {
+            if (!voltageLevel.isSymmetrical) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
                 });
             }
         },
-        [isAttachmentPointModification, reset, snackWarning]
+        [applyAttachmentPointOverrides, reset, snackWarning]
+    );
+
+    const fromEditDataToFormValues = useCallback(
+        (editDto: VoltageLevelCreationDto) => {
+            const formData = voltageLevelCreationDtoToForm(editDto);
+            applyAttachmentPointOverrides(formData);
+            reset(formData, { keepDefaultValues: true });
+        },
+        [applyAttachmentPointOverrides, reset]
     );
 
     // Supervisor watches to trigger validation for interdependent constraints
@@ -180,13 +192,13 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         };
     }, [subscribe, trigger, getValues]);
 
-    const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
 
     useEffect(() => {
         if (editData) {
-            fromExternalDataToFormValues(editData, false);
+            fromEditDataToFormValues(editData);
         }
-    }, [fromExternalDataToFormValues, editData]);
+    }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
         (voltageLevel: VoltageLevelCreationFormData) => {
