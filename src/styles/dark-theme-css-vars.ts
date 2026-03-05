@@ -24,4 +24,7 @@ export const darkThemeCssVars = {
     '.sld-reactive-power': {
         fill: '#77b5fe',
     },
+    '& .sld-active-power .sld-arrow-out, & .sld-active-power .sld-arrow-in': {
+        fill: 'white',
+    },
 };

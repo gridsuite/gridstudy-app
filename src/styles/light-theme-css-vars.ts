@@ -27,4 +27,7 @@ export const lightThemeCssVars = {
     '.sld-reactive-power': {
         fill: 'blue',
     },
+    '& .sld-active-power .sld-arrow-out, & .sld-active-power .sld-arrow-in': {
+        fill: 'black',
+    },
 };
