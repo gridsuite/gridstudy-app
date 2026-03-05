@@ -6,17 +6,16 @@
  */
 
 import {
-    convertInputValue,
-    copyEquipmentPropertiesForCreation,
     CustomFormProvider,
     DeepNullable,
     EquipmentType,
     FieldConstants,
-    FieldType,
-    getPropertiesFromModification,
     snackWithFallback,
     useSnackMessage,
+    VoltageLevelCreationDto,
     VoltageLevelCreationFormData,
+    VoltageLevelFormInfos,
+    voltageLevelCreationDtoToForm,
     voltageLevelCreationEmptyFormData,
     voltageLevelCreationFormSchema,
     voltageLevelCreationFormToDto,
@@ -24,14 +23,12 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
-import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import { FC, useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 import StudyVoltageLevelCreationForm from './voltage-level-creation-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
@@ -45,12 +42,12 @@ import {
 } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
-interface StudyVoltageLevelCreationFormData extends VoltageLevelCreationFormData {
+interface StudyVoltageLevelCreationDto extends VoltageLevelCreationDto {
     uuid?: UUID;
 }
 
 interface VoltageLevelCreationDialogProps {
-    editData?: StudyVoltageLevelCreationFormData;
+    editData?: StudyVoltageLevelCreationDto;
     currentNode: CurrentTreeNode;
     studyUuid: string;
     currentRootNetworkUuid: UUID;
@@ -89,7 +86,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     const currentNodeUuid = currentNode.id;
     const { snackError, snackWarning } = useSnackMessage();
 
-    const defaultValues = useMemo((): StudyVoltageLevelCreationFormData => {
+    const defaultValues = useMemo(() => {
         if (isAttachmentPointModification) {
             return {
                 ...voltageLevelCreationEmptyFormData,
@@ -108,93 +105,31 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
     const { reset, setValue, getValues, trigger, subscribe } = formMethods;
 
-    const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
-        (voltageLevel: Record<string, any>, fromCopy = true) => {
-            const isSubstationCreation =
-                (!fromCopy && voltageLevel.substationCreation?.equipmentId != null) || isAttachmentPointModification;
-            const shortCircuitLimits = {
-                [FieldConstants.LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
-                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
-                ),
-                [FieldConstants.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
-                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
-                ),
-            };
-            const switchKinds =
-                voltageLevel.switchKinds?.map((switchKind: string) => ({
-                    [FieldConstants.SWITCH_KIND]: switchKind,
-                })) || [];
-            const switchesBetweenSections =
-                voltageLevel.switchKinds
-                    ?.map((switchKind: string) => intl.formatMessage({ id: switchKind }))
-                    .join(' / ') || '';
+        (voltageLevel: VoltageLevelFormInfos | VoltageLevelCreationDto, fromCopy = true) => {
+            const formData = voltageLevelCreationDtoToForm(voltageLevel);
 
-            // Read from external data using API field names (equipmentId with lowercase d, id, name)
-            const equipmentId =
-                (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[FieldConstants.ID]) + (fromCopy ? '(1)' : '');
-            const equipmentName =
-                voltageLevel[FieldConstants.EQUIPMENT_NAME] ?? voltageLevel[FieldConstants.NAME];
-            const substationId = isSubstationCreation
-                ? null
-                : (voltageLevel[FieldConstants.SUBSTATION_ID] ?? null);
-
-            const properties = fromCopy
-                ? copyEquipmentPropertiesForCreation(voltageLevel)
-                : getPropertiesFromModification(voltageLevel.properties);
-            reset(
-                {
-                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
-                    [FieldConstants.EQUIPMENT_NAME]: equipmentName,
-                    [FieldConstants.TOPOLOGY_KIND]: voltageLevel[FieldConstants.TOPOLOGY_KIND],
-                    [FieldConstants.SUBSTATION_ID]: substationId,
-                    [FieldConstants.NOMINAL_V]: voltageLevel[FieldConstants.NOMINAL_V],
-                    [FieldConstants.LOW_VOLTAGE_LIMIT]: voltageLevel[FieldConstants.LOW_VOLTAGE_LIMIT],
-                    [FieldConstants.HIGH_VOLTAGE_LIMIT]: voltageLevel[FieldConstants.HIGH_VOLTAGE_LIMIT],
-                    ...shortCircuitLimits,
-                    [FieldConstants.BUS_BAR_COUNT]: voltageLevel[FieldConstants.BUS_BAR_COUNT] ?? 1,
-                    [FieldConstants.SECTION_COUNT]: voltageLevel[FieldConstants.SECTION_COUNT] ?? 1,
-                    [FieldConstants.SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
-                    [FieldConstants.COUPLING_OMNIBUS]:
-                        voltageLevel.couplingDevices?.map(
-                            (device: { busbarSectionId1: string; busbarSectionId2: string }) => ({
-                                [FieldConstants.BUS_BAR_SECTION_ID1]: device.busbarSectionId1,
-                                [FieldConstants.BUS_BAR_SECTION_ID2]: device.busbarSectionId2,
-                            })
-                        ) ?? [],
-                    [FieldConstants.SWITCH_KINDS]: switchKinds,
-                    [FieldConstants.HIDE_NOMINAL_VOLTAGE]: isAttachmentPointModification,
-                    [FieldConstants.HIDE_BUS_BAR_SECTION]: isAttachmentPointModification,
-                    ...properties,
-                },
-                { keepDefaultValues: true }
-            );
-            if (isSubstationCreation) {
-                const substationKeys = [
-                    [FieldConstants.SUBSTATION_CREATION_ID, voltageLevel.substationCreation?.equipmentId],
-                    [FieldConstants.SUBSTATION_NAME, voltageLevel.substationCreation?.equipmentName],
-                    [FieldConstants.COUNTRY, voltageLevel.substationCreation?.country],
-                ];
-                substationKeys.forEach(([key, value]) => {
-                    setValue(key, value);
-                });
-                setValue(
-                    `${FieldConstants.SUBSTATION_CREATION}.${FieldConstants.ADDITIONAL_PROPERTIES}`,
-                    voltageLevel.substationCreation?.properties
-                );
-                setValue(FieldConstants.ADD_SUBSTATION_CREATION, true);
-            } else {
-                setValue(FieldConstants.ADD_SUBSTATION_CREATION, false);
+            if (fromCopy) {
+                formData[FieldConstants.EQUIPMENT_ID] += '(1)';
             }
-            if (!voltageLevel.isSymmetrical && fromCopy) {
+
+            if (isAttachmentPointModification) {
+                formData[FieldConstants.HIDE_NOMINAL_VOLTAGE] = true;
+                formData[FieldConstants.HIDE_BUS_BAR_SECTION] = true;
+                if (!formData[FieldConstants.ADD_SUBSTATION_CREATION]) {
+                    formData[FieldConstants.ADD_SUBSTATION_CREATION] = true;
+                }
+            }
+
+            reset(formData, { keepDefaultValues: true });
+
+            if (fromCopy && !('equipmentId' in voltageLevel) && !voltageLevel.isSymmetrical) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
                 });
             }
         },
-        [isAttachmentPointModification, reset, intl, setValue, snackWarning]
+        [isAttachmentPointModification, reset, snackWarning]
     );
 
     // Supervisor watches to trigger validation for interdependent constraints
