@@ -23,6 +23,7 @@ import {
     snackWithFallback,
     TextInput,
     toModificationProperties,
+    UNDEFINED_CONNECTION_DIRECTION,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -59,7 +60,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { APPLICABILITY, FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { APPLICABILITY, FORM_LOADING_DELAY } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';

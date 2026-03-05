@@ -51,8 +51,8 @@ import {
     modificationPropertiesSchema,
     sanitizeString,
     toModificationOperation,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import {
     LccConverterStationModificationInfos,
     LccModificationInfos,

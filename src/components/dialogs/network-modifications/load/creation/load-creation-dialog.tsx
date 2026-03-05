@@ -22,6 +22,8 @@ import {
     LoadForm,
     getConnectivityFormData,
     LoadFormInfos,
+    UNDEFINED_LOAD_TYPE,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -34,7 +36,7 @@ import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';

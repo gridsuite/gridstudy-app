@@ -22,6 +22,7 @@ import {
     sanitizeString,
     snackWithFallback,
     toModificationProperties,
+    UNDEFINED_CONNECTION_DIRECTION,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -78,7 +79,6 @@ import {
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
-    UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';

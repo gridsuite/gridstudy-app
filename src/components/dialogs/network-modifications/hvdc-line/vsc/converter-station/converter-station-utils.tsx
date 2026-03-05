@@ -13,6 +13,7 @@ import {
     MODIFICATION_TYPES,
     sanitizeString,
     toModificationOperation,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../../utils/yup-config';
 import {
@@ -41,7 +42,6 @@ import {
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
 } from '../../../../reactive-limits/reactive-limits-utils';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { VscConverterStationFormInfos, ConverterStationElementModificationInfos } from './converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 import { ConverterStationCreationInfos } from '../../../../../../services/network-modification-types';

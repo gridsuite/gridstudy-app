@@ -28,6 +28,7 @@ import {
     getConnectivityFormData,
     getSetPointsSchema,
     getSetPointsEmptyFormData,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -56,7 +57,7 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,

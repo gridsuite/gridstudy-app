@@ -29,6 +29,7 @@ import {
     getSetPointsSchema,
     testValueWithinPowerInterval,
     getSetPointsEmptyFormData,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -67,7 +68,7 @@ import {
 } from 'components/utils/field-constants';
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { FORM_LOADING_DELAY, REGULATION_TYPES } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
