@@ -17,11 +17,8 @@ import NetworkParameters from './network-parameters';
 import CurveParameters from './curve-parameters';
 import { fetchDynamicSimulationProviders } from '../../../../services/dynamic-simulation';
 import {
-    fetchDefaultDynamicSimulationProvider,
     fetchDynamicSimulationParameters,
-    fetchDynamicSimulationProvider,
     updateDynamicSimulationParameters,
-    updateDynamicSimulationProvider,
 } from '../../../../services/study/dynamic-simulation';
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
@@ -85,12 +82,11 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         studyUuid,
         ComputingType.DYNAMIC_SIMULATION,
         dynamicSimulationAvailability,
-        fetchDynamicSimulationProviders,
-        fetchDynamicSimulationProvider,
-        fetchDefaultDynamicSimulationProvider,
-        updateDynamicSimulationProvider,
-        fetchDynamicSimulationParameters,
-        updateDynamicSimulationParameters
+        {
+            backendFetchProviders: fetchDynamicSimulationProviders,
+            backendFetchParameters: fetchDynamicSimulationParameters,
+            backendUpdateParameters: updateDynamicSimulationParameters,
+        }
     );
     useParametersNotification(
         ComputingType.DYNAMIC_SIMULATION,
@@ -98,8 +94,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         dynamicSimulationParametersBackend
     );
 
-    const [providers, provider, , , resetProvider, parameters, , updateParameters, resetParameters] =
-        dynamicSimulationParametersBackend;
+    const { providers, params: parameters, updateParameters, resetParameters } = dynamicSimulationParametersBackend;
 
     const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
 
@@ -116,10 +111,9 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
 
     const handleResetParametersAndProvider = useCallback(() => {
-        resetProvider();
         resetParameters();
         setOpenResetConfirmation(false);
-    }, [resetParameters, resetProvider]);
+    }, [resetParameters]);
 
     const handleResetClick = useCallback(() => {
         setOpenResetConfirmation(true);
@@ -198,9 +192,9 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     );
 
     useEffect(() => {
-        if (parameters && provider) {
+        if (parameters) {
             reset({
-                [PROVIDER]: parameters.provider ?? provider,
+                [PROVIDER]: parameters.provider,
                 [TAB_VALUES.TIME_DELAY]: {
                     [TimeDelay.START_TIME]: parameters.startTime,
                     [TimeDelay.STOP_TIME]: parameters.stopTime,
@@ -220,7 +214,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                 },
             });
         }
-    }, [reset, parameters, provider]);
+    }, [reset, parameters]);
 
     const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabIndex(newValue);
