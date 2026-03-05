@@ -60,6 +60,7 @@ import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 import { createShuntCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { ShuntCompensatorCreationDialogSchemaForm, ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
 import { ShuntCompensatorCreationInfos } from '../../../../../services/network-modification-types';
 
@@ -229,7 +230,7 @@ export default function ShuntCompensatorCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

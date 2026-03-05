@@ -61,6 +61,7 @@ import {
     getLccHvdcLineFromSearchCopy,
     getLccHvdcLineSchema,
 } from '../common/lcc-utils';
+import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 export type LccCreationSchemaForm = {
@@ -231,7 +232,7 @@ export function LccCreationDialog({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

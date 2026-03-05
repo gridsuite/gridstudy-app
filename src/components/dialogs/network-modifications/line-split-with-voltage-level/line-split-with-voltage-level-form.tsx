@@ -24,7 +24,6 @@ import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
-import PositionDiagramPane from '../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 export interface ExtendedVoltageLevelFormInfos extends VoltageLevelFormInfos {
@@ -110,7 +109,6 @@ const LineSplitWithVoltageLevelForm = ({
             withDirectionsInfos={false}
             newBusOrBusbarSectionOptions={busbarSectionOptions}
             voltageLevelOptions={allVoltageLevelOptions}
-            PositionDiagramPane={PositionDiagramPane}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );

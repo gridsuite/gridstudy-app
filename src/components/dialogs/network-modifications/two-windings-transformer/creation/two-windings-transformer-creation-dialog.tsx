@@ -129,6 +129,7 @@ import {
     TapChangerCreationInfos,
     TwoWindingsTransformerCreationInfo,
 } from 'services/network-modification-types';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { CurrentLimitsData } from 'services/study/network-map.type';
 import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
 
@@ -689,7 +690,11 @@ const TwoWindingsTransformerCreationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema as any} {...formMethods}>
+        <CustomFormProvider
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            validationSchema={formSchema as any}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}

@@ -39,7 +39,6 @@ import {
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
-import PositionDiagramPane from '../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 interface LineAttachToVoltageLevelFormProps {
@@ -179,7 +178,6 @@ const LineAttachToVoltageLevelForm = ({
             withDirectionsInfos={false}
             newBusOrBusbarSectionOptions={busbarSectionOptions}
             voltageLevelOptions={allVoltageLevelOptions}
-            PositionDiagramPane={PositionDiagramPane}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );

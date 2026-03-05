@@ -23,7 +23,6 @@ import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
-import PositionDiagramPane from '../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 interface LinesAttachToSplitLinesFormProps {
@@ -100,7 +99,6 @@ const LinesAttachToSplitLinesForm = ({
             withDirectionsInfos={false}
             withPosition={false}
             voltageLevelOptions={voltageLevelOptions}
-            PositionDiagramPane={PositionDiagramPane}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );

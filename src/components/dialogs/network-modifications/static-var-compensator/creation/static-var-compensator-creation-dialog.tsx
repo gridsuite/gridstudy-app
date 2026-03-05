@@ -85,6 +85,7 @@ import {
     getStandbyAutomatonFormData,
     getStandbyAutomatonFormValidationSchema,
 } from './standby-automaton-form-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 
 export type StaticVarCompensatorCreationSchemaForm = {
@@ -439,7 +440,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'md'}

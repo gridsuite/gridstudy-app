@@ -94,6 +94,7 @@ import {
     getShortCircuitFormData,
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { toReactiveCapabilityCurveChoiceForGeneratorCreation } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 const emptyFormData = {
@@ -351,7 +352,7 @@ export default function GeneratorCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

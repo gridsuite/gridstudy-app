@@ -71,6 +71,7 @@ import {
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import BatteryCreationForm from './battery-creation-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     getShortCircuitEmptyFormData,
@@ -258,7 +259,7 @@ export default function BatteryCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

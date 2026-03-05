@@ -93,6 +93,7 @@ import { LineCreationInfos } from '../../../../../services/network-modification-
 import { LineModificationFormSchema } from '../modification/line-modification-type';
 import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import {
     OperationalLimitsGroupFormSchema,
     TemporaryLimitFormSchema,
@@ -413,7 +414,7 @@ const LineCreationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
