@@ -58,11 +58,8 @@ const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) 
 
             if (meta) {
                 meta.lastClickedIndex.current = currentIndex;
-            }
-
-            if (meta?.onRowSelected) {
                 const selectedRows = rows.filter((r) => nextSelection[r.id]).map((r) => r.original);
-                meta.onRowSelected(selectedRows);
+                meta.onRowSelected?.(selectedRows);
             }
         },
         [table, row, meta]

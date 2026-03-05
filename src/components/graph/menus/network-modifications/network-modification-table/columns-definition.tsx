@@ -83,8 +83,8 @@ export const createBaseColumns = (
         meta: {
             cellStyle: {
                 justifyContent: 'end',
-            }
-        }
+            },
+        },
     },
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.SELECT.id,

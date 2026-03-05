@@ -16,7 +16,7 @@ const DragCloneRow = ({ row }: { row: Row<NetworkModificationMetadata> }) => (
         {row
             .getVisibleCells()
             .filter((cell) =>
-                [BASE_MODIFICATION_TABLE_COLUMNS.NAME.id, BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id].includes(
+                [BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id, BASE_MODIFICATION_TABLE_COLUMNS.NAME.id].includes(
                     cell.column.columnDef.id!
                 )
             )
