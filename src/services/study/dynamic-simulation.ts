@@ -5,12 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    getStudyUrl,
-    getStudyUrlWithNodeUuid,
-    getStudyUrlWithNodeUuidAndRootNetworkUuid,
-    PREFIX_STUDY_QUERIES,
-} from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 
 import { getRequestParamFromList } from '../utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
@@ -136,27 +131,6 @@ export function fetchDynamicSimulationProvider(studyUuid: UUID) {
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
     console.debug(url);
     return backendFetchText(url);
-}
-
-export function fetchDefaultDynamicSimulationProvider() {
-    console.info('Fetching default dynamic simulation provider');
-    const url = PREFIX_STUDY_QUERIES + '/v1/dynamic-simulation-default-provider';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
-export function updateDynamicSimulationProvider(studyUuid: UUID, newProvider: string) {
-    console.info(`Updating dynamic simulation provider on study '${studyUuid}' ...`);
-    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newProvider,
-    });
 }
 
 export function fetchDynamicSimulationParameters(studyUuid: UUID): Promise<DynamicSimulationParametersFetchReturn> {
