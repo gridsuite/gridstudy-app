@@ -22,8 +22,6 @@ const SelectHeaderCell: FunctionComponent<SelectHeaderCellProps> = ({ table }) =
             : table.getCoreRowModel().rows.map((r) => r.original);
         table.toggleAllRowsSelected();
 
-        console.log('HMA', table.getSelectedRowModel().rows);
-
         if (meta) {
             meta.onRowSelected?.(nextSelectedRows);
             meta.lastClickedIndex.current = null;
