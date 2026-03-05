@@ -39,7 +39,7 @@ function SelectedGlobalFilters() {
                     .filter((filter) => filter.filterType === FilterType.SUBSTATION_OR_VL)
                     .every((filter) => filter.equipmentType === EQUIPMENT_TYPES.SUBSTATION);
                 if (onlySubstationFilters) {
-                    displayedCategoryTitle = filter.equipmentType;
+                    displayedCategoryTitle = 'results.globalFilter.substationFilter';
                 }
             }
         }
