@@ -7,7 +7,7 @@
 
 import { Grid } from '@mui/material';
 import { Fragment, useCallback, useEffect, useState } from 'react';
-import { AutocompleteInput, EquipmentType, Option, TextInput } from '@gridsuite/commons-ui';
+import { areIdsEqual, AutocompleteInput, EquipmentType, getObjectId, Option, TextInput } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -15,7 +15,6 @@ import {
     REPLACING_LINE_1_ID,
     REPLACING_LINE_1_NAME,
 } from 'components/utils/field-constants';
-import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';

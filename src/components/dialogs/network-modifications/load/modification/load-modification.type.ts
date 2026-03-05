@@ -23,8 +23,7 @@ import {
     STATE_ESTIMATION,
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
-import { MeasurementInfo } from '../../common/measurements/measurement.type';
-import { AttributeModification, FieldConstants, Property } from '@gridsuite/commons-ui';
+import { AttributeModification, FieldConstants, MeasurementInfo, Property } from '@gridsuite/commons-ui';
 
 export type LoadModificationSchemaForm = {
     [EQUIPMENT_NAME]?: string;

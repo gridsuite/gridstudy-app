@@ -7,12 +7,12 @@
 
 import type { ReadonlyDeep } from 'type-fest';
 import { DataType, FieldOptionType } from './assignment.type';
-import { LOAD_TYPES } from '../../../../../network/constants';
 import {
     EquipmentType,
     FieldType,
     KILO_AMPERE,
     KILO_VOLT,
+    LOAD_TYPES,
     MEGA_VAR,
     MEGA_VOLT_AMPERE,
     MEGA_WATT,

@@ -8,9 +8,8 @@
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import { useMemo } from 'react';
-import { FloatInput, SwitchInput } from '@gridsuite/commons-ui';
+import { CheckboxNullableInput, FloatInput, SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
-import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { Box, Tooltip } from '@mui/material';
 import GridItem from '../commons/grid-item';
 import { ActivePowerControlInfos } from './active-power-control.type';

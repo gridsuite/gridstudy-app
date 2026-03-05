@@ -7,14 +7,16 @@
 
 import { Box } from '@mui/material';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
-import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
-import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
 import { LineModificationDialogTab } from '../line-utils';
 import { LimitsPane } from '../../../limits/limits-pane';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
-import { JSX } from 'react';
+import { JSX, useCallback } from 'react';
+import { BranchActiveReactivePowerMeasurementsForm, BranchConnectivityForm } from '@gridsuite/commons-ui';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
 export interface LineModificationDialogTabsProps {
     studyUuid: UUID;
@@ -31,15 +33,27 @@ const LineModificationDialogTabs = ({
     lineToModify,
     tabIndex,
 }: Readonly<LineModificationDialogTabsProps>): JSX.Element => {
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
     return (
         <>
             <Box hidden={tabIndex !== LineModificationDialogTab.CONNECTIVITY_TAB} p={1}>
                 <BranchConnectivityForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
                     isModification={true}
                     previousValues={lineToModify}
+                    voltageLevelOptions={voltageLevelOptions}
+                    PositionDiagramPane={PositionDiagramPane}
+                    fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                 />
             </Box>
             <Box hidden={tabIndex !== LineModificationDialogTab.CHARACTERISTICS_TAB} p={1}>
