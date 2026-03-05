@@ -39,7 +39,6 @@ export function updateComputationColumnFilters(
     computationSubtype: string
 ) {
     getComputationResultColumnFilters(studyUuid, tableType, computationSubtype).then((infos) => {
-        console.log('HMA', infos);
         const filters = toFilterConfig(infos);
         dispatch(updateColumnFiltersAction(tableType, computationSubtype, filters));
     });
