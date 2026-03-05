@@ -197,7 +197,7 @@ interface StudyEventDataHeaders extends CommonStudyEventDataHeaders {
 interface ComputationResultTabUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.UPDATE_COMPUTATION_RESULT_TAB;
     computationType: ComputingType;
-    computationSubtype: string;
+    computationSubtype?: string;
 }
 
 interface ComputationParametersUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {

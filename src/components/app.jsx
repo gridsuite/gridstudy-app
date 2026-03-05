@@ -269,12 +269,14 @@ const App = () => {
         (event) => {
             const eventData = JSON.parse(event.data);
             if (isComputationResultTabUpdatedNotification(eventData)) {
-                updateComputationColumnFilters(
-                    dispatch,
-                    studyUuid,
-                    eventData.headers.computationType,
-                    eventData.headers.computationSubtype
-                );
+                if (eventData.headers.computationSubtype) {
+                    updateComputationColumnFilters(
+                        dispatch,
+                        studyUuid,
+                        eventData.headers.computationType,
+                        eventData.headers.computationSubtype
+                    );
+                }
                 updateComputationGlobalFilters(dispatch, studyUuid, eventData.headers.computationType);
             }
         },
