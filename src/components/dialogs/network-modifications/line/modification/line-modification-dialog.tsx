@@ -15,6 +15,9 @@ import {
     EquipmentType,
     FieldConstants,
     FieldType,
+    getBranchActiveReactivePowerEditData,
+    getBranchActiveReactivePowerEmptyFormData,
+    getBranchActiveReactivePowerValidationSchema,
     getCon1andCon2WithPositionValidationSchema,
     getConcatenatedProperties,
     getConnectivityFormData,
@@ -89,11 +92,6 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    getBranchActiveReactivePowerEditData,
-    getBranchActiveReactivePowerEmptyFormData,
-    getBranchActiveReactivePowerValidationSchema,
-} from '../../common/measurements/branch-active-reactive-power-form-utils';
 import { LineModificationDialogTab } from '../line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import type { UUID } from 'node:crypto';

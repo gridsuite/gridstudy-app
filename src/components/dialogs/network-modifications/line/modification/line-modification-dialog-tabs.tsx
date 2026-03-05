@@ -7,14 +7,13 @@
 
 import { Box } from '@mui/material';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
-import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
 import { LineModificationDialogTab } from '../line-utils';
 import { LimitsPane } from '../../../limits/limits-pane';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { JSX, useCallback } from 'react';
-import { BranchConnectivityForm } from '@gridsuite/commons-ui';
+import { BranchActiveReactivePowerMeasurementsForm, BranchConnectivityForm } from '@gridsuite/commons-ui';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';

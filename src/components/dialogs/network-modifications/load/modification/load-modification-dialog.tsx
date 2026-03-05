@@ -15,6 +15,9 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionSchema,
+    getInjectionActiveReactivePowerEditData,
+    getInjectionActiveReactivePowerEmptyFormData,
+    getInjectionActiveReactivePowerValidationSchemaProperties,
     getPropertiesFromModification,
     LoadForm,
     LoadFormInfos,
@@ -56,11 +59,6 @@ import {
     fetchBusesOrBusbarSectionsForVoltageLevel,
     fetchNetworkElementInfos,
 } from '../../../../../services/study/network';
-import {
-    getInjectionActiveReactivePowerEditData,
-    getInjectionActiveReactivePowerEmptyFormData,
-    getInjectionActiveReactivePowerValidationSchemaProperties,
-} from '../../common/measurements/injection-active-reactive-power-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { LoadModificationInfos, LoadModificationSchemaForm } from './load-modification.type';

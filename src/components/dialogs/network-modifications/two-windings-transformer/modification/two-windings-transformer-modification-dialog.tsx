@@ -6,6 +6,7 @@
  */
 
 import {
+    BranchActiveReactivePowerMeasurementsForm,
     BranchConnectivityForm,
     convertInputValue,
     convertOutputValue,
@@ -144,7 +145,6 @@ import {
     fetchNetworkElementInfos,
 } from '../../../../../services/study/network';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
 import { TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
 import { ToBeEstimatedForm } from './2wt-to-be-estimated/to-be-estimated-form';
 import {
