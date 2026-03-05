@@ -1766,5 +1766,5 @@
     "Reload": "Recharger",
     "CopyError": "Copier l'erreur",
     "Copied": "Copiée",
-    "downloadNodeInfos" : "Télécharger le noeud"
+    "downloadNetworkModifications" : "Télécharger les modifications"
 }

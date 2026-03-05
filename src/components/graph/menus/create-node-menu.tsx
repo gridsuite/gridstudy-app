@@ -487,7 +487,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         EXPORT_NODE: {
             onRoot: false,
             action: () => exportNodeInfos(),
-            id: 'downloadNodeInfos',
+            id: 'downloadNetworkModifications',
             hidden: !isDeveloperMode,
             withDivider: true,
         },
