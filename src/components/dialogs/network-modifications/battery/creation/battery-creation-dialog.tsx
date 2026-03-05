@@ -26,6 +26,8 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionSchema,
     getConnectivityFormData,
+    getSetPointsSchema,
+    getSetPointsEmptyFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -70,7 +72,6 @@ import {
 } from '../../../active-power-control/active-power-control-utils';
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import BatteryCreationForm from './battery-creation-form';
-import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import {

@@ -14,6 +14,7 @@ import {
     MVAPowerAdornment,
     PropertiesForm,
     SelectInput,
+    SetPointsForm,
     SwitchInput,
     TextInput,
 } from '@gridsuite/commons-ui';
@@ -33,7 +34,6 @@ import {
 import { ENERGY_SOURCES } from 'components/network/constants';
 import { Box, Grid } from '@mui/material';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
-import { SetPointsForm } from '../../../set-points/set-points-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';

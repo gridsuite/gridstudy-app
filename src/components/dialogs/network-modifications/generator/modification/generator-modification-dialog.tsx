@@ -25,6 +25,8 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionSchema,
     getConnectivityWithPositionEmptyFormData,
+    getSetPointsSchema,
+    getSetPointsEmptyFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -67,7 +69,6 @@ import {
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import GeneratorModificationForm from './generator-modification-form';
-import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,

@@ -11,6 +11,7 @@ import {
     filledTextField,
     FloatInput,
     PropertiesForm,
+    SetPointsForm,
     TextInput,
 } from '@gridsuite/commons-ui';
 import {
@@ -27,7 +28,6 @@ import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { SetPointsForm } from '../../../set-points/set-points-form';
 import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';

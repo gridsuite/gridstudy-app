@@ -19,6 +19,8 @@ import {
     getInjectionActiveReactivePowerEmptyFormData,
     getInjectionActiveReactivePowerValidationSchemaProperties,
     getPropertiesFromModification,
+    getSetPointsEmptyFormData,
+    getSetPointsSchema,
     LoadForm,
     LoadFormInfos,
     modificationPropertiesSchema,
@@ -62,7 +64,6 @@ import {
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { LoadModificationInfos, LoadModificationSchemaForm } from './load-modification.type';
-import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';

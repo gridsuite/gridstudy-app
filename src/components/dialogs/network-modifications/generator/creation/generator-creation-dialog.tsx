@@ -26,6 +26,9 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionSchema,
+    getSetPointsSchema,
+    testValueWithinPowerInterval,
+    getSetPointsEmptyFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -83,11 +86,6 @@ import {
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
-import {
-    getSetPointsEmptyFormData,
-    getSetPointsSchema,
-    testValueWithinPowerInterval,
-} from '../../../set-points/set-points-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     getShortCircuitEmptyFormData,
