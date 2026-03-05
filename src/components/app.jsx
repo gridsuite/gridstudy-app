@@ -276,8 +276,9 @@ const App = () => {
                         eventData.headers.computationType,
                         eventData.headers.computationSubtype
                     );
+                } else {
+                    updateComputationGlobalFilters(dispatch, studyUuid, eventData.headers.computationType);
                 }
-                updateComputationGlobalFilters(dispatch, studyUuid, eventData.headers.computationType);
             }
         },
         [dispatch, studyUuid]
