@@ -59,6 +59,7 @@ import { getWorkspace, renameWorkspace, deletePanels, replaceWorkspace } from '.
 import { saveWorkspaceConfig, updateWorkspaceConfig } from '../../../services/explore';
 import type { UUID } from 'node:crypto';
 import { RootState } from 'redux/store';
+import { AppState } from 'redux/reducer';
 
 enum WorkspaceAction {
     RENAME = 'rename',
@@ -127,6 +128,7 @@ export const WorkspaceSwitcher = memo(() => {
     const workspaces = useSelector(selectWorkspaces);
     const activeWorkspaceId = useSelector(selectActiveWorkspaceId);
     const studyUuid = useSelector((state: RootState) => state.studyUuid);
+    const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [workspaceAction, setWorkspaceAction] = useState<WorkspaceActionState>(null);
@@ -135,9 +137,14 @@ export const WorkspaceSwitcher = memo(() => {
     const switchToWorkspace = async (workspaceId: UUID) => {
         if (!studyUuid) return;
 
-        globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
-        const workspace = await getWorkspace(studyUuid, workspaceId);
-        dispatch(setActiveWorkspace(workspace));
+        if (isDirtyComputationParameters) {
+            globalThis.dispatchEvent(new CustomEvent('workspace:confirmSwitchWorkspace', { detail: workspaceId }));
+        } else {
+            // Direct switch if no dirty computation parameters
+            const workspace = await getWorkspace(studyUuid, workspaceId);
+            dispatch(setActiveWorkspace(workspace));
+            globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace', { detail: workspaceId }));
+        }
     };
 
     const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
