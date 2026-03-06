@@ -1,0 +1,286 @@
+diff --git a/src/components/parameters-tabs.tsx b/src/components/parameters-tabs.tsx
+index d8e1d52e9..4026bb856 100644
+--- a/src/components/parameters-tabs.tsx
++++ b/src/components/parameters-tabs.tsx
+@@ -57,14 +57,11 @@ import {
+     setShortCircuitParameters,
+ } from 'services/study/short-circuit-analysis';
+ import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
+-import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
+ import { fetchContingencyCount } from '../services/study';
+ import {
+     fetchDynamicMarginCalculationParameters,
+     updateDynamicMarginCalculationParameters,
+ } from '../services/study/dynamic-margin-calculation';
+-import { setActiveWorkspace } from 'redux/slices/workspace-slice';
+-import { getWorkspace } from 'services/study/workspace';
+ 
+ enum TAB_VALUES {
+     lfParamsTabValue = 'LOAD_FLOW',
+@@ -82,7 +79,6 @@ enum TAB_VALUES {
+ 
+ const ParametersTabs: FunctionComponent = () => {
+     const dispatch = useDispatch();
+-    const { minimizePanel } = useWorkspacePanelActions();
+     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
+     const user = useSelector((state: AppState) => state.user);
+     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+@@ -94,8 +90,6 @@ const ParametersTabs: FunctionComponent = () => {
+     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
+ 
+     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
+-    const [pendingClosePanelId, setPendingClosePanelId] = useState<UUID | null>(null);
+-    const [pendingSwitchWorkspacelId, setPendingSwitchWorkspacelId] = useState<UUID | null>(null);
+ 
+     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+@@ -217,29 +211,6 @@ const ParametersTabs: FunctionComponent = () => {
+     const voltageInitParameters = useGetVoltageInitParameters();
+     const useStateEstimationParameters = useGetStateEstimationParameters();
+ 
+-    // Listen for panel close requests from panel header
+-    useEffect(() => {
+-        const handleCloseRequest = (event: Event) => {
+-            const customEvent = event as CustomEvent<UUID>;
+-            setPendingClosePanelId(customEvent.detail);
+-            setIsLeavingPopupOpen(true);
+-        };
+-
+-        globalThis.addEventListener('parametersPanel:requestClose', handleCloseRequest);
+-        return () => globalThis.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
+-    }, []);
+-
+-    // Listen for switch workspace requests
+-    useEffect(() => {
+-        const handleConfirmSwitchWorkspace = (event: Event) => {
+-            const customEvent = event as CustomEvent<UUID>;
+-            setPendingSwitchWorkspacelId(customEvent.detail);
+-            setIsLeavingPopupOpen(true);
+-        };
+-        globalThis.addEventListener('workspace:confirmSwitchWorkspace', handleConfirmSwitchWorkspace);
+-        return () => globalThis.removeEventListener('workspace:confirmSwitchWorkspace', handleConfirmSwitchWorkspace);
+-    }, [dispatch]);
+-
+     useEffect(() => {
+         if (attemptedLeaveParametersTabIndex !== null) {
+             if (isDirtyComputationParameters) {
+@@ -258,38 +229,19 @@ const ParametersTabs: FunctionComponent = () => {
+             setTabValue(newValue);
+         }
+     };
+-    const handlePopupChangeTab = useCallback(async () => {
++    const handlePopupChangeTab = useCallback(() => {
+         if (nextTabValue) {
+             setTabValue(nextTabValue);
+             setNextTabValue(undefined);
+         } else if (attemptedLeaveParametersTabIndex !== null) {
+             dispatch(confirmLeaveParametersTab());
+-        } else if (pendingClosePanelId !== null) {
+-            // User confirmed close - actually close the panel
+-            minimizePanel(pendingClosePanelId);
+-            setPendingClosePanelId(null);
+-        } else if (pendingSwitchWorkspacelId !== null && studyUuid) {
+-            const workspace = await getWorkspace(studyUuid, pendingSwitchWorkspacelId);
+-            dispatch(setActiveWorkspace(workspace));
+-            setPendingSwitchWorkspacelId(null);
+         }
+-
+         dispatch(setDirtyComputationParameters(false));
+         setIsLeavingPopupOpen(false);
+-    }, [
+-        nextTabValue,
+-        attemptedLeaveParametersTabIndex,
+-        pendingClosePanelId,
+-        pendingSwitchWorkspacelId,
+-        studyUuid,
+-        dispatch,
+-        minimizePanel,
+-    ]);
++    }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
+     const handleLeavingPopupClose = useCallback(() => {
+         setIsLeavingPopupOpen(false);
+         setNextTabValue(undefined);
+-        setPendingClosePanelId(null);
+-        setPendingSwitchWorkspacelId(null);
+ 
+         if (attemptedLeaveParametersTabIndex !== null) {
+             dispatch(cancelLeaveParametersTab());
+diff --git a/src/components/workspace/core/panel-header.tsx b/src/components/workspace/core/panel-header.tsx
+index af30ae4cd..88addb408 100644
+--- a/src/components/workspace/core/panel-header.tsx
++++ b/src/components/workspace/core/panel-header.tsx
+@@ -5,19 +5,21 @@
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  */
+ 
+-import { memo } from 'react';
+-import { Box, IconButton, Theme } from '@mui/material';
++import { memo, useCallback, useState } from 'react';
++import { Box, DialogContentText, IconButton, Theme } from '@mui/material';
+ import { Close, Minimize, PushPin, PushPinOutlined, Fullscreen, FullscreenExit } from '@mui/icons-material';
+ import type { MuiStyles } from '@gridsuite/commons-ui';
+ import { OverflowableText } from '@gridsuite/commons-ui';
+-import { useSelector } from 'react-redux';
+-import { useIntl } from 'react-intl';
++import { useDispatch, useSelector } from 'react-redux';
++import { FormattedMessage, useIntl } from 'react-intl';
+ import type { UUID } from 'node:crypto';
+ import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
+ import { PanelType } from '../types/workspace.types';
+ import { getPanelConfig } from '../constants/workspace.constants';
+ import type { AppState } from '../../../redux/reducer';
+ import { SldAssociationButton } from './sld-association-button';
++import { setDirtyComputationParameters } from 'redux/actions';
++import { SelectOptionsDialog } from 'utils/dialogs';
+ 
+ const getHeaderStyles = (theme: Theme, isFocused: boolean, maximized: boolean) => {
+     let backgroundColor: string;
+@@ -93,27 +95,36 @@ interface PanelHeaderProps {
+ 
+ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized, isFocused }: PanelHeaderProps) => {
+     const intl = useIntl();
++    const dispatch = useDispatch();
+     const { deletePanel, minimizePanel, maximizePanel, pinPanel } = useWorkspacePanelActions();
+     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
+     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
++    const [isConfirmCloseOpen, setIsConfirmCloseOpen] = useState(false);
+ 
+     const handleClose = () => {
+-        // If it's a parameters panel with unsaved changes, trigger confirmation dialog
+         if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
+-            globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
++            setIsConfirmCloseOpen(true);
+         } else if (
+             panelType === PanelType.NAD ||
+             panelType === PanelType.SLD_VOLTAGE_LEVEL ||
+             panelType === PanelType.SLD_SUBSTATION
+         ) {
+-            // Diagram panels are deleted
+             deletePanel(panelId);
+         } else {
+-            // Other panels are minimized
+             minimizePanel(panelId);
+         }
+     };
+ 
++    const handleConfirmClose = useCallback(() => {
++        minimizePanel(panelId);
++        dispatch(setDirtyComputationParameters(false));
++        setIsConfirmCloseOpen(false);
++    }, [panelId, minimizePanel, dispatch]);
++
++    const handleCancelClose = useCallback(() => {
++        setIsConfirmCloseOpen(false);
++    }, []);
++
+     return (
+         <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, maximized)}>
+             <Box sx={styles.title}>
+@@ -168,6 +179,19 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
+                     <Close fontSize="small" />
+                 </IconButton>
+             </Box>
++            {/* Confirm panel close with unsaved params */}
++            <SelectOptionsDialog
++                title={''}
++                open={isConfirmCloseOpen}
++                onClose={handleCancelClose}
++                onClick={handleConfirmClose}
++                child={
++                    <DialogContentText>
++                        <FormattedMessage id="genericConfirmQuestion" />
++                    </DialogContentText>
++                }
++                validateKey={'dialog.button.leave'}
++            />
+         </Box>
+     );
+ });
+diff --git a/src/components/workspace/core/workspace-switcher.tsx b/src/components/workspace/core/workspace-switcher.tsx
+index 4b83bb945..d073f7d9a 100644
+--- a/src/components/workspace/core/workspace-switcher.tsx
++++ b/src/components/workspace/core/workspace-switcher.tsx
+@@ -18,6 +18,7 @@ import {
+     Dialog,
+     DialogTitle,
+     DialogContent,
++    DialogContentText,
+     DialogActions,
+     TextField,
+     Button,
+@@ -60,6 +61,8 @@ import { saveWorkspaceConfig, updateWorkspaceConfig } from '../../../services/ex
+ import type { UUID } from 'node:crypto';
+ import { RootState } from 'redux/store';
+ import { AppState } from 'redux/reducer';
++import { setDirtyComputationParameters } from 'redux/actions';
++import { SelectOptionsDialog } from 'utils/dialogs';
+ 
+ enum WorkspaceAction {
+     RENAME = 'rename',
+@@ -132,21 +135,40 @@ export const WorkspaceSwitcher = memo(() => {
+ 
+     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+     const [workspaceAction, setWorkspaceAction] = useState<WorkspaceActionState>(null);
++    const [pendingSwitchWorkspaceId, setPendingSwitchWorkspaceId] = useState<UUID | null>(null);
+     const { snackInfo, snackError } = useSnackMessage();
+ 
++    const doSwitchWorkspace = useCallback(
++        async (workspaceId: UUID) => {
++            if (!studyUuid) return;
++            const workspace = await getWorkspace(studyUuid, workspaceId);
++            dispatch(setActiveWorkspace(workspace));
++            globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace', { detail: workspaceId }));
++        },
++        [studyUuid, dispatch]
++    );
++
+     const switchToWorkspace = async (workspaceId: UUID) => {
+         if (!studyUuid) return;
+-
+         if (isDirtyComputationParameters) {
+-            globalThis.dispatchEvent(new CustomEvent('workspace:confirmSwitchWorkspace', { detail: workspaceId }));
++            setPendingSwitchWorkspaceId(workspaceId);
+         } else {
+-            // Direct switch if no dirty computation parameters
+-            const workspace = await getWorkspace(studyUuid, workspaceId);
+-            dispatch(setActiveWorkspace(workspace));
+-            globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace', { detail: workspaceId }));
++            await doSwitchWorkspace(workspaceId);
+         }
+     };
+ 
++    const handleConfirmSwitchWorkspace = useCallback(async () => {
++        if (pendingSwitchWorkspaceId) {
++            await doSwitchWorkspace(pendingSwitchWorkspaceId);
++            dispatch(setDirtyComputationParameters(false));
++        }
++        setPendingSwitchWorkspaceId(null);
++    }, [pendingSwitchWorkspaceId, doSwitchWorkspace, dispatch]);
++
++    const handleCancelSwitchWorkspace = useCallback(() => {
++        setPendingSwitchWorkspaceId(null);
++    }, []);
++
+     const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
+         if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE) {
+             await switchToWorkspace(workspaceId as UUID);
+@@ -456,6 +478,19 @@ export const WorkspaceSwitcher = memo(() => {
+                     updateLabelId="replaceWorkspaceLabel"
+                 />
+             )}
++            {/* Confirm workspace switch with unsaved params */}
++            <SelectOptionsDialog
++                title={''}
++                open={pendingSwitchWorkspaceId !== null}
++                onClose={handleCancelSwitchWorkspace}
++                onClick={handleConfirmSwitchWorkspace}
++                child={
++                    <DialogContentText>
++                        <FormattedMessage id="genericConfirmQuestion" />
++                    </DialogContentText>
++                }
++                validateKey={'dialog.button.leave'}
++            />
+         </Box>
+     );
+ });

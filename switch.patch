@@ -1,0 +1,124 @@
+diff --git a/src/components/parameters-tabs.tsx b/src/components/parameters-tabs.tsx
+index 9126023c8..9aa8ede57 100644
+--- a/src/components/parameters-tabs.tsx
++++ b/src/components/parameters-tabs.tsx
+@@ -77,6 +77,8 @@ import {
+     fetchDynamicMarginCalculationParameters,
+     updateDynamicMarginCalculationParameters,
+ } from '../services/study/dynamic-margin-calculation';
++import { setActiveWorkspace } from 'redux/slices/workspace-slice';
++import { getWorkspace } from 'services/study/workspace';
+ 
+ enum TAB_VALUES {
+     lfParamsTabValue = 'LOAD_FLOW',
+@@ -107,6 +109,7 @@ const ParametersTabs: FunctionComponent = () => {
+ 
+     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
+     const [pendingClosePanelId, setPendingClosePanelId] = useState<UUID | null>(null);
++    const [pendingSwitchWorkspacelId, setPendingSwitchWorkspacelId] = useState<UUID | null>(null);
+ 
+     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+@@ -247,6 +250,19 @@ const ParametersTabs: FunctionComponent = () => {
+         return () => globalThis.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
+     }, []);
+ 
++    // Listen for switch workspace requests
++    useEffect(() => {
++        const handleConfirmSwitchWorkspace = (event: Event) => {
++            const customEvent = event as CustomEvent<UUID>;
++            setPendingSwitchWorkspacelId(customEvent.detail);
++            setIsLeavingPopupOpen(true);
++                        console.log("catching notif to try switching workspace with diirty paaralmse !!! ")
++
++        };
++        globalThis.addEventListener('workspace:confirmSwitchWorkspace', handleConfirmSwitchWorkspace);
++        return () => globalThis.removeEventListener('workspace:confirmSwitchWorkspace', handleConfirmSwitchWorkspace);
++    }, [dispatch]);
++
+     useEffect(() => {
+         if (attemptedLeaveParametersTabIndex !== null) {
+             if (isDirtyComputationParameters) {
+@@ -265,26 +281,38 @@ const ParametersTabs: FunctionComponent = () => {
+             setTabValue(newValue);
+         }
+     };
+-
+-    const handlePopupChangeTab = useCallback(() => {
++    const handlePopupChangeTab = useCallback(async () => {
+         if (nextTabValue) {
+             setTabValue(nextTabValue);
+             setNextTabValue(undefined);
+         } else if (attemptedLeaveParametersTabIndex !== null) {
+             dispatch(confirmLeaveParametersTab());
+         } else if (pendingClosePanelId !== null) {
+-            // User confirmed close - actually close the panel
+             minimizePanel(pendingClosePanelId);
+             setPendingClosePanelId(null);
++        } else if (pendingSwitchWorkspacelId !== null && studyUuid) {
++ 
++             const workspace = await getWorkspace(studyUuid, pendingSwitchWorkspacelId);
++            dispatch(setActiveWorkspace(workspace));
++            setPendingSwitchWorkspacelId(null);
+         }
++
+         dispatch(setDirtyComputationParameters(false));
+         setIsLeavingPopupOpen(false);
+-    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch, minimizePanel]);
+-
++    }, [
++        nextTabValue,
++        attemptedLeaveParametersTabIndex,
++        pendingClosePanelId,
++        pendingSwitchWorkspacelId,
++        studyUuid,
++        dispatch,
++        minimizePanel,
++    ]);
+     const handleLeavingPopupClose = useCallback(() => {
+         setIsLeavingPopupOpen(false);
+         setNextTabValue(undefined);
+         setPendingClosePanelId(null);
++        setPendingSwitchWorkspacelId(null);
+ 
+         if (attemptedLeaveParametersTabIndex !== null) {
+             dispatch(cancelLeaveParametersTab());
+diff --git a/src/components/workspace/core/workspace-switcher.tsx b/src/components/workspace/core/workspace-switcher.tsx
+index 334b13308..51be2764b 100644
+--- a/src/components/workspace/core/workspace-switcher.tsx
++++ b/src/components/workspace/core/workspace-switcher.tsx
+@@ -59,6 +59,7 @@ import { getWorkspace, renameWorkspace, deletePanels, replaceWorkspace } from '.
+ import { saveWorkspaceConfig, updateWorkspaceConfig } from '../../../services/explore';
+ import type { UUID } from 'node:crypto';
+ import { RootState } from 'redux/store';
++import { AppState } from 'redux/reducer';
+ 
+ enum WorkspaceAction {
+     RENAME = 'rename',
+@@ -127,6 +128,7 @@ export const WorkspaceSwitcher = memo(() => {
+     const workspaces = useSelector(selectWorkspaces);
+     const activeWorkspaceId = useSelector(selectActiveWorkspaceId);
+     const studyUuid = useSelector((state: RootState) => state.studyUuid);
++    const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
+ 
+     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+     const [workspaceAction, setWorkspaceAction] = useState<WorkspaceActionState>(null);
+@@ -135,9 +137,15 @@ export const WorkspaceSwitcher = memo(() => {
+     const switchToWorkspace = async (workspaceId: UUID) => {
+         if (!studyUuid) return;
+ 
+-        globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
+-        const workspace = await getWorkspace(studyUuid, workspaceId);
+-        dispatch(setActiveWorkspace(workspace));
++        if (isDirtyComputationParameters) {
++            globalThis.dispatchEvent(new CustomEvent('workspace:confirmSwitchWorkspace', { detail: workspaceId }));
++        } else {
++            console.log('Direct switch!!!!');
++            // Direct switch if no dirty computation parameters
++            const workspace = await getWorkspace(studyUuid, workspaceId);
++            dispatch(setActiveWorkspace(workspace));
++            globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace', { detail: workspaceId }));
++        }
+     };
+ 
+     const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
