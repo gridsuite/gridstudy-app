@@ -297,7 +297,7 @@ function GlobalFilterAutocomplete() {
                         label={label}
                         {...getTagsProps({ index })}
                         key={key}
-                        sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                        sx={getResultsGlobalFiltersChipStyle(element)}
                     />
                 );
             }
@@ -366,6 +366,10 @@ function GlobalFilterAutocomplete() {
                     onChange={handleOnChange}
                     renderInput={RenderInput}
                     renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
+                        const notFoundFilter = globalFilterOptions.find((f) => f.label === 'elementNotFound');
+                        if (notFoundFilter) {
+                            filters.push(notFoundFilter);
+                        }
                         return (
                             <Box
                                 sx={{

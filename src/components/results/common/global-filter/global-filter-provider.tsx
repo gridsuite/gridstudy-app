@@ -11,12 +11,13 @@ import { FilterType, isCriteriaFilter } from '../utils';
 import type { UUID } from 'node:crypto';
 import {
     ElementAttributes,
+    ElementType,
     fetchDirectoryElementPath,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { removeFromGlobalFilterOptions } from '../../../../redux/actions';
+import { addToGlobalFilterOptions, removeFromSelectedGlobalFilters } from '../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
@@ -75,6 +76,7 @@ export default function GlobalFilterProvider({
                     // checks if the generic filters still exist, and update their path value
                     const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
                     const parentDirectoriesNames = response.map((parent) => parent.elementName);
+                    const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
                     const path = computeFullPath(parentDirectoriesNames);
                     const fetchedFilter: GlobalFilter | undefined = mutableFilters.find(
                         (globalFilter) => globalFilter.uuid === genericFilterUuid
@@ -82,15 +84,27 @@ export default function GlobalFilterProvider({
                     if (fetchedFilter && !fetchedFilter.path) {
                         fetchedFilter.path = path;
                     }
+                    if (fetchedFilter && label && fetchedFilter.label !== label) {
+                        fetchedFilter.label = label;
+                        dispatch(addToGlobalFilterOptions([fetchedFilter]));
+                    }
                 } catch (responseError) {
                     const error = responseError as Error & { status: number };
                     if (error.status === HttpStatusCode.NOT_FOUND) {
-                        // not found => remove those missing filters from global filters
-                        dispatch(removeFromGlobalFilterOptions(genericFilterUuid));
-                        snackError({
-                            messageTxt: mutableFilters.find((filter) => filter.uuid === genericFilterUuid)?.path,
-                            headerId: 'ComputationFilterResultsError',
-                        });
+                        // Not found => removed from selected global filters and added/updated in global filter options for display
+                        const notFoundFilter = mutableFilters.find((f) => f.uuid === genericFilterUuid);
+                        if (!notFoundFilter) return;
+                        if (notFoundFilter.id) {
+                            dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, [notFoundFilter.id]));
+                        }
+                        const filterNotFound: GlobalFilter = {
+                            ...notFoundFilter,
+                            uuid: undefined,
+                            path: undefined,
+                            label: 'elementNotFound',
+                            recent: false,
+                        };
+                        dispatch(addToGlobalFilterOptions([filterNotFound]));
                     } else {
                         // or whatever error => do nothing except showing error message
                         snackWithFallback(snackError, error, {
@@ -102,7 +116,7 @@ export default function GlobalFilterProvider({
         };
 
         checkSelectedFilters().catch((error) => console.error(error));
-    }, [selectedGlobalFilters, dispatch, snackError]);
+    }, [selectedGlobalFilters, dispatch, snackError, tableType, tableUuid]);
 
     const value = useMemo(
         () => ({
