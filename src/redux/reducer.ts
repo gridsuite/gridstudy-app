@@ -1641,8 +1641,8 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.tableFilters.globalFilters[tableId].push(id);
             }
             const option = state.globalFilterOptions.find((opt) => opt.id === id);
-            if (option?.recent === true) {
-                option.recent = false;
+            if (option?.unselectedDate) {
+                delete option.unselectedDate;
             }
         });
     });
@@ -1658,8 +1658,8 @@ export const reducer = createReducer(initialState, (builder) => {
 
         filterIds.forEach((filterId) => {
             const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (option && !option.recent) {
-                option.recent = true;
+            if (option) {
+                option.unselectedDate = Date.now();
             }
         });
     });
@@ -1669,8 +1669,8 @@ export const reducer = createReducer(initialState, (builder) => {
         const previousFilterIds = state.tableFilters.globalFilters[tableId] ?? [];
         previousFilterIds.forEach((filterId) => {
             const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (option && !option.recent) {
-                option.recent = true;
+            if (option) {
+                option.unselectedDate = Date.now();
             }
         });
         state.tableFilters.globalFilters[tableId] = [];
