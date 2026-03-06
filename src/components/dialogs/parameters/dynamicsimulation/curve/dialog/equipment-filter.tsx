@@ -144,7 +144,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
         // fetching filtered equipments
         useEffect(() => {
             let ignore = false;
-            if (gridReady && filteringEquipmentsFetcher) {
+            if (gridReady && typeof filteringEquipmentsFetcher !== 'undefined') {
                 // when close dialog, the current ref may be null => so check with '?'
                 setIsFetching(true);
                 filteringEquipmentsFetcher
