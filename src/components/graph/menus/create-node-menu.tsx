@@ -14,7 +14,7 @@ import ChildMenuItem from './create-child-menu-item';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
 import { BUILD_STATUS } from '../../network/constants';
-import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
+import { type AppState, type NodeSelectionForCopy } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';

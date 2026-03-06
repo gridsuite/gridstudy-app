@@ -12,7 +12,8 @@ import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
-import { CustomAggridFilterParams } from './custom-aggrid-filter.type';
+
+import { CustomAggridFilterParams } from '../../../types/custom-aggrid-types';
 
 const styles = {
     containerStyle: {

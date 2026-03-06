@@ -9,10 +9,10 @@ import { useState, useCallback, useMemo, SetStateAction, FunctionComponent } fro
 import { ActivableChip, NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { ExcludedNetworkModifications, RootNetworkMetadata } from '../../network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import type { UUID } from 'node:crypto';
+import { AppState } from '../../../../../../redux/reducer.type';
 
 function getUpdatedExcludedModifications(
     prev: ExcludedNetworkModifications[],

@@ -11,8 +11,8 @@ import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from 
 import { setModificationMetadata } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
-import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
+import { AppState } from '../../../../../../redux/reducer.type';
 
 export interface SwitchCellRendererProps {
     data: NetworkModificationMetadata;

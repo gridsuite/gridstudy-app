@@ -14,13 +14,13 @@ import {
     IElementUpdateDialog,
     MODIFICATION_TYPES,
     ModificationType,
-    removeNullFields,
+    NetworkModificationMetadata,
     NotificationsUrlKeys,
+    removeNullFields,
     snackWithFallback,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
-    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -72,7 +72,7 @@ import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {

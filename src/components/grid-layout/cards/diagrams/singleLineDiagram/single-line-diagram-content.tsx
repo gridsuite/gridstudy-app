@@ -44,7 +44,7 @@ import { BusMenu } from 'components/menus/bus-menu';
 import { startShortCircuitAnalysis } from '../../../../../services/study/short-circuit-analysis';
 import { useOneBusShortcircuitAnalysisLoader } from './hooks/use-one-bus-shortcircuit-analysis-loader';
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../../../redux/actions';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType, type SubstationDiagramParams, type VoltageLevelDiagramParams } from '../diagram.type';

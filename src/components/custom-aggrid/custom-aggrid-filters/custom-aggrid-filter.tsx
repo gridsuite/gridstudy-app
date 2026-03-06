@@ -10,7 +10,7 @@ import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomFilterIcon } from './custom-filter-icon';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { CustomAggridAutocompleteFilterParams } from './custom-aggrid-autocomplete-filter';
-import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../../../types/custom-aggrid-types';
 
 const styles = {
     input: {

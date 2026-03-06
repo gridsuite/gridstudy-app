@@ -8,7 +8,7 @@ import { useCallback, useEffect } from 'react';
 import { BaseVoltage, fetchBaseVoltages } from '@gridsuite/commons-ui';
 import { setBaseVoltageList } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 
 export const useBaseVoltages = () => {
     const dispatch = useDispatch();
