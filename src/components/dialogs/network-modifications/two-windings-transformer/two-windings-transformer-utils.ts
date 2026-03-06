@@ -32,7 +32,7 @@ export function toTapChangerStepList(
                 const index = Number(key);
                 return {
                     ...stepsRecord[index],
-                    STEPS_TAP: index,
+                    [STEPS_TAP]: index,
                 };
             })
             .sort((a: TapChangerStep, b: TapChangerStep) => {
