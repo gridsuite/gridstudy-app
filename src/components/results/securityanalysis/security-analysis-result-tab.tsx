@@ -8,7 +8,7 @@
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
 import {
     downloadSecurityAnalysisResultZippedCsv,
@@ -21,13 +21,12 @@ import { ComputingType, GsLangUser, type MuiStyles, PARAM_DEVELOPER_MODE } from 
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
+import { RESULT_TYPE, SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
 import {
     convertFilterValues,
     getStoreFields,
     mappingColumnToField,
     NMK_TYPE,
-    RESULT_TYPE,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { PaginationType, SecurityAnalysisTab, TableType } from '../../../types/custom-aggrid-types';

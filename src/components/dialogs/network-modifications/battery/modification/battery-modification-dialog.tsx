@@ -20,6 +20,7 @@ import {
     DeepNullable,
     sanitizeString,
     FieldConstants,
+    toModificationOperation,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -69,7 +70,6 @@ import {
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
 import { FetchStatus } from '../../../../../services/utils.type';
-import { toModificationOperation } from '../../../../utils/utils';
 import {
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,

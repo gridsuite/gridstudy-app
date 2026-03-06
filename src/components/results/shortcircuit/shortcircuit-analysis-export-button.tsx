@@ -16,7 +16,7 @@ import { downloadZipFile } from '../../../services/utils';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import type { UUID } from 'node:crypto';
 import { BranchSide } from 'components/utils/constants';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useSelector } from 'react-redux';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';

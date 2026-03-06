@@ -8,7 +8,7 @@
 import { Grid } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppState } from 'redux/reducer';
+import type { AppState } from 'redux/reducer.type';
 import AddSpreadsheetButton from '../add-spreadsheet/add-spreadsheet-button';
 import type { AppDispatch } from 'redux/store';
 import {

@@ -6,7 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import type { AppState } from '../../../redux/reducer';
+import type { AppState } from '../../../redux/reducer.type';
 import { useStableComputedSet } from '../../../hooks/use-stable-computed-set';
 import type { UUID } from 'node:crypto';
 import { useNodeAliases, validAlias } from './use-node-aliases';

@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { ExportCsvButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useSelector } from 'react-redux';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { TableType } from '../../../types/custom-aggrid-types';

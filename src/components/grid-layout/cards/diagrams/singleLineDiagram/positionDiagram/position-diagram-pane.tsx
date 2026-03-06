@@ -12,7 +12,7 @@ import { PARAM_USE_NAME } from '../../../../../../utils/config-params';
 import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../../../../network/constants';
 import { getVoltageLevelSingleLineDiagramUrl } from '../../../../../../services/study/network';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
 import { PARAM_LANGUAGE } from '@gridsuite/commons-ui';

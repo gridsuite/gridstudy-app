@@ -11,7 +11,7 @@ import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../ut
 import { IntlShape, useIntl } from 'react-intl';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { TableType } from '../../../types/custom-aggrid-types';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
@@ -56,7 +56,13 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
             columnDefs={columnDefs}
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
-            loading={isLoadingResult}
+            onModelUpdated={({ api }) => {
+                if (api.getDisplayedRowCount()) {
+                    api.hideOverlay();
+                } else {
+                    api.showNoRowsOverlay();
+                }
+            }}
             overlayNoRowsTemplate={overlayNoRowsTemplate}
             overrideLocales={AGGRID_LOCALES}
             {...agGridProps}

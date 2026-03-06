@@ -12,26 +12,15 @@ import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import { filledTextField, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 import { useIntl } from 'react-intl';
-import LoadDialogTabs from './load-dialog-tabs';
 import { LoadFormInfos } from './load.type';
 
-interface LoadDialogHeaderProps {
+export interface LoadDialogHeaderProps {
     loadToModify?: LoadFormInfos | null;
-    tabIndexesWithError: number[];
-    tabIndex: number;
-    setTabIndex: (index: number) => void;
     equipmentId?: string | null;
     isModification?: boolean;
 }
 
-const LoadDialogHeader: React.FC<LoadDialogHeaderProps> = ({
-    loadToModify,
-    tabIndexesWithError,
-    tabIndex,
-    setTabIndex,
-    equipmentId,
-    isModification = false,
-}) => {
+const LoadDialogHeader: React.FC<LoadDialogHeaderProps> = ({ loadToModify, equipmentId, isModification = false }) => {
     const intl = useIntl();
 
     const loadIdField = isModification ? (
@@ -91,12 +80,6 @@ const LoadDialogHeader: React.FC<LoadDialogHeaderProps> = ({
                 <GridItem size={4}>{loadNameField}</GridItem>
                 <GridItem size={4}>{loadTypeField}</GridItem>
             </Grid>
-            <LoadDialogTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-                isModification={isModification}
-            />
         </Box>
     );
 };
