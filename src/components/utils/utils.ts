@@ -167,8 +167,12 @@ export const formatCompleteCurrentLimit = (
 
 export const richTypeEquals = (a: unknown, b: unknown) => a === b;
 
-export const computeHighTapPosition = (steps: TapChangerStep[]) => {
-    const values = steps?.map((step) => step['index']).filter((v): v is number => v !== undefined);
+export const computeHighTapPosition = (steps: Record<number, TapChangerStep>) => {
+    const values = steps
+        ? Object.keys(steps)
+              ?.map((stepIndex) => Number(stepIndex))
+              .filter((v): v is number => v !== undefined)
+        : [];
     return values?.length > 0 ? Math.max(...values) : null;
 };
 
