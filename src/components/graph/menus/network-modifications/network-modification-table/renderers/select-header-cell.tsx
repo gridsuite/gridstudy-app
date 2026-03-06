@@ -17,15 +17,14 @@ interface SelectHeaderCellProps {
 const SelectHeaderCell: FunctionComponent<SelectHeaderCellProps> = ({ table }) => {
     const handleClick = useCallback(() => {
         const meta = table.options.meta;
-        const nextSelectedRows = table.getIsAllRowsSelected()
-            ? []
-            : table.getCoreRowModel().rows.map((r) => r.original);
-        table.toggleAllRowsSelected();
-
         if (meta) {
+            const nextSelectedRows = table.getIsAllRowsSelected()
+                ? []
+                : table.getCoreRowModel().rows.map((r) => r.original);
             meta.onRowSelected?.(nextSelectedRows);
             meta.lastClickedIndex.current = null;
         }
+        table.toggleAllRowsSelected();
     }, [table]);
 
     return (
