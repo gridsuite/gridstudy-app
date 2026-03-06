@@ -33,12 +33,12 @@ const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) 
             ) {
                 const lastIndex = meta.lastClickedIndex.current;
                 const [from, to] = lastIndex < currentIndex ? [lastIndex, currentIndex] : [currentIndex, lastIndex];
-                const isTargetSelected = row.getIsSelected();
+                const isRowSelected = row.getIsSelected();
 
                 rows.slice(from, to + 1).forEach((r) => {
                     if (r.getCanSelect()) {
-                        r.toggleSelected(!isTargetSelected);
-                        if (isTargetSelected) {
+                        r.toggleSelected(!isRowSelected);
+                        if (isRowSelected) {
                             delete nextSelection[r.id];
                         } else {
                             nextSelection[r.id] = true;
