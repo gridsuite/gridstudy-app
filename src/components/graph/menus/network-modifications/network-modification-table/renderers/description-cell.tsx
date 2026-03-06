@@ -9,10 +9,10 @@ import { FunctionComponent, useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useSelector } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
-import { AppState } from '../../../../../../redux/reducer';
 import { useIsAnyNodeBuilding } from '../../../../../utils/is-any-node-building-hook';
 import { createEditDescriptionStyle } from '../styles';
 import { setModificationMetadata } from '../../../../../../services/study/network-modifications';
+import { AppState } from '../../../../../../redux/reducer.type';
 
 const DescriptionCell: FunctionComponent<{ data: NetworkModificationMetadata }> = (props) => {
     const { data } = props;
