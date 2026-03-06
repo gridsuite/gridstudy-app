@@ -84,6 +84,7 @@ const ParametersTabs: FunctionComponent = () => {
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode ?? null);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
@@ -320,6 +321,7 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
+                        globalBuildStatus={currentNode?.data?.globalBuildStatus}
                         isDeveloperMode={isDeveloperMode}
                     />
                 );
@@ -379,6 +381,7 @@ const ParametersTabs: FunctionComponent = () => {
                 );
         }
     }, [
+        currentNode,
         tabValue,
         studyUuid,
         languageLocal,

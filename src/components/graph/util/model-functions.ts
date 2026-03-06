@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { BUILD_STATUS } from '../../network/constants';
+import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 import type NetworkModificationTreeModel from '../network-modification-tree-model';
 import {
     CurrentTreeNode,
@@ -121,7 +121,7 @@ export function isNodeReadOnly(node: CurrentTreeNode | null) {
     return node?.data?.readOnly ? true : false; // ternary operator because of potential undefined
 }
 
-export function isStatusBuilt(status: BUILD_STATUS | undefined) {
+export function isStatusBuilt(status: BuildStatus | undefined) {
     return status?.startsWith('BUILT');
 }
 
