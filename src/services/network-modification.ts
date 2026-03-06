@@ -16,7 +16,34 @@ export function getLineTypesCatalog(): Promise<LineTypeInfo[]> {
     return backendFetchJson(url);
 }
 
-export function getLineTypeWithLimits(id: string): Promise<LineTypeInfo> {
+export function getLineTypeWithAreaAndTemperature(id: string): Promise<LineTypeInfo> {
     const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}`;
     return backendFetchJson(url);
+}
+
+export function getLineTypeWithLimits(
+    id: string,
+    area: string | null,
+    temperature: string | null,
+    shapeFactor: number | null
+): Promise<LineTypeInfo> {
+    let urlSearchParams = new URLSearchParams();
+    if (area != null) {
+        urlSearchParams.append('area', area);
+    }
+    if (temperature != null) {
+        urlSearchParams.append('temperature', temperature);
+    }
+    if (shapeFactor != null) {
+        urlSearchParams.append('shapeFactor', shapeFactor.toString());
+    }
+    const url =
+        `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}/with-limits?` +
+        urlSearchParams.toString();
+    return backendFetchJson(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
 }

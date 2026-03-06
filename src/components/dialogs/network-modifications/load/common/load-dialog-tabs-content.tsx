@@ -17,7 +17,7 @@ import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { LoadFormInfos } from './load.type';
 
-interface LoadDialogTabsContentProps {
+export interface LoadDialogTabsContentProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
