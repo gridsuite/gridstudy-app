@@ -28,6 +28,7 @@ import { FC, useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
+import { useIntl } from 'react-intl';
 import StudyVoltageLevelCreationForm from './voltage-level-creation-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -85,6 +86,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
+    const intl = useIntl();
     const { snackError, snackWarning } = useSnackMessage();
 
     const defaultValues = useMemo(() => {
@@ -121,7 +123,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
     const fromSearchCopyToFormValues = useCallback(
         (voltageLevel: VoltageLevelFormInfos) => {
-            const formData = voltageLevelInfosToForm(voltageLevel);
+            const formData = voltageLevelInfosToForm(voltageLevel, intl);
             formData[FieldConstants.EQUIPMENT_ID] += '(1)';
             applyAttachmentPointOverrides(formData);
             reset(formData, { keepDefaultValues: true });
@@ -132,7 +134,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 });
             }
         },
-        [applyAttachmentPointOverrides, reset, snackWarning]
+        [applyAttachmentPointOverrides, intl, reset, snackWarning]
     );
 
     const fromEditDataToFormValues = useCallback(
