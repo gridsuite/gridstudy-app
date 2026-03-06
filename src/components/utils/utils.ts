@@ -169,8 +169,8 @@ export const richTypeEquals = (a: unknown, b: unknown) => a === b;
 
 export const computeHighTapPosition = (steps: Record<number, TapChangerStep>) => {
     const values = steps
-        ? Object.values(steps)
-              ?.map((step) => step['index'])
+        ? Object.keys(steps)
+              ?.map((stepIndex) => Number(stepIndex))
               .filter((v): v is number => v !== undefined)
         : [];
     return values?.length > 0 ? Math.max(...values) : null;

@@ -25,7 +25,7 @@ function transformExpression(expr: string): string {
 }
 
 const originalEvaluate = instance.evaluate;
-export const limitedEvaluate = (expr: string | string[], scope?: any) => {
+export const limitedEvaluate = (expr: string | string[], scope?: object) => {
     const transformedExpression: string | string[] = typeof expr === 'string' ? transformExpression(expr) : expr;
     const result = originalEvaluate(transformedExpression, scope);
     if (typeof result === 'function') {

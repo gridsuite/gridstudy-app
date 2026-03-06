@@ -26,13 +26,23 @@ export function toTapChangerStepList(
     stepsRecord: Record<number, TapChangerStepMapInfos> | undefined
 ): TapChangerStep[] | undefined {
     if (stepsRecord) {
-        return Object.keys(stepsRecord).map((key: string) => {
-            const index = Number(key);
-            return {
-                ...stepsRecord[index],
-                STEPS_TAP: index,
-            };
-        });
+        return Object.keys(stepsRecord)
+            .map((key: string) => {
+                const index = Number(key);
+                return {
+                    ...stepsRecord[index],
+                    STEPS_TAP: index,
+                };
+            })
+            .sort((a: TapChangerStep, b: TapChangerStep) => {
+                if (a.index === undefined) {
+                    return 1;
+                }
+                if (b.index === undefined) {
+                    return -1;
+                }
+                return a.index - b.index;
+            });
     }
     return undefined;
 }
