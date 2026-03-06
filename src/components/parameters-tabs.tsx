@@ -63,6 +63,8 @@ import {
     fetchDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
 } from '../services/study/dynamic-margin-calculation';
+import { setActiveWorkspace } from 'redux/slices/workspace-slice';
+import { getWorkspace } from 'services/study/workspace';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -93,6 +95,7 @@ const ParametersTabs: FunctionComponent = () => {
 
     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
     const [pendingClosePanelId, setPendingClosePanelId] = useState<UUID | null>(null);
+    const [pendingSwitchWorkspacelId, setPendingSwitchWorkspacelId] = useState<UUID | null>(null);
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -226,6 +229,17 @@ const ParametersTabs: FunctionComponent = () => {
         return () => globalThis.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
     }, []);
 
+    // Listen for switch workspace requests
+    useEffect(() => {
+        const handleConfirmSwitchWorkspace = (event: Event) => {
+            const customEvent = event as CustomEvent<UUID>;
+            setPendingSwitchWorkspacelId(customEvent.detail);
+            setIsLeavingPopupOpen(true);
+        };
+        globalThis.addEventListener('workspace:confirmSwitchWorkspace', handleConfirmSwitchWorkspace);
+        return () => globalThis.removeEventListener('workspace:confirmSwitchWorkspace', handleConfirmSwitchWorkspace);
+    }, [dispatch]);
+
     useEffect(() => {
         if (attemptedLeaveParametersTabIndex !== null) {
             if (isDirtyComputationParameters) {
@@ -244,8 +258,7 @@ const ParametersTabs: FunctionComponent = () => {
             setTabValue(newValue);
         }
     };
-
-    const handlePopupChangeTab = useCallback(() => {
+    const handlePopupChangeTab = useCallback(async () => {
         if (nextTabValue) {
             setTabValue(nextTabValue);
             setNextTabValue(undefined);
@@ -255,15 +268,28 @@ const ParametersTabs: FunctionComponent = () => {
             // User confirmed close - actually close the panel
             minimizePanel(pendingClosePanelId);
             setPendingClosePanelId(null);
+        } else if (pendingSwitchWorkspacelId !== null && studyUuid) {
+            const workspace = await getWorkspace(studyUuid, pendingSwitchWorkspacelId);
+            dispatch(setActiveWorkspace(workspace));
+            setPendingSwitchWorkspacelId(null);
         }
+
         dispatch(setDirtyComputationParameters(false));
         setIsLeavingPopupOpen(false);
-    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch, minimizePanel]);
-
+    }, [
+        nextTabValue,
+        attemptedLeaveParametersTabIndex,
+        pendingClosePanelId,
+        pendingSwitchWorkspacelId,
+        studyUuid,
+        dispatch,
+        minimizePanel,
+    ]);
     const handleLeavingPopupClose = useCallback(() => {
         setIsLeavingPopupOpen(false);
         setNextTabValue(undefined);
         setPendingClosePanelId(null);
+        setPendingSwitchWorkspacelId(null);
 
         if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(cancelLeaveParametersTab());
