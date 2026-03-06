@@ -12,7 +12,7 @@ import { TableCell, TableRow } from '@mui/material';
 import { createCellStyle, createRowSx, styles } from '../styles';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
-import { BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
+import { AUTO_EXTENSIBLE_COLUMNS, BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
 
 interface ModificationRowProps {
     virtualRow: VirtualItem;
@@ -49,7 +49,7 @@ const ModificationRow = memo<ModificationRowProps>(
                             {row.getVisibleCells().map((cell) => (
                                 <TableCell
                                     key={cell.id}
-                                    sx={createCellStyle(cell)}
+                                    sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
                                     onClick={() => handleCellClickCallback(cell.column.id)}
                                     {...(cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
                                         ? provided.dragHandleProps

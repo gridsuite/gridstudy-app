@@ -9,20 +9,17 @@ import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo,
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { DragDropContext, DragStart, Droppable, DroppableProvided, DropResult } from '@hello-pangea/dnd';
 import { useVirtualizer } from '@tanstack/react-virtual';
-
 import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';
-import { createHeaderCellStyle, styles } from './styles';
-import { createBaseColumns, createRootNetworksColumns } from './columns-definition';
+import { createHeaderCellStyle, MODIFICATION_ROW_HEIGHT, styles } from './styles';
+import { AUTO_EXTENSIBLE_COLUMNS, createBaseColumns, createRootNetworksColumns } from './columns-definition';
 import ModificationRow from './row/modification-row';
 import { useTheme } from '@mui/material/styles';
 import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
-
-export const MODIFICATION_ROW_HEIGHT = 41;
+import { AppState } from '../../../../../redux/reducer.type';
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];
@@ -144,7 +141,8 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
                                                         header,
                                                         theme,
                                                         header.index === 0,
-                                                        header.index === headerGroup.headers.length - 1
+                                                        header.index === headerGroup.headers.length - 1,
+                                                        AUTO_EXTENSIBLE_COLUMNS.includes(header.column.id)
                                                     )}
                                                 >
                                                     {flexRender(header.column.columnDef.header, header.getContext())}

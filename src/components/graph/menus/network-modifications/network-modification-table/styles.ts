@@ -7,8 +7,6 @@
 
 import { MuiStyles } from '@gridsuite/commons-ui';
 import { VirtualItem } from '@tanstack/react-virtual';
-import { MODIFICATION_ROW_HEIGHT } from './network-modifications-table';
-import { AUTO_EXTENSIBLE_COLUMNS } from './columns-definition';
 import { SxProps, Theme } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { CSSProperties } from 'react';
@@ -18,6 +16,8 @@ const HIGHLIGHT_COLOR_HOVER = 'rgba(144, 202, 249, 0.24)';
 const ROW_HOVER_COLOR = 'rgba(144, 202, 249, 0.08)';
 const DRAG_OPACITY = 0.5;
 const DEACTIVATED_OPACITY = 0.4;
+
+export const MODIFICATION_ROW_HEIGHT = 41;
 
 // Static styles
 
@@ -148,8 +148,7 @@ export const createEditDescriptionStyle = (description: string | undefined): SxP
     'tr:hover &': { opacity: 1 },
 });
 
-export const createCellStyle = (cell: any) => {
-    const isAutoExtensible = AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id);
+export const createCellStyle = (cell: any, isAutoExtensible: boolean) => {
     const size = cell.column.getSize();
     const minSize = cell.column.columnDef.minSize;
 
@@ -164,9 +163,14 @@ export const createCellStyle = (cell: any) => {
     };
 };
 
-export const createHeaderCellStyle = (header: any, theme: Theme, isFirst: boolean, isLast: boolean) => {
+export const createHeaderCellStyle = (
+    header: any,
+    theme: Theme,
+    isFirst: boolean,
+    isLast: boolean,
+    isAutoExtensible: boolean
+) => {
     const darkBorder = `1px solid ${alpha(theme.palette.text.secondary, 0.4)}`;
-    const isAutoExtensible = AUTO_EXTENSIBLE_COLUMNS.includes(header.column.id);
     const size = header.column.getSize();
     const minSize = header.column.columnDef.minSize;
 

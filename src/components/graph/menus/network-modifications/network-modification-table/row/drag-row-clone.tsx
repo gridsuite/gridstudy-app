@@ -9,7 +9,7 @@ import { Box } from '@mui/material';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { createCellStyle, styles } from '../styles';
 import { flexRender, Row } from '@tanstack/react-table';
-import { BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
+import { AUTO_EXTENSIBLE_COLUMNS, BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
 
 const DragCloneRow = ({ row }: { row: Row<NetworkModificationMetadata> }) => (
     <Box sx={styles.dragRowClone}>
@@ -21,7 +21,7 @@ const DragCloneRow = ({ row }: { row: Row<NetworkModificationMetadata> }) => (
                 )
             )
             .map((cell) => (
-                <Box key={cell.id} sx={createCellStyle(cell)}>
+                <Box key={cell.id} sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </Box>
             ))}
