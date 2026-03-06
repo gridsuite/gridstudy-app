@@ -139,7 +139,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
     const fromEditDataToFormValues = useCallback(
         (editDto: VoltageLevelCreationDto) => {
-            const formData = voltageLevelCreationDtoToForm(editDto, intl);
+            const formData = voltageLevelCreationDtoToForm(editDto, intl, true);
             applyAttachmentPointOverrides(formData);
             reset(formData, { keepDefaultValues: true });
         },
