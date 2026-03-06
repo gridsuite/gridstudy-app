@@ -68,7 +68,7 @@ import {
 import { PARAM_COMPUTED_LANGUAGE, PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 
-// ——— Equipment types ———
+// ——— Equipments ———
 
 export enum EquipmentUpdateType {
     LINES = 'lines',
@@ -121,7 +121,36 @@ export interface ComputingStatusParameters {
     [ComputingType.LOAD_FLOW]: LoadFlowStatusParameters | null;
 }
 
-// ——— Diagram types ———
+// ——— Tables ———
+
+interface TablesState {
+    uuid: UUID | null;
+    definitions: SpreadsheetTabDefinition[];
+    activeTabUuid: UUID | null;
+    addedTable: UUID | null; // to track the last added table for setting the focus on it
+}
+
+export type SpreadsheetNetworkState = {
+    nodesIds: UUID[];
+    equipments: Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
+};
+
+export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
+
+export type ComputationResultColumnFilter = {
+    columns: FilterConfig[];
+};
+
+export type TableFiltersState = {
+    columnsFilters: Record<string, Record<string, ComputationResultColumnFilter>>;
+    globalFilters: Record<string, string[]>; // filter IDs
+};
+
+export type LogsFilterState = Record<string, FilterConfig[]>;
+
+export type LogsPaginationState = Record<string, LogsPaginationConfig>;
+
+// ——— Diagrams ———
 
 export type NadViewBox = Record<UUID, ViewBoxLike | null>;
 
@@ -149,7 +178,7 @@ export interface OneBusShortCircuitAnalysisDiagram {
     nodeId: UUID;
 }
 
-// ——— Copy / clipboard ———
+// ——— Clipboard ———
 
 /**
  * Represent a node in the network modifications tree that is selected.
@@ -167,29 +196,7 @@ export type CopiedNetworkModifications = {
     copyInfos: NetworkModificationCopyInfos | null;
 };
 
-// ——— Filter / sort state ———
-
-export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
-
-export type ComputationResultColumnFilter = {
-    columns: FilterConfig[];
-};
-
-export type TableFiltersState = {
-    columnsFilters: Record<string, Record<string, ComputationResultColumnFilter>>;
-    globalFilters: Record<string, string[]>; // filter IDs
-};
-
-export type LogsFilterState = Record<string, FilterConfig[]>;
-
-export type LogsPaginationState = Record<string, LogsPaginationConfig>;
-
-// ——— Others ———
-
-export type SpreadsheetNetworkState = {
-    nodesIds: UUID[];
-    equipments: Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
-};
+// ——— App config ———
 
 export interface AppConfigState {
     [PARAM_THEME]: GsTheme;
@@ -199,13 +206,6 @@ export interface AppConfigState {
     [PARAM_USE_NAME]: boolean;
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAMS_LOADED]: boolean;
-}
-
-interface TablesState {
-    uuid: UUID | null;
-    definitions: SpreadsheetTabDefinition[];
-    activeTabUuid: UUID | null;
-    addedTable: UUID | null; // to track the last added table for setting the focus on it
 }
 
 // ——— Main application state ———
