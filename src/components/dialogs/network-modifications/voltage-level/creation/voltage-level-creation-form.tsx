@@ -14,7 +14,7 @@ import {
 import { Box, Paper } from '@mui/material';
 
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import IconButton from '@mui/material/IconButton';
 import { useIntl } from 'react-intl';
 import LineSeparator from '../../../commons/line-separator';
@@ -34,6 +34,9 @@ const StudyVoltageLevelCreationForm = ({
     const intl = useIntl();
     const { setValue, getValues } = useFormContext();
     const [substations, setSubstations] = useState<string[]>([]);
+    const watchHideNominalVoltage = useWatch({ name: FieldConstants.HIDE_NOMINAL_VOLTAGE });
+    const watchHideBusBarSection = useWatch({ name: FieldConstants.HIDE_BUS_BAR_SECTION });
+    const showDeleteSubstationButton = !(watchHideNominalVoltage && watchHideBusBarSection);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
@@ -80,6 +83,7 @@ const StudyVoltageLevelCreationForm = ({
                 PaperComponent: ({ children }: { children: React.ReactNode }) => getCustomPaper(children),
                 noOptionsText: '',
             }}
+            showDeleteSubstationButton={showDeleteSubstationButton}
         />
     );
 };
