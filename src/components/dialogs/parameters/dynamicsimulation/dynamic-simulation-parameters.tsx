@@ -23,6 +23,7 @@ import {
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import {
+    ComputingType,
     CustomFormProvider,
     isObjectEmpty,
     mergeSx,
@@ -30,7 +31,6 @@ import {
     ProviderParam,
     SubmitButton,
     useParametersBackend,
-    ComputingType,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
@@ -52,7 +52,7 @@ import {
 } from './dynamic-simulation-utils';
 import { DynamicSimulationForm, formSchema, TAB_VALUES } from './dynamic-simulation.type';
 import { useSelector } from 'react-redux';
-import type { AppState } from '../../../../redux/reducer';
+import type { AppState } from '../../../../redux/reducer.type';
 import { useParametersNotification } from '../use-parameters-notification';
 import { parametersStyles } from '../util/styles';
 

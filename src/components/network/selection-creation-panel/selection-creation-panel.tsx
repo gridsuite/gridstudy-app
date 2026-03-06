@@ -18,24 +18,24 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
-    NAME,
-    EQUIPMENT_TYPE_FIELD,
-    SELECTION_TYPE,
     DESTINATION_FOLDER,
+    EQUIPMENT_TYPE_FIELD,
     FOLDER_ID,
     FOLDER_NAME,
+    NAME,
+    SELECTION_TYPE,
 } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { SelectionCreationPanelForm } from './selection-creation-panel-form';
 import {
+    getSelectionCreationSchema,
     SelectionCreationPaneFields,
     SelectionCreationPanelFormSchema,
-    getSelectionCreationSchema,
 } from './selection-creation-schema';
 import { VoltageLevel } from '../../utils/equipment-types';
 import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';

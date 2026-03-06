@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import yup from '../../utils/yup-config';
+import { COLUMN_TYPES } from '../../../types/custom-aggrid-types';
 
 export const COLUMN_ID = 'id';
 export const COLUMN_NAME = 'name';

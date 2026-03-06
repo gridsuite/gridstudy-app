@@ -13,7 +13,7 @@ import CsvDownloader from 'react-csv-downloader';
 import { CancelButton, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { PHASE_TAP, RuleType } from '../two-windings-transformer.types';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 
 export interface ImportRuleDialogProps {
     ruleType: RuleType;
