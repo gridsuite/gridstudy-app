@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES, sanitizeString } from '@gridsuite/commons-ui';
+import {
+    AttributeModification,
+    MODIFICATION_TYPES,
+    sanitizeString,
+    toModificationOperation,
+} from '@gridsuite/commons-ui';
 import yup from '../../../../../utils/yup-config';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -39,13 +44,9 @@ import {
     getReactiveLimitsSchema,
 } from '../../../../reactive-limits/reactive-limits-utils';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
-import { toModificationOperation } from '../../../../../utils/utils';
 import { VscConverterStationFormInfos, ConverterStationElementModificationInfos } from './converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
-import {
-    AttributeModification,
-    ConverterStationCreationInfos,
-} from '../../../../../../services/network-modification-types';
+import { ConverterStationCreationInfos } from '../../../../../../services/network-modification-types';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 

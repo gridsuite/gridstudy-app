@@ -7,9 +7,9 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import { AttributeModification, OperationType, TemporaryLimit } from 'services/network-modification-types';
+import { TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
-import { Option } from '@gridsuite/commons-ui';
+import { AttributeModification, OperationType, Option } from '@gridsuite/commons-ui';
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
@@ -108,14 +108,6 @@ export const buildNewBusbarSections = (equipmentId: string, sectionCount: number
     }
     return newBusbarSections;
 };
-
-export function toModificationOperation<T>(
-    value: T
-): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
-    return value === 0 || value === false || value
-        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
-        : null;
-}
 
 export function toModificationUnsetOperation<T>(
     value: T

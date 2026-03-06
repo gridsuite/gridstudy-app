@@ -10,15 +10,20 @@ import { BaseVoltage, LIGHT_THEME } from '@gridsuite/commons-ui';
 export const INVALID_COMPUTATION_OPACITY = 0.2;
 
 function parseRGB(stringRGB: string): number[] | undefined {
-    return stringRGB
-        .match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
-        ?.slice(1)
-        .map(Number);
+    const rgbRegex = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/;
+    const match = rgbRegex.exec(stringRGB);
+    return match?.slice(1).map(Number);
 }
 
 export const getBaseVoltageNetworkMapColor = (baseVoltage: BaseVoltage | undefined): number[] => {
     const color = baseVoltage?.networkMapColor;
     return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
+};
+
+export const getBaseVoltageSldAndNadThemeColors = (baseVoltage: BaseVoltage, theme: string) => {
+    return theme === LIGHT_THEME
+        ? baseVoltage.sldAndNadColors.lightThemeColors
+        : baseVoltage.sldAndNadColors.darkThemeColors;
 };
 
 export const getBaseVoltagesCssVars = (
@@ -30,10 +35,7 @@ export const getBaseVoltagesCssVars = (
         return css;
     }
     for (const interval of baseVoltages) {
-        const themeColors =
-            theme === LIGHT_THEME
-                ? interval.sldAndNadColors.lightThemeColors
-                : interval.sldAndNadColors.darkThemeColors;
+        const themeColors = getBaseVoltageSldAndNadThemeColors(interval, theme);
 
         const vlStyleClassName = `.sld-${interval.name}, .nad-${interval.name}`;
         css[vlStyleClassName] = { '--vl-color': themeColors.default };
