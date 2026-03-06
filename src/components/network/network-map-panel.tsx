@@ -59,7 +59,7 @@ import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
