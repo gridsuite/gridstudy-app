@@ -1758,7 +1758,7 @@
     "existingNAD": "NAD existant",
     "unbuildAllNodesTooltip": "Déréaliser tous les nœuds",
     "unbuildAllNodesDialogTitle": "Confirmation",
-    "unbuildAllNodesDialogContent": "Toutes les réalisations de tous les nœuds de l'arbre pour tous les réseaux racines ainsi que tous les résultats de calcul seront supprimés",
+    "unbuildAllNodesDialogContent": "L'ensemble des réalisations pour tous les réseaux racines ainsi que leurs résultats de calculs seront supprimés",
     "unbuildAllNodesError": "Une erreur est survenue lors de la déréalisation de l'ensemble des nœuds",
     "uuidCopiedToClipboard": "L'UUID a été copié dans le presse-papier système",
     "uuidCopiedToClipboardError": "L'UUID n'a pas pu être copié dans le presse-papier système",
