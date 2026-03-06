@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { STEPS_TAP } from 'components/utils/field-constants';
 import { TapChangerStep, TapChangerStepMapInfos } from './two-windings-transformer.types';
 
 export const TwoWindingsTransformerCreationDialogTab = {
@@ -35,13 +36,13 @@ export function toTapChangerStepList(
                 };
             })
             .sort((a: TapChangerStep, b: TapChangerStep) => {
-                if (a.index === undefined) {
+                if (a[STEPS_TAP] === undefined) {
                     return 1;
                 }
-                if (b.index === undefined) {
+                if (b[STEPS_TAP] === undefined) {
                     return -1;
                 }
-                return a.index - b.index;
+                return a[STEPS_TAP] - b[STEPS_TAP];
             });
     }
     return undefined;
