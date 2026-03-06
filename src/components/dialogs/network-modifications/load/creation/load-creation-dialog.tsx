@@ -10,10 +10,8 @@ import {
     CustomFormProvider,
     EquipmentType,
     snackWithFallback,
-    toModificationProperties,
     useSnackMessage,
     DeepNullable,
-    sanitizeString,
     LoadCreationDto,
     loadCreationEmptyFormData,
     LoadCreationFormData,
@@ -22,8 +20,7 @@ import {
     LoadForm,
     getConnectivityFormData,
     LoadFormInfos,
-    UNDEFINED_LOAD_TYPE,
-    UNDEFINED_CONNECTION_DIRECTION,
+    loadCreationFormToDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -122,24 +119,10 @@ export function LoadCreationDialog({
     }, [reset, editData]);
 
     const onSubmit = useCallback(
-        (load: LoadCreationFormData) => {
-            createLoad({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                uuid: editData?.uuid,
-                equipmentId: load.equipmentID,
-                equipmentName: sanitizeString(load.equipmentName),
-                loadType: load.loadType ?? UNDEFINED_LOAD_TYPE,
-                p0: load.activePowerSetpoint,
-                q0: load.reactivePowerSetpoint,
-                voltageLevelId: load.connectivity.voltageLevel?.id ?? '',
-                busOrBusbarSectionId: load.connectivity.busOrBusbarSection?.id ?? '',
-                connectionDirection: load.connectivity?.connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
-                connectionName: sanitizeString(load.connectivity?.connectionName),
-                connectionPosition: load.connectivity?.connectionPosition ?? null,
-                terminalConnected: load.connectivity?.terminalConnected ?? undefined,
-                properties: toModificationProperties(load),
-            }).catch((error) => {
+        (loadForm: LoadCreationFormData) => {
+            const dto = loadCreationFormToDto(loadForm);
+            dto.uuid = editData?.uuid;
+            createLoad(studyUuid, currentNodeUuid, dto).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'LoadCreationError' });
             });
         },

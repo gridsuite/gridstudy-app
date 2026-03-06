@@ -396,53 +396,23 @@ export function modifyBattery({
     });
 }
 
-export function createLoad({
-    studyUuid,
-    nodeUuid,
-    uuid,
-    equipmentId,
-    equipmentName,
-    loadType,
-    p0,
-    q0,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties,
-}: LoadCreationDto & { studyUuid: UUID; nodeUuid: UUID }) {
+export function createLoad(studyUuid: UUID, nodeUuid: UUID, dto: LoadCreationDto) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (uuid) {
-        createLoadUrl += '/' + safeEncodeURIComponent(uuid);
+    if (dto.uuid) {
+        createLoadUrl += '/' + safeEncodeURIComponent(dto.uuid);
         console.info('Updating load creation');
     } else {
         console.info('Creating load creation');
     }
 
     return backendFetchText(createLoadUrl, {
-        method: uuid ? 'PUT' : 'POST',
+        method: dto.uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LOAD_CREATION.type,
-            equipmentId,
-            equipmentName,
-            loadType: loadType,
-            p0: p0,
-            q0: q0,
-            voltageLevelId: voltageLevelId,
-            busOrBusbarSectionId: busOrBusbarSectionId,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            connectionPosition: connectionPosition,
-            terminalConnected: terminalConnected,
-            properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
