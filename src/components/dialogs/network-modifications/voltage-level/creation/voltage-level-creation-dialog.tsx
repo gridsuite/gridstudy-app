@@ -139,11 +139,11 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
     const fromEditDataToFormValues = useCallback(
         (editDto: VoltageLevelCreationDto) => {
-            const formData = voltageLevelCreationDtoToForm(editDto);
+            const formData = voltageLevelCreationDtoToForm(editDto, intl);
             applyAttachmentPointOverrides(formData);
             reset(formData, { keepDefaultValues: true });
         },
-        [applyAttachmentPointOverrides, reset]
+        [applyAttachmentPointOverrides, intl, reset]
     );
 
     // Supervisor watches to trigger validation for interdependent constraints
