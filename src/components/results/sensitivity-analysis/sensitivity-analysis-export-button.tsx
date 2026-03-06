@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { ExportCsvButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useSelector } from 'react-redux';
 import {
     DATA_KEY_TO_FILTER_KEY_N,
