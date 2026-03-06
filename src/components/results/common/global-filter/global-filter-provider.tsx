@@ -17,7 +17,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { addToGlobalFilterOptions, addToSelectedGlobalFilters } from '../../../../redux/actions';
+import { addToGlobalFilterOptions, removeFromSelectedGlobalFilters } from '../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
@@ -93,13 +93,18 @@ export default function GlobalFilterProvider({
                     if (error.status === HttpStatusCode.NOT_FOUND) {
                         // not found => remove those missing filters from global filters
                         const notFoundFilter = mutableFilters.find((f) => f.uuid === genericFilterUuid);
-                        if (notFoundFilter) {
-                            notFoundFilter.uuid = undefined;
-                            notFoundFilter.path = undefined;
-                            notFoundFilter.label = 'elementNotFound';
-                            dispatch(addToGlobalFilterOptions([notFoundFilter]));
-                            dispatch(addToSelectedGlobalFilters(tableType, tableUuid, [notFoundFilter.id]));
+                        if (!notFoundFilter) return;
+                        if (notFoundFilter.id) {
+                            dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, [notFoundFilter.id]));
                         }
+                        const filterNotFound: GlobalFilter = {
+                            ...notFoundFilter,
+                            uuid: undefined,
+                            path: undefined,
+                            label: 'elementNotFound',
+                            recent: false,
+                        };
+                        dispatch(addToGlobalFilterOptions([filterNotFound]));
                     } else {
                         // or whatever error => do nothing except showing error message
                         snackWithFallback(snackError, error, {

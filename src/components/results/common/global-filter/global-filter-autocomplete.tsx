@@ -357,6 +357,10 @@ function GlobalFilterAutocomplete() {
                     onChange={handleOnChange}
                     renderInput={RenderInput}
                     renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
+                        const notFoundFilter = globalFilterOptions.find((f) => f.label === 'elementNotFound');
+                        if (notFoundFilter) {
+                            filters.push(notFoundFilter);
+                        }
                         return (
                             <Box
                                 sx={{

@@ -44,9 +44,8 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             const globalFilters =
                 globalFiltersIds.length === 0
                     ? []
-                    : state.globalFilterOptions.filter((filter) => {
-                          return filter.id !== undefined && globalFiltersIds.includes(filter.id);
-                      });
+                    : state.globalFilterOptions.filter((filter) => globalFiltersIds.includes(filter.id));
+
             // Debounce per table to avoid excessive requests
             if (debouncedSyncTimers[index]) {
                 clearTimeout(debouncedSyncTimers[index]);
