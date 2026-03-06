@@ -12,10 +12,8 @@ import { FormattedMessage } from 'react-intl';
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import ScenarioParameters, { SCENARIO_DURATION } from './scenario-parameters';
 import {
-    fetchDefaultDynamicSecurityAnalysisProvider,
     fetchDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisParameters,
-    updateDynamicSecurityAnalysisProvider,
 } from '../../../../services/study/dynamic-security-analysis';
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
@@ -108,12 +106,11 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
         studyUuid,
         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
         dynamicSecurityAnalysisAvailability,
-        fetchDynamicSecurityAnalysisProviders,
-        null,
-        fetchDefaultDynamicSecurityAnalysisProvider,
-        updateDynamicSecurityAnalysisProvider,
-        fetchDynamicSecurityAnalysisParameters,
-        updateDynamicSecurityAnalysisParameters
+        {
+            backendFetchProviders: fetchDynamicSecurityAnalysisProviders,
+            backendFetchParameters: fetchDynamicSecurityAnalysisParameters,
+            backendUpdateParameters: updateDynamicSecurityAnalysisParameters,
+        }
     );
     useParametersNotification(
         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
@@ -121,8 +118,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
         dynamicSecurityParametersBackend
     );
 
-    const [providers, provider, , , resetProvider, parameters, , updateParameters, resetParameters] =
-        dynamicSecurityParametersBackend;
+    const { providers, params: parameters, updateParameters, resetParameters } = dynamicSecurityParametersBackend;
 
     const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
 
@@ -139,10 +135,9 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
 
     const handleResetParametersAndProvider = useCallback(() => {
-        resetProvider();
         resetParameters();
         setOpenResetConfirmation(false);
-    }, [resetParameters, resetProvider]);
+    }, [resetParameters]);
 
     const handleResetClick = useCallback(() => {
         setOpenResetConfirmation(true);
@@ -200,9 +195,9 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
     );
 
     useEffect(() => {
-        if (parameters && provider) {
+        if (parameters) {
             reset({
-                [PROVIDER]: parameters.provider ?? provider,
+                [PROVIDER]: parameters.provider,
                 [TAB_VALUES.SCENARIO]: {
                     [SCENARIO_DURATION]: parameters.scenarioDuration,
                 },
@@ -212,7 +207,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                 },
             });
         }
-    }, [reset, parameters, provider]);
+    }, [reset, parameters]);
 
     const handleTabChange = useCallback((event: SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabIndex(newValue);
