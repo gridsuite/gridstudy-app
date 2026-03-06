@@ -91,7 +91,7 @@ export default function GlobalFilterProvider({
                 } catch (responseError) {
                     const error = responseError as Error & { status: number };
                     if (error.status === HttpStatusCode.NOT_FOUND) {
-                        // not found => remove those missing filters from global filters
+                        // Not found => removed from selected global filters and added/updated in global filter options for display
                         const notFoundFilter = mutableFilters.find((f) => f.uuid === genericFilterUuid);
                         if (!notFoundFilter) return;
                         if (notFoundFilter.id) {
