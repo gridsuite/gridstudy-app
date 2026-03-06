@@ -461,6 +461,7 @@
     "results.globalFilter.recent": "Récents",
     "results.globalFilter.substationProperty": "Régions",
     "results.globalFilter.genericFilter": "Ouvrages",
+    "results.globalFilter.substationFilter": "Sites",
     "results.globalFilter.substationOrVoltageLevelFilter": "Sites et postes",
     "results.globalFilter.elementsHelp": "Ces filtrages excluent les autres types d'ouvrage",
     "results.globalFilter.country": "Pays",

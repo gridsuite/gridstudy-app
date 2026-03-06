@@ -461,6 +461,7 @@
     "results.globalFilter.recent": "Recent",
     "results.globalFilter.substationProperty": "Regions",
     "results.globalFilter.genericFilter": "Elements",
+    "results.globalFilter.substationFilter": "Substations",
     "results.globalFilter.substationOrVoltageLevelFilter": "Substations and voltage levels",
     "results.globalFilter.elementsHelp": "Those filters exclude other elements type",
     "results.globalFilter.country": "Countries",
