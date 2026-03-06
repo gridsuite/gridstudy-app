@@ -13,8 +13,7 @@ import {
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
 } from '../../utils/field-constants';
-import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
-import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
 import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
@@ -49,7 +48,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             y: null,
             tabIndex: null,
         });
-        const { getValues } = useFormContext();
         const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
         const {
             fields: operationalLimitsGroups,
@@ -108,18 +106,16 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         );
 
         const addNewLimitSet = useCallback(() => {
-            const formName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
-            const operationalLimitSetGroups: OperationalLimitsGroup[] = getValues(formName);
             let name = 'DEFAULT';
 
             // Try to generate unique name
-            if (operationalLimitSetGroups?.length > 0) {
-                const ids: string[] = operationalLimitSetGroups.map((l) => l.name);
+            if (operationalLimitsGroups?.length > 0) {
+                const ids: string[] = operationalLimitsGroups.map((l) => l.name);
                 name = generateUniqueId('DEFAULT', ids);
             }
             prependEmptyOperationalLimitsGroup(name);
             setIndexSelectedLimitSet(0);
-        }, [parentFormName, getValues, prependEmptyOperationalLimitsGroup, setIndexSelectedLimitSet]);
+        }, [operationalLimitsGroups, prependEmptyOperationalLimitsGroup, setIndexSelectedLimitSet]);
 
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 
