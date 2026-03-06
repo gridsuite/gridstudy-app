@@ -12,6 +12,7 @@ import {
     EquipmentInfos,
     EquipmentType,
     LoadCreationDto,
+    LoadModificationDto,
     MODIFICATION_TYPES,
     ModificationType,
     NetworkModificationMetadata,
@@ -42,7 +43,6 @@ import {
     LineCreationInfos,
     LineModificationInfos,
     LinesAttachToSplitLinesInfo,
-    LoadModificationInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfos,
@@ -446,62 +446,22 @@ export function createLoad({
     });
 }
 
-export function modifyLoad({
-    studyUuid,
-    nodeUuid,
-    modificationUuid = undefined,
-    id,
-    name,
-    loadType,
-    p0,
-    q0,
-    voltageLevelId = undefined,
-    busOrBusbarSectionId = undefined,
-    connectionName = undefined,
-    connectionDirection = undefined,
-    connectionPosition = undefined,
-    terminalConnected = undefined,
-    pMeasurementValue,
-    pMeasurementValidity,
-    qMeasurementValue,
-    qMeasurementValidity,
-    properties,
-}: LoadModificationInfo) {
+export function modifyLoad(studyUuid: UUID, nodeUuid: UUID, dto: LoadModificationDto) {
     let modifyLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
-        modifyLoadUrl += '/' + encodeURIComponent(modificationUuid);
+    if (dto.uuid) {
+        modifyLoadUrl += '/' + encodeURIComponent(dto.uuid);
         console.info('Updating load modification');
     } else {
         console.info('Creating load modification');
     }
 
     return backendFetchText(modifyLoadUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: dto.uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
-            equipmentId: id,
-            equipmentName: toModificationOperation(name),
-            loadType: toModificationOperation(loadType),
-            connectionName: toModificationOperation(connectionName),
-            connectionDirection: toModificationOperation(connectionDirection),
-            connectionPosition: toModificationOperation(connectionPosition),
-            terminalConnected: toModificationOperation(terminalConnected),
-            p0: toModificationOperation(p0),
-            q0: toModificationOperation(q0),
-            voltageLevelId: toModificationOperation(voltageLevelId),
-            busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-            pMeasurementValue: toModificationOperation(pMeasurementValue),
-            pMeasurementValidity: toModificationOperation(pMeasurementValidity),
-            qMeasurementValue: toModificationOperation(qMeasurementValue),
-            qMeasurementValidity: toModificationOperation(qMeasurementValidity),
-            properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
