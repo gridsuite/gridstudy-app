@@ -6,16 +6,19 @@
  */
 
 import {
+    Box,
     Button,
     ButtonGroup,
     ClickAwayListener,
     Grow,
+    LinearProgress,
     ListItemIcon,
     ListItemText,
     MenuItem,
     MenuList,
     Paper,
     Popper,
+    Tooltip,
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import StopIcon from '@mui/icons-material/Stop';
@@ -141,6 +144,7 @@ interface SplitButtonProps {
     onClick: (debug?: boolean) => void;
     actionOnRunnable: () => void;
     onSelectionChange: (index: number) => void;
+    progress?: { current: number; total: number } | null;
 }
 
 const SplitButton = ({
@@ -154,6 +158,7 @@ const SplitButton = ({
     onClick,
     actionOnRunnable,
     onSelectionChange,
+    progress,
 }: SplitButtonProps) => {
     const [open, setOpen] = useState(false);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
@@ -190,6 +195,16 @@ const SplitButton = ({
     const getRunningIcon = (status: RunningStatus) => {
         switch (status) {
             case RunningStatus.RUNNING:
+                if (progress && progress.total > 0) {
+                    const pct = Math.round((progress.current / progress.total) * 100);
+                    return (
+                        <Tooltip open={true} title={`${progress.current} / ${progress.total}`}>
+                            <Box sx={{ width: 40 }} data-testid="ModelExecutionRunning">
+                                <LinearProgress variant="determinate" value={pct} />
+                            </Box>
+                        </Tooltip>
+                    );
+                }
                 return <LoopIcon sx={styles.rotate} data-testid="ModelExecutionRunning" />;
             case RunningStatus.SUCCEED:
                 return <DoneIcon data-testid="ModelExecutionDone" />;
