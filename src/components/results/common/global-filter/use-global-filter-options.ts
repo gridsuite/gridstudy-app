@@ -14,7 +14,7 @@ import {
     GlobalFilterWithoutId,
 } from './global-filter-utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 import { addToGlobalFilterOptions } from '../../../../redux/actions';
 

@@ -9,7 +9,7 @@ import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ErrorMessageDescriptor, extractErrorMessageDescriptor } from '@gridsuite/commons-ui';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../../../services/study';
 import { deleteNadConfig, saveNadConfig } from '../../../../services/study/workspace';

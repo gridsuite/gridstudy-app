@@ -18,7 +18,7 @@ import {
 } from '../../../redux/actions';
 import { fetchAllEquipments } from '../../../services/study/network-map';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { useBuiltNodesIds } from './use-built-nodes-ids';
 

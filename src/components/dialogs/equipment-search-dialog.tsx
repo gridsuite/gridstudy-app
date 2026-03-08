@@ -18,7 +18,7 @@ import { FC } from 'react';
 import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/use-search-matching-equipments';
 import type { UUID } from 'node:crypto';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 

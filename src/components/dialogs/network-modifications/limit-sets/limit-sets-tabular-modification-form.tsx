@@ -35,7 +35,7 @@ import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { isFieldTypeOk, setFieldTypeError, TabularField, transformIfFrenchNumber } from '../tabular/tabular-common';
 import {
     LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,

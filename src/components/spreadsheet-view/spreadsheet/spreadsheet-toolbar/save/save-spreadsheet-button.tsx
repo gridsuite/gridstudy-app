@@ -25,7 +25,7 @@ import type { AgGridReact } from 'ag-grid-react';
 import type { ColDef } from 'ag-grid-community';
 import { spreadsheetStyles } from '../../../spreadsheet.style';
 import { useSelector } from 'react-redux';
-import type { AppState } from '../../../../../redux/reducer';
+import type { AppState } from '../../../../../redux/reducer.type';
 import SaveNamingFilterDialog from './save-naming-filter-dialog';
 
 enum SpreadsheetSaveOptionId {
