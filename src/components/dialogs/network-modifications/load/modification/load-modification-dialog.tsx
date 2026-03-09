@@ -114,6 +114,7 @@ export default function LoadModificationDialog({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
                                 }),
                                 { keepDirty: true }
