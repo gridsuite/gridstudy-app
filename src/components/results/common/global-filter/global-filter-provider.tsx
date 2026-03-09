@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
 import { FilterType, isCriteriaFilter } from '../utils';
 import type { UUID } from 'node:crypto';
@@ -61,6 +61,45 @@ export default function GlobalFilterProvider({
     // may be a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
 
+    const updateGenericFilter = useCallback(
+        async (genericFilterUuid: UUID, mutableFilters: GlobalFilter[]) => {
+            try {
+                const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
+                const parentDirectoriesNames = response.map((parent) => parent.elementName);
+                const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
+                const path = computeFullPath(parentDirectoriesNames);
+                const fetchedFilter = mutableFilters.find((globalFilter) => globalFilter.uuid === genericFilterUuid);
+                if (!fetchedFilter) return;
+                if (!fetchedFilter.path) {
+                    fetchedFilter.path = path;
+                }
+                if (label && fetchedFilter.label !== label) {
+                    fetchedFilter.label = label;
+                    dispatch(addToGlobalFilterOptions([fetchedFilter], tableType, tableUuid));
+                }
+            } catch (responseError) {
+                const error = responseError as Error & { status: number };
+                if (error.status === HttpStatusCode.NOT_FOUND) {
+                    // Not found => updated in global filter options for display
+                    const notFoundFilter = mutableFilters.find((f) => f.uuid === genericFilterUuid);
+                    if (notFoundFilter?.id) {
+                        const elementNotFound: GlobalFilter = {
+                            id: notFoundFilter.id,
+                            label: 'elementNotFound',
+                            filterType: notFoundFilter.filterType,
+                        };
+                        dispatch(addToGlobalFilterOptions([elementNotFound], tableType, tableUuid));
+                    }
+                } else {
+                    snackWithFallback(snackError, error, {
+                        headerId: 'ComputationFilterResultsError',
+                    });
+                }
+            }
+        },
+        [dispatch, tableType, tableUuid, snackError]
+    );
+
     // Check the selected global filters and remove them if they do not exist anymore.
     useEffect(() => {
         const checkSelectedFilters = async () => {
@@ -72,47 +111,12 @@ export default function GlobalFilterProvider({
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 
             for (const genericFilterUuid of genericFiltersUuids) {
-                try {
-                    // checks if the generic filters still exist, and update their path value
-                    const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
-                    const parentDirectoriesNames = response.map((parent) => parent.elementName);
-                    const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
-                    const path = computeFullPath(parentDirectoriesNames);
-                    const fetchedFilter: GlobalFilter | undefined = mutableFilters.find(
-                        (globalFilter) => globalFilter.uuid === genericFilterUuid
-                    );
-                    if (fetchedFilter && !fetchedFilter.path) {
-                        fetchedFilter.path = path;
-                    }
-                    if (fetchedFilter && label && fetchedFilter.label !== label) {
-                        fetchedFilter.label = label;
-                        dispatch(addToGlobalFilterOptions([fetchedFilter], tableType, tableUuid));
-                    }
-                } catch (responseError) {
-                    const error = responseError as Error & { status: number };
-                    if (error.status === HttpStatusCode.NOT_FOUND) {
-                        // Not found => removed from selected global filters and added/updated in global filter options for display
-                        const notFoundFilter = mutableFilters.find((f) => f.uuid === genericFilterUuid);
-                        if (notFoundFilter?.id) {
-                            const elementNotFound: GlobalFilter = {
-                                id: notFoundFilter.id,
-                                label: 'elementNotFound',
-                                filterType: notFoundFilter.filterType,
-                            };
-                            dispatch(addToGlobalFilterOptions([elementNotFound], tableType, tableUuid));
-                        }
-                    } else {
-                        // or whatever error => do nothing except showing error message
-                        snackWithFallback(snackError, error, {
-                            headerId: 'ComputationFilterResultsError',
-                        });
-                    }
-                }
+                await updateGenericFilter(genericFilterUuid, mutableFilters);
             }
         };
 
         checkSelectedFilters().catch((error) => console.error(error));
-    }, [selectedGlobalFilters, dispatch, snackError, tableType, tableUuid]);
+    }, [selectedGlobalFilters, dispatch, snackError, tableType, tableUuid, updateGenericFilter]);
 
     const value = useMemo(
         () => ({
