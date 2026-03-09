@@ -7,21 +7,17 @@
 
 import { IconButton } from '@mui/material';
 import { TextInput } from '@gridsuite/commons-ui';
-import { SECTION_COUNT, SWITCHES_BETWEEN_SECTIONS, SWITCH_KINDS, SWITCH_KIND } from 'components/utils/field-constants';
+import { SECTION_COUNT, SWITCH_KIND, SWITCH_KINDS, SWITCHES_BETWEEN_SECTIONS } from 'components/utils/field-constants';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { CreateSwitchesDialog } from './create-switches-between-sections/create-switches-dialog';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import GridItem from '../../../commons/grid-item';
-
-export interface SwitchKindData {
-    [SWITCH_KIND]: string;
-}
-
-export interface CreateSwitchesFormData {
-    [SWITCH_KINDS]: SwitchKindData[];
-}
+import {
+    CreateSwitchesFormData,
+    SwitchKindData,
+} from './create-switches-between-sections/create-switches-dialog-utils';
 
 export const SwitchesBetweenSections = (): ReactElement => {
     const { getValues, setValue } = useFormContext();

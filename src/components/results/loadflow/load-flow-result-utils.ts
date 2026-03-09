@@ -28,21 +28,24 @@ import {
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import RunningStatus from 'components/utils/running-status';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
-import { FilterConfig, numericFilterParams, TableType, textFilterParams } from '../../../types/custom-aggrid-types';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
+    FilterConfig,
     FilterEnumsType,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    numericFilterParams,
+    SortParams,
+    TableType,
+    textFilterParams,
+} from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
 import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
-import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
 import { createEnumColumn } from '../common/column-filter/utilis';
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {

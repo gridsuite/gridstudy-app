@@ -6,7 +6,6 @@
  */
 
 import type { RefObject } from 'react';
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Grid } from '@mui/material';
@@ -17,6 +16,7 @@ import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
 import { FilteredRowCounter } from './row-counter/filtered-row-counter';
 import { UseFilteredRowCounterInfoReturn } from './row-counter/use-filtered-row-counter';
+import { CustomColDef } from '../../../../types/custom-aggrid-types';
 
 const styles = {
     toolbar: (theme) => ({

@@ -9,8 +9,8 @@ import { ModificationsSearchResult } from './root-network.types';
 import { getModifications } from '../../../../services/root-network';
 import type { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
-import { useSnackMessage, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
+import { AppState } from '../../../../redux/reducer.type';
+import { snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setHighlightModification } from 'redux/actions';
 
 function reOrderSearchResults(
