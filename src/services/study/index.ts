@@ -13,6 +13,7 @@ import {
     backendFetchJson,
     backendFetchText,
     ComputingType,
+    ContingencyCount,
     EquipmentType,
     ExtendedEquipmentType,
     Parameter,
@@ -201,7 +202,7 @@ export function fetchContingencyCount(
     currentNodeUuid: UUID | null,
     currentRootNetworkUuid: UUID | null,
     contingencyListIds: UUID[] | null
-): Promise<number> {
+): Promise<ContingencyCount> {
     console.info(
         `Fetching contingency count for ${contingencyListIds} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );

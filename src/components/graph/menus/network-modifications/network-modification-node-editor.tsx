@@ -15,8 +15,8 @@ import {
     MODIFICATION_TYPES,
     ModificationType,
     NetworkModificationMetadata,
-    removeNullFields,
     NotificationsUrlKeys,
+    removeNullFields,
     snackWithFallback,
     useNotificationsListener,
     usePrevious,
@@ -72,7 +72,7 @@ import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
