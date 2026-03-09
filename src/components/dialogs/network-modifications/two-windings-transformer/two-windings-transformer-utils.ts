@@ -28,7 +28,7 @@ export function toTapChangerStepList(
 ): TapChangerStep[] | undefined {
     if (stepsRecord) {
         return Object.keys(stepsRecord)
-            .map((key: string) => {
+            .map((key) => {
                 const index = Number(key);
                 return {
                     ...stepsRecord[index],
