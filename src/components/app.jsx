@@ -53,7 +53,8 @@ import {
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import {
-    isComputationResultTabUpdatedNotification,
+    isComputationResultColumnFilterUpdatedNotification,
+    isComputationResultGlobalFilterUpdatedNotification,
     isNetworkVisualizationParametersUpdatedNotification,
     NotificationType,
 } from 'types/notification-types';
@@ -268,17 +269,15 @@ const App = () => {
     const onComputationTabNotification = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
-            if (isComputationResultTabUpdatedNotification(eventData)) {
-                if (eventData.headers.computationSubtype) {
-                    updateComputationColumnFilters(
-                        dispatch,
-                        studyUuid,
-                        eventData.headers.computationType,
-                        eventData.headers.computationSubtype
-                    );
-                } else {
-                    updateComputationGlobalFilters(dispatch, studyUuid, eventData.headers.computationType);
-                }
+            if (isComputationResultColumnFilterUpdatedNotification(eventData)) {
+                updateComputationColumnFilters(
+                    dispatch,
+                    studyUuid,
+                    eventData.headers.computationType,
+                    eventData.headers.computationSubtype
+                );
+            } else if (isComputationResultGlobalFilterUpdatedNotification(eventData)) {
+                updateComputationGlobalFilters(dispatch, studyUuid, eventData.headers.computationType);
             }
         },
         [dispatch, studyUuid]
