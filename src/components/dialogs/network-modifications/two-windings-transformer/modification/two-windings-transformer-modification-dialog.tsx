@@ -463,13 +463,12 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTapChangerFormValues?.[ENABLED] !== !!twtToModify?.ratioTapChanger
                     ? ratioTapChangerFormValues?.[ENABLED]
                     : null;
-            const previousRatioTapChangerValues = toTapChangerStepList(twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]);
             const areRatioStepsModified =
                 isNodeBuilt(currentNode) && editData?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ? true
                     : !compareStepsWithPreviousValues(
                           ratioTapChangerFormValues?.[STEPS] as TapChangerStep[],
-                          previousRatioTapChangerValues
+                          toTapChangerStepList(twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS])
                       );
             const ratioTapChangerSteps = !areRatioStepsModified ? null : ratioTapChangerFormValues?.[STEPS];
             if (ratioTapChangerFormValues?.[ENABLED]) {
