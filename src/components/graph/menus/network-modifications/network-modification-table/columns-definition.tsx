@@ -78,11 +78,11 @@ export const createBaseColumns = (
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
         cell: () => <DragHandleCell isRowDragDisabled={isRowDragDisabled} />,
-        size: 24,
-        minSize: 24,
+        size: 38,
+        minSize: 38,
         meta: {
             cellStyle: {
-                justifyContent: 'end',
+                justifyContent: 'center',
             },
         },
     },
@@ -90,8 +90,8 @@ export const createBaseColumns = (
         id: BASE_MODIFICATION_TABLE_COLUMNS.SELECT.id,
         header: ({ table }) => <SelectHeaderCell table={table} />,
         cell: ({ row, table }) => <SelectCell row={row} table={table} />,
-        size: 40,
-        minSize: 40,
+        size: 38,
+        minSize: 38,
         meta: {
             cellStyle: styles.columnCell.select,
         },
@@ -120,7 +120,6 @@ export const createBaseColumns = (
         minSize: 48,
         meta: {
             cellStyle: {
-                justifyContent: 'center',
                 paddingRight: '5px',
             },
         },
