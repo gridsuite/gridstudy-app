@@ -44,6 +44,7 @@ import useVoltageLevelsListInfos from 'hooks/use-voltage-levels-list-infos';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
+import { WithModificationId } from '../../../../../services/network-modification-types';
 
 /**
  * Dialog to create a load in the network
@@ -54,8 +55,10 @@ import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../servic
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
+interface LoadCreationDtoWithId extends LoadCreationDto, WithModificationId {}
+
 export type LoadCreationDialogProps = NetworkModificationDialogProps & {
-    editData: LoadCreationDto;
+    editData: LoadCreationDtoWithId;
 };
 
 export function LoadCreationDialog({
@@ -121,12 +124,11 @@ export function LoadCreationDialog({
     const onSubmit = useCallback(
         (loadForm: LoadCreationFormData) => {
             const dto = loadCreationFormToDto(loadForm);
-            dto.uuid = editData?.uuid;
-            createLoad(studyUuid, currentNodeUuid, dto).catch((error: Error) => {
+            createLoad(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'LoadCreationError' });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData?.uuid, studyUuid, currentNodeUuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({

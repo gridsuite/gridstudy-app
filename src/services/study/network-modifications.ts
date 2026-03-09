@@ -396,18 +396,18 @@ export function modifyBattery({
     });
 }
 
-export function createLoad(studyUuid: UUID, nodeUuid: UUID, dto: LoadCreationDto) {
+export function createLoad(studyUuid: UUID, nodeUuid: UUID, modificationUuid: UUID | undefined, dto: LoadCreationDto) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (dto.uuid) {
-        createLoadUrl += '/' + safeEncodeURIComponent(dto.uuid);
+    if (modificationUuid) {
+        createLoadUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating load creation');
     } else {
         console.info('Creating load creation');
     }
 
     return backendFetchText(createLoadUrl, {
-        method: dto.uuid ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
