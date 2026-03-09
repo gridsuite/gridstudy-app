@@ -26,7 +26,10 @@ import {
     TemporaryLimitFormSchema,
 } from '../dialogs/limits/operational-limits-groups-types';
 import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
-import { TapChangerStep } from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
+import {
+    TapChangerStep,
+    TapChangerStepMapInfos,
+} from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -167,11 +170,11 @@ export const formatCompleteCurrentLimit = (
 
 export const richTypeEquals = (a: unknown, b: unknown) => a === b;
 
-export const computeHighTapPosition = (steps: Record<number, TapChangerStep>) => {
+export const computeHighTapPosition = (steps: Record<number, TapChangerStepMapInfos>) => {
     const values = steps
         ? Object.keys(steps)
               ?.map((stepIndex) => Number(stepIndex))
-              .filter((v): v is number => v !== undefined)
+              .filter((v) => v !== undefined)
         : [];
     return values?.length > 0 ? Math.max(...values) : null;
 };

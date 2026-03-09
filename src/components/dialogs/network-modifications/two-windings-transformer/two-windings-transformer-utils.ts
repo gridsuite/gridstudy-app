@@ -35,13 +35,7 @@ export function toTapChangerStepList(
                     [STEPS_TAP]: index,
                 };
             })
-            .sort((a: TapChangerStep, b: TapChangerStep) => {
-                if (a[STEPS_TAP] === undefined) {
-                    return 1;
-                }
-                if (b[STEPS_TAP] === undefined) {
-                    return -1;
-                }
+            .sort((a, b) => {
                 return a[STEPS_TAP] - b[STEPS_TAP];
             });
     }

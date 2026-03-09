@@ -501,13 +501,12 @@ const TwoWindingsTransformerModificationDialog = ({
                 phaseTapChangerFormValues?.[ENABLED] !== !!twtToModify?.phaseTapChanger
                     ? phaseTapChangerFormValues?.[ENABLED]
                     : null;
-            const previousPhaseTapChangerValues = toTapChangerStepList(twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]);
             const arePhaseStepsModified =
                 isNodeBuilt(currentNode) && editData?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ? true
                     : !compareStepsWithPreviousValues(
                           phaseTapChangerFormValues?.[STEPS] as TapChangerStep[],
-                          previousPhaseTapChangerValues
+                          toTapChangerStepList(twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS])
                       );
             const phaseTapChangerSteps = !arePhaseStepsModified ? null : phaseTapChangerFormValues?.[STEPS];
             if (phaseTapChangerFormValues?.[ENABLED]) {
