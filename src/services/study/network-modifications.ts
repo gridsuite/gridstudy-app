@@ -416,17 +416,22 @@ export function createLoad(studyUuid: UUID, nodeUuid: UUID, modificationUuid: UU
     });
 }
 
-export function modifyLoad(studyUuid: UUID, nodeUuid: UUID, dto: LoadModificationDto) {
+export function modifyLoad(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: LoadModificationDto
+) {
     let modifyLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    if (dto.uuid) {
-        modifyLoadUrl += '/' + encodeURIComponent(dto.uuid);
+    if (modificationUuid) {
+        modifyLoadUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating load modification');
     } else {
         console.info('Creating load modification');
     }
 
     return backendFetchText(modifyLoadUrl, {
-        method: dto.uuid ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',

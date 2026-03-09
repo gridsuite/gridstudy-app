@@ -40,9 +40,12 @@ import { EquipmentModificationDialogProps } from 'components/graph/menus/network
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { WithModificationId } from 'services/network-modification-types';
+
+interface LoadModificationDtoWithId extends LoadModificationDto, WithModificationId {}
 
 export type LoadModificationDialogProps = EquipmentModificationDialogProps & {
-    editData?: LoadModificationDto;
+    editData?: LoadModificationDtoWithId;
 };
 
 export default function LoadModificationDialog({
@@ -138,8 +141,7 @@ export default function LoadModificationDialog({
     const onSubmit = useCallback(
         (loadForm: LoadModificationFormData) => {
             const dto = loadModificationFormToDto(loadForm);
-            dto.uuid = editData?.uuid;
-            modifyLoad(studyUuid, currentNodeUuid, dto).catch((error: Error) => {
+            modifyLoad(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'LoadModificationError' });
             });
         },
