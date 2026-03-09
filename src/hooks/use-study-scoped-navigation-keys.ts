@@ -8,7 +8,7 @@
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 
 // Shared hook for computing study-scoped localStorage keys
 export const useStudyScopedNavigationKeys = () => {

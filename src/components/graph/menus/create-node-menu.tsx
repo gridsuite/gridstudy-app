@@ -21,6 +21,7 @@ import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeTyp
 import { NodeInsertModes } from 'types/notification-types';
 import { Divider } from '@mui/material';
 import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 type SubMenuItem = {
     onRoot: boolean;
@@ -57,6 +58,8 @@ interface CreateNodeMenuProps {
     handleBuildNode: (element: CurrentTreeNode) => void;
     handleUnbuildNode: (element: CurrentTreeNode) => void;
     handleExportCaseOnNode: (node: CurrentTreeNode) => void;
+    handleExportNodeInfos: (node: CurrentTreeNode) => void;
+
     activeNode: CurrentTreeNode;
     nodeSelectionForCopy: NodeSelectionForCopy;
     handleCopyNode: (nodeId: string) => void;
@@ -115,6 +118,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleSecuritySequenceCreation,
     handleNodeRemoval,
     handleExportCaseOnNode,
+    handleExportNodeInfos,
     activeNode,
     nodeSelectionForCopy,
     handleCopyNode,
@@ -131,6 +135,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
 
@@ -183,6 +188,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
 
     function exportCaseOnNode() {
         handleExportCaseOnNode(activeNode);
+        handleClose();
+    }
+
+    function exportNodeInfos() {
+        handleExportNodeInfos(activeNode);
         handleClose();
     }
 
@@ -422,7 +432,6 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 },
                 INSERT_NODE_BEFORE: {
                     onRoot: false,
-
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.CONSTRUCTION),
                     id: 'insertNodeAbove',
@@ -475,7 +484,13 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             subMenuItems: SUBTREE_SUBMENU_ITEMS,
             withDivider: true,
         },
-
+        EXPORT_NODE: {
+            onRoot: false,
+            action: () => exportNodeInfos(),
+            id: 'downloadNetworkModifications',
+            hidden: !isDeveloperMode,
+            withDivider: true,
+        },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,
             action: () => exportCaseOnNode(),

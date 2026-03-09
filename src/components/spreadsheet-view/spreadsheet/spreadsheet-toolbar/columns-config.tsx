@@ -18,7 +18,7 @@ import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/c
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';
 import { updateColumnStates } from 'services/study/study-config';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { ColumnState } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_STATE } from '../../constants';

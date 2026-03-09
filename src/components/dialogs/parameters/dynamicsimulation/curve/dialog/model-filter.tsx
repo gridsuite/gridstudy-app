@@ -15,7 +15,7 @@ import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { ModelVariable } from '../../dynamic-simulation.type';
 
 interface ModelVariableDefinitionInfos {

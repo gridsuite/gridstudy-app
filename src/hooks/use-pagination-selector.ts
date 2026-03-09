@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, DEFAULT_PAGINATION } from '../redux/reducer';
+import type { AppState } from '../redux/reducer.type';
+import { DEFAULT_PAGINATION } from '../redux/reducer';
 import {
     PaginationConfig,
     PaginationTab,

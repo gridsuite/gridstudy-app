@@ -8,7 +8,7 @@ import { UnknownAction } from 'redux';
 import { LOGS_STORE_FIELD, SPREADSHEET_STORE_FIELD } from '../utils/store-sort-filter-fields';
 import { setLogsFilter, setSpreadsheetFilter, updateColumnFiltersAction } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 import { FilterConfig, TableType } from '../types/custom-aggrid-types';
 import { useCallback } from 'react';
 

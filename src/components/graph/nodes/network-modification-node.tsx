@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { copyToClipboard, LIGHT_THEME, type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { CopyType } from 'components/network-modification.type';
 import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';

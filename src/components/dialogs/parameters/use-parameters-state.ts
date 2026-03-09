@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { snackWithFallback, updateConfigParameter, useSnackMessage } from '@gridsuite/commons-ui';
-import { AppConfigState } from 'redux/reducer';
+import { AppConfigState } from 'redux/reducer.type';
 
 import { simpleConverterToString } from '../../../utils/types-utils';
 import { APP_NAME } from '../../../utils/config-params';
