@@ -12,15 +12,14 @@ import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import ChildMenuItem from './create-child-menu-item';
 import { CustomDialog } from '../../utils/custom-dialog';
-import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
-import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
+import { CustomNestedMenuItem, PARAM_DEVELOPER_MODE, BuildStatus } from '@gridsuite/commons-ui';
+import { type AppState, type NodeSelectionForCopy } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
 import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { Divider } from '@mui/material';
-import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 type SubMenuItem = {

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import type { UUID } from 'node:crypto';
-import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
+import { BuildStatus } from '@gridsuite/commons-ui';
 import { Node } from '@xyflow/react';
 
 export enum NodeType {

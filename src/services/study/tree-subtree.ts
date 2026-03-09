@@ -6,11 +6,10 @@
  */
 
 import { getStudyUrl } from './index';
-import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, BuildStatus } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { AbstractNode, NodeType, StashedNodeProperties } from '../../components/graph/tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
-import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 
 interface Node {
     name: string;

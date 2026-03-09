@@ -36,10 +36,10 @@ import {
     useIntlRef,
     useNotificationsListener,
     useSnackMessage,
+    BuildStatus,
 } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
-import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchNetworkModificationTree, fetchNetworkModificationTreeNode } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';

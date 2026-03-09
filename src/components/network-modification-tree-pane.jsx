@@ -26,9 +26,9 @@ import {
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
+    BuildStatus,
 } from '@gridsuite/commons-ui';
 import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog';
-import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 import {
     copySubtree,
     copyTreeNode,

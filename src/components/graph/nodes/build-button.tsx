@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 import React, { useCallback, useState } from 'react';
 import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
 import type { UUID } from 'node:crypto';
-import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, snackWithFallback, BuildStatus, useSnackMessage } from '@gridsuite/commons-ui';
 
 type BuildButtonProps = {
     buildStatus?: BuildStatus;

@@ -9,11 +9,10 @@ import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import ReportViewer from '../../report-viewer/report-viewer';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, BuildStatus } from '@gridsuite/commons-ui';
 import WaitingLoader from '../../utils/waiting-loader';
 import { useReportFetcher } from '../../../hooks/use-report-fetcher';
 import { Report, SeverityLevel } from '../../../utils/report/report.type';
-import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 import { sortSeverityList } from 'utils/report/report-severity';
 
 interface ComputationReportViewerProps {

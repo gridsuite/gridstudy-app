@@ -9,7 +9,14 @@ import { NodeProps, Position } from '@xyflow/react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { copyToClipboard, LIGHT_THEME, type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    copyToClipboard,
+    LIGHT_THEME,
+    type MuiStyles,
+    useSnackMessage,
+    BuildStatusChip,
+    BuildStatus,
+} from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { AppState } from 'redux/reducer.type';
 import { CopyType } from 'components/network-modification.type';
@@ -25,8 +32,6 @@ import { useCallback, useMemo } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import ForwardRefBox from 'components/utils/forwardRefBox';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import BuildStatusChip from '@gridsuite/commons-ui/components/node/build-status-chip';
-import { BuildStatus } from '@gridsuite/commons-ui/components/node/constant';
 
 const styles = {
     networkModificationSelected: (theme) => ({
