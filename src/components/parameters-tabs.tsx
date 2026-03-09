@@ -11,28 +11,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
     getLoadFlowDefaultLimitReductions,
     getLoadFlowProviders,
     getLoadFlowSpecificParametersDescription,
 } from 'services/loadflow';
-import {
-    getDefaultLoadFlowProvider,
-    getLoadFlowParameters,
-    setLoadFlowParameters,
-    setLoadFlowProvider,
-} from 'services/study/loadflow';
-import {
-    fetchDefaultSecurityAnalysisProvider,
-    getSecurityAnalysisParameters,
-    setSecurityAnalysisParameters,
-    updateSecurityAnalysisProvider,
-} from 'services/study/security-analysis';
-import {
-    fetchDefaultSensitivityAnalysisProvider,
-    getSensitivityAnalysisParameters,
-} from 'services/study/sensitivity-analysis';
+import { getLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
+import { getSecurityAnalysisParameters, setSecurityAnalysisParameters } from 'services/study/security-analysis';
+import { getSensitivityAnalysisParameters } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
@@ -72,11 +59,11 @@ import {
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
 import { fetchContingencyCount } from '../services/study';
-import { fetchDefaultDynamicSecurityAnalysisProvider } from '../services/study/dynamic-security-analysis';
 import {
     fetchDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
 } from '../services/study/dynamic-margin-calculation';
+import { BUILD_STATUS } from './network/constants';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -99,6 +86,7 @@ const ParametersTabs: FunctionComponent = () => {
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
+    const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
@@ -150,14 +138,13 @@ const ParametersTabs: FunctionComponent = () => {
         studyUuid,
         ComputingType.LOAD_FLOW,
         OptionalServicesStatus.Up,
-        getLoadFlowProviders,
-        null,
-        getDefaultLoadFlowProvider,
-        setLoadFlowProvider,
-        getLoadFlowParameters,
-        setLoadFlowParameters,
-        getLoadFlowSpecificParametersDescription,
-        getLoadFlowDefaultLimitReductions
+        {
+            backendFetchProviders: getLoadFlowProviders,
+            backendFetchParameters: getLoadFlowParameters,
+            backendUpdateParameters: setLoadFlowParameters,
+            backendFetchSpecificParametersDescription: getLoadFlowSpecificParametersDescription,
+            backendFetchDefaultLimitReductions: getLoadFlowDefaultLimitReductions,
+        }
     );
     useParametersNotification(ComputingType.LOAD_FLOW, OptionalServicesStatus.Up, loadFlowParametersBackend);
 
@@ -166,14 +153,12 @@ const ParametersTabs: FunctionComponent = () => {
         studyUuid,
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
-        fetchSecurityAnalysisProviders,
-        null,
-        fetchDefaultSecurityAnalysisProvider,
-        updateSecurityAnalysisProvider,
-        getSecurityAnalysisParameters,
-        setSecurityAnalysisParameters,
-        undefined,
-        getSecurityAnalysisDefaultLimitReductions
+        {
+            backendFetchProviders: fetchSecurityAnalysisProviders,
+            backendFetchParameters: getSecurityAnalysisParameters,
+            backendUpdateParameters: setSecurityAnalysisParameters,
+            backendFetchDefaultLimitReductions: getSecurityAnalysisDefaultLimitReductions,
+        }
     );
     useParametersNotification(
         ComputingType.SECURITY_ANALYSIS,
@@ -186,11 +171,10 @@ const ParametersTabs: FunctionComponent = () => {
         studyUuid,
         ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability,
-        fetchSensitivityAnalysisProviders,
-        null,
-        fetchDefaultSensitivityAnalysisProvider,
-        null,
-        getSensitivityAnalysisParameters
+        {
+            backendFetchProviders: fetchSensitivityAnalysisProviders,
+            backendFetchParameters: getSensitivityAnalysisParameters,
+        }
     );
     useParametersNotification(
         ComputingType.SENSITIVITY_ANALYSIS,
@@ -203,13 +187,11 @@ const ParametersTabs: FunctionComponent = () => {
         studyUuid,
         ComputingType.SHORT_CIRCUIT,
         OptionalServicesStatus.Up,
-        null,
-        fetchDefaultDynamicSecurityAnalysisProvider,
-        null,
-        null,
-        getShortCircuitParameters,
-        setShortCircuitParameters,
-        getShortCircuitSpecificParametersDescription
+        {
+            backendFetchParameters: getShortCircuitParameters,
+            backendUpdateParameters: setShortCircuitParameters,
+            backendFetchSpecificParametersDescription: getShortCircuitSpecificParametersDescription,
+        }
     );
     useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
 
@@ -218,12 +200,11 @@ const ParametersTabs: FunctionComponent = () => {
         studyUuid,
         ComputingType.DYNAMIC_MARGIN_CALCULATION,
         dynamicMarginCalculationAvailability,
-        fetchDynamicMarginCalculationProviders,
-        null,
-        null,
-        null,
-        fetchDynamicMarginCalculationParameters,
-        updateDynamicMarginCalculationParameters
+        {
+            backendFetchProviders: fetchDynamicMarginCalculationProviders,
+            backendFetchParameters: fetchDynamicMarginCalculationParameters,
+            backendUpdateParameters: updateDynamicMarginCalculationParameters,
+        }
     );
     useParametersNotification(
         ComputingType.DYNAMIC_MARGIN_CALCULATION,
@@ -329,6 +310,10 @@ const ParametersTabs: FunctionComponent = () => {
                         fetchContingencyCount={(contingencyLists: UUID[] | null) =>
                             fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
                         }
+                        isBuiltCurrentNode={
+                            currentNodeBuildStatus !== BUILD_STATUS.NOT_BUILT &&
+                            currentNodeBuildStatus !== BUILD_STATUS.BUILDING
+                        }
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
                     />
@@ -407,6 +392,7 @@ const ParametersTabs: FunctionComponent = () => {
         setDirtyFields,
         isDeveloperMode,
         securityAnalysisParametersBackend,
+        currentNodeBuildStatus,
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,

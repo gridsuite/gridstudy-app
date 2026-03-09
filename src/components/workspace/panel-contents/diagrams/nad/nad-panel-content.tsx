@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { Box } from '@mui/material';
 import type { DiagramAdditionalMetadata } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import NetworkAreaDiagramContent from '../../../../grid-layout/cards/diagrams/networkAreaDiagram/network-area-diagram-content';
@@ -32,8 +32,6 @@ export const NadPanelContent = memo(function NadPanelContent({
     currentNodeId,
     currentRootNetworkUuid,
 }: NadPanelContentProps) {
-    const [isDraggingSld, setIsDraggingSld] = useState(false);
-
     const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
     const { diagram, loading, globalError, updateDiagram, handleSaveNad, replaceNadConfig } = useNadDiagram({
@@ -90,7 +88,6 @@ export const NadPanelContent = memo(function NadPanelContent({
                     flex: 1,
                     overflow: 'hidden',
                     position: 'relative',
-                    pointerEvents: isDraggingSld ? 'none' : 'auto',
                 }}
             >
                 <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
@@ -116,7 +113,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                         nadPanelId={panelId}
                     />
                 </DiagramWrapper>
-                <NadAssociatedPanelsContainer nadPanelId={panelId} onDragStateChange={setIsDraggingSld} />
+                <NadAssociatedPanelsContainer nadPanelId={panelId} />
             </Box>
             {!globalError && <NadNavigationSidebar nadPanelId={panelId} />}
         </Box>
