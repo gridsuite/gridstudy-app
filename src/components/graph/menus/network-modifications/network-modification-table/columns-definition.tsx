@@ -116,11 +116,11 @@ export const createBaseColumns = (
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.SWITCH.id,
         cell: ({ row }) => <SwitchCell data={row.original} setModifications={setModifications} />,
-        size: 40,
-        minSize: 40,
+        size: 48,
+        minSize: 48,
         meta: {
             cellStyle: {
-                justifyContent: 'end',
+                justifyContent: 'center',
                 paddingRight: '5px',
             },
         },
