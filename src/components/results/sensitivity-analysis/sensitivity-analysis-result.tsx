@@ -17,19 +17,20 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
 import { mappingTabs, SUFFIX_TYPES } from './sensitivity-analysis-result-utils.js';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterConfig, TableType } from '../../../types/custom-aggrid-types';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
-import { AppState } from '../../../redux/reducer';
-import { GridApi, GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
-import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
-import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    FilterConfig,
+    TableType,
+} from '../../../types/custom-aggrid-types';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
+import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
+import { AppState } from '../../../redux/reducer.type';
+import { GridApi, GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';

@@ -396,53 +396,23 @@ export function modifyBattery({
     });
 }
 
-export function createLoad({
-    studyUuid,
-    nodeUuid,
-    uuid,
-    equipmentId,
-    equipmentName,
-    loadType,
-    p0,
-    q0,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties,
-}: LoadCreationDto & { studyUuid: UUID; nodeUuid: UUID }) {
+export function createLoad(studyUuid: UUID, nodeUuid: UUID, modificationUuid: UUID | undefined, dto: LoadCreationDto) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (uuid) {
-        createLoadUrl += '/' + safeEncodeURIComponent(uuid);
+    if (modificationUuid) {
+        createLoadUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating load creation');
     } else {
         console.info('Creating load creation');
     }
 
     return backendFetchText(createLoadUrl, {
-        method: uuid ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LOAD_CREATION.type,
-            equipmentId,
-            equipmentName,
-            loadType: loadType,
-            p0: p0,
-            q0: q0,
-            voltageLevelId: voltageLevelId,
-            busOrBusbarSectionId: busOrBusbarSectionId,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            connectionPosition: connectionPosition,
-            terminalConnected: terminalConnected,
-            properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -1653,6 +1623,13 @@ export function fetchNetworkModifications(
     urlSearchParams.append('onlyStashed', onlyStashed.toString());
     urlSearchParams.append('onlyMetadata', 'true');
     const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    console.debug(modificationsGetUrl);
+    return backendFetchJson(modificationsGetUrl);
+}
+
+export function fetchNetworkModificationsToExport(studyUuid: UUID | null, nodeUuid: string) {
+    console.info('Fetching network modifications to export for nodeUuid : ', nodeUuid);
+    const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '/export';
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }

@@ -22,12 +22,10 @@ import { useSldLayout } from './hooks/use-sld-layout';
 
 interface NadAssociatedPanelsContainerProps {
     readonly nadPanelId: UUID;
-    readonly onDragStateChange?: (isDragging: boolean) => void;
 }
 
 export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsContainer({
     nadPanelId,
-    onDragStateChange,
 }: NadAssociatedPanelsContainerProps) {
     const { minimizePanel, focusPanel } = useWorkspacePanelActions();
 
@@ -56,24 +54,10 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
 
     const { handleReorganize, toggleHideAll } = useSldLayout({ nadPanelId });
 
-    const handleDragStart = useCallback(() => {
-        onDragStateChange?.(true);
-    }, [onDragStateChange]);
-
-    const handleDragStop = useCallback(() => {
-        onDragStateChange?.(false);
-    }, [onDragStateChange]);
-
     return (
         <>
             {visibleSldPanelIds.map((sldPanelId) => (
-                <AssociatedSldPanel
-                    key={sldPanelId}
-                    sldPanelId={sldPanelId}
-                    isFocused={focusedSldId === sldPanelId}
-                    onDragStart={handleDragStart}
-                    onDragStop={handleDragStop}
-                />
+                <AssociatedSldPanel key={sldPanelId} sldPanelId={sldPanelId} isFocused={focusedSldId === sldPanelId} />
             ))}
 
             <AssociatedSldsChips
