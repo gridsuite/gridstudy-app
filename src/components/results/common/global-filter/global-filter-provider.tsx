@@ -17,7 +17,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { addToGlobalFilterOptions, removeFromSelectedGlobalFilters } from '../../../../redux/actions';
+import { addToGlobalFilterOptions } from '../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
@@ -86,25 +86,21 @@ export default function GlobalFilterProvider({
                     }
                     if (fetchedFilter && label && fetchedFilter.label !== label) {
                         fetchedFilter.label = label;
-                        dispatch(addToGlobalFilterOptions([fetchedFilter]));
+                        dispatch(addToGlobalFilterOptions([fetchedFilter], tableType, tableUuid));
                     }
                 } catch (responseError) {
                     const error = responseError as Error & { status: number };
                     if (error.status === HttpStatusCode.NOT_FOUND) {
                         // Not found => removed from selected global filters and added/updated in global filter options for display
                         const notFoundFilter = mutableFilters.find((f) => f.uuid === genericFilterUuid);
-                        if (!notFoundFilter) return;
-                        if (notFoundFilter.id) {
-                            dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, [notFoundFilter.id]));
+                        if (notFoundFilter?.id) {
+                            const elementNotFound: GlobalFilter = {
+                                id: notFoundFilter.id,
+                                label: 'elementNotFound',
+                                filterType: notFoundFilter.filterType,
+                            };
+                            dispatch(addToGlobalFilterOptions([elementNotFound], tableType, tableUuid));
                         }
-                        const filterNotFound: GlobalFilter = {
-                            ...notFoundFilter,
-                            uuid: undefined,
-                            path: undefined,
-                            label: 'elementNotFound',
-                            recent: false,
-                        };
-                        dispatch(addToGlobalFilterOptions([filterNotFound]));
                     } else {
                         // or whatever error => do nothing except showing error message
                         snackWithFallback(snackError, error, {
