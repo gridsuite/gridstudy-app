@@ -1773,5 +1773,6 @@
     "PanelError": "Something went wrong in this panel",
     "Reload": "Reload",
     "CopyError": "Copy Error",
-    "Copied": "Copied"
+    "Copied": "Copied",
+    "downloadNetworkModifications" : "Download modifications"
 }
