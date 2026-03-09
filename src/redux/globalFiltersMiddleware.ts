@@ -10,7 +10,7 @@ import { ADD_GLOBAL_FILTERS, CLEAR_GLOBAL_FILTERS, GlobalFilterAction, REMOVE_GL
 import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
-import { AppState } from './reducer';
+import type { AppState } from './reducer.type';
 
 const debouncedSyncTimers: Record<string, ReturnType<typeof setTimeout>> = {};
 

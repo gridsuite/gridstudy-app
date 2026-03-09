@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ToggleButton, Tooltip } from '@mui/material';
 import { Sync, SyncDisabled } from '@mui/icons-material';
 import { selectSyncEnabled } from '../redux/actions';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useIntl } from 'react-intl';
 import { useStudyScopedNavigationKeys } from 'hooks/use-study-scoped-navigation-keys';
 

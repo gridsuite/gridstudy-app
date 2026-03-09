@@ -30,7 +30,7 @@ import {
     useSnackMessage,
     type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer.type';
 import { SelectOptionsDialog } from '../../../../../utils/dialogs';
 import {
     ColumnDefinitionDto,

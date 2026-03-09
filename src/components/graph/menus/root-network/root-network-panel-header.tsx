@@ -7,7 +7,7 @@
 
 import React, { SetStateAction, useCallback, useState } from 'react';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
     fetchDirectoryElementPath,
     LeftPanelCloseIcon,

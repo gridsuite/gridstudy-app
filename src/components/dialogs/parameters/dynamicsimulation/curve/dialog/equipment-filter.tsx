@@ -17,7 +17,7 @@ import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
 import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
 import { buildExpertFilter, CURVE_EQUIPMENT_TYPES, NOMINAL_VOLTAGE_UNIT } from './curve-selector-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import { AGGRID_LOCALES } from '../../../../../../translations/not-intl/aggrid-locales';
 

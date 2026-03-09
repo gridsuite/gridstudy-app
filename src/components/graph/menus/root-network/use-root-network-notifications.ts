@@ -7,7 +7,7 @@
 
 import { SetStateAction, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
     NotificationsUrlKeys,
     snackWithFallback,
