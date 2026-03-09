@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import type { GlobalFilter } from './global-filter-types';
 import { evaluateGlobalFilter } from '../../../../services/study/filter';
-import type { AppState } from '../../../../redux/reducer';
+import type { AppState } from '../../../../redux/reducer.type';
 import type { FilterEquipmentType } from '../../../../types/filter-lib/filter';
 import { isStatusBuilt } from '../../../graph/util/model-functions';
 import { buildValidGlobalFilters } from './build-valid-global-filters';

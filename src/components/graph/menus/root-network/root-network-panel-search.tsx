@@ -19,7 +19,7 @@ import { useRootNetworkNodeSearch } from './use-root-network-node-search';
 import { useRootNetworkModificationSearch } from './use-root-network-modification-search';
 import { setHighlightModification } from 'redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 
 enum TAB_VALUES {
     modifications = 'MODIFICATIONS',

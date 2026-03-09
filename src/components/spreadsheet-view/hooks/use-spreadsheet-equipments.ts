@@ -13,7 +13,7 @@ import {
     removeNodeData,
     removeSpreadsheetLoadedNodesIds,
 } from 'redux/actions';
-import { type AppState } from 'redux/reducer';
+import { type AppState } from 'redux/reducer.type';
 import { useOptionalLoadingParametersForEquipments } from '../spreadsheet/spreadsheet-content/hooks/use-optional-loading-parameters-for-equipments';
 import { useFetchEquipment } from 'components/spreadsheet-view/hooks/use-fetch-equipment';
 import { useBuiltNodesIds } from './use-built-nodes-ids';

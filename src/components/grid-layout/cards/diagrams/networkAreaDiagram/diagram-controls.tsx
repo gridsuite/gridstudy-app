@@ -31,7 +31,7 @@ import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
 import { Tooltip } from '@mui/material';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';

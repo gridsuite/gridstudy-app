@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';

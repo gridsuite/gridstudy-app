@@ -69,6 +69,10 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         });
     }, []);
 
+    const filteringOnlySubstations = useMemo(() => {
+        return filterableEquipmentTypes?.length === 1 && filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION;
+    }, [filterableEquipmentTypes]);
+
     const standardCategories: string[] = useMemo(() => {
         const filteredCategories = filterCategories
             // removes the SUBSTATION_PROPERTY type because we want to display them by subtype
@@ -86,13 +90,10 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
             })
             .filter((category) => {
                 // when we are filtering substations the SUBSTATION_OR_VL makes no sense and is removed :
-                const onlySubstations =
-                    filterableEquipmentTypes?.length === 1 &&
-                    filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION;
-                return !(category === FilterType.SUBSTATION_OR_VL && onlySubstations);
+                return !(category === FilterType.SUBSTATION_OR_VL && filteringOnlySubstations);
             });
         return [RECENT_FILTER, ...filteredCategories];
-    }, [filterCategories, filterableEquipmentTypes]);
+    }, [filterCategories, filterableEquipmentTypes, filteringOnlySubstations]);
 
     // adds extra global filter subcategories if there are some in the local config
     const categories = useMemo(() => {
@@ -243,7 +244,11 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                                                 primary={
                                                     category === 'genericFilter' ? (
                                                         <TextWithInfoIcon
-                                                            text="results.globalFilter.genericFilter"
+                                                            text={
+                                                                filteringOnlySubstations
+                                                                    ? 'results.globalFilter.substationFilter'
+                                                                    : 'results.globalFilter.genericFilter'
+                                                            }
                                                             tooltipMessage="results.globalFilter.elementsHelp"
                                                         />
                                                     ) : (

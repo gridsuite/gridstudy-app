@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import Paper from '@mui/material/Paper';
 import { LIGHT_THEME, PARAM_THEME } from '@gridsuite/commons-ui';
 import { AccordionIllustration } from './AccordionIllustration';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 
 interface ReplacedText {
     eltId: string;

@@ -20,7 +20,7 @@ import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
 import GridItem from '../commons/grid-item';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 
 const styles = {
     message: (theme) => ({

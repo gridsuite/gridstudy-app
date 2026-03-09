@@ -1667,6 +1667,13 @@ export function fetchNetworkModifications(
     return backendFetchJson(modificationsGetUrl);
 }
 
+export function fetchNetworkModificationsToExport(studyUuid: UUID | null, nodeUuid: string) {
+    console.info('Fetching network modifications to export for nodeUuid : ', nodeUuid);
+    const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '/export';
+    console.debug(modificationsGetUrl);
+    return backendFetchJson(modificationsGetUrl);
+}
+
 export function fetchExcludedNetworkModifications(
     studyUuid: UUID | null,
     nodeUuid: string

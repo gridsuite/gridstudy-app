@@ -10,10 +10,10 @@ import type { UUID } from 'node:crypto';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { downloadZipFile } from 'services/utils';
-import { RESULT_TYPE } from './security-analysis-result-utils';
+import { RESULT_TYPE } from './security-analysis.type';
 import { PERMANENT_LIMIT_NAME } from '../common/utils';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 interface SecurityAnalysisExportButtonProps {
