@@ -12,11 +12,11 @@ import { Box, Divider, List, ListItem, Typography } from '@mui/material';
 import { getOptionLabel } from './global-filter-utils';
 import { useContext } from 'react';
 import { GlobalFilterContext } from './global-filter-context';
-import { useLocalizedCountries } from '../../../../utils/localized-countries-hook';
+import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { FilterType } from '../../utils';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-import { removeFromSelectedGlobalFilters } from '../../../../../redux/actions';
+import { FilterType } from '../utils';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { removeFromSelectedGlobalFilters } from '../../../../redux/actions';
 import { useDispatch } from 'react-redux';
 
 function SelectedGlobalFilters() {

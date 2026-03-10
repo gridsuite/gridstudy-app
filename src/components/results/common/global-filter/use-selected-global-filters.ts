@@ -8,7 +8,7 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { GlobalFilter } from './global-filter-types';
-import { RootState, store } from '../../../../../redux/store';
+import { RootState, store } from '../../../../redux/store';
 
 /**
  * Subscribes to the store and returns the selected global filters for the given table key.

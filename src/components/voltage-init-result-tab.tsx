@@ -15,9 +15,9 @@ import { AppState } from '../redux/reducer.type';
 import { VoltageInitResult } from './voltage-init-result';
 import { useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
-import { useComputationGlobalFilters } from './results/common/filter/global-filter/use-computation-global-filters';
+import { useComputationGlobalFilters } from './results/common/global-filter/use-computation-global-filters';
 import { TableType } from '../types/custom-aggrid-types';
-import { buildValidGlobalFilters } from './results/common/filter/global-filter/build-valid-global-filters';
+import { buildValidGlobalFilters } from './results/common/global-filter/build-valid-global-filters';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;

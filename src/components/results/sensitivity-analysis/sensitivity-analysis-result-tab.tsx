@@ -23,11 +23,11 @@ import {
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
-import GlobalFilterSelector from '../common/filter/global-filter/global-filter-selector';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
 import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
-import { useComputationGlobalFilters } from '../common/filter/global-filter/use-computation-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { FilterType, isCriteriaFilterType } from '../common/utils';

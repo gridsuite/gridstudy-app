@@ -18,9 +18,9 @@ import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN } from './pcc-min-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { buildValidGlobalFilters } from '../common/filter/global-filter/build-valid-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 
-import { getSelectedGlobalFilters } from '../common/filter/global-filter/use-selected-global-filters';
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 
 interface PccMinExportButtonProps {
     studyUuid: UUID;

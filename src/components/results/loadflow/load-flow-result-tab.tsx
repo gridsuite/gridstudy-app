@@ -41,16 +41,16 @@ import { loadflowResultInvalidations } from '../../computing-status/use-all-comp
 import { useNodeData } from 'components/use-node-data';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
-import GlobalFilterSelector from '../common/filter/global-filter/global-filter-selector';
-import { buildValidGlobalFilters } from '../common/filter/global-filter/build-valid-global-filters';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { Button, LinearProgress } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { useComputationGlobalFilters } from '../common/filter/global-filter/use-computation-global-filters';
-import { useComputationColumnFilters } from '../common/filter/column-filter/use-computation-column-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 const styles = {
     flexWrapper: {

@@ -4,23 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { TableType } from '../../../../../types/custom-aggrid-types';
+import { TableType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer.type';
-import { GlobalFilter } from './global-filter-types';
+import { AppState } from '../../../../redux/reducer.type';
 import { useEffect } from 'react';
-import { getComputationResultGlobalFilters } from '../../../../../services/study/study-config';
-import { initOrUpdateGlobalFilters } from '../../../../../redux/actions';
 import { useSelectedGlobalFilters } from './use-selected-global-filters';
-import { UUID } from 'node:crypto';
-import { Dispatch } from 'redux';
-
-export function updateComputationGlobalFilters(dispatch: Dispatch, studyUuid: UUID, tableType: TableType) {
-    getComputationResultGlobalFilters(studyUuid, tableType).then((globalFiltersInfos: GlobalFilter[] | null) => {
-        const globalFilters = Array.isArray(globalFiltersInfos) ? globalFiltersInfos : [];
-        dispatch(initOrUpdateGlobalFilters(tableType, globalFilters));
-    });
-}
+import { updateComputationGlobalFilters } from '../utils';
 
 // Get the global filters for a given table from the server and store them in the Redux store
 export function useFetchComputationGlobalFilters(tableType: TableType) {

@@ -28,9 +28,9 @@ import { Delete as DeleteIcon, FilterAlt, WarningAmberRounded } from '@mui/icons
 import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch } from 'react-redux';
-import { FilterType } from '../../utils';
+import { FilterType } from '../utils';
 import { OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import GlobalFilterPaper from './global-filter-paper';
@@ -42,8 +42,8 @@ import {
     clearSelectedGlobalFilters,
     removeFromGlobalFilterOptions,
     removeFromSelectedGlobalFilters,
-} from '../../../../../redux/actions';
-import { AppDispatch } from '../../../../../redux/store';
+} from '../../../../redux/actions';
+import { AppDispatch } from '../../../../redux/store';
 
 const TAG_LIMIT_NUMBER: number = 4;
 

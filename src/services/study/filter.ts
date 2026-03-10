@@ -12,7 +12,7 @@ import { getRequestParamFromList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import type { GlobalFilters } from '../../components/results/common/filter/global-filter/global-filter-types';
+import type { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 import type { FilterEquipmentType } from '../../types/filter-lib/filter';
 
 export interface ExpertFilter {

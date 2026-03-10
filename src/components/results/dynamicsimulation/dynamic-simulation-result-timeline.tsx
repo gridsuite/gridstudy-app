@@ -29,7 +29,7 @@ import { dynamicSimulationResultInvalidations } from '../../computing-status/use
 import { useNodeData } from 'components/use-node-data';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/study/dynamic-simulation';
-import { updateComputationColumnsFilters } from '../common/filter/column-filter/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 const styles = {

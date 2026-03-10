@@ -32,7 +32,7 @@ import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
-import { updateComputationColumnsFilters } from '../common/filter/column-filter/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 

@@ -13,7 +13,7 @@ import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
 import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
-import { useSelectedGlobalFilters } from '../../../../results/common/filter/global-filter/use-selected-global-filters';
+import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
 import { isCriteriaFilterType } from '../../../../results/common/utils';
 
 type UseFilteredRowCounterInfoParams = {

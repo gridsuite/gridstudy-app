@@ -6,7 +6,7 @@
  */
 
 import { GlobalFilter } from './global-filter-types';
-import { FilterType } from '../../utils';
+import { FilterType } from '../utils';
 import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
 import { UUID } from 'node:crypto';

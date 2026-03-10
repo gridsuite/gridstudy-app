@@ -12,7 +12,7 @@ import {
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { GsLangUser, backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { GlobalFilters } from '../../components/results/common/filter/global-filter/global-filter-types';
+import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 import { Selector } from 'components/results/common/utils';
 
 const PREFIX_SHORTCIRCUIT_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';

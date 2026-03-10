@@ -295,10 +295,7 @@ import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 import { isCriteriaFilter } from '../components/results/common/utils';
-import {
-    addGlobalFilterId,
-    getGlobalFilterId,
-} from '../components/results/common/filter/global-filter/global-filter-utils';
+import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {

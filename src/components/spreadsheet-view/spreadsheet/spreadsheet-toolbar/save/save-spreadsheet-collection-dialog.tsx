@@ -41,7 +41,7 @@ import {
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
-import { GlobalFilter } from '../../../../results/common/filter/global-filter/global-filter-types';
+import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 import { SortConfig } from '../../../../../types/custom-aggrid-types';
 

@@ -10,7 +10,7 @@ import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../.
 import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector, {
     type GlobalFilterSelectorProps,
-} from '../../../../results/common/filter/global-filter/global-filter-selector';
+} from '../../../../results/common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { TableType } from '../../../../../types/custom-aggrid-types';
 

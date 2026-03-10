@@ -13,7 +13,7 @@ import {
     SpreadsheetCollectionDto,
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { GlobalFilter } from '../../components/results/common/filter/global-filter/global-filter-types';
+import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
 import { TableType, SortConfig } from '../../types/custom-aggrid-types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {

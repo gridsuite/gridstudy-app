@@ -41,9 +41,9 @@ import {
 } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { buildValidGlobalFilters } from '../common/filter/global-filter/build-valid-global-filters';
-import { useSelectedGlobalFilters } from '../common/filter/global-filter/use-selected-global-filters';
-import { useComputationColumnFilters } from '../common/filter/column-filter/use-computation-column-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
