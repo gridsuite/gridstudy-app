@@ -140,7 +140,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
             switch (eventData.headers.updateType) {
                 case NotificationType.NODE_CREATED: {
-                    fetchAndDispatchAddedNode(studyUuid, currentRootNetworkUuid, eventData);
+                    fetchAndDispatchAddedNode(dispatch, studyUuid, currentRootNetworkUuid, eventData);
                     invalidateClipboardIfImpacted(
                         [eventData.headers.parentNode],
                         nodeSelectionForCopyRef.current,
@@ -156,7 +156,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                         nodeSelectionForCopyRef.current,
                         resetNodeClipboard
                     );
-                    fetchAndHandleSubtree(studyUuid, eventData.headers.newNode, eventData.headers.parentNode);
+                    fetchAndHandleSubtree(dispatch, studyUuid, eventData.headers.newNode, eventData.headers.parentNode);
                     break;
                 }
 
@@ -166,7 +166,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 }
 
                 case NotificationType.NODE_MOVED: {
-                    fetchAndDispatchMovedNode(studyUuid, currentRootNetworkUuid, eventData);
+                    fetchAndDispatchMovedNode(dispatch, studyUuid, currentRootNetworkUuid, eventData);
                     invalidateClipboardIfImpacted(
                         [eventData.headers.movedNode, eventData.headers.parentNode],
                         nodeSelectionForCopyRef.current,
@@ -176,7 +176,12 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 }
 
                 case NotificationType.SUBTREE_MOVED: {
-                    fetchAndHandleSubtree(studyUuid, eventData.headers.movedNode, eventData.headers.parentNode);
+                    fetchAndHandleSubtree(
+                        dispatch,
+                        studyUuid,
+                        eventData.headers.movedNode,
+                        eventData.headers.parentNode
+                    );
                     invalidateClipboardIfImpacted(
                         [eventData.headers.movedNode, eventData.headers.parentNode],
                         nodeSelectionForCopyRef.current,

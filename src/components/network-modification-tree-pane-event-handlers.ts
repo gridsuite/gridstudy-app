@@ -13,7 +13,7 @@ import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
 } from '../redux/actions';
-import { store } from '../redux/store';
+import type { AppDispatch } from '../redux/store';
 import {
     fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
@@ -21,6 +21,7 @@ import {
 } from '../services/study/tree-subtree';
 import { CopyType } from './network-modification.type';
 import { Dispatch, SetStateAction } from 'react';
+import { NetworkModificationNodeData, RootNodeData } from './graph/tree-node.type';
 
 export const isClipboardImpacted = (nodeIds: UUID[], nodeSelectionForCopy: NodeSelectionForCopy): boolean =>
     nodeIds.includes(nodeSelectionForCopy.nodeId!) ||
@@ -47,41 +48,52 @@ export const refreshStashedNodes = (studyUuid: UUID, setNodesToRestore: Dispatch
 };
 
 export const fetchAndDispatchAddedNode = (
+    dispatch: AppDispatch,
     studyUuid: UUID,
     currentRootNetworkUuid: UUID,
     eventData: NodeCreatedEventData
 ): void => {
-    fetchNetworkModificationTreeNode(studyUuid, eventData.headers.newNode, currentRootNetworkUuid).then((node) => {
-        store.dispatch(
-            networkModificationTreeNodeAdded(
-                node,
-                eventData.headers.parentNode,
-                eventData.headers.insertMode,
-                eventData.headers.referenceNodeUuid
-            )
-        );
-    });
+    fetchNetworkModificationTreeNode(studyUuid, eventData.headers.newNode, currentRootNetworkUuid).then(
+        (node: NetworkModificationNodeData | RootNodeData) => {
+            dispatch(
+                networkModificationTreeNodeAdded(
+                    node,
+                    eventData.headers.parentNode,
+                    eventData.headers.insertMode,
+                    eventData.headers.referenceNodeUuid
+                )
+            );
+        }
+    );
 };
 
 export const fetchAndDispatchMovedNode = (
+    dispatch: AppDispatch,
     studyUuid: UUID,
     currentRootNetworkUuid: UUID,
     eventData: NodeMovedEventData
 ): void => {
-    fetchNetworkModificationTreeNode(studyUuid, eventData.headers.movedNode, currentRootNetworkUuid).then((node) => {
-        store.dispatch(
-            networkModificationTreeNodeMoved(
-                node,
-                eventData.headers.parentNode,
-                eventData.headers.insertMode,
-                eventData.headers.referenceNodeUuid
-            )
-        );
-    });
+    fetchNetworkModificationTreeNode(studyUuid, eventData.headers.movedNode, currentRootNetworkUuid).then(
+        (node: NetworkModificationNodeData | RootNodeData) => {
+            dispatch(
+                networkModificationTreeNodeMoved(
+                    node,
+                    eventData.headers.parentNode,
+                    eventData.headers.insertMode,
+                    eventData.headers.referenceNodeUuid
+                )
+            );
+        }
+    );
 };
 
-export const fetchAndHandleSubtree = (studyUuid: UUID, rootNodeId: UUID, parentNode: UUID): void => {
-    fetchNetworkModificationSubtree(studyUuid, rootNodeId).then((nodes) => {
-        store.dispatch(networkModificationHandleSubtree(nodes, parentNode));
+export const fetchAndHandleSubtree = (
+    dispatch: AppDispatch,
+    studyUuid: UUID,
+    rootNodeId: UUID,
+    parentNode: UUID
+): void => {
+    fetchNetworkModificationSubtree(studyUuid, rootNodeId).then((nodes: NetworkModificationNodeData | RootNodeData) => {
+        dispatch(networkModificationHandleSubtree(nodes, parentNode));
     });
 };
