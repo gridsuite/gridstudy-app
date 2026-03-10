@@ -81,14 +81,17 @@ export const styles = {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
     },
-    dragHandle: {
+    selectCheckBox: (theme) => ({
+        padding: theme.spacing(0.8),
+    }),
+    dragHandle: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         cursor: 'grab',
-        paddingLeft: 0.5,
         opacity: 0,
+        padding: theme.spacing(0.5),
         'tr:hover &': { opacity: 1 },
-    },
+    }),
     dragIndicatorIcon: {
         width: '16px',
         height: '16px',
@@ -105,7 +108,7 @@ export const styles = {
     },
     columnCell: {
         select: { padding: 2, justifyContent: 'center' },
-        modificationName: { cursor: 'pointer', minWidth: 0, overflow: 'hidden', flex: 1, paddingLeft: '0.8vw' },
+        modificationName: { cursor: 'pointer', minWidth: 0, overflow: 'hidden', flex: 1 },
         rootNetworkChip: { textAlign: 'center' },
     },
 } as const satisfies MuiStyles;
@@ -133,6 +136,7 @@ export const createRowSx = (isHighlighted: boolean, isDragging: boolean, virtual
 
 export const createModificationNameCellStyle = (activated: boolean): CSSProperties => ({
     opacity: activated ? 1 : DEACTIVATED_OPACITY,
+    paddingLeft: '0.8vw',
 });
 
 export const createRootNetworkChipCellSx = (activated: boolean): SxProps => ({

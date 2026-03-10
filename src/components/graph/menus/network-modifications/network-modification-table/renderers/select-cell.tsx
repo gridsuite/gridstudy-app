@@ -9,6 +9,7 @@ import React, { FunctionComponent, useCallback } from 'react';
 import { Checkbox } from '@mui/material';
 import { Row, Table } from '@tanstack/react-table';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { styles } from '../styles';
 
 interface SelectCellRendererProps {
     row: Row<NetworkModificationMetadata>;
@@ -66,7 +67,13 @@ const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) 
     );
 
     return (
-        <Checkbox size="small" checked={row.getIsSelected()} disabled={!row.getCanSelect()} onClick={handleChange} />
+        <Checkbox
+            size="small"
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onClick={handleChange}
+            sx={styles.selectCheckBox}
+        />
     );
 };
 
