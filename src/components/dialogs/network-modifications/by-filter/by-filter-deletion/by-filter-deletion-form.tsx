@@ -8,11 +8,10 @@
 import { Grid } from '@mui/material';
 import { useCallback, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
+import { AutocompleteInput, DirectoryItemsInput, ElementType, useGetLabelEquipmentTypes } from '@gridsuite/commons-ui';
 import { FILTERS, TYPE } from 'components/utils/field-constants';
 import { richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import useGetLabelEquipmentTypes from '../../../../../hooks/use-get-label-equipment-types';
 import GridItem from '../../../commons/grid-item';
 
 const ByFilterDeletionForm = () => {
