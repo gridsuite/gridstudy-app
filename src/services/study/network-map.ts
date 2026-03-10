@@ -15,6 +15,7 @@ import {
     EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
+    HvdcLccDeletionInfos,
     Identifiable,
     NewFilterType,
 } from '@gridsuite/commons-ui';
@@ -22,7 +23,6 @@ import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
 import type { UUID } from 'node:crypto';
-import { HvdcLccDeletionInfos } from '../../components/dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid: UUID,
