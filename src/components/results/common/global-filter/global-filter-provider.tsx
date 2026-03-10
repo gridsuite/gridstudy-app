@@ -64,22 +64,19 @@ export default function GlobalFilterProvider({
     const updateGenericFilter = useCallback(
         async (genericFilter: GlobalFilter) => {
             try {
-                const genericFilterUuid = genericFilter.uuid as UUID;
-                const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
+                const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilter.uuid as UUID);
                 const parentDirectoriesNames = response.map((parent) => parent.elementName);
                 const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
                 const path = computeFullPath(parentDirectoriesNames);
-                let updated = false;
-                if (!genericFilter.path) {
-                    genericFilter.path = path;
-                    updated = true;
-                }
-                if (label && genericFilter.label !== label) {
-                    genericFilter.label = label;
-                    updated = true;
-                }
-                if (updated) {
-                    dispatch(addToGlobalFilterOptions([genericFilter], tableType, tableUuid));
+                const updatedFilter = {
+                    ...genericFilter,
+                    path: genericFilter.path ?? path,
+                    label: label ?? genericFilter.label,
+                };
+                const isUpdated =
+                    updatedFilter.path !== genericFilter.path || updatedFilter.label !== genericFilter.label;
+                if (isUpdated) {
+                    dispatch(addToGlobalFilterOptions([updatedFilter], tableType, tableUuid));
                 }
             } catch (responseError) {
                 const error = responseError as Error & { status: number };
