@@ -58,38 +58,39 @@ export default function GlobalFilterProvider({
 
     const [openedDropdown, setOpenedDropdown] = useState(false);
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    // may be a filter type or a recent filter or whatever category
+    // maybe a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
 
     const updateGenericFilter = useCallback(
-        async (genericFilterUuid: UUID, mutableFilters: GlobalFilter[]) => {
+        async (genericFilter: GlobalFilter) => {
             try {
+                const genericFilterUuid = genericFilter.uuid as UUID;
                 const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
                 const parentDirectoriesNames = response.map((parent) => parent.elementName);
                 const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
                 const path = computeFullPath(parentDirectoriesNames);
-                const fetchedFilter = mutableFilters.find((globalFilter) => globalFilter.uuid === genericFilterUuid);
-                if (!fetchedFilter) return;
-                if (!fetchedFilter.path) {
-                    fetchedFilter.path = path;
+                let updated = false;
+                if (!genericFilter.path) {
+                    genericFilter.path = path;
+                    updated = true;
                 }
-                if (label && fetchedFilter.label !== label) {
-                    fetchedFilter.label = label;
-                    dispatch(addToGlobalFilterOptions([fetchedFilter], tableType, tableUuid));
+                if (label && genericFilter.label !== label) {
+                    genericFilter.label = label;
+                    updated = true;
+                }
+                if (updated) {
+                    dispatch(addToGlobalFilterOptions([genericFilter], tableType, tableUuid));
                 }
             } catch (responseError) {
                 const error = responseError as Error & { status: number };
                 if (error.status === HttpStatusCode.NOT_FOUND) {
                     // Not found => updated in global filter options for display
-                    const notFoundFilter = mutableFilters.find((f) => f.uuid === genericFilterUuid);
-                    if (notFoundFilter?.id) {
-                        const elementNotFound: GlobalFilter = {
-                            id: notFoundFilter.id,
-                            label: 'elementNotFound',
-                            filterType: notFoundFilter.filterType,
-                        };
-                        dispatch(addToGlobalFilterOptions([elementNotFound], tableType, tableUuid));
-                    }
+                    const elementNotFound: GlobalFilter = {
+                        id: genericFilter.id,
+                        label: 'elementNotFound',
+                        filterType: genericFilter.filterType,
+                    };
+                    dispatch(addToGlobalFilterOptions([elementNotFound], tableType, tableUuid));
                 } else {
                     snackWithFallback(snackError, error, {
                         headerId: 'ComputationFilterResultsError',
@@ -104,14 +105,12 @@ export default function GlobalFilterProvider({
     useEffect(() => {
         const checkSelectedFilters = async () => {
             const mutableFilters: GlobalFilter[] = selectedGlobalFilters.map((filter) => ({ ...filter }));
+            const genericFilters: GlobalFilter[] = mutableFilters.filter((globalFilter) =>
+                isCriteriaFilter(globalFilter)
+            );
 
-            const genericFiltersUuids: UUID[] = mutableFilters
-                .filter((globalFilter) => isCriteriaFilter(globalFilter))
-                .map((globalFilter) => globalFilter.uuid)
-                .filter((globalFilterUUID) => globalFilterUUID !== undefined);
-
-            for (const genericFilterUuid of genericFiltersUuids) {
-                await updateGenericFilter(genericFilterUuid, mutableFilters);
+            for (const genericFilter of genericFilters) {
+                await updateGenericFilter(genericFilter);
             }
         };
 
