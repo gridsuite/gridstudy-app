@@ -101,7 +101,7 @@ export const UnbuildAllNodesButton = () => {
                         disabled={isLoading}
                         data-testid="DeleteButton"
                     >
-                        {(isLoading && <CircularProgress size={24} />) || <FormattedMessage id="delete" />}
+                        {(isLoading && <CircularProgress size={24} />) || <FormattedMessage id="unbuildNode" />}
                     </Button>
                 </DialogActions>
             </Dialog>
