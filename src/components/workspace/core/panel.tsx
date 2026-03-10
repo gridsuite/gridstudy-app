@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, memo } from 'react';
+import { memo, useCallback } from 'react';
 import { Box, Theme } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import { useSelector } from 'react-redux';
@@ -16,9 +16,9 @@ import { PANEL_CONTENT_REGISTRY } from '../panel-contents/panel-content-registry
 import { PanelHeader } from './panel-header';
 import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
-import type { AppState } from '../../../redux/reducer';
+import type { AppState } from '../../../redux/reducer.type';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
-import { positionToRelative, sizeToRelative, calculatePanelDimensions } from './utils/coordinate-utils';
+import { calculatePanelDimensions, positionToRelative, sizeToRelative } from './utils/coordinate-utils';
 import PanelErrorBoundary from './panel-error-boundary';
 
 const RESIZE_HANDLE_SIZE = 12;

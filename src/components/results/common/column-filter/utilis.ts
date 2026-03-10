@@ -7,7 +7,7 @@
 import { ColDef, ICellRendererParams, type IFilterOptionDef } from 'ag-grid-community';
 import { makeAgGridCustomHeaderColumn } from '../../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { CustomAggridAutocompleteFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
-import { FILTER_DATA_TYPES } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { FILTER_DATA_TYPES } from '../../../../types/custom-aggrid-types';
 import { IntlShape } from 'react-intl';
 import { JSX } from 'react';
 

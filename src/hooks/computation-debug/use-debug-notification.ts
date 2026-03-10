@@ -9,7 +9,7 @@ import { NotificationType } from '../../types/notification-types';
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { buildDebugIdentifier, isDebug, unsetDebug } from './computation-debug-utils';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer.type';
 import useDebugDownload from './use-debug-download';
 
 export default function useDebugNotification() {
