@@ -12,7 +12,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
-import { FilterType, isCriteriaFilterType } from '../utils';
+import { FilterType, isCriteriaFilterType } from '../../utils';
 import { GlobalFilter } from './global-filter-types';
 import { fetchSubstationPropertiesGlobalFilters, RECENT_FILTER } from './global-filter-utils';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -26,15 +26,15 @@ import {
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
 import SelectedGlobalFilters from './selected-global-filters';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { TextWithInfoIcon } from './text-with-info-icon';
 import {
     addToSelectedGlobalFilters,
     addToGlobalFilterOptions,
     clearSelectedGlobalFilters,
-} from '../../../../redux/actions';
+} from '../../../../../redux/actions';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../redux/store';
+import { AppDispatch } from '../../../../../redux/store';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;

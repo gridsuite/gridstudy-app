@@ -8,7 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import type { UUID } from 'node:crypto';
 import { backendFetch, backendFetchJson, backendFetchText, VoltageInitStudyParameters } from '@gridsuite/commons-ui';
-import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
+import { ResultsQueryParams } from '../../components/results/common/filter/global-filter/global-filter-types';
 
 export function startVoltageInit(
     studyUuid: UUID,

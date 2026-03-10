@@ -7,10 +7,10 @@
 
 import GlobalFilterProvider from './global-filter-provider';
 import GlobalFilterAutocomplete from './global-filter-autocomplete';
-import { FilterType } from '../utils';
-import { TableType } from '../../../../types/custom-aggrid-types';
+import { FilterType } from '../../utils';
+import { TableType } from '../../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
 export type GlobalFilterSelectorProps = {
     filterCategories?: FilterType[];

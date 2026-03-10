@@ -11,9 +11,9 @@ import type { UUID } from 'node:crypto';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
-import { useGlobalFilterResults } from '../../../../results/common/global-filter/use-global-filter-results';
+import { useGlobalFilterResults } from '../../../../results/common/filter/global-filter/use-global-filter-results';
 import { FilterEquipmentType } from '../../../../../types/filter-lib/filter';
-import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
+import { useSelectedGlobalFilters } from '../../../../results/common/filter/global-filter/use-selected-global-filters';
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
     event.api.refreshCells({ columns: [ROW_INDEX_COLUMN_ID], force: true });

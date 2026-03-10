@@ -67,7 +67,7 @@ import {
     HighlightModificationAction,
     INIT_OR_UPDATE_GLOBAL_FILTER,
     INIT_TABLE_DEFINITIONS,
-    type InitOrUpdateSpreadSheetGlobalFilterAction,
+    type InitOrUpdateGlobalFilterAction,
     type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
@@ -295,7 +295,7 @@ import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 import { isCriteriaFilter } from '../components/results/common/utils';
-import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
+import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/filter/global-filter/global-filter-utils';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {
@@ -1584,7 +1584,7 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(INIT_OR_UPDATE_GLOBAL_FILTER, (state, action: InitOrUpdateSpreadSheetGlobalFilterAction) => {
+    builder.addCase(INIT_OR_UPDATE_GLOBAL_FILTER, (state, action: InitOrUpdateGlobalFilterAction) => {
         // Replace selected IDs in globalFilters only if different to avoid unnecessary re-render and re-fetch
         const currentIds = state.tableFilters.globalFilters[action.tabUuid];
         const newIds = action.filters.map(getGlobalFilterId);

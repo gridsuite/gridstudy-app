@@ -45,9 +45,9 @@ import {
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/filter/column-filter/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
-import { createEnumColumn } from '../common/column-filter/utilis';
+import { createEnumColumn } from '../common/filter/column-filter/utilis';
 
 interface TableParams {
     sortParams: SortParams;

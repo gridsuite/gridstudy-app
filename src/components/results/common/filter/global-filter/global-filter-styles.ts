@@ -6,7 +6,7 @@
  */
 
 import { cyan, lime } from '@mui/material/colors';
-import { FilterType } from '../utils';
+import { FilterType } from '../../utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 export const getResultsGlobalFiltersChipStyle = (filterType: string) => {

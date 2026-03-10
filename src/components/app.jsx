@@ -71,9 +71,9 @@ import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
-import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
-import { updateComputationGlobalFilters } from './results/common/global-filter/use-computation-global-filters.ts';
-import { updateComputationColumnFilters } from './results/common/column-filter/use-computation-column-filters.ts';
+import { useGlobalFilterOptions } from './results/common/filter/global-filter/use-global-filter-options.ts';
+import { updateComputationGlobalFilters } from './results/common/filter/global-filter/use-computation-global-filters.ts';
+import { updateComputationColumnFilters } from './results/common/filter/column-filter/use-computation-column-filters.ts';
 
 const noUserManager = { instance: null, error: null };
 

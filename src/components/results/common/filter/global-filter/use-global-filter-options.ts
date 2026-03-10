@@ -6,17 +6,17 @@
  */
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useEffect } from 'react';
-import { fetchAllCountries } from '../../../../services/study/network-map';
-import { FilterType } from '../utils';
+import { fetchAllCountries } from '../../../../../services/study/network-map';
+import { FilterType } from '../../utils';
 import {
     addGlobalFilterId,
     fetchSubstationPropertiesGlobalFilters,
     GlobalFilterWithoutId,
 } from './global-filter-utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer.type';
-import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
-import { addToGlobalFilterOptions } from '../../../../redux/actions';
+import { AppState } from '../../../../../redux/reducer.type';
+import { useBaseVoltages } from '../../../../../hooks/use-base-voltages';
+import { addToGlobalFilterOptions } from '../../../../../redux/actions';
 
 /**
  * Custom hook that manages global filter options for tables.

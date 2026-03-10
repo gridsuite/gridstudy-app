@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { GlobalFilters } from '../common/filter/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
 import {
     ColumnContext,
@@ -20,7 +20,7 @@ import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-so
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { GridApi, ICellRendererParams } from 'ag-grid-community';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/filter/column-filter/update-computation-columns-filters';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;

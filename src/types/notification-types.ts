@@ -942,7 +942,7 @@ export interface WorkspaceNadConfigUpdatedEventData {
 }
 
 export function isComputationResultColumnFilterUpdatedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is ComputationResultTabUpdatedEventData {
     return (
         (notif as ComputationResultTabUpdatedEventData).headers?.updateType ===
@@ -951,7 +951,7 @@ export function isComputationResultColumnFilterUpdatedNotification(
 }
 
 export function isComputationResultGlobalFilterUpdatedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is ComputationResultTabUpdatedEventData {
     return (
         (notif as ComputationResultTabUpdatedEventData).headers?.updateType ===

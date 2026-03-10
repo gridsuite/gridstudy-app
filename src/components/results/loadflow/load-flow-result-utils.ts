@@ -45,8 +45,8 @@ import {
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
-import { createEnumColumn } from '../common/column-filter/utilis';
+import { updateComputationColumnsFilters } from '../common/filter/column-filter/update-computation-columns-filters';
+import { createEnumColumn } from '../common/filter/column-filter/utilis';
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {
     subjectId: 'subjectId',

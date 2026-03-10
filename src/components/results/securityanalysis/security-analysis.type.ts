@@ -11,7 +11,7 @@ import { AgGridReactProps } from 'ag-grid-react';
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { GlobalFilters } from '../common/filter/global-filter/global-filter-types';
 import { Page } from '../common/utils';
 
 export enum RESULT_TYPE {

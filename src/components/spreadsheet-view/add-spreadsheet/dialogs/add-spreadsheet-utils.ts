@@ -30,7 +30,7 @@ import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
 import { SpreadsheetFilterState } from 'redux/reducer.type';
 import { TableSortConfig } from '../../../../types/custom-aggrid-types';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
-import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
+import { GlobalFilter } from '../../../results/common/filter/global-filter/global-filter-types';
 import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
 
 const createNewTableDefinition = (

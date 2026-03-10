@@ -45,7 +45,7 @@ import {
 } from '../types/custom-aggrid-types';
 import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
-import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../components/results/common/filter/global-filter/global-filter-types';
 import {
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
@@ -126,7 +126,7 @@ export type AppActions =
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | AddFilterForNewSpreadsheetAction
-    | InitOrUpdateSpreadSheetGlobalFilterAction
+    | InitOrUpdateGlobalFilterAction
     | RemoveTableDefinitionAction
     | SetCalculationSelectionsAction
     | ReorderTableDefinitionsAction
@@ -1438,8 +1438,8 @@ export const addSortForNewSpreadsheet = (tabUuid: UUID, value: SortConfig[]): Ad
     },
 });
 
-export const INIT_OR_UPDATE_GLOBAL_FILTER = 'INIT_OR_UPDATE_SPREADSHEET_GLOBAL_FILTER';
-export type InitOrUpdateSpreadSheetGlobalFilterAction = Readonly<Action<typeof INIT_OR_UPDATE_GLOBAL_FILTER>> & {
+export const INIT_OR_UPDATE_GLOBAL_FILTER = 'INIT_OR_UPDATE_GLOBAL_FILTER';
+export type InitOrUpdateGlobalFilterAction = Readonly<Action<typeof INIT_OR_UPDATE_GLOBAL_FILTER>> & {
     tabUuid: string;
     filters: GlobalFilter[];
 };
@@ -1447,7 +1447,7 @@ export type InitOrUpdateSpreadSheetGlobalFilterAction = Readonly<Action<typeof I
 export function initOrUpdateGlobalFilters(
     tabUuid: string,
     filters: GlobalFilter[]
-): InitOrUpdateSpreadSheetGlobalFilterAction {
+): InitOrUpdateGlobalFilterAction {
     return {
         type: INIT_OR_UPDATE_GLOBAL_FILTER,
         tabUuid: tabUuid,

@@ -23,9 +23,9 @@ import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-so
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
 import { PccMinExportButton } from './pcc-min-export-button';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
-import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { buildValidGlobalFilters } from '../common/filter/global-filter/build-valid-global-filters';
+import { useSelectedGlobalFilters } from '../common/filter/global-filter/use-selected-global-filters';
+import { useComputationColumnFilters } from '../common/filter/column-filter/use-computation-column-filters';
 
 interface PccMinResultProps {
     studyUuid: UUID;

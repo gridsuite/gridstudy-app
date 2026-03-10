@@ -7,7 +7,7 @@
 
 import { createContext } from 'react';
 import { GlobalFilter } from './global-filter-types';
-import { TableType } from '../../../../types/custom-aggrid-types';
+import { TableType } from '../../../../../types/custom-aggrid-types';
 
 export const GlobalFilterContext = createContext<{
     // manage internal states

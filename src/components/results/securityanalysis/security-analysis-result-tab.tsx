@@ -37,13 +37,13 @@ import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
-import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import GlobalFilterSelector from '../common/filter/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { useComputationGlobalFilters } from '../common/filter/global-filter/use-computation-global-filters';
+import { buildValidGlobalFilters } from '../common/filter/global-filter/build-valid-global-filters';
+import { useComputationColumnFilters } from '../common/filter/column-filter/use-computation-column-filters';
 import { FilterType, isCriteriaFilterType } from '../common/utils';
 
 const styles = {

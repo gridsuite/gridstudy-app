@@ -7,7 +7,7 @@
 
 import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
-import { FilterType, isCriteriaFilter } from '../utils';
+import { FilterType, isCriteriaFilter } from '../../utils';
 import type { UUID } from 'node:crypto';
 import {
     ElementAttributes,
@@ -15,14 +15,14 @@ import {
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { computeFullPath } from '../../../../utils/compute-title';
-import { removeFromGlobalFilterOptions } from '../../../../redux/actions';
+import { computeFullPath } from '../../../../../utils/compute-title';
+import { removeFromGlobalFilterOptions } from '../../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../../../../redux/store';
+import { AppDispatch } from '../../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
-import { HttpStatusCode } from '../../../../utils/http-status-code';
-import { TableType } from '../../../../types/custom-aggrid-types';
-import { AppState } from '../../../../redux/reducer.type';
+import { HttpStatusCode } from '../../../../../utils/http-status-code';
+import { TableType } from '../../../../../types/custom-aggrid-types';
+import { AppState } from '../../../../../redux/reducer.type';
 
 export default function GlobalFilterProvider({
     children,

@@ -6,7 +6,7 @@
  */
 
 import { GlobalFilter, GlobalFilters } from './global-filter-types';
-import { FilterType } from '../utils';
+import { FilterType } from '../../utils';
 
 /**
  * Transforms global filters stored by the frontend into the format expected by the filter server.

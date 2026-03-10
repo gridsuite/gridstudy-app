@@ -46,10 +46,10 @@ import { resultsStyles } from '../common/utils';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
+import { updateComputationColumnsFilters } from '../common/filter/column-filter/update-computation-columns-filters';
 import type { UUID } from 'node:crypto';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
-import { createMultiEnumFilterParams } from '../common/column-filter/utilis';
+import { createMultiEnumFilterParams } from '../common/filter/column-filter/utilis';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[] | undefined;
