@@ -1444,10 +1444,7 @@ export type InitOrUpdateGlobalFilterAction = Readonly<Action<typeof INIT_OR_UPDA
     filters: GlobalFilter[];
 };
 
-export function initOrUpdateGlobalFilters(
-    tabUuid: string,
-    filters: GlobalFilter[]
-): InitOrUpdateGlobalFilterAction {
+export function initOrUpdateGlobalFilters(tabUuid: string, filters: GlobalFilter[]): InitOrUpdateGlobalFilterAction {
     return {
         type: INIT_OR_UPDATE_GLOBAL_FILTER,
         tabUuid: tabUuid,
