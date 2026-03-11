@@ -15,7 +15,7 @@ import { VoltageInitResultTab } from './voltage-init-result-tab';
 import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResultsTab } from './results/use-results-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';

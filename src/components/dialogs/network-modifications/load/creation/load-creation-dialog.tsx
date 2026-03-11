@@ -17,7 +17,6 @@ import {
     useSnackMessage,
     DeepNullable,
     sanitizeString,
-    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -28,8 +27,8 @@ import {
     LOAD_TYPE,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import { useCallback, useEffect, useState } from 'react';
-import { FieldErrors, useForm } from 'react-hook-form';
+import { useCallback, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
@@ -46,11 +45,8 @@ import { createLoad } from '../../../../../services/study/network-modifications'
 import { LoadCreationInfos, LoadCreationSchemaForm } from './load-creation.type';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import LoadDialogHeader from '../common/load-dialog-header';
-import { LoadDialogTab } from '../common/load-utils';
-import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
-import useVoltageLevelsListInfos from 'hooks/use-voltage-levels-list-infos';
+import { LoadForm } from '../common/load-form';
 
 /**
  * Dialog to create a load in the network
@@ -99,9 +95,6 @@ export function LoadCreationDialog({
 }: Readonly<LoadCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
-    const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const formMethods = useForm<DeepNullable<LoadCreationSchemaForm>>({
         defaultValues: emptyFormData,
@@ -195,36 +188,12 @@ export function LoadCreationDialog({
 
     const clear = useCallback(() => reset(emptyFormData), [reset]);
 
-    const onValidationError = (errors: FieldErrors) => {
-        let tabsInError: number[] = [];
-        if (
-            errors?.[ACTIVE_POWER_SETPOINT] !== undefined ||
-            errors?.[REACTIVE_POWER_SET_POINT] !== undefined ||
-            errors?.[FieldConstants.ADDITIONAL_PROPERTIES] !== undefined
-        ) {
-            tabsInError.push(LoadDialogTab.CHARACTERISTICS_TAB);
-        }
-        if (errors?.[CONNECTIVITY] !== undefined) {
-            tabsInError.push(LoadDialogTab.CONNECTIVITY_TAB);
-        }
-        if (tabsInError.length > 0) {
-            setTabIndex(tabsInError[0]);
-        }
-        setTabIndexesWithError(tabsInError);
-    };
-
-    const headerAndTabs = (
-        <LoadDialogHeader tabIndexesWithError={tabIndexesWithError} tabIndex={tabIndex} setTabIndex={setTabIndex} />
-    );
-
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                onValidationError={onValidationError}
-                subtitle={headerAndTabs}
                 maxWidth={'md'}
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
@@ -232,12 +201,10 @@ export function LoadCreationDialog({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <LoadDialogTabsContent
+                <LoadForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    tabIndex={tabIndex}
-                    voltageLevelOptions={voltageLevelOptions}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

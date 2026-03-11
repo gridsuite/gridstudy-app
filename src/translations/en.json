@@ -461,6 +461,7 @@
     "results.globalFilter.recent": "Recent",
     "results.globalFilter.substationProperty": "Regions",
     "results.globalFilter.genericFilter": "Elements",
+    "results.globalFilter.substationFilter": "Substations",
     "results.globalFilter.substationOrVoltageLevelFilter": "Substations and voltage levels",
     "results.globalFilter.elementsHelp": "Those filters exclude other elements type",
     "results.globalFilter.country": "Countries",
@@ -1764,7 +1765,7 @@
     "existingNAD": "Existing NAD",
     "unbuildAllNodesTooltip": "Unbuild all nodes",
     "unbuildAllNodesDialogTitle": "Confirmation",
-    "unbuildAllNodesDialogContent": "All built networks for all nodes of the tree and all root networks as well as all calculation results will be deleted",
+    "unbuildAllNodesDialogContent": "All built nodes for all root networks as well as their computation results will be deleted",
     "unbuildAllNodesError": "An error occurred while unbuilding all nodes",
     "uuidCopiedToClipboard": "Uuid copied to system clipboard",
     "uuidCopiedToClipboardError": "Uuid could not be copied to system clipboard",
@@ -1772,5 +1773,6 @@
     "PanelError": "Something went wrong in this panel",
     "Reload": "Reload",
     "CopyError": "Copy Error",
-    "Copied": "Copied"
+    "Copied": "Copied",
+    "downloadNetworkModifications" : "Download modifications"
 }

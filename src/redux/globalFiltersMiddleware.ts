@@ -16,7 +16,7 @@ import {
 import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
-import { AppState } from './reducer';
+import type { AppState } from './reducer.type';
 
 const debouncedSyncTimers: Record<string, ReturnType<typeof setTimeout>> = {};
 

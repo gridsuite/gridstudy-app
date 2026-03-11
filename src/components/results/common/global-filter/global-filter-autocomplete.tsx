@@ -247,13 +247,22 @@ function GlobalFilterAutocomplete() {
                         } else if (option.filterSubtype) {
                             // if the filter has a subtype it should be filtered through it instead of filterType
                             return option.filterSubtype === filterGroupSelected;
+                        } else if (
+                            filterGroupSelected === FilterType.GENERIC_FILTER &&
+                            filterableEquipmentTypes?.length === 1 &&
+                            filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION &&
+                            option.equipmentType === EQUIPMENT_TYPES.SUBSTATION
+                        ) {
+                            // when filtering substations, the substation filters are displayed in the GENERIC_FILTER category
+                            // (because there are no voltage level so the SUBSTATION_OR_VL category doesn't make sense)
+                            return true;
                         } else {
                             return option.filterType === filterGroupSelected;
                         }
                     })
             );
         },
-        [filterGroupSelected, translate]
+        [filterGroupSelected, translate, filterableEquipmentTypes]
     );
 
     const options = useMemo(

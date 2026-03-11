@@ -6,7 +6,7 @@
  */
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer.type';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { Box, Button, CircularProgress, Fade, Tooltip } from '@mui/material';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
