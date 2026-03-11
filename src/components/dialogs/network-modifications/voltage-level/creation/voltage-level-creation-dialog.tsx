@@ -25,6 +25,7 @@ import {
     translateSwitchKinds,
     substationCreationEmptyFormData,
     copyEquipmentPropertiesForCreation,
+    SubstationCreationMode,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -45,9 +46,6 @@ import {
 } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { fetchEquipmentsIds } from 'services/study/network-map';
-import { Box, Paper } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import LineSeparator from 'components/dialogs/commons/line-separator';
 import { VoltageLevelDto } from '../voltage-level.type';
 
 const voltageLevelDtoToForm = (formInfos: VoltageLevelDto, intl?: IntlShape) => ({
@@ -128,6 +126,13 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     const { snackError, snackWarning } = useSnackMessage();
     const [substations, setSubstations] = useState<string[]>([]);
 
+    const substationCreationMode = useMemo((): SubstationCreationMode => {
+        if (isAttachmentPointModification) {
+            return SubstationCreationMode.MUST_CREATE_SUBSTATION;
+        }
+        return SubstationCreationMode.CAN_CREATE_SUBSTATION;
+    }, [isAttachmentPointModification]);
+
     const defaultValues = useMemo((): VoltageLevelCreationFormData => {
         if (isAttachmentPointModification) {
             return {
@@ -145,7 +150,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         resolver: yupResolver<DeepNullable<VoltageLevelCreationFormData>>(voltageLevelCreationFormSchema),
     });
 
-    const { reset, setValue, getValues, trigger, subscribe } = formMethods;
+    const { reset, getValues, trigger, subscribe } = formMethods;
 
     const intl = useIntl();
 
@@ -259,29 +264,6 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const handleAddButton = useCallback(() => {
-        setValue(FieldConstants.SUBSTATION_CREATION_ID, getValues(FieldConstants.SUBSTATION_ID));
-        setValue(FieldConstants.ADD_SUBSTATION_CREATION, true);
-    }, [setValue, getValues]);
-
-    function getCustomPaper(children: React.ReactNode) {
-        return (
-            <Paper>
-                <Box>
-                    {children}
-                    <LineSeparator />
-                    <IconButton
-                        color="primary"
-                        sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%', width: '100%' }}
-                        onMouseDown={handleAddButton}
-                    >
-                        {`${intl.formatMessage({ id: 'CreateSubstation' })} : ${getValues(FieldConstants.SUBSTATION_ID)}`}
-                    </IconButton>
-                </Box>
-            </Paper>
-        );
-    }
-
     const onSubmit = useCallback(
         (voltageLevel: VoltageLevelCreationFormData) => {
             const dto = voltageLevelCreationFormToDto(voltageLevel);
@@ -336,11 +318,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
             >
                 <VoltageLevelCreationForm
                     substationOptions={substations}
-                    substationFieldAdditionalProps={{
-                        PaperComponent: ({ children }: { children: React.ReactNode }) => getCustomPaper(children),
-                        noOptionsText: '',
-                    }}
-                    showDeleteSubstationButton={!isAttachmentPointModification}
+                    substationCreationMode={substationCreationMode}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
