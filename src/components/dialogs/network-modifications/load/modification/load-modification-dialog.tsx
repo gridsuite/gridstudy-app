@@ -124,6 +124,10 @@ export default function LoadModificationDialog({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset(
+                            { ...loadModificationEmptyFormData, [FieldConstants.EQUIPMENT_ID]: equipmentId },
+                            { keepDirty: true }
+                        );
                         if (editData?.equipmentId !== equipmentId) {
                             setLoadToModify(null);
                         }
