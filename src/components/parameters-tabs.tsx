@@ -57,7 +57,6 @@ import {
     setShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
-import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
 import { fetchContingencyCount } from '../services/study';
 import {
     fetchDynamicMarginCalculationParameters,
@@ -81,7 +80,6 @@ enum TAB_VALUES {
 
 const ParametersTabs: FunctionComponent = () => {
     const dispatch = useDispatch();
-    const { minimizePanel } = useWorkspacePanelActions();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -94,7 +92,6 @@ const ParametersTabs: FunctionComponent = () => {
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
-    const [pendingClosePanelId, setPendingClosePanelId] = useState<UUID | null>(null);
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -216,18 +213,6 @@ const ParametersTabs: FunctionComponent = () => {
     const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
 
-    // Listen for panel close requests from panel header
-    useEffect(() => {
-        const handleCloseRequest = (event: Event) => {
-            const customEvent = event as CustomEvent<UUID>;
-            setPendingClosePanelId(customEvent.detail);
-            setIsLeavingPopupOpen(true);
-        };
-
-        globalThis.addEventListener('parametersPanel:requestClose', handleCloseRequest);
-        return () => globalThis.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
-    }, []);
-
     useEffect(() => {
         if (attemptedLeaveParametersTabIndex !== null) {
             if (isDirtyComputationParameters) {
@@ -246,26 +231,19 @@ const ParametersTabs: FunctionComponent = () => {
             setTabValue(newValue);
         }
     };
-
     const handlePopupChangeTab = useCallback(() => {
         if (nextTabValue) {
             setTabValue(nextTabValue);
             setNextTabValue(undefined);
         } else if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(confirmLeaveParametersTab());
-        } else if (pendingClosePanelId !== null) {
-            // User confirmed close - actually close the panel
-            minimizePanel(pendingClosePanelId);
-            setPendingClosePanelId(null);
         }
         dispatch(setDirtyComputationParameters(false));
         setIsLeavingPopupOpen(false);
-    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch, minimizePanel]);
-
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
     const handleLeavingPopupClose = useCallback(() => {
         setIsLeavingPopupOpen(false);
         setNextTabValue(undefined);
-        setPendingClosePanelId(null);
 
         if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(cancelLeaveParametersTab());
