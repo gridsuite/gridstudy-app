@@ -18,20 +18,22 @@ import {
     VoltageLevelCreationFormData,
     VoltageLevelCreationDto,
     voltageLevelCreationFormToDto,
-    VoltageLevelFormInfos,
-    voltageLevelInfosToForm,
     voltageLevelCreationDtoToForm,
     VoltageLevelCreationForm,
+    convertInputValue,
+    FieldType,
+    translateSwitchKinds,
+    substationCreationEmptyFormData,
+    copyEquipmentPropertiesForCreation,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
-import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { useIntl } from 'react-intl';
+import { IntlShape, useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
@@ -46,6 +48,41 @@ import { fetchEquipmentsIds } from 'services/study/network-map';
 import { Box, Paper } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import LineSeparator from 'components/dialogs/commons/line-separator';
+import { VoltageLevelDto } from '../voltage-level.type';
+
+const voltageLevelDtoToForm = (formInfos: VoltageLevelDto, intl?: IntlShape) => ({
+    [FieldConstants.EQUIPMENT_ID]: formInfos?.id,
+    [FieldConstants.EQUIPMENT_NAME]: formInfos?.name ?? '',
+    [FieldConstants.TOPOLOGY_KIND]: formInfos?.topologyKind ?? null,
+    [FieldConstants.SUBSTATION_ID]: formInfos?.substationId ?? null,
+    [FieldConstants.NOMINAL_V]: formInfos?.nominalV,
+    [FieldConstants.LOW_VOLTAGE_LIMIT]: formInfos?.lowVoltageLimit,
+    [FieldConstants.HIGH_VOLTAGE_LIMIT]: formInfos?.highVoltageLimit,
+    [FieldConstants.LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+        FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+        formInfos?.identifiableShortCircuit?.ipMin ?? null
+    ),
+    [FieldConstants.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+        FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+        formInfos?.identifiableShortCircuit?.ipMax ?? null
+    ),
+    [FieldConstants.BUS_BAR_COUNT]: formInfos?.busbarCount ?? 1,
+    [FieldConstants.SECTION_COUNT]: formInfos?.sectionCount ?? 1,
+    [FieldConstants.SWITCHES_BETWEEN_SECTIONS]: translateSwitchKinds(formInfos?.switchKinds, intl),
+    [FieldConstants.COUPLING_OMNIBUS]: [],
+    [FieldConstants.SWITCH_KINDS]:
+        formInfos.switchKinds?.map((switchKind) => ({
+            [FieldConstants.SWITCH_KIND]: switchKind,
+        })) ?? [],
+    [FieldConstants.ADD_SUBSTATION_CREATION]: false,
+    [FieldConstants.SUBSTATION_CREATION_ID]: null,
+    [FieldConstants.SUBSTATION_NAME]: null,
+    [FieldConstants.COUNTRY]: null,
+    [FieldConstants.SUBSTATION_CREATION]: substationCreationEmptyFormData,
+    [FieldConstants.HIDE_NOMINAL_VOLTAGE]: false,
+    [FieldConstants.HIDE_BUS_BAR_SECTION]: false,
+    ...copyEquipmentPropertiesForCreation({ properties: formInfos.properties ?? undefined }),
+});
 
 interface VoltageLevelCreationEditData extends VoltageLevelCreationDto {
     uuid?: UUID;
@@ -124,9 +161,9 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     );
 
     const fromSearchCopyToFormValues = useCallback(
-        (voltageLevel: VoltageLevelFormInfos) => {
-            const formData = voltageLevelInfosToForm(voltageLevel, intl);
-            formData[EQUIPMENT_ID] += '(1)';
+        (voltageLevel: VoltageLevelDto) => {
+            const formData = voltageLevelDtoToForm(voltageLevel, intl);
+            formData[FieldConstants.EQUIPMENT_ID] += '(1)';
             applyAttachmentPointOverrides(formData);
             reset(formData, { keepDefaultValues: true });
 
@@ -180,7 +217,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
         // Watch EQUIPMENT_ID changed
         const unsubscribeEquipmentId = subscribe({
-            name: [EQUIPMENT_ID],
+            name: [FieldConstants.EQUIPMENT_ID],
             formState: {
                 values: true,
             },
@@ -201,8 +238,8 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 values: true,
             },
             callback: () => {
-                if (getValues(EQUIPMENT_ID)) {
-                    trigger(EQUIPMENT_ID);
+                if (getValues(FieldConstants.EQUIPMENT_ID)) {
+                    trigger(FieldConstants.EQUIPMENT_ID);
                 }
             },
         });
