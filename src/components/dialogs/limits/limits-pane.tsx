@@ -211,7 +211,7 @@ export function LimitsPane({
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
                     {indexSelectedLimitSet !== null &&
-                        operationalLimitsGroups.map(
+                        controlledOperationalLimitsGroups.map(
                             (operationalLimitsGroup: OperationalLimitsGroupFormSchema, index: number) =>
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
