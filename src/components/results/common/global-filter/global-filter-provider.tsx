@@ -68,26 +68,26 @@ export default function GlobalFilterProvider({
                 const parentDirectoriesNames = response.map((parent) => parent.elementName);
                 const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
                 const path = computeFullPath(parentDirectoriesNames);
-                const updatedFilter = {
-                    ...genericFilter,
-                    path: genericFilter.path ?? path,
-                    label: label ?? genericFilter.label,
-                };
-                const isUpdated =
-                    updatedFilter.path !== genericFilter.path || updatedFilter.label !== genericFilter.label;
-                if (isUpdated) {
-                    dispatch(addToGlobalFilterOptions([updatedFilter], tableType, tableUuid));
+                if (path !== genericFilter.path || label !== genericFilter.label) {
+                    dispatch(
+                        addToGlobalFilterOptions(
+                            [{ ...genericFilter, path: path, label: label ?? genericFilter.label }],
+                            tableType,
+                            tableUuid
+                        )
+                    );
                 }
             } catch (responseError) {
                 const error = responseError as Error & { status: number };
                 if (error.status === HttpStatusCode.NOT_FOUND) {
                     // Not found => updated in global filter options for display
-                    const elementNotFound: GlobalFilter = {
-                        id: genericFilter.id,
-                        label: 'elementNotFound',
-                        filterType: genericFilter.filterType,
-                    };
-                    dispatch(addToGlobalFilterOptions([elementNotFound], tableType, tableUuid));
+                    dispatch(
+                        addToGlobalFilterOptions(
+                            [{ id: genericFilter.id, label: 'elementNotFound', filterType: genericFilter.filterType }],
+                            tableType,
+                            tableUuid
+                        )
+                    );
                 } else {
                     snackWithFallback(snackError, error, {
                         headerId: 'ComputationFilterResultsError',
@@ -101,18 +101,12 @@ export default function GlobalFilterProvider({
     // Check the selected global filters and remove them if they do not exist anymore.
     useEffect(() => {
         const checkSelectedFilters = async () => {
-            const mutableFilters: GlobalFilter[] = selectedGlobalFilters.map((filter) => ({ ...filter }));
-            const genericFilters: GlobalFilter[] = mutableFilters.filter((globalFilter) =>
-                isCriteriaFilter(globalFilter)
-            );
-
-            for (const genericFilter of genericFilters) {
-                await updateGenericFilter(genericFilter);
-            }
+            const genericFilters = selectedGlobalFilters.filter(isCriteriaFilter);
+            await Promise.all(genericFilters.map(updateGenericFilter));
         };
 
         checkSelectedFilters().catch((error) => console.error(error));
-    }, [selectedGlobalFilters, dispatch, snackError, tableType, tableUuid, updateGenericFilter]);
+    }, [selectedGlobalFilters, updateGenericFilter]);
 
     const value = useMemo(
         () => ({
