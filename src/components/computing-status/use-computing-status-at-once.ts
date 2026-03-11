@@ -36,7 +36,11 @@ interface UseComputingStatusProps {
 
 interface LastUpdateProps {
     eventData: StudyUpdatedEventData | null;
-    allComputingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<AllComputationStatusInfos | null>;
+    allComputingStatusFetcher: (
+        studyUuid: UUID,
+        nodeUuid: UUID,
+        currentRootNetworkUuid: UUID
+    ) => Promise<AllComputationStatusInfos | null>;
 }
 
 function isWorthUpdate(
@@ -49,7 +53,6 @@ function isWorthUpdate(
         return true;
     }
     return rootNetworkUuidRef.current !== currentRootNetworkUuid;
-
 }
 
 const shouldRequestBeCanceled = (
@@ -77,7 +80,7 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
     nodeUuid,
     currentRootNetworkUuid,
     allComputingStatusFetcher,
-    getCompletions,
+    getCompletions
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);

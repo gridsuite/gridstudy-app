@@ -135,7 +135,10 @@ export function getComputingStatusParametersFetcher(
     }
 }
 
-export function getRunningStatusByComputingType(allStatuses: AllComputationStatusInfos, computingType: ComputingType): RunningStatus {
+export function getRunningStatusByComputingType(
+    allStatuses: AllComputationStatusInfos,
+    computingType: ComputingType
+): RunningStatus {
     switch (computingType) {
         case ComputingType.PCC_MIN:
             return getPccMinRunningStatus(allStatuses.pccMinStatus);
