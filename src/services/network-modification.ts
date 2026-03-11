@@ -59,8 +59,8 @@ export function fetchBusBarSectionsForNewCoupler(
     urlSearchParams.append('voltageLevelId', voltageLevelId);
     urlSearchParams.append('busBarCount', String(busBarCount));
     urlSearchParams.append('sectionCount', String(sectionCount));
-    for (let i = 0; i < switchKindList.length; i++) {
-        urlSearchParams.append('switchKindList', switchKindList[i]);
+    for (const kind of switchKindList) {
+        urlSearchParams.append('switchKindList', kind);
     }
 
     const url =
