@@ -6,14 +6,10 @@
  */
 import { TableType } from '../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
-import { GlobalFilter } from './global-filter-types';
+import { AppState } from '../../../../redux/reducer.type';
 import { useEffect } from 'react';
-import { getComputationResultGlobalFilters } from '../../../../services/study/study-config';
-import { addToGlobalFilterOptions, addToSelectedGlobalFilters } from '../../../../redux/actions';
-import { isCriteriaFilter } from '../utils';
-import { addGlobalFilterId, getGlobalFilterId } from './global-filter-utils';
 import { useSelectedGlobalFilters } from './use-selected-global-filters';
+import { updateComputationGlobalFilters } from '../utils';
 
 // Get the global filters for a given table from the server and store them in the Redux store
 export function useFetchComputationGlobalFilters(tableType: TableType) {
@@ -21,17 +17,9 @@ export function useFetchComputationGlobalFilters(tableType: TableType) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     useEffect(() => {
-        studyUuid &&
-            getComputationResultGlobalFilters(studyUuid, tableType).then(
-                (globalFiltersInfos: GlobalFilter[] | null) => {
-                    const globalFilters = Array.isArray(globalFiltersInfos) ? globalFiltersInfos : [];
-                    const criteriaFilters = globalFilters.filter(isCriteriaFilter).map(addGlobalFilterId);
-                    // Store full criteria filters in globalFilterOptions
-                    if (criteriaFilters.length > 0) dispatch(addToGlobalFilterOptions(criteriaFilters));
-                    // Store only IDs in globalFilters
-                    dispatch(addToSelectedGlobalFilters(tableType, tableType, globalFilters.map(getGlobalFilterId)));
-                }
-            );
+        if (studyUuid) {
+            updateComputationGlobalFilters(dispatch, studyUuid, tableType);
+        }
     }, [dispatch, studyUuid, tableType]);
 }
 

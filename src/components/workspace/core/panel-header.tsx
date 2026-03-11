@@ -16,7 +16,7 @@ import type { UUID } from 'node:crypto';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
-import type { AppState } from '../../../redux/reducer';
+import type { AppState } from '../../../redux/reducer.type';
 import { SldAssociationButton } from './sld-association-button';
 import { setDirtyComputationParameters } from 'redux/actions';
 import { SelectOptionsDialog } from 'utils/dialogs';
