@@ -11,8 +11,8 @@ import {
     BUS_BAR_SECTION_ID2,
     COUPLING_OMNIBUS,
     EQUIPMENT_ID,
-    SECTION_COUNT, SWITCH_KINDS,
-    SWITCHES_BETWEEN_SECTIONS,
+    SECTION_COUNT,
+    SWITCH_KINDS,
 } from 'components/utils/field-constants';
 import { CouplingOmnibusCreation } from './coupling-omnibus-creation';
 import { useEffect, useState } from 'react';
