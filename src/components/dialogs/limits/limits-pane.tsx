@@ -64,6 +64,16 @@ export function LimitsPane({
         name: operationalLimitsGroupsFormName,
     });
 
+    const watchedOperationalLimitsGroups = useWatch({ name: operationalLimitsGroupsFormName });
+
+    // Merge
+    const controlledOperationalLimitsGroups = operationalLimitsGroups.map((operationalLimitsGroup, index) => {
+        return {
+            ...operationalLimitsGroup,
+            ...watchedOperationalLimitsGroups[index],
+        };
+    });
+
     const isAModification: boolean = useMemo(() => !!equipmentToModify, [equipmentToModify]);
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
@@ -174,7 +184,7 @@ export function LimitsPane({
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
                         parentFormName={id}
-                        operationalLimitsGroups={operationalLimitsGroups}
+                        operationalLimitsGroups={controlledOperationalLimitsGroups}
                         appendToLimitsGroups={appendToLimitsGroups}
                         prependToLimitsGroups={prependToLimitsGroups}
                         removeLimitsGroups={removeLimitsGroups}

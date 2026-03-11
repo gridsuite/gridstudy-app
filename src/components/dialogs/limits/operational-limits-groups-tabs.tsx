@@ -65,9 +65,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         const selectedLimitsGroups2: string = useWatch({
             name: `${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID2}`,
         });
-        const limitsGroups: OperationalLimitsGroupFormSchema[] = useWatch({
-            name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`,
-        });
 
         const handleOpenMenu = useCallback(
             (event: React.MouseEvent<HTMLElement>, index: number): void => {
@@ -112,13 +109,13 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             let name = 'DEFAULT';
 
             // Try to generate unique name
-            if (limitsGroups?.length > 0) {
-                const ids: string[] = limitsGroups.map((l) => l.name);
+            if (operationalLimitsGroups?.length > 0) {
+                const ids: string[] = operationalLimitsGroups.map((l) => l.name);
                 name = generateUniqueId('DEFAULT', ids);
             }
             prependEmptyOperationalLimitsGroup(name);
             setIndexSelectedLimitSet(0);
-        }, [limitsGroups, prependEmptyOperationalLimitsGroup, setIndexSelectedLimitSet]);
+        }, [operationalLimitsGroups, prependEmptyOperationalLimitsGroup, setIndexSelectedLimitSet]);
 
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 
@@ -138,7 +135,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     onChange={handleTabChange}
                     sx={limitsStyles.tabs}
                 >
-                    {limitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
+                    {operationalLimitsGroups.map((opLg: OperationalLimitsGroupFormSchema, index: number) => (
                         <Tab
                             onMouseEnter={() => setHoveredRowIndex(index)}
                             onContextMenu={(e) => handleOpenMenu(e, index)}
