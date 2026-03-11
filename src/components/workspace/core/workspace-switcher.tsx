@@ -60,9 +60,9 @@ import { getWorkspace, renameWorkspace, deletePanels, replaceWorkspace } from '.
 import { saveWorkspaceConfig, updateWorkspaceConfig } from '../../../services/explore';
 import type { UUID } from 'node:crypto';
 import { RootState } from 'redux/store';
-import { AppState } from 'redux/reducer';
 import { setDirtyComputationParameters } from 'redux/actions';
 import { SelectOptionsDialog } from 'utils/dialogs';
+import { AppState } from 'redux/reducer.type';
 
 enum WorkspaceAction {
     RENAME = 'rename',
