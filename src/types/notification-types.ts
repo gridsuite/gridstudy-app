@@ -325,10 +325,6 @@ interface ComputationResultEventDataHeaders extends CommonStudyEventDataHeaders 
     node: UUID;
     rootNetworkUuid: UUID;
 }
-interface ComputationStatusEventDataHeaders extends CommonStudyEventDataHeaders {
-    node: UUID;
-    rootNetworkUuid: UUID;
-}
 
 interface ComputationFailedEventDataHeaders extends CommonStudyEventDataHeaders {
     node: UUID;
