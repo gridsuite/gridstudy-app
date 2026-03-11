@@ -17,7 +17,7 @@ import {
     isOneBusShortCircuitFailedNotification,
     isOneBusShortCircuitResultNotification,
     parseEventData,
-    StudyUpdateEventData,
+    CommonStudyEventData,
 } from 'types/notification-types';
 
 const styles = {
@@ -109,10 +109,11 @@ export function useOneBusShortcircuitAnalysisLoader(diagramId: string): oneBusSh
             if (!studyUuid || !currentNode?.id || !rootNetworkUuid) {
                 return;
             }
-            const eventData = parseEventData<StudyUpdateEventData>(event);
+            const eventData = parseEventData<CommonStudyEventData>(event);
             if (
-                (eventData && isOneBusShortCircuitResultNotification(eventData)) ||
-                isOneBusShortCircuitFailedNotification(eventData)
+                eventData &&
+                (isOneBusShortCircuitResultNotification(eventData) ||
+                    isOneBusShortCircuitFailedNotification(eventData))
             ) {
                 if (eventData.headers.rootNetworkUuid !== rootNetworkUuid) {
                     return;
