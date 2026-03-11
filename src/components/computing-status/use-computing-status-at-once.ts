@@ -10,17 +10,15 @@ import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ComputingType, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
-import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 import { isParameterizedComputingType, toComputingStatusParameters } from './computing-status-utils';
-import { parseEventData, StudyUpdatedEventData } from '../../types/notification-types';
+import { NotificationType, parseEventData, StudyUpdatedEventData } from '../../types/notification-types';
 import {
     AllComputationStatusInfos,
     getComputingStatusParametersFetcher,
     getRunningStatusByComputingType,
 } from '../../services/study/study';
-import { getCompletions } from './use-all-computing-status';
 
 interface UseComputingStatusProps {
     (
@@ -32,7 +30,7 @@ interface UseComputingStatusProps {
             nodeUuid: UUID,
             currentRootNetworkUuid: UUID
         ) => Promise<AllComputationStatusInfos | null>,
-        optionalServiceAvailabilityStatus?: OptionalServicesStatus
+        getCompletions: (computingType: ComputingType) => NotificationType[]
     ): void;
 }
 
@@ -72,12 +70,14 @@ const shouldRequestBeCanceled = (
  * @param nodeUuid current node uuid
  * @param allComputingStatusFetcher method fetching all <computingType> state
  * @param currentRootNetworkUuid
+ * @param getCompletions
  */
 export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    allComputingStatusFetcher
+    allComputingStatusFetcher,
+    getCompletions,
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
@@ -197,6 +197,7 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
             canceledRequest = true;
         };
     }, [
+        getCompletions,
         dispatch,
         nodeUuid,
         currentRootNetworkUuid,

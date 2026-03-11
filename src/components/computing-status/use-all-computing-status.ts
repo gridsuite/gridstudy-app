@@ -308,5 +308,11 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         pccMinAvailability
     );
 
-    useAllComputingStatusAtOnce(studyUuid, currentNodeUuid, currentRootNetworkUuid, fetchAllComputationStatus);
+    useAllComputingStatusAtOnce(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        fetchAllComputationStatus,
+        getCompletions
+    );
 };
