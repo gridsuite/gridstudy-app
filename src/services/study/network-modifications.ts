@@ -13,8 +13,8 @@ import {
     EquipmentType,
     MODIFICATION_TYPES,
     ModificationType,
-    NetworkModificationMetadata,
     safeEncodeURIComponent,
+    NetworkModificationMetadata,
     toModificationOperation,
 } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
@@ -1694,6 +1694,13 @@ export function fetchNetworkModifications(
     urlSearchParams.append('onlyStashed', onlyStashed.toString());
     urlSearchParams.append('onlyMetadata', 'true');
     const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    console.debug(modificationsGetUrl);
+    return backendFetchJson(modificationsGetUrl);
+}
+
+export function fetchNetworkModificationsToExport(studyUuid: UUID | null, nodeUuid: string) {
+    console.info('Fetching network modifications to export for nodeUuid : ', nodeUuid);
+    const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '/export';
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }

@@ -10,7 +10,7 @@ import { Grid, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useCustomAggridComparatorFilter } from './hooks/use-custom-aggrid-comparator-filter';
 
-import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../../../types/custom-aggrid-types';
 
 export const CustomAggridComparatorFilter = ({ api, colId, filterParams }: CustomAggridFilterParams) => {
     const {

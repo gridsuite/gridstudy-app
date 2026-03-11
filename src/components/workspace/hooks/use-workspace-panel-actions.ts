@@ -8,29 +8,29 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { updatePanels, deletePanels as deletePanelsRedux } from '../../../redux/slices/workspace-slice';
+import { deletePanels as deletePanelsRedux, updatePanels } from '../../../redux/slices/workspace-slice';
 import {
-    selectFocusedPanelId,
     selectActiveWorkspaceId,
+    selectAssociatedPanels,
+    selectExistingSLD,
+    selectFocusedPanelId,
     selectPanel,
     selectPanelByType,
-    selectExistingSLD,
-    selectAssociatedPanels,
     selectPanels,
 } from '../../../redux/slices/workspace-selectors';
+import type { PanelState, PersistentNADFields, SpreadsheetPanel } from '../types/workspace.types';
 import { PanelType } from '../types/workspace.types';
-import type { PanelState, SpreadsheetPanel, PersistentNADFields } from '../types/workspace.types';
-import { store, type AppDispatch } from '../../../redux/store';
+import { type AppDispatch, store } from '../../../redux/store';
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
+    createNADPanel,
+    createPanelBase,
+    createSLDPanel,
     getDefaultAssociatedSldPositionAndSize,
     isNADPanel,
     isSLDVoltageLevelPanel,
     updateNavigationHistory,
-    createPanelBase,
-    createSLDPanel,
-    createNADPanel,
 } from './workspace-panel-utils';
 import { getPanelConfig } from '../constants/workspace.constants';
 import { panelBackendManager } from '../utils/panel-backend-manager';

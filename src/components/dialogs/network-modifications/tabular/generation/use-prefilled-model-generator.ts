@@ -7,10 +7,10 @@
 
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { LANG_FRENCH, useSnackMessage, snackWithFallback, Identifiable } from '@gridsuite/commons-ui';
-import { AppState } from 'redux/reducer';
+import { Identifiable, LANG_FRENCH, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { AppState } from 'redux/reducer.type';
 import { EQUIPMENT_ID } from 'components/utils/field-constants';
-import { isFieldTypeOk, TabularField, PredefinedEquipmentProperties } from '../tabular-common';
+import { isFieldTypeOk, PredefinedEquipmentProperties, TabularField } from '../tabular-common';
 import { getNetworkElementsInfosByGlobalFilter } from 'services/study/filter';
 import { fetchNetworkElementsInfos } from 'services/study/network';
 import type { UUID } from 'node:crypto';

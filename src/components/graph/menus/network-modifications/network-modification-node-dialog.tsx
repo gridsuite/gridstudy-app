@@ -17,11 +17,11 @@ import { Grid } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { isNodeExists } from 'services/study';
-import { NAME, DESCRIPTION } from 'components/utils/field-constants';
+import { DESCRIPTION, NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { updateTreeNode } from 'services/study/tree-subtree';
 

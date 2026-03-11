@@ -34,6 +34,7 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { transformIfFrenchNumber } from '../../tabular/tabular-common.js';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { RuleType, TapChangerMapInfos, TapChangerStep } from '../two-windings-transformer.types';
+import { toTapChangerStepList } from '../two-windings-transformer-utils';
 
 export interface TapChangerStepsProps {
     tapChanger: string;
@@ -141,7 +142,7 @@ const TapChangerSteps = ({
         if (editData?.[STEPS] && isNodeBuilt(currentNode)) {
             return true;
         } else {
-            return !compareStepsWithPreviousValues(tapStepsWatcher, previousValues?.[STEPS]);
+            return !compareStepsWithPreviousValues(tapStepsWatcher, toTapChangerStepList(previousValues?.[STEPS]));
         }
     }, [currentNode, editData, previousValues, tapStepsWatcher]);
 
@@ -331,7 +332,7 @@ const TapChangerSteps = ({
                 uploadButtonMessageId={importRuleMessageId}
                 handleResetButton={handleResetButton}
                 resetButtonMessageId={resetButtonMessageId}
-                previousValues={previousValues?.[STEPS]}
+                previousValues={toTapChangerStepList(previousValues?.[STEPS])}
                 getPreviousValue={getTapPreviousValue}
                 isValueModified={isTapModified}
                 withResetButton={isModification && areStepsModified}
