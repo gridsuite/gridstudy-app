@@ -13,7 +13,7 @@ import {
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
 } from '../../utils/field-constants';
-import { useFieldArray, useWatch } from 'react-hook-form';
+import { UseFieldArrayAppend, useWatch } from 'react-hook-form';
 import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { OperationalLimitsGroupTabLabel } from './operational-limits-group-tab-label';
 import { OperationalLimitsGroupFormSchema } from './operational-limits-groups-types';
@@ -23,21 +23,32 @@ import { limitsStyles } from './operational-limits-groups-styles';
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
-    limitsGroups: OperationalLimitsGroupFormSchema[];
+    operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     currentLimitsToModify: CurrentLimitsData[];
     editable: boolean;
+    appendToLimitsGroups: UseFieldArrayAppend<
+        {
+            [p: string]: OperationalLimitsGroupFormSchema[];
+        },
+        string
+    >;
+    prependToLimitsGroups: (operationalLimitsGroupFormSchema: OperationalLimitsGroupFormSchema) => void;
+    removeLimitsGroups: () => void;
 }
 
 export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGroupsTabsProps>(
     (
         {
             parentFormName,
-            limitsGroups,
+            operationalLimitsGroups,
             setIndexSelectedLimitSet,
             indexSelectedLimitSet,
             editable,
+            appendToLimitsGroups,
+            prependToLimitsGroups,
+            removeLimitsGroups,
             currentLimitsToModify,
         },
         ref
@@ -48,22 +59,14 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             y: null,
             tabIndex: null,
         });
-        const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
-        const {
-            fields: operationalLimitsGroups,
-            append: appendToLimitsGroups,
-            prepend: prependToLimitsGroups,
-            remove: removeLimitsGroups,
-        } = useFieldArray<{
-            [key: string]: OperationalLimitsGroupFormSchema[];
-        }>({
-            name: operationalLimitsGroupsFormName,
-        });
         const selectedLimitsGroups1: string = useWatch({
             name: `${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID1}`,
         });
         const selectedLimitsGroups2: string = useWatch({
             name: `${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID2}`,
+        });
+        const limitsGroups: OperationalLimitsGroupFormSchema[] = useWatch({
+            name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`,
         });
 
         const handleOpenMenu = useCallback(
@@ -93,10 +96,10 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
 
         useEffect(() => {
             // as long as there are limit sets, one should be selected
-            if (indexSelectedLimitSet === null && limitsGroups.length > 0) {
+            if (indexSelectedLimitSet === null && operationalLimitsGroups.length > 0) {
                 setIndexSelectedLimitSet(0);
             }
-        }, [indexSelectedLimitSet, setIndexSelectedLimitSet, limitsGroups]);
+        }, [indexSelectedLimitSet, setIndexSelectedLimitSet, operationalLimitsGroups]);
 
         const prependEmptyOperationalLimitsGroup = useCallback(
             (name: string) => {
@@ -109,13 +112,13 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             let name = 'DEFAULT';
 
             // Try to generate unique name
-            if (operationalLimitsGroups?.length > 0) {
-                const ids: string[] = operationalLimitsGroups.map((l) => l.name);
+            if (limitsGroups?.length > 0) {
+                const ids: string[] = limitsGroups.map((l) => l.name);
                 name = generateUniqueId('DEFAULT', ids);
             }
             prependEmptyOperationalLimitsGroup(name);
             setIndexSelectedLimitSet(0);
-        }, [operationalLimitsGroups, prependEmptyOperationalLimitsGroup, setIndexSelectedLimitSet]);
+        }, [limitsGroups, prependEmptyOperationalLimitsGroup, setIndexSelectedLimitSet]);
 
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 

@@ -16,7 +16,7 @@ import {
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.js';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { CurrentLimits } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
@@ -48,11 +48,20 @@ export function LimitsPane({
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups = useWatch({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
-    });
     const olgEditable: boolean = useWatch({
         name: `${id}.${ENABLE_OLG_MODIFICATION}`,
+    });
+
+    const operationalLimitsGroupsFormName: string = `${id}.${OPERATIONAL_LIMITS_GROUPS}`;
+    const {
+        fields: operationalLimitsGroups,
+        append: appendToLimitsGroups,
+        prepend: prependToLimitsGroups,
+        remove: removeLimitsGroups,
+    } = useFieldArray<{
+        [key: string]: OperationalLimitsGroupFormSchema[];
+    }>({
+        name: operationalLimitsGroupsFormName,
     });
 
     const isAModification: boolean = useMemo(() => !!equipmentToModify, [equipmentToModify]);
@@ -165,7 +174,10 @@ export function LimitsPane({
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
                         parentFormName={id}
-                        limitsGroups={limitsGroups}
+                        operationalLimitsGroups={operationalLimitsGroups}
+                        appendToLimitsGroups={appendToLimitsGroups}
+                        prependToLimitsGroups={prependToLimitsGroups}
+                        removeLimitsGroups={removeLimitsGroups}
                         indexSelectedLimitSet={indexSelectedLimitSet}
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
                         editable={olgEditable}
@@ -174,7 +186,7 @@ export function LimitsPane({
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
                     {indexSelectedLimitSet !== null &&
-                        limitsGroups.map(
+                        operationalLimitsGroups.map(
                             (operationalLimitsGroup: OperationalLimitsGroupFormSchema, index: number) =>
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
