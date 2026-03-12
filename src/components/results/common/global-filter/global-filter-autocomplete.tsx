@@ -103,8 +103,6 @@ function RenderOption({
     const dispatch = useDispatch<AppDispatch>();
     const { translate } = useLocalizedCountries();
 
-    // recent selected options are not displayed in the recent tab :
-    const hideOption = state.selected && option.recent;
     const label = getOptionLabel(option, translate, intl) ?? '';
 
     let content: React.ReactNode;
@@ -143,12 +141,10 @@ function RenderOption({
     }
 
     return (
-        !hideOption && (
-            <ListItemButton selected={state.selected} component="li" {...otherProps}>
-                <Checkbox size="small" checked={state.selected} />
-                {content}
-            </ListItemButton>
-        )
+        <ListItemButton selected={state.selected} component="li" {...otherProps}>
+            <Checkbox size="small" checked={state.selected} />
+            {content}
+        </ListItemButton>
     );
 }
 
@@ -229,38 +225,50 @@ function GlobalFilterAutocomplete() {
         return '';
     }, [genericFiltersStrictMode, selectedGlobalFilters, filterableEquipmentTypes, intl]);
 
-    // Filters the 3options 'on the fly' based on the user's search input value and the category he selected (country, voltage level, recent...)
+    // Filter / sort the options 'on the fly' based on the user's search input value and the category he selected (country, voltage level, recent...)
     const filterOptions = useCallback(
         (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
-            return (
-                options
-                    // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
-                    .filter((option: GlobalFilter) => {
-                        const labelToMatch: string =
-                            option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
-                        return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
-                    })
-                    .filter((option: GlobalFilter) => {
-                        // recent filters are a group in itself
-                        if (filterGroupSelected === RECENT_FILTER) {
-                            return option.recent === true;
-                        } else if (option.filterSubtype) {
-                            // if the filter has a subtype it should be filtered through it instead of filterType
-                            return option.filterSubtype === filterGroupSelected;
-                        } else if (
-                            filterGroupSelected === FilterType.GENERIC_FILTER &&
-                            filterableEquipmentTypes?.length === 1 &&
-                            filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION &&
-                            option.equipmentType === EQUIPMENT_TYPES.SUBSTATION
-                        ) {
-                            // when filtering substations, the substation filters are displayed in the GENERIC_FILTER category
-                            // (because there are no voltage level so the SUBSTATION_OR_VL category doesn't make sense)
-                            return true;
-                        } else {
-                            return option.filterType === filterGroupSelected;
-                        }
-                    })
-            );
+            const filteredOptions = options
+                // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
+                .filter((option: GlobalFilter) => {
+                    const labelToMatch: string =
+                        option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                    return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
+                })
+                .filter((option: GlobalFilter) => {
+                    // recent filters are a group in itself
+                    if (filterGroupSelected === RECENT_FILTER) {
+                        return !!option.unselectedDate;
+                    } else if (option.filterSubtype) {
+                        // if the filter has a subtype it should be filtered through it instead of filterType
+                        return option.filterSubtype === filterGroupSelected;
+                    } else if (
+                        filterGroupSelected === FilterType.GENERIC_FILTER &&
+                        filterableEquipmentTypes?.length === 1 &&
+                        filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION &&
+                        option.equipmentType === EQUIPMENT_TYPES.SUBSTATION
+                    ) {
+                        // when filtering substations, the substation filters are displayed in the GENERIC_FILTER category
+                        // (because there are no voltage level so the SUBSTATION_OR_VL category doesn't make sense)
+                        return true;
+                    } else {
+                        return option.filterType === filterGroupSelected;
+                    }
+                });
+
+            if (filterGroupSelected === RECENT_FILTER) {
+                // Sort recent options by date from most recent to oldest
+                filteredOptions.sort((a, b) => {
+                    if (a.unselectedDate && b.unselectedDate) {
+                        return b.unselectedDate - a.unselectedDate;
+                    }
+                    return 0;
+                });
+                // Only display the 10 most recent options
+                filteredOptions.splice(10);
+            }
+
+            return filteredOptions;
         },
         [filterGroupSelected, translate, filterableEquipmentTypes]
     );
