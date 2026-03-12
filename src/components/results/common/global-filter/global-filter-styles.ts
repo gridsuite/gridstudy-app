@@ -14,7 +14,7 @@ import { GlobalFilter } from './global-filter-types';
 export const getResultsGlobalFiltersChipStyle = (element: GlobalFilter): SxProps<Theme> => {
     return mergeSx(
         resultsGlobalFilterStyles.chip,
-        element.removed
+        element.deleted
             ? resultsGlobalFilterStyles.chipNotFound
             : FILTER_TYPE_STYLE_MAP[element.filterType as FilterType]
     );

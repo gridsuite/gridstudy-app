@@ -83,7 +83,7 @@ export default function GlobalFilterProvider({
                 const error = responseError as Error & { status: number };
                 if (error.status === HttpStatusCode.NOT_FOUND) {
                     // Not found => updated in global filter options for display
-                    dispatch(addToGlobalFilterOptions([{ ...genericFilter, removed: true }], tableType, tableUuid));
+                    dispatch(addToGlobalFilterOptions([{ ...genericFilter, deleted: true }], tableType, tableUuid));
                 } else {
                     snackWithFallback(snackError, error, {
                         headerId: 'ComputationFilterResultsError',
@@ -98,7 +98,7 @@ export default function GlobalFilterProvider({
     useEffect(() => {
         const checkSelectedFilters = async () => {
             const genericFilters: GlobalFilter[] = selectedGlobalFilters.filter(
-                (globalFilter) => isCriteriaFilter(globalFilter) && !globalFilter.removed
+                (globalFilter) => isCriteriaFilter(globalFilter) && !globalFilter.deleted
             );
             await Promise.all(genericFilters.map(updateGenericFilter));
         };

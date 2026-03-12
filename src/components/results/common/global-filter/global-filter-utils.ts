@@ -50,7 +50,7 @@ export const getOptionLabel = (
         case FilterType.GENERIC_FILTER:
         case FilterType.SUBSTATION_OR_VL:
         case FilterType.SUBSTATION_PROPERTY:
-            if (option.removed) {
+            if (option.deleted) {
                 return intl.formatMessage({ id: 'elementNotFound' });
             }
             return option.label;
