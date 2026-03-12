@@ -82,11 +82,7 @@ export default function GlobalFilterProvider({
                 if (error.status === HttpStatusCode.NOT_FOUND) {
                     // Not found => updated in global filter options for display
                     dispatch(
-                        addToGlobalFilterOptions(
-                            [{ id: genericFilter.id, label: 'elementNotFound', filterType: genericFilter.filterType }],
-                            tableType,
-                            tableUuid
-                        )
+                        addToGlobalFilterOptions([{ ...genericFilter, label: 'elementNotFound' }], tableType, tableUuid)
                     );
                 } else {
                     snackWithFallback(snackError, error, {
@@ -101,7 +97,12 @@ export default function GlobalFilterProvider({
     // Check the selected global filters and remove them if they do not exist anymore.
     useEffect(() => {
         const checkSelectedFilters = async () => {
-            const genericFilters = selectedGlobalFilters.filter(isCriteriaFilter);
+            const genericFilters: GlobalFilter[] = selectedGlobalFilters.filter(
+                (globalFilter) =>
+                    isCriteriaFilter(globalFilter) &&
+                    globalFilter.uuid !== undefined &&
+                    globalFilter.label !== 'elementNotFound'
+            );
             await Promise.all(genericFilters.map(updateGenericFilter));
         };
 
