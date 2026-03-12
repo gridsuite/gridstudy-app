@@ -38,7 +38,13 @@ const styles = {
     },
 };
 
-export const VoltageLevelPopoverBusInfos = ({ buses }: { buses?: VoltageLevelTooltipBusInfos[] }) => {
+export const VoltageLevelPopoverBusInfos = ({
+    buses,
+    fallbackVoltage,
+}: {
+    buses?: VoltageLevelTooltipBusInfos[];
+    fallbackVoltage?: number;
+}) => {
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus.LOAD_FLOW);
     const shortcircuitStatus = useSelector((state: AppState) => state.computingStatus.SHORT_CIRCUIT);
     const theme = useSelector((state: AppState) => state[PARAM_THEME]);
@@ -47,13 +53,13 @@ export const VoltageLevelPopoverBusInfos = ({ buses }: { buses?: VoltageLevelToo
     const { getBaseVoltageInterval } = useBaseVoltages();
 
     const voltageLevelThemeColors = useMemo(() => {
-        const firstDefinedBusVoltage = buses?.find(({ u }) => u != null)?.u;
-        if (firstDefinedBusVoltage != null) {
-            const voltageLevelInterval = getBaseVoltageInterval(firstDefinedBusVoltage);
+        const voltage = buses?.find(({ u }) => u != null)?.u ?? fallbackVoltage;
+        if (voltage != null) {
+            const voltageLevelInterval = getBaseVoltageInterval(voltage);
             return voltageLevelInterval && getBaseVoltageSldAndNadThemeColors(voltageLevelInterval, theme);
         }
         return undefined;
-    }, [buses, getBaseVoltageInterval, theme]);
+    }, [buses, fallbackVoltage, getBaseVoltageInterval, theme]);
 
     const getBusColor = (busIndex: number) => {
         const colorKey = busIndex === 0 ? 'default' : `bus-${busIndex}`;
