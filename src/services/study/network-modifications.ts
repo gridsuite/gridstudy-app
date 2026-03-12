@@ -11,6 +11,7 @@ import {
     backendFetchText,
     EquipmentInfos,
     EquipmentType,
+    LoadCreationDto,
     MODIFICATION_TYPES,
     ModificationType,
     safeEncodeURIComponent,
@@ -41,7 +42,6 @@ import {
     LineCreationInfos,
     LineModificationInfos,
     LinesAttachToSplitLinesInfo,
-    LoadCreationInfo,
     LoadModificationInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
@@ -396,27 +396,10 @@ export function modifyBattery({
     });
 }
 
-export function createLoad({
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    loadType,
-    p0,
-    q0,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    isUpdate,
-    modificationUuid,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties,
-}: LoadCreationInfo) {
+export function createLoad(studyUuid: UUID, nodeUuid: UUID, modificationUuid: UUID | undefined, dto: LoadCreationDto) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
+    if (modificationUuid) {
         createLoadUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating load creation');
     } else {
@@ -424,26 +407,12 @@ export function createLoad({
     }
 
     return backendFetchText(createLoadUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LOAD_CREATION.type,
-            equipmentId: id,
-            equipmentName: name,
-            loadType: loadType,
-            p0: p0,
-            q0: q0,
-            voltageLevelId: voltageLevelId,
-            busOrBusbarSectionId: busOrBusbarSectionId,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            connectionPosition: connectionPosition,
-            terminalConnected: terminalConnected,
-            properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 

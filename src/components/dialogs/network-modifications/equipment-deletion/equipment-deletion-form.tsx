@@ -14,6 +14,8 @@ import {
     EquipmentType,
     filledTextField,
     snackWithFallback,
+    getObjectId,
+    areIdsEqual,
 } from '@gridsuite/commons-ui';
 import {
     DELETION_SPECIFIC_DATA,
@@ -21,7 +23,7 @@ import {
     HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE,
     TYPE,
 } from 'components/utils/field-constants';
-import { areIdsEqual, getObjectId, richTypeEquals } from 'components/utils/utils';
+import { richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import HvdcLccDeletionSpecificForm from './hvdc-lcc-deletion/hvdc-lcc-deletion-specific-form';
 

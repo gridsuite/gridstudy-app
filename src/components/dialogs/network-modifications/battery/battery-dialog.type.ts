@@ -30,14 +30,13 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
-import { ConnectablePositionFormInfos } from '../../connectivity/connectivity.type';
 import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '../../reactive-limits/reactive-limits.type';
 import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
 import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
-import { FieldConstants, Property } from '@gridsuite/commons-ui';
+import { ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type BatteryDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;

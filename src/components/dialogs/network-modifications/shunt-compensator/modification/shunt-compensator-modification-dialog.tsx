@@ -20,6 +20,9 @@ import {
     sanitizeString,
     FieldConstants,
     toModificationOperation,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityFormData,
+    getConnectivityWithPositionSchema,
 } from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -50,22 +53,17 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { ShuntCompensatorModificationInfos } from '../../../../../services/network-modification-types';
 import { ShuntCompensatorModificationDialogSchemaForm } from '../shunt-compensator-dialog.type';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
-import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
