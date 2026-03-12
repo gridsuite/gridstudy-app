@@ -64,7 +64,8 @@ export default function GlobalFilterProvider({
     const updateGenericFilter = useCallback(
         async (genericFilter: GlobalFilter) => {
             try {
-                const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilter.uuid as UUID);
+                const genericFilterUuid = genericFilter.uuid as UUID;
+                const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
                 const parentDirectoriesNames = response.map((parent) => parent.elementName);
                 const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
                 const path = computeFullPath(parentDirectoriesNames);
