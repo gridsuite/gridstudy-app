@@ -13,6 +13,7 @@ import { useIsAnyNodeBuilding } from '../../../../../utils/is-any-node-building-
 import { createEditDescriptionStyle } from '../styles';
 import { setModificationMetadata } from '../../../../../../services/study/network-modifications';
 import { AppState } from '../../../../../../redux/reducer.type';
+import { FormattedMessage } from 'react-intl';
 
 const DescriptionCell: FunctionComponent<{ data: NetworkModificationMetadata }> = (props) => {
     const { data } = props;
@@ -59,7 +60,7 @@ const DescriptionCell: FunctionComponent<{ data: NetworkModificationMetadata }> 
                     updateElement={updateModification}
                 />
             )}
-            <Tooltip title={description} arrow placement="right">
+            <Tooltip title={description ?? <FormattedMessage id={'addDescription'} />}>
                 <IconButton
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
