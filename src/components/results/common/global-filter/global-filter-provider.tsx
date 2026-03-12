@@ -8,7 +8,6 @@
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
 import { FilterType, isCriteriaFilter } from '../utils';
-import type { UUID } from 'node:crypto';
 import {
     ElementAttributes,
     ElementType,
@@ -64,8 +63,10 @@ export default function GlobalFilterProvider({
     const updateGenericFilter = useCallback(
         async (genericFilter: GlobalFilter) => {
             try {
-                const genericFilterUuid = genericFilter.uuid as UUID;
-                const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
+                if (!genericFilter.uuid) {
+                    return;
+                }
+                const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilter.uuid);
                 const parentDirectoriesNames = response.map((parent) => parent.elementName);
                 const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
                 const path = computeFullPath(parentDirectoriesNames);
@@ -82,9 +83,7 @@ export default function GlobalFilterProvider({
                 const error = responseError as Error & { status: number };
                 if (error.status === HttpStatusCode.NOT_FOUND) {
                     // Not found => updated in global filter options for display
-                    dispatch(
-                        addToGlobalFilterOptions([{ ...genericFilter, label: 'elementNotFound' }], tableType, tableUuid)
-                    );
+                    dispatch(addToGlobalFilterOptions([{ ...genericFilter, removed: true }], tableType, tableUuid));
                 } else {
                     snackWithFallback(snackError, error, {
                         headerId: 'ComputationFilterResultsError',
@@ -99,10 +98,7 @@ export default function GlobalFilterProvider({
     useEffect(() => {
         const checkSelectedFilters = async () => {
             const genericFilters: GlobalFilter[] = selectedGlobalFilters.filter(
-                (globalFilter) =>
-                    isCriteriaFilter(globalFilter) &&
-                    globalFilter.uuid !== undefined &&
-                    globalFilter.label !== 'elementNotFound'
+                (globalFilter) => isCriteriaFilter(globalFilter) && !globalFilter.removed
             );
             await Promise.all(genericFilters.map(updateGenericFilter));
         };

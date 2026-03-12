@@ -42,9 +42,6 @@ export const getOptionLabel = (
     translate: (arg: string) => string,
     intl: IntlShape
 ): string => {
-    if (option.label === 'elementNotFound') {
-        return intl.formatMessage({ id: 'elementNotFound' });
-    }
     switch (option.filterType) {
         case FilterType.COUNTRY:
             return translate(option.label);
@@ -53,6 +50,9 @@ export const getOptionLabel = (
         case FilterType.GENERIC_FILTER:
         case FilterType.SUBSTATION_OR_VL:
         case FilterType.SUBSTATION_PROPERTY:
+            if (option.removed) {
+                return intl.formatMessage({ id: 'elementNotFound' });
+            }
             return option.label;
     }
     return '';
