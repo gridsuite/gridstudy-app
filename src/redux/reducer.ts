@@ -1655,7 +1655,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
         filterIds.forEach((filterId) => {
             const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (option) {
+            if (option && !option.deleted) {
                 option.unselectedDate = Date.now();
             }
         });
@@ -1666,7 +1666,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const previousFilterIds = state.tableFilters.globalFilters[tableId] ?? [];
         previousFilterIds.forEach((filterId) => {
             const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (option) {
+            if (option && !option.deleted) {
                 option.unselectedDate = Date.now();
             }
         });
