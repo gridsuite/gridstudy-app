@@ -141,9 +141,14 @@ export type ComputationResultColumnFilter = {
     columns: FilterConfig[];
 };
 
+export type GlobalFiltersState = {
+    selected: string[];
+    recents: Record<string, number>; // filterId → unselectedDate timestamp
+};
+
 export type TableFiltersState = {
     columnsFilters: Record<string, Record<string, ComputationResultColumnFilter>>;
-    globalFilters: Record<string, string[]>; // filter IDs
+    globalFilters: Record<string, GlobalFiltersState>;
 };
 
 export type LogsFilterState = Record<string, FilterConfig[]>;

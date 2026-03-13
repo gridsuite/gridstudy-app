@@ -186,6 +186,7 @@ function GlobalFilterAutocomplete() {
         tableUuid,
         globalFilterOptions,
         selectedGlobalFilters,
+        recentGlobalFilters,
         filterCategories,
         filterableEquipmentTypes,
     } = useContext(GlobalFilterContext);
@@ -238,7 +239,7 @@ function GlobalFilterAutocomplete() {
                 .filter((option: GlobalFilter) => {
                     // recent filters are a group in itself
                     if (filterGroupSelected === RECENT_FILTER) {
-                        return !!option.unselectedDate;
+                        return option.id in (recentGlobalFilters ?? {});
                     } else if (option.filterSubtype) {
                         // if the filter has a subtype it should be filtered through it instead of filterType
                         return option.filterSubtype === filterGroupSelected;
@@ -258,19 +259,14 @@ function GlobalFilterAutocomplete() {
 
             if (filterGroupSelected === RECENT_FILTER) {
                 // Sort recent options by date from most recent to oldest
-                filteredOptions.sort((a, b) => {
-                    if (a.unselectedDate && b.unselectedDate) {
-                        return b.unselectedDate - a.unselectedDate;
-                    }
-                    return 0;
-                });
+                filteredOptions.sort((a, b) => (recentGlobalFilters?.[b.id] ?? 0) - (recentGlobalFilters?.[a.id] ?? 0));
                 // Only display the 10 most recent options
                 filteredOptions.splice(10);
             }
 
             return filteredOptions;
         },
-        [filterGroupSelected, translate, filterableEquipmentTypes]
+        [filterGroupSelected, translate, filterableEquipmentTypes, recentGlobalFilters]
     );
 
     const options = useMemo(

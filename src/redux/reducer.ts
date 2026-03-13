@@ -805,8 +805,12 @@ export const reducer = createReducer(initialState, (builder) => {
             }, {} as TableSortConfig);
         const spreadsheetGlobalFilters = action.globalFilters ?? {};
         Object.entries(spreadsheetGlobalFilters).forEach(([tabUuid, filters]) => {
-            // Store only IDs in globalFilters
-            state.tableFilters.globalFilters[tabUuid] = filters.map(getGlobalFilterId);
+            const selectedFilters = filters.filter((f) => !f.unselectedDate);
+            const recentFilters = filters.filter((f) => !!f.unselectedDate);
+            state.tableFilters.globalFilters[tabUuid] = {
+                selected: selectedFilters.map(getGlobalFilterId),
+                recents: Object.fromEntries(recentFilters.map((f) => [getGlobalFilterId(f), f.unselectedDate!])),
+            };
             // Store full objects in globalFilterOptions only if not already present
             filters.filter(isCriteriaFilter).forEach((filter) => {
                 const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
@@ -1409,11 +1413,11 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(REMOVE_FROM_GLOBAL_FILTER_OPTIONS, (state, action: RemoveFromGlobalFilterOptionsAction) => {
         state.globalFilterOptions = state.globalFilterOptions.filter((opt) => opt.id !== action.id);
-        // We also need to remove it from the selected filter IDs.
+        // We also need to remove it from the selected and recent filters for each table.
         for (const key of Object.keys(state.tableFilters.globalFilters)) {
-            state.tableFilters.globalFilters[key] = state.tableFilters.globalFilters[key].filter(
-                (id) => id !== action.id
-            );
+            const tableState = state.tableFilters.globalFilters[key];
+            tableState.selected = tableState.selected.filter((id) => id !== action.id);
+            delete tableState.recents[action.id];
         }
     });
 
@@ -1585,15 +1589,39 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(INIT_OR_UPDATE_GLOBAL_FILTER, (state, action: InitOrUpdateGlobalFilterAction) => {
-        // Replace selected IDs in globalFilters only if different to avoid unnecessary re-render and re-fetch
-        const currentIds = state.tableFilters.globalFilters[action.tabUuid];
-        const newIds = action.filters.map(getGlobalFilterId);
-        const areEqual =
-            currentIds?.length === newIds.length &&
-            currentIds.every((id) => newIds.includes(id)) &&
-            newIds.every((id) => currentIds.includes(id));
-        if (!areEqual) {
-            state.tableFilters.globalFilters[action.tabUuid] = newIds;
+        // Replace global filters state only if different to avoid unnecessary re-render and re-fetch
+        const currentState = state.tableFilters.globalFilters[action.tabUuid];
+
+        // Selected filters
+        const selectedFilters = action.filters.filter((f) => !f.unselectedDate);
+        const newSelectedIds = selectedFilters.map(getGlobalFilterId);
+        const currentSelectedIds = currentState?.selected;
+        const areSelectedEqual =
+            newSelectedIds.length === currentSelectedIds?.length &&
+            newSelectedIds.every((id) => currentSelectedIds.includes(id)) &&
+            currentSelectedIds.every((id) => newSelectedIds.includes(id));
+
+        // Recent filters
+        const recentFilters = action.filters.filter((f) => !!f.unselectedDate);
+        const newRecents = Object.fromEntries(recentFilters.map((f) => [getGlobalFilterId(f), f.unselectedDate!]));
+        const currentRecents = currentState?.recents ?? {};
+        const newRecentKeys = Object.keys(newRecents);
+        const currentRecentKeys = Object.keys(currentRecents);
+        const areRecentsEqual =
+            newRecentKeys.length === currentRecentKeys.length &&
+            newRecentKeys.every((id) => currentRecentKeys.includes(id)) &&
+            currentRecentKeys.every((id) => newRecentKeys.includes(id)) &&
+            newRecentKeys.every((id) => newRecents[id] === currentRecents[id]);
+
+        // Update only if different
+        if (!areSelectedEqual || !areRecentsEqual) {
+            state.tableFilters.globalFilters[action.tabUuid] ??= { selected: [], recents: {} };
+            if (!areSelectedEqual) {
+                state.tableFilters.globalFilters[action.tabUuid].selected = newSelectedIds;
+            }
+            if (!areRecentsEqual) {
+                state.tableFilters.globalFilters[action.tabUuid].recents = newRecents;
+            }
         }
 
         // Store full objects in globalFilterOptions only if not already present (same as above and also preserve the recent status)
@@ -1631,46 +1659,39 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ADD_GLOBAL_FILTERS, (state, action: AddGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= [];
+        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: {} };
+        const tableState = state.tableFilters.globalFilters[tableId];
 
         filterIds.forEach((id) => {
-            if (!state.tableFilters.globalFilters[tableId].includes(id)) {
-                state.tableFilters.globalFilters[tableId].push(id);
+            if (!tableState.selected.includes(id)) {
+                tableState.selected.push(id);
             }
-            const option = state.globalFilterOptions.find((opt) => opt.id === id);
-            if (option?.unselectedDate) {
-                delete option.unselectedDate;
-            }
+            delete tableState.recents[id];
         });
     });
 
     builder.addCase(REMOVE_GLOBAL_FILTERS, (state, action: RemoveGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= [];
+        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: {} };
+        const tableState = state.tableFilters.globalFilters[tableId];
 
-        state.tableFilters.globalFilters[tableId] = state.tableFilters.globalFilters[tableId].filter(
-            (id) => !filterIds.includes(id)
-        );
+        tableState.selected = tableState.selected.filter((id) => !filterIds.includes(id));
 
         filterIds.forEach((filterId) => {
-            const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (option) {
-                option.unselectedDate = Date.now();
-            }
+            tableState.recents[filterId] = Date.now();
         });
     });
 
     builder.addCase(CLEAR_GLOBAL_FILTERS, (state, action: ClearGlobalFiltersAction) => {
         const { tableId } = action;
-        const previousFilterIds = state.tableFilters.globalFilters[tableId] ?? [];
-        previousFilterIds.forEach((filterId) => {
-            const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (option) {
-                option.unselectedDate = Date.now();
-            }
+        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: {} };
+        const tableState = state.tableFilters.globalFilters[tableId];
+        const now = Date.now();
+        tableState.selected.forEach((filterId) => {
+            tableState.recents[filterId] = now;
         });
-        state.tableFilters.globalFilters[tableId] = [];
+        tableState.selected = [];
     });
 });
 

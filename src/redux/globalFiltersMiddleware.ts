@@ -40,11 +40,17 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             }
 
             const index = tableId ?? tableType;
-            const globalFiltersIds = state.tableFilters.globalFilters[index] ?? [];
-            const globalFilters =
-                globalFiltersIds.length === 0
-                    ? []
-                    : state.globalFilterOptions.filter((filter) => globalFiltersIds.includes(filter.id));
+            const tableFiltersState = state.tableFilters.globalFilters[index];
+            const selectedFiltersIds = tableFiltersState?.selected ?? [];
+            const recentFilters = tableFiltersState?.recents ?? {};
+            const selectedGlobalFilters = state.globalFilterOptions
+                .filter((filter) => selectedFiltersIds.includes(filter.id));
+
+            const recentGlobalFilters = state.globalFilterOptions
+                .filter((filter) => filter.id in recentFilters)
+                .map((filter) => ({ ...filter, unselectedDate: recentFilters[filter.id] }));
+
+            const globalFilters = [...selectedGlobalFilters, ...recentGlobalFilters];
 
             // Debounce per table to avoid excessive requests
             if (debouncedSyncTimers[index]) {
