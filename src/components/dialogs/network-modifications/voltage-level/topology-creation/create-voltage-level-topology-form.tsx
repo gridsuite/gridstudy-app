@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { filledTextField, IntegerInput } from '@gridsuite/commons-ui';
+import { filledTextField, IntegerInput, SwitchesBetweenSections } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
 import GridItem from '../../../commons/grid-item';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
@@ -17,7 +17,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 
 export interface CreateVoltageLevelTopologyFormProps {
     voltageLevelId: string;
