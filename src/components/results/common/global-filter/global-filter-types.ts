@@ -32,7 +32,7 @@ export interface GlobalFilter {
     filterType: string;
     filterSubtype?: string; // when filterType needs more precise subcategories
     filterTypeFromMetadata?: string; // only useful for generic filters
-    recent?: boolean;
+    unselectedDate?: number;
     uuid?: UUID; // only useful for generic filters
     equipmentType?: string; // only useful for generic filters
     path?: string; // only useful for generic filters
