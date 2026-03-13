@@ -19,7 +19,10 @@ import {
     Parameter,
     safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
-import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    CompositeModificationAction,
+    NetworkModificationCopyInfos,
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
@@ -219,6 +222,40 @@ export function fetchContingencyCount(
     return backendFetchJson(url);
 }
 
+export function insertCompositeModifications(
+    studyUuid: UUID,
+    targetNodeId: UUID,
+    modificationsToInsertUuids: UUID[],
+    compositeModificationAction: CompositeModificationAction
+) {
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        safeEncodeURIComponent(studyUuid) +
+        '/nodes/' +
+        safeEncodeURIComponent(targetNodeId) +
+        '/composite-modifications?' +
+        new URLSearchParams({
+            action: compositeModificationAction.toString(),
+        });
+
+    const modifications = modificationsToInsertUuids.map((modificationUuid) => {
+        return {
+            first: modificationUuid,
+            second: '',
+        };
+    });
+
+    return backendFetch(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(modifications),
+    });
+}
+
 export function copyOrMoveModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
@@ -239,18 +276,13 @@ export function copyOrMoveModifications(
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
-    // TODO : conversion to a ModificationsToCopyInfos dto => this will be useful and improved when INSERT_COMPOSITE action will be made available from the front
-    const modifications = modificationToCutUuidList.map((modificationUuid) => {
-        return { uuid: modificationUuid };
-    });
-
     return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modifications),
+        body: JSON.stringify(modificationToCutUuidList),
     });
 }
 
