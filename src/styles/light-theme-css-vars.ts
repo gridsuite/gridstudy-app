@@ -21,4 +21,26 @@ export const lightThemeCssVars = {
     '.nad-textnode-highlight': {
         backgroundColor: '#f0f0f0cc', // same displayed color as #9c9c9c20 but with 0.8 opacity
     },
+    '.nad-arrow-out, .nad-arrow-in': {
+        fill: 'black',
+    },
+    '& .nad-reactive': {
+        fill: 'blue',
+    },
+    '& .nad-reactive.nad-arrow-out, & .nad-reactive.nad-arrow-in': {
+        fill: 'blue',
+    },
+
+    'text.nad-reactive': {
+        fill: 'blue',
+    },
+
+    '.nad-active, .nad-permanent-limit-percentage, .nad-bus-descr': {
+        fill: 'black',
+    },
+
+    '.nad-edge-infos path.nad-reactive, .nad-reactive path': {
+        fill: 'blue',
+        stroke: 'blue',
+    },
 };
