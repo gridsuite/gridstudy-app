@@ -14,10 +14,10 @@ import { type MuiStyles, NotificationsUrlKeys, useNotificationsListener } from '
 import { resetOneBusShortcircuitAnalysisDiagram, setOneBusShortcircuitAnalysisDiagram } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import {
+    CommonStudyEventData,
     isOneBusShortCircuitFailedNotification,
     isOneBusShortCircuitResultNotification,
     parseEventData,
-    StudyUpdateEventData,
 } from 'types/notification-types';
 
 const styles = {
@@ -109,10 +109,10 @@ export function useOneBusShortcircuitAnalysisLoader(diagramId: string): oneBusSh
             if (!studyUuid || !currentNode?.id || !rootNetworkUuid) {
                 return;
             }
-            const eventData = parseEventData<StudyUpdateEventData>(event);
+            const eventData = parseEventData<CommonStudyEventData>(event);
             if (
-                (eventData && isOneBusShortCircuitResultNotification(eventData)) ||
-                isOneBusShortCircuitFailedNotification(eventData)
+                eventData &&
+                (isOneBusShortCircuitResultNotification(eventData) || isOneBusShortCircuitFailedNotification(eventData))
             ) {
                 if (eventData.headers.rootNetworkUuid !== rootNetworkUuid) {
                     return;

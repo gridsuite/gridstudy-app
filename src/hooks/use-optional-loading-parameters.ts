@@ -7,9 +7,11 @@
 
 import { useCallback, useEffect } from 'react';
 import { fetchSpreadsheetParameters } from '../services/study/spreadsheet';
-import type { PartialDeep } from 'type-fest';
-import { SpreadsheetOptionalLoadingParameters } from '../components/spreadsheet-view/types/spreadsheet.type';
-import { isSpreadsheetParametersUpdatedNotification } from '../types/notification-types';
+import {
+    CommonStudyEventData,
+    isSpreadsheetParametersUpdatedNotification,
+    parseEventData,
+} from '../types/notification-types';
 import type { UUID } from 'node:crypto';
 import { useDispatch } from 'react-redux';
 import { updateSpreadsheetPartialData } from '../redux/actions';
@@ -28,8 +30,12 @@ export function useOptionalLoadingParameters(studyUuid: UUID) {
 
     const updateRemoteSpreadsheetParametersListenerCallback = useCallback(
         (event: MessageEvent) => {
-            const eventData: PartialDeep<SpreadsheetOptionalLoadingParameters> = JSON.parse(event.data);
-            if (isSpreadsheetParametersUpdatedNotification(eventData) && eventData.headers.studyUuid === studyUuid) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (
+                eventData &&
+                isSpreadsheetParametersUpdatedNotification(eventData) &&
+                eventData.headers.studyUuid === studyUuid
+            ) {
                 console.debug('Event: spreadsheet parameters updated', eventData);
                 updateRemoteSpreadsheetParameters();
             }
