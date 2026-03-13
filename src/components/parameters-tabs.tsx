@@ -49,8 +49,6 @@ import {
     VoltageInitParametersInLine,
     DynamicSecurityAnalysisInline,
     fetchDynamicSecurityAnalysisProviders,
-    fetchDynamicSecurityAnalysisParameters,
-    updateDynamicSecurityAnalysisParameters,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -65,6 +63,10 @@ import {
     fetchDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
 } from '../services/study/dynamic-margin-calculation';
+import {
+    fetchDynamicSecurityAnalysisParameters,
+    updateDynamicSecurityAnalysisParameters,
+} from '../services/study/dynamic-security-analysis';
 import { BUILD_STATUS } from './network/constants';
 
 enum TAB_VALUES {
