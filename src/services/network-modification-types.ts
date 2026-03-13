@@ -18,6 +18,10 @@ import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
+export interface WithModificationId {
+    uuid: UUID;
+}
+
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
     droop: number;

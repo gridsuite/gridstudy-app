@@ -9,8 +9,8 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    EquipmentDeletionDto,
     EquipmentInfos,
-    EquipmentType,
     MODIFICATION_TYPES,
     ModificationType,
     safeEncodeURIComponent,
@@ -69,7 +69,6 @@ import {
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '../../components/utils/field-constants';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
-import { EquipmentDeletionSpecificInfos } from '../../components/dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1613,44 +1612,27 @@ export function deleteAttachingLine({
     });
 }
 
-export interface DeleteEquipmentInfo {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    equipmentId: UUID;
-    equipmentType: EquipmentType;
-    equipmentSpecificInfos?: EquipmentDeletionSpecificInfos;
-}
-
-export function deleteEquipment({
-    studyUuid,
-    nodeUuid,
-    uuid,
-    equipmentId,
-    equipmentType,
-    equipmentSpecificInfos,
-}: DeleteEquipmentInfo) {
+export function deleteEquipment(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: EquipmentDeletionDto
+) {
     let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (uuid) {
-        deleteEquipmentUrl += '/' + encodeURIComponent(uuid);
+    if (modificationUuid) {
+        deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating equipment deletion');
     } else {
         console.info('Creating equipment deletion');
     }
 
-    return backendFetch(deleteEquipmentUrl, {
-        method: uuid ? 'PUT' : 'POST',
+    return backendFetchText(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
-            equipmentId: equipmentId,
-            equipmentType: equipmentType,
-            equipmentInfos: equipmentSpecificInfos,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
