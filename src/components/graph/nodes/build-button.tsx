@@ -5,16 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BUILD_STATUS } from 'components/network/constants';
 import React, { useCallback, useState } from 'react';
 import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
 import type { UUID } from 'node:crypto';
-import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, snackWithFallback, BuildStatus, useSnackMessage } from '@gridsuite/commons-ui';
 
 type BuildButtonProps = {
-    buildStatus?: BUILD_STATUS;
+    buildStatus?: BuildStatus;
     studyUuid: UUID | null;
     currentRootNetworkUuid: UUID | null;
     nodeUuid: UUID;
@@ -50,7 +49,7 @@ export const BuildButton = ({
 
             setIsLoading(true);
 
-            if (!buildStatus || buildStatus === BUILD_STATUS.NOT_BUILT) {
+            if (!buildStatus || buildStatus === BuildStatus.NOT_BUILT) {
                 buildNode(studyUuid, nodeUuid, currentRootNetworkUuid)
                     .catch((error) => snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' }))
                     .finally(() => {
@@ -73,7 +72,7 @@ export const BuildButton = ({
         if (isLoading) {
             return <CircularProgress size={24} color="primary" />;
         }
-        return !buildStatus || buildStatus === BUILD_STATUS.NOT_BUILT ? (
+        return !buildStatus || buildStatus === BuildStatus.NOT_BUILT ? (
             <PlayCircleFilled sx={styles.playColor} />
         ) : (
             <StopCircleOutlined color="primary" />
