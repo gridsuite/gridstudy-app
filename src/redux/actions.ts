@@ -956,19 +956,19 @@ export const ADD_TO_GLOBAL_FILTER_OPTIONS = 'ADD_TO_GLOBAL_FILTER_OPTIONS';
 export type AddToGlobalFilterOptionsAction = Readonly<Action<typeof ADD_TO_GLOBAL_FILTER_OPTIONS>> & {
     globalFilters: GlobalFilter[];
     tableType?: string;
-    tableUuid?: string;
+    tableId?: string;
 };
 
 export function addToGlobalFilterOptions(
     globalFilters: GlobalFilter[],
     tableType?: string,
-    tableUuid?: string
+    tableId?: string
 ): AddToGlobalFilterOptionsAction {
     return {
         type: ADD_TO_GLOBAL_FILTER_OPTIONS,
         globalFilters: globalFilters,
         tableType: tableType,
-        tableUuid: tableUuid,
+        tableId: tableId,
     };
 }
 
