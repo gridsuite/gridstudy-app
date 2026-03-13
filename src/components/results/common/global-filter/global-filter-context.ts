@@ -19,6 +19,7 @@ export const GlobalFilterContext = createContext<{
     setFilterGroupSelected: (selectedFilterGroup: string) => void;
     globalFilterOptions: GlobalFilter[];
     selectedGlobalFilters: GlobalFilter[];
+    recentGlobalFilters?: Record<string, number>;
     filterCategories: string[];
     genericFiltersStrictMode: boolean;
     filterableEquipmentTypes: string[];
@@ -33,6 +34,7 @@ export const GlobalFilterContext = createContext<{
     setFilterGroupSelected: () => {},
     globalFilterOptions: [],
     selectedGlobalFilters: [],
+    recentGlobalFilters: {},
     filterCategories: [],
     genericFiltersStrictMode: false,
     filterableEquipmentTypes: [],

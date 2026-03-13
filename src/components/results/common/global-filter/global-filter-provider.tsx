@@ -43,7 +43,9 @@ export default function GlobalFilterProvider({
 
     const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
 
-    const selectedFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters[tableUuid]);
+    const selectedFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters[tableUuid]?.selected);
+
+    const recentGlobalFilters = useSelector((state: AppState) => state.tableFilters.globalFilters[tableUuid]?.recents);
 
     const selectedGlobalFilters = useMemo(
         () =>
@@ -114,6 +116,7 @@ export default function GlobalFilterProvider({
             setFilterGroupSelected,
             globalFilterOptions,
             selectedGlobalFilters,
+            recentGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
             filterableEquipmentTypes,
@@ -126,6 +129,7 @@ export default function GlobalFilterProvider({
             filterGroupSelected,
             globalFilterOptions,
             selectedGlobalFilters,
+            recentGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
             filterableEquipmentTypes,
