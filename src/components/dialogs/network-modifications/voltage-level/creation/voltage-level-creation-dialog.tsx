@@ -25,7 +25,6 @@ import {
     translateSwitchKinds,
     substationCreationEmptyFormData,
     copyEquipmentPropertiesForCreation,
-    SubstationCreationMode,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -125,13 +124,6 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     const currentNodeUuid = currentNode.id;
     const { snackError, snackWarning } = useSnackMessage();
     const [substations, setSubstations] = useState<string[]>([]);
-
-    const substationCreationMode = useMemo((): SubstationCreationMode => {
-        if (isAttachmentPointModification) {
-            return SubstationCreationMode.MUST_CREATE_SUBSTATION;
-        }
-        return SubstationCreationMode.CAN_CREATE_SUBSTATION;
-    }, [isAttachmentPointModification]);
 
     const defaultValues = useMemo((): VoltageLevelCreationFormData => {
         if (isAttachmentPointModification) {
@@ -318,7 +310,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
             >
                 <VoltageLevelCreationForm
                     substationOptions={substations}
-                    substationCreationMode={substationCreationMode}
+                    showDeleteSubstationButton={!isAttachmentPointModification}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
