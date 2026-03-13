@@ -13,20 +13,17 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { copyOrMoveModifications } from '../../services/study';
+import { insertCompositeModifications } from '../../services/study';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import { NetworkModificationCopyType } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 /**
  * Dialog to select some network modifications and append them in the current node
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param currentNode the current node
- * @param studyUuid Id of the current study
  */
-
 interface ImportModificationDialogProps {
     open: boolean;
     onClose: () => void;
@@ -42,12 +39,12 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
         const modificationUuidList = selectedElements.map((e) => e.id);
         // import selected modifications
         if (modificationUuidList.length > 0 && studyUuid && currentNode) {
-            const copyInfos = {
-                copyType: NetworkModificationCopyType.SPLIT_COMPOSITE,
-                originStudyUuid: studyUuid,
-                originNodeUuid: currentNode.id,
-            };
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationUuidList, copyInfos).catch((error) => {
+            insertCompositeModifications(
+                studyUuid,
+                currentNode.id,
+                modificationUuidList,
+                CompositeModificationAction.SPLIT
+            ).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'errDuplicateModificationMsg' });
             });
         }
