@@ -154,7 +154,7 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 .nad-edge-infos .nad-permanent-limit-percentage {
     display:none;
 }
-/* zoom 3500 → active + permanent */
+/* zoom 5000 → active + permanent */
 .nad-zoom-5000 .nad-active,
 .nad-zoom-5000 .nad-permanent-limit-percentage {
     display: inline;
