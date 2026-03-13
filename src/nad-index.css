@@ -154,37 +154,14 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 .nad-edge-infos .nad-permanent-limit-percentage {
     display:none;
 }
-/* zoom 5000 → active + permanent */
-.nad-zoom-5000 .nad-active,
-.nad-zoom-5000 .nad-permanent-limit-percentage {
-    display: inline;
+
+:is(.nad-zoom-5000, .nad-zoom-3500, .nad-zoom-2000, .nad-zoom-1000, .nad-zoom-500, .nad-zoom-0) :is(.nad-active, .nad-permanent-limit-percentage) {
+   display: inline;
 }
-/* zoom 3500 → active + permanent */
-.nad-zoom-3500 .nad-active,
-.nad-zoom-3500 .nad-permanent-limit-percentage {
-    display: inline;
-}
-/* zoom 2000 → active + permanent */
-.nad-zoom-2000 .nad-active,
-.nad-zoom-2000 .nad-permanent-limit-percentage {
-    display: inline;
-}
-/* zoom 1000 → active + permanent */
-.nad-zoom-1000 .nad-active,
-.nad-zoom-1000 .nad-permanent-limit-percentage {
-    display: inline;
-}
-/* zoom 500 → + reactive */
-.nad-zoom-500 .nad-active,
-.nad-zoom-500 .nad-reactive,
-.nad-zoom-500 .nad-permanent-limit-percentage {
-    display:inline;
+:is(.nad-zoom-500, .nad-zoom-0) :is(.nad-reactive) {
+   display: inline;
 }
 
-/* zoom 0 → show all */
-.nad-zoom-0 .nad-edge-infos * {
-    display:inline;
-}
 /* Makes the nodes' edges thicker when zooming a lot */
 .nad-zoom-0 {
     :is(
@@ -312,10 +289,6 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 .nad-zoom-0 .nad-edge-infos text { font-size: 20px; stroke-width: 5px; }
 .nad-zoom-500 .nad-edge-infos text { font-size: 20px; stroke-width: 5px; }
 .nad-zoom-1000 .nad-edge-infos text { font-size: 30px; stroke-width: 5.5px; }
-.nad-zoom-1500 .nad-edge-infos text { font-size: 35px; stroke-width: 6px; }
 .nad-zoom-2000 .nad-edge-infos text { font-size: 40px; stroke-width: 7px; }
-.nad-zoom-2500 .nad-edge-infos text { font-size: 45px; stroke-width: 7.5px; }
-.nad-zoom-3000 .nad-edge-infos text { font-size: 50px; stroke-width: 8px; }
 .nad-zoom-3500 .nad-edge-infos text { font-size: 60px; stroke-width: 9px; }
-.nad-zoom-4000 .nad-edge-infos text { font-size: 65px; stroke-width: 9.5px; }
 .nad-zoom-5000 .nad-edge-infos text { font-size: 70px; stroke-width: 10px; }
