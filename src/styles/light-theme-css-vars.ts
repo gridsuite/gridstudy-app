@@ -43,4 +43,9 @@ export const lightThemeCssVars = {
         fill: 'blue',
         stroke: 'blue',
     },
+
+    '.nad-edge-infos path.nad-permanent-limit-percentage, .nad-permanent-limit-percentage path': {
+        fill: 'black',
+        stroke: 'black',
+    },
 };

@@ -39,4 +39,8 @@ export const darkThemeCssVars = {
         fill: '#77b5fe',
         stroke: '#77b5fe',
     },
+    '.nad-edge-infos path.nad-permanent-limit-percentage, .nad-permanent-limit-percentage path': {
+        fill: 'white',
+        stroke: 'white',
+    },
 };
