@@ -36,6 +36,9 @@ export const CouplingOmnibusForm = () => {
     const watchSwitchesKind = useWatch({ name: SWITCH_KINDS });
 
     useEffect(() => {
+        if (!watchVoltageLevelID || !watchBusBarCount || !watchSectionCount) {
+            return;
+        }
         const switchKinds: string[] = watchSwitchesKind.map((value: { switchKind: string }) => value.switchKind);
         fetchBusBarSectionsForNewCoupler(watchVoltageLevelID, watchBusBarCount, watchSectionCount, switchKinds).then(
             (bbsIds) => {
