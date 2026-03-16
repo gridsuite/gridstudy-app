@@ -294,7 +294,7 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 .nad-zoom-5000 .nad-edge-infos text { font-size: 70px; stroke-width: 10px; }
  
 /* Make arrows scale with zoom */
-  .nad-zoom-5000 .nad-edge-infos path {
+.nad-zoom-5000 .nad-edge-infos path {
     stroke-width: 12px;
 }
 :is(.nad-zoom-2000, .nad-zoom-3500) .nad-edge-infos path {
