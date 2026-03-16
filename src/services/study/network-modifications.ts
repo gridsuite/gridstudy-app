@@ -16,6 +16,7 @@ import {
     safeEncodeURIComponent,
     NetworkModificationMetadata,
     toModificationOperation,
+    SubstationCreationDto,
 } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
@@ -48,7 +49,6 @@ import {
     ShuntCompensatorCreationInfos,
     ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
-    SubstationCreationInfo,
     SubstationModificationInfo,
     TopologyVoltageLevelModificationInfos,
     TwoWindingsTransformerCreationInfo,
@@ -1079,40 +1079,27 @@ export function createTabularModification({
     });
 }
 
-export function createSubstation({
-    studyUuid,
-    nodeUuid,
-    substationId,
-    substationName,
-    country,
-    isUpdate = false,
-    modificationUuid,
-    properties,
-}: SubstationCreationInfo) {
+export function createSubstation(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: SubstationCreationDto
+) {
     let url = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
-        equipmentId: substationId,
-        equipmentName: substationName,
-        country: country === '' ? null : country,
-        properties,
-    });
-
     if (modificationUuid) {
         url += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating substation creation', { url, body });
+        console.info('Updating substation creation', url);
     } else {
-        console.info('Creating substation creation', { url, body });
+        console.info('Creating substation creation', url);
     }
 
     return backendFetchText(url, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify(dto),
     });
 }
 
