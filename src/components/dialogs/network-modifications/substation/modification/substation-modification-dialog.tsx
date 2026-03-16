@@ -79,7 +79,7 @@ const SubstationModificationDialog = ({
         defaultValues: substationModificationEmptyFormData,
         resolver: yupResolver<DeepNullable<SubstationModificationFormData>>(substationModificationFormSchema),
     });
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, getValues } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -126,7 +126,9 @@ const SubstationModificationDialog = ({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
-                        setValue(FieldConstants.EQUIPMENT_ID, equipmentId);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
                             setSubstationToModify(undefined);
                         }
@@ -136,7 +138,7 @@ const SubstationModificationDialog = ({
                 reset(substationModificationEmptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, setValue, editData]
+        [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, editData]
     );
 
     useEffect(() => {

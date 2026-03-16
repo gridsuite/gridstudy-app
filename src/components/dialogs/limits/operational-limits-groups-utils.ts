@@ -32,7 +32,7 @@ function generateEmptyTemporaryLimitArray(): TemporaryLimitFormSchema[] {
 
 export function generateEmptyOperationalLimitsGroup(name: string): OperationalLimitsGroupFormSchema {
     return {
-        [ID]: name + APPLICABILITY.EQUIPMENT.id,
+        [ID]: crypto.randomUUID(),
         [NAME]: name,
         [APPLICABILITY_FIELD]: APPLICABILITY.EQUIPMENT.id,
         [LIMITS_PROPERTIES]: [],
