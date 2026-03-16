@@ -114,7 +114,7 @@ const SubstationCreationDialog = ({
     const onSubmit = useCallback(
         (substationForm: SubstationCreationFormData) => {
             const dto = substationCreationFormToDto(substationForm);
-            createSubstation(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
+            createSubstation(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: unknown) => {
                 snackWithFallback(snackError, error, { headerId: 'SubstationCreationError' });
             });
         },
