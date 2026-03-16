@@ -34,7 +34,7 @@ import type {
 } from '../types/custom-aggrid-types';
 import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
-import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { CopyType } from '../components/network-modification.type';
 import type {
     CurrentTreeNode,
@@ -143,7 +143,7 @@ export type ComputationResultColumnFilter = {
 
 export type GlobalFiltersState = {
     selected: string[];
-    recents: Record<string, number>; // filterId → unselectedDate timestamp
+    recents: RecentGlobalFilter[]; // sorted by unselectedDate descending (most recent first), max 10
 };
 
 export type TableFiltersState = {

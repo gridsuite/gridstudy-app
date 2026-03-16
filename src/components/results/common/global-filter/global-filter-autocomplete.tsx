@@ -239,7 +239,7 @@ function GlobalFilterAutocomplete() {
                 .filter((option: GlobalFilter) => {
                     // recent filters are a group in itself
                     if (filterGroupSelected === RECENT_FILTER) {
-                        return option.id in (recentGlobalFilters ?? {});
+                        return recentGlobalFilters.some((r) => r.id === option.id);
                     } else if (option.filterSubtype) {
                         // if the filter has a subtype it should be filtered through it instead of filterType
                         return option.filterSubtype === filterGroupSelected;
@@ -258,10 +258,12 @@ function GlobalFilterAutocomplete() {
                 });
 
             if (filterGroupSelected === RECENT_FILTER) {
-                // Sort recent options by date from most recent to oldest
-                filteredOptions.sort((a, b) => (recentGlobalFilters?.[b.id] ?? 0) - (recentGlobalFilters?.[a.id] ?? 0));
-                // Only display the 10 most recent options
-                filteredOptions.splice(10);
+                // Sort filtered options to match recents order (most recent first, recentGlobalFilters is already ordered)
+                filteredOptions.sort((a, b) => {
+                    const indexA = recentGlobalFilters.findIndex((r) => r.id === a.id);
+                    const indexB = recentGlobalFilters.findIndex((r) => r.id === b.id);
+                    return indexA - indexB;
+                });
             }
 
             return filteredOptions;

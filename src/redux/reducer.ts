@@ -296,6 +296,7 @@ import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants'
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 import { isCriteriaFilter } from '../components/results/common/utils';
 import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
+import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {
@@ -349,6 +350,15 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): Spread
         default:
             return;
     }
+}
+
+const MAX_RECENT_GLOBAL_FILTERS = 10;
+
+function buildSortedRecents(filters: GlobalFilter[]): RecentGlobalFilter[] {
+    return filters
+        .map((f) => ({ id: getGlobalFilterId(f), unselectedDate: f.unselectedDate! }))
+        .sort((a, b) => b.unselectedDate - a.unselectedDate)
+        .slice(0, MAX_RECENT_GLOBAL_FILTERS);
 }
 
 export const DEFAULT_PAGINATION: PaginationConfig = {
@@ -809,7 +819,7 @@ export const reducer = createReducer(initialState, (builder) => {
             const recentFilters = filters.filter((f) => !!f.unselectedDate);
             state.tableFilters.globalFilters[tabUuid] = {
                 selected: selectedFilters.map(getGlobalFilterId),
-                recents: Object.fromEntries(recentFilters.map((f) => [getGlobalFilterId(f), f.unselectedDate!])),
+                recents: buildSortedRecents(recentFilters),
             };
             // Store full objects in globalFilterOptions only if not already present
             filters.filter(isCriteriaFilter).forEach((filter) => {
@@ -1417,7 +1427,7 @@ export const reducer = createReducer(initialState, (builder) => {
         for (const key of Object.keys(state.tableFilters.globalFilters)) {
             const tableState = state.tableFilters.globalFilters[key];
             tableState.selected = tableState.selected.filter((id) => id !== action.id);
-            delete tableState.recents[action.id];
+            tableState.recents = tableState.recents.filter((r) => r.id !== action.id);
         }
     });
 
@@ -1603,19 +1613,17 @@ export const reducer = createReducer(initialState, (builder) => {
 
         // Recent filters
         const recentFilters = action.filters.filter((f) => !!f.unselectedDate);
-        const newRecents = Object.fromEntries(recentFilters.map((f) => [getGlobalFilterId(f), f.unselectedDate!]));
-        const currentRecents = currentState?.recents ?? {};
-        const newRecentKeys = Object.keys(newRecents);
-        const currentRecentKeys = Object.keys(currentRecents);
+        const newRecents = buildSortedRecents(recentFilters);
+        const currentRecents = currentState?.recents ?? [];
         const areRecentsEqual =
-            newRecentKeys.length === currentRecentKeys.length &&
-            newRecentKeys.every((id) => currentRecentKeys.includes(id)) &&
-            currentRecentKeys.every((id) => newRecentKeys.includes(id)) &&
-            newRecentKeys.every((id) => newRecents[id] === currentRecents[id]);
+            newRecents.length === currentRecents.length &&
+            newRecents.every(
+                (r, i) => r.id === currentRecents[i]?.id && r.unselectedDate === currentRecents[i]?.unselectedDate
+            );
 
         // Update only if different
         if (!areSelectedEqual || !areRecentsEqual) {
-            state.tableFilters.globalFilters[action.tabUuid] ??= { selected: [], recents: {} };
+            state.tableFilters.globalFilters[action.tabUuid] ??= { selected: [], recents: [] };
             if (!areSelectedEqual) {
                 state.tableFilters.globalFilters[action.tabUuid].selected = newSelectedIds;
             }
@@ -1659,38 +1667,40 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ADD_GLOBAL_FILTERS, (state, action: AddGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: {} };
+        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
 
         filterIds.forEach((id) => {
             if (!tableState.selected.includes(id)) {
                 tableState.selected.push(id);
             }
-            delete tableState.recents[id];
+            tableState.recents = tableState.recents.filter((r) => r.id !== id);
         });
     });
 
     builder.addCase(REMOVE_GLOBAL_FILTERS, (state, action: RemoveGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: {} };
+        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
 
         tableState.selected = tableState.selected.filter((id) => !filterIds.includes(id));
 
+        const now = Date.now();
         filterIds.forEach((filterId) => {
-            tableState.recents[filterId] = Date.now();
+            tableState.recents = tableState.recents.filter((r) => r.id !== filterId);
+            tableState.recents.unshift({ id: filterId, unselectedDate: now });
         });
+        tableState.recents = tableState.recents.slice(0, MAX_RECENT_GLOBAL_FILTERS);
     });
 
     builder.addCase(CLEAR_GLOBAL_FILTERS, (state, action: ClearGlobalFiltersAction) => {
         const { tableId } = action;
-        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: {} };
+        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
         const now = Date.now();
-        tableState.selected.forEach((filterId) => {
-            tableState.recents[filterId] = now;
-        });
+        const newRecents = tableState.selected.map((filterId) => ({ id: filterId, unselectedDate: now }));
+        tableState.recents = [...newRecents, ...tableState.recents].slice(0, MAX_RECENT_GLOBAL_FILTERS);
         tableState.selected = [];
     });
 });
