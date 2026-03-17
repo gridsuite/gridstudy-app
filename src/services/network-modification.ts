@@ -47,26 +47,3 @@ export function getLineTypeWithLimits(
         },
     });
 }
-
-export function fetchBusBarSectionsForNewCoupler(
-    voltageLevelId: string,
-    busBarCount: number,
-    sectionCount: number,
-    switchKindList: string[]
-): Promise<string[]> {
-    console.info('Fetching bus bar sections ids for voltage level : ', voltageLevelId);
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('voltageLevelId', voltageLevelId);
-    urlSearchParams.append('busBarCount', String(busBarCount));
-    urlSearchParams.append('sectionCount', String(sectionCount));
-    for (const kind of switchKindList) {
-        urlSearchParams.append('switchKindList', kind);
-    }
-
-    const url =
-        `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/busbar-sections-for-new-coupler` +
-        '?' +
-        urlSearchParams.toString();
-    console.debug(url);
-    return backendFetchJson(url);
-}
