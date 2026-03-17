@@ -12,12 +12,13 @@ import {
     COUPLING_OMNIBUS,
     EQUIPMENT_ID,
     SECTION_COUNT,
+    SWITCH_KINDS,
 } from 'components/utils/field-constants';
 import { CouplingOmnibusCreation } from './coupling-omnibus-creation';
-import { useEffect, useMemo } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { buildNewBusbarSections } from 'components/utils/utils';
+import { useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { ExpandableInput } from '@gridsuite/commons-ui';
+import { fetchBusBarSectionsForNewCoupler } from '../../../../../services/network-modification';
 
 export const CouplingOmnibusForm = () => {
     const { setValue } = useFormContext();
@@ -27,23 +28,45 @@ export const CouplingOmnibusForm = () => {
         [BUS_BAR_SECTION_ID2]: null,
     };
 
-    const watchVoltageLevelID = useWatch({ name: EQUIPMENT_ID });
-    const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
-    const watchSectionCount = useWatch({ name: SECTION_COUNT });
+    const [sectionOptions, setSectionOptions] = useState<string[]>([]);
 
-    const sectionOptions = useMemo(() => {
-        if (watchVoltageLevelID && watchBusBarCount && watchSectionCount) {
-            return buildNewBusbarSections(watchVoltageLevelID, watchSectionCount, watchBusBarCount).map((section) => {
-                return typeof section === 'string' ? section : section.id;
-            });
-        }
-        return [];
-    }, [watchVoltageLevelID, watchBusBarCount, watchSectionCount]);
+    const { subscribe, trigger, getValues, formState } = useFormContext();
 
     useEffect(() => {
-        // the cleanup function is triggered every time sectionOptions changes and when unmounting
-        return () => setValue(COUPLING_OMNIBUS, []);
-    }, [sectionOptions, setValue]);
+        const switchKinds: string[] = getValues(SWITCH_KINDS).map((value: { switchKind: string }) => value.switchKind);
+        fetchBusBarSectionsForNewCoupler(
+            getValues(EQUIPMENT_ID),
+            getValues(BUS_BAR_COUNT),
+            getValues(SECTION_COUNT),
+            switchKinds
+        ).then((bbsIds) => {
+            setSectionOptions(bbsIds);
+        });
+    }, [getValues]);
+
+    useEffect(() => {
+        const unsubscribe = subscribe({
+            name: [EQUIPMENT_ID, BUS_BAR_COUNT, SECTION_COUNT, SWITCH_KINDS],
+            formState: {
+                values: true,
+            },
+            callback: () => {
+                const switchKinds: string[] = getValues(SWITCH_KINDS).map(
+                    (value: { switchKind: string }) => value.switchKind
+                );
+                fetchBusBarSectionsForNewCoupler(
+                    getValues(EQUIPMENT_ID),
+                    getValues(BUS_BAR_COUNT),
+                    getValues(SECTION_COUNT),
+                    switchKinds
+                ).then((bbsIds) => {
+                    setValue(COUPLING_OMNIBUS, []);
+                    setSectionOptions(bbsIds);
+                });
+            },
+        });
+        return () => unsubscribe();
+    }, [subscribe, trigger, getValues, setValue, formState]);
 
     return (
         <ExpandableInput
