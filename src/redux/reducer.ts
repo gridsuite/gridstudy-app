@@ -1614,9 +1614,9 @@ export const reducer = createReducer(initialState, (builder) => {
         // Recent filters
         const recentFilters = action.filters.filter((f) => !!f.unselectedDate);
         const newRecents = buildSortedRecents(recentFilters);
-        const currentRecents = currentState?.recents ?? [];
+        const currentRecents = currentState?.recents;
         const areRecentsEqual =
-            newRecents.length === currentRecents.length &&
+            newRecents.length === currentRecents?.length &&
             newRecents.every(
                 (r, i) => r.id === currentRecents[i]?.id && r.unselectedDate === currentRecents[i]?.unselectedDate
             );
@@ -1688,7 +1688,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
         const now = Date.now();
         filterIds.forEach((filterId) => {
-            tableState.recents = tableState.recents.filter((r) => r.id !== filterId);
             tableState.recents.unshift({ id: filterId, unselectedDate: now });
         });
         tableState.recents = tableState.recents.slice(0, MAX_RECENT_GLOBAL_FILTERS);

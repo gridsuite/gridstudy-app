@@ -17,7 +17,7 @@ export const RECENT_FILTER: string = 'recent';
 
 // Add an ID to each filter object saved in the server so that it can be used as a key in the globalFiltersOptions object.
 export const addGlobalFilterId = (filter: GlobalFilterWithoutId): GlobalFilter => {
-    const { unselectedDate, ...rest } = filter;
+    const { unselectedDate, ...rest } = filter; // we don't want unselectedDate here
     switch (rest.filterType) {
         case FilterType.GENERIC_FILTER:
         case FilterType.SUBSTATION_OR_VL:

@@ -32,6 +32,7 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
         case REMOVE_GLOBAL_FILTERS:
         case CLEAR_GLOBAL_FILTERS: {
             const { tableType, tableId } = action as GlobalFilterAction;
+
             // State after the action
             const state = store.getState();
             const studyUuid = state.studyUuid;
@@ -41,12 +42,13 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
 
             const index = tableId ?? tableType;
             const tableFiltersState = state.tableFilters.globalFilters[index];
+
             const selectedFiltersIds = tableFiltersState?.selected ?? [];
-            const recentFilters = tableFiltersState?.recents ?? [];
             const selectedGlobalFilters = state.globalFilterOptions.filter((filter) =>
                 selectedFiltersIds.includes(filter.id)
             );
 
+            const recentFilters = tableFiltersState?.recents ?? [];
             const recentGlobalFilters = recentFilters
                 .map((recentFilter) => {
                     const filterOption = state.globalFilterOptions.find((opt) => opt.id === recentFilter.id);
