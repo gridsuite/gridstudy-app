@@ -225,7 +225,10 @@ export function fetchContingencyCount(
 export function insertCompositeModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
-    modificationsToInsertUuids: UUID[],
+    compositeModificationsToInsert: {
+        first: UUID;
+        second: string; // composite modification name (if needed)
+    }[],
     compositeModificationAction: CompositeModificationAction
 ) {
     const url =
@@ -239,20 +242,13 @@ export function insertCompositeModifications(
             action: compositeModificationAction.toString(),
         });
 
-    const modifications = modificationsToInsertUuids.map((modificationUuid) => {
-        return {
-            first: modificationUuid,
-            second: '',
-        };
-    });
-
     return backendFetch(url, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modifications),
+        body: JSON.stringify(compositeModificationsToInsert),
     });
 }
 

@@ -36,13 +36,18 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const processSelectedElements = (selectedElements: TreeViewFinderNodeProps[]) => {
-        const modificationUuidList = selectedElements.map((e) => e.id);
+        const modificationsToInsert = selectedElements.map((e) => {
+            return {
+                first: e.id,
+                second: e.name,
+            };
+        });
         // import selected modifications
-        if (modificationUuidList.length > 0 && studyUuid && currentNode) {
+        if (modificationsToInsert.length > 0 && studyUuid && currentNode) {
             insertCompositeModifications(
                 studyUuid,
                 currentNode.id,
-                modificationUuidList,
+                modificationsToInsert,
                 CompositeModificationAction.SPLIT
             ).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'errDuplicateModificationMsg' });
