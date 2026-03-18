@@ -118,6 +118,8 @@ export interface ShuntCompensatorModificationInfos {
     connectionName?: AttributeModification<string> | null;
     connectionPosition?: AttributeModification<number> | null;
     terminalConnected?: AttributeModification<boolean> | null;
+    qMeasurementValue: AttributeModification<number> | null;
+    qMeasurementValidity: AttributeModification<boolean> | null;
     properties: Property[] | null;
 }
 

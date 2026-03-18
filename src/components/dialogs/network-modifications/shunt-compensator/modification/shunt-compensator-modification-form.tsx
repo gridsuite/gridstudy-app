@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextInput, PropertiesForm, filledTextField, ConnectivityForm } from '@gridsuite/commons-ui';
+import {
+    TextInput,
+    PropertiesForm,
+    filledTextField,
+    ConnectivityForm,
+    PowerMeasurementsForm,
+} from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
 import { Grid, TextField } from '@mui/material';
 import GridItem from '../../../commons/grid-item';
@@ -83,6 +89,13 @@ export default function ShuntCompensatorModificationForm({
         />
     );
 
+    const measurementsForm = (
+        <PowerMeasurementsForm
+            reactivePowerMeasurement={shuntCompensatorToModify?.measurementQ}
+            reactivePowerOnly={true}
+        />
+    );
+
     return (
         <>
             <Grid container spacing={2}>
@@ -97,6 +110,10 @@ export default function ShuntCompensatorModificationForm({
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{characteristicsForm}</GridItem>
+            </Grid>
+            <GridSection title="MeasurementsSection" />
+            <Grid container spacing={2}>
+                <GridItem size={12}>{measurementsForm}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'shuntCompensator'} isModification={true} />
         </>
