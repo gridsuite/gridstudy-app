@@ -285,6 +285,14 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     // trigger focus when requested from outside (ex: from root network modification results)
     useTreeNodeFocus(handleFocusNode);
 
+    // FIX : when fitting the view, the nodes are not yet rendered, so the view is not correctly
+    // centered and zoomed on the nodes. We need to wait for the nodes to be rendered and then fit the view.
+    // cf https://github.com/xyflow/xyflow/issues/533
+    const onReactFlowInit = (rf) => {
+        rf.fitView();
+    };
+    // END OF FIX
+
     return (
         <Box sx={styles.modificationTree}>
             <ReactFlow
@@ -292,7 +300,8 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                 edges={edges}
                 onNodesChange={handleNodesChange}
                 onEdgesChange={onEdgesChange}
-                fitView
+                // fitView : see fix in onReactFlowInit function above
+                onInit={onReactFlowInit}
                 snapToGrid
                 snapGrid={snapGrid}
                 onNodeContextMenu={onNodeContextMenu}
