@@ -489,7 +489,7 @@ const TwoWindingsTransformerModificationDialog = ({
                           ratioTapChangerFormValues?.[STEPS] as TapChangerStep[],
                           toTapChangerStepList(twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS])
                       );
-            const ratioTapChangerSteps = !areRatioStepsModified ? null : ratioTapChangerFormValues?.[STEPS];
+            const ratioTapChangerSteps = areRatioStepsModified ? ratioTapChangerFormValues?.[STEPS] : null;
             if (ratioTapChangerFormValues?.[ENABLED]) {
                 ratioTap = {
                     [ENABLED]: toModificationOperation(enableRatioTapChanger),
@@ -526,7 +526,7 @@ const TwoWindingsTransformerModificationDialog = ({
                           phaseTapChangerFormValues?.[STEPS] as TapChangerStep[],
                           toTapChangerStepList(twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS])
                       );
-            const phaseTapChangerSteps = !arePhaseStepsModified ? null : phaseTapChangerFormValues?.[STEPS];
+            const phaseTapChangerSteps = arePhaseStepsModified ? phaseTapChangerFormValues?.[STEPS] : null;
             if (phaseTapChangerFormValues?.[ENABLED]) {
                 phaseTap = {
                     [ENABLED]: toModificationOperation(enablePhaseTapChanger),

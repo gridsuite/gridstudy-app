@@ -541,7 +541,6 @@
     "CreateCompositeModificationLabel": "Create a new composite modification",
     "UpdateCompositeModificationLabel": "Replace an existing composite modification",
     "descriptionProperty": "Description",
-    "RestoreModificationText": "Please select modifications to restore",
     "DeleteModificationText": "{numberToDelete, plural, =0 {No modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
     "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
@@ -1086,7 +1085,6 @@
     "cancelCutNetworkModificationSubtree": "Cancel cut",
     "removeNetworkModificationSubtree": "Remove",
     "restoreNodes": "Restore",
-    "restoreNodesText": "Please select nodes to restore:",
     "deleteNodesText": "{numberToDelete, plural, =0 {Please select a node to delete} =1 {One node or subtree will be permanently deleted.} other {# nodes or subtrees will be permanently deleted.}}",
     "ReorderSubtreeInvalidNotifInfo": "Subtree order update cancelled (invalid notification infos) !",
 

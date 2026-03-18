@@ -18,6 +18,8 @@ import {
     safeEncodeURIComponent,
     NetworkModificationMetadata,
     toModificationOperation,
+    SubstationCreationDto,
+    SubstationModificationDto,
 } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
@@ -48,8 +50,6 @@ import {
     ShuntCompensatorCreationInfos,
     ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
-    SubstationCreationInfo,
-    SubstationModificationInfo,
     TopologyVoltageLevelModificationInfos,
     TwoWindingsTransformerCreationInfo,
     TwoWindingsTransformerModificationInfo,
@@ -1013,26 +1013,14 @@ export function createTabularModification({
     });
 }
 
-export function createSubstation({
-    studyUuid,
-    nodeUuid,
-    substationId,
-    substationName,
-    country,
-    isUpdate = false,
-    modificationUuid,
-    properties,
-}: SubstationCreationInfo) {
+export function createSubstation(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: SubstationCreationDto
+) {
+    const body = JSON.stringify(dto);
     let url = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
-        equipmentId: substationId,
-        equipmentName: substationName,
-        country: country === '' ? null : country,
-        properties,
-    });
-
     if (modificationUuid) {
         url += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating substation creation', { url, body });
@@ -1041,12 +1029,12 @@ export function createSubstation({
     }
 
     return backendFetchText(url, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body,
     });
 }
 
@@ -1102,19 +1090,15 @@ export function formatPropertiesForBackend(previousProperties: any, newPropertie
     return propertiesModifications;
 }
 
-export function modifySubstation({
-    studyUuid,
-    nodeUuid,
-    modificationUuid = undefined,
-    id,
-    name,
-    country,
-    properties,
-}: SubstationModificationInfo) {
+export function modifySubstation(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: SubstationModificationDto
+) {
     let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
+    if (modificationUuid) {
         modifyUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating substation modification');
     } else {
@@ -1122,18 +1106,12 @@ export function modifySubstation({
     }
 
     return backendFetchText(modifyUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
-            equipmentId: id,
-            equipmentName: toModificationOperation(name),
-            country: toModificationOperation(country),
-            properties: properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
