@@ -25,12 +25,14 @@ interface PowerMeasurementsFormProps {
     side?: 1 | 2;
     activePowerMeasurement?: MeasurementInfo;
     reactivePowerMeasurement?: MeasurementInfo;
+    reactivePowerOnly?: boolean;
 }
 
 export const PowerMeasurementsForm: FunctionComponent<PowerMeasurementsFormProps> = ({
     side,
     activePowerMeasurement,
     reactivePowerMeasurement,
+    reactivePowerOnly = false,
 }) => {
     const getActiveMeasurementType = (side: number | null | undefined) => {
         if (!side) {
@@ -51,13 +53,15 @@ export const PowerMeasurementsForm: FunctionComponent<PowerMeasurementsFormProps
 
     return (
         <Grid container spacing={2}>
-            <GridItem size={12}>
-                <PowerWithValidityForm
-                    id={activePowerId}
-                    field={FieldType.ACTIVE_POWER}
-                    measurement={activePowerMeasurement}
-                />
-            </GridItem>
+            {!reactivePowerOnly && (
+                <GridItem size={12}>
+                    <PowerWithValidityForm
+                        id={activePowerId}
+                        field={FieldType.ACTIVE_POWER}
+                        measurement={activePowerMeasurement}
+                    />
+                </GridItem>
+            )}
             <GridItem size={12}>
                 <PowerWithValidityForm
                     id={reactivePowerId}

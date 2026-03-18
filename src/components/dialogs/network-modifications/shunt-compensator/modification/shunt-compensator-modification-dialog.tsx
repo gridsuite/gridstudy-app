@@ -70,16 +70,16 @@ import {
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 import {
-    getInjectionReactivePowerEditData,
-    getInjectionReactivePowerEmptyFormData,
-    getInjectionReactivePowerValidationSchemaProperties,
-} from '../../common/measurements/injection-reactive-power-form-utils';
+    getInjectionActiveReactivePowerEditData,
+    getInjectionActiveReactivePowerEmptyFormData,
+    getInjectionActiveReactivePowerValidationSchemaProperties,
+} from '../../common/measurements/injection-active-reactive-power-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getCharacteristicsEmptyFormData(),
-    ...getInjectionReactivePowerEmptyFormData(STATE_ESTIMATION),
+    ...getInjectionActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
     ...emptyProperties,
 };
 
@@ -88,7 +88,7 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
-        [STATE_ESTIMATION]: getInjectionReactivePowerValidationSchemaProperties(),
+        [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
         ...getCharacteristicsFormValidationSchema(true),
     })
     .concat(modificationPropertiesSchema)
@@ -157,7 +157,7 @@ export default function ShuntCompensatorModificationDialog({
                     sectionCount: editData.sectionCount?.value ?? null,
                     maximumSectionCount: editData.maximumSectionCount?.value ?? null,
                 }),
-                ...getInjectionReactivePowerEditData(STATE_ESTIMATION, editData),
+                ...getInjectionActiveReactivePowerEditData(STATE_ESTIMATION, editData),
                 ...getPropertiesFromModification(editData.properties),
             });
         }
