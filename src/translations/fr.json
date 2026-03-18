@@ -539,7 +539,6 @@
     "CreateCompositeModificationLabel": "Créer une nouvelle modification composite",
     "UpdateCompositeModificationLabel": "Remplacer une modification composite existante",
     "descriptionProperty": "Description",
-    "RestoreModificationText": "Veuillez sélectionner les modifications à restaurer",
     "DeleteModificationText": "{numberToDelete, plural, =0 {Aucune modification à supprimer.} =1 {Une modification va être définitivement supprimée.} other {# modifications vont être définitivement supprimées.}}",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
@@ -1096,7 +1095,6 @@
     "cancelCutNetworkModificationSubtree": "Annuler couper",
     "removeNetworkModificationSubtree": "Supprimer",
     "restoreNodes": "Restaurer",
-    "restoreNodesText": "Veuillez sélectionner les nœuds à restaurer\u00a0:",
     "deleteNodesText": "{numberToDelete, plural, =0 {Veuillez sélectionner un nœuds à supprimer} =1 {Un nœud ou sous-arbre va être définitivement supprimé.} other {# nœuds ou sous-arbres vont être définitivement supprimés.}}",
     "ReorderSubtreeInvalidNotifInfo": "Mise à jour de l'ordre d'un sous arbre annulée (infos de notification invalides) !",
 
