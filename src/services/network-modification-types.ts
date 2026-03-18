@@ -729,17 +729,6 @@ export interface AttachedSubstationCreationInfo {
     properties: Property[] | null;
 }
 
-export interface SubstationCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    substationId: string;
-    substationName: string | null;
-    country: string | null;
-    isUpdate: boolean;
-    modificationUuid?: UUID;
-    properties: Property[] | null;
-}
-
 export interface DivideLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
