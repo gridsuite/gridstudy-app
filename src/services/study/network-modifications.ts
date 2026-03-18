@@ -1085,12 +1085,13 @@ export function createSubstation(
     modificationUuid: UUID | undefined,
     dto: SubstationCreationDto
 ) {
+    const body = JSON.stringify(dto);
     let url = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         url += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating substation creation', url);
+        console.info('Updating substation creation', { url, body });
     } else {
-        console.info('Creating substation creation', url);
+        console.info('Creating substation creation', { url, body });
     }
 
     return backendFetchText(url, {
@@ -1099,7 +1100,7 @@ export function createSubstation(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dto),
+        body,
     });
 }
 
