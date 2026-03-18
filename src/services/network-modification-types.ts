@@ -337,16 +337,6 @@ export interface CurrentLimits {
     temporaryLimits: TemporaryLimit[];
 }
 
-export interface SubstationModificationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    modificationUuid?: UUID;
-    id: string | null;
-    name: string | null;
-    country: string | null;
-    properties: Property[] | null;
-}
-
 export enum SwitchKind {
     BREAKER = 'BREAKER',
     DISCONNECTOR = 'DISCONNECTOR',
