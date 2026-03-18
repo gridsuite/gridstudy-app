@@ -335,7 +335,6 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         parametersBackend={shortCircuitParametersBackend}
-                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case TAB_VALUES.pccMinTabValue:
