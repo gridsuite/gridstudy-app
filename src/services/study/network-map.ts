@@ -15,7 +15,7 @@ import {
     EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
-    HvdcLccDeletionInfos,
+    LccDeletionDto,
     Identifiable,
     NewFilterType,
 } from '@gridsuite/commons-ui';
@@ -29,7 +29,7 @@ export function fetchHvdcLineWithShuntCompensators(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     hvdcLineId: UUID
-): Promise<HvdcLccDeletionInfos> {
+): Promise<LccDeletionDto> {
     console.info(
         `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
