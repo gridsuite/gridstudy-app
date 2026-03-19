@@ -6,6 +6,7 @@
  */
 
 import {
+    AREA,
     LIMIT_SET_NAME,
     LIMIT_VALUE,
     PERMANENT_LIMIT,
@@ -16,6 +17,8 @@ import {
     SEGMENT_SUSCEPTANCE,
     SEGMENT_TYPE_ID,
     SEGMENT_TYPE_VALUE,
+    SHAPE_FACTOR,
+    TEMPERATURE,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMITS,
@@ -32,6 +35,9 @@ export const SegmentSchema = yup.object().shape({
         .required()
         .test('empty-check', 'SegmentTypeMissing', (value) => (value ? value.length > 0 : false)),
     [SEGMENT_TYPE_ID]: yup.string().required(),
+    [AREA]: yup.string().nullable(),
+    [TEMPERATURE]: yup.string().nullable(),
+    [SHAPE_FACTOR]: yup.number().nullable(),
     [SEGMENT_RESISTANCE]: yup.number().required(),
     [SEGMENT_REACTANCE]: yup.number().required(),
     [SEGMENT_SUSCEPTANCE]: yup.number().required(),
@@ -61,6 +67,9 @@ export type SegmentFormData = {
     [SEGMENT_REACTANCE]: number;
     [SEGMENT_SUSCEPTANCE]: number;
     [SEGMENT_CURRENT_LIMITS]: [];
+    [AREA]: string;
+    [TEMPERATURE]: string;
+    [SHAPE_FACTOR]: number | null;
 };
 
 export const emptyLineSegment: SegmentFormData = {
@@ -71,4 +80,7 @@ export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_REACTANCE]: 0.0,
     [SEGMENT_SUSCEPTANCE]: 0.0,
     [SEGMENT_CURRENT_LIMITS]: [],
+    [AREA]: '',
+    [TEMPERATURE]: '',
+    [SHAPE_FACTOR]: null,
 };

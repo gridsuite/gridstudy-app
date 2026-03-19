@@ -42,6 +42,7 @@ import {
     G1,
     G2,
     LIMITS,
+    LINE_SEGMENTS,
     OPERATIONAL_LIMITS_GROUPS,
     R,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
@@ -88,7 +89,7 @@ import { createLine } from '../../../../../services/study/network-modifications'
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 import { LimitsPane } from '../../../limits/limits-pane';
-import { LineCreationInfos } from '../../../../../services/network-modification-types';
+import { LineCreationInfos, LineSegmentInfos } from '../../../../../services/network-modification-types';
 import { LineModificationFormSchema } from '../modification/line-modification-type';
 import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
@@ -160,7 +161,14 @@ const LineCreationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, setValue } = formMethods;
+    const { reset, setValue, getValues } = formMethods;
+
+    const setSegments = useCallback(
+        (segments: LineSegmentInfos[]) => {
+            setValue(LINE_SEGMENTS, segments);
+        },
+        [setValue]
+    );
 
     const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
@@ -255,6 +263,7 @@ const LineCreationDialog = ({
                     line?.selectedOperationalLimitsGroupId2 ?? null
                 ),
                 ...getPropertiesFromModification(line.properties),
+                [LINE_SEGMENTS]: line.lineSegments,
             };
             reset(formData, { keepDefaultValues: true });
         },
@@ -311,6 +320,7 @@ const LineCreationDialog = ({
             const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
+            const segments = line[LINE_SEGMENTS];
             const lineCreationInfos: LineCreationInfos = {
                 type: ModificationType.LINE_CREATION,
                 equipmentId: header[EQUIPMENT_ID],
@@ -339,6 +349,7 @@ const LineCreationDialog = ({
                 connected1: characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
                 connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
                 properties: toModificationProperties(line),
+                lineSegments: segments,
             } satisfies LineCreationInfos;
             onCreateLine({
                 lineCreationInfos,
@@ -350,7 +361,7 @@ const LineCreationDialog = ({
                 snackWithFallback(snackError, error, { headerId: 'LineCreationError' });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
+        [onCreateLine, studyUuid, currentNodeUuid, editData, snackError]
     );
 
     const onValidationError = (errors: FieldErrors<LineModificationFormSchema>) => {
@@ -457,6 +468,8 @@ const LineCreationDialog = ({
                     open={isOpenLineTypesCatalogDialog}
                     onClose={handleCloseLineTypesCatalogDialog}
                     onSave={handleLineSegmentsBuildSubmit}
+                    editData={getValues(LINE_SEGMENTS)}
+                    setSegments={setSegments}
                 />
             </ModificationDialog>
         </CustomFormProvider>

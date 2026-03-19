@@ -22,7 +22,7 @@ import { getLineTypeWithAreaAndTemperature } from '../../../services/network-mod
 import { ModificationDialog } from '../commons/modificationDialog';
 import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
+import LineTypesCatalogSelectorForm, { LineCatalogParams } from './line-types-catalog-selector-form';
 
 const formSchema = yup
     .object()
@@ -86,6 +86,7 @@ export type LineTypesCatalogSelectorDialogProps = {
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
+    preselectedParams?: LineCatalogParams;
 };
 
 export default function LineTypesCatalogSelectorDialog({
@@ -93,6 +94,7 @@ export default function LineTypesCatalogSelectorDialog({
     preselectedRowId,
     rowData,
     onClose,
+    preselectedParams,
     ...dialogProps
 }: Readonly<LineTypesCatalogSelectorDialogProps>) {
     const { snackError } = useSnackMessage();
@@ -222,6 +224,7 @@ export default function LineTypesCatalogSelectorDialog({
                     areasOptions={areasOptions}
                     aerialTemperatures={aerialTemperatures}
                     undergroundShapeFactor={undergroundShapeFactors}
+                    preselectedRowData={preselectedParams}
                 />
             </ModificationDialog>
         </CustomFormProvider>

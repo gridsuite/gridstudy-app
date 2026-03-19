@@ -25,6 +25,12 @@ import { useColumnDefinitions } from './use-column-definitions';
 import { useRowData } from './use-row-data';
 import { AgGridReact } from 'ag-grid-react';
 
+export interface LineCatalogParams {
+    area: string;
+    temperature: string;
+    shapeFactor: number;
+}
+
 interface LineTypesCatalogSelectorFormProps {
     gridRef: React.RefObject<AgGridReact | null>;
     selectedRow: LineTypeInfo | null;
@@ -34,6 +40,7 @@ interface LineTypesCatalogSelectorFormProps {
     areasOptions: Option[];
     aerialTemperatures: Option[];
     undergroundShapeFactor: Option[];
+    preselectedRowData?: LineCatalogParams;
 }
 
 export default function LineTypesCatalogSelectorForm({
@@ -45,6 +52,7 @@ export default function LineTypesCatalogSelectorForm({
     areasOptions,
     aerialTemperatures,
     undergroundShapeFactor,
+    preselectedRowData,
 }: Readonly<LineTypesCatalogSelectorFormProps>) {
     const [tabIndex, setTabIndex] = useState<number>(CATEGORIES_TABS.AERIAL.id);
     const { setValue } = useFormContext();
@@ -69,7 +77,13 @@ export default function LineTypesCatalogSelectorForm({
                     : CATEGORIES_TABS.AERIAL.id;
             setValue(SELECTED_CATEGORIES_TAB, newTabIndex);
         }
-    }, [rowData, preselectedRowId, setValue]);
+        if (preselectedRowData) {
+            setValue(AERIAL_AREAS, preselectedRowData.area);
+            setValue(AERIAL_TEMPERATURES, preselectedRowData.temperature);
+            setValue(UNDERGROUND_AREAS, preselectedRowData.area);
+            setValue(UNDERGROUND_SHAPE_FACTORS, preselectedRowData.shapeFactor);
+        }
+    }, [rowData, preselectedRowId, setValue, preselectedRowData]);
 
     // Tries to find the selected row to highlight it
     const highlightSelectedRow = useCallback(() => {

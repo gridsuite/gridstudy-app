@@ -22,6 +22,7 @@ import {
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import { InferType } from 'yup';
+import { LineSegmentInfos } from '../../../services/network-modification-types';
 
 const LineTypeSegmentSchema = yup
     .object()
@@ -46,21 +47,49 @@ export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
     onSave: (data: ComputedLineCharacteristics) => void;
+    editData?: LineSegmentInfos[];
+    setSegments?: (segments: LineSegmentInfos[]) => void;
 }
 
 export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
 
-export default function LineTypeSegmentDialog({ open, onSave, onClose }: Readonly<LineTypeSegmentDialogProps>) {
+export default function LineTypeSegmentDialog({
+    open,
+    onSave,
+    onClose,
+    editData,
+    setSegments,
+}: Readonly<LineTypeSegmentDialogProps>) {
     const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LineTypeSegmentDialogSchemaForm>>(LineTypeSegmentSchema),
     });
 
     const { reset } = formMethods;
-
+    const { getValues } = formMethods;
     const handleClear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
+
+    const onSubmit = useCallback(
+        (data: ComputedLineCharacteristics) => {
+            const segmentsData = getValues(`${SEGMENTS}`);
+            if (segmentsData && setSegments) {
+                const segments: LineSegmentInfos[] = segmentsData.map((segment) => {
+                    return {
+                        segmentTypeId: segment?.segmentTypeId ?? '',
+                        segmentDistanceValue: segment?.segmentDistanceValue ?? 0,
+                        area: segment?.area ?? '',
+                        temperature: segment?.temperature ?? '',
+                        shapeFactor: segment?.shapeFactor ?? null,
+                    };
+                });
+                setSegments(segments ?? []);
+            }
+            onSave(data);
+        },
+        [getValues, onSave, setSegments]
+    );
 
     return (
         <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
@@ -71,9 +100,9 @@ export default function LineTypeSegmentDialog({ open, onSave, onClose }: Readonl
                 titleId="LineTypesCatalogDialogTitle"
                 open={open}
                 onClose={onClose}
-                onSave={onSave}
+                onSave={onSubmit}
             >
-                <LineTypeSegmentForm />
+                <LineTypeSegmentForm editData={editData} />
             </ModificationDialog>
         </CustomFormProvider>
     );

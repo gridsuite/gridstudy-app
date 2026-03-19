@@ -11,6 +11,7 @@ import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
+    AREA,
     FINAL_CURRENT_LIMITS,
     SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
@@ -20,6 +21,8 @@ import {
     SEGMENT_TYPE_ID,
     SEGMENT_TYPE_VALUE,
     SEGMENTS,
+    SHAPE_FACTOR,
+    TEMPERATURE,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
@@ -48,6 +51,7 @@ import {
 import { emptyLineSegment, SegmentFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
 import GridSection from '../commons/grid-section';
+import { LineSegmentInfos } from '../../../services/network-modification-types';
 
 const styles = {
     h3: {
@@ -64,7 +68,11 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const LineTypeSegmentForm = () => {
+export interface LineTypeSegmentFormProps {
+    editData?: LineSegmentInfos[];
+}
+
+export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormProps>) => {
     const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
@@ -115,6 +123,15 @@ export const LineTypeSegmentForm = () => {
             setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, limitInfo);
         },
         [setValue]
+    );
+
+    const updateLimits = useCallback(
+        (index: number, id: string, area: string | null, temperature: string | null, shapeFactor: number | null) => {
+            getLineTypeWithLimits(id, area, temperature, shapeFactor).then((lineTypeWithLimits) => {
+                updateSegmentLimitsValues(index, lineTypeWithLimits.limitsForLineType);
+            });
+        },
+        [updateSegmentLimitsValues]
     );
 
     const updateTotals = useCallback(() => {
@@ -179,6 +196,42 @@ export const LineTypeSegmentForm = () => {
         setValue(FINAL_CURRENT_LIMITS, Array.from(mostContrainingLimits.values()));
     }, [getValues, setValue, setCurrentLimitResult]);
 
+    useEffect(() => {
+        if (!editData) {
+            return;
+        }
+        for (let index = 0; index < editData?.length; index++) {
+            const segmentCatalogId = editData[index][SEGMENT_TYPE_ID];
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`, segmentCatalogId);
+            const lineTypeInfo: LineTypeInfo | undefined = lineTypesCatalog.find(
+                (segment) => segment.id === segmentCatalogId
+            );
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_TYPE_VALUE}`, lineTypeInfo?.type ?? '');
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`, Number(editData[index][SEGMENT_DISTANCE_VALUE]));
+            setValue(`${SEGMENTS}.${index}.${AREA}`, editData[index][AREA]);
+            setValue(`${SEGMENTS}.${index}.${TEMPERATURE}`, editData[index][TEMPERATURE]);
+            setValue(`${SEGMENTS}.${index}.${SHAPE_FACTOR}`, editData[index][SHAPE_FACTOR]);
+            updateLimits(
+                index,
+                segmentCatalogId,
+                editData[index][AREA],
+                editData[index][TEMPERATURE],
+                editData[index][SHAPE_FACTOR]
+            );
+            updateSegmentValues(index);
+            updateTotals();
+            keepMostConstrainingLimits();
+        }
+    }, [
+        editData,
+        updateLimits,
+        keepMostConstrainingLimits,
+        lineTypesCatalog,
+        setValue,
+        updateSegmentValues,
+        updateTotals,
+    ]);
+
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
             getLineTypeWithLimits(
@@ -193,6 +246,18 @@ export const LineTypeSegmentForm = () => {
                         const selectedTypeId = lineTypeWithLimits.id ?? '';
                         setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`, selectedType);
                         setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_ID}`, selectedTypeId);
+                        setValue(
+                            `${SEGMENTS}.${openCatalogDialogIndex}.${AREA}`,
+                            selectedAreaAndTemperature2LineTypeData?.area
+                        );
+                        setValue(
+                            `${SEGMENTS}.${openCatalogDialogIndex}.${TEMPERATURE}`,
+                            selectedAreaAndTemperature2LineTypeData?.temperature
+                        );
+                        setValue(
+                            `${SEGMENTS}.${openCatalogDialogIndex}.${SHAPE_FACTOR}`,
+                            selectedAreaAndTemperature2LineTypeData?.shapeFactor
+                        );
                         clearErrors(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`);
                         updateSegmentValues(openCatalogDialogIndex);
                         updateSegmentLimitsValues(openCatalogDialogIndex, lineTypeWithLimits.limitsForLineType);
@@ -245,6 +310,17 @@ export const LineTypeSegmentForm = () => {
     const getPreselectedRowIdForCatalog = useCallback(
         (index: number) => {
             return getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
+        },
+        [getValues]
+    );
+
+    const getPreselectedRowData = useCallback(
+        (index: number) => {
+            return {
+                temperature: getValues(`${SEGMENTS}.${index}.${TEMPERATURE}`),
+                area: getValues(`${SEGMENTS}.${index}.${AREA}`),
+                shapeFactor: getValues(`${SEGMENTS}.${index}.${SHAPE_FACTOR}`),
+            };
         },
         [getValues]
     );
@@ -415,6 +491,7 @@ export const LineTypeSegmentForm = () => {
                     rowData={lineTypesCatalog}
                     onSelectLine={onSelectCatalogLine}
                     preselectedRowId={getPreselectedRowIdForCatalog(openCatalogDialogIndex)}
+                    preselectedParams={getPreselectedRowData(openCatalogDialogIndex)}
                 />
             )}
         </>
