@@ -290,9 +290,7 @@ export default function CreateVoltageLevelSectionDialog({
                         busBarSectionInfos={busBarSectionInfos}
                         voltageLevelId={selectedId}
                         allBusbarSectionsList={allBusbarSectionsList}
-                        studyUuid={studyUuid}
                         currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         isUpdate={isUpdate}
                         isSymmetricalNbBusBarSections={isSymmetricalNbBusBarSections}
                         isNotFoundOrNotSupported={isExtensionNotFoundOrNotSupportedTopology}
