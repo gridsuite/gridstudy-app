@@ -35,8 +35,11 @@ import {
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
+    MEASUREMENT_Q,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
+    STATE_ESTIMATION,
+    VALIDITY,
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
 import yup from '../../../../utils/yup-config';
@@ -66,11 +69,17 @@ import {
 } from '../characteristics-pane/characteristics-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
+import {
+    getInjectionActiveReactivePowerEditData,
+    getInjectionActiveReactivePowerEmptyFormData,
+    getInjectionActiveReactivePowerValidationSchemaProperties,
+} from '../../common/measurements/injection-active-reactive-power-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getCharacteristicsEmptyFormData(),
+    ...getInjectionActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
     ...emptyProperties,
 };
 
@@ -79,6 +88,7 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
+        [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
         ...getCharacteristicsFormValidationSchema(true),
     })
     .concat(modificationPropertiesSchema)
@@ -147,6 +157,7 @@ export default function ShuntCompensatorModificationDialog({
                     sectionCount: editData.sectionCount?.value ?? null,
                     maximumSectionCount: editData.maximumSectionCount?.value ?? null,
                 }),
+                ...getInjectionActiveReactivePowerEditData(STATE_ESTIMATION, editData),
                 ...getPropertiesFromModification(editData.properties),
             });
         }
@@ -220,6 +231,8 @@ export default function ShuntCompensatorModificationDialog({
 
     const onSubmit = useCallback(
         (shuntCompensator: ShuntCompensatorModificationDialogSchemaForm) => {
+            const stateEstimationData = shuntCompensator[STATE_ESTIMATION];
+
             const shuntCompensatorModificationInfos = {
                 type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
                 uuid: editData?.uuid ?? null,
@@ -252,6 +265,10 @@ export default function ShuntCompensatorModificationDialog({
                 connectionDirection: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION]),
                 connectionPosition: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION]),
                 terminalConnected: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[CONNECTED]),
+                qMeasurementValue: toModificationOperation(
+                    stateEstimationData?.[MEASUREMENT_Q]?.[FieldConstants.VALUE]
+                ),
+                qMeasurementValidity: toModificationOperation(stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY]),
                 properties: toModificationProperties(shuntCompensator),
             } satisfies ShuntCompensatorModificationInfos;
             modifyShuntCompensator({
