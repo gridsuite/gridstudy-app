@@ -28,10 +28,6 @@ import {
     SHUNT_COMPENSATOR_SELECTED,
     VOLTAGE_LEVEL,
 } from '../../../../../utils/field-constants';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-} from '../../../../connectivity/connectivity-form-utils';
 import yup from '../../../../../utils/yup-config';
 import {
     LccConverterStationCreationInfos,
@@ -42,19 +38,21 @@ import {
     ShuntCompensatorModificationFormSchema,
 } from './lcc-type';
 import {
+    Connectivity,
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     emptyProperties,
     FieldConstants,
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionSchema,
     getPropertiesFromModification,
     MODIFICATION_TYPES,
     modificationPropertiesSchema,
     sanitizeString,
     toModificationOperation,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
-import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
-import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 import {
     LccConverterStationModificationInfos,
     LccModificationInfos,
