@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useLayoutEffect, useRef, useState, memo } from 'react';
+import { memo, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../../../utils/running-status';
 import {
@@ -33,9 +33,9 @@ import {
     ComputingType,
     EquipmentType,
     mergeSx,
+    PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
-    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -44,17 +44,17 @@ import { BusMenu } from 'components/menus/bus-menu';
 import { startShortCircuitAnalysis } from '../../../../../services/study/short-circuit-analysis';
 import { useOneBusShortcircuitAnalysisLoader } from './hooks/use-one-bus-shortcircuit-analysis-loader';
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../../../redux/actions';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType, type SubstationDiagramParams, type VoltageLevelDiagramParams } from '../diagram.type';
 import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
-import useComputationDebug from '../../../../../hooks/use-computation-debug';
 
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
+import useDebugSubscription from '../../../../../hooks/computation-debug/use-debug-subscription';
 
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
@@ -148,7 +148,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     );
 
     const toggleBreakerDomClasses = useCallback((elementId?: string | null) => {
-        const breakerToSwitchDom: HTMLElement | null = document.getElementById(elementId ?? '');
+        const breakerToSwitchDom = svgRef.current?.querySelector<HTMLElement>(`#${CSS.escape(elementId ?? '')}`);
         if (breakerToSwitchDom?.classList.value.includes('sld-closed')) {
             breakerToSwitchDom.classList.replace('sld-closed', 'sld-open');
         } else if (breakerToSwitchDom?.classList.value.includes('sld-open')) {
@@ -217,7 +217,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     );
 
     // --- for running in debug mode --- //
-    const subscribeDebug = useComputationDebug({
+    const subscribeDebug = useDebugSubscription({
         studyUuid: studyUuid,
         nodeUuid: currentNode?.id!,
         rootNetworkUuid: currentRootNetworkUuid!,

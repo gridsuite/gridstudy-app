@@ -16,6 +16,7 @@ import {
     COMMON_APP_NAME,
     fetchConfigParameter,
     fetchConfigParameters,
+    getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
     LAST_SELECTED_DIRECTORY,
@@ -23,26 +24,25 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
-    getComputedLanguage,
-    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
-import { APP_NAME, PARAM_FAVORITE_CONTINGENCY_LISTS, PARAM_USE_NAME } from '../utils/config-params';
+import { APP_NAME, PARAM_USE_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
+    addSortForNewSpreadsheet,
+    initOrUpdateGlobalFilters,
     initTableDefinitions,
     renameTableDefinition,
-    saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
     selectIsDeveloperMode,
-    selectFavoriteContingencyLists,
     selectLanguage,
     selectTheme,
     selectUseName,
@@ -52,7 +52,12 @@ import {
     updateTableColumns,
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
-import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
+import {
+    isComputationResultColumnFilterUpdatedNotification,
+    isComputationResultGlobalFilterUpdatedNotification,
+    isNetworkVisualizationParametersUpdatedNotification,
+    NotificationType,
+} from 'types/notification-types';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
     getSpreadsheetModel,
@@ -64,7 +69,10 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
+import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
+import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
+import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -127,9 +135,6 @@ const App = () => {
                     case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));
                         break;
-                    case PARAM_FAVORITE_CONTINGENCY_LISTS:
-                        dispatch(selectFavoriteContingencyLists(param.value.split(',').filter((list) => list)));
-                        break;
                     case LAST_SELECTED_DIRECTORY:
                         localStorage.setItem(LAST_SELECTED_DIRECTORY, param.value);
                         break;
@@ -163,6 +168,8 @@ const App = () => {
 
     useBaseVoltages();
 
+    useGlobalFilterOptions();
+
     const networkVisuParamsUpdated = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
@@ -181,9 +188,11 @@ const App = () => {
 
     const resetTableDefinitions = useCallback(
         (collection) => {
-            const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+            const { tablesFilters, tableGlobalFilters, tableDefinitions, tablesSorts } =
                 processSpreadsheetsCollectionData(collection);
-            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters));
+            dispatch(
+                initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters, tablesSorts)
+            );
         },
         [dispatch]
     );
@@ -200,7 +209,15 @@ const App = () => {
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
-                    dispatch(saveSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
+                    dispatch(initOrUpdateGlobalFilters(tabUuid, formattedGlobalFilters));
+                    dispatch(
+                        addSortForNewSpreadsheet(tabUuid, [
+                            {
+                                colId: model.sortConfig ? model.sortConfig.colId : 'id',
+                                sort: model.sortConfig ? model.sortConfig.sort : SortWay.ASC,
+                            },
+                        ])
+                    );
                 })
                 .catch((error) => {
                     snackWithFallback(snackError, error, {
@@ -246,6 +263,27 @@ const App = () => {
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: onSpreadsheetNotification,
+    });
+
+    const onComputationTabNotification = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            if (isComputationResultColumnFilterUpdatedNotification(eventData)) {
+                updateComputationColumnFilters(
+                    dispatch,
+                    studyUuid,
+                    eventData.headers.computationType,
+                    eventData.headers.computationSubtype
+                );
+            } else if (isComputationResultGlobalFilterUpdatedNotification(eventData)) {
+                updateComputationGlobalFilters(dispatch, studyUuid, eventData.headers.computationType);
+            }
+        },
+        [dispatch, studyUuid]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: onComputationTabNotification,
     });
 
     // Can't use lazy initializer because useRouteMatch is a hook

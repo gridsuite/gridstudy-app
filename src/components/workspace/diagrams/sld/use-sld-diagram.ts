@@ -6,10 +6,10 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useSnackMessage, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
-import { AppState } from '../../../../redux/reducer';
+import { ErrorMessageDescriptor, extractErrorMessageDescriptor, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
+import { AppState } from '../../../../redux/reducer.type';
 import { Diagram, DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg } from '../../../../services/study';
 import {
@@ -21,11 +21,10 @@ import { SLD_DISPLAY_MODE } from '../../../network/constants';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
 import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
 import { NodeType } from '../../../graph/tree-node.type';
-import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 
 interface UseSldDiagramProps {
     diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
-    diagramId: string;
+    equipmentId: string;
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
@@ -33,7 +32,7 @@ interface UseSldDiagramProps {
 
 export const useSldDiagram = ({
     diagramType,
-    diagramId,
+    equipmentId,
     studyUuid,
     currentNodeId,
     currentRootNetworkUuid,
@@ -42,19 +41,23 @@ export const useSldDiagram = ({
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
-    const { snackError } = useSnackMessage();
-    const { baseVoltagesConfig } = useBaseVoltages();
 
     const [diagram, setDiagram] = useState<Diagram>(
         () =>
             ({
                 type: diagramType,
                 svg: null,
-                diagramId,
+                equipmentId,
             }) as Diagram
     );
     const [loading, setLoading] = useState(false);
-    const [globalError, setGlobalError] = useState<string | undefined>();
+    const [globalError, setGlobalError] = useState<ErrorMessageDescriptor | undefined>();
+
+    // Keep ref synced to check node build status in async callbacks (avoids stale closures)
+    const currentNodeRef = useRef(currentNode);
+    useEffect(() => {
+        currentNodeRef.current = currentNode;
+    }, [currentNode]);
 
     // Helper to process SVG data - extracted to reduce nesting
     const processSvgData = useCallback((svgData: any) => {
@@ -63,29 +66,9 @@ export const useSldDiagram = ({
         }
     }, []);
 
-    const handleFetchError = useCallback(
-        (error: any) => {
-            console.error('Error fetching SLD diagram:', error);
-            let errorMessage: string;
-            if (error?.status === 404) {
-                setDiagram((current) => {
-                    errorMessage =
-                        current.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
-                    setGlobalError(errorMessage);
-                    return current;
-                });
-            } else if (error?.status === 403) {
-                errorMessage = error.message || 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
-                setGlobalError(errorMessage);
-            } else {
-                errorMessage = 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
-                setGlobalError(errorMessage);
-            }
-        },
-        [snackError]
-    );
+    const handleFetchError = useCallback((error: any) => {
+        setGlobalError(extractErrorMessageDescriptor(error, ''));
+    }, []);
 
     const handleFetchComplete = useCallback(() => {
         setLoading(false);
@@ -107,20 +90,19 @@ export const useSldDiagram = ({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        voltageLevelId: currentDiagram.diagramId,
+                        voltageLevelId: currentDiagram.equipmentId,
                     });
                     fetchOptions = {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             useName: paramUseName,
-                            centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-                            diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                            componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                            centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,
+                            diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
+                            componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
                             sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
                             topologicalColoring: true,
                             language,
-                            baseVoltagesConfigInfos: baseVoltagesConfig,
                         }),
                     };
                 } else if (currentDiagram.type === DiagramType.SUBSTATION) {
@@ -128,20 +110,19 @@ export const useSldDiagram = ({
                         studyUuid,
                         currentNodeUuid: currentNodeId,
                         currentRootNetworkUuid,
-                        substationId: currentDiagram.diagramId,
+                        substationId: currentDiagram.equipmentId,
                     });
                     fetchOptions = {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             useName: paramUseName,
-                            centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-                            diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                            substationLayout: networkVisuParams.singleLineDiagramParameters.substationLayout,
-                            componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                            centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,
+                            diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
+                            substationLayout: networkVisuParams?.singleLineDiagramParameters.substationLayout,
+                            componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
                             topologicalColoring: true,
                             language,
-                            baseVoltagesConfigInfos: baseVoltagesConfig,
                         }),
                     };
                 }
@@ -168,7 +149,6 @@ export const useSldDiagram = ({
         currentRootNetworkUuid,
         paramUseName,
         networkVisuParams,
-        baseVoltagesConfig,
         language,
         processSvgData,
         handleFetchError,
@@ -180,19 +160,19 @@ export const useSldDiagram = ({
         if (!currentNode?.id) return;
 
         if (currentNode.type !== NodeType.ROOT && !isStatusBuilt(currentNode?.data?.globalBuildStatus)) {
-            setGlobalError('InvalidNode');
+            setGlobalError({ descriptor: { id: 'InvalidNode' } });
             return;
         }
 
         setGlobalError(undefined);
 
-        // Update diagram from diagramId
+        // Update diagram from equipmentId
         setDiagram(
             (prev) =>
                 ({
                     ...prev,
                     type: diagramType,
-                    diagramId,
+                    equipmentId,
                 }) as Diagram
         );
 
@@ -205,7 +185,7 @@ export const useSldDiagram = ({
         currentNode?.type,
         currentNode?.data?.globalBuildStatus,
         currentRootNetworkUuid,
-        diagramId,
+        equipmentId,
     ]);
 
     // Listen for notifications and refetch

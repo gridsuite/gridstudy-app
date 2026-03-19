@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
-import { createPropertyModification, Property } from '../common/properties/property-utils';
 import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from './properties/property-utils';
 import {
     CSV_FILENAME,
@@ -27,11 +26,13 @@ import {
 import { BOOLEAN, ENUM, NUMBER } from '../../../network/constants';
 import { IntlShape } from 'react-intl';
 import {
+    createPropertyModification,
     EquipmentType,
     equipmentTypesForPredefinedPropertiesMapper,
     LANG_FRENCH,
     ModificationType,
     PredefinedProperties,
+    Property,
 } from '@gridsuite/commons-ui';
 import yup from 'components/utils/yup-config';
 import type { UUID } from 'node:crypto';

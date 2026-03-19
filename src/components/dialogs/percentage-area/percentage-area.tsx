@@ -6,12 +6,11 @@
  */
 
 import { Grid, Typography } from '@mui/material';
-import { percentageTextField, standardTextField } from '../dialog-utils';
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import { useFormContext } from 'react-hook-form';
 import { formatPercentageValue, isValidPercentage, sanitizePercentageValue } from './percentage-area-utils';
 import { FormattedMessage } from 'react-intl';
-import { Input, SliderInput, TextInput } from '@gridsuite/commons-ui';
+import { Input, PercentageAdornment, SliderInput, standardTextField, TextInput } from '@gridsuite/commons-ui';
 
 /**
  * Component to handle a 'percentage area' (slider , left and right percentage fields)
@@ -65,7 +64,7 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
     const leftSidePercentageField = (
         <TextInput
             name={LEFT_SIDE_PERCENTAGE}
-            adornment={percentageTextField}
+            adornment={PercentageAdornment}
             acceptValue={isValidPercentage}
             outputTransform={handleLeftPercentageValueChange}
             formProps={standardTextField}
@@ -75,7 +74,7 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
     const rightSidePercentageField = (
         <TextInput
             name={RIGHT_SIDE_PERCENTAGE}
-            adornment={percentageTextField}
+            adornment={PercentageAdornment}
             acceptValue={isValidPercentage}
             outputTransform={handleRightPercentageValueChange}
             formProps={standardTextField}

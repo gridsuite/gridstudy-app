@@ -8,163 +8,145 @@
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import { PanelType } from '../../components/workspace/types/workspace.types';
-import type { Workspace, SLDPanelMetadata } from '../../components/workspace/types/workspace.types';
+import type { Workspace, PanelState, SLDVoltageLevelPanel } from '../../components/workspace/types/workspace.types';
 import type { UUID } from 'node:crypto';
-import { findNadForSld } from './workspace-helpers';
 
-const getActiveWorkspace = (state: RootState): Workspace | undefined =>
-    state.workspace.workspaces.find((w) => w.id === state.workspace.activeWorkspaceId);
+const getActiveWorkspace = (state: RootState): Workspace | null => state.workspace.activeWorkspace;
 
 export const selectActiveWorkspace = getActiveWorkspace;
 
-export const selectPanelsRecord = createSelector([getActiveWorkspace], (workspace) => workspace?.panels ?? {});
-
-// Map NAD panel IDs to their associated SLD panel IDs
-const selectSldsByNad = createSelector([selectPanelsRecord], (panels): Map<UUID, UUID[]> => {
-    const map = new Map<UUID, UUID[]>();
-    Object.values(panels).forEach((panel) => {
-        if (panel.type === PanelType.SLD_VOLTAGE_LEVEL || panel.type === PanelType.SLD_SUBSTATION) {
-            const parentNadId = (panel.metadata as SLDPanelMetadata | undefined)?.parentNadPanelId;
-            if (parentNadId) {
-                const sldIds = map.get(parentNadId);
-                if (sldIds) {
-                    sldIds.push(panel.id);
-                } else {
-                    map.set(parentNadId, [panel.id]);
-                }
-            }
-        }
-    });
-    return map;
-});
+export const selectPanels = createSelector([getActiveWorkspace], (workspace): PanelState[] => workspace?.panels ?? []);
 
 export const selectPanel = createSelector(
-    [selectPanelsRecord, (_state: RootState, panelId: UUID) => panelId],
-    (panels, panelId) => panels[panelId]
+    [selectPanels, (_state: RootState, panelId: UUID) => panelId],
+    (panels, panelId) => panels.find((p) => p.id === panelId)
 );
 
-export const selectPanelMetadata = createSelector([selectPanel], (panel) => panel?.metadata);
+export const selectWorkspaces = (state: RootState) => state.workspace.workspacesMetadata;
 
-export const selectIsPanelTypeOpen = createSelector(
-    [selectPanelsRecord, (_state: RootState, panelType: PanelType) => panelType],
-    (panels, panelType): boolean => Object.values(panels).some((p) => p.type === panelType && !p.isClosed)
-);
+export const selectActiveWorkspaceId = (state: RootState) => state.workspace.activeWorkspace?.id ?? null;
 
-// Get all SLD panel IDs associated with NAD panels
-const selectAssociatedSldIds = createSelector([selectSldsByNad], (sldsByNad): Set<UUID> => {
-    const associatedSldIds = new Set<UUID>();
-    sldsByNad.forEach((sldIds) => {
-        sldIds.forEach((id) => associatedSldIds.add(id));
-    });
-    return associatedSldIds;
+export const selectFocusedPanelId = createSelector([selectPanels], (panels): UUID | null => {
+    const nonMinimized = panels.filter(
+        (p) => !p.minimized && !(p.type === PanelType.SLD_VOLTAGE_LEVEL && p.parentNadPanelId)
+    );
+    if (nonMinimized.length === 0) return null;
+
+    const focused = nonMinimized.reduce((max, p) => ((p.zIndex ?? 0) >= (max.zIndex ?? 0) ? p : max), nonMinimized[0]);
+    return focused.id;
 });
 
-export const selectOpenPanels = createSelector(
-    [selectPanelsRecord, selectAssociatedSldIds],
-    (panels, associatedSldIds) => {
-        return Object.values(panels)
-            .filter((p) => {
-                // Exclude attached SLDs (they render inside NAD panels, not in workspace)
-                const isAttachedSld = associatedSldIds.has(p.id);
-                return !p.isClosed && !isAttachedSld;
-            })
-            .sort((a, b) => a.orderIndex - b.orderIndex);
+export const selectOpenPanels = createSelector([selectPanels], (panels) => {
+    const attachedSldIds = new Set<UUID>();
+    panels.forEach((panel) => {
+        if (panel.type === PanelType.SLD_VOLTAGE_LEVEL && panel.parentNadPanelId) {
+            attachedSldIds.add(panel.id);
+        }
+    });
+
+    return panels.filter((p) => {
+        // Filter out attached SLD panels
+        if (attachedSldIds.has(p.id)) return false;
+
+        // Keep diagram panels mounted even when minimized
+        if (p.type === PanelType.NAD || p.type === PanelType.SLD_VOLTAGE_LEVEL || p.type === PanelType.SLD_SUBSTATION) {
+            return true;
+        }
+
+        // Other panels are filtered out when minimized
+        return !p.minimized;
+    });
+});
+
+export const selectOpenPanelIds = createSelector([selectOpenPanels], (panels) => panels.map((p) => p.id));
+
+export const selectAssociatedPanels = createSelector(
+    [selectPanels, (_state: RootState, nadPanelId: UUID) => nadPanelId],
+    (panels, nadPanelId): SLDVoltageLevelPanel[] => {
+        return panels.filter(
+            (p): p is SLDVoltageLevelPanel =>
+                p.type === PanelType.SLD_VOLTAGE_LEVEL && p.parentNadPanelId === nadPanelId
+        );
     }
 );
 
-export const selectOpenPanelIds = createSelector([selectOpenPanels], (openPanels) => openPanels.map((p) => p.id));
-
-export const selectFocusedPanelId = createSelector(
-    [getActiveWorkspace],
-    (workspace) => workspace?.focusedPanelId ?? null
+export const selectPanelByType = createSelector(
+    [selectPanels, (_state: RootState, panelType: PanelType) => panelType],
+    (panels, panelType) => panels.find((p) => p.type === panelType)
 );
 
-export const selectWorkspaces = (state: RootState) => state.workspace.workspaces;
-
-export const selectActiveWorkspaceId = (state: RootState) => state.workspace.activeWorkspaceId;
-
-// Get associated SLD panel IDs for a NAD panel
-export const selectAssociatedPanelIds = createSelector(
-    [selectSldsByNad, (_state: RootState, nadPanelId: UUID) => nadPanelId],
-    (sldsByNad, nadPanelId): UUID[] => {
-        return sldsByNad.get(nadPanelId) || [];
+export const selectExistingSLD = createSelector(
+    [selectPanels, (_state: RootState, equipmentId: string) => equipmentId],
+    (panels, equipmentId) => {
+        return panels.find(
+            (p) =>
+                (p.type === PanelType.SLD_VOLTAGE_LEVEL || p.type === PanelType.SLD_SUBSTATION) &&
+                p.equipmentId === equipmentId &&
+                (p.type === PanelType.SLD_SUBSTATION || !p.parentNadPanelId)
+        );
     }
 );
 
-// Get panel data (zIndex, isClosed) for associated SLD panels
-export const selectAssociatedPanelsData = createSelector(
-    [selectAssociatedPanelIds, selectPanelsRecord],
-    (associatedPanelIds, allPanels): Record<UUID, { zIndex: number; isClosed: boolean }> => {
-        const result: Record<UUID, { zIndex: number; isClosed: boolean }> = {};
-        associatedPanelIds.forEach((id) => {
-            const panel = allPanels[id];
-            if (panel) {
-                result[id] = {
-                    zIndex: panel.zIndex,
-                    isClosed: panel.isClosed,
-                };
-            }
-        });
-        return result;
-    }
-);
-
-// Map associated panel IDs to their voltage level IDs
 export const selectAssociatedVoltageLevelIds = createSelector(
-    [selectAssociatedPanelIds, selectPanelsRecord],
-    (associatedPanelIds, panels): string[] => {
-        return associatedPanelIds
-            .map((panelId) => {
-                const panel = panels[panelId];
-                return (panel?.metadata as SLDPanelMetadata | undefined)?.diagramId;
-            })
-            .filter((id): id is string => !!id);
+    [selectPanels, (_state: RootState, nadPanelId: UUID) => nadPanelId],
+    (panels, nadPanelId): string[] => {
+        return panels
+            .filter((p) => p.type === PanelType.SLD_VOLTAGE_LEVEL && p.parentNadPanelId === nadPanelId)
+            .map((p) => (p as SLDVoltageLevelPanel).equipmentId);
     }
 );
 
-// Get visible associated SLD panels for a NAD panel
-export const selectVisibleAssociatedSldPanels = createSelector(
-    [selectAssociatedPanelIds, selectPanelsRecord],
-    (associatedPanelIds, panels) => associatedPanelIds.filter((id) => panels[id] && !panels[id].isClosed)
+export const selectVisibleAssociatedSldPanelIds = createSelector([selectAssociatedPanels], (panels): UUID[] =>
+    panels.filter((p) => !p.minimized).map((p) => p.id)
 );
 
-// Get associated panel details for rendering chips
-export const selectAssociatedPanelDetails = createSelector(
-    [selectAssociatedPanelIds, selectPanelsRecord],
-    (associatedPanelIds, panels) =>
-        associatedPanelIds.map((id) => {
-            const panel = panels[id];
-            return {
-                id,
-                title: panel?.title,
-                isVisible: panel && !panel.isClosed,
-            };
-        })
-);
+export const selectFocusedAssociatedSldId = createSelector([selectAssociatedPanels], (panels): UUID | null => {
+    const visible = panels.filter((p) => !p.minimized);
+    if (visible.length === 0) return null;
+    const focused = visible.reduce((max, p) => ((p.zIndex ?? 0) > (max.zIndex ?? 0) ? p : max), visible[0]);
+    return focused.id;
+});
 
-// Get NAD panel ID for a given SLD panel (null if not associated)
-export const selectNadForSld = createSelector(
-    [selectActiveWorkspace, (_state: RootState, sldPanelId: UUID) => sldPanelId],
-    (workspace, sldPanelId) => {
-        if (!workspace) return null;
-        return findNadForSld(workspace, sldPanelId);
+// Field-specific selectors to prevent unnecessary re-renders
+export const selectPanelTargetEquipment = createSelector(
+    [selectPanel],
+    (panel): { targetEquipmentId?: string; targetEquipmentType?: string } | undefined => {
+        if (panel?.type !== PanelType.SPREADSHEET) return undefined;
+        return {
+            targetEquipmentId: panel.targetEquipmentId,
+            targetEquipmentType: panel.targetEquipmentType,
+        };
     }
 );
 
-// Find SLD panel ID for a voltage level in a NAD's associated panels
-export const selectAssociatedSldByVoltageLevelId = createSelector(
-    [
-        selectSldsByNad,
-        selectPanelsRecord,
-        (_state: RootState, nadPanelId: UUID, _voltageLevelId: string) => nadPanelId,
-        (_state: RootState, _nadPanelId: UUID, voltageLevelId: string) => voltageLevelId,
-    ],
-    (sldsByNad, panels, nadPanelId, voltageLevelId) => {
-        const associatedPanelIds = sldsByNad.get(nadPanelId) || [];
-
-        return associatedPanelIds.find((panelId) => {
-            const metadata = panels[panelId]?.metadata as SLDPanelMetadata | undefined;
-            return metadata?.diagramId === voltageLevelId;
-        });
+export const selectSldDiagramFields = createSelector(
+    [selectPanel],
+    (panel): { equipmentId: string; navigationHistory: string[]; parentNadPanelId: UUID | undefined } | undefined => {
+        if (panel?.type !== PanelType.SLD_VOLTAGE_LEVEL && panel?.type !== PanelType.SLD_SUBSTATION) {
+            return undefined;
+        }
+        return {
+            equipmentId: panel.equipmentId,
+            navigationHistory: panel.type === PanelType.SLD_VOLTAGE_LEVEL ? panel.navigationHistory || [] : [],
+            parentNadPanelId: panel.type === PanelType.SLD_VOLTAGE_LEVEL ? panel.parentNadPanelId : undefined,
+        };
     }
 );
+
+export const selectNadDiagramFields = createSelector([selectPanel], (panel) => {
+    if (panel?.type !== PanelType.NAD) return undefined;
+    return {
+        title: panel.title,
+        nadConfigUuid: panel.nadConfigUuid,
+        filterUuid: panel.filterUuid,
+        currentFilterUuid: panel.currentFilterUuid,
+        initialVoltageLevelIds: panel.initialVoltageLevelIds,
+        voltageLevelToOmitIds: panel.voltageLevelToOmitIds,
+        currentNadConfigUuid: panel.currentNadConfigUuid,
+    };
+});
+
+export const selectNadNavigationHistory = createSelector([selectPanel], (panel): string[] | undefined => {
+    if (panel?.type !== PanelType.NAD) return undefined;
+    return panel.navigationHistory;
+});

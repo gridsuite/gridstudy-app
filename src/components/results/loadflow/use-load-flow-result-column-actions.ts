@@ -13,9 +13,8 @@ import { BranchSide } from '../../utils/constants';
 import type { UUID } from 'node:crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { openSLD } from '../../../redux/slices/workspace-slice';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { useDispatch } from 'react-redux';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 
 type UseLoadFlowResultColumnActionsProps = {
     studyUuid: UUID;
@@ -30,7 +29,7 @@ export const useLoadFlowResultColumnActions = ({
 }: UseLoadFlowResultColumnActionsProps) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const dispatch = useDispatch();
+    const { openSLD } = useWorkspacePanelActions();
 
     const getBranchSide = useCallback(
         (side: string | undefined) => {
@@ -59,15 +58,15 @@ export const useLoadFlowResultColumnActions = ({
                         getBranchSide(side) ?? BranchSide.ONE
                     )
                         .then((voltageLevelId) => {
-                            if (!voltageLevelId) {
-                                vlId = subjectId;
-                            } else {
+                            if (voltageLevelId) {
                                 vlId = voltageLevelId;
+                            } else {
+                                vlId = subjectId;
                             }
                         })
                         .finally(() => {
                             if (vlId) {
-                                dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                                openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
                                 return;
                             }
                             snackError({
@@ -80,7 +79,7 @@ export const useLoadFlowResultColumnActions = ({
                 }
             }
         },
-        [studyUuid, nodeUuid, currentRootNetworkUuid, getBranchSide, dispatch, snackError]
+        [studyUuid, nodeUuid, currentRootNetworkUuid, getBranchSide, openSLD, snackError]
     );
 
     return { onLinkClick };

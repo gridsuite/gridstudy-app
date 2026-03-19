@@ -11,8 +11,8 @@ import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { reorderNetworkModificationTreeNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { openOrFocusPanel } from '../redux/slices/workspace-slice';
 import { isSameNode } from './graph/util/model-functions';
+import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
@@ -27,13 +27,12 @@ import {
 import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
-import { PARAM_DEVELOPER_MODE, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 import { PanelType } from './workspace/types/workspace.types';
-import { useParameterState } from './dialogs/parameters/use-parameters-state.js';
 
 const styles = {
     modificationTree: (theme) => ({
@@ -62,8 +61,8 @@ const styles = {
 
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const dispatch = useDispatch();
+    const { openToolPanel } = useWorkspacePanelActions();
     const { snackError } = useSnackMessage();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
@@ -96,13 +95,13 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === NodeType.NETWORK_MODIFICATION) {
-                dispatch(openOrFocusPanel({ panelType: PanelType.NODE_EDITOR }));
+                openToolPanel(PanelType.MODIFICATIONS);
             }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);
             }
         },
-        [currentNode, dispatch, setCurrentTreeNodeWithSync]
+        [currentNode, openToolPanel, setCurrentTreeNodeWithSync]
     );
 
     /**
@@ -326,11 +325,9 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                     showInteractive={false}
                     showFitView={false} // We customize (for its tooltip) the fitView button below so we don't use the reactflow native one
                 >
-                    {enableDeveloperMode && (
-                        <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
-                            <CropFreeIcon />
-                        </TreeControlButton>
-                    )}
+                    <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
+                        <CropFreeIcon />
+                    </TreeControlButton>
                     <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
                         <CenterFocusIcon />
                     </TreeControlButton>
@@ -344,7 +341,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
 export default NetworkModificationTree;
 
 NetworkModificationTree.propTypes = {
-    prevTreeDisplay: PropTypes.object,
     onNodeContextMenu: PropTypes.func.isRequired,
     studyUuid: PropTypes.string.isRequired,
 };

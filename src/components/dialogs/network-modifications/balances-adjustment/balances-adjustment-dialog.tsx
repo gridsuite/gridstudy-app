@@ -250,7 +250,7 @@ export function BalancesAdjustmentDialog({
                 });
             } catch (error) {
                 snackWithFallback(snackError, error, {
-                    headerId: 'GenerationDispatchError',
+                    headerId: 'BalancesAdjustmentError',
                 });
             }
         },

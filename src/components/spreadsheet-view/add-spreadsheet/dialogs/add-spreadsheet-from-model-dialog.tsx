@@ -18,7 +18,7 @@ import {
 import { useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
     getSpreadsheetFromModelFormSchema,
     initialSpreadsheetFromModelForm,
@@ -83,13 +83,13 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<AddSpre
             const tabIndex = tablesDefinitions.length;
             const tabName = formData[SPREADSHEET_NAME];
             const modelId = formData[SPREADSHEET_MODEL][0].id;
-
             getSpreadsheetModel(modelId)
                 .then((selectedModel) => {
                     addNewSpreadsheet({
                         studyUuid,
                         columns: selectedModel.columns,
                         globalFilters: selectedModel.globalFilters,
+                        sortConfig: selectedModel.sortConfig,
                         sheetType: selectedModel.sheetType,
                         nodeAliases: selectedModel.nodeAliases,
                         resetNodeAliases,

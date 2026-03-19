@@ -12,7 +12,6 @@ export const PARAM_USE_NAME = 'useName';
 export const PARAM_LIMIT_REDUCTION = 'limitReduction';
 export const PARAM_COMPUTED_LANGUAGE = 'computedLanguage';
 export const PARAMS_LOADED = 'paramsLoaded';
-export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
 
 // SA Param names
 export const PARAM_SA_PROVIDER = 'provider';

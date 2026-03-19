@@ -15,7 +15,6 @@ import {
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
     CONVERTERS_MODE,
-    DELETION_MARK,
     FILTERS_SHUNT_COMPENSATOR_TABLE,
     ID,
     LOSS_FACTOR,
@@ -29,10 +28,6 @@ import {
     SHUNT_COMPENSATOR_SELECTED,
     VOLTAGE_LEVEL,
 } from '../../../../../utils/field-constants';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-} from '../../../../connectivity/connectivity-form-utils';
 import yup from '../../../../../utils/yup-config';
 import {
     LccConverterStationCreationInfos,
@@ -43,24 +38,27 @@ import {
     ShuntCompensatorModificationFormSchema,
 } from './lcc-type';
 import {
+    Connectivity,
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     emptyProperties,
+    FieldConstants,
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionSchema,
     getPropertiesFromModification,
+    MODIFICATION_TYPES,
     modificationPropertiesSchema,
-} from '../../../common/properties/property-utils';
-import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
-import { sanitizeString } from '../../../../dialog-utils';
-import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
-import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
+    sanitizeString,
+    toModificationOperation,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '@gridsuite/commons-ui';
 import {
     LccConverterStationModificationInfos,
     LccModificationInfos,
     LccShuntCompensatorInfos,
     LccShuntCompensatorModificationInfos,
 } from '../../../../../../services/network-modification-types';
-import { toModificationOperation } from '../../../../../utils/utils';
 
 export const getLccConverterStationSchema = () =>
     yup.object().shape({
@@ -132,7 +130,7 @@ export const getEmptyShuntCompensatorOnSideFormData = () => ({
 
 export const getEmptyShuntCompensatorOnSideModificationFormData = () => ({
     ...getEmptyShuntCompensatorOnSideFormData(),
-    [DELETION_MARK]: false,
+    [FieldConstants.DELETION_MARK]: false,
 });
 
 export const getEmptyFiltersShuntCompensatorModificationTableFormData = (count = 0) =>
@@ -215,7 +213,7 @@ export const getShuntCompensatorOnSideFormModificationData = (
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
             [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc === undefined ? null : shuntCp.connectedToHvdc,
-            [DELETION_MARK]: shuntCp.deletionMark ?? false,
+            [FieldConstants.DELETION_MARK]: shuntCp.deletionMark ?? false,
         })) ?? []
     );
 };
@@ -232,7 +230,7 @@ export const getConcatenatedShuntCompensatorOnSideInfos = (
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
             [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc === undefined ? null : shuntCp.connectedToHvdc,
-            [DELETION_MARK]: shuntCp?.deletionMark ?? false,
+            [FieldConstants.DELETION_MARK]: shuntCp?.deletionMark ?? false,
         })) ?? []
     );
 };
@@ -338,7 +336,7 @@ export const getShuntCompensatorOnSideModificationData = (
             name: shuntCp[SHUNT_COMPENSATOR_NAME],
             maxQAtNominalV: shuntCp[MAX_Q_AT_NOMINAL_V],
             connectedToHvdc: shuntCp[SHUNT_COMPENSATOR_SELECTED],
-            deletionMark: shuntCp[DELETION_MARK],
+            deletionMark: shuntCp[FieldConstants.DELETION_MARK],
             type: 'LCC_SHUNT_MODIFICATION',
         })) ?? []
     );

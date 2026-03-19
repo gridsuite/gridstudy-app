@@ -18,6 +18,7 @@ import {
     ErrorInput,
     fetchStudyMetadata,
     FieldErrorAlert,
+    getObjectId,
     LANG_FRENCH,
     type MuiStyles,
     type TreeViewFinderNodeProps,
@@ -39,7 +40,7 @@ import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import DefinePropertiesDialog from './properties/define-properties-dialog';
 import { PropertiesFormType, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from './properties/property-utils';
 import {
@@ -55,7 +56,6 @@ import { ColDef } from 'ag-grid-community';
 import { BOOLEAN } from '../../../network/constants';
 import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
 import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
-import { getObjectId } from '../../../utils/utils';
 import { useFilterCsvGenerator } from './use-filter-csv-generator';
 import { usePrefilledModelGenerator } from './generation/use-prefilled-model-generator';
 import GeneratePrefilledModelDialog from './generation/generate-prefilled-model-dialog';
@@ -346,11 +346,20 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
                 skipEmptyLines: true,
-                dynamicTyping: true,
+                dynamicTyping: (fieldName: string) => {
+                    // "property_*" (user added property) columns should remain as strings
+                    return !fieldName.startsWith(PROPERTY_CSV_COLUMN_PREFIX);
+                },
                 comments: '#',
                 delimiter: language === LANG_FRENCH ? ';' : ',',
                 complete: handleComplete,
-                transform: (value) => transformIfFrenchNumber(value, language),
+                transform: (value: string, field: string | number) => {
+                    if (typeof field === 'string' && field.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
+                        // don't transform property_* columns (user added property), keep them string
+                        return value;
+                    }
+                    return transformIfFrenchNumber(value, language);
+                },
             });
         }
     }, [clearErrors, handleComplete, intl, selectedFile, selectedFileError, setValue, language, csvFields]);

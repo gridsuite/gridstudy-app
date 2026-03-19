@@ -9,8 +9,8 @@ import { Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/mate
 import { BranchEquipmentInfos, CommonBranchEquipmentInfos } from '../equipment-popover-type';
 import { CellRender } from '../cell-render';
 import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
-import { CurrentLimits, TemporaryLimit } from 'services/network-modification-types';
 import RunningStatus from 'components/utils/running-status';
+import { CurrentLimitsData, TemporaryLimitsData } from '../../../services/study/network-map.type';
 
 /**
  * Render common characteristics Table
@@ -48,7 +48,7 @@ export const renderCommonCharacteristicsTable = (equipmentInfo: CommonBranchEqui
  */
 export const generateCurrentLimitsRows = (
     equipmentInfos: BranchEquipmentInfos,
-    currentLimits: CurrentLimits,
+    currentLimits: CurrentLimitsData,
     side: '1' | '2',
     loadFlowStatus?: RunningStatus
 ) => {
@@ -56,7 +56,7 @@ export const generateCurrentLimitsRows = (
 
     return (
         <>
-            {currentLimits?.permanentLimit && (
+            {!!currentLimits?.permanentLimit && (
                 <TableRow key={currentLimits.permanentLimit + side}>
                     <CellRender isLabel={true} label="PermanentCurrentLimitText" colStyle={styles.cell}></CellRender>
                     <TableCell sx={styles.cell}>{formatValue(Math.round(currentLimits.permanentLimit))}</TableCell>
@@ -77,7 +77,7 @@ export const generateCurrentLimitsRows = (
                 </TableRow>
             )}
             {currentLimits?.temporaryLimits?.map(
-                (temporaryLimit: TemporaryLimit) =>
+                (temporaryLimit: TemporaryLimitsData) =>
                     temporaryLimit.value && (
                         <TableRow key={temporaryLimit.name + side}>
                             <TableCell sx={styles.cell}>{formatValue(temporaryLimit.name)}</TableCell>

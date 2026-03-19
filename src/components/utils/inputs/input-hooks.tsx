@@ -10,10 +10,16 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { TextField, Tooltip, Button, Grid, TextFieldProps } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
-import { styles } from '../../dialogs/dialog-utils';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useCSVReader } from 'react-papaparse';
 import { LANG_FRENCH } from '@gridsuite/commons-ui';
+
+export const styles = {
+    tooltip: {
+        fontSize: 18,
+        maxWidth: 'none',
+    },
+};
 
 interface UseButtonWithTooltipProps {
     handleClick: React.MouseEventHandler<HTMLButtonElement>;

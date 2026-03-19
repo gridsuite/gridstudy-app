@@ -6,22 +6,24 @@
  */
 
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
+import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
+import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 
 export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     studyUuid,
@@ -35,10 +37,16 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+    const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
+    const { rowsPerPage } = pagination;
 
-    const handleSubTabChange = useCallback((event: React.SyntheticEvent, newIndex: number) => {
+    const resetPagination = useCallback(() => {
+        dispatchPagination({ page: 0, rowsPerPage });
+    }, [dispatchPagination, rowsPerPage]);
+
+    useComputationGlobalFilters(TableType.PccMin, resetPagination);
+
+    const handleSubTabChange = useCallback((event: SyntheticEvent, newIndex: number) => {
         setResultOrLogIndex(newIndex);
     }, []);
 
@@ -51,16 +59,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
         return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
     }, []);
 
-    useEffect(() => {
-        // Clear the globalfilter when tab changes
-        handleGlobalFilterChange([]);
-    }, [handleGlobalFilterChange]);
-
-    const globalFilterOptions = useMemo(
-        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
-        [voltageLevelsFilter, countriesFilter, propertiesFilter]
-    );
-
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0, mb: 1 }}>
@@ -71,10 +69,9 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                 {resultOrLogIndex === RESULTS_TAB_INDEX && (
                     <Box sx={{ flex: 1 }}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
-                            filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             genericFiltersStrictMode
+                            tableType={TableType.PccMin}
                         />
                     </Box>
                 )}
@@ -87,7 +84,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             currentRootNetworkUuid={currentRootNetworkUuid}
-                            globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
                             customTablePaginationProps={{
                                 labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
                             }}

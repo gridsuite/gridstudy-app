@@ -19,7 +19,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useIntl } from 'react-intl';
 import { updateStudySpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions } from 'redux/actions';
@@ -77,11 +77,17 @@ export default function AddSpreadsheetsFromCollectionDialog({ open }: Readonly<D
             const appendMode = formData.spreadsheetCollectionMode === SpreadsheetCollectionImportMode.APPEND;
             updateStudySpreadsheetConfigCollection(studyUuid, collectionId, appendMode)
                 .then((collectionData: SpreadsheetCollectionDto) => {
-                    const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                    const { tablesFilters, tableGlobalFilters, tableDefinitions, tablesSorts } =
                         processSpreadsheetsCollectionData(collectionData);
                     resetNodeAliases(appendMode, collectionData.nodeAliases);
                     dispatch(
-                        initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters)
+                        initTableDefinitions(
+                            collectionData.id,
+                            tableDefinitions,
+                            tablesFilters,
+                            tableGlobalFilters,
+                            tablesSorts
+                        )
                     );
                 })
                 .catch((error) => {

@@ -34,16 +34,34 @@ export type ComputedLineCharacteristics = {
     totalResistance: number;
     totalReactance: number;
     totalSusceptance: number;
+    finalCurrentLimits: CurrentLimitsInfo[];
 };
 
-export type CurrentLimitsInfo = {
+export type CurrentLimitHeader = {
     limitSetName: string;
     permanentLimit: number;
-    temporaryLimitValue: number;
-    temporaryLimitAcceptableDuration: number;
-    temporaryLimitName: string;
+};
+
+export type CurrentLimitsInfo = CurrentLimitHeader & {
+    temporaryLimits: TemporaryLimitsInfo[];
     area: string;
     temperature: string;
+};
+
+export type LimitSelectedRowData = CurrentLimitHeader & TemporaryLimitSelectedRowData;
+
+export type TemporaryLimitSelectedRowData = Record<string, number | string>;
+
+export type AreaTemperatureShapeFactorInfo = {
+    area: string | null;
+    temperature: string | null;
+    shapeFactor: number | null;
+};
+
+export type TemporaryLimitsInfo = {
+    limitValue: number;
+    acceptableDuration: number;
+    name: string;
 };
 
 export const CATEGORIES_TABS = {

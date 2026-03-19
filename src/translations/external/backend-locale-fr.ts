@@ -29,7 +29,7 @@ const backend_locale_fr = {
     TWO: 'Côté 2',
 
     // Voltage init results
-    REACTIVE_SLACKS_OVER_THRESHOLD: `L'investissement réactif pour au moins un noeud électrique dépasse {threshold} MVar`,
+    REACTIVE_SLACKS_OVER_THRESHOLD: `L'investissement réactif pour au moins un noeud électrique dépasse {threshold} Mvar`,
     VOLTAGE_LEVEL_LIMITS_OUT_OF_NOMINAL_VOLTAGE_RANGE:
         'La plage de tension acceptable pour au moins un poste semble incohérente par rapport à la tension nominale',
 

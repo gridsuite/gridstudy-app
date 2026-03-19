@@ -12,13 +12,18 @@ import {
     MINIMUM_ACTIVE_POWER,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { Grid, TextField } from '@mui/material';
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    ConnectivityForm,
+    filledTextField,
+    FloatInput,
+    PropertiesForm,
+    ReactivePowerAdornment,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage } from 'react-intl';
-import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
@@ -28,6 +33,9 @@ import { BatteryFormInfos } from '../battery-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { useCallback } from 'react';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
 export interface BatteryModificationFormProps {
     studyUuid: UUID;
@@ -48,6 +56,18 @@ export default function BatteryModificationForm({
     equipmentId,
 }: Readonly<BatteryModificationFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
     const batteryIdField = (
         <TextField
             size="small"
@@ -114,11 +134,7 @@ export default function BatteryModificationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
             previousValues={{
                 connectablePosition: batteryToModify?.connectablePosition,
@@ -126,6 +142,9 @@ export default function BatteryModificationForm({
                 busOrBusbarSectionId: batteryToModify?.busOrBusbarSectionId,
                 terminalConnected: batteryToModify?.terminalConnected,
             }}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

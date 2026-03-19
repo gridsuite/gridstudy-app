@@ -10,7 +10,7 @@ on:
 
 jobs:
   run-patch:
-    uses: powsybl/github-ci/.github/workflows/patch-frontend-app-generic.yml@b0f6bbfe2ebaf08ac8f5e4f1220e13cb05c24de2
+    uses: powsybl/github-ci/.github/workflows/patch-frontend-app-generic.yml@0d8ae1ddb3c03d77626232819c7026db6c5f2699
     with:
       releaseVersion: ${{ github.event.inputs.releaseVersion }}
       dockerImage: docker.io/gridsuite/gridstudy-app

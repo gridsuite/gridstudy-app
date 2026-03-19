@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppState } from '../redux/reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { DeletedEquipment, isStudyNotification, NetworkImpactsInfos } from 'types/notification-types';
 import { setReloadMapNeeded } from 'redux/actions';
@@ -25,7 +25,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const mapManualRefresh = useSelector(
-        (state: AppState) => state.networkVisualizationsParameters.mapParameters.mapManualRefresh
+        (state: AppState) => state.networkVisualizationsParameters?.mapParameters.mapManualRefresh
     );
     const dispatch = useDispatch();
 

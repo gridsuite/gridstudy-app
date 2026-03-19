@@ -124,6 +124,16 @@ export const equipmentsWithPopover = [
     FEEDER_TYPES.GENERATOR,
 ];
 
+export const equipmentsWithContextualMenu = [
+    FEEDER_TYPES.LINE,
+    FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER,
+    FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER,
+    FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER_LEG,
+    FEEDER_TYPES.LOAD,
+    FEEDER_TYPES.VOLTAGE_LEVEL,
+    FEEDER_TYPES.GENERATOR,
+];
+
 /**
  * Get the nodes and textNodes positions from the NAD's metadata and transform them in an array
  * of DiagramConfigPosition, to be saved in the backend.

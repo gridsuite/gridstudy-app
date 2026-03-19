@@ -10,10 +10,10 @@ import { Grid } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort';
-import { SortParams, useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
+import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
+import { CustomAggridFilterParams, SortParams } from '../../types/custom-aggrid-types';
 import { CustomMenu, CustomMenuProps } from './custom-aggrid-menu';
 import { CustomHeaderProps } from 'ag-grid-react';
-import { CustomAggridFilterParams } from './custom-aggrid-filters/custom-aggrid-filter.type';
 
 const styles = {
     displayName: {
@@ -43,7 +43,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
 }: CustomHeaderComponentProps<F, T>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
-    const { handleSortChange } = useCustomAggridSort(column.getId(), sortParams);
+    const { handleSortChange } = useCustomAggridSort(column.getId(), sortParams, api);
     const isSortable = !!sortParams;
     const handleClickHeader = () => {
         handleSortChange && handleSortChange();

@@ -7,7 +7,6 @@
 
 import {
     ACTIVE_POWER_SET_POINT,
-    ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -31,14 +30,13 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
-import { Property } from '../common/properties/property-utils';
-import { ConnectablePositionFormInfos } from '../../connectivity/connectivity.type';
 import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '../../reactive-limits/reactive-limits.type';
 import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
 import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
+import { ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type BatteryDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -63,7 +61,7 @@ export type BatteryDialogSchemaBaseForm = {
         [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
     };
     // Properties
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
     [TRANSFORMER_REACTANCE]?: number | null;
     [TRANSIENT_REACTANCE]?: number | null;
 };

@@ -7,12 +7,12 @@
 
 import type { ReadonlyDeep } from 'type-fest';
 import { DataType, FieldOptionType } from './assignment.type';
-import { LOAD_TYPES } from '../../../../../network/constants';
 import {
     EquipmentType,
     FieldType,
     KILO_AMPERE,
     KILO_VOLT,
+    LOAD_TYPES,
     MEGA_VAR,
     MEGA_VOLT_AMPERE,
     MEGA_WATT,
@@ -299,15 +299,15 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         dataType: DataType.ENUM,
         values: LOAD_TYPES,
     },
-    SELECTED_OPERATIONAL_LIMITS_GROUP_1: {
-        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
-        label: 'selectedOperationalLimitsGroup1',
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1: {
+        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+        label: 'selectedOperationalLimitsGroupId1',
         dataType: DataType.STRING,
         settableToNone: true,
     },
-    SELECTED_OPERATIONAL_LIMITS_GROUP_2: {
-        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
-        label: 'selectedOperationalLimitsGroup2',
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2: {
+        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
+        label: 'selectedOperationalLimitsGroupId2',
         dataType: DataType.STRING,
         settableToNone: true,
     },
@@ -341,8 +341,8 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.G2,
         FIELD_OPTIONS.B1,
         FIELD_OPTIONS.B2,
-        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
-        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
         FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_1_WITH_PROPERTIES,
         FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_2_WITH_PROPERTIES,
     ],
@@ -363,8 +363,8 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.PHASE_LOW_TAP_POSITION,
         FIELD_OPTIONS.PHASE_TAP_POSITION,
         FIELD_OPTIONS.PHASE_TARGET_DEADBAND,
-        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
-        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
         FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_1_WITH_PROPERTIES,
         FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_2_WITH_PROPERTIES,
     ],
@@ -413,3 +413,5 @@ export const EQUIPMENTS_FIELDS = {
     [EquipmentType.STATIC_VAR_COMPENSATOR]: [FIELD_OPTIONS.PROPERTY],
     [EquipmentType.HVDC_LINE]: [FIELD_OPTIONS.PROPERTY],
 } as const;
+
+export type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;

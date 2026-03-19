@@ -6,10 +6,9 @@
  */
 
 import { NAME, PREDEFINED, SELECTED } from 'components/utils/field-constants';
-import { CheckboxInput, TextInput } from '@gridsuite/commons-ui';
+import { CheckboxInput, italicFontTextField, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 import { useWatch } from 'react-hook-form';
-import { italicFontTextField } from '../../../dialog-utils';
 
 type PropertyFormProps = {
     name: string;

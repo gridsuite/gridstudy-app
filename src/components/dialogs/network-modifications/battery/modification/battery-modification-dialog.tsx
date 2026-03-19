@@ -8,16 +8,29 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    emptyProperties,
     EquipmentType,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
+    modificationPropertiesSchema,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
+    toModificationOperation,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityFormData,
+    getConnectivityWithPositionSchema,
+    getSetPointsEmptyFormData,
+    getSetPointsSchema,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
-    ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -43,7 +56,6 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { sanitizeString } from '../../../dialog-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
@@ -55,30 +67,15 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { FetchStatus } from '../../../../../services/utils.type';
-import { toModificationOperation } from '../../../../utils/utils';
 import {
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { BatteryModificationInfos } from '../../../../../services/network-modification-types';
 import BatteryModificationForm from './battery-modification-form';
-import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
@@ -255,7 +252,7 @@ export default function BatteryModificationDialog({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
                                 { keepDirty: true }
                             );

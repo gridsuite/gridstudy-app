@@ -31,7 +31,7 @@ import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
 import { Tooltip } from '@mui/material';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
@@ -297,13 +297,15 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         <>
                             <Divider orientation="vertical" flexItem sx={styles.divider} />
                             <Tooltip title={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}>
-                                <IconButton
-                                    sx={styles.actionIcon}
-                                    onClick={handleClickAddVoltageLevelSIcon}
-                                    disabled={isDiagramLoading || isNadCreationFromFilter}
-                                >
-                                    <AddLocationAltOutlinedIcon sx={styles.icon} />
-                                </IconButton>
+                                <span>
+                                    <IconButton
+                                        sx={styles.actionIcon}
+                                        onClick={handleClickAddVoltageLevelSIcon}
+                                        disabled={isDiagramLoading || isNadCreationFromFilter}
+                                    >
+                                        <AddLocationAltOutlinedIcon sx={styles.icon} />
+                                    </IconButton>
+                                </span>
                             </Tooltip>
                             <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
                                 <span>

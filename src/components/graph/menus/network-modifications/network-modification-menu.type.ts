@@ -41,7 +41,8 @@ export interface ExcludedNetworkModifications {
 export enum NetworkModificationCopyType {
     COPY = 'COPY',
     MOVE = 'MOVE',
-    INSERT = 'INSERT',
+    SPLIT_COMPOSITE = 'SPLIT_COMPOSITE',
+    INSERT_COMPOSITE = 'INSERT_COMPOSITE',
 }
 
 export interface NetworkModificationCopyInfos {

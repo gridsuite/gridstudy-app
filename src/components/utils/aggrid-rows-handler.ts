@@ -32,9 +32,9 @@ export function getNoRowsMessage(
         case RunningStatus.FAILED:
             return messages.failed;
         case RunningStatus.SUCCEED:
-            if (!isDataReady) {
+            if (!isDataReady || !rows) {
                 return messages.fetching;
-            } else if (!rows || rows?.length === 0) {
+            } else if (rows?.length === 0) {
                 return messages.noData ? messages.noData : messages.noLimitViolation;
             }
             return undefined;

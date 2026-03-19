@@ -13,32 +13,32 @@ import {
     EquipmentType,
     fetchDirectoryElementPath,
     Identifiable,
+    Nullable,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
-    NAME,
-    EQUIPMENT_TYPE_FIELD,
-    SELECTION_TYPE,
     DESTINATION_FOLDER,
+    EQUIPMENT_TYPE_FIELD,
     FOLDER_ID,
     FOLDER_NAME,
+    NAME,
+    SELECTION_TYPE,
 } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
-import { Nullable } from 'components/utils/ts-utils';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { SelectionCreationPanelForm } from './selection-creation-panel-form';
 import {
+    getSelectionCreationSchema,
     SelectionCreationPaneFields,
     SelectionCreationPanelFormSchema,
-    getSelectionCreationSchema,
 } from './selection-creation-schema';
 import { VoltageLevel } from '../../utils/equipment-types';
-import { openNAD } from '../../../redux/slices/workspace-slice';
+import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
 
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
@@ -67,7 +67,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const { pendingState, onSaveSelection } = useSaveMap();
-    const dispatch = useDispatch();
+    const { openNAD } = useWorkspacePanelActions();
     const formMethods = useForm<Nullable<SelectionCreationPanelFormSchema>>({
         defaultValues: emptyFormData,
         // "Nullable" to allow null values as default values for required values
@@ -108,7 +108,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 )
                 .filter((id): id is string => !!id);
 
-            dispatch(openNAD({ name: formData.name, initialVoltageLevelIds: voltageLevelIds }));
+            openNAD({ title: formData.name, initialVoltageLevelIds: voltageLevelIds });
             return;
         }
 

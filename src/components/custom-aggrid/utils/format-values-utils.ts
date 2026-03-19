@@ -22,7 +22,7 @@ export const convertDuration = (duration: number) => {
     const seconds = duration % 60;
 
     if (seconds === 0) {
-        return minutes + ' mn';
+        return minutes + ' min';
     }
 
     if (minutes === 0) {

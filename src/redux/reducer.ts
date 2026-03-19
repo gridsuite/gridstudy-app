@@ -9,17 +9,10 @@ import { createReducer, type Draft } from '@reduxjs/toolkit';
 import {
     type AuthenticationActions,
     type AuthenticationRouterErrorAction,
-    type AuthenticationRouterErrorState,
-    BaseVoltage,
-    type CommonStoreState,
     ComputingType,
-    type GsLang,
-    type GsLangUser,
-    type GsTheme,
     type Identifiable,
     LOGOUT_ERROR,
     type LogoutErrorAction,
-    type NetworkVisualizationParameters,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
@@ -36,15 +29,17 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     ADD_FILTER_FOR_NEW_SPREADSHEET,
+    ADD_GLOBAL_FILTERS,
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_SPREADSHEET_LOADED_NODES_IDS,
-    ADD_TO_RECENT_GLOBAL_FILTERS,
+    ADD_TO_GLOBAL_FILTER_OPTIONS,
     type AddFilterForNewSpreadsheetAction,
+    AddGlobalFiltersAction,
     type AddNotificationAction,
     type AddSortForNewSpreadsheetAction,
     AddSpreadsheetLoadedNodesIdsAction,
-    type AddToRecentGlobalFiltersAction,
+    type AddToGlobalFilterOptionsAction,
     type AppActions,
     ATTEMPT_LEAVE_PARAMETERS_TAB,
     type AttemptLeaveParametersTabAction,
@@ -53,30 +48,30 @@ import {
     type CenterOnSubstationAction,
     CLEAN_EQUIPMENTS,
     CleanEquipmentsAction,
+    CLEAR_GLOBAL_FILTERS,
+    ClearGlobalFiltersAction,
     CLOSE_STUDY,
     type CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
+    COPIED_NETWORK_MODIFICATIONS,
+    type CopiedNetworkModificationsAction,
     CURRENT_ROOT_NETWORK_UUID,
     CURRENT_TREE_NODE,
     type CurrentRootNetworkUuidAction,
     type CurrentTreeNodeAction,
     DELETE_EQUIPMENTS,
     type DeleteEquipmentsAction,
-    DYNAMIC_SIMULATION_RESULT_FILTER,
-    type DynamicSimulationResultFilterAction,
     ENABLE_DEVELOPER_MODE,
     type EnableDeveloperModeAction,
-    FAVORITE_CONTINGENCY_LISTS,
-    type FavoriteContingencyListsAction,
     HIGHLIGHT_MODIFICATION,
     HighlightModificationAction,
+    INIT_OR_UPDATE_GLOBAL_FILTER,
     INIT_TABLE_DEFINITIONS,
+    type InitOrUpdateGlobalFilterAction,
     type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     type LoadEquipmentsAction,
-    LOADFLOW_RESULT_FILTER,
-    type LoadflowResultFilterAction,
     type LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LOGS_RESULT_PAGINATION,
@@ -101,26 +96,24 @@ import {
     type NetworkModificationTreeNodesReorderAction,
     type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
-    COPIED_NETWORK_MODIFICATIONS,
     type NodeSelectionForCopyAction,
-    type CopiedNetworkModificationsAction,
     OPEN_STUDY,
     type OpenStudyAction,
     type ParameterizedComputingType,
-    PCCMIN_ANALYSIS_RESULT_FILTER,
     PCCMIN_ANALYSIS_RESULT_PAGINATION,
-    type PccminAnalysisResultFilterAction,
     PccminAnalysisResultPaginationAction,
     REMOVE_COLUMN_DEFINITION,
     REMOVE_EQUIPMENT_DATA,
-    REMOVE_FROM_RECENT_GLOBAL_FILTERS,
+    REMOVE_FROM_GLOBAL_FILTER_OPTIONS,
+    REMOVE_GLOBAL_FILTERS,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
     REMOVE_SPREADSHEET_LOADED_NODES_IDS,
     REMOVE_TABLE_DEFINITION,
     type RemoveColumnDefinitionAction,
     type RemoveEquipmentDataAction,
-    type RemoveFromRecentGlobalFiltersAction,
+    type RemoveFromGlobalFilterOptionsAction,
+    RemoveGlobalFiltersAction,
     type RemoveNodeDataAction,
     type RemoveNotificationByNodeAction,
     RemoveSpreadsheetLoadedNodesIdsAction,
@@ -129,7 +122,6 @@ import {
     type RenameTableDefinitionAction,
     REORDER_TABLE_DEFINITIONS,
     type ReorderTableDefinitionsAction,
-    RESET_ALL_SPREADSHEET_GS_FILTERS,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_COMPUTATION,
@@ -141,7 +133,6 @@ import {
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
     RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
-    type ResetAllSpreadsheetGlobalFiltersAction,
     type ResetEquipmentsAction,
     type ResetEquipmentsByTypesAction,
     type ResetEquipmentsPostComputationAction,
@@ -153,11 +144,7 @@ import {
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
     ResetShortcircuitAnalysisPaginationAction,
-    SAVE_SPREADSHEET_GS_FILTER,
-    type SaveSpreadSheetGlobalFilterAction,
-    SECURITY_ANALYSIS_RESULT_FILTER,
     SECURITY_ANALYSIS_RESULT_PAGINATION,
-    type SecurityAnalysisResultFilterAction,
     SecurityAnalysisResultPaginationAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
@@ -167,9 +154,7 @@ import {
     type SelectLanguageAction,
     type SelectSyncEnabledAction,
     type SelectThemeAction,
-    SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
-    type SensitivityAnalysisResultFilterAction,
     SensitivityAnalysisResultPaginationAction,
     SET_ACTIVE_SPREADSHEET_TAB,
     SET_ADDED_SPREADSHEET_TAB,
@@ -209,18 +194,15 @@ import {
     type SetRootNetworkIndexationStatusAction,
     type SetRootNetworksAction,
     SetSpreadsheetFetchingAction,
-    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
-    type ShortcircuitAnalysisResultFilterAction,
     ShortcircuitAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
-    STATEESTIMATION_RESULT_FILTER,
-    type StateEstimationResultFilterAction,
-    STUDY_UPDATED,
-    type StudyUpdatedAction,
+    STORE_NAD_VIEW_BOX,
+    StoreNadViewBoxAction,
     TABLE_SORT,
     type TableSortAction,
+    UPDATE_COLUMN_FILTERS,
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
@@ -228,6 +210,7 @@ import {
     UPDATE_SPREADSHEET_PARTIAL_DATA,
     UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
+    UpdateColumnFiltersAction,
     type UpdateColumnsDefinitionsAction,
     type UpdateEquipmentsAction,
     type UpdateNetworkVisualizationParametersAction,
@@ -237,8 +220,6 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
-    STORE_NAD_VIEW_BOX,
-    StoreNadViewBoxAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -248,45 +229,30 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import {
-    PARAM_COMPUTED_LANGUAGE,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_LIMIT_REDUCTION,
-    PARAM_USE_NAME,
-    PARAMS_LOADED,
-} from '../utils/config-params';
+import { PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
 import { RunningStatus } from 'components/utils/running-status';
-import {
-    type IOptionalService,
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from '../components/utils/optional-services';
+import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import {
     ALL_BUSES,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_CURRENT_LIMIT_VIOLATION,
     LOADFLOW_RESULT,
     LOADFLOW_RESULT_SORT_STORE,
-    LOADFLOW_RESULT_STORE_FIELD,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     ONE_BUS,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     PCCMIN_ANALYSIS_RESULT_SORT_STORE,
-    PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
     PCCMIN_RESULT,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
     SECURITY_ANALYSIS_RESULT_SORT_STORE,
-    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_AT_NODE_N,
     SENSITIVITY_AT_NODE_N_K,
     SENSITIVITY_IN_DELTA_A_N,
@@ -295,88 +261,52 @@ import {
     SENSITIVITY_IN_DELTA_MW_N_K,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_SORT_STORE,
     SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
     STATEESTIMATION_RESULT_SORT_STORE,
-    STATEESTIMATION_RESULT_STORE_FIELD,
     TABLE_SORT_STORE,
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import type { UUID } from 'node:crypto';
-import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import type { Entries, ValueOf } from 'type-fest';
+import type { Entries } from 'type-fest';
 import { CopyType } from '../components/network-modification.type';
-import {
-    CurrentTreeNode,
-    NetworkModificationNodeData,
-    NetworkModificationNodeInfos,
-    NetworkModificationNodeType,
-    RootNodeData,
-} from '../components/graph/tree-node.type';
+import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
-import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
-    type SpreadsheetOptionalLoadingParameters,
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
-    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PCCMIN_ANALYSIS_TABS,
-    PccminTab,
     SECURITY_ANALYSIS_TABS,
-    SecurityAnalysisTab,
     SENSITIVITY_ANALYSIS_TABS,
-    SensitivityAnalysisTab,
     SHORTCIRCUIT_ANALYSIS_TABS,
-    ShortcircuitAnalysisTab,
-    SortConfig,
     SortWay,
+    TableSortConfig,
 } from '../types/custom-aggrid-types';
-import {
-    NetworkModificationCopyInfos,
-    RootNetworkMetadata,
-} from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
-import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
+import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
-import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
-import { ViewBoxLike } from '@svgdotjs/svg.js';
+import { isCriteriaFilter } from '../components/results/common/utils';
+import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
 
-// Redux state
-export type StudyUpdated = {
-    force: number; //IntRange<0, 1>;
-} & StudyUpdateNotification;
-export type NadViewBox = Record<UUID, ViewBoxLike | null>;
-export enum EquipmentUpdateType {
-    LINES = 'lines',
-    TIE_LINES = 'tieLines',
-    TWO_WINDINGS_TRANSFORMERS = 'twoWindingsTransformers',
-    THREE_WINDINGS_TRANSFORMERS = 'threeWindingsTransformers',
-    GENERATORS = 'generators',
-    LOADS = 'loads',
-    BATTERIES = 'batteries',
-    DANGLING_LINES = 'danglingLines',
-    HVDC_LINES = 'hvdcLines',
-    LCC_CONVERTER_STATIONS = 'lccConverterStations',
-    VSC_CONVERTER_STATIONS = 'vscConverterStations',
-    SHUNT_COMPENSATORS = 'shuntCompensators',
-    STATIC_VAR_COMPENSATORS = 'staticVarCompensators',
-    VOLTAGE_LEVELS = 'voltageLevels',
-    SUBSTATIONS = 'substations',
-    BUSES = 'buses',
-    BUSBAR_SECTIONS = 'busbarSections',
-    BRANCHES = 'branches', // LINE + TWO_WINDINGS_TRANSFORMER
-}
+// Types are defined in reducer.type.ts — import them directly from there
+import {
+    type AppState,
+    type Bus,
+    EquipmentUpdateType,
+    type LogsFilterState,
+    type LogsPaginationState,
+    type SpreadsheetNetworkState,
+    type Substation,
+} from './reducer.type';
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
     switch (updateType) {
@@ -433,195 +363,8 @@ export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
     rowsPerPage: DEFAULT_LOGS_PAGE_COUNT,
 };
 
-export interface OneBusShortCircuitAnalysisDiagram {
-    diagramId: string;
-    studyUuid: UUID;
-    rootNetworkUuid: UUID;
-    nodeId: UUID;
-}
-
-export interface ComputingStatus {
-    [ComputingType.LOAD_FLOW]: RunningStatus;
-    [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
-    [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
-    [ComputingType.SHORT_CIRCUIT]: RunningStatus;
-    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
-    [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
-    [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
-    [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
-    [ComputingType.STATE_ESTIMATION]: RunningStatus;
-    [ComputingType.PCC_MIN]: RunningStatus;
-}
-
-export interface LoadFlowStatusParameters {
-    withRatioTapChangers: boolean;
-}
-
-export interface ComputingStatusParameters {
-    [ComputingType.LOAD_FLOW]: LoadFlowStatusParameters | null;
-}
-
-export type TableSortConfig = Record<string, SortConfig[]>;
-export type TableSort = {
-    [SPREADSHEET_SORT_STORE]: TableSortConfig;
-    [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
-    [SECURITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
-    [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
-    [PCCMIN_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-};
-export type TableSortKeysType = keyof TableSort;
-
-export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
-
-export type NadNodeMovement = {
-    diagramId: UUID;
-    equipmentId: string;
-    x: number;
-    y: number;
-    scalingFactor: number;
-};
-
-export type NadTextMovement = {
-    diagramId: UUID;
-    equipmentId: string;
-    shiftX: number;
-    shiftY: number;
-    connectionShiftX: number;
-    connectionShiftY: number;
-};
-
-/**
- * Represent a node in the network modifications tree that is selected.
- */
-export type NodeSelectionForCopy = {
-    sourceStudyUuid: UUID | null;
-    nodeId: UUID | null;
-    nodeType?: NetworkModificationNodeType | null;
-    copyType: ValueOf<typeof CopyType> | null;
-    allChildren?: NetworkModificationNodeInfos[] | null;
-};
-
-export type CopiedNetworkModifications = {
-    networkModificationUuids: UUID[];
-    copyInfos: NetworkModificationCopyInfos | null;
-};
-
 export type Actions = AppActions | AuthenticationActions;
 
-export interface AppConfigState {
-    [PARAM_THEME]: GsTheme;
-    [PARAM_LANGUAGE]: GsLang;
-    [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
-    [PARAM_LIMIT_REDUCTION]: number;
-    [PARAM_USE_NAME]: boolean;
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
-    [PARAM_DEVELOPER_MODE]: boolean;
-    [PARAMS_LOADED]: boolean;
-}
-
-export type LogsPaginationState = Record<string, LogsPaginationConfig>;
-export interface AppState extends CommonStoreState, AppConfigState {
-    signInCallbackError: Error | null;
-    authenticationRouterError: AuthenticationRouterErrorState | null;
-    showAuthenticationRouterLogin: boolean;
-    appTabIndex: number;
-    attemptedLeaveParametersTabIndex: number | null;
-    isDirtyComputationParameters: boolean;
-    studyUpdated: StudyUpdated;
-    studyUuid: UUID | null;
-    currentTreeNode: CurrentTreeNode | null;
-    currentRootNetworkUuid: UUID | null;
-    rootNetworks: RootNetworkMetadata[];
-    computingStatus: ComputingStatus;
-    computingStatusParameters: ComputingStatusParameters;
-    lastCompletedComputation: ComputingType | null;
-    computationStarting: boolean;
-    optionalServices: IOptionalService[];
-    oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
-    notificationIdList: UUID[];
-    recentGlobalFilters: GlobalFilter[];
-    mapEquipments: GSMapEquipments | undefined;
-    networkAreaDiagramDepth: number;
-    rootNetworkIndexationStatus: RootNetworkIndexationStatus;
-    tableSort: TableSort;
-    tables: TablesState;
-    nodeAliases: NodeAlias[];
-
-    nodeSelectionForCopy: NodeSelectionForCopy;
-    nadViewBox: NadViewBox;
-    copiedNetworkModifications: CopiedNetworkModifications;
-    geoData: null;
-    networkModificationTreeModel: NetworkModificationTreeModel | null;
-    isNetworkModificationTreeModelUpToDate: boolean;
-    mapDataLoading: boolean;
-    nadNodeMovements: NadNodeMovement[];
-    nadTextNodeMovements: NadTextMovement[];
-    isExplorerDrawerOpen: boolean;
-    centerOnSubstation: undefined | { to: string };
-    isModificationsInProgress: boolean;
-    isMonoRootStudy: boolean;
-    reloadMapNeeded: boolean;
-    isEditMode: boolean;
-    freezeMapUpdates: boolean;
-    isMapEquipmentsInitialized: boolean;
-    spreadsheetNetwork: SpreadsheetNetworkState;
-    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
-    spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
-    networkVisualizationsParameters: NetworkVisualizationParameters;
-
-    syncEnabled: boolean;
-
-    baseVoltages: BaseVoltage[];
-
-    [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterConfig[];
-        [LOADFLOW_RESULT]: FilterConfig[];
-    };
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: FilterConfig[];
-        [SECURITY_ANALYSIS_RESULT_N_K]: FilterConfig[];
-    };
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: FilterConfig[];
-        [SENSITIVITY_IN_DELTA_MW_N_K]: FilterConfig[];
-        [SENSITIVITY_IN_DELTA_A_N]: FilterConfig[];
-        [SENSITIVITY_IN_DELTA_A_N_K]: FilterConfig[];
-        [SENSITIVITY_AT_NODE_N]: FilterConfig[];
-        [SENSITIVITY_AT_NODE_N_K]: FilterConfig[];
-    };
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: FilterConfig[];
-        [ALL_BUSES]: FilterConfig[];
-    };
-    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: {
-        [PCCMIN_RESULT]: FilterConfig[];
-    };
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: FilterConfig[];
-    };
-    [STATEESTIMATION_RESULT_STORE_FIELD]: {
-        [STATEESTIMATION_QUALITY_CRITERION]: FilterConfig[];
-        [STATEESTIMATION_QUALITY_PER_REGION]: FilterConfig[];
-    };
-    [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SecurityAnalysisTab, PaginationConfig>;
-    [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SensitivityAnalysisTab, PaginationConfig>;
-    [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
-    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: Record<PccminTab, PaginationConfig>;
-
-    [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
-
-    [LOGS_STORE_FIELD]: LogsFilterState;
-    [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationState;
-
-    calculationSelections: Record<UUID, CalculationType[]>;
-    highlightedModificationUuid: UUID | null;
-}
-
-export type LogsFilterState = Record<string, FilterConfig[]>;
 const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
@@ -631,6 +374,7 @@ const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT_ONE_BUS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SIMULATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_MARGIN_CALCULATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.PCC_MIN]: [],
@@ -645,6 +389,7 @@ const initialLogsPaginationState: LogsPaginationState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT_ONE_BUS]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SIMULATION]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_MARGIN_CALCULATION]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.PCC_MIN]: { ...DEFAULT_LOGS_PAGINATION },
@@ -653,11 +398,6 @@ const initialLogsPaginationState: LogsPaginationState = {
 const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: {},
     isFetching: false,
-};
-
-export type SpreadsheetNetworkState = {
-    nodesIds: UUID[];
-    equipments: Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
 };
 
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
@@ -684,8 +424,6 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     },
 };
 
-export type GlobalFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
-
 interface TablesState {
     uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];
@@ -702,7 +440,7 @@ const initialTablesState: TablesState = {
 
 const initialState: AppState = {
     syncEnabled: false,
-    baseVolatges: null,
+    baseVoltages: null,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
     isDirtyComputationParameters: false,
@@ -735,10 +473,7 @@ const initialState: AppState = {
     signInCallbackError: null,
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
-    // @ts-expect-error TODO can't have empty eventData here
-    studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
-    setMapOpen: false,
     isExplorerDrawerOpen: true,
     centerOnSubstation: undefined,
     notificationIdList: [],
@@ -752,7 +487,7 @@ const initialState: AppState = {
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
-    globalFilterSpreadsheetState: {},
+
     spreadsheetOptionalLoadingParameters: {
         [SpreadsheetEquipmentType.BRANCH]: {
             operationalLimitsGroups: false,
@@ -770,6 +505,7 @@ const initialState: AppState = {
             networkComponents: false,
         },
     },
+    networkVisualizationsParameters: null,
     highlightedModificationUuid: null,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
@@ -779,6 +515,7 @@ const initialState: AppState = {
         [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
         [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
         [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
+        [ComputingType.DYNAMIC_MARGIN_CALCULATION]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
         [ComputingType.PCC_MIN]: RunningStatus.IDLE,
@@ -799,42 +536,11 @@ const initialState: AppState = {
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
     [PARAM_USE_NAME]: true,
     [PARAM_LIMIT_REDUCTION]: 100,
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
 
-    recentGlobalFilters: [],
+    globalFilterOptions: [],
     lastCompletedComputation: null,
-
-    // Results filters
-    [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [],
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [],
-        [LOADFLOW_RESULT]: [],
-    },
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: [],
-        [SECURITY_ANALYSIS_RESULT_N_K]: [],
-    },
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: [],
-        [SENSITIVITY_IN_DELTA_MW_N_K]: [],
-        [SENSITIVITY_IN_DELTA_A_N]: [],
-        [SENSITIVITY_IN_DELTA_A_N_K]: [],
-        [SENSITIVITY_AT_NODE_N]: [],
-        [SENSITIVITY_AT_NODE_N_K]: [],
-    },
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: [],
-        [ALL_BUSES]: [],
-    },
-
-    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: {
-        [PCCMIN_RESULT]: [],
-    },
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: [],
-    },
     [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: {
         [SECURITY_ANALYSIS_RESULT_N]: { ...DEFAULT_PAGINATION },
         [SECURITY_ANALYSIS_RESULT_N_K]: { ...DEFAULT_PAGINATION },
@@ -853,10 +559,6 @@ const initialState: AppState = {
     },
     [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: {
         [PCCMIN_RESULT]: { ...DEFAULT_PAGINATION },
-    },
-    [STATEESTIMATION_RESULT_STORE_FIELD]: {
-        [STATEESTIMATION_QUALITY_CRITERION]: [],
-        [STATEESTIMATION_QUALITY_PER_REGION]: [],
     },
 
     // Spreadsheet filters
@@ -933,6 +635,10 @@ const initialState: AppState = {
                 },
             ],
         },
+    },
+    tableFilters: {
+        columnsFilters: {},
+        globalFilters: {},
     },
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1091,13 +797,24 @@ export const reducer = createReducer(initialState, (builder) => {
             .reduce((acc, tabUuid) => {
                 acc[tabUuid] = [
                     {
-                        colId: 'id',
-                        sort: SortWay.ASC,
+                        colId: action?.tablesSorts?.[tabUuid]?.[0]?.colId ?? 'id',
+                        sort: action?.tablesSorts?.[tabUuid]?.[0]?.sort ?? SortWay.ASC,
                     },
                 ];
                 return acc;
             }, {} as TableSortConfig);
-        state.globalFilterSpreadsheetState = action?.globalFilterSpreadsheetState ?? {};
+        const spreadsheetGlobalFilters = action.globalFilters ?? {};
+        Object.entries(spreadsheetGlobalFilters).forEach(([tabUuid, filters]) => {
+            // Store only IDs in globalFilters
+            state.tableFilters.globalFilters[tabUuid] = filters.map(getGlobalFilterId);
+            // Store full objects in globalFilterOptions only if not already present
+            filters.filter(isCriteriaFilter).forEach((filter) => {
+                const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
+                if (!alreadyExists) {
+                    state.globalFilterOptions.push(addGlobalFilterId(filter));
+                }
+            });
+        });
     });
 
     builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
@@ -1259,15 +976,6 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     );
 
-    builder.addCase(STUDY_UPDATED, (state, action: StudyUpdatedAction) => {
-        state.studyUpdated = {
-            force: 1 - state.studyUpdated.force,
-            // @ts-expect-error TODO types incompatible here
-            type: action.eventData.headers.updateType,
-            eventData: action.eventData,
-        };
-    });
-
     builder.addCase(MAP_DATA_LOADING, (state, action: MapDataLoadingAction) => {
         state.mapDataLoading = action.mapDataLoading;
     });
@@ -1335,10 +1043,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
         state.isMapEquipmentsInitialized = action.newValue;
-    });
-
-    builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
-        state[PARAM_FAVORITE_CONTINGENCY_LISTS] = action[PARAM_FAVORITE_CONTINGENCY_LISTS];
     });
 
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
@@ -1556,6 +1260,15 @@ export const reducer = createReducer(initialState, (builder) => {
                         action.nodeId
                     ] = updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
                 }
+                // since we don't receive deleted buses ids in the notifications
+                // we have to check buses connected to the deleted voltage level and delete them
+                const currentBuses = state.spreadsheetNetwork.equipments[SpreadsheetEquipmentType.BUS]
+                    .equipmentsByNodeId[action.nodeId] as Record<string, Bus> | null;
+                if (currentBuses != null) {
+                    state.spreadsheetNetwork.equipments[SpreadsheetEquipmentType.BUS].equipmentsByNodeId[
+                        action.nodeId
+                    ] = updateBusesAfterVLDeletion(currentBuses, equipmentToDeleteId);
+                }
             }
             if (state.spreadsheetNetwork.equipments[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId]) {
                 delete state.spreadsheetNetwork.equipments[equipmentToDeleteType].equipmentsByNodeId[action.nodeId][
@@ -1602,6 +1315,7 @@ export const reducer = createReducer(initialState, (builder) => {
         switch (action.equipmentType) {
             case SpreadsheetEquipmentType.GENERATOR:
                 propsToClean = {
+                    regulationType: undefined,
                     regulatingTerminalVlName: undefined,
                     regulatingTerminalConnectableId: undefined,
                     regulatingTerminalConnectableType: undefined,
@@ -1682,61 +1396,29 @@ export const reducer = createReducer(initialState, (builder) => {
         state.rootNetworkIndexationStatus = action.rootNetworkIndexationStatus;
     });
 
-    builder.addCase(ADD_TO_RECENT_GLOBAL_FILTERS, (state, action: AddToRecentGlobalFiltersAction) => {
-        let newRecentGlobalFilters = [...state.recentGlobalFilters];
+    builder.addCase(ADD_TO_GLOBAL_FILTER_OPTIONS, (state, action: AddToGlobalFilterOptionsAction) => {
         action.globalFilters.forEach((filter) => {
-            if (
-                !newRecentGlobalFilters.some(
-                    (obj) =>
-                        obj.label === filter.label &&
-                        obj.filterType === filter.filterType &&
-                        obj.filterSubtype === filter.filterSubtype &&
-                        obj.uuid === filter.uuid
-                )
-            ) {
-                newRecentGlobalFilters.push(filter);
+            const existingIndex = state.globalFilterOptions.findIndex((obj) => obj.id === filter.id);
+            if (existingIndex >= 0) {
+                state.globalFilterOptions[existingIndex] = filter;
+            } else {
+                state.globalFilterOptions.push(filter);
             }
         });
-        state.recentGlobalFilters = newRecentGlobalFilters;
     });
 
-    builder.addCase(REMOVE_FROM_RECENT_GLOBAL_FILTERS, (state, action: RemoveFromRecentGlobalFiltersAction) => {
-        state.recentGlobalFilters = [
-            ...state.recentGlobalFilters.filter((recentGlobalFilter) => recentGlobalFilter.uuid !== action.uuid),
-        ];
+    builder.addCase(REMOVE_FROM_GLOBAL_FILTER_OPTIONS, (state, action: RemoveFromGlobalFilterOptionsAction) => {
+        state.globalFilterOptions = state.globalFilterOptions.filter((opt) => opt.id !== action.id);
+        // We also need to remove it from the selected filter IDs.
+        for (const key of Object.keys(state.tableFilters.globalFilters)) {
+            state.tableFilters.globalFilters[key] = state.tableFilters.globalFilters[key].filter(
+                (id) => id !== action.id
+            );
+        }
     });
 
     builder.addCase(SET_LAST_COMPLETED_COMPUTATION, (state, action: SetLastCompletedComputationAction) => {
         state.lastCompletedComputation = action.lastCompletedComputation;
-    });
-
-    builder.addCase(LOADFLOW_RESULT_FILTER, (state, action: LoadflowResultFilterAction) => {
-        state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] = action[LOADFLOW_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(SECURITY_ANALYSIS_RESULT_FILTER, (state, action: SecurityAnalysisResultFilterAction) => {
-        state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] = action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(SENSITIVITY_ANALYSIS_RESULT_FILTER, (state, action: SensitivityAnalysisResultFilterAction) => {
-        state[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-            action[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(SHORTCIRCUIT_ANALYSIS_RESULT_FILTER, (state, action: ShortcircuitAnalysisResultFilterAction) => {
-        state[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-            action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(PCCMIN_ANALYSIS_RESULT_FILTER, (state, action: PccminAnalysisResultFilterAction) => {
-        state[PCCMIN_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] = action[PCCMIN_ANALYSIS_RESULT_STORE_FIELD];
-    });
-    builder.addCase(DYNAMIC_SIMULATION_RESULT_FILTER, (state, action: DynamicSimulationResultFilterAction) => {
-        state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(STATEESTIMATION_RESULT_FILTER, (state, action: StateEstimationResultFilterAction) => {
-        state[STATEESTIMATION_RESULT_STORE_FIELD][action.filterTab] = action[STATEESTIMATION_RESULT_STORE_FIELD];
     });
 
     builder.addCase(SECURITY_ANALYSIS_RESULT_PAGINATION, (state, action: SecurityAnalysisResultPaginationAction) => {
@@ -1902,8 +1584,25 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGlobalFilterAction) => {
-        state.globalFilterSpreadsheetState[action.tabUuid] = action.filters;
+    builder.addCase(INIT_OR_UPDATE_GLOBAL_FILTER, (state, action: InitOrUpdateGlobalFilterAction) => {
+        // Replace selected IDs in globalFilters only if different to avoid unnecessary re-render and re-fetch
+        const currentIds = state.tableFilters.globalFilters[action.tabUuid];
+        const newIds = action.filters.map(getGlobalFilterId);
+        const areEqual =
+            currentIds?.length === newIds.length &&
+            currentIds.every((id) => newIds.includes(id)) &&
+            newIds.every((id) => currentIds.includes(id));
+        if (!areEqual) {
+            state.tableFilters.globalFilters[action.tabUuid] = newIds;
+        }
+
+        // Store full objects in globalFilterOptions only if not already present (same as above and also preserve the recent status)
+        action.filters.filter(isCriteriaFilter).forEach((filter) => {
+            const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
+            if (!alreadyExists) {
+                state.globalFilterOptions.push(addGlobalFilterId(filter));
+            }
+        });
     });
 
     builder.addCase(SET_CALCULATION_SELECTIONS, (state, action: SetCalculationSelectionsAction) => {
@@ -1913,16 +1612,65 @@ export const reducer = createReducer(initialState, (builder) => {
         };
     });
 
-    builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGlobalFiltersAction) => {
-        state.globalFilterSpreadsheetState = {};
-    });
-
     builder.addCase(SELECT_SYNC_ENABLED, (state, action: SelectSyncEnabledAction) => {
         state.syncEnabled = action.syncEnabled;
     });
 
     builder.addCase(UPDATE_NODE_ALIASES, (state, action: UpdateNodeAliasesAction) => {
         state.nodeAliases = action.nodeAliases;
+    });
+    builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
+        const { filterType, filterSubType, filters } = action;
+        state.tableFilters.columnsFilters[filterType] ??= {};
+        state.tableFilters.columnsFilters[filterType][filterSubType] ??= {
+            columns: [],
+        };
+        state.tableFilters.columnsFilters[filterType][filterSubType].columns = filters;
+    });
+
+    builder.addCase(ADD_GLOBAL_FILTERS, (state, action: AddGlobalFiltersAction) => {
+        const { tableId, filterIds } = action;
+
+        state.tableFilters.globalFilters[tableId] ??= [];
+
+        filterIds.forEach((id) => {
+            if (!state.tableFilters.globalFilters[tableId].includes(id)) {
+                state.tableFilters.globalFilters[tableId].push(id);
+            }
+            const option = state.globalFilterOptions.find((opt) => opt.id === id);
+            if (option?.unselectedDate) {
+                delete option.unselectedDate;
+            }
+        });
+    });
+
+    builder.addCase(REMOVE_GLOBAL_FILTERS, (state, action: RemoveGlobalFiltersAction) => {
+        const { tableId, filterIds } = action;
+
+        state.tableFilters.globalFilters[tableId] ??= [];
+
+        state.tableFilters.globalFilters[tableId] = state.tableFilters.globalFilters[tableId].filter(
+            (id) => !filterIds.includes(id)
+        );
+
+        filterIds.forEach((filterId) => {
+            const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
+            if (option) {
+                option.unselectedDate = Date.now();
+            }
+        });
+    });
+
+    builder.addCase(CLEAR_GLOBAL_FILTERS, (state, action: ClearGlobalFiltersAction) => {
+        const { tableId } = action;
+        const previousFilterIds = state.tableFilters.globalFilters[tableId] ?? [];
+        previousFilterIds.forEach((filterId) => {
+            const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
+            if (option) {
+                option.unselectedDate = Date.now();
+            }
+        });
+        state.tableFilters.globalFilters[tableId] = [];
     });
 });
 
@@ -1942,9 +1690,14 @@ function updateSubstationAfterVLDeletion(
     return currentSubstations;
 }
 
-export type Substation = Identifiable & {
-    voltageLevels: Identifiable[];
-};
+function updateBusesAfterVLDeletion(currentBuses: Record<string, Bus>, VLToDeleteId: string): Record<string, Bus> {
+    for (const busId in currentBuses) {
+        if (currentBuses[busId][VOLTAGE_LEVEL_ID] === VLToDeleteId) {
+            delete currentBuses[busId];
+        }
+    }
+    return currentBuses;
+}
 
 function updateSubstationsAndVoltageLevels(
     currentSubstations: Record<string, Substation>,

@@ -35,7 +35,12 @@ function SensitivityAnalysisTabs({ sensiTab, setSensiTab }: Readonly<Sensitivity
     return (
         <Tabs value={sensiTab} onChange={(_, newSensiTab) => setSensiTab(newSensiTab)}>
             {sensiTabs.map((sensiTab) => (
-                <Tab label={<FormattedMessage id={sensiTab} />} value={sensiTab} key={sensiTab} />
+                <Tab
+                    label={<FormattedMessage id={sensiTab} />}
+                    value={sensiTab}
+                    key={sensiTab}
+                    data-testid={`SensitivityAnalysis${sensiTab}Tab`}
+                />
             ))}
         </Tabs>
     );

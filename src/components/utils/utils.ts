@@ -7,29 +7,29 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import {
-    AttributeModification,
-    OperationalLimitsGroup,
-    OperationType,
-    TemporaryLimit,
-} from 'services/network-modification-types';
+import { TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
-import { Option } from '@gridsuite/commons-ui';
+import { AttributeModification, OperationType, Option } from '@gridsuite/commons-ui';
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
     ID,
     LIMITS_PROPERTIES,
-    MODIFICATION_TYPE,
     NAME,
     SELECTED,
     TEMPORARY_LIMIT_DURATION,
-    TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
 } from './field-constants';
-import { TemporaryLimitFormSchema } from '../dialogs/limits/operational-limits-groups-types';
+import {
+    OperationalLimitsGroupFormSchema,
+    TemporaryLimitFormSchema,
+} from '../dialogs/limits/operational-limits-groups-types';
 import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
+import {
+    TapChangerStep,
+    TapChangerStepMapInfos,
+} from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -87,38 +87,18 @@ export const areNumbersOrdered = (array?: unknown) => {
     return true;
 };
 
-export const areIdsEqual = (val1: Option, val2: Option) => {
-    if (typeof val1 !== 'string' && typeof val2 !== 'string') {
-        return val1.id === val2.id;
-    } else {
-        return val1 === val2;
-    }
-};
-
-export const getObjectId = (object: string | { id: string }) => {
-    return typeof object === 'string' ? object : (object?.id ?? null);
-};
-
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
-    const newBusbarSections = [];
+    const newBusbarSections: Option[] = [];
     for (let i = 0; i < busbarCount; i++) {
         for (let j = 0; j < sectionCount; j++) {
             newBusbarSections.push({
                 id: equipmentId + '_' + (i + 1) + '_' + (j + 1),
-                name: '',
+                label: '',
             });
         }
     }
     return newBusbarSections;
 };
-
-export function toModificationOperation<T>(
-    value: T
-): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
-    return value === 0 || value === false || value
-        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
-        : null;
-}
 
 export function toModificationUnsetOperation<T>(
     value: T
@@ -131,22 +111,14 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimits = (temporaryLimits: TemporaryLimitsData[]): TemporaryLimit[] =>
-    temporaryLimits?.map((limit: TemporaryLimitsData) => {
-        return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [MODIFICATION_TYPE]: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
-        };
-    });
-
-export const formatToTemporaryLimitsFormSchema = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormSchema[] =>
+export const formatTemporaryLimitsModificationToFormSchema = (
+    temporaryLimits: TemporaryLimit[]
+): TemporaryLimitFormSchema[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME]?.value ?? '',
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE]?.value ?? null,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION]?.value ?? null,
         };
     });
 
@@ -161,8 +133,10 @@ export const formatMapInfosToTemporaryLimitsFormSchema = (
         };
     });
 
-export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsData[]) => {
-    const formattedCompleteLimitsGroups: OperationalLimitsGroup[] = [];
+export const formatCompleteCurrentLimit = (
+    completeLimitsGroups: CurrentLimitsData[]
+): OperationalLimitsGroupFormSchema[] => {
+    const formattedCompleteLimitsGroups = [];
     if (completeLimitsGroups) {
         for (const elt of completeLimitsGroups) {
             if (isNotBlankOrEmpty(elt.id)) {
@@ -173,7 +147,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsDa
                     [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
                         permanentLimit: elt.permanentLimit,
-                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
+                        temporaryLimits: addSelectedFieldToRows(elt.temporaryLimits),
                     },
                 });
             }
@@ -184,15 +158,12 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsDa
 
 export const richTypeEquals = (a: unknown, b: unknown) => a === b;
 
-export const computeHighTapPosition = (steps: { index: number }[]) => {
-    const values = steps?.map((step) => step['index']);
+export const computeHighTapPosition = (steps: Record<number, TapChangerStepMapInfos>) => {
+    const values = steps ? Object.keys(steps)?.map(Number) : [];
     return values?.length > 0 ? Math.max(...values) : null;
 };
 
-export const compareStepsWithPreviousValues = (
-    tapSteps: Record<string, number>[],
-    previousValues: Record<string, number>[]
-) => {
+export const compareStepsWithPreviousValues = (tapSteps: TapChangerStep[], previousValues?: TapChangerStep[]) => {
     if (previousValues === undefined) {
         return false;
     }
@@ -201,7 +172,7 @@ export const compareStepsWithPreviousValues = (
     }
     return tapSteps.every((step, index) => {
         const previousStep = previousValues[index];
-        return Object.getOwnPropertyNames(previousStep).every((key) => {
+        return (Object.keys(previousStep) as (keyof TapChangerStep)[]).every((key) => {
             return step[key] === previousStep[key];
         });
     });
@@ -272,7 +243,7 @@ export function calculateSusceptance(distance: number, linearCapacity: number) {
 
 export function getNewVoltageLevelOptions(
     formattedVoltageLevel: VoltageLevel,
-    oldVoltageLevelId: string,
+    oldVoltageLevelId: string | undefined,
     voltageLevelOptions: VoltageLevel[]
 ) {
     const newVoltageLevelOptions =
@@ -306,10 +277,12 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
     return Array.from({ length }, (_, index) => start + index * step);
 }
 
-export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
-    return rows?.map((row) => {
-        return { ...row, [SELECTED]: false };
-    });
+export const addSelectedFieldToRows = <T>(rows?: T[]): (T & { selected: boolean })[] => {
+    return (
+        rows?.map((row) => {
+            return { ...row, [SELECTED]: false };
+        }) ?? []
+    );
 };
 
 //Escapes regex special characters to avoid misinterpreting user prompts

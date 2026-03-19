@@ -6,7 +6,6 @@
  */
 import {
     ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
     CONNECTIVITY,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
@@ -26,18 +25,26 @@ import {
 import yup from '../../../../../utils/yup-config';
 import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
-import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from '../common/lcc-type';
-import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
-import { CustomFormProvider, ExtendedEquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    ExtendedEquipmentType,
+    Property,
+    snackWithFallback,
+    toModificationProperties,
+    useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
+    Connectivity,
+} from '@gridsuite/commons-ui';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import { useCallback, useEffect, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { createLcc } from '../../../../../../services/study/network-modifications';
-import { sanitizeString } from '../../../../dialog-utils';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { Grid } from '@mui/material';
 import LccCreationDialogHeader from './lcc-creation-dialog-header';
@@ -54,8 +61,8 @@ import {
     getLccHvdcLineFromSearchCopy,
     getLccHvdcLineSchema,
 } from '../common/lcc-utils';
+import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { Connectivity } from '../../../../connectivity/connectivity.type';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -66,7 +73,7 @@ export type LccCreationSchemaForm = {
         [MAX_P]: number;
         [CONVERTERS_MODE]: string;
         [ACTIVE_POWER_SETPOINT]: number;
-        [ADDITIONAL_PROPERTIES]?: Property[];
+        [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
     };
     [CONVERTER_STATION_1]: {
         [CONVERTER_STATION_ID]: string;
@@ -225,7 +232,7 @@ export function LccCreationDialog({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

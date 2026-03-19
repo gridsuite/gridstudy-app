@@ -89,7 +89,7 @@ export const EQUIPMENTS_WITH_TWO_SUBSTATIONS = [EQUIPMENT_TYPES.LINE, EQUIPMENT_
 
 export interface VoltageLevel extends Identifiable {
     nominalV: number;
-    subtationId?: string;
+    substationId?: string;
 }
 
 export const convertToEquipmentType = (type: EQUIPMENT_TYPES): EquipmentType => {

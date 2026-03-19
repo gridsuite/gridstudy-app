@@ -32,12 +32,6 @@
     stroke-width: 0.2%;
     fill: none;
 }
-path.nad-arrow-out:not(.nad-state-out .nad-arrow-out) {
-    visibility: hidden;
-}
-path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
-    visibility: hidden;
-}
 .nad-active {
     fill: #787F81;
 }
@@ -246,23 +240,16 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
     display: none;
 }
 
-/* Hides the labels until sufficiently zoomed in. */
-:is(.nad-zoom-3500, .nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
-    .nad-label-box
-    ) {
-    display: none;
-}
-
 /* Hides the voltage levels 0 to 50 when zoomed out. */
 :is(.nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
-    .nad-vl0to30, .nad-vl30to50
+    .nad-voltage-level-1, .nad-voltage-level-2
     ) {
     display: none;
 }
 
-/* Hides the voltage levels 50 to 120 when zoomed out. */
+/* Hides the voltage levels 50 to 100 when zoomed out. */
 .nad-zoom-15000 :is(
-    .nad-vl50to70, .nad-vl70to120
+    .nad-voltage-level-3, .nad-voltage-level-4
     ) {
     display: none;
 }

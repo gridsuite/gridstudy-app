@@ -22,13 +22,14 @@ import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
 import type { UUID } from 'node:crypto';
+import { HvdcLccDeletionInfos } from '../../components/dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    hvdcLineId: string
-) {
+    hvdcLineId: UUID
+): Promise<HvdcLccDeletionInfos> {
     console.info(
         `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
@@ -95,7 +96,7 @@ export function fetchEquipmentsIds(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[],
+    substationsIds: string[] | undefined,
     equipmentType: EquipmentType | ExtendedEquipmentType,
     inUpstreamBuiltParentNode: boolean,
     nominalVoltages?: number[]

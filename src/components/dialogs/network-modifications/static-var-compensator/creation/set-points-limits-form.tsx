@@ -20,8 +20,13 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
-import { ReactivePowerAdornment, SusceptanceAdornment, VoltageAdornment } from '../../../dialog-utils';
+import {
+    FloatInput,
+    ReactivePowerAdornment,
+    SelectInput,
+    SusceptanceAdornment,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
 import { useWatch } from 'react-hook-form';
 import { FunctionComponent } from 'react';
 import type { UUID } from 'node:crypto';

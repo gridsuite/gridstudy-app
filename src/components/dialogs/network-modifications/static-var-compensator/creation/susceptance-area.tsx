@@ -22,8 +22,7 @@ import {
     Q0,
     SETPOINTS_LIMITS,
 } from 'components/utils/field-constants';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
+import { FloatInput, ReactivePowerAdornment, SusceptanceAdornment } from '@gridsuite/commons-ui';
 import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { InputAdornment, Grid, TextField } from '@mui/material';
@@ -78,7 +77,7 @@ export const SusceptanceArea = () => {
             disabled={true}
             size={'small'}
             InputProps={{
-                endAdornment: <InputAdornment position="start">MVar</InputAdornment>,
+                endAdornment: <InputAdornment position="start">Mvar</InputAdornment>,
             }}
         />
     );
@@ -90,7 +89,7 @@ export const SusceptanceArea = () => {
             disabled={true}
             size={'small'}
             InputProps={{
-                endAdornment: <InputAdornment position="start">MVar</InputAdornment>,
+                endAdornment: <InputAdornment position="start">Mvar</InputAdornment>,
             }}
         />
     );

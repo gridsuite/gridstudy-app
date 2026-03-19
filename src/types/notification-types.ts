@@ -51,6 +51,10 @@ export enum NotificationType {
     EVENT_DELETING_IN_PROGRESS = 'eventDeletingInProgress',
     EVENT_CRUD_FINISHED = 'EVENT_CRUD_FINISHED',
 
+    // Computations filters
+    UPDATE_COMPUTATION_GLOBAL_FILTER_TAB = 'computationResultGlobalFilterUpdated',
+    UPDATE_COMPUTATION_COLUMN_FILTER_TAB = 'computationResultColumnFilterUpdated',
+
     // Computations
     LOADFLOW_RESULT = 'loadflowResult',
     LOADFLOW_FAILED = 'loadflow_failed',
@@ -73,6 +77,9 @@ export enum NotificationType {
     DYNAMIC_SECURITY_ANALYSIS_RESULT = 'dynamicSecurityAnalysisResult',
     DYNAMIC_SECURITY_ANALYSIS_FAILED = 'dynamicSecurityAnalysis_failed',
     DYNAMIC_SECURITY_ANALYSIS_STATUS = 'dynamicSecurityAnalysis_status',
+    DYNAMIC_MARGIN_CALCULATION_RESULT = 'dynamicMarginCalculationResult',
+    DYNAMIC_MARGIN_CALCULATION_FAILED = 'dynamicMarginCalculation_failed',
+    DYNAMIC_MARGIN_CALCULATION_STATUS = 'dynamicMarginCalculation_status',
     VOLTAGE_INIT_RESULT = 'voltageInitResult',
     VOLTAGE_INIT_FAILED = 'voltageInit_failed',
     VOLTAGE_INIT_CANCEL_FAILED = 'voltageInit_cancel_failed',
@@ -89,6 +96,12 @@ export enum NotificationType {
     SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
     SPREADSHEET_PARAMETERS_UPDATED = 'spreadsheetParametersUpdated',
+
+    // workspaces
+    WORKSPACE_RENAMED = 'workspaceRenamed',
+    WORKSPACE_PANELS_UPDATED = 'workspacePanelsUpdated',
+    WORKSPACE_PANELS_DELETED = 'workspacePanelsDeleted',
+    WORKSPACE_NAD_CONFIG_UPDATED = 'workspaceNadConfigUpdated',
 }
 
 export const PENDING_MODIFICATION_NOTIFICATION_TYPES = [
@@ -180,6 +193,14 @@ interface StudyEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.STUDY;
     rootNetworkUuid: UUID;
     node: UUID;
+}
+
+interface ComputationResultTabUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType:
+        | NotificationType.UPDATE_COMPUTATION_GLOBAL_FILTER_TAB
+        | NotificationType.UPDATE_COMPUTATION_COLUMN_FILTER_TAB;
+    computationType: ComputingType;
+    computationSubtype?: string;
 }
 
 interface ComputationParametersUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
@@ -315,6 +336,29 @@ interface ModificationProgressionEventDataHeaders extends CommonStudyEventDataHe
 
 interface SpreadsheetParametersUpdatedDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
+}
+
+interface WorkspaceRenamedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_RENAMED;
+}
+
+interface WorkspacePanelsUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_PANELS_UPDATED;
+    workspaceUuid: UUID;
+    clientId?: UUID;
+}
+
+interface WorkspacePanelsDeletedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_PANELS_DELETED;
+    workspaceUuid: UUID;
+    clientId?: UUID;
+}
+
+interface WorkspaceNadConfigUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.WORKSPACE_NAD_CONFIG_UPDATED;
+    workspaceUuid: UUID;
+    panelId: UUID;
+    clientId?: UUID;
 }
 
 interface ModificationsCreationInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
@@ -515,6 +559,8 @@ interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.NETWORK_EXPORT_FINISHED;
     userId: string;
     exportUuid: UUID;
+    exportToGridExplore?: boolean;
+    fileName: string;
     error: string | null;
 }
 
@@ -552,6 +598,11 @@ export interface StudyEventData {
     headers: StudyEventDataHeaders;
     /** @see NetworkImpactsInfos */
     payload: string;
+}
+
+export interface ComputationResultTabUpdatedEventData {
+    headers: ComputationResultTabUpdatedEventDataHeaders;
+    payload: undefined;
 }
 
 export interface ComputationParametersUpdatedEventData {
@@ -870,6 +921,44 @@ export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyE
     payload: string;
 }
 
+export interface WorkspaceRenamedEventData {
+    headers: WorkspaceRenamedEventDataHeaders;
+    payload: string; // workspace ID
+}
+
+export interface WorkspacePanelsUpdatedEventData {
+    headers: WorkspacePanelsUpdatedEventDataHeaders;
+    payload: string; // panel IDs (JSON array)
+}
+
+export interface WorkspacePanelsDeletedEventData {
+    headers: WorkspacePanelsDeletedEventDataHeaders;
+    payload: string; // panel IDs (JSON array)
+}
+
+export interface WorkspaceNadConfigUpdatedEventData {
+    headers: WorkspaceNadConfigUpdatedEventDataHeaders;
+    payload: string; // config UUID
+}
+
+export function isComputationResultColumnFilterUpdatedNotification(
+    notif: unknown
+): notif is ComputationResultTabUpdatedEventData {
+    return (
+        (notif as ComputationResultTabUpdatedEventData).headers?.updateType ===
+        NotificationType.UPDATE_COMPUTATION_COLUMN_FILTER_TAB
+    );
+}
+
+export function isComputationResultGlobalFilterUpdatedNotification(
+    notif: unknown
+): notif is ComputationResultTabUpdatedEventData {
+    return (
+        (notif as ComputationResultTabUpdatedEventData).headers?.updateType ===
+        NotificationType.UPDATE_COMPUTATION_GLOBAL_FILTER_TAB
+    );
+}
+
 export function isComputationParametersUpdatedNotification(
     notif: unknown
 ): notif is ComputationParametersUpdatedEventData {
@@ -1099,10 +1188,38 @@ export function isSpreadsheetParametersUpdatedNotification(
     return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
 }
 
+export function isWorkspaceRenamedNotification(notif: unknown): notif is WorkspaceRenamedEventData {
+    return (notif as WorkspaceRenamedEventData).headers?.updateType === NotificationType.WORKSPACE_RENAMED;
+}
+
+export function isWorkspacePanelsUpdatedNotification(notif: unknown): notif is WorkspacePanelsUpdatedEventData {
+    return (notif as WorkspacePanelsUpdatedEventData).headers?.updateType === NotificationType.WORKSPACE_PANELS_UPDATED;
+}
+
+export function isWorkspacePanelsDeletedNotification(notif: unknown): notif is WorkspacePanelsDeletedEventData {
+    return (notif as WorkspacePanelsDeletedEventData).headers?.updateType === NotificationType.WORKSPACE_PANELS_DELETED;
+}
+
+export function isWorkspaceNadConfigUpdatedNotification(notif: unknown): notif is WorkspaceNadConfigUpdatedEventData {
+    return (
+        (notif as WorkspaceNadConfigUpdatedEventData).headers?.updateType ===
+        NotificationType.WORKSPACE_NAD_CONFIG_UPDATED
+    );
+}
+
+export function parseEventData<T>(event: MessageEvent | null): T | null {
+    try {
+        return JSON.parse(event?.data);
+    } catch {
+        return null;
+    }
+}
+
 // Notification types
 export type StudyUpdateEventData =
     | StudyEventData
     | ComputationParametersUpdatedEventData
+    | ComputationResultTabUpdatedEventData
     | RootNetworkUpdatedEventData
     | RootNetworkUpdateFailedEventData
     | RootNetworkDeletionStartedEventData
@@ -1164,10 +1281,6 @@ export type StudyUpdateEventData =
     | PccMinFailedEventData
     | PccMinStatusEventData
     | ExportNetworkEventData;
-
-export type StudyUpdateNotification = {
-    eventData: StudyUpdateEventData;
-};
 
 /******************* TO REMOVE LATER ****************/
 // Headers

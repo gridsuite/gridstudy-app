@@ -1,0 +1,109 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {
+    DELETION_SPECIFIC_DATA,
+    DELETION_SPECIFIC_TYPE,
+    HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE,
+    SHUNT_COMPENSATOR_SIDE_1,
+    SHUNT_COMPENSATOR_SIDE_2,
+} from 'components/utils/field-constants';
+import { useCallback } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchHvdcLineWithShuntCompensators } from '../../../../../services/study/network-map';
+import {
+    EquipmentDeletionInfos,
+    HvdcLccDeletionInfos,
+    LccShuntCompensatorConnectionInfos,
+} from '../equipement-deletion-dialog.type';
+import { UUID } from 'node:crypto';
+
+const useHvdcLccDeletion = () => {
+    const { replace: replaceMcsList1 } = useFieldArray({
+        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`,
+    });
+    const { replace: replaceMcsList2 } = useFieldArray({
+        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`,
+    });
+    const { setValue } = useFormContext();
+    const { snackError } = useSnackMessage();
+
+    const updateMcsLists = useCallback(
+        (hvdcLineData: HvdcLccDeletionInfos, editData?: EquipmentDeletionInfos) => {
+            function mergeMcsLists(
+                dynamicList: LccShuntCompensatorConnectionInfos[],
+                editList: LccShuntCompensatorConnectionInfos[]
+            ) {
+                if (!dynamicList?.length && !editList?.length) {
+                    return [];
+                } else if (!dynamicList?.length) {
+                    // TODO: we should refactor modification-server to store only selected MCS
+                    return editList.filter((item) => item.connectedToHvdc);
+                } else if (!editList?.length) {
+                    return dynamicList;
+                }
+                // dynamicList and editList are not empty : let's merge them
+                const mergedList: LccShuntCompensatorConnectionInfos[] = dynamicList.map((obj) => {
+                    return { ...obj, connectedToHvdc: false };
+                });
+                // now overwrite dynamic values with edited modification values
+                const dynamicIds = new Set(dynamicList.map((obj) => obj.id));
+                for (let editObj of editList.values()) {
+                    if (dynamicIds.has(editObj.id)) {
+                        const mergedObj = mergedList.find((obj) => obj.id === editObj.id);
+                        if (mergedObj) {
+                            mergedObj.connectedToHvdc = editObj.connectedToHvdc;
+                        }
+                    } else if (editObj.connectedToHvdc) {
+                        // if a selected edit data does not exist at this time, we add/display it anyway
+                        mergedList.push(editObj);
+                    }
+                }
+                return mergedList;
+            }
+
+            if (
+                hvdcLineData?.mcsOnSide1 ||
+                hvdcLineData?.mcsOnSide2 ||
+                editData?.equipmentInfos?.mcsOnSide1 ||
+                editData?.equipmentInfos?.mcsOnSide2
+            ) {
+                setValue(`${DELETION_SPECIFIC_DATA}.${DELETION_SPECIFIC_TYPE}`, HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE);
+                replaceMcsList1(mergeMcsLists(hvdcLineData?.mcsOnSide1, editData?.equipmentInfos?.mcsOnSide1 ?? []));
+                replaceMcsList2(mergeMcsLists(hvdcLineData?.mcsOnSide2, editData?.equipmentInfos?.mcsOnSide2 ?? []));
+            } else {
+                setValue(DELETION_SPECIFIC_DATA, null);
+            }
+        },
+        [replaceMcsList1, replaceMcsList2, setValue]
+    );
+
+    const specificUpdate = useCallback(
+        (
+            studyUuid: UUID,
+            nodeId: UUID,
+            currentRootNetworkUuid: UUID,
+            equipmentId: UUID,
+            editData?: EquipmentDeletionInfos
+        ) => {
+            fetchHvdcLineWithShuntCompensators(studyUuid, nodeId, currentRootNetworkUuid, equipmentId)
+                .then((hvdcLineData) => {
+                    updateMcsLists(hvdcLineData, editData);
+                })
+                .catch((error) => {
+                    setValue(DELETION_SPECIFIC_DATA, null);
+                    snackWithFallback(snackError, error, { headerId: 'FetchHvdcLineWithShuntCompensatorsError' });
+                });
+        },
+        [setValue, updateMcsLists, snackError]
+    );
+
+    return { specificUpdate };
+};
+
+export default useHvdcLccDeletion;

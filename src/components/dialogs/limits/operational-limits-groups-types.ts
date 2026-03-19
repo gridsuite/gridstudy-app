@@ -15,14 +15,14 @@ import {
     OLG_IS_DUPLICATE,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
-    VALUE,
 } from '../../utils/field-constants';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 export interface LimitsFormSchema {
     [LIMITS]: OperationalLimitsGroupsFormSchema;
@@ -30,8 +30,8 @@ export interface LimitsFormSchema {
 
 export interface OperationalLimitsGroupsFormSchema {
     [OPERATIONAL_LIMITS_GROUPS]: OperationalLimitsGroupFormSchema[];
-    [SELECTED_LIMITS_GROUP_1]?: string;
-    [SELECTED_LIMITS_GROUP_2]?: string;
+    [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string;
+    [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string;
     [ENABLE_OLG_MODIFICATION]: boolean;
 }
 
@@ -45,13 +45,14 @@ export interface OperationalLimitsGroupFormSchema {
 }
 
 export interface CurrentLimitsFormSchema {
+    [ID]?: string;
     [PERMANENT_LIMIT]: number | null;
     [TEMPORARY_LIMITS]: TemporaryLimitFormSchema[];
 }
 
 interface LimitsPropertyFormSchema {
     [NAME]: string;
-    [VALUE]: string;
+    [FieldConstants.VALUE]: string;
 }
 
 export interface TemporaryLimitFormSchema {
