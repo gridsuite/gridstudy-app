@@ -11,7 +11,6 @@ import {
     backendFetchText,
     EquipmentDeletionDto,
     EquipmentInfos,
-    EquipmentType,
     LoadCreationDto,
     LoadModificationDto,
     MODIFICATION_TYPES,
