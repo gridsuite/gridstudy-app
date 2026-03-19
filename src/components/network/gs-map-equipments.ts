@@ -7,7 +7,7 @@
 
 import type { UUID } from 'node:crypto';
 import { type UseSnackMessageReturn } from '@gridsuite/commons-ui';
-import { MapEquipments } from '@powsybl/network-viewer';
+import { MapEquipments } from '@powsybl/network-map-layers';
 import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
 import type { AppDispatch } from '../../redux/store';
 import {
