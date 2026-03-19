@@ -18,14 +18,15 @@ import {
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
+    MEASUREMENT_Q,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
+    STATE_ESTIMATION,
     SWITCHED_ON_Q_AT_NOMINAL_V,
     SWITCHED_ON_SUSCEPTANCE,
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
-import { ConnectablePositionFormInfos } from '../../connectivity/connectivity.type';
-import { FieldConstants, Property } from '@gridsuite/commons-ui';
+import { ConnectablePositionFormInfos, FieldConstants, MeasurementInfo, Property } from '@gridsuite/commons-ui';
 
 export type ShuntCompensatorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -51,7 +52,11 @@ export type ShuntCompensatorCreationDialogSchemaForm = {
     [EQUIPMENT_ID]: string;
 } & ShuntCompensatorDialogSchemaBaseForm;
 
-export type ShuntCompensatorModificationDialogSchemaForm = Partial<ShuntCompensatorDialogSchemaBaseForm>;
+export type ShuntCompensatorModificationDialogSchemaForm = {
+    [STATE_ESTIMATION]?: {
+        [MEASUREMENT_Q]?: MeasurementInfo;
+    };
+} & Partial<ShuntCompensatorDialogSchemaBaseForm>;
 
 export interface ShuntCompensatorFormInfos {
     id: string;
@@ -68,5 +73,6 @@ export interface ShuntCompensatorFormInfos {
     qAtNominalV?: number;
     maximumSectionCount: number;
     isLinear?: boolean;
+    measurementQ: MeasurementInfo | undefined;
     properties: Record<string, string> | undefined;
 }

@@ -18,6 +18,10 @@ import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
+export interface WithModificationId {
+    uuid: UUID;
+}
+
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
     droop: number;
@@ -75,25 +79,6 @@ export interface BatteryModificationInfos {
     stepUpTransformerX: AttributeModification<number> | null;
 }
 
-export interface LoadCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name?: string | null;
-    loadType: string;
-    p0: number;
-    q0: number;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    isUpdate: boolean;
-    modificationUuid?: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean;
-    properties?: Property[] | null;
-}
-
 export interface LoadModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
@@ -133,6 +118,8 @@ export interface ShuntCompensatorModificationInfos {
     connectionName?: AttributeModification<string> | null;
     connectionPosition?: AttributeModification<number> | null;
     terminalConnected?: AttributeModification<boolean> | null;
+    qMeasurementValue: AttributeModification<number> | null;
+    qMeasurementValidity: AttributeModification<boolean> | null;
     properties: Property[] | null;
 }
 

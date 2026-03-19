@@ -14,22 +14,17 @@ import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLi
 import { useCallback, useMemo, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 export interface CreateVoltageLevelTopologyFormProps {
     voltageLevelId: string;
-    studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
 }
 
 export default function CreateVoltageLevelTopologyForm({
-    studyUuid,
     voltageLevelId,
     currentNode,
-    currentRootNetworkUuid,
 }: Readonly<CreateVoltageLevelTopologyFormProps>) {
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
@@ -90,12 +85,9 @@ export default function CreateVoltageLevelTopologyForm({
             </Grid>
             <Box>
                 <PositionDiagramPane
-                    studyUuid={studyUuid}
                     open={isDiagramPaneOpen}
                     onClose={handleCloseDiagramPane}
                     voltageLevelId={voltageLevelId}
-                    currentNodeUuid={currentNode?.id}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Box>
         </>

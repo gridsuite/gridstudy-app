@@ -7,9 +7,13 @@
 
 import {
     AttributeModification,
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
     MODIFICATION_TYPES,
     sanitizeString,
     toModificationOperation,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../../utils/yup-config';
 import {
@@ -34,16 +38,10 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
-} from '../../../../connectivity/connectivity-form-utils';
-import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
 } from '../../../../reactive-limits/reactive-limits-utils';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { VscConverterStationFormInfos, ConverterStationElementModificationInfos } from './converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 import { ConverterStationCreationInfos } from '../../../../../../services/network-modification-types';
