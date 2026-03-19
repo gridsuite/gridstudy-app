@@ -60,7 +60,7 @@ const EquipmentDeletionDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
-    defaultIdValue,
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD/map
     equipmentType,
     editDataFetchStatus,
     onClose,
