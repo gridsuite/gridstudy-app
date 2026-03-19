@@ -171,8 +171,8 @@ const EquipmentDeletionDialog = ({
             >
                 <EquipmentDeletionForm
                     editData={editData}
-                    fetchEquipmentIdsPromise={fetchEquipmentIds}
-                    fetchHvdcWithShuntCompensatorsPromise={fetchHvdcWithShuntCompensators}
+                    fetchEquipmentIds={fetchEquipmentIds}
+                    fetchHvdcWithShuntCompensators={fetchHvdcWithShuntCompensators}
                 />
             </ModificationDialog>
         </CustomFormProvider>
