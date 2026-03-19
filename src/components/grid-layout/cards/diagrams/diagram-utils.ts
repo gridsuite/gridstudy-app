@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { DiagramConfigPosition } from '../../../../services/explore';
-import { DiagramMetadata } from '@powsybl/network-viewer';
+import { DiagramMetadata } from '@powsybl/network-viewer-core';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import { Diagram, DiagramType, Svg } from './diagram.type';

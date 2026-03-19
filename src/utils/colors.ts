@@ -9,13 +9,13 @@ import { BaseVoltage, LIGHT_THEME } from '@gridsuite/commons-ui';
 
 export const INVALID_COMPUTATION_OPACITY = 0.2;
 
-function parseRGB(stringRGB: string): number[] | undefined {
+function parseRGB(stringRGB: string): [number, number, number] | undefined {
     const rgbRegex = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/;
     const match = rgbRegex.exec(stringRGB);
-    return match?.slice(1).map(Number);
+    return match?.slice(1).map(Number) as [number, number, number] | undefined;
 }
 
-export const getBaseVoltageNetworkMapColor = (baseVoltage: BaseVoltage | undefined): number[] => {
+export const getBaseVoltageNetworkMapColor = (baseVoltage: BaseVoltage | undefined): [number, number, number] => {
     const color = baseVoltage?.networkMapColor;
     return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
 };
