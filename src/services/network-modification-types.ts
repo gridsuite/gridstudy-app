@@ -133,6 +133,8 @@ export interface ShuntCompensatorModificationInfos {
     connectionName?: AttributeModification<string> | null;
     connectionPosition?: AttributeModification<number> | null;
     terminalConnected?: AttributeModification<boolean> | null;
+    qMeasurementValue: AttributeModification<number> | null;
+    qMeasurementValidity: AttributeModification<boolean> | null;
     properties: Property[] | null;
 }
 
@@ -333,16 +335,6 @@ export interface CurrentLimits {
     id?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
-}
-
-export interface SubstationModificationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    modificationUuid?: UUID;
-    id: string | null;
-    name: string | null;
-    country: string | null;
-    properties: Property[] | null;
 }
 
 export enum SwitchKind {
@@ -724,17 +716,6 @@ export interface AttachedSubstationCreationInfo {
     equipmentId: string | null;
     equipmentName: string | null;
     country: string | null;
-    properties: Property[] | null;
-}
-
-export interface SubstationCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    substationId: string;
-    substationName: string | null;
-    country: string | null;
-    isUpdate: boolean;
-    modificationUuid?: UUID;
     properties: Property[] | null;
 }
 

@@ -16,6 +16,7 @@ import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
 import CharacteristicsForm from '../characteristics-pane/characteristics-form';
+import { PowerMeasurementsForm } from '../../common/measurements/power-measurements-form';
 
 export interface ShuntCompensatorModificationFormProps {
     studyUuid: UUID;
@@ -72,6 +73,13 @@ export default function ShuntCompensatorModificationForm({
         />
     );
 
+    const measurementsForm = (
+        <PowerMeasurementsForm
+            reactivePowerMeasurement={shuntCompensatorToModify?.measurementQ}
+            reactivePowerOnly={true}
+        />
+    );
+
     return (
         <>
             <Grid container spacing={2}>
@@ -86,6 +94,10 @@ export default function ShuntCompensatorModificationForm({
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{characteristicsForm}</GridItem>
+            </Grid>
+            <GridSection title="MeasurementsSection" />
+            <Grid container spacing={2}>
+                <GridItem size={12}>{measurementsForm}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'shuntCompensator'} isModification={true} />
         </>
