@@ -6,7 +6,7 @@
  */
 
 import yup from '../../../utils/yup-config';
-import { SolverTypeInfos } from 'services/study/dynamic-simulation.type';
+import { SolverType } from 'services/study/dynamic-simulation.type';
 import { getFormSchema as getCommonSolverFormSchema } from './solver/common-solver-parameters';
 
 export enum TimeDelay {
@@ -102,24 +102,24 @@ export const getIdaFormSchema = () =>
     });
 
 export enum Solver {
-    ID = 'solverId',
+    SOLVER = 'solver',
     SOLVERS = 'solvers',
 }
 
 export const solverFormSchema = yup.object().shape({
-    [Solver.ID]: yup.string().required(),
-    [Solver.SOLVERS]: yup.array().when([Solver.ID], ([solverId], schema) =>
+    [Solver.SOLVER]: yup.string().required(),
+    [Solver.SOLVERS]: yup.array().when([Solver.SOLVER], ([solver], schema) =>
         schema.of(
             yup.lazy((item) => {
-                const { id, type } = item;
+                const { type } = item;
 
                 // ignore validation if not current selected solver
-                if (solverId !== id) {
+                if (solver !== type) {
                     return yup.object().default(undefined);
                 }
 
                 // chose the right schema for each type of solver
-                if (type === SolverTypeInfos.IDA) {
+                if (type === SolverType.IDA) {
                     return getIdaFormSchema();
                 } else {
                     return getSimplifiedFormSchema();
@@ -130,7 +130,7 @@ export const solverFormSchema = yup.object().shape({
 });
 
 export const solverEmptyFormData = {
-    [Solver.ID]: '',
+    [Solver.SOLVER]: '',
     [Solver.SOLVERS]: [],
 };
 

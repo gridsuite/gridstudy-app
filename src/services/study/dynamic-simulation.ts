@@ -29,13 +29,11 @@ export function startDynamicSimulation({
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
-    dynamicSimulationConfiguration,
     debug,
 }: {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    dynamicSimulationConfiguration?: DynamicSimulationParametersInfos;
     debug: boolean;
 }): Promise<Response> {
     console.info(
@@ -54,10 +52,7 @@ export function startDynamicSimulation({
         currentRootNetworkUuid
     )}/dynamic-simulation/run?${urlParams}`;
 
-    // add body
-    const body = JSON.stringify(dynamicSimulationConfiguration ?? {});
-
-    console.debug({ startDynamicSimulationUrl, body });
+    console.debug({ startDynamicSimulationUrl });
 
     return backendFetch(startDynamicSimulationUrl, {
         method: 'post',
@@ -65,7 +60,6 @@ export function startDynamicSimulation({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body,
     });
 }
 
