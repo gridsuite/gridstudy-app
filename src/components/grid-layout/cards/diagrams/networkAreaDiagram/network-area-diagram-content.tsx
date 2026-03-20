@@ -21,12 +21,12 @@ import {
 } from '../diagram-utils';
 import {
     DiagramMetadata,
-    EQUIPMENT_TYPES,
     NadViewerParametersOptions,
     NetworkAreaDiagramViewer,
     OnSelectNodeCallbackType,
     OnToggleNadHoverCallbackType,
-} from '@powsybl/network-viewer';
+} from '@powsybl/network-viewer-core';
+import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer.type';

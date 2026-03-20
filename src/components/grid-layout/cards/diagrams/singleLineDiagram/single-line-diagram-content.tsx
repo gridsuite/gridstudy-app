@@ -25,7 +25,7 @@ import {
     type OnNextVoltageCallbackType,
     SingleLineDiagramViewer,
     SLDMetadata,
-} from '@powsybl/network-viewer';
+} from '@powsybl/network-viewer-core';
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
 import { useTheme } from '@mui/material/styles';
