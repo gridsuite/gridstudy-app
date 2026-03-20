@@ -7,11 +7,10 @@
 
 import Grid from '@mui/material/Grid';
 import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/field-constants';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
-import { Identifiable, Option, TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import { ConnectivityForm, Identifiable, Option, TextInput } from '@gridsuite/commons-ui';
 import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
@@ -25,6 +24,7 @@ import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 export interface ExtendedVoltageLevelFormInfos extends VoltageLevelFormInfos {
     busbarSections?: Option[];
@@ -55,6 +55,17 @@ const LineSplitWithVoltageLevelForm = ({
     editDataFetchStatus,
 }: LineSplitWithVoltageLevelFormProps) => {
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
 
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
@@ -96,11 +107,9 @@ const LineSplitWithVoltageLevelForm = ({
             voltageLevelSelectLabel={'VoltageLevelToSplitAt'}
             withPosition={false}
             withDirectionsInfos={false}
-            voltageLevelOptions={allVoltageLevelOptions}
             newBusOrBusbarSectionOptions={busbarSectionOptions}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            voltageLevelOptions={allVoltageLevelOptions}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 
