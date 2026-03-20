@@ -46,14 +46,13 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import { ConnectablePositionFormInfos } from '../../connectivity/connectivity.type';
 import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '../../reactive-limits/reactive-limits.type';
 import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
 import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
-import { FieldConstants, Property } from '@gridsuite/commons-ui';
+import { ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type GeneratorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
