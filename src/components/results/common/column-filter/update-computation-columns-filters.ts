@@ -6,23 +6,20 @@
  */
 import { FilterConfig, TableType } from '../../../../types/custom-aggrid-types';
 import { updateComputationResultFiltersColumn } from '../../../../services/study/study-config';
-import { GridApi } from 'ag-grid-community';
 import { UUID } from 'node:crypto';
 
-export const updateComputationColumnsFilters = (
-    agGridApi?: GridApi,
+export const persistComputationColumnFilters = (
     filters?: FilterConfig[],
     colId?: string,
     studyUuid?: UUID,
     tableType?: TableType,
     filterSubType?: string,
-    onBeforePersist?: () => void
+    onError?: (error: unknown) => void
 ) => {
-    if (!agGridApi || !studyUuid || !colId || !filterSubType || !tableType) {
+    if (!studyUuid || !colId || !filterSubType || !tableType) {
         return;
     }
     const filter = filters?.find((f) => f.column === colId);
-    onBeforePersist?.();
     const columnFilterInfos = {
         columnId: colId,
         columnFilterInfos: filter
@@ -34,5 +31,7 @@ export const updateComputationColumnsFilters = (
               }
             : null,
     };
-    updateComputationResultFiltersColumn(studyUuid, tableType, filterSubType, columnFilterInfos).then();
+    updateComputationResultFiltersColumn(studyUuid, tableType, filterSubType, columnFilterInfos).catch((error) => {
+        onError?.(error);
+    });
 };
