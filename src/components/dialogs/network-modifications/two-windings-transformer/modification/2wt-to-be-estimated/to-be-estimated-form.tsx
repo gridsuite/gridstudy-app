@@ -8,7 +8,6 @@
 import Grid from '@mui/material/Grid';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 import {
@@ -18,6 +17,7 @@ import {
     TO_BE_ESTIMATED,
 } from '../../../../../utils/field-constants';
 import { ToBeEstimatedProps } from './to-be-estimated.type';
+import { CheckboxNullableInput } from '@gridsuite/commons-ui';
 
 export const ToBeEstimatedForm: FunctionComponent<ToBeEstimatedProps> = ({ toBeEstimated }) => {
     const intl = useIntl();

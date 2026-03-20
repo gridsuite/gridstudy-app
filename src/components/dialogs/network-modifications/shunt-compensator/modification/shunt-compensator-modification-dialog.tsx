@@ -20,6 +20,12 @@ import {
     sanitizeString,
     FieldConstants,
     toModificationOperation,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityFormData,
+    getConnectivityWithPositionSchema,
+    getInjectionActiveReactivePowerEditData,
+    getInjectionActiveReactivePowerEmptyFormData,
+    getInjectionActiveReactivePowerValidationSchemaProperties,
 } from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -35,8 +41,11 @@ import {
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
+    MEASUREMENT_Q,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
+    STATE_ESTIMATION,
+    VALIDITY,
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
 import yup from '../../../../utils/yup-config';
@@ -50,27 +59,23 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { ShuntCompensatorModificationInfos } from '../../../../../services/network-modification-types';
 import { ShuntCompensatorModificationDialogSchemaForm } from '../shunt-compensator-dialog.type';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
-import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getCharacteristicsEmptyFormData(),
+    ...getInjectionActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
     ...emptyProperties,
 };
 
@@ -79,6 +84,7 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
+        [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
         ...getCharacteristicsFormValidationSchema(true),
     })
     .concat(modificationPropertiesSchema)
@@ -147,6 +153,7 @@ export default function ShuntCompensatorModificationDialog({
                     sectionCount: editData.sectionCount?.value ?? null,
                     maximumSectionCount: editData.maximumSectionCount?.value ?? null,
                 }),
+                ...getInjectionActiveReactivePowerEditData(STATE_ESTIMATION, editData),
                 ...getPropertiesFromModification(editData.properties),
             });
         }
@@ -220,6 +227,8 @@ export default function ShuntCompensatorModificationDialog({
 
     const onSubmit = useCallback(
         (shuntCompensator: ShuntCompensatorModificationDialogSchemaForm) => {
+            const stateEstimationData = shuntCompensator[STATE_ESTIMATION];
+
             const shuntCompensatorModificationInfos = {
                 type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
                 uuid: editData?.uuid ?? null,
@@ -252,6 +261,10 @@ export default function ShuntCompensatorModificationDialog({
                 connectionDirection: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION]),
                 connectionPosition: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION]),
                 terminalConnected: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[CONNECTED]),
+                qMeasurementValue: toModificationOperation(
+                    stateEstimationData?.[MEASUREMENT_Q]?.[FieldConstants.VALUE]
+                ),
+                qMeasurementValidity: toModificationOperation(stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY]),
                 properties: toModificationProperties(shuntCompensator),
             } satisfies ShuntCompensatorModificationInfos;
             modifyShuntCompensator({

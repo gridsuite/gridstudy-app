@@ -198,10 +198,8 @@ export default function CreateCouplingDeviceDialog({
                 {selectedId != null && (
                     <CreateCouplingDeviceForm
                         sectionOptions={busOrBusbarSectionOptions}
-                        studyUuid={studyUuid}
                         voltageLevelId={selectedId}
                         currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                     />
                 )}
             </ModificationDialog>
