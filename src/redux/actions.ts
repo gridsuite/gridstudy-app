@@ -976,6 +976,20 @@ export function removeFromGlobalFilterOptions(id: string): RemoveFromGlobalFilte
     };
 }
 
+export const SET_SA_PROGRESS = 'SET_SA_PROGRESS';
+export type SetSaProgressAction = Readonly<Action<typeof SET_SA_PROGRESS>> & {
+    current: number;
+    total: number;
+};
+
+export function setSaProgress(current: number, total: number): SetSaProgressAction {
+    return {
+        type: SET_SA_PROGRESS,
+        current,
+        total,
+    };
+}
+
 export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
 export type SetLastCompletedComputationAction = Readonly<Action<typeof SET_LAST_COMPLETED_COMPUTATION>> & {
     lastCompletedComputation: ComputingType | null;

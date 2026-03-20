@@ -6,6 +6,7 @@
  */
 
 import { useComputingStatus } from './use-computing-status';
+import { useSecurityAnalysisProgress } from './use-security-analysis-progress';
 import {
     getDynamicMarginCalculationRunningStatus,
     getDynamicSecurityAnalysisRunningStatus,
@@ -160,6 +161,8 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         undefined,
         securityAnalysisAvailability
     );
+
+    useSecurityAnalysisProgress(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     useComputingStatus(
         studyUuid,

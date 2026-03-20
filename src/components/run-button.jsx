@@ -19,6 +19,7 @@ import { DialogContentText } from '@mui/material';
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
     const intl = useIntl();
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
+    const securityAnalysisProgress = useSelector((state) => state.securityAnalysisProgress);
     const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
 
     // a transient state which is used only for a run with popup dialog
@@ -127,6 +128,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 text={runnablesText[selectedRunnable] || ''}
                 actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
                 computationStopped={computationStopped}
+                progress={selectedRunnable === ComputingType.SECURITY_ANALYSIS ? securityAnalysisProgress : null}
             />
             <SelectOptionsDialog
                 title={''}
