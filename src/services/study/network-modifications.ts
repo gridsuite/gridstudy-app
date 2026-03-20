@@ -16,12 +16,16 @@ import {
     MODIFICATION_TYPES,
     ModificationType,
     safeEncodeURIComponent,
-    NetworkModificationMetadata,
     toModificationOperation,
     SubstationCreationDto,
     SubstationModificationDto,
+    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
-import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import {
+    getBaseNetworkModificationUrl,
+    getStudyUrlWithNodeUuid,
+    getStudyUrlWithNodeUuidAndRootNetworkUuid,
+} from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
@@ -1995,4 +1999,19 @@ export function moveVoltageLevelFeederBays({
         },
         body: JSON.stringify(moveVoltageLevelFeederBaysInfos),
     });
+}
+
+export function getNetworkModificationsFromComposite(
+    compositeModificationUuids: UUID[],
+    onlyMetadata: boolean = true
+): Promise<NetworkModificationMetadata[]> {
+    const urlSearchParams = new URLSearchParams();
+    compositeModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    urlSearchParams.append('onlyMetadata', String(onlyMetadata));
+    const url =
+        getBaseNetworkModificationUrl() +
+        '/network-composite-modifications/network-modifications?' +
+        urlSearchParams.toString();
+    console.debug(url);
+    return backendFetchJson(url);
 }

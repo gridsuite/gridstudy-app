@@ -100,6 +100,7 @@ export const styles = {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
         whiteSpace: 'nowrap',
+        paddingLeft: '0.5vw',
     },
     rootNetworkHeader: {
         width: '100%',
@@ -118,7 +119,14 @@ export const styles = {
 export const DROP_INDICATOR_TOP = 'inset 0 2px 0 #90caf9';
 export const DROP_INDICATOR_BOTTOM = 'inset 0 -2px 0 #90caf9';
 
-export const createRowSx = (isHighlighted: boolean, isDragging: boolean, virtualRow: VirtualItem): SxProps => ({
+export const createRowSx = (
+    theme: Theme,
+    isHighlighted: boolean,
+    isDragging: boolean,
+    virtualRow: VirtualItem,
+    depth: number,
+    isExpanded: boolean
+): SxProps => ({
     position: 'absolute',
     top: 0,
     left: 0,
@@ -132,11 +140,12 @@ export const createRowSx = (isHighlighted: boolean, isDragging: boolean, virtual
         backgroundColor: isHighlighted ? HIGHLIGHT_COLOR_HOVER : ROW_HOVER_COLOR,
     },
     ...(isDragging && { zIndex: 1, transform: 'none' }),
+    ...(depth === 0 && !isExpanded && { borderTop: `1px solid ${alpha(theme.palette.text.secondary, 0.4)}` }),
 });
 
 export const createModificationNameCellStyle = (activated: boolean): CSSProperties => ({
     opacity: activated ? 1 : DEACTIVATED_OPACITY,
-    paddingLeft: '0.8vw',
+    width: '100%',
 });
 
 export const createRootNetworkChipCellSx = (activated: boolean): SxProps => ({
@@ -152,9 +161,20 @@ export const createEditDescriptionStyle = (description: string | undefined): SxP
     'tr:hover &': { opacity: 1 },
 });
 
-export const createCellStyle = (cell: any, isAutoExtensible: boolean) => {
+const BORDER_SUPPRESSED_COLUMNS = new Set(['dragHandle', 'select', 'modificationName']);
+
+export const createCellStyle = (
+    cell: any,
+    isAutoExtensible: boolean,
+    depth: number = 0,
+    isExpanded: boolean = false
+) => {
     const size = cell.column.getSize();
     const minSize = cell.column.columnDef.minSize;
+
+    // For the last leaf row of a group, only suppress border on the name column (not drag/select)
+    const suppressedColumns = BORDER_SUPPRESSED_COLUMNS;
+    const suppressBorder = suppressedColumns.has(cell.column.id) && (depth > 0 || isExpanded);
 
     return {
         ...cell.column.columnDef.meta?.cellStyle,
@@ -164,6 +184,7 @@ export const createCellStyle = (cell: any, isAutoExtensible: boolean) => {
         height: `${MODIFICATION_ROW_HEIGHT}px`,
         display: 'flex',
         alignItems: 'center',
+        ...(suppressBorder && { borderBottom: 'none' }),
     };
 };
 
