@@ -12,6 +12,10 @@ import {
     useSnackMessage,
     DeepNullable,
     sanitizeString,
+    getNewVoltageLevelData,
+    getConnectivityData,
+    getConnectivityWithoutPositionValidationSchema,
+    getConnectivityWithoutPositionEmptyFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -33,12 +37,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../commons/modificationDialog';
-import {
-    getConnectivityData,
-    getConnectivityWithoutPositionEmptyFormData,
-    getConnectivityWithoutPositionValidationSchema,
-    getNewVoltageLevelData,
-} from '../../connectivity/connectivity-form-utils';
 import LineSplitWithVoltageLevelForm, { ExtendedVoltageLevelFormInfos } from './line-split-with-voltage-level-form';
 import LineSplitWithVoltageLevelIllustration from './line-split-with-voltage-level-illustration';
 import {
