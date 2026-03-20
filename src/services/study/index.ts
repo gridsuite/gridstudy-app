@@ -222,7 +222,7 @@ export function fetchContingencyCount(
     return backendFetchJson(url);
 }
 
-export function insertCompositeModifications(
+export function executeCompositeModificationAction(
     studyUuid: UUID,
     targetNodeId: UUID,
     compositeModificationsToInsert: {

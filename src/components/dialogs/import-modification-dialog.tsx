@@ -13,7 +13,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { insertCompositeModifications } from '../../services/study';
+import { executeCompositeModificationAction } from '../../services/study';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
@@ -44,7 +44,7 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
         });
         // import selected modifications
         if (modificationsToInsert.length > 0 && studyUuid && currentNode) {
-            insertCompositeModifications(
+            executeCompositeModificationAction(
                 studyUuid,
                 currentNode.id,
                 modificationsToInsert,
