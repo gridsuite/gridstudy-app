@@ -8,12 +8,12 @@
 import React, { FunctionComponent, useCallback } from 'react';
 import { Checkbox } from '@mui/material';
 import { Row, Table } from '@tanstack/react-table';
-import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { styles } from '../styles';
+import { ComposedModificationMetadata } from '../utils';
 
 interface SelectCellRendererProps {
-    row: Row<NetworkModificationMetadata>;
-    table: Table<NetworkModificationMetadata>;
+    row: Row<ComposedModificationMetadata>;
+    table: Table<ComposedModificationMetadata>;
 }
 
 const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) => {

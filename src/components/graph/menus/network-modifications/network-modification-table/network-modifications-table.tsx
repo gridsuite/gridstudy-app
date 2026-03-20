@@ -5,11 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo, useRef } from 'react';
-import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+    ColumnDef,
+    ExpandedState,
+    flexRender,
+    getCoreRowModel,
+    getExpandedRowModel,
+    useReactTable,
+} from '@tanstack/react-table';
 import { DragDropContext, DragStart, Droppable, DroppableProvided, DropResult } from '@hello-pangea/dnd';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
@@ -20,6 +26,8 @@ import ModificationRow from './row/modification-row';
 import { useTheme } from '@mui/material/styles';
 import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
 import { AppState } from '../../../../../redux/reducer.type';
+import { ComposedModificationMetadata, formatComposedModification } from './utils';
+import { MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];
@@ -55,12 +63,22 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     const containerRef = useRef<HTMLDivElement>(null);
     const lastClickedIndex = useRef<number | null>(null);
 
-    const columns = useMemo<ColumnDef<NetworkModificationMetadata>[]>(() => {
+    const [expanded, setExpanded] = useState<ExpandedState>({});
+
+    const [composedModification, setComposedModification] = useState<ComposedModificationMetadata[]>(
+        formatComposedModification(modifications)
+    );
+
+    useEffect(() => {
+        setComposedModification(formatComposedModification(modifications));
+    }, [modifications]);
+
+    const columns = useMemo<ColumnDef<ComposedModificationMetadata>[]>(() => {
         const staticColumns = createBaseColumns(
             isRowDragDisabled,
             modifications.length,
             nameHeaderProps,
-            setModifications
+            setComposedModification
         );
         const dynamicColumns = isMonoRootStudy
             ? []
@@ -77,7 +95,6 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
         isRowDragDisabled,
         modifications,
         nameHeaderProps,
-        setModifications,
         isMonoRootStudy,
         rootNetworks,
         currentRootNetworkUuid,
@@ -86,11 +103,17 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     ]);
 
     const table = useReactTable({
-        data: modifications,
+        data: composedModification,
         columns,
+        state: { expanded },
         getCoreRowModel: getCoreRowModel(),
-        getRowId: (row) => row.uuid,
+        getExpandedRowModel: getExpandedRowModel(),
+        getSubRows: (row) => row.subModifications,
+        getRowId: (row, index, parent) => (parent ? `${parent.id}.${row.uuid}` : row.uuid),
+        getRowCanExpand: (row) => row.original.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type,
         enableRowSelection: true,
+        enableExpanding: true,
+        onExpandedChange: setExpanded,
         meta: { lastClickedIndex, onRowSelected },
     });
 

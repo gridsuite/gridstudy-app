@@ -16,10 +16,10 @@ import {
     MODIFICATION_TYPES,
     ModificationType,
     safeEncodeURIComponent,
-    NetworkModificationMetadata,
     toModificationOperation,
     SubstationCreationDto,
     SubstationModificationDto,
+    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
