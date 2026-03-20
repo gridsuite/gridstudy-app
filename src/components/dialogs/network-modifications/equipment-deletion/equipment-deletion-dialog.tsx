@@ -80,7 +80,11 @@ const EquipmentDeletionDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (editData: EquipmentDeletionDto) => {
-            reset(equipmentDeletionDtoToForm(editData));
+            const formData = equipmentDeletionDtoToForm(editData);
+            reset({
+                ...formData,
+                equipmentInfos: null, // this prop will be computed (cf LCC specific part)
+            });
         },
         [reset]
     );
