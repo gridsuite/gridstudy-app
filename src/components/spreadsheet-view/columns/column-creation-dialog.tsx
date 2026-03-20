@@ -226,8 +226,8 @@ export default function ColumnCreationDialog({
         />
     );
 
-    const filters = useSelector<AppState, FilterConfig[]>((state) =>
-        getColumnFiltersFromState(state, TableType.Spreadsheet, spreadsheetConfigUuid)
+    const filters = useSelector<AppState, FilterConfig[]>(
+        (state) => getColumnFiltersFromState(state, TableType.Spreadsheet, spreadsheetConfigUuid) ?? []
     );
 
     const persistFilters = useCallback(

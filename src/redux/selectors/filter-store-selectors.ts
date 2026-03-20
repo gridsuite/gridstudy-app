@@ -13,6 +13,6 @@ import { getColumnFiltersFromState } from './filter-selectors';
  * Get column filters directly from Redux store without using hooks.
  * This is useful in callbacks to avoid re-creating callbacks on every filter change.
  */
-export const getColumnFiltersFromStore = (filterType: TableType, filterTab: string): FilterConfig[] => {
+export const getColumnFiltersFromStore = (filterType: TableType, filterTab: string): FilterConfig[] | undefined => {
     return getColumnFiltersFromState(store.getState(), filterType, filterTab);
 };

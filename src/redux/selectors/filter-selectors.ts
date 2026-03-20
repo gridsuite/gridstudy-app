@@ -12,6 +12,6 @@ export const getColumnFiltersFromState = (
     state: AppState,
     filterType: TableType,
     filterTab: string
-): FilterConfig[] => {
-    return state.tableFilters.columnsFilters?.[filterType]?.[filterTab] ?? [];
+): FilterConfig[] | undefined => {
+    return state.tableFilters.columnsFilters?.[filterType]?.[filterTab];
 };

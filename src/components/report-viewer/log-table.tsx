@@ -105,8 +105,8 @@ const LogTable = ({
     const [, , , fetchLogs, fetchLogMatches] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
-    const filters = useSelector<AppState, FilterConfig[]>((state) =>
-        getColumnFiltersFromState(state, TableType.Logs, reportType)
+    const filters = useSelector<AppState, FilterConfig[]>(
+        (state) => getColumnFiltersFromState(state, TableType.Logs, reportType) ?? []
     );
     const { pagination, setPagination } = useLogsPagination(reportType);
 
