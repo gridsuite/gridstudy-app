@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { CONNECTION_DIRECTIONS, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION_ID,
     CONNECTED,
@@ -60,7 +60,6 @@ import {
 import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
 import {
     BOOLEAN,
-    CONNECTION_DIRECTIONS,
     ENERGY_SOURCES,
     ENUM,
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
