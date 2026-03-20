@@ -28,13 +28,11 @@ import {
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
-    ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_GLOBAL_FILTERS,
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_SPREADSHEET_LOADED_NODES_IDS,
     ADD_TO_GLOBAL_FILTER_OPTIONS,
-    type AddFilterForNewSpreadsheetAction,
     AddGlobalFiltersAction,
     type AddNotificationAction,
     type AddSortForNewSpreadsheetAction,
@@ -73,9 +71,7 @@ import {
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     type LoadEquipmentsAction,
     type LoadNetworkModificationTreeSuccessAction,
-    LOGS_FILTER,
     LOGS_RESULT_PAGINATION,
-    type LogsFilterAction,
     LogsResultPaginationAction,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
@@ -196,8 +192,6 @@ import {
     SetSpreadsheetFetchingAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
     ShortcircuitAnalysisResultPaginationAction,
-    SPREADSHEET_FILTER,
-    type SpreadsheetFilterAction,
     STORE_NAD_VIEW_BOX,
     StoreNadViewBoxAction,
     TABLE_SORT,
@@ -242,7 +236,6 @@ import {
     LOADFLOW_RESULT_SORT_STORE,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
     LOGS_PAGINATION_STORE_FIELD,
-    LOGS_STORE_FIELD,
     ONE_BUS,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     PCCMIN_ANALYSIS_RESULT_SORT_STORE,
@@ -262,7 +255,6 @@ import {
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
     SPREADSHEET_SORT_STORE,
-    SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
     STATEESTIMATION_RESULT_SORT_STORE,
@@ -281,6 +273,7 @@ import {
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
+    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PCCMIN_ANALYSIS_TABS,
@@ -289,6 +282,7 @@ import {
     SHORTCIRCUIT_ANALYSIS_TABS,
     SortWay,
     TableSortConfig,
+    TableType,
 } from '../types/custom-aggrid-types';
 import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
@@ -302,7 +296,6 @@ import {
     type AppState,
     type Bus,
     EquipmentUpdateType,
-    type LogsFilterState,
     type LogsPaginationState,
     type SpreadsheetNetworkState,
     type Substation,
@@ -365,7 +358,7 @@ export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
 
 export type Actions = AppActions | AuthenticationActions;
 
-const initialLogsFilterState: LogsFilterState = {
+const initialLogsFilterState: Record<string, FilterConfig[]> = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SECURITY_ANALYSIS]: [],
@@ -561,10 +554,6 @@ const initialState: AppState = {
         [PCCMIN_RESULT]: { ...DEFAULT_PAGINATION },
     },
 
-    // Spreadsheet filters
-    [SPREADSHEET_STORE_FIELD]: {},
-
-    [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
     [LOGS_PAGINATION_STORE_FIELD]: { ...initialLogsPaginationState },
 
     [TABLE_SORT_STORE]: {
@@ -637,7 +626,9 @@ const initialState: AppState = {
         },
     },
     tableFilters: {
-        columnsFilters: {},
+        columnsFilters: {
+            [TableType.Logs]: { ...initialLogsFilterState },
+        },
         globalFilters: {},
     },
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
@@ -783,7 +774,7 @@ export const reducer = createReducer(initialState, (builder) => {
             }
         }
         state.tables.addedTable = null;
-        state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
+        state.tableFilters.columnsFilters[TableType.Spreadsheet] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce(
                 (acc, tabUuid) => ({
@@ -836,8 +827,8 @@ export const reducer = createReducer(initialState, (builder) => {
         // Replace the definitions array with the new one
         state.tables.definitions = newDefinitions;
 
-        if (state[SPREADSHEET_STORE_FIELD]) {
-            delete state[SPREADSHEET_STORE_FIELD][removedTable.uuid];
+        if (state.tableFilters.columnsFilters[TableType.Spreadsheet]) {
+            delete state.tableFilters.columnsFilters[TableType.Spreadsheet][removedTable.uuid];
         }
 
         if (state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE]) {
@@ -1496,21 +1487,8 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
-        state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
-    });
-
-    builder.addCase(ADD_FILTER_FOR_NEW_SPREADSHEET, (state, action: AddFilterForNewSpreadsheetAction) => {
-        const { tabUuid, value } = action.payload;
-        state[SPREADSHEET_STORE_FIELD][tabUuid] = value;
-    });
-
-    builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
-        state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
-    });
-
     builder.addCase(RESET_LOGS_FILTER, (state, _action: ResetLogsFilterAction) => {
-        state[LOGS_STORE_FIELD] = {
+        state.tableFilters.columnsFilters[TableType.Logs] = {
             ...initialLogsFilterState,
         };
     });
@@ -1568,7 +1546,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const { uuid, value } = action.definition;
         const tableDefinition = state.tables.definitions.find((tabDef) => tabDef.uuid === uuid);
         const tableSort = state.tableSort[SPREADSHEET_SORT_STORE];
-        const tableFilter = state[SPREADSHEET_STORE_FIELD];
+        const tableFilter = state.tableFilters.columnsFilters[TableType.Spreadsheet];
 
         if (tableDefinition) {
             tableDefinition.columns = tableDefinition.columns.filter((col) => col.id !== value);
@@ -1577,7 +1555,7 @@ export const reducer = createReducer(initialState, (builder) => {
         if (tableDefinition && tableSort[tableDefinition.name]) {
             tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort) => sort.colId !== value);
         }
-        if (tableDefinition && tableFilter[tableDefinition.uuid]) {
+        if (tableDefinition && tableFilter?.[tableDefinition.uuid]) {
             tableFilter[tableDefinition.uuid] = tableFilter[tableDefinition.uuid].filter(
                 (filter) => filter.column !== value
             );
@@ -1622,10 +1600,31 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
         const { filterType, filterSubType, filters } = action;
         state.tableFilters.columnsFilters[filterType] ??= {};
-        state.tableFilters.columnsFilters[filterType][filterSubType] ??= {
-            columns: [],
-        };
-        state.tableFilters.columnsFilters[filterType][filterSubType].columns = filters;
+        state.tableFilters.columnsFilters[filterType][filterSubType] = filters;
+
+        // Reset pagination to page 0 when column filters change
+        switch (filterType) {
+            case TableType.SecurityAnalysis:
+                SECURITY_ANALYSIS_TABS.forEach((tab) => {
+                    state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][tab].page = 0;
+                });
+                break;
+            case TableType.SensitivityAnalysis:
+                SENSITIVITY_ANALYSIS_TABS.forEach((tab) => {
+                    state[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD][tab].page = 0;
+                });
+                break;
+            case TableType.ShortcircuitAnalysis:
+                SHORTCIRCUIT_ANALYSIS_TABS.forEach((tab) => {
+                    state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD][tab].page = 0;
+                });
+                break;
+            case TableType.PccMin:
+                PCCMIN_ANALYSIS_TABS.forEach((tab) => {
+                    state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][tab].page = 0;
+                });
+                break;
+        }
     });
 
     builder.addCase(ADD_GLOBAL_FILTERS, (state, action: AddGlobalFiltersAction) => {

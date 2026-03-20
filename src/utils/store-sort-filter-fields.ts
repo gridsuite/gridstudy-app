@@ -38,11 +38,9 @@ export const DYNAMIC_SIMULATION_RESULT_SORT_STORE = 'dynamicSimulationResult';
 export const TIMELINE = 'timeline';
 
 //spreadsheet store fields
-export const SPREADSHEET_STORE_FIELD = 'spreadsheetFilter';
 export const SPREADSHEET_SORT_STORE = 'spreadsheet';
 
 //logs store fields
-export const LOGS_STORE_FIELD = 'logsFilter';
 export const LOGS_PAGINATION_STORE_FIELD = 'logsPagination';
 
 //table sort store field
