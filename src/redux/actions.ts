@@ -955,12 +955,20 @@ export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircui
 export const ADD_TO_GLOBAL_FILTER_OPTIONS = 'ADD_TO_GLOBAL_FILTER_OPTIONS';
 export type AddToGlobalFilterOptionsAction = Readonly<Action<typeof ADD_TO_GLOBAL_FILTER_OPTIONS>> & {
     globalFilters: GlobalFilter[];
+    tableType?: string;
+    tableId?: string;
 };
 
-export function addToGlobalFilterOptions(globalFilters: GlobalFilter[]): AddToGlobalFilterOptionsAction {
+export function addToGlobalFilterOptions(
+    globalFilters: GlobalFilter[],
+    tableType?: string,
+    tableId?: string
+): AddToGlobalFilterOptionsAction {
     return {
         type: ADD_TO_GLOBAL_FILTER_OPTIONS,
         globalFilters: globalFilters,
+        tableType: tableType,
+        tableId: tableId,
     };
 }
 
