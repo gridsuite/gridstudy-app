@@ -20,6 +20,7 @@ import {
     toModificationOperation,
     SubstationCreationDto,
     SubstationModificationDto,
+    VoltageLevelModificationDto,
 } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
@@ -56,7 +57,6 @@ import {
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
-    VoltageLeveModificationInfo,
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
@@ -1175,16 +1175,13 @@ export function createVoltageLevel({
 export function modifyVoltageLevel({
     studyUuid,
     nodeUuid,
-    modificationUuid = undefined,
-    equipmentId,
-    equipmentName,
-    nominalV,
-    lowVoltageLimit,
-    highVoltageLimit,
-    lowShortCircuitCurrentLimit,
-    highShortCircuitCurrentLimit,
-    properties,
-}: VoltageLeveModificationInfo) {
+    modificationUuid,
+    ...dto
+}: {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: UUID;
+} & VoltageLevelModificationDto) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -1201,17 +1198,7 @@ export function modifyVoltageLevel({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
-            equipmentId,
-            equipmentName: toModificationOperation(equipmentName),
-            nominalV: toModificationOperation(nominalV),
-            lowVoltageLimit: toModificationOperation(lowVoltageLimit),
-            highVoltageLimit: toModificationOperation(highVoltageLimit),
-            ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
-            ipMax: toModificationOperation(highShortCircuitCurrentLimit),
-            properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
