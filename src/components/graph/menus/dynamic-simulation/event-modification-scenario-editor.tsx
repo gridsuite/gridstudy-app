@@ -39,7 +39,7 @@ import {
     isEventNotification,
     NotificationType,
     parseEventData,
-    StudyUpdateEventData,
+    CommonStudyEventData,
 } from 'types/notification-types';
 import {
     deleteDynamicSimulationEvents,
@@ -168,7 +168,10 @@ const EventModificationScenarioEditor = memo(() => {
 
     const handleEvent = useCallback(
         (event: MessageEvent) => {
-            const eventData = parseEventData<StudyUpdateEventData>(event);
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (!eventData) {
+                return;
+            }
             if (isEventNotification(eventData)) {
                 if (currentNodeIdRef.current !== eventData.headers.parentNode) {
                     return;
