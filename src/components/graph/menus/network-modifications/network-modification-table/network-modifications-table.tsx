@@ -5,7 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    Dispatch,
+    FunctionComponent,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
 import {
@@ -14,6 +23,7 @@ import {
     flexRender,
     getCoreRowModel,
     getExpandedRowModel,
+    Updater,
     useReactTable,
 } from '@tanstack/react-table';
 import { DragDropContext, DragStart, Droppable, DroppableProvided, DropResult } from '@hello-pangea/dnd';
@@ -28,6 +38,7 @@ import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
 import { AppState } from '../../../../../redux/reducer.type';
 import { ComposedModificationMetadata, formatComposedModification } from './utils';
 import { MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { getNetworkModificationsFromComposite } from '../../../../../services/study/network-modifications';
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];
@@ -39,6 +50,30 @@ interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorN
     onRowSelected: (selectedRows: NetworkModificationMetadata[]) => void;
     modificationsToExclude: ExcludedNetworkModifications[];
     setModificationsToExclude: Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
+}
+
+/**
+ * Fetches sub-modifications for composite rows that are expanded but not yet loaded,
+ * then updates composedModifications with the results.
+ * One request is fired per UUID because the endpoint returns a flat list with no parent attribution.
+ */
+function fetchSubModificationsForExpandedRows(
+    expandedIds: string[],
+    mods: ComposedModificationMetadata[],
+    setMods: Dispatch<SetStateAction<ComposedModificationMetadata[]>>
+): void {
+    const uuidsToFetch = expandedIds.filter((id) => {
+        const mod = mods.find((m) => m.uuid === id);
+        return mod?.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type && mod.subModifications.length === 0;
+    });
+
+    uuidsToFetch.forEach((uuid) => {
+        getNetworkModificationsFromComposite([uuid]).then((subMods) => {
+            setMods((prev) =>
+                prev.map((m) => (m.uuid === uuid ? { ...m, subModifications: formatComposedModification(subMods) } : m))
+            );
+        });
+    });
 }
 
 const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProps> = ({
@@ -65,20 +100,36 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
 
     const [expanded, setExpanded] = useState<ExpandedState>({});
 
-    const [composedModification, setComposedModification] = useState<ComposedModificationMetadata[]>(
+    const [composedModifications, setComposedModifications] = useState<ComposedModificationMetadata[]>(
         formatComposedModification(modifications)
     );
 
     useEffect(() => {
-        setComposedModification(formatComposedModification(modifications));
-    }, [modifications]);
+        const nextMods = formatComposedModification(modifications);
+        // Re-fetch sub-modifications for rows that were already expanded
+        const expandedIds = Object.keys(expanded).filter((id) => expanded[id]);
+        fetchSubModificationsForExpandedRows(expandedIds, nextMods, setComposedModifications);
+        setComposedModifications(nextMods);
+    }, [modifications]); // eslint-disable-line react-hooks/exhaustive-deps -- `expanded` is intentionally excluded: we only want the snapshot at the time modifications change
+
+    const handleExpandRow = useCallback((updater: Updater<ExpandedState>) => {
+        setExpanded((prevExpanded) => {
+            const nextExpanded = typeof updater === 'function' ? updater(prevExpanded) : updater;
+            const newlyExpandedIds = Object.keys(nextExpanded).filter((id) => nextExpanded[id] && !prevExpanded[id]);
+            setComposedModifications((prevMods) => {
+                fetchSubModificationsForExpandedRows(newlyExpandedIds, prevMods, setComposedModifications);
+                return prevMods;
+            });
+            return nextExpanded;
+        });
+    }, []);
 
     const columns = useMemo<ColumnDef<ComposedModificationMetadata>[]>(() => {
         const staticColumns = createBaseColumns(
             isRowDragDisabled,
             modifications.length,
             nameHeaderProps,
-            setComposedModification
+            setComposedModifications
         );
         const dynamicColumns = isMonoRootStudy
             ? []
@@ -103,7 +154,7 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     ]);
 
     const table = useReactTable({
-        data: composedModification,
+        data: composedModifications,
         columns,
         state: { expanded },
         getCoreRowModel: getCoreRowModel(),
@@ -113,7 +164,7 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
         getRowCanExpand: (row) => row.original.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type,
         enableRowSelection: true,
         enableExpanding: true,
-        onExpandedChange: setExpanded,
+        onExpandedChange: handleExpandRow,
         meta: { lastClickedIndex, onRowSelected },
     });
 

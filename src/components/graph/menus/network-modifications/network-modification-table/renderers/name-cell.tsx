@@ -7,7 +7,7 @@
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { Row } from '@tanstack/react-table';
-import { mergeSx, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import { mergeSx, MODIFICATION_TYPES, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, SxProps, Theme, Tooltip } from '@mui/material';
 import { createModificationNameCellStyle, styles } from '../styles';
@@ -27,7 +27,7 @@ const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
 
-    const hasSubModifications = row.original.subModifications?.length > 0;
+    const hasSubModifications = row.original.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type;
     const depth = row.depth;
 
     const getModificationLabel = useCallback(
