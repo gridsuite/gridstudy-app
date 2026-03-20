@@ -226,8 +226,8 @@ export default function ColumnCreationDialog({
         />
     );
 
-    const filters = useSelector<AppState, FilterConfig[]>(
-        (state) => getColumnFiltersFromState(state, TableType.Spreadsheet, spreadsheetConfigUuid) ?? []
+    const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
+        getColumnFiltersFromState(state, TableType.Spreadsheet, spreadsheetConfigUuid)
     );
 
     const persistFilters = useCallback(
@@ -299,7 +299,7 @@ export default function ColumnCreationDialog({
             // If we update the column, we remove its filters
             if (existingColumn) {
                 isUpdate = true;
-                const updatedFilters = filters?.filter((filter) => filter.column !== existingColumn.id);
+                const updatedFilters = filters?.filter((filter) => filter.column !== existingColumn.id) ?? [];
                 persistFilters(studyUuid, updatedFilters);
             }
 

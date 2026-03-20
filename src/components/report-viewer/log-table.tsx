@@ -38,7 +38,7 @@ import { reportStyles } from './report.styles';
 import { useLogsPagination } from './use-logs-pagination';
 import { useStableComputedArray } from '../../hooks/use-stable-computed-array';
 
-const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
+const getColumnFilterValue = (array: FilterConfig[] | null | undefined, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
 };
 
@@ -105,8 +105,8 @@ const LogTable = ({
     const [, , , fetchLogs, fetchLogMatches] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
-    const filters = useSelector<AppState, FilterConfig[]>(
-        (state) => getColumnFiltersFromState(state, TableType.Logs, reportType) ?? []
+    const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
+        getColumnFiltersFromState(state, TableType.Logs, reportType)
     );
     const { pagination, setPagination } = useLogsPagination(reportType);
 

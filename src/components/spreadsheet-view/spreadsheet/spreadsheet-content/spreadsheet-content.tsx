@@ -166,8 +166,8 @@ export const SpreadsheetContent = memo(
             }
         }, [transformedRowData, gridRef, isGridReady]);
 
-        const filters = useSelector<AppState, FilterConfig[]>(
-            (state) => getColumnFiltersFromState(state, TableType.Spreadsheet, tableDefinition?.uuid) ?? []
+        const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
+            getColumnFiltersFromState(state, TableType.Spreadsheet, tableDefinition?.uuid)
         );
 
         useEffect(() => {

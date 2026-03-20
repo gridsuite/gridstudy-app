@@ -42,6 +42,8 @@ const changeValueFromArrayWithFieldValue = (
     }
 };
 
+const EMPTY_ARRAY: FilterConfig[] = [];
+
 export const useCustomAggridColumnFilter = (
     colId: string,
     { type, tab, dataType, comparators = [], debounceMs = 1000 }: FilterParams
@@ -54,7 +56,9 @@ export const useCustomAggridColumnFilter = (
     const isEditingRef = useRef(false);
 
     const { snackError } = useSnackMessage();
-    const filters = useSelector<AppState, FilterConfig[]>((state) => getColumnFiltersFromState(state, type, tab) ?? []);
+    const filters = useSelector<AppState, FilterConfig[]>(
+        (state) => getColumnFiltersFromState(state, type, tab) ?? EMPTY_ARRAY
+    );
     const studyUuid = useSelector<AppState, AppState['studyUuid']>((state) => state.studyUuid);
     const tableDefinitions = useSelector<AppState, AppState['tables']['definitions']>(
         (state) => state.tables.definitions
