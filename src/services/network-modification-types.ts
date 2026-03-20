@@ -330,7 +330,6 @@ export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
     topologyKind?: string;
 }
 
-
 type VariationFilter = {
     id: string;
     name: string;

@@ -57,7 +57,6 @@ import {
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
-
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
