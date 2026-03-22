@@ -12,31 +12,31 @@ import { makeComponents, TYPES } from '../util/make-component-utils';
 import IdaSolverParameters from './solver/ida-solver-parameters';
 import SimplifiedSolverParameters from './solver/simplified-solver-parameters';
 import { TabPanel } from '../parameters';
-import { SolverTypeInfos } from 'services/study/dynamic-simulation.type';
 import { Solver } from './dynamic-simulation-utils';
 import { DynamicSimulationForm } from './dynamic-simulation.type';
+import { SolverInfos, SolverType } from '../../../../services/study/dynamic-simulation.type';
 
 interface SolverParametersProps {
-    solver?: { solverId: string; solvers: Record<string, any>[] };
+    solver?: { solver?: SolverType; solvers?: SolverInfos[] };
     path: keyof DynamicSimulationForm;
     clearErrors: UseFormClearErrors<DynamicSimulationForm>;
 }
 
-const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver, path, clearErrors }) => {
-    const { solvers } = solver ?? {};
+const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver: solverParam, path, clearErrors }) => {
+    const { solvers } = solverParam ?? {};
 
-    const solverId = useWatch({ name: `${path}.${Solver.ID}` });
+    const solver = useWatch({ name: `${path}.${Solver.SOLVER}` });
 
     const selectedSolver = useMemo(() => {
-        return solvers?.find((elem) => elem.id === solverId);
-    }, [solvers, solverId]);
+        return solvers?.find((elem) => elem.type === solver);
+    }, [solvers, solver]);
 
     const solverOptions = useMemo(() => {
         return solvers?.reduce<{ id: string; label: string }[]>((arr, curr) => {
             return [
                 ...arr,
                 {
-                    id: curr.id,
+                    id: curr.type,
                     label: `DynamicSimulationSolver${curr.type}`,
                 },
             ];
@@ -45,10 +45,10 @@ const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver, pa
 
     useEffect(() => {
         clearErrors(path);
-    }, [solverId, clearErrors, path]);
+    }, [solver, clearErrors, path]);
 
     const defParams = {
-        [Solver.ID]: {
+        [Solver.SOLVER]: {
             type: TYPES.ENUM,
             label: 'DynamicSimulationSolverType',
             options: solverOptions,
@@ -58,10 +58,10 @@ const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver, pa
     return (
         <Grid xl={8} container>
             {makeComponents(defParams, path)}
-            <TabPanel value={selectedSolver?.type} index={SolverTypeInfos.IDA}>
+            <TabPanel value={selectedSolver?.type} index={SolverType.IDA}>
                 <IdaSolverParameters path={`${path}.${Solver.SOLVERS}[0]`} />
             </TabPanel>
-            <TabPanel value={selectedSolver?.type} index={SolverTypeInfos.SIM}>
+            <TabPanel value={selectedSolver?.type} index={SolverType.SIM}>
                 <SimplifiedSolverParameters path={`${path}.${Solver.SOLVERS}[1]`} />
             </TabPanel>
         </Grid>

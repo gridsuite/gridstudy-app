@@ -242,7 +242,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         );
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid, startComputationAsync]);
 
-    const handleStartDynamicSimulation = (dynamicSimulationConfiguration, debug) => {
+    const handleStartDynamicSimulation = (debug) => {
         startComputationAsync(
             ComputingType.DYNAMIC_SIMULATION,
             null,
@@ -251,7 +251,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     studyUuid,
                     currentNodeUuid: currentNode?.id,
                     currentRootNetworkUuid,
-                    dynamicSimulationConfiguration,
                     debug,
                 }),
             () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
@@ -661,8 +660,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 <DynamicSimulationParametersSelector
                     open={showDynamicSimulationParametersSelector}
                     onClose={() => setShowDynamicSimulationParametersSelector(false)}
-                    onStart={(params) => {
-                        handleStartDynamicSimulation(params, runWithDebug);
+                    onStart={() => {
+                        handleStartDynamicSimulation(runWithDebug);
                         setShowDynamicSimulationParametersSelector(false);
                         setRunWithDebug(false);
                     }}

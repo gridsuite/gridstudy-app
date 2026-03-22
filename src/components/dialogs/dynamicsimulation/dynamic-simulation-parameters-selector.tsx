@@ -45,7 +45,7 @@ const emptyFormData: MappingFormData = {
 interface DynamicSimulationParametersSelectorProps {
     open: boolean;
     onClose: () => void;
-    onStart: (params: any) => void;
+    onStart: () => void;
     studyUuid: UUID;
 }
 
@@ -116,7 +116,7 @@ export function DynamicSimulationParametersSelector({
                 updateDynamicSimulationParameters(studyUuid, newDynamicSimulationParams)
                     .then(() => {
                         // start computation
-                        onStart(newDynamicSimulationParams);
+                        onStart();
                     })
                     .catch((error) => {
                         snackWithFallback(snackError, error, {
