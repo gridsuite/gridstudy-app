@@ -296,7 +296,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                         <NetworkParameters path={TAB_VALUES.NETWORK} />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={TAB_VALUES.CURVE}>
-                        <CurveParameters path={TAB_VALUES.CURVE} />
+                        <CurveParameters path={TAB_VALUES.CURVE} mappingPath={`${TAB_VALUES.MAPPING}.${MAPPING}`} />
                     </TabPanel>
                 </Grid>
 

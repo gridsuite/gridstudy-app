@@ -113,9 +113,13 @@ export function fetchDynamicSimulationResultTimeSeries(
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationModels(studyUuid: UUID | null) {
+export function fetchDynamicSimulationModels(studyUuid: UUID | null, mapping: string | null) {
     console.info(`Fetching dynamic simulation models on study '${studyUuid}' ...`);
-    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/models';
+    const urlParams = new URLSearchParams();
+    if (mapping) {
+        urlParams.append('mapping', `${mapping}`);
+    }
+    const url = getStudyUrl(studyUuid) + `/dynamic-simulation/models?${urlParams}`;
     console.debug(url);
     return backendFetchJson(url);
 }

@@ -30,9 +30,10 @@ interface CurveSelectorDialogProps {
     open: boolean;
     onClose: () => void;
     onSave: (curves: Curve[]) => void;
+    mapping?: string;
 }
 
-const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open, onClose, onSave }) => {
+const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open, onClose, onSave, mapping }) => {
     const theme = useTheme();
 
     const selectorRef = useRef<GetSelectedItemsHandler>(null);
@@ -95,7 +96,7 @@ const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open
                     })}
                 >
                     <Grid item container xs={8} spacing={theme.spacing(1)}>
-                        <CurveSelector ref={selectorRef} />
+                        <CurveSelector ref={selectorRef} mapping={mapping} />
                     </Grid>
                     <Grid item container direction={'column'} justifyContent={'center'} alignItems={'center'} xs={0.5}>
                         <Grid item>
