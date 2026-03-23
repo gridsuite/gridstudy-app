@@ -32,12 +32,17 @@ export interface GlobalFilter {
     filterType: string;
     filterSubtype?: string; // when filterType needs more precise subcategories
     filterTypeFromMetadata?: string; // only useful for generic filters
-    recent?: boolean;
+    unselectedDate?: number;
     uuid?: UUID; // only useful for generic filters
     equipmentType?: string; // only useful for generic filters
     path?: string; // only useful for generic filters
     minValue?: number; // only useful for voltage level filters
     maxValue?: number; // only useful for voltage level filters
+}
+
+export interface RecentGlobalFilter {
+    id: string;
+    unselectedDate: number;
 }
 
 export interface ResultsQueryParams {

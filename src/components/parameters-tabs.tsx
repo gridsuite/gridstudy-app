@@ -27,7 +27,6 @@ import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
-import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
@@ -48,6 +47,8 @@ import {
     ShortCircuitParametersInLine,
     useParametersBackend,
     VoltageInitParametersInLine,
+    DynamicSecurityAnalysisInline,
+    fetchDynamicSecurityAnalysisProviders,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -57,12 +58,15 @@ import {
     setShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
-import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
 import { fetchContingencyCount } from '../services/study';
 import {
     fetchDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
 } from '../services/study/dynamic-margin-calculation';
+import {
+    fetchDynamicSecurityAnalysisParameters,
+    updateDynamicSecurityAnalysisParameters,
+} from '../services/study/dynamic-security-analysis';
 import { BUILD_STATUS } from './network/constants';
 
 enum TAB_VALUES {
@@ -81,7 +85,6 @@ enum TAB_VALUES {
 
 const ParametersTabs: FunctionComponent = () => {
     const dispatch = useDispatch();
-    const { minimizePanel } = useWorkspacePanelActions();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -94,7 +97,6 @@ const ParametersTabs: FunctionComponent = () => {
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
-    const [pendingClosePanelId, setPendingClosePanelId] = useState<UUID | null>(null);
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -186,14 +188,14 @@ const ParametersTabs: FunctionComponent = () => {
         user,
         studyUuid,
         ComputingType.SHORT_CIRCUIT,
-        OptionalServicesStatus.Up,
+        shortCircuitAvailability,
         {
             backendFetchParameters: getShortCircuitParameters,
             backendUpdateParameters: setShortCircuitParameters,
             backendFetchSpecificParametersDescription: getShortCircuitSpecificParametersDescription,
         }
     );
-    useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
+    useParametersNotification(ComputingType.SHORT_CIRCUIT, shortCircuitAvailability, shortCircuitParametersBackend);
 
     const dynamicMarginCalculationParametersBackend = useParametersBackend(
         user,
@@ -212,21 +214,26 @@ const ParametersTabs: FunctionComponent = () => {
         dynamicMarginCalculationParametersBackend
     );
 
+    const dynamicSecurityAnalysisParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        {
+            backendFetchProviders: fetchDynamicSecurityAnalysisProviders,
+            backendFetchParameters: fetchDynamicSecurityAnalysisParameters,
+            backendUpdateParameters: updateDynamicSecurityAnalysisParameters,
+        }
+    );
+    useParametersNotification(
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        dynamicSecurityAnalysisParametersBackend
+    );
+
     const pccMinParameters = useGetPccMinParameters();
     const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
-
-    // Listen for panel close requests from panel header
-    useEffect(() => {
-        const handleCloseRequest = (event: Event) => {
-            const customEvent = event as CustomEvent<UUID>;
-            setPendingClosePanelId(customEvent.detail);
-            setIsLeavingPopupOpen(true);
-        };
-
-        globalThis.addEventListener('parametersPanel:requestClose', handleCloseRequest);
-        return () => globalThis.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
-    }, []);
 
     useEffect(() => {
         if (attemptedLeaveParametersTabIndex !== null) {
@@ -246,26 +253,19 @@ const ParametersTabs: FunctionComponent = () => {
             setTabValue(newValue);
         }
     };
-
     const handlePopupChangeTab = useCallback(() => {
         if (nextTabValue) {
             setTabValue(nextTabValue);
             setNextTabValue(undefined);
         } else if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(confirmLeaveParametersTab());
-        } else if (pendingClosePanelId !== null) {
-            // User confirmed close - actually close the panel
-            minimizePanel(pendingClosePanelId);
-            setPendingClosePanelId(null);
         }
         dispatch(setDirtyComputationParameters(false));
         setIsLeavingPopupOpen(false);
-    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch, minimizePanel]);
-
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
     const handleLeavingPopupClose = useCallback(() => {
         setIsLeavingPopupOpen(false);
         setNextTabValue(undefined);
-        setPendingClosePanelId(null);
 
         if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(cancelLeaveParametersTab());
@@ -335,7 +335,6 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         parametersBackend={shortCircuitParametersBackend}
-                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case TAB_VALUES.pccMinTabValue:
@@ -349,7 +348,13 @@ const ParametersTabs: FunctionComponent = () => {
             case TAB_VALUES.dynamicSimulationParamsTabValue:
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setDirtyFields} />;
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
-                return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setDirtyFields} />;
+                return (
+                    <DynamicSecurityAnalysisInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        parametersBackend={dynamicSecurityAnalysisParametersBackend}
+                    />
+                );
             case TAB_VALUES.dynamicMarginCalculationParamsTabValue:
                 return (
                     <DynamicMarginCalculationInline
@@ -400,6 +405,7 @@ const ParametersTabs: FunctionComponent = () => {
         pccMinParameters,
         user,
         dynamicMarginCalculationParametersBackend,
+        dynamicSecurityAnalysisParametersBackend,
         voltageInitParameters,
         useStateEstimationParameters,
         networkVisualizationsParameters,

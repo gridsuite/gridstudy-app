@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ConnectablePositionInfos } from '../../../connectivity/connectivity.type';
+import { ConnectablePositionInfos } from '@gridsuite/commons-ui';
 
 export type FeederBaysFormInfos = {
     equipmentId: string | null;

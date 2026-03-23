@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 import {
     ACTIVE_POWER_SETPOINT,
     CONVERTER_STATION_1,
@@ -22,7 +21,7 @@ import {
     R,
 } from '../../../../../utils/field-constants';
 import { LccShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
-import { FieldConstants, Property } from '@gridsuite/commons-ui';
+import { ConnectablePositionInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export const LccDialogTab = {
     HVDC_LINE_TAB: 0,

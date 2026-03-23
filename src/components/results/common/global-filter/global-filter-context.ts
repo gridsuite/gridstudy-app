@@ -8,6 +8,7 @@
 import { createContext } from 'react';
 import { GlobalFilter } from './global-filter-types';
 import { TableType } from '../../../../types/custom-aggrid-types';
+import type { RecentGlobalFilter } from './global-filter-types';
 
 export const GlobalFilterContext = createContext<{
     // manage internal states
@@ -19,6 +20,7 @@ export const GlobalFilterContext = createContext<{
     setFilterGroupSelected: (selectedFilterGroup: string) => void;
     globalFilterOptions: GlobalFilter[];
     selectedGlobalFilters: GlobalFilter[];
+    recentGlobalFilters: RecentGlobalFilter[];
     filterCategories: string[];
     genericFiltersStrictMode: boolean;
     filterableEquipmentTypes: string[];
@@ -33,6 +35,7 @@ export const GlobalFilterContext = createContext<{
     setFilterGroupSelected: () => {},
     globalFilterOptions: [],
     selectedGlobalFilters: [],
+    recentGlobalFilters: [],
     filterCategories: [],
     genericFiltersStrictMode: false,
     filterableEquipmentTypes: [],

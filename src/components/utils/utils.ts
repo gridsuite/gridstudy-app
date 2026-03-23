@@ -26,7 +26,10 @@ import {
     TemporaryLimitFormSchema,
 } from '../dialogs/limits/operational-limits-groups-types';
 import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
-import { TapChangerStep } from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
+import {
+    TapChangerStep,
+    TapChangerStepMapInfos,
+} from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -82,18 +85,6 @@ export const areNumbersOrdered = (array?: unknown) => {
         current = nextOne;
     }
     return true;
-};
-
-export const areIdsEqual = (val1: Option, val2: Option) => {
-    if (typeof val1 !== 'string' && typeof val2 !== 'string') {
-        return val1.id === val2.id;
-    } else {
-        return val1 === val2;
-    }
-};
-
-export const getObjectId = (object: string | { id: string }) => {
-    return typeof object === 'string' ? object : (object?.id ?? null);
 };
 
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
@@ -167,8 +158,8 @@ export const formatCompleteCurrentLimit = (
 
 export const richTypeEquals = (a: unknown, b: unknown) => a === b;
 
-export const computeHighTapPosition = (steps: TapChangerStep[]) => {
-    const values = steps?.map((step) => step['index']).filter((v): v is number => v !== undefined);
+export const computeHighTapPosition = (steps: Record<number, TapChangerStepMapInfos>) => {
+    const values = steps ? Object.keys(steps)?.map(Number) : [];
     return values?.length > 0 ? Math.max(...values) : null;
 };
 
