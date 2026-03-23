@@ -88,26 +88,26 @@ const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = 
                         </IconButton>
                     </Box>
                 )}
-                <Tooltip disableFocusListener disableTouchListener title={label}>
-                    <Box
-                        sx={mergeSx(
-                            styles.modificationLabel,
-                            row.getIsExpanded() || depth > 0
-                                ? {
-                                      alignSelf: 'stretch',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      flex: 1,
-                                      borderBottom: (theme: Theme) => `1px solid rgba(81, 81, 81, 1)`,
-                                      borderLeft: (theme: Theme) => `1px solid rgba(81, 81, 81, 1)`,
-                                      borderTop: (theme: Theme) => `1px solid rgba(81, 81, 81, 1)`,
-                                  }
-                                : {}
-                        )}
-                    >
-                        {label}
-                    </Box>
-                </Tooltip>
+                <Box
+                    sx={
+                        row.getIsExpanded() || depth > 0
+                            ? {
+                                  alignSelf: 'stretch',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  flex: 1,
+                                  minWidth: 0,
+                                  borderBottom: (theme: Theme) => `1px solid rgba(81, 81, 81, 1)`,
+                                  borderLeft: (theme: Theme) => `1px solid rgba(81, 81, 81, 1)`,
+                                  borderTop: (theme: Theme) => `1px solid rgba(81, 81, 81, 1)`,
+                              }
+                            : { flex: 1, minWidth: 0 }
+                    }
+                >
+                    <Tooltip disableFocusListener disableTouchListener title={label}>
+                        <Box sx={styles.modificationLabel}>{label}</Box>
+                    </Tooltip>
+                </Box>
             </Box>
         </Box>
     );
