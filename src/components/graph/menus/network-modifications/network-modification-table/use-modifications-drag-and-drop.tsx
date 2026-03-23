@@ -58,7 +58,11 @@ export const useModificationsDragAndDrop = ({
             const el = containerRef.current?.querySelector<HTMLElement>(`[data-row-id="${targetRow?.original.uuid}"]`);
 
             if (el) {
-                if (targetRow.depth !== sourceRow.depth) {
+                if (
+                    targetRow.depth !== sourceRow.depth ||
+                    (sourceRow.depth > 0 && targetRow.getParentRow()?.id !== sourceRow.getParentRow()?.id) ||
+                    targetRow.getIsExpanded()
+                ) {
                     el.style.boxShadow =
                         destination.index > source.index
                             ? DROP_FORBIDDEN_INDICATOR_BOTTOM
@@ -83,7 +87,11 @@ export const useModificationsDragAndDrop = ({
             const targetRow = rows[destination.index];
             const sourceRow = rows[source.index];
 
-            if (targetRow.depth !== sourceRow.depth) {
+            if (
+                targetRow.depth !== sourceRow.depth ||
+                (sourceRow.depth > 0 && targetRow.getParentRow()?.id !== sourceRow.getParentRow()?.id) ||
+                targetRow.getIsExpanded()
+            ) {
                 return;
             }
             if (sourceRow.index !== targetRow.index) {

@@ -6,6 +6,7 @@
  */
 
 import Box from '@mui/material/Box';
+import { styles } from '../styles';
 
 interface DepthBoxProps {
     showTick?: boolean;
@@ -13,29 +14,9 @@ interface DepthBoxProps {
 
 const DepthBox = ({ showTick = false }: DepthBoxProps) => {
     return (
-        <Box
-            sx={{
-                width: '32px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignSelf: 'stretch',
-                position: 'relative',
-            }}
-        >
-            <Box sx={{ width: '1px', backgroundColor: 'divider', alignSelf: 'stretch' }} />
-            {showTick && (
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        width: '5px',
-                        height: '1px',
-                        backgroundColor: 'divider',
-                        transform: 'translateY(-50%)',
-                    }}
-                />
-            )}
+        <Box sx={styles.depthBoxOuter}>
+            <Box sx={styles.depthBoxLine} />
+            {showTick && <Box sx={styles.depthBoxTick} />}
         </Box>
     );
 };

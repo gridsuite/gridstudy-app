@@ -7,21 +7,20 @@
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { Row } from '@tanstack/react-table';
-import { mergeSx, MODIFICATION_TYPES, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import {
+    mergeSx,
+    MODIFICATION_TYPES,
+    NetworkModificationMetadata,
+    useModificationLabelComputer,
+} from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { Box, SxProps, Theme, Tooltip } from '@mui/material';
-import { createModificationNameCellStyle, muiTableCellBorder, styles } from '../styles';
+import { Box, Tooltip } from '@mui/material';
+import { createModificationNameCellStyle, createNameCellLabelBoxSx, styles } from '../styles';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DepthBox from './depth-box';
 import { ComposedModificationMetadata } from '../utils';
-
-const createIndentedCellStyle = (depth: number): SxProps<Theme> => ({
-    display: 'flex',
-    alignItems: 'stretch',
-    gap: 0,
-});
 
 const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = ({ row }) => {
     const intl = useIntl();
@@ -34,7 +33,7 @@ const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = 
         (modification: ComposedModificationMetadata, formatBold: boolean = true) => {
             return intl.formatMessage(
                 { id: `network_modifications.${modification.messageType}` },
-                { ...modification, ...computeLabel(modification, formatBold) }
+                { ...(modification as NetworkModificationMetadata), ...computeLabel(modification, formatBold) }
             );
         },
         [computeLabel, intl]
@@ -51,33 +50,20 @@ const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = 
 
     return (
         <Box
-            sx={mergeSx(
-                styles.tableCell,
-                createModificationNameCellStyle(row.original.activated),
-                createIndentedCellStyle(depth),
-                { height: '100%' }
-            )}
+            sx={mergeSx(styles.tableCell, createModificationNameCellStyle(row.original.activated), styles.nameCellRoot)}
         >
             {renderDepthBox()}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0, flex: 1, minWidth: 0, alignSelf: 'stretch' }}>
+            <Box sx={styles.nameCellInnerRow}>
                 {/* Always reserve exactly 32px for the toggler so labels align across all depths */}
                 {hasSubModifications && (
-                    <Box
-                        sx={{
-                            width: '32px',
-                            flexShrink: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
+                    <Box sx={styles.nameCellTogglerBox}>
                         <IconButton
                             size="small"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 row.getToggleExpandedHandler()();
                             }}
-                            sx={{ padding: '4px', width: '32px', height: '32px' }}
+                            sx={styles.nameCellToggleButton}
                             aria-label={row.getIsExpanded() ? 'Collapse' : 'Expand'}
                         >
                             {row.getIsExpanded() ? (
@@ -88,21 +74,7 @@ const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = 
                         </IconButton>
                     </Box>
                 )}
-                <Box
-                    sx={
-                        row.getIsExpanded() || depth > 0
-                            ? {
-                                  alignSelf: 'stretch',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  flex: 1,
-                                  minWidth: 0,
-                                  borderBottom: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
-                                  borderLeft: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
-                              }
-                            : { flex: 1, minWidth: 0 }
-                    }
-                >
+                <Box sx={createNameCellLabelBoxSx(row.getIsExpanded(), depth)}>
                     <Tooltip disableFocusListener disableTouchListener title={label}>
                         <Box sx={styles.modificationLabel}>{label}</Box>
                     </Tooltip>

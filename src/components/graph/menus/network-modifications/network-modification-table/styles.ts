@@ -119,9 +119,75 @@ export const styles = {
         modificationName: { cursor: 'pointer', minWidth: 0, overflow: 'hidden', flex: 1 },
         rootNetworkChip: { textAlign: 'center' },
     },
+    // name-cell
+    nameCellRoot: {
+        height: '100%',
+        display: 'flex',
+        alignItems: 'stretch',
+        gap: 0,
+    },
+    nameCellInnerRow: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0,
+        flex: 1,
+        minWidth: 0,
+        alignSelf: 'stretch',
+    },
+    nameCellTogglerBox: {
+        width: '32px',
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    nameCellToggleButton: {
+        padding: '4px',
+        width: '32px',
+        height: '32px',
+    },
+    nameCellLabelBoxPlain: {
+        flex: 1,
+        minWidth: 0,
+    },
+    // depth-box
+    depthBoxOuter: {
+        width: '32px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignSelf: 'stretch',
+        position: 'relative',
+    },
+    depthBoxLine: {
+        width: '1px',
+        backgroundColor: 'divider',
+        alignSelf: 'stretch',
+    },
+    depthBoxTick: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: '5px',
+        height: '1px',
+        backgroundColor: 'divider',
+        transform: 'translateY(-50%)',
+    },
 } as const satisfies MuiStyles;
 
 // Dynamic styles
+
+export const createNameCellLabelBoxSx = (isExpanded: boolean, depth: number): SxProps<Theme> =>
+    isExpanded || depth > 0
+        ? {
+              alignSelf: 'stretch',
+              display: 'flex',
+              alignItems: 'center',
+              flex: 1,
+              minWidth: 0,
+              borderBottom: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
+              borderLeft: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
+          }
+        : { flex: 1, minWidth: 0 };
 
 export const DROP_INDICATOR_TOP = 'inset 0 2px 0 #90caf9';
 export const DROP_INDICATOR_BOTTOM = 'inset 0 -2px 0 #90caf9';
