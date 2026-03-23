@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getObjectId } from 'components/utils/utils';
 import {
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -22,6 +21,7 @@ import {
     FieldConstants,
     filledTextField,
     FloatInput,
+    getObjectId,
     KiloAmpereAdornment,
     Properties,
     PropertiesForm,

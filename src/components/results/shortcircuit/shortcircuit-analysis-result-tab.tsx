@@ -17,7 +17,7 @@ import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
@@ -74,7 +74,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         PaginationType.ShortcircuitAnalysis,
         mappingTabs(tabIndex) as ShortcircuitAnalysisTab
     );
-    const { page, rowsPerPage } = pagination;
+    const { rowsPerPage } = pagination;
 
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
@@ -86,11 +86,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         if (resultOrLogIndex !== RESULTS_TAB_INDEX) {
             return;
         }
-        if (page === 0) {
-            return;
-        }
         dispatchPagination({ page: 0, rowsPerPage });
-    }, [tabIndex, resultOrLogIndex, page, dispatchPagination, rowsPerPage]);
+    }, [tabIndex, resultOrLogIndex, dispatchPagination, rowsPerPage]);
 
     const AllBusesShortCircuitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Identifiable, FieldConstants } from '@gridsuite/commons-ui';
+import { Identifiable, FieldConstants, ConnectablePositionFormInfos } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import {
     B,
@@ -54,7 +54,6 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { UUID } from 'node:crypto';
-import { ConnectablePositionFormInfos } from 'components/dialogs/connectivity/connectivity.type';
 import { LimitsProperty, TwoWindingsTransformerModificationInfo } from 'services/network-modification-types';
 
 export const PHASE_TAP = 'dephasing';
@@ -63,6 +62,7 @@ export const RATIO_TAP = 'ratio';
 export type RuleType = typeof PHASE_TAP | typeof RATIO_TAP;
 
 export interface TapChangerStep extends TapChangerStepMapInfos {
+    [STEPS_TAP]: number;
     [SELECTED]?: boolean;
 }
 
@@ -157,7 +157,6 @@ export interface TapChangerStepMapInfos {
     [STEPS_SUSCEPTANCE]: number;
     [STEPS_RATIO]: number;
     [STEPS_ALPHA]?: number;
-    [STEPS_TAP]?: number;
 }
 
 export interface TapChangerMapInfos {
@@ -173,7 +172,7 @@ export interface TapChangerMapInfos {
     [REGULATING_TERMINAL_CONNECTABLE_ID]?: string;
     [REGULATING_TERMINAL_CONNECTABLE_TYPE]?: string;
     [REGULATING_TERMINAL_VOLTAGE_LEVEL_ID]?: string;
-    [STEPS]?: TapChangerStepMapInfos[];
+    [STEPS]?: Record<number, TapChangerStepMapInfos>;
 }
 
 export interface TwoWindingsTransformerMapInfos extends Identifiable {

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { filledTextField, IntegerInput } from '@gridsuite/commons-ui';
+import { filledTextField, IntegerInput, SwitchesBetweenSections } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
 import GridItem from '../../../commons/grid-item';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
@@ -14,23 +14,17 @@ import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLi
 import { useCallback, useMemo, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 
 export interface CreateVoltageLevelTopologyFormProps {
     voltageLevelId: string;
-    studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
 }
 
 export default function CreateVoltageLevelTopologyForm({
-    studyUuid,
     voltageLevelId,
     currentNode,
-    currentRootNetworkUuid,
 }: Readonly<CreateVoltageLevelTopologyFormProps>) {
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
@@ -91,12 +85,9 @@ export default function CreateVoltageLevelTopologyForm({
             </Grid>
             <Box>
                 <PositionDiagramPane
-                    studyUuid={studyUuid}
                     open={isDiagramPaneOpen}
                     onClose={handleCloseDiagramPane}
                     voltageLevelId={voltageLevelId}
-                    currentNodeUuid={currentNode?.id}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Box>
         </>

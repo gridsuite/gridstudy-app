@@ -8,91 +8,48 @@
 import {
     CustomFormProvider,
     DeepNullable,
-    emptyProperties,
     EquipmentType,
     FieldConstants,
     getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    sanitizeString,
+    LoadForm,
+    LoadFormInfos,
+    LoadModificationDto,
+    loadModificationDtoToForm,
+    loadModificationEmptyFormData,
+    LoadModificationFormData,
+    loadModificationFormSchema,
+    loadModificationFormToDto,
     snackWithFallback,
-    toModificationProperties,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import {
-    ACTIVE_POWER_SETPOINT,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    EQUIPMENT_NAME,
-    ID,
-    LOAD_TYPE,
-    MEASUREMENT_P,
-    MEASUREMENT_Q,
-    REACTIVE_POWER_SET_POINT,
-    STATE_ESTIMATION,
-    VALIDITY,
-    VOLTAGE_LEVEL,
-} from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
-import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
-import {
-    getInjectionActiveReactivePowerEditData,
-    getInjectionActiveReactivePowerEmptyFormData,
-    getInjectionActiveReactivePowerValidationSchemaProperties,
-} from '../../common/measurements/injection-active-reactive-power-form-utils';
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchNetworkElementInfos,
+} from '../../../../../services/study/network';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { LoadModificationInfos, LoadModificationSchemaForm } from './load-modification.type';
-import { LoadFormInfos } from '../common/load.type';
-import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import { LoadForm } from '../common/load-form';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { WithModificationId } from 'services/network-modification-types';
 
-const emptyFormData = {
-    [EQUIPMENT_NAME]: '',
-    [LOAD_TYPE]: null,
-    ...getSetPointsEmptyFormData(true),
-    ...getConnectivityWithPositionEmptyFormData(true),
-    ...getInjectionActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
-    ...emptyProperties,
-};
-
-const formSchema: yup.ObjectSchema<DeepNullable<LoadModificationSchemaForm>> = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [LOAD_TYPE]: yup.string().nullable(),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
-        [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
-        ...getSetPointsSchema(true),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
+interface LoadModificationDtoWithId extends LoadModificationDto, WithModificationId {}
 
 export type LoadModificationDialogProps = EquipmentModificationDialogProps & {
-    editData?: LoadModificationInfos;
+    editData?: LoadModificationDtoWithId;
 };
 
 export default function LoadModificationDialog({
-    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    editData,
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
     currentRootNetworkUuid,
@@ -106,51 +63,40 @@ export default function LoadModificationDialog({
     const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
     const [loadToModify, setLoadToModify] = useState<LoadFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
-    const formMethods = useFormWithDirtyTracking<DeepNullable<LoadModificationSchemaForm>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<LoadModificationSchemaForm>>(formSchema),
+    const formMethods = useFormWithDirtyTracking<DeepNullable<LoadModificationFormData>>({
+        defaultValues: loadModificationEmptyFormData,
+        resolver: yupResolver<DeepNullable<LoadModificationFormData>>(loadModificationFormSchema),
     });
 
     const { reset, getValues } = formMethods;
 
-    const fromEditDataToFormValues = useCallback(
-        (load: LoadModificationInfos) => {
-            if (load?.equipmentId) {
-                setSelectedId(load.equipmentId);
-            }
-            reset({
-                [EQUIPMENT_NAME]: load.equipmentName?.value ?? '',
-                [LOAD_TYPE]: load.loadType?.value ?? null,
-                [ACTIVE_POWER_SETPOINT]: load.p0?.value ?? null,
-                [REACTIVE_POWER_SET_POINT]: load.q0?.value ?? null,
-                ...getConnectivityFormData({
-                    voltageLevelId: load?.voltageLevelId?.value ?? null,
-                    busbarSectionId: load?.busOrBusbarSectionId?.value ?? null,
-                    connectionName: load?.connectionName?.value ?? '',
-                    connectionDirection: load?.connectionDirection?.value ?? null,
-                    connectionPosition: load?.connectionPosition?.value ?? null,
-                    terminalConnected: load?.terminalConnected?.value ?? null,
-                    isEquipmentModification: true,
-                }),
-                ...getInjectionActiveReactivePowerEditData(STATE_ESTIMATION, load),
-                ...(getPropertiesFromModification(load.properties) ?? undefined),
-            });
-        },
-        [reset]
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
+            reset(loadModificationDtoToForm(editData));
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [reset, editData]);
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string) => {
             if (!equipmentId) {
                 setLoadToModify(null);
-                reset(emptyFormData, { keepDefaultValues: true });
+                reset(loadModificationEmptyFormData, { keepDefaultValues: true });
             } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
@@ -168,6 +114,7 @@ export default function LoadModificationDialog({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
                                 }),
                                 { keepDirty: true }
@@ -177,6 +124,10 @@ export default function LoadModificationDialog({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset(
+                            { ...loadModificationEmptyFormData, [FieldConstants.EQUIPMENT_ID]: equipmentId },
+                            { keepDirty: true }
+                        );
                         if (editData?.equipmentId !== equipmentId) {
                             setLoadToModify(null);
                         }
@@ -193,33 +144,13 @@ export default function LoadModificationDialog({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (load: LoadModificationSchemaForm) => {
-            const stateEstimationData = load[STATE_ESTIMATION];
-            modifyLoad({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                id: selectedId,
-                name: sanitizeString(load?.equipmentName),
-                loadType: load?.loadType,
-                p0: load?.activePowerSetpoint,
-                q0: load?.reactivePowerSetpoint,
-                voltageLevelId: load[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                busOrBusbarSectionId: load[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                connectionName: sanitizeString(load[CONNECTIVITY]?.[CONNECTION_NAME]),
-                connectionDirection: load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
-                connectionPosition: load[CONNECTIVITY]?.[CONNECTION_POSITION],
-                terminalConnected: load[CONNECTIVITY]?.[CONNECTED],
-                pMeasurementValue: stateEstimationData?.[MEASUREMENT_P]?.[FieldConstants.VALUE],
-                pMeasurementValidity: stateEstimationData?.[MEASUREMENT_P]?.[VALIDITY],
-                qMeasurementValue: stateEstimationData?.[MEASUREMENT_Q]?.[FieldConstants.VALUE],
-                qMeasurementValidity: stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY],
-                properties: toModificationProperties(load) ?? null,
-            }).catch((error: Error) => {
+        (loadForm: LoadModificationFormData) => {
+            const dto = loadModificationFormToDto(loadForm);
+            modifyLoad(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'LoadModificationError' });
             });
         },
-        [selectedId, editData, studyUuid, currentNodeUuid, snackError]
+        [currentNodeUuid, editData?.uuid, snackError, studyUuid]
     );
 
     const open = useOpenShortWaitFetching({
@@ -231,12 +162,12 @@ export default function LoadModificationDialog({
     });
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(loadModificationEmptyFormData);
     }, [reset]);
 
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={loadModificationFormSchema}
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -265,12 +196,11 @@ export default function LoadModificationDialog({
                 )}
                 {selectedId != null && (
                     <LoadForm
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         loadToModify={loadToModify}
-                        equipmentId={selectedId}
                         isModification={true}
+                        voltageLevelOptions={voltageLevelOptions}
+                        PositionDiagramPane={PositionDiagramPane}
+                        fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                     />
                 )}
             </ModificationDialog>

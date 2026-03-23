@@ -11,6 +11,7 @@ import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
     LimitViolation,
+    RESULT_TYPE,
     SecurityAnalysisNmkTableRow,
     SubjectIdRendererType,
 } from './security-analysis.type';
@@ -26,24 +27,25 @@ import {
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import RunningStatus from 'components/utils/running-status';
 import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
-import { FilterConfig, TableType } from '../../../types/custom-aggrid-types';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
+    FilterConfig,
     FilterEnumsType,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    SortParams,
+    TableType,
+} from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
 import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
-import { SortParams } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
 import type { UUID } from 'node:crypto';
 import { createEnumColumn } from '../common/column-filter/utilis';
 
@@ -801,12 +803,6 @@ export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> =
 export enum NMK_TYPE {
     CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
     CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
-}
-
-export enum RESULT_TYPE {
-    N = 'N',
-    NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
-    NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
 }
 
 export const mappingColumnToField = (resultType: RESULT_TYPE) => {
