@@ -119,6 +119,9 @@ export const styles = {
 export const DROP_INDICATOR_TOP = 'inset 0 2px 0 #90caf9';
 export const DROP_INDICATOR_BOTTOM = 'inset 0 -2px 0 #90caf9';
 
+export const DROP_FORBIDDEN_INDICATOR_TOP = 'inset 0 2px 0 #FF3636';
+export const DROP_FORBIDDEN_INDICATOR_BOTTOM = 'inset 0 -2px 0 #FF3636';
+
 export const createRowSx = (
     theme: Theme,
     isHighlighted: boolean,

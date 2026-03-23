@@ -9,7 +9,12 @@ import { JSX, RefObject, useCallback } from 'react';
 import { Row } from '@tanstack/react-table';
 import { DraggableProvided, DraggableRubric, DraggableStateSnapshot, DragUpdate, DropResult } from '@hello-pangea/dnd';
 import DragCloneRow from './row/drag-row-clone';
-import { DROP_INDICATOR_BOTTOM, DROP_INDICATOR_TOP } from './styles';
+import {
+    DROP_FORBIDDEN_INDICATOR_BOTTOM,
+    DROP_FORBIDDEN_INDICATOR_TOP,
+    DROP_INDICATOR_BOTTOM,
+    DROP_INDICATOR_TOP,
+} from './styles';
 import { ComposedModificationMetadata } from './utils';
 
 interface UseModificationsDragAndDropParams {
@@ -48,10 +53,19 @@ export const useModificationsDragAndDrop = ({
                 return;
             }
 
-            const targetUuid = rows[destination.index]?.original.uuid;
-            const el = containerRef.current?.querySelector<HTMLElement>(`[data-row-id="${targetUuid}"]`);
+            const targetRow = rows[destination.index];
+            const sourceRow = rows[source.index];
+            const el = containerRef.current?.querySelector<HTMLElement>(`[data-row-id="${targetRow?.original.uuid}"]`);
+
             if (el) {
-                el.style.boxShadow = destination.index > source.index ? DROP_INDICATOR_BOTTOM : DROP_INDICATOR_TOP;
+                if (targetRow.depth !== sourceRow.depth) {
+                    el.style.boxShadow =
+                        destination.index > source.index
+                            ? DROP_FORBIDDEN_INDICATOR_BOTTOM
+                            : DROP_FORBIDDEN_INDICATOR_TOP;
+                } else {
+                    el.style.boxShadow = destination.index > source.index ? DROP_INDICATOR_BOTTOM : DROP_INDICATOR_TOP;
+                }
             }
         },
         [rows, containerRef]
@@ -61,11 +75,22 @@ export const useModificationsDragAndDrop = ({
         (result: DropResult) => {
             clearRowDragIndicators(containerRef.current);
 
-            if (result.destination && result.source.index !== result.destination.index) {
+            const { source, destination } = result;
+            if (!destination || source.index === destination.index) {
+                return;
+            }
+
+            const targetRow = rows[destination.index];
+            const sourceRow = rows[source.index];
+
+            if (targetRow.depth !== sourceRow.depth) {
+                return;
+            }
+            if (sourceRow.index !== targetRow.index) {
                 onRowDragEnd?.(result);
             }
         },
-        [containerRef, onRowDragEnd]
+        [containerRef, onRowDragEnd, rows]
     );
 
     const renderClone = useCallback(
