@@ -19,7 +19,7 @@ export interface ComposedModificationMetadata extends NetworkModificationMetadat
     subModifications: ComposedModificationMetadata[];
 }
 
-export function findModInTree(
+export function findModificationsInTree(
     uuid: string,
     mods: ComposedModificationMetadata[]
 ): ComposedModificationMetadata | undefined {
@@ -27,7 +27,7 @@ export function findModInTree(
         if (mod.uuid === uuid) {
             return mod;
         }
-        const found = findModInTree(uuid, mod.subModifications);
+        const found = findModificationsInTree(uuid, mod.subModifications);
         if (found) {
             return found;
         }
@@ -35,7 +35,7 @@ export function findModInTree(
     return undefined;
 }
 
-export function updateModInTree(
+export function updateModificationInTree(
     uuid: string,
     subModifications: ComposedModificationMetadata[],
     mods: ComposedModificationMetadata[]
@@ -45,7 +45,7 @@ export function updateModInTree(
             return { ...m, subModifications };
         }
         if (m.subModifications.length > 0) {
-            return { ...m, subModifications: updateModInTree(uuid, subModifications, m.subModifications) };
+            return { ...m, subModifications: updateModificationInTree(uuid, subModifications, m.subModifications) };
         }
         return m;
     });
@@ -88,22 +88,20 @@ export function fetchSubModificationsForExpandedRows(
     setMods: Dispatch<SetStateAction<ComposedModificationMetadata[]>>
 ): void {
     const uuidsToFetch = expandedIds.filter((id) => {
-        const mod = findModInTree(id, mods);
+        const mod = findModificationsInTree(id, mods);
         return mod?.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type && mod.subModifications.length === 0;
     });
 
     // Fire all requests concurrently — each resolves independently and patches the tree
     uuidsToFetch.map((uuid) =>
         getNetworkModificationsFromComposite([uuid]).then((subMods) => {
-            setMods((prev) => updateModInTree(uuid, formatComposedModification(subMods), prev));
+            setMods((prev) => updateModificationInTree(uuid, formatComposedModification(subMods), prev));
         })
     );
 }
 
 /**
- * Re-fetches sub-modifications for all expanded composite rows unconditionally,
- * firing all requests concurrently, then applies all results in a single setMods call
- * once every fetch has resolved.
+ * Re-fetches sub-modifications for all expanded composite rows
  * Used when `modifications` changes to ensure no stale sub-modification data remains.
  */
 export function refetchSubModificationsForExpandedRows(
@@ -112,7 +110,7 @@ export function refetchSubModificationsForExpandedRows(
     setMods: Dispatch<SetStateAction<ComposedModificationMetadata[]>>
 ): void {
     const uuidsToRefetch = expandedIds.filter((id) => {
-        const mod = findModInTree(id, mods);
+        const mod = findModificationsInTree(id, mods);
         return mod?.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type;
     });
 
@@ -120,6 +118,7 @@ export function refetchSubModificationsForExpandedRows(
         return;
     }
 
+    //TODO CHANGE TO UNIQUE API CALL ONCE DATA STRUCTURE IS ADAPTED
     Promise.all(
         uuidsToRefetch.map((uuid) =>
             getNetworkModificationsFromComposite([uuid]).then((subMods) => ({ uuid, subMods }))
@@ -127,7 +126,7 @@ export function refetchSubModificationsForExpandedRows(
     ).then((results) => {
         setMods((prev) =>
             results.reduce(
-                (tree, { uuid, subMods }) => updateModInTree(uuid, formatComposedModification(subMods), tree),
+                (tree, { uuid, subMods }) => updateModificationInTree(uuid, formatComposedModification(subMods), tree),
                 prev
             )
         );
