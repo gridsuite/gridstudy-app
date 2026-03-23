@@ -8,14 +8,16 @@
 import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 
-import { filledTextField, PropertiesForm, TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import { ConnectivityForm, filledTextField, PropertiesForm, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import CharacteristicsForm from '../characteristics-pane/characteristics-form';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { useCallback } from 'react';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
 export interface ShuntCompensatorCreationFormProps {
     studyUuid: UUID;
@@ -31,6 +33,17 @@ export default function ShuntCompensatorCreationForm({
     const currentNodeUuid = currentNode?.id;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
     const shuntCompensatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
@@ -41,9 +54,8 @@ export default function ShuntCompensatorCreationForm({
         <ConnectivityForm
             withPosition={true}
             voltageLevelOptions={voltageLevelOptions}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

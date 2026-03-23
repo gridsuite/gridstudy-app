@@ -20,9 +20,14 @@ import {
     SHUNT_COMPENSATOR_NAME,
     SHUNT_COMPENSATOR_SELECTED,
 } from '../../../../../utils/field-constants';
-import { FieldConstants, FloatInput, ReactivePowerAdornment, TextInput } from '@gridsuite/commons-ui';
+import {
+    CheckboxNullableInput,
+    FieldConstants,
+    FloatInput,
+    ReactivePowerAdornment,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import TextField from '@mui/material/TextField';
-import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { LccShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 
