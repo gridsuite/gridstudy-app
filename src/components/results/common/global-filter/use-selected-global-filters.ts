@@ -17,7 +17,7 @@ import { RootState, store } from '../../../../redux/store';
  */
 export function useSelectedGlobalFilters(tableKey: string): GlobalFilter[] {
     const globalFilterOptions = useSelector((state: RootState) => state.globalFilterOptions);
-    const selectedFilterIds = useSelector((state: RootState) => state.tableFilters.globalFilters[tableKey]);
+    const selectedFilterIds = useSelector((state: RootState) => state.tableFilters.globalFilters[tableKey]?.selected);
 
     return useMemo(
         () =>
@@ -38,7 +38,7 @@ export function useSelectedGlobalFilters(tableKey: string): GlobalFilter[] {
  */
 export function getSelectedGlobalFilters(tableKey: string): GlobalFilter[] {
     const state = store.getState() as RootState;
-    const filterIds = state.tableFilters.globalFilters[tableKey] ?? [];
+    const filterIds = state.tableFilters.globalFilters[tableKey]?.selected ?? [];
     const globalFilterOptions = state.globalFilterOptions;
     return filterIds.map((id) => globalFilterOptions.find((opt) => opt.id === id)).filter((f) => f !== undefined);
 }
