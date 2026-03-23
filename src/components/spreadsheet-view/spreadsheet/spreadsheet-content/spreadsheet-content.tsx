@@ -80,10 +80,22 @@ export const SpreadsheetContent = memo(
 
         // Initial data loading for this type when the tab is opened
         useEffect(() => {
-            if (active && nodesIds.length > 0 && Object.keys(equipments.equipmentsByNodeId).length === 0) {
+            if (
+                active &&
+                nodesIds.length > 0 &&
+                Object.keys(equipments.equipmentsByNodeId).length === 0 &&
+                !equipments.isFetching
+            ) {
                 fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
             }
-        }, [active, nodesIds, equipments.equipmentsByNodeId, fetchNodesEquipmentData, tableDefinition?.type]);
+        }, [
+            active,
+            nodesIds,
+            equipments.equipmentsByNodeId,
+            fetchNodesEquipmentData,
+            tableDefinition?.type,
+            equipments.isFetching,
+        ]);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
