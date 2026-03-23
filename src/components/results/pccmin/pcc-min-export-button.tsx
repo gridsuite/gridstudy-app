@@ -11,8 +11,8 @@ import { downloadZipFile } from '../../../services/utils';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
 import { useSelector } from 'react-redux';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { TableType } from '../../../types/custom-aggrid-types';
+import { getColumnFiltersFromStore } from '../../../redux/selectors/filter-store-selectors';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
@@ -37,7 +37,6 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
-    const { filters } = useFilterSelector(TableType.PccMin, PCCMIN_RESULT);
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
@@ -59,6 +58,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
     const exportCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
+        const filters = getColumnFiltersFromStore(TableType.PccMin, PCCMIN_RESULT);
         const filter = filters ? mapFieldsToColumnsFilter(filters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null;
         const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.PccMin));
         exportPccMinResultsAsCsv(
@@ -85,7 +85,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [filters, studyUuid, nodeUuid, currentRootNetworkUuid, sortConfig, csvHeaders, language, snackError]);
+    }, [studyUuid, nodeUuid, currentRootNetworkUuid, sortConfig, csvHeaders, language, snackError]);
 
     return (
         <ExportCsvButton

@@ -45,7 +45,7 @@ import {
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
+
 import { createEnumColumn } from '../common/column-filter/utilis';
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {
@@ -206,7 +206,6 @@ interface TableParams {
     filterParams: {
         type: TableType;
         tab: string;
-        updateFilterCallback: typeof updateComputationColumnsFilters;
     };
 }
 
@@ -220,7 +219,6 @@ const createTableParams = (tabIndex: number): TableParams => {
         filterParams: {
             type: TableType.Loadflow,
             tab,
-            updateFilterCallback: updateComputationColumnsFilters,
         },
     };
 };
