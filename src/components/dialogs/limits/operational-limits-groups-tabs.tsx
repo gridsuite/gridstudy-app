@@ -22,7 +22,6 @@ import { limitsStyles } from './operational-limits-groups-styles';
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
-    operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     currentLimitsToModify: CurrentLimitsData[];
@@ -33,13 +32,11 @@ export interface OperationalLimitsGroupsTabsProps {
         },
         string
     >;
-    prependToLimitsGroups: (operationalLimitsGroupFormSchema: OperationalLimitsGroupFormSchema) => void;
     removeLimitsGroups: () => void;
 }
 
 export const OperationalLimitsGroupsTabs = ({
     parentFormName,
-    operationalLimitsGroups,
     setIndexSelectedLimitSet,
     indexSelectedLimitSet,
     editable,
@@ -58,6 +55,10 @@ export const OperationalLimitsGroupsTabs = ({
     });
     const selectedLimitsGroups2: string = useWatch({
         name: `${parentFormName}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID2}`,
+    });
+
+    const operationalLimitsGroups: OperationalLimitsGroupFormSchema[] = useWatch({
+        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
 
     const handleOpenMenu = useCallback(
