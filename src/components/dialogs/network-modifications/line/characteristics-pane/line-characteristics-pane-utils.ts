@@ -17,12 +17,13 @@ import {
     X,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
+import { LineCharacteristics } from '../modification/line-modification-type';
 import {
+    Connectivity,
+    FieldConstants,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils';
-import { LineCharacteristics } from '../modification/line-modification-type';
-import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
+} from '@gridsuite/commons-ui';
 
 const characteristicsValidationSchema = (id: string, displayConnectivity: boolean, modification: boolean) => ({
     [id]: yup.object().shape({
@@ -34,8 +35,8 @@ const characteristicsValidationSchema = (id: string, displayConnectivity: boolea
         [G1]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [B2]: yup.number().nullable(),
         [G2]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_1)),
-        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_2)),
+        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, FieldConstants.CONNECTIVITY_1)),
+        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, FieldConstants.CONNECTIVITY_2)),
     }),
 });
 
@@ -55,8 +56,8 @@ const characteristicsEmptyFormData = (id: string, displayConnectivity: boolean =
         [G1]: null,
         [B2]: null,
         [G2]: null,
-        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_1)),
-        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_2)),
+        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, FieldConstants.CONNECTIVITY_1)),
+        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, FieldConstants.CONNECTIVITY_2)),
     },
 });
 
