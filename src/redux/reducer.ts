@@ -277,9 +277,13 @@ import {
     LogsPaginationConfig,
     PaginationConfig,
     PCCMIN_ANALYSIS_TABS,
+    PccminTab,
     SECURITY_ANALYSIS_TABS,
+    SecurityAnalysisTab,
     SENSITIVITY_ANALYSIS_TABS,
+    SensitivityAnalysisTab,
     SHORTCIRCUIT_ANALYSIS_TABS,
+    ShortcircuitAnalysisTab,
     SortWay,
     TableSortConfig,
     TableType,
@@ -1605,24 +1609,16 @@ export const reducer = createReducer(initialState, (builder) => {
         // Reset pagination to page 0 when column filters change
         switch (filterType) {
             case TableType.SecurityAnalysis:
-                SECURITY_ANALYSIS_TABS.forEach((tab) => {
-                    state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][tab].page = 0;
-                });
+                state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][filterSubType as SecurityAnalysisTab].page = 0;
                 break;
             case TableType.SensitivityAnalysis:
-                SENSITIVITY_ANALYSIS_TABS.forEach((tab) => {
-                    state[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD][tab].page = 0;
-                });
+                state[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD][filterSubType as SensitivityAnalysisTab].page = 0;
                 break;
             case TableType.ShortcircuitAnalysis:
-                SHORTCIRCUIT_ANALYSIS_TABS.forEach((tab) => {
-                    state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD][tab].page = 0;
-                });
+                state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD][filterSubType as ShortcircuitAnalysisTab].page = 0;
                 break;
             case TableType.PccMin:
-                PCCMIN_ANALYSIS_TABS.forEach((tab) => {
-                    state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][tab].page = 0;
-                });
+                state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][filterSubType as PccminTab].page = 0;
                 break;
         }
     });
