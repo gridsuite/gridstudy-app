@@ -8,7 +8,7 @@
 import { MuiStyles } from '@gridsuite/commons-ui';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { SxProps, Theme } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha, darken, lighten } from '@mui/material/styles';
 import { CSSProperties } from 'react';
 
 const HIGHLIGHT_COLOR_BASE = 'rgba(144, 202, 249, 0.16)';
@@ -18,6 +18,13 @@ const DRAG_OPACITY = 0.5;
 const DEACTIVATED_OPACITY = 0.4;
 
 export const MODIFICATION_ROW_HEIGHT = 41;
+
+// Replicates the exact border color MUI uses internally for TableCell,
+// so custom borders match seamlessly in both light and dark mode.
+export const muiTableCellBorder = (theme: Theme): string =>
+    theme.palette.mode === 'light'
+        ? lighten(alpha(theme.palette.divider, 1), 0.88)
+        : darken(alpha(theme.palette.divider, 1), 0.68);
 
 // Static styles
 
@@ -143,7 +150,9 @@ export const createRowSx = (
         backgroundColor: isHighlighted ? HIGHLIGHT_COLOR_HOVER : ROW_HOVER_COLOR,
     },
     ...(isDragging && { zIndex: 1, transform: 'none' }),
-    ...(depth === 0 && !isExpanded && { borderTop: `1px solid ${alpha(theme.palette.text.secondary, 0.4)}` }),
+    ...(((depth === 0 && !isExpanded) || (depth === 0 && isExpanded)) && {
+        borderTop: `1px solid ${muiTableCellBorder(theme)}`,
+    }),
 });
 
 export const createModificationNameCellStyle = (activated: boolean): CSSProperties => ({

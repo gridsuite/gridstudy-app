@@ -10,7 +10,7 @@ import { Row } from '@tanstack/react-table';
 import { mergeSx, MODIFICATION_TYPES, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, SxProps, Theme, Tooltip } from '@mui/material';
-import { createModificationNameCellStyle, styles } from '../styles';
+import { createModificationNameCellStyle, muiTableCellBorder, styles } from '../styles';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -97,9 +97,8 @@ const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = 
                                   alignItems: 'center',
                                   flex: 1,
                                   minWidth: 0,
-                                  borderBottom: (theme: Theme) => `1px solid rgba(81, 81, 81, 1)`,
-                                  borderLeft: (theme: Theme) => `1px solid rgba(81, 81, 81, 1)`,
-                                  borderTop: (theme: Theme) => `1px solid rgba(81, 81, 81, 1)`,
+                                  borderBottom: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
+                                  borderLeft: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
                               }
                             : { flex: 1, minWidth: 0 }
                     }
