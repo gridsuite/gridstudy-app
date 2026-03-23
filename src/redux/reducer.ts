@@ -1426,8 +1426,8 @@ export const reducer = createReducer(initialState, (builder) => {
         // We also need to remove it from the selected and recent filters for each table.
         for (const key of Object.keys(state.tableFilters.globalFilters)) {
             const tableState = state.tableFilters.globalFilters[key];
-            tableState.selected = tableState.selected.filter((id) => id !== action.id);
-            tableState.recents = tableState.recents.filter((r) => r.id !== action.id);
+            tableState.selected = tableState.selected?.filter((id) => id !== action.id) ?? [];
+            tableState.recents = tableState.recents?.filter((r) => r.id !== action.id) ?? [];
         }
     });
 
