@@ -9,11 +9,10 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { countDecimalPlacesFromString } from '../../../../utils/rounding';
 import { useCustomAggridColumnFilter } from './use-custom-aggrid-column-filter';
-import { GridApi } from 'ag-grid-community';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS, FilterParams } from '../../../../types/custom-aggrid-types';
 
-export const useCustomAggridComparatorFilter = (api: GridApi, colId: string, filterParams: FilterParams) => {
+export const useCustomAggridComparatorFilter = (colId: string, filterParams: FilterParams) => {
     const { dataType = FILTER_DATA_TYPES.TEXT, comparators = [] } = filterParams;
 
     const isNumberInput = dataType === FILTER_DATA_TYPES.NUMBER;

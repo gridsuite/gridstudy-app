@@ -37,7 +37,7 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ api, colId, filterParams }) => {
+const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ colId, filterParams }) => {
     const intl = useIntl();
 
     const { selectedFilterData, selectedFilterComparator, handleChangeFilterValue, handleChangeComparator } =

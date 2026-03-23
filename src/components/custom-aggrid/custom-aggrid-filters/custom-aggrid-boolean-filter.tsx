@@ -29,7 +29,6 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({
-    api,
     colId,
     filterParams,
 }) => {
