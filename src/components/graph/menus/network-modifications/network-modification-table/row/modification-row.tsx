@@ -29,10 +29,6 @@ const ModificationRow = memo<ModificationRowProps>(
         const isHighlighted = row.original.uuid === highlightedModificationUuid;
         const theme = useTheme();
         const isExpanded = row.getIsExpanded() && !!row.subRows?.length;
-        // Last leaf: depth > 0 and this row is the last child of its parent
-        const parentSubRows = row.getParentRow()?.subRows;
-        const isLastLeaf =
-            row.depth > 0 && !!parentSubRows && row.index === parentSubRows[parentSubRows.length - 1].index;
 
         const handleCellClickCallback = useCallback(
             (columnId: string) => {
