@@ -6,8 +6,7 @@
  */
 import { LimitsProperty } from '../network-modification-types';
 import { BusBarSections } from '../../components/dialogs/network-modifications/voltage-level/section/voltage-level-section.type';
-import { ConnectablePositionInfos } from '../../components/dialogs/connectivity/connectivity.type';
-import { EquipmentWithProperties } from '@gridsuite/commons-ui';
+import { ConnectablePositionInfos, EquipmentWithProperties } from '@gridsuite/commons-ui';
 
 export type SwitchInfos = {
     id: string;

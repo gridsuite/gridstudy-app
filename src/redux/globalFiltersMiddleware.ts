@@ -33,6 +33,7 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
         case REMOVE_GLOBAL_FILTERS:
         case CLEAR_GLOBAL_FILTERS: {
             const { tableType, tableId } = action as GlobalFilterAction;
+
             // State after the action
             const state = store.getState();
             const studyUuid = state.studyUuid;
@@ -45,11 +46,22 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             // Protection from overriding more recent filters from backend notification
             markEditingGlobalFilter(index);
 
-            const globalFiltersIds = state.tableFilters.globalFilters[index] ?? [];
-            const globalFilters =
-                globalFiltersIds.length === 0
-                    ? []
-                    : state.globalFilterOptions.filter((filter) => globalFiltersIds.includes(filter.id));
+            const tableFiltersState = state.tableFilters.globalFilters[index];
+
+            const selectedFiltersIds = tableFiltersState?.selected ?? [];
+            const selectedGlobalFilters = state.globalFilterOptions.filter((filter) =>
+                selectedFiltersIds.includes(filter.id)
+            );
+
+            const recentFilters = tableFiltersState?.recents ?? [];
+            const recentGlobalFilters = recentFilters
+                .map((recentFilter) => {
+                    const filterOption = state.globalFilterOptions.find((opt) => opt.id === recentFilter.id);
+                    return filterOption ? { ...filterOption, unselectedDate: recentFilter.unselectedDate } : undefined;
+                })
+                .filter((f) => f !== undefined);
+
+            const globalFilters = [...selectedGlobalFilters, ...recentGlobalFilters];
 
             // Debounce per table to avoid excessive requests
             if (debouncedSyncTimers[index]) {

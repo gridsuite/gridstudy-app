@@ -188,14 +188,14 @@ const ParametersTabs: FunctionComponent = () => {
         user,
         studyUuid,
         ComputingType.SHORT_CIRCUIT,
-        OptionalServicesStatus.Up,
+        shortCircuitAvailability,
         {
             backendFetchParameters: getShortCircuitParameters,
             backendUpdateParameters: setShortCircuitParameters,
             backendFetchSpecificParametersDescription: getShortCircuitSpecificParametersDescription,
         }
     );
-    useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
+    useParametersNotification(ComputingType.SHORT_CIRCUIT, shortCircuitAvailability, shortCircuitParametersBackend);
 
     const dynamicMarginCalculationParametersBackend = useParametersBackend(
         user,
