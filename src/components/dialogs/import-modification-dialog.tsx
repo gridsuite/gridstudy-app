@@ -19,9 +19,7 @@ import { insertCompositeModifications } from '../../services/study';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import {
-    CompositeModificationsActionType
-} from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { CompositeModificationsActionType } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import {
     Box,
     Button,
@@ -33,11 +31,12 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { ListAlt } from '@mui/icons-material';
+import { NoteAlt as NoteAltIcon } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from './commons/modificationDialog';
+import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -63,15 +62,9 @@ interface SelectedModification {
     name: string;
 }
 
-// Form field names
-const ACTION = 'action';
-const SELECTED_MODIFICATIONS = 'selectedModifications';
-const COMPOSITE_NAMES = 'compositeNames';
-
 interface FormData {
     [ACTION]: CompositeModificationsActionType;
     [SELECTED_MODIFICATIONS]: SelectedModification[];
-    // Record keyed by modification UUID; only validated when action === INSERT
     [COMPOSITE_NAMES]: Record<string, string>;
 }
 
@@ -88,21 +81,30 @@ const formSchema = yup
             .mixed<CompositeModificationsActionType>()
             .oneOf(Object.values(CompositeModificationsActionType))
             .required(),
-        [SELECTED_MODIFICATIONS]: yup
-            .array()
-            .of(yup.object({ id: yup.string().required(), name: yup.string().required() }))
-            .min(1)
-            .required(),
-        [COMPOSITE_NAMES]: yup.mixed<Record<string, string>>().when(ACTION, {
+        [SELECTED_MODIFICATIONS]: yup.array().min(1).required(),
+        [COMPOSITE_NAMES]: yup.mixed<Record<string, string>>().when([ACTION], {
             is: CompositeModificationsActionType.INSERT,
             then: (schema) =>
                 schema.test('all-names-filled', 'FieldIsRequired', function (value) {
                     const selections: SelectedModification[] = this.parent[SELECTED_MODIFICATIONS] ?? [];
-                    return selections.every((m) => (value?.[m.id] ?? '').trim().length > 0);
+                    for (const m of selections) {
+                        const name = value?.[m.id] ?? '';
+                        if (!name.trim()) {
+                            return this.createError({
+                                path: `${COMPOSITE_NAMES}.${m.id}`,
+                                message: 'FieldIsRequired',
+                            });
+                        }
+                    }
+
+                    return true;
                 }),
+            otherwise: (schema) => schema.optional(),
         }),
     })
     .required();
+
+type FormSchemaType = yup.InferType<typeof formSchema>;
 
 const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps> = ({ open, onClose }) => {
     const intl = useIntl();
@@ -112,30 +114,24 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
 
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
 
-    const formMethods = useForm<FormData>({
+    const formMethods = useForm<FormSchemaType>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
-    const {
-        control,
-        reset,
-        watch,
-        setValue,
-        formState: { errors },
-    } = formMethods;
+    const { control, reset, watch, setValue, formState: {isValid} } = formMethods;
 
     const action = watch(ACTION);
     const selectedModifications = watch(SELECTED_MODIFICATIONS);
     const compositeNames = watch(COMPOSITE_NAMES);
     const isInsertMode = action === CompositeModificationsActionType.INSERT;
 
-    const handleSelectionValidated = (selectedElements: TreeViewFinderNodeProps[]) => {
+    const handleSelectModification = (selectedElements: TreeViewFinderNodeProps[]) => {
         setIsSelectorOpen(false);
         if (!selectedElements.length) return;
 
         const newSelections = selectedElements.map((e) => ({ id: e.id, name: e.name }));
-        setValue(SELECTED_MODIFICATIONS, newSelections, { shouldValidate: true });
+        setValue(SELECTED_MODIFICATIONS, newSelections, { shouldValidate: true, shouldDirty: true });
 
         // Pre-fill names from directory item names, preserving any existing edits
         const currentNames = compositeNames ?? {};
@@ -164,8 +160,6 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
         [studyUuid, currentNode, snackError, onClose]
     );
 
-    console.log('HMA', errors);
-
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -175,11 +169,10 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
                 onClose={onClose}
                 onClear={handleClear}
                 onSave={handleSave}
-                titleId="ModificationsSelection"
-                disabledSave={!isObjectEmpty(errors)}
+                titleId="ModificationsImport"
+                disabledSave={!isValid}
             >
                 <Grid container spacing={2} direction="column" marginTop="auto">
-                    {/* --- Action mode selection --- */}
                     <Grid item>
                         <FormControl>
                             <Controller
@@ -202,37 +195,23 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
                             />
                         </FormControl>
                     </Grid>
-
-                    {/* --- Composite selection row (mirrors RootNetworkCaseSelection style) --- */}
                     <Grid container alignItems="center" item>
                         <Grid item display="flex" marginLeft={1}>
-                            <ListAlt color={selectedModifications.length ? 'primary' : 'disabled'} />
+                            <NoteAltIcon />
                         </Grid>
-                        <Typography m={1} component="span" sx={{ flex: 1 }}>
-                            <Box fontWeight="fontWeightBold">
-                                {selectedModifications.length === 0 ? (
-                                    <Typography color="text.secondary" variant="body2">
-                                        <FormattedMessage id="CompositeModificationsNoneSelected" />
-                                    </Typography>
-                                ) : (
-                                    selectedModifications.map((m) => m.name).join(', ')
-                                )}
-                            </Box>
+                        <Typography m={1} component="span">
+                            <Box fontWeight="fontWeightBold">{selectedModifications.map((m) => m.name).join(', ')}</Box>
                         </Typography>
                         <Grid item>
                             <Button
-                                variant={selectedModifications.length ? 'contained' : undefined}
                                 size={selectedModifications.length ? 'small' : 'medium'}
                                 onClick={() => setIsSelectorOpen(true)}
                             >
-                                <FormattedMessage
-                                    id={selectedModifications.length ? 'ModifyFromMenu' : 'chooseModifications'}
-                                />
+                                <FormattedMessage id={'ChooseModifications'} />
                             </Button>
                         </Grid>
                     </Grid>
 
-                    {/* --- Per-composite name fields, visible only in INSERT mode --- */}
                     {isInsertMode && selectedModifications.length > 0 && (
                         <Grid item>
                             <Grid container spacing={1} direction="column">
@@ -241,21 +220,23 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
                                         <Controller
                                             name={`${COMPOSITE_NAMES}.${m.id}`}
                                             control={control}
-                                            render={({ field, fieldState }) => (
-                                                <TextField
-                                                    {...field}
-                                                    label={m.name}
-                                                    fullWidth
-                                                    required
-                                                    size="small"
-                                                    error={!!fieldState.error}
-                                                    helperText={
-                                                        fieldState.error
-                                                            ? intl.formatMessage({ id: 'FieldIsRequired' })
-                                                            : undefined
-                                                    }
-                                                />
-                                            )}
+                                            render={({ field, fieldState }) => {
+                                                return (
+                                                    <TextField
+                                                        {...field}
+                                                        label={m.name}
+                                                        fullWidth
+                                                        required
+                                                        size="small"
+                                                        error={!!fieldState.error}
+                                                        helperText={
+                                                            fieldState.error
+                                                                ? intl.formatMessage({ id: 'FieldIsRequired' })
+                                                                : undefined
+                                                        }
+                                                    />
+                                                );
+                                            }}
                                         />
                                     </Grid>
                                 ))}
@@ -265,10 +246,9 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
                 </Grid>
             </ModificationDialog>
 
-            {/* DirectoryItemSelector rendered outside ModificationDialog but controlled from within */}
             <DirectoryItemSelector
                 open={isSelectorOpen}
-                onClose={handleSelectionValidated}
+                onClose={handleSelectModification}
                 types={[ElementType.MODIFICATION]}
                 multiSelect={true}
                 title={intl.formatMessage({ id: 'ModificationsSelection' })}
