@@ -6,12 +6,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    removeNotificationByNode,
-    reorderNetworkModificationTreeNodes,
-    resetLogsFilter,
-    resetLogsPagination,
-} from '../redux/actions';
+import { removeNotificationByNode, resetLogsFilter, resetLogsPagination } from '../redux/actions';
 import { invalidateClipboardIfImpacted, refreshStashedNodes } from './network-modification-tree-pane-event-handlers';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -52,7 +47,7 @@ import { fetchNetworkModificationsToExport } from 'services/study/network-modifi
 
 export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
-    const { snackError, snackWarning } = useSnackMessage();
+    const { snackError } = useSnackMessage();
     const [nodesToRestore, setNodesToRestore] = useState([]);
 
     const { selectionForCopy, copyNode, cutNode, cleanClipboard } = useCopiedNodes();
@@ -90,27 +85,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         cleanClipboard();
     }, [cleanClipboard]);
 
-    const reorderSubtree = useCallback(
-        (parentNodeId, orderedChildrenNodeIds) => {
-            // We check that the received node order from the notification is coherent with what we have locally.
-            const children = new Set(treeModelRef.current.getChildren(parentNodeId).map((c) => c.id));
-            let isListsEqual =
-                orderedChildrenNodeIds.length === children.size &&
-                orderedChildrenNodeIds.every((id) => children.has(id));
-            if (!isListsEqual) {
-                snackWarning({
-                    messageId: 'ReorderSubtreeInvalidNotifInfo',
-                });
-                console.warn('Subtree order update cancelled : the ordered children list is incompatible');
-                return;
-            }
-
-            // dispatch reorder
-            dispatch(reorderNetworkModificationTreeNodes(parentNodeId, orderedChildrenNodeIds));
-        },
-        [dispatch, snackWarning]
-    );
-
     const handleEvent = useCallback(
         (event) => {
             const eventData = parseEventData(event);
@@ -139,7 +113,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 }
 
                 case NotificationType.NODES_COLUMN_POSITION_CHANGED: {
-                    reorderSubtree(eventData.headers.parentNode, JSON.parse(eventData.payload));
+                    // Tree model update handled globally in study-container.jsx
                     break;
                 }
 
@@ -205,7 +179,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 }
             }
         },
-        [studyUuid, reorderSubtree, dispatch, resetNodeClipboard]
+        [studyUuid, dispatch, resetNodeClipboard]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

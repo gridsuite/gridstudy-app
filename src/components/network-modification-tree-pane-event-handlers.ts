@@ -7,7 +7,12 @@
 
 import type { UUID } from 'node:crypto';
 import type { NodeSelectionForCopy } from 'redux/reducer.type';
-import type { NodeCreatedEventData, NodeMovedEventData, StudyUpdateEventData } from 'types/notification-types';
+import type {
+    NodeCreatedEventData,
+    NodeMovedEventData,
+    NodesColumnPositionsChangedEventData,
+    StudyUpdateEventData,
+} from 'types/notification-types';
 import { NotificationType } from 'types/notification-types';
 import {
     networkModificationHandleSubtree,
@@ -15,6 +20,7 @@ import {
     networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
+    reorderNetworkModificationTreeNodes,
 } from '../redux/actions';
 import type { AppDispatch } from '../redux/store';
 import {
@@ -107,9 +113,14 @@ const fetchAndDispatchUpdatedNodes = (
     rootNetworkUuid: UUID,
     nodeIds: UUID[]
 ): void => {
-    Promise.all(nodeIds.map((nodeId) => fetchNetworkModificationTreeNode(studyUuid, nodeId, rootNetworkUuid))).then(
-        (values) => dispatch(networkModificationTreeNodesUpdated(values))
-    );
+    Promise.allSettled(
+        nodeIds.map((nodeId) => fetchNetworkModificationTreeNode(studyUuid, nodeId, rootNetworkUuid))
+    ).then((results) => {
+        const values = results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []));
+        if (values.length > 0) {
+            dispatch(networkModificationTreeNodesUpdated(values));
+        }
+    });
 };
 
 export const handleTreeModelUpdate = (
@@ -135,6 +146,11 @@ export const handleTreeModelUpdate = (
         case NotificationType.SUBTREE_MOVED:
             fetchAndHandleSubtree(dispatch, studyUuid, eventData.headers.movedNode, eventData.headers.parentNode);
             break;
+        case NotificationType.NODES_COLUMN_POSITION_CHANGED: {
+            const { headers, payload } = eventData as NodesColumnPositionsChangedEventData;
+            dispatch(reorderNetworkModificationTreeNodes(headers.parentNode, JSON.parse(payload)));
+            break;
+        }
         case NotificationType.NODES_DELETED:
             dispatch(networkModificationTreeNodesRemoved(eventData.headers.nodes));
             break;

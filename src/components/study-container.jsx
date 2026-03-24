@@ -273,6 +273,9 @@ export function StudyContainer() {
             // Handle tree model updates globally so all workspaces (including those without a tree panel)
             // stay synchronized. This ensures navigation sync works across browser tabs regardless of
             // which panels are open in each tab's active workspace.
+            if (!currentRootNetworkUuidRef.current) {
+                return; // root networks not yet loaded, skip tree sync
+            }
             handleTreeModelUpdate(dispatch, studyUuid, currentRootNetworkUuidRef.current, eventData);
         },
         // Note: dispatch doesn't change
