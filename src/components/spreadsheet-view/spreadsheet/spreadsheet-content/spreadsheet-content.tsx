@@ -84,6 +84,8 @@ export const SpreadsheetContent = memo(
                 active &&
                 nodesIds.length > 0 &&
                 Object.keys(equipments.equipmentsByNodeId).length === 0 &&
+                // There is automatic re-fetch in several cases (tree node change, aliases modified, loading options changed) in useSpreadsheetEquipments hook
+                // then we want to make sure the active tab is not duplicating fetch during automatic operation.
                 !equipments.isFetching
             ) {
                 fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
