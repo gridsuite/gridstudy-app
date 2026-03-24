@@ -253,7 +253,10 @@ export async function createMapContingencyList(
     busbarIdAsContingencyName: boolean
 ) {
     let equipmentContingencyList: ContingencyList;
-    let equipmentIdAsContingencyName = false;
+    // should be in the switch, but TS and eslint do not like fallthrough
+    let equipmentIdAsContingencyName =
+        equipmentType === EquipmentType.BUSBAR_SECTION ? busbarIdAsContingencyName : false;
+
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
         case EquipmentType.LINE:
@@ -264,10 +267,6 @@ export async function createMapContingencyList(
             );
 
             break;
-
-        // @ts-ignore fallthrough on purpose
-        case EquipmentType.BUSBAR_SECTION:
-            equipmentIdAsContingencyName = busbarIdAsContingencyName;
 
         default:
             if (selectedEquipments.length === 0) {
