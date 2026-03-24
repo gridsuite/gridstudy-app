@@ -31,7 +31,7 @@ export const darkThemeCssVars = {
         fill: '#77b5fe',
     },
 
-    '.nad-active, .nad-permanent-limit-percentage, .nad-bus-descr,': {
+    '.nad-active, .nad-permanent-limit-percentage, .nad-bus-descr': {
         fill: 'white',
     },
 
