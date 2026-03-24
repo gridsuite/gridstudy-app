@@ -216,7 +216,7 @@ export const createRowSx = (
         backgroundColor: isHighlighted ? HIGHLIGHT_COLOR_HOVER : ROW_HOVER_COLOR,
     },
     ...(isDragging && { zIndex: 1, transform: 'none' }),
-    ...(((depth === 0 && !isExpanded) || (depth === 0 && isExpanded)) && {
+    ...(depth === 0 && {
         borderTop: `1px solid ${muiTableCellBorder(theme)}`,
     }),
 });
