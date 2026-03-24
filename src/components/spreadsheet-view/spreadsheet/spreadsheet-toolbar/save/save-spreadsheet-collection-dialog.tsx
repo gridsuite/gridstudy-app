@@ -199,7 +199,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     const getTableGlobalFilters = useCallback(
         (tableIndex: number): GlobalFilter[] => {
             const tableUuid = tables[tableIndex].uuid;
-            const ids = tablesGlobalFilterIds[tableUuid] ?? [];
+            const ids = tablesGlobalFilterIds[tableUuid]?.selected ?? [];
             return ids.map((id) => globalFilterOptions.find((opt) => opt.id === id)).filter((f) => f !== undefined);
         },
         [tablesGlobalFilterIds, globalFilterOptions, tables]
