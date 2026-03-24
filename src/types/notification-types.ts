@@ -696,7 +696,7 @@ export function isNodeCreatedNotification(notif: CommonStudyEventData): notif is
 export function isNodeEditedNotification(notif: CommonStudyEventData): notif is NodeEditedEventData {
     return notif.headers?.updateType === NotificationType.NODE_EDITED;
 }
-export function isNodSubTreeCreatedNotification(notif: CommonStudyEventData): notif is SubtreeCreatedEventData {
+export function isNodeSubTreeCreatedNotification(notif: CommonStudyEventData): notif is SubtreeCreatedEventData {
     return notif.headers?.updateType === NotificationType.SUBTREE_CREATED;
 }
 
@@ -741,9 +741,7 @@ export function isMetadataUpdatedNotification(notif: CommonStudyEventData): noti
     return notif.headers?.updateType === NotificationType.METADATA_UPDATED;
 }
 
-export function isSpreadsheetNodeAliasesUpdatedNotification(
-    notif: CommonStudyEventData
-): notif is CommonStudyEventData {
+export function isSpreadsheetNodeAliasesUpdatedNotification(notif: CommonStudyEventData): boolean {
     return notif.headers?.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED;
 }
 

@@ -8,7 +8,13 @@ import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer.type';
 import type { UUID } from 'node:crypto';
-import { DeletedEquipment, isStudyNotification, NetworkImpactsInfos } from 'types/notification-types';
+import {
+    CommonStudyEventData,
+    DeletedEquipment,
+    isStudyNotification,
+    NetworkImpactsInfos,
+    parseEventData,
+} from 'types/notification-types';
 import { setReloadMapNeeded } from 'redux/actions';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 
@@ -47,7 +53,11 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
 
     const handleStudyNotification = useCallback(
         (event: MessageEvent) => {
-            const eventData = JSON.parse(event.data);
+            const eventData = parseEventData<CommonStudyEventData>(event);
+
+            if (!eventData?.payload) {
+                return;
+            }
 
             if (isStudyNotification(eventData)) {
                 const nodeUuidFromNotif = eventData.headers.node;
