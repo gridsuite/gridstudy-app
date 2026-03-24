@@ -6,7 +6,7 @@
  */
 
 import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { GlobalFilter } from './global-filter-types';
+import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
 import { FilterType, isCriteriaFilter } from '../utils';
 import type { UUID } from 'node:crypto';
 import {
@@ -23,6 +23,8 @@ import { GlobalFilterContext } from './global-filter-context';
 import { HttpStatusCode } from '../../../../utils/http-status-code';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../redux/reducer.type';
+
+const EMPTY_ARRAY: RecentGlobalFilter[] = [];
 
 export default function GlobalFilterProvider({
     children,
@@ -43,7 +45,11 @@ export default function GlobalFilterProvider({
 
     const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
 
-    const selectedFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters[tableUuid]);
+    const selectedFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters[tableUuid]?.selected);
+
+    const recentGlobalFilters = useSelector(
+        (state: AppState) => state.tableFilters.globalFilters[tableUuid]?.recents ?? EMPTY_ARRAY
+    );
 
     const selectedGlobalFilters = useMemo(
         () =>
@@ -114,6 +120,7 @@ export default function GlobalFilterProvider({
             setFilterGroupSelected,
             globalFilterOptions,
             selectedGlobalFilters,
+            recentGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
             filterableEquipmentTypes,
@@ -126,6 +133,7 @@ export default function GlobalFilterProvider({
             filterGroupSelected,
             globalFilterOptions,
             selectedGlobalFilters,
+            recentGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
             filterableEquipmentTypes,
