@@ -26,7 +26,7 @@ import {
     Updater,
     useReactTable,
 } from '@tanstack/react-table';
-import { DragDropContext, DragStart, Droppable, DroppableProvided, DropResult } from '@hello-pangea/dnd';
+import { DragDropContext, DragStart, Droppable, DroppableProvided } from '@hello-pangea/dnd';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';
@@ -50,8 +50,8 @@ interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorN
     setModifications: Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
     handleCellClick: (modification: NetworkModificationMetadata) => void;
     isRowDragDisabled?: boolean;
-    onRowDragStart: (event: DragStart) => void;
-    onRowDragEnd: (event: DropResult) => void;
+    onRowDragStart: () => void;
+    onRowDragEnd: () => void;
     onRowSelected: (selectedRows: NetworkModificationMetadata[]) => void;
     modificationsToExclude: ExcludedNetworkModifications[];
     setModificationsToExclude: Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
@@ -171,7 +171,9 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     const { handleDragUpdate, handleDragEnd, renderClone } = useModificationsDragAndDrop({
         rows,
         containerRef,
-        onRowDragEnd,
+        modifications,
+        setModifications,
+        onDragEnd: onRowDragEnd,
     });
 
     useEffect(() => {
