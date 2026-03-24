@@ -207,6 +207,14 @@ interface NodesDeletedEventDataHeaders extends CommonStudyEventDataHeaders {
     removeChildren: boolean;
 }
 
+interface NodeMovedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NODE_MOVED;
+    parentNode: UUID;
+    movedNode: UUID;
+    insertMode: NodeInsertModes;
+    referenceNodeUuid: UUID;
+}
+
 interface NodeEditedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.NODE_EDITED;
     node: UUID;
@@ -444,6 +452,11 @@ export interface NodeCreatedEventData extends CommonStudyEventData {
 
 export interface NodesDeletedEventData extends CommonStudyEventData {
     headers: NodesDeletedEventDataHeaders;
+    payload: undefined;
+}
+
+export interface NodeMovedEventData extends CommonStudyEventData {
+    headers: NodeMovedEventDataHeaders;
     payload: undefined;
 }
 
