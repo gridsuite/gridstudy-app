@@ -6,7 +6,7 @@
  */
 
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     convertInputValue,
     CustomFormProvider,
@@ -69,8 +69,16 @@ const VoltageLevelModificationDialog = ({
     const [voltageLevelToModify, setVoltageLevelToModify] = useState<VoltageLevelDto | undefined>();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
+    const emptyFormData = useMemo(
+        () => ({
+            ...voltageLevelModificationEmptyFormData,
+            [FieldConstants.HIDE_SUBSTATION_FIELD]: false,
+        }),
+        []
+    );
+
     const formMethods = useFormWithDirtyTracking<DeepNullable<VoltageLevelModificationFormData>>({
-        defaultValues: voltageLevelModificationEmptyFormData,
+        defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<VoltageLevelModificationFormData>>(voltageLevelModificationFormSchema),
     });
 
@@ -96,7 +104,7 @@ const VoltageLevelModificationDialog = ({
             if (editData.equipmentId) {
                 setSelectedId(editData.equipmentId);
             }
-            reset(voltageLevelModificationDtoToForm(editData));
+            reset({ ...voltageLevelModificationDtoToForm(editData), [FieldConstants.HIDE_SUBSTATION_FIELD]: false });
         }
     }, [editData, reset]);
 
@@ -153,10 +161,10 @@ const VoltageLevelModificationDialog = ({
                     });
             } else {
                 setVoltageLevelToModify(undefined);
-                reset(voltageLevelModificationEmptyFormData, { keepDefaultValues: true });
+                reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData?.equipmentId, emptyFormData]
     );
 
     useEffect(() => {
@@ -180,8 +188,8 @@ const VoltageLevelModificationDialog = ({
     );
 
     const clear = useCallback(() => {
-        reset(voltageLevelModificationEmptyFormData);
-    }, [reset]);
+        reset(emptyFormData);
+    }, [emptyFormData, reset]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
