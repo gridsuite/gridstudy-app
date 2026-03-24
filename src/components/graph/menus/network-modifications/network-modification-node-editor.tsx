@@ -9,6 +9,7 @@ import {
     ElementSaveDialog,
     ElementType,
     EquipmentType,
+    ExcludedNetworkModifications,
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
@@ -82,7 +83,6 @@ import {
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
-    ExcludedNetworkModifications,
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
     MenuSection,

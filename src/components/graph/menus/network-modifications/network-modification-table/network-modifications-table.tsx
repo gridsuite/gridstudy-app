@@ -6,20 +6,25 @@
  */
 
 import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo, useRef } from 'react';
-import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import {
+    AUTO_EXTENSIBLE_COLUMNS,
+    createHeaderCellStyle,
+    ExcludedNetworkModifications,
+    MODIFICATION_ROW_HEIGHT,
+    ModificationRow,
+    NetworkModificationEditorNameHeaderProps,
+    NetworkModificationMetadata,
+    networkTableStyles,
+    useModificationsDragAndDrop,
+} from '@gridsuite/commons-ui';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { DragDropContext, DragStart, Droppable, DroppableProvided, DropResult } from '@hello-pangea/dnd';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
-import { ExcludedNetworkModifications } from '../network-modification-menu.type';
-import { createHeaderCellStyle, MODIFICATION_ROW_HEIGHT, styles } from './styles';
-import { AUTO_EXTENSIBLE_COLUMNS, createBaseColumns, createRootNetworksColumns } from './columns-definition';
-import ModificationRow from './row/modification-row';
 import { useTheme } from '@mui/material/styles';
-import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
 import { AppState } from '../../../../../redux/reducer.type';
+import { createBaseColumns, createRootNetworksColumns } from './createColumns';
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];
@@ -126,14 +131,14 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
 
     return (
         <DragDropContext onDragEnd={handleDragEnd} onDragStart={onRowDragStart} onDragUpdate={handleDragUpdate}>
-            <Box sx={styles.tableWrapper}>
+            <Box sx={networkTableStyles.tableWrapper}>
                 <Droppable droppableId="modifications-table" mode="virtual" renderClone={renderClone}>
                     {(provided: DroppableProvided) => (
-                        <Box ref={containerRef} sx={styles.container}>
-                            <Table sx={styles.table}>
-                                <TableHead sx={styles.thead}>
+                        <Box ref={containerRef} sx={networkTableStyles.container}>
+                            <Table sx={networkTableStyles.table}>
+                                <TableHead sx={networkTableStyles.thead}>
                                     {table.getHeaderGroups().map((headerGroup) => (
-                                        <TableRow key={headerGroup.id} sx={styles.tableRow}>
+                                        <TableRow key={headerGroup.id} sx={networkTableStyles.tableRow}>
                                             {headerGroup.headers.map((header) => (
                                                 <TableCell
                                                     key={header.id}
@@ -154,7 +159,7 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
                                 <TableBody
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    sx={{ ...styles.tableBody, height: `${virtualizer.getTotalSize()}px` }}
+                                    sx={{ ...networkTableStyles.tableBody, height: `${virtualizer.getTotalSize()}px` }}
                                 >
                                     {virtualItems.map((virtualRow) => {
                                         const row = rows[virtualRow.index];
