@@ -31,7 +31,7 @@ const SelectHeaderCell: FunctionComponent<SelectHeaderCellProps> = ({ table }) =
         <Checkbox
             size="small"
             checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
+            indeterminate={table.getSelectedRowModel().flatRows.length !== 0}
             onClick={handleClick}
         />
     );

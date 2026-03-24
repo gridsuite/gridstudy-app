@@ -26,7 +26,7 @@ import {
     Updater,
     useReactTable,
 } from '@tanstack/react-table';
-import { DragDropContext, DragStart, Droppable, DroppableProvided } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, DroppableProvided } from '@hello-pangea/dnd';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';

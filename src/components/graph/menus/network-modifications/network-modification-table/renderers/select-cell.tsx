@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { Checkbox } from '@mui/material';
 import { Row, Table } from '@tanstack/react-table';
 import { styles } from '../styles';
@@ -21,10 +21,11 @@ const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) 
 
     const handleChange = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
-            const rows = table.getRowModel().rows;
-            const currentIndex = row.index;
+            const rows = table.getRowModel().flatRows;
+            const currentIndex = rows.indexOf(row);
             const nextSelection = { ...table.getState().rowSelection };
 
+            console.log('HMA', currentIndex);
             // When shift is held and a previous click exists, select or deselect the contiguous range between
             // the two clicks instead of toggling a single row.
             if (
@@ -66,10 +67,16 @@ const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) 
         [table, row, meta]
     );
 
+    const hasPartiallySelectedSubRows = useMemo(
+        () => row.subRows.some((subRow) => subRow.getIsSelected()) && !row.getIsSelected(),
+        [row]
+    );
+
     return (
         <Checkbox
             size="small"
             checked={row.getIsSelected()}
+            indeterminate={hasPartiallySelectedSubRows}
             disabled={!row.getCanSelect()}
             onClick={handleChange}
             sx={styles.selectCheckBox}
