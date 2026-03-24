@@ -7,12 +7,15 @@
 
 import {
     ActivePowerAdornment,
+    CheckboxNullableInput,
+    ConnectivityForm,
     filledTextField,
     FloatInput,
     MVAPowerAdornment,
-    SelectInput,
-    TextInput,
     PropertiesForm,
+    SelectInput,
+    SetPointsForm,
+    TextInput,
 } from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
@@ -30,19 +33,19 @@ import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constan
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, TextField } from '@mui/material';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
-import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import { useWatch } from 'react-hook-form';
-import { SetPointsForm } from '../../../set-points/set-points-form';
 import type { UUID } from 'node:crypto';
 import { GeneratorFormInfos } from '../generator-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { useCallback } from 'react';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
 export interface GeneratorModificationFormProps {
     studyUuid: UUID;
@@ -64,6 +67,17 @@ export default function GeneratorModificationForm({
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
 
     const energySourceLabelId = getEnergySourceLabel(generatorToModify?.energySource);
     const previousEnergySourceLabel = energySourceLabelId
@@ -218,11 +232,7 @@ export default function GeneratorModificationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
             previousValues={{
                 connectablePosition: generatorToModify?.connectablePosition,
@@ -230,6 +240,9 @@ export default function GeneratorModificationForm({
                 busOrBusbarSectionId: generatorToModify?.busOrBusbarSectionId,
                 terminalConnected: generatorToModify?.terminalConnected,
             }}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

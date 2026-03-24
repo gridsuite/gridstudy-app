@@ -11,6 +11,7 @@ import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig 
 import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
 import type { AppState } from './reducer.type';
+import { markEditingGlobalFilter, unmarkEditingGlobalFilter } from '../utils/editing-global-filter-sync';
 
 const debouncedSyncTimers: Record<string, ReturnType<typeof setTimeout>> = {};
 
@@ -32,6 +33,7 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
         case REMOVE_GLOBAL_FILTERS:
         case CLEAR_GLOBAL_FILTERS: {
             const { tableType, tableId } = action as GlobalFilterAction;
+
             // State after the action
             const state = store.getState();
             const studyUuid = state.studyUuid;
@@ -40,26 +42,49 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             }
 
             const index = tableId ?? tableType;
-            const globalFiltersIds = state.tableFilters.globalFilters[index] ?? [];
-            const globalFilters =
-                globalFiltersIds.length === 0
-                    ? []
-                    : state.globalFilterOptions.filter((filter) => globalFiltersIds.includes(filter.id));
+
+            // Protection from overriding more recent filters from backend notification
+            markEditingGlobalFilter(index);
+
+            const tableFiltersState = state.tableFilters.globalFilters[index];
+
+            const selectedFiltersIds = tableFiltersState?.selected ?? [];
+            const selectedGlobalFilters = state.globalFilterOptions.filter((filter) =>
+                selectedFiltersIds.includes(filter.id)
+            );
+
+            const recentFilters = tableFiltersState?.recents ?? [];
+            const recentGlobalFilters = recentFilters
+                .map((recentFilter) => {
+                    const filterOption = state.globalFilterOptions.find((opt) => opt.id === recentFilter.id);
+                    return filterOption ? { ...filterOption, unselectedDate: recentFilter.unselectedDate } : undefined;
+                })
+                .filter((f) => f !== undefined);
+
+            const globalFilters = [...selectedGlobalFilters, ...recentGlobalFilters];
 
             // Debounce per table to avoid excessive requests
             if (debouncedSyncTimers[index]) {
                 clearTimeout(debouncedSyncTimers[index]);
             }
+
             debouncedSyncTimers[index] = setTimeout(() => {
-                if (tableType === TableType.Spreadsheet) {
-                    setGlobalFiltersToSpreadsheetConfig(studyUuid, tableId as UUID, globalFilters).catch((error) =>
-                        console.error('Failed to save spreadsheet global filters: ', error)
-                    );
-                } else {
-                    setComputationResultGlobalFilters(studyUuid, tableType, globalFilters).catch((error) =>
-                        console.error('Failed to save computation global filters: ', error)
-                    );
-                }
+                const globalFilterPromise =
+                    tableType === TableType.Spreadsheet
+                        ? setGlobalFiltersToSpreadsheetConfig(studyUuid, tableId as UUID, globalFilters)
+                        : setComputationResultGlobalFilters(studyUuid, tableType, globalFilters);
+
+                globalFilterPromise
+                    .catch((error) => {
+                        console.error('Failed to save global filters: ', error);
+                    })
+                    .finally(() => {
+                        // Only unmark if no new debounce timer was started while the POST was in flight
+                        if (!debouncedSyncTimers[index]) {
+                            unmarkEditingGlobalFilter(index);
+                        }
+                    });
+
                 delete debouncedSyncTimers[index];
             }, 2000);
 
