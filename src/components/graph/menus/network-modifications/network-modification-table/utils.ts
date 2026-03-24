@@ -95,7 +95,8 @@ export function fetchSubModificationsForExpandedRows(
     // Fire all requests concurrently — each resolves independently and patches the tree
     uuidsToFetch.map((uuid) =>
         getNetworkModificationsFromComposite([uuid]).then((subMods) => {
-            setMods((prev) => updateModificationInTree(uuid, formatComposedModification(subMods), prev));
+            const liveModifications = subMods.filter((m) => !m.stashed);
+            setMods((prev) => updateModificationInTree(uuid, formatComposedModification(liveModifications), prev));
         })
     );
 }
@@ -125,10 +126,10 @@ export function refetchSubModificationsForExpandedRows(
         )
     ).then((results) => {
         setMods((prev) =>
-            results.reduce(
-                (tree, { uuid, subMods }) => updateModificationInTree(uuid, formatComposedModification(subMods), tree),
-                prev
-            )
+            results.reduce((tree, { uuid, subMods }) => {
+                const liveModifications = subMods.filter((m) => !m.stashed);
+                return updateModificationInTree(uuid, formatComposedModification(liveModifications), tree);
+            }, prev)
         );
     });
 }
