@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { getQueryParamsList } from '../utils';
-import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
+import {getStudyUrlWithNodeUuidAndRootNetworkUuid} from './index';
+import {getQueryParamsList} from '../utils';
+import {EQUIPMENT_INFOS_TYPES} from '../../components/utils/equipment-types';
 import {
     backendFetchJson,
     backendFetchText,
@@ -18,11 +18,13 @@ import {
     Identifiable,
     NewFilterType,
 } from '@gridsuite/commons-ui';
-import { fetchNetworkElementsInfos } from './network';
-import { createContingencyList } from 'services/explore';
-import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
-import type { UUID } from 'node:crypto';
-import { HvdcLccDeletionInfos } from '../../components/dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
+import {fetchNetworkElementsInfos} from './network';
+import {createContingencyList} from 'services/explore';
+import {ContingencyList, createIdentifierContingencyList} from './contingency-list';
+import type {UUID} from 'node:crypto';
+import {
+    HvdcLccDeletionInfos
+} from '../../components/dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid: UUID,
@@ -250,9 +252,10 @@ export async function createMapContingencyList(
     currentRootNetworkUuid: UUID,
     selectedEquipments: EquipmentInfos[],
     nominalVoltages: number[],
-    equipmentIdAsContingencyName: boolean
+    busbarIdAsContingencyName: boolean
 ) {
     let equipmentContingencyList: ContingencyList;
+    let equipmentIdAsContingencyName = false;
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
         case EquipmentType.LINE:
@@ -263,6 +266,10 @@ export async function createMapContingencyList(
             );
 
             break;
+
+        // @ts-ignore fallthrough on purpose
+        case EquipmentType.BUSBAR_SECTION:
+            equipmentIdAsContingencyName = busbarIdAsContingencyName;
 
         default:
             if (selectedEquipments.length === 0) {

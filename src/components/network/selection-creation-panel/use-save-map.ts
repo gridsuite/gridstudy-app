@@ -30,12 +30,12 @@ export const useSaveMap = (): UseSaveMapOutput => {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [pendingState, setPendingState] = useState(false);
-    const [equipmentIdAsContingencyName, setEquipmentIdAsContingencyName] = useState(false);
+    const [busbarIdAsContingencyName, setBusbarIdAsContingencyName] = useState(false);
 
     useEffect(() => {
         fetchAppsMetadata().then((res) => {
             const metadata = res.find((item) => item.name === 'Study');
-            setEquipmentIdAsContingencyName(!!metadata?.useEquipmentIdAsContingencyNameForPolygonCreation);
+            setBusbarIdAsContingencyName(!!metadata?.useBusbarIdAsContingencyNameForPolygonCreation);
         });
     }, []);
 
@@ -92,7 +92,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         currentRootNetworkUuid,
                         equipments,
                         nominalVoltages,
-                        equipmentIdAsContingencyName
+                        busbarIdAsContingencyName
                     );
                     snackInfo({
                         messageTxt: intl.formatMessage({
@@ -117,7 +117,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
             return true; // success
         },
         [
-            equipmentIdAsContingencyName,
+            busbarIdAsContingencyName,
             currentNodeUuid,
             currentRootNetworkUuid,
             intl,
