@@ -7,20 +7,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    networkModificationTreeNodesRemoved,
-    networkModificationTreeNodesUpdated,
     removeNotificationByNode,
     reorderNetworkModificationTreeNodes,
     resetLogsFilter,
     resetLogsPagination,
 } from '../redux/actions';
-import {
-    fetchAndDispatchAddedNode,
-    fetchAndDispatchMovedNode,
-    fetchAndHandleSubtree,
-    invalidateClipboardIfImpacted,
-    refreshStashedNodes,
-} from './network-modification-tree-pane-event-handlers';
+import { invalidateClipboardIfImpacted, refreshStashedNodes } from './network-modification-tree-pane-event-handlers';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import NetworkModificationTree from './network-modification-tree';
@@ -40,7 +32,6 @@ import {
     createTreeNode,
     cutSubtree,
     cutTreeNode,
-    fetchNetworkModificationTreeNode,
     fetchStashedNodes,
     stashSubtree,
     stashTreeNode,
@@ -95,19 +86,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const { subscribeExport } = useExportSubscription();
 
-    const updateNodes = useCallback(
-        (updatedNodesIds) => {
-            Promise.all(
-                updatedNodesIds.map((nodeId) =>
-                    fetchNetworkModificationTreeNode(studyUuid, nodeId, currentRootNetworkUuid)
-                )
-            ).then((values) => {
-                dispatch(networkModificationTreeNodesUpdated(values));
-            });
-        },
-        [studyUuid, currentRootNetworkUuid, dispatch]
-    );
-
     const resetNodeClipboard = useCallback(() => {
         cleanClipboard();
     }, [cleanClipboard]);
@@ -140,7 +118,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
             switch (eventData.headers.updateType) {
                 case NotificationType.NODE_CREATED: {
-                    fetchAndDispatchAddedNode(dispatch, studyUuid, currentRootNetworkUuid, eventData);
+                    // Tree model update handled globally in study-container.jsx
                     invalidateClipboardIfImpacted(
                         [eventData.headers.parentNode],
                         nodeSelectionForCopyRef.current,
@@ -151,12 +129,12 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 }
 
                 case NotificationType.SUBTREE_CREATED: {
+                    // Tree model update handled globally in study-container.jsx
                     invalidateClipboardIfImpacted(
                         [eventData.headers.parentNode],
                         nodeSelectionForCopyRef.current,
                         resetNodeClipboard
                     );
-                    fetchAndHandleSubtree(dispatch, studyUuid, eventData.headers.newNode, eventData.headers.parentNode);
                     break;
                 }
 
@@ -165,23 +143,9 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     break;
                 }
 
-                case NotificationType.NODE_MOVED: {
-                    fetchAndDispatchMovedNode(dispatch, studyUuid, currentRootNetworkUuid, eventData);
-                    invalidateClipboardIfImpacted(
-                        [eventData.headers.movedNode, eventData.headers.parentNode],
-                        nodeSelectionForCopyRef.current,
-                        resetNodeClipboard
-                    );
-                    break;
-                }
-
+                case NotificationType.NODE_MOVED:
                 case NotificationType.SUBTREE_MOVED: {
-                    fetchAndHandleSubtree(
-                        dispatch,
-                        studyUuid,
-                        eventData.headers.movedNode,
-                        eventData.headers.parentNode
-                    );
+                    // Tree model update handled globally in study-container.jsx
                     invalidateClipboardIfImpacted(
                         [eventData.headers.movedNode, eventData.headers.parentNode],
                         nodeSelectionForCopyRef.current,
@@ -191,20 +155,19 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 }
 
                 case NotificationType.NODES_DELETED: {
+                    // Tree model update handled globally in study-container.jsx
                     invalidateClipboardIfImpacted(
                         eventData.headers.nodes,
                         nodeSelectionForCopyRef.current,
                         resetNodeClipboard
                     );
-                    dispatch(networkModificationTreeNodesRemoved(eventData.headers.nodes));
                     refreshStashedNodes(studyUuid, setNodesToRestore);
                     break;
                 }
 
                 case NotificationType.NODES_UPDATED: {
-                    updateNodes(eventData.headers.nodes);
-
-                    if (eventData.headers.nodes.some((nodeId) => nodeId === currentNodeRef.current?.id)) {
+                    // Tree model update handled globally in study-container.jsx
+                    if (eventData.headers.nodes.includes(currentNodeRef.current?.id)) {
                         dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
                     }
                     invalidateClipboardIfImpacted(
@@ -215,18 +178,13 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     break;
                 }
 
-                case NotificationType.NODE_EDITED: {
-                    updateNodes([eventData.headers.node]);
-                    break;
-                }
-
                 case NotificationType.NODE_BUILD_STATUS_UPDATED: {
                     if (eventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) break;
 
                     // Note: The actual node updates are now handled globally in study-container.jsx
                     // to ensure all workspaces open in other browser tabs (including those without tree panel) stay synchronized.
                     // Here we only handle tree-specific cleanup operations.
-                    if (eventData.headers.nodes.some((nodeId) => nodeId === currentNodeRef.current?.id)) {
+                    if (eventData.headers.nodes.includes(currentNodeRef.current?.id)) {
                         dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
                         // when the current node is updated, we need to reset the logs filter
                         dispatch(resetLogsFilter());
@@ -247,7 +205,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                 }
             }
         },
-        [studyUuid, updateNodes, reorderSubtree, dispatch, currentRootNetworkUuid, resetNodeClipboard]
+        [studyUuid, reorderSubtree, dispatch, resetNodeClipboard]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
