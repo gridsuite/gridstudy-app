@@ -41,6 +41,11 @@ export interface GlobalFilter {
     deleted?: boolean; // only useful for generic filters
 }
 
+export interface RecentGlobalFilter {
+    id: string;
+    unselectedDate: number;
+}
+
 export interface ResultsQueryParams {
     sort?: SortConfig[];
     filters: FilterConfig[] | null; // column filters

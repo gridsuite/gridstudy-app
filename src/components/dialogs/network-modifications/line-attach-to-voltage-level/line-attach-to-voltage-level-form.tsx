@@ -20,8 +20,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
-import { Identifiable, TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import { ConnectivityForm, Identifiable, TextInput } from '@gridsuite/commons-ui';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -40,6 +39,7 @@ import {
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
@@ -78,6 +78,17 @@ const LineAttachToVoltageLevelForm = ({
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
     });
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
 
     const onLineDialogClose = () => {
         setLineDialogOpen(false);
@@ -165,11 +176,9 @@ const LineAttachToVoltageLevelForm = ({
             voltageLevelSelectLabel={'AttachedVoltageLevelId'}
             withPosition={false}
             withDirectionsInfos={false}
-            voltageLevelOptions={allVoltageLevelOptions}
             newBusOrBusbarSectionOptions={busbarSectionOptions}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            voltageLevelOptions={allVoltageLevelOptions}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 
