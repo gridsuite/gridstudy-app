@@ -119,7 +119,13 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
         resolver: yupResolver(formSchema),
     });
 
-    const { control, reset, watch, setValue, formState: {isValid} } = formMethods;
+    const {
+        control,
+        reset,
+        watch,
+        setValue,
+        formState: { isValid },
+    } = formMethods;
 
     const action = watch(ACTION);
     const selectedModifications = watch(SELECTED_MODIFICATIONS);
@@ -133,7 +139,6 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
         const newSelections = selectedElements.map((e) => ({ id: e.id, name: e.name }));
         setValue(SELECTED_MODIFICATIONS, newSelections, { shouldValidate: true, shouldDirty: true });
 
-        // Pre-fill names from directory item names, preserving any existing edits
         const currentNames = compositeNames ?? {};
         setValue(COMPOSITE_NAMES, Object.fromEntries(newSelections.map((e) => [e.id, currentNames[e.id] ?? e.name])), {
             shouldValidate: true,
