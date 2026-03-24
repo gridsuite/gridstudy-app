@@ -81,7 +81,7 @@ export const styles = {
         border: '1px solid #f5f5f5',
         display: 'flex',
         width: 'fit-content',
-        paddingRight: theme.spacing(1),
+        padding: theme.spacing(1),
     }),
     overflow: {
         whiteSpace: 'pre',
