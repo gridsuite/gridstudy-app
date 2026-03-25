@@ -175,7 +175,14 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
     );
 
     const updateLimits = useCallback(
-        (index: number, id: string, area: string | null, temperature: string | null, shapeFactor: number | null, distance: number) => {
+        (
+            index: number,
+            id: string,
+            area: string | null,
+            temperature: string | null,
+            shapeFactor: number | null,
+            distance: number
+        ) => {
             getLineTypeWithLimits(id, area, temperature, shapeFactor).then((lineTypeWithLimits) => {
                 const newResistance = roundToDefaultPrecision(
                     calculateResistance(distance, lineTypeWithLimits?.linearResistance ?? 0)
@@ -203,7 +210,7 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
             if (!editData || catalog.length === 0) {
                 return;
             }
-            for (let index = 0; index < editData?.length; index++) {
+            for (const [index] of editData?.entries() || []) {
                 const segmentCatalogId = editData[index][SEGMENT_TYPE_ID];
                 setValue(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`, segmentCatalogId);
                 const lineTypeInfo: LineTypeInfo | undefined = catalog.find(
@@ -268,7 +275,7 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
                         );
                         setValue(
                             `${SEGMENTS}.${openCatalogDialogIndex}.${SHAPE_FACTOR}`,
-                            selectedAreaAndTemperature2LineTypeData?.shapeFactor
+                            Number(selectedAreaAndTemperature2LineTypeData?.shapeFactor)
                         );
                         clearErrors(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`);
                         updateSegmentValues(openCatalogDialogIndex);
