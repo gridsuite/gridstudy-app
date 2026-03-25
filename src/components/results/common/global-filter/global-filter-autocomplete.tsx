@@ -232,7 +232,6 @@ function GlobalFilterAutocomplete() {
             const filteredOptions = options
                 // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
                 .filter((option: GlobalFilter) => {
-                    if (option.deleted) return false;
                     const labelToMatch: string =
                         option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
                     return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
@@ -275,6 +274,7 @@ function GlobalFilterAutocomplete() {
     const options = useMemo(
         () =>
             globalFilterOptions
+                .filter((filter) => !filter.deleted)
                 .filter(
                     (filter) =>
                         filterCategories.includes(filter.filterType) &&

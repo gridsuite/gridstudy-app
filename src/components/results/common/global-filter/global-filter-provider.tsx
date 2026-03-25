@@ -74,15 +74,12 @@ export default function GlobalFilterProvider({
                 }
                 const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilter.uuid);
                 const parentDirectoriesNames = response.map((parent) => parent.elementName);
-                const label = response.find((parent) => parent.type === ElementType.FILTER)?.elementName;
+                const label =
+                    response.find((parent) => parent.type === ElementType.FILTER)?.elementName ?? genericFilter.label;
                 const path = computeFullPath(parentDirectoriesNames);
                 if (path !== genericFilter.path || label !== genericFilter.label) {
                     dispatch(
-                        addToGlobalFilterOptions(
-                            [{ ...genericFilter, path: path, label: label ?? genericFilter.label }],
-                            tableType,
-                            tableUuid
-                        )
+                        addToGlobalFilterOptions([{ ...genericFilter, path: path, label: label }], tableType, tableUuid)
                     );
                 }
             } catch (responseError) {
