@@ -308,7 +308,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLoading', 'loading', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLoading', 'patlLoading', intl, filterParams, sortParams)
+            makeAgGridFloatColumn('PatlLoading', 'patlLoading', intl, filterParams, undefined)
         ),
         makeAgGridCustomHeaderColumn(
             makeAgGridDurationColumn('actualOverloadDuration', 'acceptableDuration', intl, filterParams, sortParams)
@@ -319,24 +319,19 @@ export const securityAnalysisTableNColumnsDefinition = (
                 'upcomingAcceptableDuration',
                 intl,
                 filterParams,
-                sortParams
+                undefined
             )
         ),
         makeAgGridCustomHeaderColumn({
-            ...makeAgGridStringColumn(
-                'NextLimitNameCurrentViolation',
-                'nextLimitName',
-                intl,
-                filterParams,
-                sortParams,
-                [FILTER_TEXT_COMPARATORS.EQUALS]
-            ),
+            ...makeAgGridStringColumn('NextLimitNameCurrentViolation', 'nextLimitName', intl, filterParams, undefined, [
+                FILTER_TEXT_COMPARATORS.EQUALS,
+            ]),
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
 
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLabelAOrKv', 'limit', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, filterParams, sortParams)
+            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, filterParams, undefined)
         ),
 
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('CalculatedValue', 'value', intl, filterParams, sortParams)),
@@ -413,10 +408,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             })
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLoading', 'patlLoading', intl, filterParams, {
-                ...sortParams,
-                isChildren: true,
-            })
+            makeAgGridFloatColumn('PatlLoading', 'patlLoading', intl, filterParams, undefined)
         ),
 
         makeAgGridCustomHeaderColumn(
@@ -429,22 +421,14 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 'upcomingAcceptableDuration',
                 intl,
                 filterParams,
-                sortParams
+                undefined
             )
         ),
 
         makeAgGridCustomHeaderColumn({
-            ...makeAgGridStringColumn(
-                'NextLimitNameCurrentViolation',
-                'nextLimitName',
-                intl,
-                filterParams,
-                {
-                    ...sortParams,
-                    isChildren: true,
-                },
-                [FILTER_TEXT_COMPARATORS.EQUALS]
-            ),
+            ...makeAgGridStringColumn('NextLimitNameCurrentViolation', 'nextLimitName', intl, filterParams, undefined, [
+                FILTER_TEXT_COMPARATORS.EQUALS,
+            ]),
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
 
@@ -456,10 +440,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         ),
 
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, filterParams, {
-                ...sortParams,
-                isChildren: true,
-            })
+            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, filterParams, undefined)
         ),
 
         makeAgGridCustomHeaderColumn(
@@ -550,10 +531,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             })
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLoading', 'patlLoading', intl, filterParams, {
-                ...sortParams,
-                isChildren: true,
-            })
+            makeAgGridFloatColumn('PatlLoading', 'patlLoading', intl, filterParams, undefined)
         ),
         makeAgGridCustomHeaderColumn(
             makeAgGridDurationColumn('actualOverloadDuration', 'acceptableDuration', intl, filterParams, sortParams)
@@ -564,21 +542,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 'upcomingAcceptableDuration',
                 intl,
                 filterParams,
-                sortParams
+                undefined
             )
         ),
         makeAgGridCustomHeaderColumn({
-            ...makeAgGridStringColumn(
-                'NextLimitNameCurrentViolation',
-                'nextLimitName',
-                intl,
-                filterParams,
-                {
-                    ...sortParams,
-                    isChildren: true,
-                },
-                [FILTER_TEXT_COMPARATORS.EQUALS]
-            ),
+            ...makeAgGridStringColumn('NextLimitNameCurrentViolation', 'nextLimitName', intl, filterParams, undefined, [
+                FILTER_TEXT_COMPARATORS.EQUALS,
+            ]),
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
         makeAgGridCustomHeaderColumn(
@@ -589,10 +559,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         ),
 
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, filterParams, {
-                ...sortParams,
-                isChildren: true,
-            })
+            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, filterParams, undefined)
         ),
 
         makeAgGridCustomHeaderColumn(
