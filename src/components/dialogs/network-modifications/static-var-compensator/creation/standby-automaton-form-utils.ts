@@ -25,6 +25,7 @@ import {
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
 import * as yup from 'yup';
+import { MUST_BE_GREATER_OR_EQUAL_TO_ZERO } from 'utils/validation-translation-keys';
 
 export const getStandbyAutomatonEmptyFormData = (id = AUTOMATON) => ({
     [id]: {
@@ -83,10 +84,18 @@ export const getStandbyAutomatonFormValidationSchema = () =>
                     addStandbyAutomaton && voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
                 then: (schema) => schema.required(),
             }),
-        [LOW_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'mustBeGreaterOrEqualToZero')),
-        [HIGH_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'mustBeGreaterOrEqualToZero')),
-        [LOW_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'mustBeGreaterOrEqualToZero')),
-        [HIGH_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'mustBeGreaterOrEqualToZero')),
+        [LOW_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(
+            yup.number().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
+        ),
+        [HIGH_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(
+            yup.number().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
+        ),
+        [LOW_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(
+            yup.number().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
+        ),
+        [HIGH_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(
+            yup.number().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
+        ),
         [B0]: requiredWhenSusceptanceChoice(yup.number().nullable()),
         [Q0]: requiredWhenQatNominalVChoice(yup.number().nullable()),
     });

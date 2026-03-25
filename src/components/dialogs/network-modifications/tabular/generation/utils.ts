@@ -24,6 +24,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
 } from 'components/utils/field-constants';
 import { mapTwtDataForTable } from 'utils/spreadsheet-equipments-mapper';
+import { COLUMN_SELECTION_REQUIRED, YUP_REQUIRED } from 'utils/validation-translation-keys';
 
 export const styles = {
     dialogContent: {
@@ -76,7 +77,7 @@ export const getPrefilledModelSchema = () => {
             .default([])
             .when(RESTRICT_BY_FILTER, {
                 is: true,
-                then: (schema) => schema.min(1, 'FieldIsRequired'),
+                then: (schema) => schema.min(1, YUP_REQUIRED),
                 otherwise: (schema) => schema,
             }),
         [USE_CURRENT_GRID_STATE]: yup.boolean().required(),
@@ -86,7 +87,7 @@ export const getPrefilledModelSchema = () => {
             .default([])
             .when(USE_CURRENT_GRID_STATE, {
                 is: true,
-                then: (schema) => schema.min(1, 'ColumnSelectionRequired'),
+                then: (schema) => schema.min(1, COLUMN_SELECTION_REQUIRED),
                 otherwise: (schema) => schema,
             }),
     });

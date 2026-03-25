@@ -26,6 +26,7 @@ import {
     GeneratorModificationDialogSchemaForm,
 } from '../../network-modifications/generator/generator-dialog.type';
 import { GeneratorCreationInfos, GeneratorModificationInfos } from '../../../../services/network-modification-types';
+import { YUP_REQUIRED } from 'utils/validation-translation-keys';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';
@@ -97,7 +98,7 @@ function ifOneFieldThenAllFields(values: ReactiveCapabilityCurve, context: TestC
                 errors.push(
                     context.createError({
                         path: `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}[${index}].${field}`,
-                        message: 'YupRequired',
+                        message: YUP_REQUIRED,
                     })
                 );
             }

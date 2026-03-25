@@ -29,6 +29,7 @@ import {
     VOLTAGE_LEVEL,
 } from '../../../../../utils/field-constants';
 import * as yup from 'yup';
+import { NORMALIZED_PERCENTAGE } from 'utils/validation-translation-keys';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,
@@ -67,8 +68,8 @@ export const getLccConverterStationSchema = () =>
         [LOSS_FACTOR]: yup
             .number()
             .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
+            .min(0, NORMALIZED_PERCENTAGE)
+            .max(100, NORMALIZED_PERCENTAGE)
             .required(),
         [POWER_FACTOR]: yup
             .number()
@@ -98,7 +99,7 @@ export const getLccConverterStationModificationSchema = () =>
     yup.object().shape({
         [CONVERTER_STATION_ID]: yup.string().nullable(),
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
-        [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
+        [LOSS_FACTOR]: yup.number().nullable().min(0, NORMALIZED_PERCENTAGE).max(100, NORMALIZED_PERCENTAGE),
         [POWER_FACTOR]: yup
             .number()
             .nullable()

@@ -26,6 +26,7 @@ import {
 import * as yup from 'yup';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { Schema } from 'yup';
+import { MUST_BE_GREATER_OR_EQUAL_TO_ZERO } from 'utils/validation-translation-keys';
 
 export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
     [id]: {
@@ -74,7 +75,7 @@ export const getReactiveFormValidationSchema = () =>
         [VOLTAGE_SET_POINT]: yup
             .number()
             .nullable()
-            .min(0, 'mustBeGreaterOrEqualToZero')
+            .min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
             .when([VOLTAGE_REGULATION_MODE], {
                 is: (voltageRegulationMode: string) => voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
                 then: (schema) => schema.required(),

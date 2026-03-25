@@ -23,6 +23,7 @@ import {
     ByFilterDeletionEditData,
     ByFilterDeletionFormData,
 } from './by-filter-deletion.type';
+import { YUP_REQUIRED } from 'utils/validation-translation-keys';
 
 const formSchema = yup
     .object()
@@ -37,7 +38,7 @@ const formSchema = yup
                 })
             )
             .required()
-            .min(1, 'FieldIsRequired'),
+            .min(1, YUP_REQUIRED),
     })
     .required();
 

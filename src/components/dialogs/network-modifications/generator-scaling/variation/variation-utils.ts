@@ -16,6 +16,7 @@ import {
     VARIATION_VALUE,
 } from 'components/utils/field-constants';
 import { VARIATION_MODES } from 'components/network/constants';
+import { YUP_REQUIRED } from 'utils/validation-translation-keys';
 
 export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 
@@ -38,7 +39,7 @@ export const getVariationSchema = () =>
                     })
                 )
                 .required()
-                .min(1, 'FieldIsRequired')
+                .min(1, YUP_REQUIRED)
                 .when([VARIATION_MODE], {
                     is: VARIATION_MODES.STACKING_UP.id || VARIATION_MODES.VENTILATION.id,
                     then: (schema) =>

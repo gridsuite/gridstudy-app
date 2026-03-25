@@ -80,6 +80,8 @@ import {
     treeviewFinderFr,
     useUniqueNameValidationEn,
     useUniqueNameValidationFr,
+    validationEn,
+    validationFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -88,6 +90,8 @@ import { store } from '../redux/store';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import messages_plugins from '../plugins/translations';
+import { validationEn as appValidationEn } from '../translations/validation-en';
+import { validationFr as appValidationFr } from '../translations/validation-fr';
 import { grid_en } from '../translations/grid-en';
 import { grid_fr } from '../translations/grid-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
@@ -430,6 +434,8 @@ const messages = {
         ...filterEn,
         ...businessErrorsEn,
         ...errorsEn,
+        ...validationEn,
+        ...appValidationEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -472,6 +478,8 @@ const messages = {
         ...filterFr,
         ...businessErrorsFr,
         ...errorsFr,
+        ...validationFr,
+        ...appValidationFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

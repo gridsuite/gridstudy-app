@@ -33,6 +33,7 @@ import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
 import { FetchStatus } from 'services/utils.type';
 import { GenerationDispatchModificationInfos } from '../../../../services/network-modification-types';
+import { NORMALIZED_PERCENTAGE } from 'utils/validation-translation-keys';
 
 interface GenerationDispatchProps {
     editData: GenerationDispatchModificationInfos;
@@ -93,14 +94,14 @@ const formSchema = yup
         [LOSS_COEFFICIENT]: yup
             .number()
             .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
+            .min(0, NORMALIZED_PERCENTAGE)
+            .max(100, NORMALIZED_PERCENTAGE)
             .required(),
         [DEFAULT_OUTAGE_RATE]: yup
             .number()
             .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
+            .min(0, NORMALIZED_PERCENTAGE)
+            .max(100, NORMALIZED_PERCENTAGE)
             .required(),
         [GENERATORS_WITHOUT_OUTAGE]: getGeneratorsFiltersSchema(),
         [GENERATORS_WITH_FIXED_ACTIVE_POWER]: getGeneratorsFiltersSchema(),

@@ -17,6 +17,7 @@ import {
     VARIATION_VALUE,
 } from 'components/utils/field-constants';
 import { REACTIVE_VARIATION_MODES } from 'components/network/constants';
+import { YUP_REQUIRED } from 'utils/validation-translation-keys';
 
 export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 
@@ -40,7 +41,7 @@ export const getVariationSchema = () =>
                     })
                 )
                 .required()
-                .min(1, 'FieldIsRequired'),
+                .min(1, YUP_REQUIRED),
         });
 
 export const getVariationsSchema = (id: string) => ({
