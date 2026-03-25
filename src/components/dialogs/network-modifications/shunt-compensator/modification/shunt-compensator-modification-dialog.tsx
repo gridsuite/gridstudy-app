@@ -48,7 +48,7 @@ import {
     VALIDITY,
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useState } from 'react';
 import { ModificationDialog } from '../../../commons/modificationDialog';

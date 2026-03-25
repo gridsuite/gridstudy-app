@@ -16,7 +16,7 @@ import {
     R,
     X,
 } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { LineCharacteristics } from '../modification/line-modification-type';
 import {
     Connectivity,

@@ -12,7 +12,7 @@ import {
     EXPORT_PARAMETERS,
     FILE_NAME,
 } from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import { DESCRIPTION, MAX_CHAR_DESCRIPTION, Parameter } from '@gridsuite/commons-ui';
 import { directoryItemSchema } from '../../utils/rhf-inputs/directory-item-input/directory-item-utils';
 

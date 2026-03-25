@@ -34,7 +34,7 @@ import {
     PredefinedProperties,
     Property,
 } from '@gridsuite/commons-ui';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import type { UUID } from 'node:crypto';
 
 export type TabularModificationEditDataType = {

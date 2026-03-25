@@ -6,7 +6,7 @@
  */
 
 import { DROOP, FREQUENCY_REGULATION } from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 
 export const getActivePowerControlEmptyFormData = (isEquipmentModification = false) => ({
     [FREQUENCY_REGULATION]: isEquipmentModification ? null : false,

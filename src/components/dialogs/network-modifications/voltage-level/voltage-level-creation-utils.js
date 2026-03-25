@@ -6,7 +6,7 @@
  */
 
 import { COUPLING_OMNIBUS, BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 
 const buildValidationError = (errors, field) => {
     return errors.length === 0

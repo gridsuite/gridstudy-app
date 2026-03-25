@@ -61,7 +61,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { APPLICABILITY, FORM_LOADING_DELAY } from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import {

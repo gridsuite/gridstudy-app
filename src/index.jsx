@@ -10,11 +10,14 @@ import 'core-js/es/array/flat-map';
 import 'typeface-roboto';
 
 import { createRoot } from 'react-dom/client';
+import { configureYupLocale } from '@gridsuite/commons-ui';
 
 import '@xyflow/react/dist/base.css';
 import './index.css';
 
 import AppWrapper from './components/app-wrapper';
+
+configureYupLocale();
 
 const container = document.getElementById('root');
 const root = createRoot(container);

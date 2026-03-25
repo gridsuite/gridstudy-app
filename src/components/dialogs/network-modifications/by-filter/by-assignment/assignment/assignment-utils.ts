@@ -13,7 +13,7 @@ import {
     PROPERTY_NAME_FIELD,
     VALUE_FIELD,
 } from '../../../../../utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { Schema } from 'yup';
 import { Assignment, DataType, FieldOptionType, FieldValue } from './assignment.type';
 import { FIELD_OPTIONS } from './assignment-constants';

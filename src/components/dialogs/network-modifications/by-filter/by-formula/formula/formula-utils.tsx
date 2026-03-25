@@ -17,7 +17,7 @@ import {
     SPECIFIC_METADATA,
     TYPE,
 } from '../../../../../utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { AnyObject, TestContext, TestFunction } from 'yup';
 import {
     EquipmentType,

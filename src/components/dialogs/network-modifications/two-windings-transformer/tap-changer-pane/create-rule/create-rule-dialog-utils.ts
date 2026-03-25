@@ -6,7 +6,7 @@
  */
 
 import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { CreateRuleFormInput } from './create-rule-dialog.types';
 
 const createRuleValidationSchema = () =>

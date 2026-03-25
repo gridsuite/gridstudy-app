@@ -23,7 +23,7 @@ import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     BUSBAR_SECTION_ID,
     BUSBAR_SECTION_IDS,

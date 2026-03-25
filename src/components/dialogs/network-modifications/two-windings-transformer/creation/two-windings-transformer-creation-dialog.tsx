@@ -80,7 +80,7 @@ import {
     REGULATION_TYPES,
     SIDE,
 } from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getPhaseTapChangerEmptyFormData,
