@@ -45,6 +45,9 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             const state = store.getState();
             const studyUuid = state.studyUuid;
             const index = tableId ?? tableType;
+            if (!studyUuid || !index) {
+                break;
+            }
 
             // Protection from overriding more recent filters from backend notification
             markEditingGlobalFilter(index);
