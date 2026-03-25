@@ -6,7 +6,7 @@
  */
 
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import RunningStatus from 'components/utils/running-status';
 import {
     buildPositionsFromNadMetadata,
@@ -56,7 +56,9 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
-import { StoreNadViewBox } from 'redux/actions';
+import { selectActiveWorkspaceId } from 'redux/slices/workspace-selectors';
+import { getLocalStoragePanelState, saveLocalStoragePanelState } from 'redux/session-storage/workspace-local-storage';
+import { PanelType } from 'components/workspace/types/workspace.types';
 import { DiagramAdditionalMetadata } from '../diagram.type';
 
 type NetworkAreaDiagramContentProps = {
@@ -123,14 +125,23 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
-    const nadViewBox = useSelector((state: AppState) => state.nadViewBox);
-    const dispatch = useDispatch();
+    const workspaceId = useSelector(selectActiveWorkspaceId);
 
     // refs to keep useLayoutEffect and callbacks stable
     const isEditNadModeRef = useRef(isEditNadMode);
     const positionsRef = useRef(positions);
     isEditNadModeRef.current = isEditNadMode;
     positionsRef.current = positions;
+
+    const initialLocalStorageViewBox = useRef(
+        (() => {
+            if (!studyUuid || !workspaceId) {
+                return null;
+            }
+            const localState = getLocalStoragePanelState(studyUuid, workspaceId, nadPanelId);
+            return localState?.type === PanelType.NAD ? (localState.viewBox ?? null) : null;
+        })()
+    );
     // Update drag interaction without full viewer reinitialization
     if (diagramViewerRef.current) {
         diagramViewerRef.current.enableDragInteraction = isEditNadMode;
@@ -406,15 +417,23 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const handleReplaceNadConfig = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             // Since we want to replace the NAD with a new one, we ditch the previous diagram
-            // viewer reference because we do not want to use an obsolete viewbox on the new NAD.
+            // viewer reference and viewbox because we do not want to use an obsolete viewbox on the new NAD.
             diagramViewerRef.current = null;
+            initialLocalStorageViewBox.current = null;
+            if (studyUuid && workspaceId) {
+                saveLocalStoragePanelState(studyUuid, workspaceId, {
+                    id: nadPanelId,
+                    type: PanelType.NAD,
+                    viewBox: undefined,
+                });
+            }
             onReplaceNad(
                 elementName,
                 elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
                 elementType === ElementType.FILTER ? elementUuid : undefined
             );
         },
-        [onReplaceNad]
+        [onReplaceNad, studyUuid, workspaceId, nadPanelId]
     );
 
     const handleFocusVoltageLevel = useCallback(
@@ -442,16 +461,28 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         [svgMetadata]
     );
 
-    useEffect(() => {
-        const handleSwitchWorkspace = () => {
-            if (!diagramViewerRef?.current) return;
-            const viewBox = diagramViewerRef.current.getViewBox() ?? null;
-            dispatch(StoreNadViewBox(nadPanelId, viewBox));
-        };
-        globalThis.addEventListener('workspace:switchWorkspace', handleSwitchWorkspace);
-        return () => globalThis.removeEventListener('workspace:switchWorkspace', handleSwitchWorkspace);
-    }, [nadPanelId, diagramViewerRef, dispatch]);
+    const saveViewBoxToLocalStorage = useCallback(() => {
+        if (!diagramViewerRef.current || !studyUuid || !workspaceId) {
+            return;
+        }
+        const viewBox = diagramViewerRef.current.getViewBox() ?? undefined;
+        saveLocalStoragePanelState(studyUuid, workspaceId, {
+            id: nadPanelId,
+            type: PanelType.NAD,
+            viewBox,
+        });
+    }, [nadPanelId, studyUuid, workspaceId]);
 
+    useEffect(() => {
+        // Save viewbox on workspace switch
+        globalThis.addEventListener('workspace:switchWorkspace', saveViewBoxToLocalStorage);
+        // Save viewbox on page close/refresh
+        globalThis.addEventListener('beforeunload', saveViewBoxToLocalStorage);
+        return () => {
+            globalThis.removeEventListener('workspace:switchWorkspace', saveViewBoxToLocalStorage);
+            globalThis.removeEventListener('beforeunload', saveViewBoxToLocalStorage);
+        };
+    }, [saveViewBoxToLocalStorage]);
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -472,7 +503,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onSelectNodeCallback: handleNodeLeftClick,
                 onToggleHoverCallback: handleToggleHover,
                 onRightClickCallback: showEquipmentMenu,
-                initialViewBox: nadViewBox[nadPanelId] ?? diagramViewerRef?.current?.getViewBox(),
+                initialViewBox:
+                    diagramViewerRef.current?.getViewBox() ?? initialLocalStorageViewBox.current ?? undefined,
                 enableAdaptiveTextZoom: true,
                 adaptiveTextZoomThreshold: 3500,
             };
@@ -501,7 +533,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     }, [
         svg,
         svgMetadata,
-        nadViewBox,
         nadPanelId,
         loadingState,
         handleMoveNode,

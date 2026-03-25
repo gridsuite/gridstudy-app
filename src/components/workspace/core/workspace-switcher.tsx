@@ -142,8 +142,8 @@ export const WorkspaceSwitcher = memo(() => {
         async (workspaceId: UUID) => {
             if (!studyUuid) return;
             const workspace = await getWorkspace(studyUuid, workspaceId);
-            dispatch(setActiveWorkspace(workspace));
             globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace', { detail: workspaceId }));
+            dispatch(setActiveWorkspace(workspace));
         },
         [studyUuid, dispatch]
     );

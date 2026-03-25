@@ -21,7 +21,6 @@ import type {
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { ValueOf } from 'type-fest';
-import type { ViewBoxLike } from '@svgdotjs/svg.js';
 import type {
     FilterConfig,
     LogsPaginationConfig,
@@ -157,8 +156,6 @@ export type LogsPaginationState = Record<string, LogsPaginationConfig>;
 
 // ——— Diagrams ———
 
-export type NadViewBox = Record<UUID, ViewBoxLike | null>;
-
 export type NadNodeMovement = {
     diagramId: UUID;
     equipmentId: string;
@@ -242,7 +239,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nodeAliases: NodeAlias[];
 
     nodeSelectionForCopy: NodeSelectionForCopy;
-    nadViewBox: NadViewBox;
     copiedNetworkModifications: CopiedNetworkModifications;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
