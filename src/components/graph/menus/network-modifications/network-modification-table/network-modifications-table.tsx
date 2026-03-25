@@ -178,6 +178,7 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
 
     useEffect(() => {
         table.resetRowSelection();
+        table.resetExpanded();
         lastClickedIndex.current = null;
     }, [currentTreeNodeId, table]);
 

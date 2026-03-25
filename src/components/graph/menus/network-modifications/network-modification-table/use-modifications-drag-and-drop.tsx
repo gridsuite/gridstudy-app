@@ -16,7 +16,10 @@ import {
     DROP_INDICATOR_TOP,
 } from './styles';
 import { ComposedModificationMetadata } from './utils';
-import { changeNetworkModificationOrder } from '../../../../../services/study/network-modifications';
+import {
+    changeNetworkModificationOrder,
+    changeCompositeSubModificationOrder,
+} from '../../../../../services/study/network-modifications';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
@@ -79,11 +82,11 @@ const isDropForbidden = (
 ): boolean => {
     // Cross-depth drops are always forbidden
     if (targetRow.depth !== sourceRow.depth) {
-        return true;
+        //return true;
     }
     // Sub-rows must stay within the same parent composite
     if (sourceRow.depth > 0 && targetRow.getParentRow()?.id !== sourceRow.getParentRow()?.id) {
-        return true;
+        //return true;
     }
     // Depth-0 drops directly after an expanded composite are forbidden
     if (sourceRow.depth === 0 && isDropAfterExpandedComposite(sourceIndex, destinationIndex, targetRow)) {
@@ -151,35 +154,78 @@ export const useModificationsDragAndDrop = ({
                 return;
             }
 
-            // Map flat visual row indices back to depth-0 modification indices.
-            // `rows` contains both depth-0 and depth-1 rows; `modifications` is depth-0 only.
-            // We use the row's own parentId to identify depth-0 rows and find their position
-            // in the flat modifications array by UUID.
-            const sourceDepth0Uuid =
-                sourceRow.depth === 0 ? sourceRow.original.uuid : sourceRow.getParentRow()!.original.uuid;
-            const targetDepth0Uuid =
-                targetRow.depth === 0 ? targetRow.original.uuid : targetRow.getParentRow()!.original.uuid;
+            const isSubRowInvolved = sourceRow.depth > 0 || targetRow.depth > 0;
 
-            const oldPosition = modifications.findIndex((m) => m.uuid === sourceDepth0Uuid);
-            const newPosition = modifications.findIndex((m) => m.uuid === targetDepth0Uuid);
+            if (isSubRowInvolved) {
+                // --- Sub-modification move: route to the composite endpoint ---
 
-            if (oldPosition === -1 || newPosition === -1 || oldPosition === newPosition || !currentNodeId) {
-                return;
+                // The UUID of the modification being moved is always the source row's own UUID,
+                // regardless of whether it is a sub-row or a root row being embedded.
+                const movingUuid = sourceRow.original.uuid;
+
+                // sourceCompositeUuid: composite that currently owns the item (null = root level)
+                const sourceCompositeUuid =
+                    sourceRow.depth > 0 ? (sourceRow.getParentRow()?.original.uuid ?? null) : null;
+
+                // targetCompositeUuid: composite to insert into (null = root level)
+                const targetCompositeUuid =
+                    targetRow.depth > 0 ? (targetRow.getParentRow()?.original.uuid ?? null) : null;
+
+                // Compute beforeUuid: the next sibling after the landing position within the target collection.
+                // "Target collection" = the sub-row list of targetCompositeUuid, or the root-level rows.
+                const targetSiblings = targetCompositeUuid
+                    ? rows.filter((r) => r.depth > 0 && r.getParentRow()?.original.uuid === targetCompositeUuid)
+                    : rows.filter((r) => r.depth === 0);
+
+                const landingIndexInSiblings = targetSiblings.findIndex(
+                    (r) => r.original.uuid === targetRow.original.uuid
+                );
+                // If dragging downward within the same collection, the item lands after the target;
+                // otherwise it lands before.
+                const isDraggingDown = destination.index > source.index;
+                const insertAfterTarget = isDraggingDown && sourceCompositeUuid === targetCompositeUuid;
+                const beforeSiblingIndex = insertAfterTarget ? landingIndexInSiblings + 1 : landingIndexInSiblings;
+                const beforeUuid = targetSiblings[beforeSiblingIndex]?.original.uuid ?? null;
+
+                changeCompositeSubModificationOrder(
+                    studyUuid,
+                    currentNodeId,
+                    movingUuid,
+                    sourceCompositeUuid,
+                    targetCompositeUuid,
+                    beforeUuid
+                ).catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
+                });
+                // Optimistic UI update is deferred: the sub-modification list is re-fetched
+                // when the study-update notification arrives after the API call completes.
+            } else {
+                // --- Root-level modification move: existing path ---
+
+                const sourceDepth0Uuid = sourceRow.original.uuid;
+                const targetDepth0Uuid = targetRow.original.uuid;
+
+                const oldPosition = modifications.findIndex((m) => m.uuid === sourceDepth0Uuid);
+                const newPosition = modifications.findIndex((m) => m.uuid === targetDepth0Uuid);
+
+                if (oldPosition === -1 || newPosition === -1 || oldPosition === newPosition || !currentNodeId) {
+                    return;
+                }
+
+                // Optimistic update of the flat modifications list
+                const previousModifications = [...modifications];
+                const updatedModifications = [...modifications];
+                const [movedItem] = updatedModifications.splice(oldPosition, 1);
+                updatedModifications.splice(newPosition, 0, movedItem);
+                setModifications(updatedModifications);
+
+                const before = updatedModifications[newPosition + 1]?.uuid ?? null;
+
+                changeNetworkModificationOrder(studyUuid, currentNodeId, movedItem.uuid, before).catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
+                    setModifications(previousModifications);
+                });
             }
-
-            // Optimistic update of the flat modifications list
-            const previousModifications = [...modifications];
-            const updatedModifications = [...modifications];
-            const [movedItem] = updatedModifications.splice(oldPosition, 1);
-            updatedModifications.splice(newPosition, 0, movedItem);
-            setModifications(updatedModifications);
-
-            const before = updatedModifications[newPosition + 1]?.uuid ?? null;
-
-            changeNetworkModificationOrder(studyUuid, currentNodeId, movedItem.uuid, before).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
-                setModifications(previousModifications);
-            });
         },
         [containerRef, onDragEnd, rows, modifications, setModifications, currentNodeId, studyUuid, snackError]
     );

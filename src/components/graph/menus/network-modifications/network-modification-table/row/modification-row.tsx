@@ -8,8 +8,8 @@
 import React, { memo, useCallback } from 'react';
 import { flexRender, Row } from '@tanstack/react-table';
 import { mergeSx } from '@gridsuite/commons-ui';
-import { TableCell, TableRow } from '@mui/material';
-import { createCellStyle, createRowSx, styles } from '../styles';
+import { Box, TableCell, TableRow } from '@mui/material';
+import { BORDER_SUPPRESSED_COLUMNS, createCellContentWrapperSx, createCellStyle, createRowSx, styles } from '../styles';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { AUTO_EXTENSIBLE_COLUMNS, BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
@@ -38,7 +38,7 @@ const ModificationRow = memo<ModificationRowProps>(
             },
             [handleCellClick, row.original]
         );
-
+        
         return (
             <Draggable draggableId={row.id} index={virtualRow.index} isDragDisabled={isRowDragDisabled}>
                 {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => {
@@ -50,33 +50,37 @@ const ModificationRow = memo<ModificationRowProps>(
                             data-row-id={row.original.uuid}
                             sx={mergeSx(
                                 styles.tableRow,
-                                createRowSx(
-                                    theme,
-                                    isHighlighted,
-                                    snapshot.isDragging,
-                                    virtualRow,
-                                    row.depth,
-                                    isExpanded
-                                )
+                                createRowSx(theme, isHighlighted, snapshot.isDragging, virtualRow, row.depth)
                             )}
                         >
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell
-                                    key={cell.id}
-                                    sx={createCellStyle(
-                                        cell,
-                                        AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id),
-                                        row.depth,
-                                        isExpanded
-                                    )}
-                                    onClick={() => handleCellClickCallback(cell.column.id)}
-                                    {...(cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
-                                        ? provided.dragHandleProps
-                                        : undefined)}
-                                >
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                            ))}
+                            {row.getVisibleCells().map((cell) => {
+                                const isNameColumn = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.NAME.id;
+                                return (
+                                    <TableCell
+                                        key={cell.id}
+                                        sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
+                                        onClick={() => handleCellClickCallback(cell.column.id)}
+                                        {...(cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
+                                            ? provided.dragHandleProps
+                                            : undefined)}
+                                    >
+                                        {isNameColumn ? (
+                                            // NameCell owns its own borders entirely
+                                            flexRender(cell.column.columnDef.cell, cell.getContext())
+                                        ) : (
+                                            <Box
+                                                sx={createCellContentWrapperSx(
+                                                    theme,
+                                                    (isExpanded || row.depth > 0) &&
+                                                        BORDER_SUPPRESSED_COLUMNS.has(cell.column.columnDef.id ?? '')
+                                                )}
+                                            >
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </Box>
+                                        )}
+                                    </TableCell>
+                                );
+                            })}
                         </TableRow>
                     );
                 }}

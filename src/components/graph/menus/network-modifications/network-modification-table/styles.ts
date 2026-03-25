@@ -119,14 +119,8 @@ export const styles = {
         modificationName: { cursor: 'pointer', minWidth: 0, overflow: 'hidden', flex: 1 },
         rootNetworkChip: { textAlign: 'center' },
     },
-    // name-cell
-    nameCellRoot: {
-        height: '100%',
-        display: 'flex',
-        alignItems: 'stretch',
-        gap: 0,
-    },
     nameCellInnerRow: {
+        position: 'relative',
         display: 'flex',
         alignItems: 'center',
         gap: 0,
@@ -176,19 +170,6 @@ export const styles = {
 
 // Dynamic styles
 
-export const createNameCellLabelBoxSx = (isExpanded: boolean, depth: number): SxProps<Theme> =>
-    isExpanded || depth > 0
-        ? {
-              alignSelf: 'stretch',
-              display: 'flex',
-              alignItems: 'center',
-              flex: 1,
-              minWidth: 0,
-              borderBottom: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
-              borderLeft: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
-          }
-        : { flex: 1, minWidth: 0 };
-
 export const DROP_INDICATOR_TOP = 'inset 0 2px 0 #90caf9';
 export const DROP_INDICATOR_BOTTOM = 'inset 0 -2px 0 #90caf9';
 
@@ -200,8 +181,7 @@ export const createRowSx = (
     isHighlighted: boolean,
     isDragging: boolean,
     virtualRow: VirtualItem,
-    depth: number,
-    isExpanded: boolean
+    depth: number
 ): SxProps => ({
     position: 'absolute',
     top: 0,
@@ -223,7 +203,6 @@ export const createRowSx = (
 
 export const createModificationNameCellStyle = (activated: boolean): CSSProperties => ({
     opacity: activated ? 1 : DEACTIVATED_OPACITY,
-    width: '100%',
 });
 
 export const createRootNetworkChipCellSx = (activated: boolean): SxProps => ({
@@ -239,20 +218,9 @@ export const createEditDescriptionStyle = (description: string | undefined): SxP
     'tr:hover &': { opacity: 1 },
 });
 
-const BORDER_SUPPRESSED_COLUMNS = new Set(['dragHandle', 'select', 'modificationName']);
-
-export const createCellStyle = (
-    cell: any,
-    isAutoExtensible: boolean,
-    depth: number = 0,
-    isExpanded: boolean = false
-) => {
+export const createCellStyle = (cell: any, isAutoExtensible: boolean) => {
     const size = cell.column.getSize();
     const minSize = cell.column.columnDef.minSize;
-
-    // For the last leaf row of a group, only suppress border on the name column (not drag/select)
-    const suppressedColumns = BORDER_SUPPRESSED_COLUMNS;
-    const suppressBorder = suppressedColumns.has(cell.column.id) && (depth > 0 || isExpanded);
 
     return {
         ...cell.column.columnDef.meta?.cellStyle,
@@ -262,7 +230,8 @@ export const createCellStyle = (
         height: `${MODIFICATION_ROW_HEIGHT}px`,
         display: 'flex',
         alignItems: 'center',
-        ...(suppressBorder && { borderBottom: 'none' }),
+        borderTop: 'none',
+        borderBottom: 'none',
     };
 };
 
@@ -295,4 +264,47 @@ export const createHeaderCellStyle = (
         ...(isFirst && { borderLeft: darkBorder }),
         ...(isLast && { borderRight: darkBorder }),
     };
+};
+export const BORDER_SUPPRESSED_COLUMNS = new Set(['dragHandle', 'select']);
+
+export const createCellContentWrapperSx = (theme: Theme, areBordersSuppressed: boolean): SxProps => ({
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    borderTop: areBordersSuppressed ? 'none' : `1px solid ${muiTableCellBorder(theme)}`,
+    borderBottom: areBordersSuppressed ? 'none' : `1px solid ${muiTableCellBorder(theme)}`,
+});
+
+export const createNameCellRootStyle = (theme: Theme, isExpanded: boolean, depth: number) => ({
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    alignItems: 'stretch',
+    gap: 0,
+    ...(depth === 0 &&
+        !isExpanded && {
+            borderTop: `1px solid ${muiTableCellBorder(theme)}`,
+            borderBottom: `1px solid ${muiTableCellBorder(theme)}`,
+        }),
+});
+
+export const createNameCellLabelBoxSx = (isExpanded: boolean, depth: number): SxProps<Theme> => {
+    return depth > 0 || isExpanded
+        ? {
+              alignSelf: 'stretch',
+              display: 'flex',
+              alignItems: 'center',
+              flex: 1,
+              minWidth: 0,
+              borderTop: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
+              borderBottom: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
+              borderLeft: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
+          }
+        : {
+              flex: 1,
+              minWidth: 0,
+              // The row-level borderTop (createRowSx depth===0) provides the top separator.
+              // The cell content wrapper provides the bottom border.
+          };
 };

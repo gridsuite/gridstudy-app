@@ -15,15 +15,19 @@ import {
 } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, Tooltip } from '@mui/material';
-import { createModificationNameCellStyle, createNameCellLabelBoxSx, styles } from '../styles';
+import { createModificationNameCellStyle, createNameCellLabelBoxSx, createNameCellRootStyle, styles } from '../styles';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DepthBox from './depth-box';
 import { ComposedModificationMetadata } from '../utils';
+import { useTheme } from '@mui/material/styles';
 
-const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = ({ row }) => {
+const NameCell: FunctionComponent<{
+    row: Row<ComposedModificationMetadata>;
+}> = ({ row }) => {
     const intl = useIntl();
+    const theme = useTheme();
     const { computeLabel } = useModificationLabelComputer();
 
     const hasSubModifications = row.original.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type;
@@ -49,9 +53,7 @@ const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = 
     };
 
     return (
-        <Box
-            sx={mergeSx(styles.tableCell, createModificationNameCellStyle(row.original.activated), styles.nameCellRoot)}
-        >
+        <Box sx={mergeSx(styles.tableCell, createNameCellRootStyle(theme, row.getIsExpanded(), depth))}>
             {renderDepthBox()}
             <Box sx={styles.nameCellInnerRow}>
                 {/* Always reserve exactly 32px for the toggler so labels align across all depths */}
@@ -76,7 +78,14 @@ const NameCell: FunctionComponent<{ row: Row<ComposedModificationMetadata> }> = 
                 )}
                 <Box sx={createNameCellLabelBoxSx(row.getIsExpanded(), depth)}>
                     <Tooltip disableFocusListener disableTouchListener title={label}>
-                        <Box sx={styles.modificationLabel}>{label}</Box>
+                        <Box
+                            sx={mergeSx(
+                                styles.modificationLabel,
+                                createModificationNameCellStyle(row.original.activated)
+                            )}
+                        >
+                            {label}
+                        </Box>
                     </Tooltip>
                 </Box>
             </Box>
