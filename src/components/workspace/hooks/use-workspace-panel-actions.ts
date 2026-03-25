@@ -34,6 +34,7 @@ import {
 } from './workspace-panel-utils';
 import { getPanelConfig } from '../constants/workspace.constants';
 import { panelBackendManager } from '../utils/panel-backend-manager';
+import { deleteLocalStoragePanelStates } from '../../../redux/session-storage/workspace-local-storage';
 
 // compute the next available zIndex value
 const getNextZIndex = (panels: PanelState[]): number => {
@@ -61,6 +62,7 @@ export const useWorkspacePanelActions = () => {
             dispatch(deletePanelsRedux(panelIds));
             if (workspaceId) {
                 panelBackendManager.debounceDelete(studyUuid as UUID, workspaceId, panelIds);
+                deleteLocalStoragePanelStates(studyUuid as UUID, workspaceId, panelIds);
             }
         },
         [dispatch, studyUuid, workspaceId]
