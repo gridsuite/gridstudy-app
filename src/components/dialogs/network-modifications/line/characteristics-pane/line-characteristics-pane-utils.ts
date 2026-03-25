@@ -16,7 +16,7 @@ import {
     R,
     X,
 } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { LineCharacteristics } from '../modification/line-modification-type';
 import {
     Connectivity,
@@ -24,17 +24,18 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '@gridsuite/commons-ui';
+import { MUST_BE_GREATER_OR_EQUAL_TO_ZERO } from 'utils/validation-translation-keys';
 
 const characteristicsValidationSchema = (id: string, displayConnectivity: boolean, modification: boolean) => ({
     [id]: yup.object().shape({
         [R]: modification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+            ? yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
+            : yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
         [X]: modification ? yup.number().nullable() : yup.number().nullable().required(),
         [B1]: yup.number().nullable(),
-        [G1]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [G1]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
         [B2]: yup.number().nullable(),
-        [G2]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [G2]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
         ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, FieldConstants.CONNECTIVITY_1)),
         ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, FieldConstants.CONNECTIVITY_2)),
     }),

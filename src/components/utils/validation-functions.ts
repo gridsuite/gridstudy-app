@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { YUP_NOT_TYPE_NUMBER, YUP_REQUIRED } from '../../utils/validation-translation-keys';
+
 const NO_ERROR = {
     error: false,
     errorMsgId: null,
@@ -149,11 +151,11 @@ export function validateField(
     const isValueBlankOrEmpty = isBlankOrEmpty(value);
 
     if (toValidate.isFieldRequired && isValueBlankOrEmpty) {
-        return makeErrorRecord('FieldIsRequired');
+        return makeErrorRecord(YUP_REQUIRED);
     }
 
     if (!isValueBlankOrEmpty && toValidate.isFieldNumeric && !validateValueIsANumber(value)) {
-        return makeErrorRecord('FieldAcceptNumeric');
+        return makeErrorRecord(YUP_NOT_TYPE_NUMBER);
     }
 
     if (toValidate.valueLessThanOrEqualTo !== undefined) {

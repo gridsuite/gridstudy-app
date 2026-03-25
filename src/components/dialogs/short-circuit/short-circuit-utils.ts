@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { TRANSFORMER_REACTANCE, TRANSIENT_REACTANCE } from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 
 export const getShortCircuitEmptyFormData = () => {
     return {

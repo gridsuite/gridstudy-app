@@ -4,7 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Identifiable, type MuiStyles, type UseStateBooleanReturn, yupConfig as yup } from '@gridsuite/commons-ui';
+import { Identifiable, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -23,6 +24,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
 } from 'components/utils/field-constants';
 import { mapTwtDataForTable } from 'utils/spreadsheet-equipments-mapper';
+import { COLUMN_SELECTION_REQUIRED, YUP_REQUIRED } from 'utils/validation-translation-keys';
 
 export const styles = {
     dialogContent: {
@@ -75,7 +77,7 @@ export const getPrefilledModelSchema = () => {
             .default([])
             .when(RESTRICT_BY_FILTER, {
                 is: true,
-                then: (schema) => schema.min(1, 'FieldIsRequired'),
+                then: (schema) => schema.min(1, YUP_REQUIRED),
                 otherwise: (schema) => schema,
             }),
         [USE_CURRENT_GRID_STATE]: yup.boolean().required(),
@@ -85,7 +87,7 @@ export const getPrefilledModelSchema = () => {
             .default([])
             .when(USE_CURRENT_GRID_STATE, {
                 is: true,
-                then: (schema) => schema.min(1, 'ColumnSelectionRequired'),
+                then: (schema) => schema.min(1, COLUMN_SELECTION_REQUIRED),
                 otherwise: (schema) => schema,
             }),
     });

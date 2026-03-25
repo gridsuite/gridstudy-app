@@ -590,8 +590,6 @@
     "SynchronousComponent": "Composante synchrone",
     "EmptySelection": "Aucun ouvrage n'est sélectionné",
     "Connectivity": "Connectivité",
-    "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
-    "FieldIsRequired": "Ce champ doit être renseigné",
     "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",
     "errDuplicateModificationMsg": "Une erreur est survenue lors de la copie des modifications",
     "errCutModificationMsg": "Une erreur est survenue lors du coupage des modifications",
@@ -740,8 +738,6 @@
     "ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower": "La valeur de la puissance active doit être égale à 0 ou comprise entre la valeur de la puissance active min et la valeur de la puissance active max",
     "PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower": "La valeur de la puissance imposée doit être comprise entre la valeur de la puissance active min et la valeur de la puissance active max",
     "RatedNominalPowerMustBeGreaterThanZero": "La valeur de la puissance nominale doit être supérieure à 0",
-    "NormalizedPercentage": "Ce pourcentage doit être compris entre 0 et 100",
-    "RealPercentage": "Cette valeur doit être comprise entre 0 et 1",
     "GeneratorModificationError": "Erreur lors de la modification d'un générateur ",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "Le tableau des limites de réactifs par diagramme doit comporter au moins quatre points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Chaque valeur de puissance active doit être un nombre unique et valide.",
@@ -1047,7 +1043,6 @@
     "GeneratePrefilledModel": "Générer un modèle pré-rempli",
     "RestrictEquipmentList": "Restreindre la liste des ouvrages",
     "CurrentGridState": "État actuel du réseau",
-    "ColumnSelectionRequired": "Au moins une colonne doit être sélectionnée",
 
     "PrefilledColumn.Conductance": "Conductance",
     "PrefilledColumn.Susceptance": "Susceptance",
@@ -1161,10 +1156,6 @@
     "GeneratorsFiltersFrequencyReserveToolTip": "Les saisies sont appliquées dans l’ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un groupe est inclus dans plusieurs filtres)",
     "GeneratorsOrdering": "Hiérarchie des sites",
     "ReplacingLine": "Liaison de remplacement",
-    "YupRequired": "Ce champ doit être renseigné",
-    "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
-    "YupNotTypeDefault": "La valeur du champ n'est pas au bon format",
-
     "NetworkEquipmentNotFound": "L'ouvrage \"{equipmentId}\" n'existe pas dans ce réseau",
 
     "SLDOpenedInTheGrid": "Le {diagramType} \"{equipmentId}\" a été ouvert dans la grille des images",
@@ -1332,7 +1323,6 @@
     "ModifyByFormula": "Modification par formule",
     "ModifyByAssignment": "Modification par filtre",
     "UseDashToSelectField": "Utiliser # pour sélectionner un champ",
-    "WrongRefOrValueError": "Veuillez saisir une valeur numérique valide ou une référence de champ valide. Utiliser # pour sélectionner un champ",
     "ValueMustBeNumericWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une valeur numérique positive valide",
     "ValueMustBeRefWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une référence de champ valide",
     "addNewFormula": "Ajouter une nouvelle formule",
@@ -1532,7 +1522,6 @@
     "qmax": "Q Max",
     "nodeAliasesRetrievingError": "Erreur lors de la récupération des alias de nœuds",
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
-    "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
     "previousConnection": "Connexion préc.",
 
     "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",

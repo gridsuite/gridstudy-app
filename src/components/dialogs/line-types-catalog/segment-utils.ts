@@ -20,7 +20,7 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 
 export const SegmentSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup

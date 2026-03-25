@@ -30,7 +30,7 @@ import {
     formatMapInfosToTemporaryLimitsFormSchema,
     formatTemporaryLimitsModificationToFormSchema,
 } from 'components/utils/utils';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     CurrentLimits,
     OperationalLimitsGroup,

@@ -17,7 +17,7 @@ import {
     NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     convertInputValue,
@@ -46,6 +46,7 @@ import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { MUST_BE_GREATER_OR_EQUAL_TO_ZERO } from 'utils/validation-translation-keys';
 
 type FetchStatusType = (typeof FetchStatus)[keyof typeof FetchStatus];
 
@@ -101,16 +102,16 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [SUBSTATION_ID]: yup.string().nullable(),
-        [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [NOMINAL_V]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
         [LOW_VOLTAGE_LIMIT]: yup
             .number()
             .nullable()
-            .min(0, 'mustBeGreaterOrEqualToZero')
+            .min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
             .when([HIGH_VOLTAGE_LIMIT], {
                 is: (highVoltageLimit: number) => highVoltageLimit != null,
                 then: (schema) => schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
             }),
-        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
         [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
             .nullable()

@@ -20,7 +20,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { getLineTypeWithAreaAndTemperature } from '../../../services/network-modification';
 import { ModificationDialog } from '../commons/modificationDialog';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
 

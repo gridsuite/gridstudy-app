@@ -23,7 +23,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
@@ -33,6 +33,7 @@ import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
 import { FetchStatus } from 'services/utils.type';
 import { GenerationDispatchModificationInfos } from '../../../../services/network-modification-types';
+import { NORMALIZED_PERCENTAGE } from 'utils/validation-translation-keys';
 
 interface GenerationDispatchProps {
     editData: GenerationDispatchModificationInfos;
@@ -93,14 +94,14 @@ const formSchema = yup
         [LOSS_COEFFICIENT]: yup
             .number()
             .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
+            .min(0, NORMALIZED_PERCENTAGE)
+            .max(100, NORMALIZED_PERCENTAGE)
             .required(),
         [DEFAULT_OUTAGE_RATE]: yup
             .number()
             .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
+            .min(0, NORMALIZED_PERCENTAGE)
+            .max(100, NORMALIZED_PERCENTAGE)
             .required(),
         [GENERATORS_WITHOUT_OUTAGE]: getGeneratorsFiltersSchema(),
         [GENERATORS_WITH_FIXED_ACTIVE_POWER]: getGeneratorsFiltersSchema(),

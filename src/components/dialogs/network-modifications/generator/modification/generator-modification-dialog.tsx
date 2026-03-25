@@ -29,7 +29,7 @@ import {
     getSetPointsEmptyFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     ACTIVE_POWER_SET_POINT,
     BUS_OR_BUSBAR_SECTION,
@@ -103,6 +103,7 @@ import {
     getShortCircuitFormData,
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
+import { MUST_BE_GREATER_OR_EQUAL_TO_ZERO, REAL_PERCENTAGE } from 'utils/validation-translation-keys';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -137,13 +138,13 @@ const formSchema = yup
                 then: (schema) =>
                     schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
             }),
-        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
         ...getShortCircuitFormSchema(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [MARGINAL_COST]: yup.number().nullable(),
 
-        [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
-        [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
+        [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, REAL_PERCENTAGE).max(1, REAL_PERCENTAGE),
+        [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, REAL_PERCENTAGE).max(1, REAL_PERCENTAGE),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
         [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
         ...getSetPointsSchema(true),

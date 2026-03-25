@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     FILTERS,
     ID,
@@ -17,6 +17,7 @@ import {
     VARIATION_VALUE,
 } from 'components/utils/field-constants';
 import { REACTIVE_VARIATION_MODES } from 'components/network/constants';
+import { YUP_REQUIRED } from 'utils/validation-translation-keys';
 
 export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 
@@ -40,7 +41,7 @@ export const getVariationSchema = () =>
                     })
                 )
                 .required()
-                .min(1, 'FieldIsRequired'),
+                .min(1, YUP_REQUIRED),
         });
 
 export const getVariationsSchema = (id: string) => ({

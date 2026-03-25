@@ -6,7 +6,8 @@
  */
 
 import { DROOP, FREQUENCY_REGULATION } from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
+import { NORMALIZED_PERCENTAGE } from '../../../utils/validation-translation-keys';
 
 export const getActivePowerControlEmptyFormData = (isEquipmentModification = false) => ({
     [FREQUENCY_REGULATION]: isEquipmentModification ? null : false,
@@ -24,8 +25,8 @@ export const getActivePowerControlSchema = (isEquipmentModification = false) => 
     [DROOP]: yup
         .number()
         .nullable()
-        .min(0, 'NormalizedPercentage')
-        .max(100, 'NormalizedPercentage')
+        .min(0, NORMALIZED_PERCENTAGE)
+        .max(100, NORMALIZED_PERCENTAGE)
         .when([FREQUENCY_REGULATION], {
             is: (frequencyRegulation: boolean) => !isEquipmentModification && frequencyRegulation,
             then: (schema) => schema.required(),

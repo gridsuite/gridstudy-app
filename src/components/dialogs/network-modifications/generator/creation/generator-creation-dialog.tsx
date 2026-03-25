@@ -32,7 +32,7 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     ACTIVE_POWER_SET_POINT,
     CONNECTED,
@@ -86,6 +86,7 @@ import {
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
+import { MUST_BE_GREATER_OR_EQUAL_TO_ZERO, REAL_PERCENTAGE } from 'utils/validation-translation-keys';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import {
@@ -128,7 +129,7 @@ const formSchema = yup
             .nullable()
             .max(yup.ref(MAXIMUM_ACTIVE_POWER), 'generatorMinimumActivePowerMaxValueError')
             .required(),
-        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
         ...getShortCircuitFormSchema(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup
             .number()
@@ -140,8 +141,8 @@ const formSchema = yup
                 testValueWithinPowerInterval
             ),
         [MARGINAL_COST]: yup.number().nullable(),
-        [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
-        [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
+        [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, REAL_PERCENTAGE).max(1, REAL_PERCENTAGE),
+        [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, REAL_PERCENTAGE).max(1, REAL_PERCENTAGE),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(),
         ...getSetPointsSchema(),
         [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(),

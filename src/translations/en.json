@@ -594,8 +594,6 @@
     "connected": "Connected",
     "terminalConnected": "Connected",
     "disconnected": "Disconnected",
-    "FieldAcceptNumeric": "This field only accepts numeric values",
-    "FieldIsRequired": "This field is required",
     "errReorderModificationMsg": "Reorder network modification error:",
     "errDuplicateModificationMsg": "Network modifications copy error",
     "errCutModificationMsg": "Network modifications cut error",
@@ -745,8 +743,6 @@
     "ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower": "Active power value must be equal to 0 or between minimum and maximum active power values",
     "PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower": "Planned active power set point must be between minimum and maximum active power values",
     "RatedNominalPowerMustBeGreaterThanZero": "The rated nominal power value must be greater than 0",
-    "NormalizedPercentage": "This percentage must be between 0 and 100",
-    "RealPercentage": "This value must be between 0 and 1",
     "GeneratorModificationError": "Error while modifying generator",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "The table of reactive capability curve must have at least four points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Each active power value must be a valid unique number.",
@@ -1050,7 +1046,6 @@
     "GeneratePrefilledModel": "Generate prefilled model",
     "RestrictEquipmentList": "Restrict equipment list",
     "CurrentGridState": "Current grid state",
-    "ColumnSelectionRequired": "At least one column must be selected",
 
     "PrefilledColumn.Conductance": "Conductance",
     "PrefilledColumn.Susceptance": "Susceptance",
@@ -1164,10 +1159,6 @@
     "GeneratorsFiltersFrequencyReserveToolTip": "User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry",
     "GeneratorsOrdering": "Substations hierarchy",
     "ReplacingLine": "Replacing line",
-
-    "YupRequired": "This field is required",
-    "YupNotTypeNumber": "This field only accepts numeric values",
-    "YupNotTypeDefault": "Field value format is incorrect",
 
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
     "SLDOpenedInTheGrid": "The {diagramType} \"{equipmentId}\" was opened in the image grid",
@@ -1333,7 +1324,6 @@
     "ModifyByFormula": "Modify by formula",
     "ModifyByAssignment": "Modify by filter",
     "UseDashToSelectField": "Use # to select a field",
-    "WrongRefOrValueError": "Please enter a valid numeric value or a valid field reference. Use # to select a field",
     "ValueMustBeNumericWhenPercentageError": "When using %, this field must be a valid positive numeric value",
     "ValueMustBeRefWhenPercentageError": "When using %, this field must be a valid field reference",
     "addNewFormula": "Add new formula",
@@ -1534,7 +1524,6 @@
     "qmax": "Max Q",
     "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
-    "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
     "previousConnection": "Prev. connection",
 
     "confirmRootNetworkCreation": "The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.",

@@ -22,7 +22,7 @@ import { ModificationDialog } from 'components/dialogs/commons/modificationDialo
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { isNodeExists } from 'services/study';
 import { DESCRIPTION, NAME } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { updateTreeNode } from 'services/study/tree-subtree';
 
 export const MAX_CHAR_NODE_DESCRIPTION = 10000;

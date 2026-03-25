@@ -17,7 +17,7 @@ import {
     SPECIFIC_METADATA,
     TYPE,
 } from '../../../../../utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { AnyObject, TestContext, TestFunction } from 'yup';
 import {
     EquipmentType,
@@ -31,6 +31,7 @@ import {
     PERCENTAGE,
     SIEMENS,
 } from '@gridsuite/commons-ui';
+import { WRONG_REF_OR_VALUE_ERROR, YUP_REQUIRED } from 'utils/validation-translation-keys';
 
 export type EquipmentField = {
     id: string;
@@ -189,13 +190,13 @@ export function getFormulaSchema() {
                     })
                 )
                 .required()
-                .min(1, 'FieldIsRequired'),
+                .min(1, YUP_REQUIRED),
             [EDITED_FIELD]: yup.string().required(),
             [OPERATOR]: yup.string().required(),
             [REFERENCE_FIELD_OR_VALUE_1]: yup
                 .mixed()
                 .required()
-                .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
+                .test('checkRefOrValue', WRONG_REF_OR_VALUE_ERROR, checkValueInEquipmentFieldsOrNumeric)
                 .when([OPERATOR], {
                     is: 'PERCENTAGE',
                     then: (schema) =>
@@ -208,7 +209,7 @@ export function getFormulaSchema() {
             [REFERENCE_FIELD_OR_VALUE_2]: yup
                 .mixed()
                 .required()
-                .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
+                .test('checkRefOrValue', WRONG_REF_OR_VALUE_ERROR, checkValueInEquipmentFieldsOrNumeric)
                 .when([OPERATOR], {
                     is: 'PERCENTAGE',
                     then: (schema) =>

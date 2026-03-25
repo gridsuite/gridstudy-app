@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
@@ -20,12 +20,13 @@ import {
 } from '../../../../../utils/field-constants';
 import { VscFormInfos } from '../vsc-dialog.type';
 import { VscCreationInfos } from '../../../../../../services/network-modification-types';
+import { MUST_BE_GREATER_OR_EQUAL_TO_ZERO } from 'utils/validation-translation-keys';
 
 export function getVscHvdcLinePaneSchema() {
     return yup.object().shape(
         {
-            [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-            [R]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+            [NOMINAL_V]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
+            [R]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
             [MAX_P]: yup.number().nullable().required(),
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
@@ -59,8 +60,8 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-                [R]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+                [NOMINAL_V]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
+                [R]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
                 [MAX_P]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),

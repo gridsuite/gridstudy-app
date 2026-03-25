@@ -19,9 +19,10 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../regulating-terminal/regulating-terminal-form-utils';
+import { MUST_BE_GREATER_OR_EQUAL_TO_ZERO, NORMALIZED_PERCENTAGE } from '../../../utils/validation-translation-keys';
 
 export const getVoltageRegulationEmptyFormData = (isEquipmentModification = false) => ({
     [VOLTAGE_REGULATION]: isEquipmentModification ? null : false,
@@ -44,12 +45,12 @@ export const getVoltageRegulationSchema = (isEquipmentModification = false) => (
     [VOLTAGE_SET_POINT]: yup
         .number()
         .nullable()
-        .min(0, 'mustBeGreaterOrEqualToZero')
+        .min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
         .when([VOLTAGE_REGULATION], {
             is: (value: string) => !isEquipmentModification && value,
             then: (schema) => schema.required(),
         }),
-    [Q_PERCENT]: yup.number().nullable().max(100, 'NormalizedPercentage').min(0, 'NormalizedPercentage'),
+    [Q_PERCENT]: yup.number().nullable().max(100, NORMALIZED_PERCENTAGE).min(0, NORMALIZED_PERCENTAGE),
     [VOLTAGE_LEVEL]: yup
         .object()
         .nullable()

@@ -13,10 +13,11 @@ import {
     PROPERTY_NAME_FIELD,
     VALUE_FIELD,
 } from '../../../../../utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { Schema } from 'yup';
 import { Assignment, DataType, FieldOptionType, FieldValue } from './assignment.type';
 import { FIELD_OPTIONS } from './assignment-constants';
+import { YUP_REQUIRED } from 'utils/validation-translation-keys';
 
 export const getDataType = (fieldName?: string | null) => {
     return getFieldOption(fieldName)?.dataType;
@@ -51,7 +52,7 @@ export function getAssignmentsSchema(emptyValueStr: string) {
                         })
                     )
                     .required()
-                    .min(1, 'YupRequired'),
+                    .min(1, YUP_REQUIRED),
                 [EDITED_FIELD]: yup.string().required(),
                 [PROPERTY_NAME_FIELD]: yup.string().when([EDITED_FIELD], ([editedField], schema) => {
                     const dataType = getDataType(editedField);

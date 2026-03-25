@@ -35,7 +35,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
 import {

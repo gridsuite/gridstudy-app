@@ -24,7 +24,7 @@ import {
     useSnackMessage,
     DeepNullable,
 } from '@gridsuite/commons-ui';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 import CreateCouplingDeviceForm from './create-coupling-device-form';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';

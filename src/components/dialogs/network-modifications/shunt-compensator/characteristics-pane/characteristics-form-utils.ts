@@ -17,7 +17,7 @@ import {
     SWITCHED_ON_SUSCEPTANCE,
 } from 'components/utils/field-constants';
 import { computeSwitchedOnValue } from 'components/utils/utils';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
 
 export const getCharacteristicsFormValidationSchema = (isModification: boolean) => {

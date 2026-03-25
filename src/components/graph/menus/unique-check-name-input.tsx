@@ -14,6 +14,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import type { UUID } from 'node:crypto';
 import { useCustomFormContext, useDebounce } from '@gridsuite/commons-ui';
+import { YUP_REQUIRED } from '../../../utils/validation-translation-keys';
 
 export interface UniqueCheckNameInputProps {
     name: string;
@@ -126,7 +127,7 @@ export function UniqueCheckNameInput({
             clearErrors('root.isValidating');
             setError(name, {
                 type: 'validate',
-                message: 'FieldIsRequired',
+                message: YUP_REQUIRED,
             });
         }
     }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty, defaultFieldValue]);

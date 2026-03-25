@@ -6,8 +6,9 @@
  */
 
 import { CHARACTERISTICS, G, B, RATED_S, RATED_U1, RATED_U2, R, X } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { CharacteristicsFormSchema } from '../two-windings-transformer.types';
+import { MUST_BE_GREATER_OR_EQUAL_TO_ZERO } from 'utils/validation-translation-keys';
 
 type AdditionalValidationFields = Record<string, yup.AnySchema>;
 type AdditionalDataFields = Record<string, unknown>;
@@ -15,20 +16,20 @@ type AdditionalDataFields = Record<string, unknown>;
 const characteristicsValidationSchema = (isModification: boolean, additionalFields: AdditionalValidationFields) => ({
     [CHARACTERISTICS]: yup.object().shape({
         [R]: isModification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+            ? yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
+            : yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
         [X]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
         [G]: isModification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+            ? yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
+            : yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
         [B]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
         [RATED_S]: yup.number().nullable().positive('RatedNominalPowerMustBeGreaterThanZero'),
         [RATED_U1]: isModification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+            ? yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
+            : yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
         [RATED_U2]: isModification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+            ? yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
+            : yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
         ...additionalFields,
     }),
 });

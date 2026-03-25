@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -38,6 +38,7 @@ import {
     initializeDirectory,
 } from '@gridsuite/commons-ui';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { DESCRIPTION_LIMIT_ERROR } from '../../../../../utils/validation-translation-keys';
 
 // Define operation types
 enum OperationType {
@@ -101,7 +102,7 @@ const schema = yup
     .object()
     .shape({
         [FieldConstants.NAME]: yup.string().trim().required(),
-        [FieldConstants.DESCRIPTION]: yup.string().optional().max(MAX_CHAR_DESCRIPTION, 'descriptionLimitError'),
+        [FieldConstants.DESCRIPTION]: yup.string().optional().max(MAX_CHAR_DESCRIPTION, DESCRIPTION_LIMIT_ERROR),
         [FieldConstants.OPERATION_TYPE]: yup.string().oneOf(Object.values(OperationType)).required(),
     })
     .required();
