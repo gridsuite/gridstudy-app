@@ -39,6 +39,7 @@ import {
     ExtendedEquipmentType,
     HvdcType,
     type MuiStyles,
+    newEquipmentDeletionDto,
     NotificationsUrlKeys,
     snackWithFallback,
     useNotificationsListener,
@@ -271,12 +272,12 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     // only hvdc line with LCC requires a Dialog (to select MCS)
                     handleOpenDeletionDialog(equipmentId, EquipmentType.HVDC_LINE);
                 } else {
-                    deleteEquipment({
+                    deleteEquipment(
                         studyUuid,
-                        nodeUuid: currentNode.id,
-                        equipmentId: equipmentId as UUID,
-                        equipmentType,
-                    }).catch((error) => {
+                        currentNode.id,
+                        undefined,
+                        newEquipmentDeletionDto(equipmentType, equipmentId as UUID)
+                    ).catch((error) => {
                         snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
                     });
                 }
