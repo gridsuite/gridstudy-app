@@ -90,8 +90,6 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
             // Rebuild from the new modifications prop, carrying over already-fetched subModifications
             // to avoid a visual flash of empty children while re-fetches are in flight.
             const nextMods = mergeSubModificationsIntoTree(formatComposedModification(modifications), prevMods);
-            // Always re-fetch all expanded composite rows unconditionally to overwrite any stale data,
-            // firing all requests concurrently.
             const expandedIds = Object.keys(expanded).filter((id) => expanded[id]);
             refetchSubModificationsForExpandedRows(expandedIds, nextMods, setComposedModifications);
             return nextMods;
@@ -171,8 +169,8 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     const { handleDragUpdate, handleDragEnd, renderClone } = useModificationsDragAndDrop({
         rows,
         containerRef,
-        modifications,
-        setModifications,
+        composedModifications,
+        setComposedModifications,
         onDragEnd: onRowDragEnd,
     });
 

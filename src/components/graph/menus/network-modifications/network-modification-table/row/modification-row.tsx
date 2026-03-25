@@ -38,7 +38,6 @@ const ModificationRow = memo<ModificationRowProps>(
             },
             [handleCellClick, row.original]
         );
-        
         return (
             <Draggable draggableId={row.id} index={virtualRow.index} isDragDisabled={isRowDragDisabled}>
                 {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => {
