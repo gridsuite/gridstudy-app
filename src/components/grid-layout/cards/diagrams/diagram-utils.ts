@@ -38,8 +38,8 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
             return { equipmentType: EquipmentType.BATTERY };
         case FEEDER_TYPES.TIE_LINE:
             return { equipmentType: EquipmentType.TIE_LINE };
-        case FEEDER_TYPES.DANGLING_LINE:
-            return { equipmentType: EquipmentType.DANGLING_LINE };
+        case FEEDER_TYPES.BOUNDARY_LINE:
+            return { equipmentType: EquipmentType.BOUNDARY_LINE };
         case FEEDER_TYPES.GENERATOR:
             return { equipmentType: EquipmentType.GENERATOR };
         case FEEDER_TYPES.LCC_CONVERTER_STATION:
@@ -86,7 +86,7 @@ export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentT
         case EquipmentType.LOAD:
         case EquipmentType.BATTERY:
         case EquipmentType.TIE_LINE:
-        case EquipmentType.DANGLING_LINE:
+        case EquipmentType.BOUNDARY_LINE:
         case EquipmentType.GENERATOR:
         case EquipmentType.HVDC_LINE:
         case EquipmentType.SHUNT_COMPENSATOR:

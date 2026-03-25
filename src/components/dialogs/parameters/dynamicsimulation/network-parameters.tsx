@@ -14,9 +14,9 @@ const defParams = {
         type: TYPES.FLOAT,
         label: 'DynamicSimulationNetworkCapacitorNoReclosingDelay',
     },
-    [NetworkEnum.DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
+    [NetworkEnum.BOUNDARY_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
         type: TYPES.FLOAT,
-        label: 'DynamicSimulationNetworkDanglingLineCurrentLimitMaxTimeOperation',
+        label: 'DynamicSimulationNetworkBoundaryLineCurrentLimitMaxTimeOperation',
     },
     [NetworkEnum.LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
         type: TYPES.FLOAT,

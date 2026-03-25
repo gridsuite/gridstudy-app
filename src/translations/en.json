@@ -296,7 +296,7 @@
     "DynamicSimulationSolverMinimalAcceptableStep": "Minimal acceptable value for a time step",
     "DynamicSimulationNetworkCapacitorNoReclosingDelay": "Time lag before reclosing in s (capacitor)",
     "DynamicSimulationNetworkReactanceNoReclosingDelay": "Time lag before reclosing in s (reactance)",
-    "DynamicSimulationNetworkDanglingLineCurrentLimitMaxTimeOperation": "Time threshold over which current limiter should not operate in s",
+    "DynamicSimulationNetworkBoundaryLineCurrentLimitMaxTimeOperation": "Time threshold over which current limiter should not operate in s",
     "DynamicSimulationNetworkLineCurrentLimitMaxTimeOperation": "Line current limit Max Time Operation",
     "DynamicSimulationNetworkLoadTp": "Time constant for integration of active power setpoint change, in s",
     "DynamicSimulationNetworkLoadTq": "Time constant for integration of reactive power setpoint change, in s",
@@ -504,7 +504,7 @@
     "loadType": "Type",
     "ConstantP": "Constant p (MW)",
     "ConstantQ": "Constant q (Mvar)",
-    "DanglingLines": "Dangling Lines",
+    "BoundaryLines": "Boundary Lines",
     "PairingKey": "UCTE Xnode",
     "HvdcLines": "HVDC Lines",
     "ConvertersMode": "Converters mode",
@@ -622,7 +622,7 @@
     "GENERATOR": "Generator",
     "LOAD": "Load",
     "BATTERY": "Battery",
-    "DANGLING_LINE": "Dangling Line",
+    "BOUNDARY_LINE": "Boundary Line",
     "Hvdc": "HVDC",
     "HVDC_LINE": "HVDC Line",
     "HVDC_CONVERTER_STATION": "HVDC Converter Station",
@@ -1772,5 +1772,5 @@
     "Reload": "Reload",
     "CopyError": "Copy Error",
     "Copied": "Copied",
-    "downloadNetworkModifications" : "Download modifications"
+    "downloadNetworkModifications": "Download modifications"
 }

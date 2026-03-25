@@ -294,7 +294,7 @@
     "DynamicSimulationSolverMinimalAcceptableStep": "Pas de temps minimum acceptable",
     "DynamicSimulationNetworkCapacitorNoReclosingDelay": "Temporisation avant la possibilité de réenclencher le MCS en s (capacité)",
     "DynamicSimulationNetworkReactanceNoReclosingDelay": "Temporisation avant la possibilité de réenclencher le MCS en s (réactance)",
-    "DynamicSimulationNetworkDanglingLineCurrentLimitMaxTimeOperation": "Seuil de temps au delà duquel les limiteurs de courant ne doivent pas agir en s",
+    "DynamicSimulationNetworkBoundaryLineCurrentLimitMaxTimeOperation": "Seuil de temps au delà duquel les limiteurs de courant ne doivent pas agir en s",
     "DynamicSimulationNetworkLineCurrentLimitMaxTimeOperation": "Seuil de temps au-delà duquel les limiteurs de courant ne doivent pas agir en s",
     "DynamicSimulationNetworkLoadTp": "Constante de temps pour intégration du changement de consigne active, en s",
     "DynamicSimulationNetworkLoadTq": "Constante de temps pour intégration du changement de consigne réactive, en s",
@@ -502,7 +502,7 @@
     "loadType": "Type",
     "ConstantP": "P constant (MW)",
     "ConstantQ": "Q constant (Mvar)",
-    "DanglingLines": "Lignes frontières",
+    "BoundaryLines": "Lignes frontières",
     "PairingKey": "Xnode UCTE",
     "HvdcLines": "Lignes HVDC",
     "ConvertersMode": "Mode du convertisseur",
@@ -618,7 +618,7 @@
     "GENERATOR": "Groupe",
     "LOAD": "Consommation",
     "BATTERY": "Batterie",
-    "DANGLING_LINE": "Ligne frontière",
+    "BOUNDARY_LINE": "Ligne frontière",
     "Hvdc": "HVDC",
     "HVDC_LINE": "Ligne HVDC",
     "HVDC_CONVERTER_STATION": "Station de conversion HVDC",
@@ -1765,5 +1765,5 @@
     "Reload": "Recharger",
     "CopyError": "Copier l'erreur",
     "Copied": "Copiée",
-    "downloadNetworkModifications" : "Télécharger les modifications"
+    "downloadNetworkModifications": "Télécharger les modifications"
 }

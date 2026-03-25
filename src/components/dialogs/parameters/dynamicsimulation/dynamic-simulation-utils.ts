@@ -173,7 +173,7 @@ export enum NetworkEnum {
     CAPACITOR_NO_RECLOSING_DELAY = 'capacitorNoReclosingDelay',
 
     // Line related
-    DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION = 'danglingLineCurrentLimitMaxTimeOperation',
+    BOUNDARY_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION = 'boundaryLineCurrentLimitMaxTimeOperation',
     LINE_CURRENT_LIMIT_MAX_TIME_OPERATION = 'lineCurrentLimitMaxTimeOperation',
 
     // Load related
@@ -202,7 +202,7 @@ export enum NetworkEnum {
 
 export const networkFormSchema = yup.object().shape({
     [NetworkEnum.CAPACITOR_NO_RECLOSING_DELAY]: yup.number().required(),
-    [NetworkEnum.DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: yup.number().required(),
+    [NetworkEnum.BOUNDARY_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: yup.number().required(),
     [NetworkEnum.LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: yup.number().required(),
     [NetworkEnum.LOAD_TP]: yup.number().required(),
     [NetworkEnum.LOAD_TQ]: yup.number().required(),
@@ -225,7 +225,7 @@ export const networkFormSchema = yup.object().shape({
 
 export const networkEmptyFormData = {
     [NetworkEnum.CAPACITOR_NO_RECLOSING_DELAY]: 0,
-    [NetworkEnum.DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: 0,
+    [NetworkEnum.BOUNDARY_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: 0,
     [NetworkEnum.LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: 0,
     [NetworkEnum.LOAD_TP]: 0,
     [NetworkEnum.LOAD_TQ]: 0,
