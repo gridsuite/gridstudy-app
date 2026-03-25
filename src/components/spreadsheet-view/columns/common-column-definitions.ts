@@ -68,7 +68,6 @@ export const textColumnDefinition = (
                 filterParams: {
                     type: TableType.Spreadsheet,
                     tab,
-
                     dataType: FILTER_DATA_TYPES.TEXT,
                     comparators: [
                         FILTER_TEXT_COMPARATORS.STARTS_WITH,
@@ -121,7 +120,6 @@ export const enumColumnDefinition = (
                 filterParams: {
                     type: TableType.Spreadsheet,
                     tab,
-
                     dataType: FILTER_DATA_TYPES.TEXT,
                     debounceMs: 200,
                 },
@@ -154,7 +152,6 @@ export const numberColumnDefinition = (
                 filterParams: {
                     type: TableType.Spreadsheet,
                     tab,
-
                     dataType: FILTER_DATA_TYPES.NUMBER,
                     comparators: Object.values(SPREADSHEET_FILTER_NUMBER_COMPARATORS),
                     debounceMs: 500,
@@ -213,7 +210,6 @@ export const booleanColumnDefinition = (
                     type: TableType.Spreadsheet,
                     tab,
                     dataType: FILTER_DATA_TYPES.BOOLEAN,
-
                     debounceMs: 50,
                 },
             },
