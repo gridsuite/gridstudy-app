@@ -8,7 +8,6 @@
 import { MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { getNetworkModificationsFromComposite } from '../../../../../services/study/network-modifications';
 import { Dispatch, SetStateAction } from 'react';
-import { Row } from '@tanstack/react-table';
 
 export const formatComposedModification = (
     modifications: NetworkModificationMetadata[]

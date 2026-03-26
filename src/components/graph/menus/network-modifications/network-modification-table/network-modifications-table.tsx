@@ -39,11 +39,12 @@ import { AppState } from '../../../../../redux/reducer.type';
 import {
     ComposedModificationMetadata,
     fetchSubModificationsForExpandedRows,
-    formatComposedModification, isCompositeModification,
+    formatComposedModification,
+    isCompositeModification,
     mergeSubModificationsIntoTree,
     refetchSubModificationsForExpandedRows,
 } from './utils';
-import { MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];

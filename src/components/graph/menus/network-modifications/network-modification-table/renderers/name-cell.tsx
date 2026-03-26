@@ -7,12 +7,7 @@
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { Row } from '@tanstack/react-table';
-import {
-    mergeSx,
-    MODIFICATION_TYPES,
-    NetworkModificationMetadata,
-    useModificationLabelComputer,
-} from '@gridsuite/commons-ui';
+import { mergeSx, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, Tooltip } from '@mui/material';
 import { createModificationNameCellStyle, createNameCellLabelBoxSx, createNameCellRootStyle, styles } from '../styles';

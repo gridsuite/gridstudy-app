@@ -20,7 +20,7 @@ import {
     changeCompositeSubModificationOrder,
     changeNetworkModificationOrder,
 } from '../../../../../services/study/network-modifications';
-import { MODIFICATION_TYPES, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
 import { ComposedModificationMetadata, isCompositeModification, moveSubModificationInTree } from './utils';
