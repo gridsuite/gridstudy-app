@@ -39,6 +39,7 @@ import { AppState } from '../../../../../redux/reducer.type';
 import {
     ComposedModificationMetadata,
     fetchSubModificationsForExpandedRows,
+    findAllLoadedCompositeModifications,
     formatComposedModification,
     isCompositeModification,
     mergeSubModificationsIntoTree,
@@ -91,15 +92,19 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
             // Rebuild from the new modifications prop, carrying over already-fetched subModifications
             // to avoid a visual flash of empty children while re-fetches are in flight.
             const nextMods = mergeSubModificationsIntoTree(formatComposedModification(modifications), prevMods);
-            const expandedIds =
-                expanded === true
-                    ? nextMods.filter((m) => m.subModifications !== undefined).map((m) => m.uuid)
-                    : Object.keys(expanded).filter((id) => expanded[id]);
-            refetchSubModificationsForExpandedRows(expandedIds, nextMods, setComposedModifications);
+
+            // Re-fetch for any composite that already has loaded sub-modifications, regardless of
+            // whether it is currently expanded to avoid stale state
+            let loadedComposite: ComposedModificationMetadata[] = [];
+            findAllLoadedCompositeModifications(nextMods, loadedComposite);
+            refetchSubModificationsForExpandedRows(
+                loadedComposite.map((mod) => mod.uuid),
+                nextMods,
+                setComposedModifications
+            );
             return nextMods;
         });
-        // `expanded` is intentionally excluded: we only want the snapshot at the time modifications change
-    }, [modifications]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [modifications]);
 
     const handleExpandRow = useCallback((updater: Updater<ExpandedState>) => {
         setExpanded((prevExpanded) => {

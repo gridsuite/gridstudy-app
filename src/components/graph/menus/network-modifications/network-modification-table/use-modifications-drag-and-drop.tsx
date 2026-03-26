@@ -23,7 +23,12 @@ import {
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
-import { ComposedModificationMetadata, isCompositeModification, moveSubModificationInTree } from './utils';
+import {
+    ComposedModificationMetadata,
+    findModificationsInTree,
+    isCompositeModification,
+    moveSubModificationInTree,
+} from './utils';
 import { UUID } from 'node:crypto';
 
 interface UseModificationsDragAndDropParams {
@@ -54,10 +59,20 @@ const isDropForbidden = (
     sourceRow: Row<ComposedModificationMetadata>,
     targetRow: Row<ComposedModificationMetadata>
 ): boolean => {
-    return (
+    const isDraggingDown = targetRow.index > sourceRow.index;
+    //Can't move composite inside another composite for now
+    if (
         isCompositeModification(sourceRow.original) &&
-        ((isCompositeModification(targetRow.original) && targetRow.getIsExpanded()) ||
+        ((isCompositeModification(targetRow.original) && targetRow.getIsExpanded() && isDraggingDown) ||
             isCompositeModification(targetRow.getParentRow()?.original))
+    ) {
+        return true;
+    }
+
+    //Can't drag a composite in its own subtree
+    return !!(
+        isCompositeModification(sourceRow.original) &&
+        findModificationsInTree(targetRow.original.uuid, [sourceRow.original])
     );
 };
 

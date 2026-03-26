@@ -23,6 +23,18 @@ export function isCompositeModification(modification: ComposedModificationMetada
     return modification?.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type;
 }
 
+export function findAllLoadedCompositeModifications(
+    modifications: ComposedModificationMetadata[],
+    composites: ComposedModificationMetadata[]
+) {
+    for (const modification of modifications) {
+        if (isCompositeModification(modification) && modification.subModifications.length > 0) {
+            composites.push(modification);
+            findAllLoadedCompositeModifications(modification.subModifications, composites);
+        }
+    }
+}
+
 export function findModificationsInTree(
     uuid: string,
     mods: ComposedModificationMetadata[]
