@@ -25,7 +25,6 @@ const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) 
             const currentIndex = rows.indexOf(row);
             const nextSelection = { ...table.getState().rowSelection };
 
-            console.log('HMA', currentIndex);
             // When shift is held and a previous click exists, select or deselect the contiguous range between
             // the two clicks instead of toggling a single row.
             if (

@@ -50,7 +50,6 @@ const NameCell: FunctionComponent<{
         <Box sx={mergeSx(styles.tableCell, createNameCellRootStyle(theme, row.getIsExpanded(), depth))}>
             {renderDepthBox()}
             <Box sx={styles.nameCellInnerRow}>
-                {/* Always reserve exactly 32px for the toggler so labels align across all depths */}
                 {isCompositeModification(row.original) && (
                     <Box sx={styles.nameCellTogglerBox}>
                         <IconButton
