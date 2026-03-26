@@ -61,6 +61,15 @@ export default class NetworkModificationTreeModel {
      * @returns true if the order was changed
      */
     reorderChildrenNodes(parentNodeId: string, orderedNodeIds: string[]) {
+        // Guard against incoherent notification before reordering
+        const currentChildren = new Set(this.getChildren(parentNodeId).map((c) => c.id));
+        if (
+            orderedNodeIds.length !== currentChildren.size ||
+            !orderedNodeIds.every((id) => currentChildren.has(id as UUID))
+        ) {
+            console.warn('reorderChildrenNodes: orderedNodeIds does not match the current children set, skipping');
+            return false;
+        }
         if (!this.needReorder(parentNodeId, orderedNodeIds)) {
             return false;
         }

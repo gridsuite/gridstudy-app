@@ -13,7 +13,6 @@ import { PARAMS_LOADED } from '../utils/config-params';
 import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
-    networkModificationTreeNodesUpdated,
     openStudy,
     resetEquipmentsPostComputation,
     setCurrentRootNetworkUuid,
@@ -41,7 +40,8 @@ import NetworkModificationTreeModel from './graph/network-modification-tree-mode
 import { getFirstNodeOfType } from './graph/util/model-functions';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchNetworkModificationTree, fetchNetworkModificationTreeNode } from '../services/study/tree-subtree';
+import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { handleTreeModelUpdate } from './network-modification-tree-pane-event-handlers';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
@@ -265,29 +265,18 @@ export function StudyContainer() {
     const handleStudyUpdate = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.STUDY_ALERT) {
+            if (eventData.headers.updateType === NotificationType.STUDY_ALERT) {
                 sendAlert(eventData);
                 return; // here, we do not want to update the redux state
             }
             displayErrorNotifications(eventData);
-
-            // Handle build status updates globally so all workspaces open in other browser tabs update currentTreeNode
-            // This fixes the issue where tabs without tree panel don't get updates
-            if (
-                updateTypeHeader === NotificationType.NODE_BUILD_STATUS_UPDATED &&
-                eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current
-            ) {
-                // Fetch updated nodes and dispatch to Redux to sync currentTreeNode
-                const updatedNodeIds = eventData.headers.nodes;
-                Promise.all(
-                    updatedNodeIds.map((nodeId) =>
-                        fetchNetworkModificationTreeNode(studyUuid, nodeId, currentRootNetworkUuidRef.current)
-                    )
-                ).then((values) => {
-                    dispatch(networkModificationTreeNodesUpdated(values));
-                });
+            // Handle tree model updates globally so all workspaces (including those without a tree panel)
+            // stay synchronized. This ensures navigation sync works across browser tabs regardless of
+            // which panels are open in each tab's active workspace.
+            if (!currentRootNetworkUuidRef.current) {
+                return; // root networks not yet loaded, skip tree sync
             }
+            handleTreeModelUpdate(dispatch, studyUuid, currentRootNetworkUuidRef.current, eventData);
         },
         // Note: dispatch doesn't change
         [dispatch, displayErrorNotifications, sendAlert, studyUuid]
