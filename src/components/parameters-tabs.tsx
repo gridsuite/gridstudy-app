@@ -30,7 +30,6 @@ import { useGetStateEstimationParameters } from './dialogs/parameters/state-esti
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
-import type { UUID } from 'node:crypto';
 import {
     ComputingType,
     DynamicMarginCalculationInline,
@@ -307,7 +306,7 @@ const ParametersTabs: FunctionComponent = () => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
-                        fetchContingencyCount={(contingencyLists: UUID[] | null) =>
+                        fetchContingencyCount={(contingencyLists: string[] | null) =>
                             fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
                         }
                         isBuiltCurrentNode={
