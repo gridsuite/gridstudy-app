@@ -5,8 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useCallback, useEffect } from 'react';
 import {
+    CheckboxNullableInput,
+    ConnectivityForm,
     FloatInput,
     PercentageAdornment,
     ReactivePowerAdornment,
@@ -25,18 +27,18 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import type { UUID } from 'node:crypto';
-import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid, TextField } from '@mui/material';
 import { ReactiveLimitsForm } from '../../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
-import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 import { ConverterStationElementModificationInfos } from './converter-station-type';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
+import PositionDiagramPane from '../../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../../services/study/network';
 
 interface VscConverterStationPaneProps {
     id: string;
@@ -62,6 +64,17 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     const intl = useIntl();
 
     const { trigger } = useFormContext();
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
 
     const voltageRegulationOnWatch = useWatch({
         name: `${id}.${VOLTAGE_REGULATION_ON}`,
@@ -101,11 +114,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     const connectivityForm = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={isModification}
             previousValues={{
                 connectablePosition: previousValues?.connectablePosition,
@@ -113,6 +122,9 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
                 busOrBusbarSectionId: previousValues?.busOrBusbarSectionId,
                 terminalConnected: previousValues?.terminalConnected,
             }}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

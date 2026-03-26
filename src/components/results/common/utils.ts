@@ -16,6 +16,7 @@ import {
     getComputationResultGlobalFilters,
 } from '../../../services/study/study-config';
 import { initOrUpdateGlobalFilters, updateColumnFiltersAction } from '../../../redux/actions';
+import { isEditingGlobalFilter } from '../../../utils/editing-global-filter-sync';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -140,7 +141,14 @@ export function updateComputationColumnFilters(
 }
 
 export function updateComputationGlobalFilters(dispatch: Dispatch, studyUuid: UUID, tableType: TableType) {
+    // Double-check, before and after sending the request
+    if (isEditingGlobalFilter(tableType)) {
+        return;
+    }
     getComputationResultGlobalFilters(studyUuid, tableType).then((globalFiltersInfos: GlobalFilter[] | null) => {
+        if (isEditingGlobalFilter(tableType)) {
+            return;
+        }
         const globalFilters = Array.isArray(globalFiltersInfos) ? globalFiltersInfos : [];
         dispatch(initOrUpdateGlobalFilters(tableType, globalFilters));
     });

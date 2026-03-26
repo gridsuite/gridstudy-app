@@ -6,15 +6,21 @@
  */
 
 import {
+    BranchActiveReactivePowerMeasurementsForm,
+    BranchConnectivityForm,
     convertInputValue,
     convertOutputValue,
+    createConnectivityData,
     CustomFormProvider,
     emptyProperties,
     EquipmentType,
     EquipmentWithProperties,
     FieldConstants,
     FieldType,
+    getCon1andCon2WithPositionValidationSchema,
     getConcatenatedProperties,
+    getConnectivityFormData,
+    getCont1Cont2WithPositionEmptyFormData,
     getPropertiesFromModification,
     modificationPropertiesSchema,
     sanitizeString,
@@ -134,16 +140,11 @@ import {
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import {
-    createConnectivityData,
-    getCon1andCon2WithPositionValidationSchema,
-    getConnectivityFormData,
-    getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils';
-import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchNetworkElementInfos,
+} from '../../../../../services/study/network';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { toTapChangerStepList, TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
 import { ToBeEstimatedForm } from './2wt-to-be-estimated/to-be-estimated-form';
 import {
@@ -157,10 +158,10 @@ import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-wi
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import {
-    TapChangerStep,
-    ConnectivityFormSchema,
     CharacteristicsFormSchema,
+    ConnectivityFormSchema,
     StateEstimationFormSchema,
+    TapChangerStep,
     TwoWindingsTransformerMapInfos,
 } from '../two-windings-transformer.types';
 import { BranchInfos, CurrentLimitsData } from 'services/study/network-map.type';
@@ -174,6 +175,7 @@ import {
 import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
 import { LineModificationFormSchema } from '../../line/modification/line-modification-type';
 import { FetchStatus } from 'services/utils.type';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 
 export interface TwoWindingsTransformerModificationDialogProps {
     studyUuid: UUID;
@@ -275,6 +277,17 @@ const TwoWindingsTransformerModificationDialog = ({
         }
     };
 
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
     const fromEditDataToFormValues = useCallback(
         (twtModification: TwoWindingsTransformerModificationInfo) => {
             if (twtModification?.equipmentId) {
@@ -283,8 +296,14 @@ const TwoWindingsTransformerModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: twtModification.equipmentName?.value,
                 [CONNECTIVITY]: {
-                    ...getConnectivityFormData(createConnectivityData(twtModification, 1), CONNECTIVITY_1),
-                    ...getConnectivityFormData(createConnectivityData(twtModification, 2), CONNECTIVITY_2),
+                    ...getConnectivityFormData(
+                        createConnectivityData(twtModification, 1),
+                        FieldConstants.CONNECTIVITY_1
+                    ),
+                    ...getConnectivityFormData(
+                        createConnectivityData(twtModification, 2),
+                        FieldConstants.CONNECTIVITY_2
+                    ),
                 },
                 ...getCharacteristicsFormData({
                     r: twtModification.r?.value ?? null,
@@ -878,11 +897,11 @@ const TwoWindingsTransformerModificationDialog = ({
                     <>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.CONNECTIVITY_TAB} p={1}>
                             <BranchConnectivityForm
-                                studyUuid={studyUuid}
-                                currentNode={currentNode}
-                                currentRootNetworkUuid={currentRootNetworkUuid}
                                 isModification={true}
                                 previousValues={twtToModify}
+                                voltageLevelOptions={voltageLevelOptions}
+                                PositionDiagramPane={PositionDiagramPane}
+                                fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                             />
                         </Box>
                         <Box

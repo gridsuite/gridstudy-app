@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
+import { areIdsEqual, AutocompleteInput, Option } from '@gridsuite/commons-ui';
 import GridItem from '../commons/grid-item';
 import GridSection from '../commons/grid-section';
 import { Grid, Tab, Tabs } from '@mui/material';
@@ -16,7 +16,6 @@ import {
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
 import { CATEGORIES_TABS, LineTypeInfo } from './line-catalog.type';
-import { areIdsEqual } from '../../utils/utils';
 import { useFormContext } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import LimitCustomAgGrid from './limit-custom-aggrid';

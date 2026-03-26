@@ -6,6 +6,7 @@
  */
 
 import {
+    CONNECTION_DIRECTIONS,
     convertInputValue,
     convertOutputValue,
     FieldConstants,
@@ -107,7 +108,6 @@ import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limit
 import {
     APPLICABILITY,
     BOOLEAN,
-    CONNECTION_DIRECTIONS,
     ENERGY_SOURCES,
     ENUM,
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,

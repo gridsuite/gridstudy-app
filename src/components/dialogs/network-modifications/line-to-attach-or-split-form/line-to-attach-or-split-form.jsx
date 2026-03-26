@@ -6,8 +6,7 @@
  */
 
 import { Grid, Typography } from '@mui/material';
-import { AutocompleteInput, snackWithFallback } from '@gridsuite/commons-ui';
-import { areIdsEqual, getObjectId } from 'components/utils/utils';
+import { areIdsEqual, AutocompleteInput, getObjectId, snackWithFallback } from '@gridsuite/commons-ui';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../../percentage-area/percentage-area';
 import { useWatch } from 'react-hook-form';

@@ -11,6 +11,9 @@ import {
     useSnackMessage,
     DeepNullable,
     sanitizeString,
+    getConnectivityData,
+    getConnectivityPropertiesValidationSchema,
+    getConnectivityWithoutPositionEmptyFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -34,11 +37,6 @@ import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
-import {
-    getConnectivityData,
-    getConnectivityPropertiesValidationSchema,
-    getConnectivityWithoutPositionEmptyFormData,
-} from '../../connectivity/connectivity-form-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';

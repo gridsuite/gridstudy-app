@@ -27,7 +27,6 @@ import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
-import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
@@ -48,6 +47,8 @@ import {
     ShortCircuitParametersInLine,
     useParametersBackend,
     VoltageInitParametersInLine,
+    DynamicSecurityAnalysisInline,
+    fetchDynamicSecurityAnalysisProviders,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -62,6 +63,10 @@ import {
     fetchDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
 } from '../services/study/dynamic-margin-calculation';
+import {
+    fetchDynamicSecurityAnalysisParameters,
+    updateDynamicSecurityAnalysisParameters,
+} from '../services/study/dynamic-security-analysis';
 import { BUILD_STATUS } from './network/constants';
 
 enum TAB_VALUES {
@@ -183,14 +188,14 @@ const ParametersTabs: FunctionComponent = () => {
         user,
         studyUuid,
         ComputingType.SHORT_CIRCUIT,
-        OptionalServicesStatus.Up,
+        shortCircuitAvailability,
         {
             backendFetchParameters: getShortCircuitParameters,
             backendUpdateParameters: setShortCircuitParameters,
             backendFetchSpecificParametersDescription: getShortCircuitSpecificParametersDescription,
         }
     );
-    useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
+    useParametersNotification(ComputingType.SHORT_CIRCUIT, shortCircuitAvailability, shortCircuitParametersBackend);
 
     const dynamicMarginCalculationParametersBackend = useParametersBackend(
         user,
@@ -207,6 +212,23 @@ const ParametersTabs: FunctionComponent = () => {
         ComputingType.DYNAMIC_MARGIN_CALCULATION,
         dynamicMarginCalculationAvailability,
         dynamicMarginCalculationParametersBackend
+    );
+
+    const dynamicSecurityAnalysisParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        {
+            backendFetchProviders: fetchDynamicSecurityAnalysisProviders,
+            backendFetchParameters: fetchDynamicSecurityAnalysisParameters,
+            backendUpdateParameters: updateDynamicSecurityAnalysisParameters,
+        }
+    );
+    useParametersNotification(
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        dynamicSecurityAnalysisParametersBackend
     );
 
     const pccMinParameters = useGetPccMinParameters();
@@ -326,7 +348,13 @@ const ParametersTabs: FunctionComponent = () => {
             case TAB_VALUES.dynamicSimulationParamsTabValue:
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setDirtyFields} />;
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
-                return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setDirtyFields} />;
+                return (
+                    <DynamicSecurityAnalysisInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        parametersBackend={dynamicSecurityAnalysisParametersBackend}
+                    />
+                );
             case TAB_VALUES.dynamicMarginCalculationParamsTabValue:
                 return (
                     <DynamicMarginCalculationInline
@@ -377,6 +405,7 @@ const ParametersTabs: FunctionComponent = () => {
         pccMinParameters,
         user,
         dynamicMarginCalculationParametersBackend,
+        dynamicSecurityAnalysisParametersBackend,
         voltageInitParameters,
         useStateEstimationParameters,
         networkVisualizationsParameters,

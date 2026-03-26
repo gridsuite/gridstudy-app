@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Identifiable, FieldConstants } from '@gridsuite/commons-ui';
+import { Identifiable, FieldConstants, ConnectablePositionFormInfos } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import {
     B,
@@ -54,7 +54,6 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { UUID } from 'node:crypto';
-import { ConnectablePositionFormInfos } from 'components/dialogs/connectivity/connectivity.type';
 import { LimitsProperty, TwoWindingsTransformerModificationInfo } from 'services/network-modification-types';
 
 export const PHASE_TAP = 'dephasing';

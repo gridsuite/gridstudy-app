@@ -5,20 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
+import { backendFetch } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 
 const PREFIX_DYNAMIC_SECURITY_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/dynamic-security-analysis';
 
 function getDynamicSecurityAnalysisUrl() {
     return `${PREFIX_DYNAMIC_SECURITY_ANALYSIS_SERVER_QUERIES}/v1/`;
-}
-
-export function fetchDynamicSecurityAnalysisProviders() {
-    console.info('fetch dynamic security analysis providers');
-    const url = getDynamicSecurityAnalysisUrl() + 'providers';
-    console.debug(url);
-    return backendFetchJson(url);
 }
 
 export function downloadDebugFileDynamicSecurityAnalysis(resultUuid: UUID): Promise<Response> {
