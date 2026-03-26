@@ -15,7 +15,7 @@ import {
     DROP_INDICATOR_BOTTOM,
     DROP_INDICATOR_TOP,
 } from './styles';
-import { ComposedModificationMetadata } from './utils';
+
 import {
     changeCompositeSubModificationOrder,
     changeNetworkModificationOrder,
@@ -23,6 +23,7 @@ import {
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
+import { ComposedModificationMetadata, moveSubModificationInTree } from './utils';
 
 interface UseModificationsDragAndDropParams {
     rows: Row<ComposedModificationMetadata>[];
@@ -79,14 +80,6 @@ const isDropForbidden = (
     sourceRow: Row<ComposedModificationMetadata>,
     targetRow: Row<ComposedModificationMetadata>
 ): boolean => {
-    // Cross-depth drops are always forbidden
-    if (targetRow.depth !== sourceRow.depth) {
-        //return true;
-    }
-    // Sub-rows must stay within the same parent composite
-    if (sourceRow.depth > 0 && targetRow.getParentRow()?.id !== sourceRow.getParentRow()?.id) {
-        //return true;
-    }
     // Depth-0 drops directly after an expanded composite are forbidden
     if (sourceRow.depth === 0 && isDropAfterExpandedComposite(sourceIndex, destinationIndex, targetRow)) {
         return true;
@@ -175,55 +168,10 @@ export const useModificationsDragAndDrop = ({
                 const beforeSiblingIndex = insertAfterTarget ? landingIndexInSiblings + 1 : landingIndexInSiblings;
                 const beforeUuid = targetSiblings[beforeSiblingIndex]?.original.uuid ?? null;
 
-                // Optimistic update: splice subModifications on the affected composite(s)
                 const previousComposed = composedModifications;
-                setComposedModifications((prev) => {
-                    const next = prev.map((mod) => ({
-                        ...mod,
-                        ...(mod.subModifications !== undefined && { subModifications: [...mod.subModifications] }),
-                    }));
-
-                    // Find and remove the item from its source collection
-                    let movedItem: ComposedModificationMetadata | undefined;
-                    if (sourceCompositeUuid) {
-                        const sourceParent = next.find((m) => m.uuid === sourceCompositeUuid);
-                        if (sourceParent?.subModifications) {
-                            const idx = sourceParent.subModifications.findIndex((m) => m.uuid === movingUuid);
-                            if (idx !== -1) {
-                                [movedItem] = sourceParent.subModifications.splice(idx, 1);
-                            }
-                        }
-                    } else {
-                        const idx = next.findIndex((m) => m.uuid === movingUuid);
-                        if (idx !== -1) {
-                            [movedItem] = next.splice(idx, 1);
-                        }
-                    }
-
-                    if (!movedItem) {
-                        return prev;
-                    }
-
-                    // Insert into target collection at the computed position
-                    if (targetCompositeUuid) {
-                        const targetParent = next.find((m) => m.uuid === targetCompositeUuid);
-                        if (targetParent?.subModifications) {
-                            const insertIdx = beforeUuid
-                                ? targetParent.subModifications.findIndex((m) => m.uuid === beforeUuid)
-                                : targetParent.subModifications.length;
-                            targetParent.subModifications.splice(
-                                insertIdx === -1 ? targetParent.subModifications.length : insertIdx,
-                                0,
-                                movedItem
-                            );
-                        }
-                    } else {
-                        const insertIdx = beforeUuid ? next.findIndex((m) => m.uuid === beforeUuid) : next.length;
-                        next.splice(insertIdx === -1 ? next.length : insertIdx, 0, movedItem);
-                    }
-
-                    return next;
-                });
+                setComposedModifications((prev) =>
+                    moveSubModificationInTree(movingUuid, sourceCompositeUuid, targetCompositeUuid, beforeUuid, prev)
+                );
 
                 changeCompositeSubModificationOrder(
                     studyUuid,
@@ -234,7 +182,6 @@ export const useModificationsDragAndDrop = ({
                     beforeUuid
                 ).catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
-                    // Roll back optimistic update on error
                     setComposedModifications(previousComposed);
                 });
             } else {
@@ -261,16 +208,6 @@ export const useModificationsDragAndDrop = ({
                     snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
                     setComposedModifications(previousModifications);
                 });
-
-                // Also keep the flat NetworkModificationMetadata list in sync for the changeNetworkModificationOrder call
-                const oldPosMeta = composedModifications.findIndex((m) => m.uuid === sourceDepth0Uuid);
-                const newPosMeta = composedModifications.findIndex((m) => m.uuid === targetDepth0Uuid);
-                if (oldPosMeta !== -1 && newPosMeta !== -1) {
-                    const updatedMeta = [...composedModifications];
-                    const [movedMeta] = updatedMeta.splice(oldPosMeta, 1);
-                    updatedMeta.splice(newPosMeta, 0, movedMeta);
-                    setComposedModifications(updatedMeta);
-                }
             }
         },
         [

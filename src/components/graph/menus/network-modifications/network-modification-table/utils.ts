@@ -75,13 +75,54 @@ export function mergeSubModificationsIntoTree(
     });
 }
 
-/**
- * Collects all composite UUIDs from expandedIds that have not yet been loaded,
- * fires one concurrent request per UUID (the endpoint returns a flat list of children
- * with no parent attribution, so batching multiple parents into one call is not possible),
- * then applies each result into the tree as responses arrive.
- * Used for lazy loading on the expand interaction only — does not overwrite already-loaded rows.
- */
+export function moveSubModificationInTree(
+    movingUuid: string,
+    sourceParentUuid: string | null,
+    targetParentUuid: string | null,
+    beforeUuid: string | null,
+    mods: ComposedModificationMetadata[]
+): ComposedModificationMetadata[] {
+    // --- Extract the item from its source ---
+    let movedItem: ComposedModificationMetadata | undefined;
+    let next: ComposedModificationMetadata[];
+
+    if (sourceParentUuid) {
+        const sourceMod = findModificationsInTree(sourceParentUuid, mods);
+        if (!sourceMod) {
+            return mods;
+        }
+        movedItem = sourceMod.subModifications.find((m) => m.uuid === movingUuid);
+        if (!movedItem) {
+            return mods;
+        }
+        const newSourceSubs = sourceMod.subModifications.filter((m) => m.uuid !== movingUuid);
+        next = updateModificationInTree(sourceParentUuid, newSourceSubs, mods);
+    } else {
+        movedItem = mods.find((m) => m.uuid === movingUuid);
+        if (!movedItem) {
+            return mods;
+        }
+        next = mods.filter((m) => m.uuid !== movingUuid);
+    }
+
+    // --- Insert into target ---
+    if (targetParentUuid) {
+        const targetMod = findModificationsInTree(targetParentUuid, next);
+        if (!targetMod) {
+            return mods;
+        }
+        const newTargetSubs = [...targetMod.subModifications];
+        const insertIdx = beforeUuid ? newTargetSubs.findIndex((m) => m.uuid === beforeUuid) : -1;
+        newTargetSubs.splice(insertIdx === -1 ? newTargetSubs.length : insertIdx, 0, movedItem);
+        return updateModificationInTree(targetParentUuid, newTargetSubs, next);
+    } else {
+        const insertIdx = beforeUuid ? next.findIndex((m) => m.uuid === beforeUuid) : -1;
+        const result = [...next];
+        result.splice(insertIdx === -1 ? result.length : insertIdx, 0, movedItem);
+        return result;
+    }
+}
+
 export function fetchSubModificationsForExpandedRows(
     expandedIds: string[],
     mods: ComposedModificationMetadata[],
