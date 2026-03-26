@@ -120,7 +120,6 @@ import { LimitSetsModificationDialog } from '../../../dialogs/network-modificati
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
-import { DragStart } from '@hello-pangea/dnd';
 import { FetchStatus } from '../../../../services/utils.type';
 import { EquipmentDeletionInfos } from '../../../dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 

@@ -10,7 +10,6 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
-    isObjectEmpty,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,

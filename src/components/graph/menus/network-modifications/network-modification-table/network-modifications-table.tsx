@@ -90,7 +90,10 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
             // Rebuild from the new modifications prop, carrying over already-fetched subModifications
             // to avoid a visual flash of empty children while re-fetches are in flight.
             const nextMods = mergeSubModificationsIntoTree(formatComposedModification(modifications), prevMods);
-            const expandedIds = Object.keys(expanded).filter((id) => expanded[id]);
+            const expandedIds =
+                expanded === true
+                    ? nextMods.filter((m) => m.subModifications !== undefined).map((m) => m.uuid)
+                    : Object.keys(expanded).filter((id) => expanded[id]);
             refetchSubModificationsForExpandedRows(expandedIds, nextMods, setComposedModifications);
             return nextMods;
         });
@@ -101,7 +104,9 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
         setExpanded((prevExpanded) => {
             const nextExpanded = typeof updater === 'function' ? updater(prevExpanded) : updater;
 
-            const newlyExpandedIds = Object.keys(nextExpanded).filter((id) => nextExpanded[id] && !prevExpanded[id]);
+            const prevRecord = prevExpanded === true ? {} : prevExpanded;
+            const nextRecord = nextExpanded === true ? {} : nextExpanded;
+            const newlyExpandedIds = Object.keys(nextRecord).filter((id) => nextRecord[id] && !prevRecord[id]);
 
             setComposedModifications((prevMods) => {
                 fetchSubModificationsForExpandedRows(newlyExpandedIds, prevMods, setComposedModifications);
@@ -148,7 +153,7 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
         getCoreRowModel: getCoreRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
         getSubRows: (row) => row.subModifications,
-        getRowId: (row, index, parent) => row.uuid,
+        getRowId: (row) => row.uuid,
         getRowCanExpand: (row) => row.original.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type,
         enableRowSelection: true,
         enableExpanding: true,
