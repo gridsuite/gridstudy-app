@@ -401,6 +401,7 @@ const ParametersTabs: FunctionComponent = () => {
         setDirtyFields,
         isDeveloperMode,
         securityAnalysisParametersBackend,
+        fetchContingencyCountBackend,
         currentNodeBuildStatus,
         currentNodeUuid,
         currentRootNetworkUuid,
