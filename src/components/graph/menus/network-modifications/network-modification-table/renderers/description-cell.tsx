@@ -60,7 +60,7 @@ const DescriptionCell: FunctionComponent<{ data: NetworkModificationMetadata }> 
                     updateElement={updateModification}
                 />
             )}
-            <Tooltip title={description ?? <FormattedMessage id={'addDescription'} />}>
+            <Tooltip title={description ?? <FormattedMessage id={'addDescription'} />} arrow placement="right">
                 <IconButton
                     onClick={handleModifyDescription}
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}

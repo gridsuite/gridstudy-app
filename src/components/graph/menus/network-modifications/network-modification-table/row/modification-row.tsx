@@ -51,7 +51,6 @@ const ModificationRow = memo<ModificationRowProps>(
                                 const isDragHandle = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id;
                                 const isCheckboxColumn = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.SELECT.id;
                                 const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
-                                console.log(cellContent, 'pppp');
                                 // Tooltip for drag
                                 if (isDragHandle) {
                                     return (
@@ -101,7 +100,7 @@ const ModificationRow = memo<ModificationRowProps>(
                                             ? provided.dragHandleProps
                                             : undefined)}
                                     >
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        {cellContent}
                                     </TableCell>
                                 );
                             })}

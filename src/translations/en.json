@@ -1751,7 +1751,7 @@
     "Copied": "Copied",
     "downloadNetworkModifications" : "Download modifications",
     "moveToTrash": "Move to trash",
-    "visualizedRootNetwork": "Visualized root network :  {tag}",
+    "visualizedRootNetwork": "Visualized root network : {tag}",
     "addDescription" : "Add description",
     "activateModification" : "Activate network modification",
     "deactivateModification" : "Deactivate network modification",
