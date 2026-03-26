@@ -65,8 +65,8 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
                     const filterOption = state.globalFilterOptions.find((opt) => opt.id === recentFilter.id);
                     return filterOption ? { ...filterOption, unselectedDate: recentFilter.unselectedDate } : undefined;
                 })
-                .filter((f) => f !== undefined);
-
+                .filter((f) => f !== undefined)
+                .filter((f) => !f.deleted);
             const globalFilters = [...selectedGlobalFilters, ...recentGlobalFilters];
 
             // Debounce per table to avoid excessive requests
