@@ -79,6 +79,26 @@ export function mergeSubModificationsIntoTree(
     });
 }
 
+/**
+ * Returns a new tree where the modification identified by {@code uuid} has the given
+ * partial fields merged in. All other nodes are returned as-is (referentially stable).
+ */
+export function updateModificationFieldInTree(
+    uuid: string,
+    fields: Partial<ComposedModificationMetadata>,
+    mods: ComposedModificationMetadata[]
+): ComposedModificationMetadata[] {
+    return mods.map((m) => {
+        if (m.uuid === uuid) {
+            return { ...m, ...fields };
+        }
+        if (m.subModifications.length > 0) {
+            return { ...m, subModifications: updateModificationFieldInTree(uuid, fields, m.subModifications) };
+        }
+        return m;
+    });
+}
+
 export function moveSubModificationInTree(
     movingUuid: string,
     sourceParentUuid: string | null,

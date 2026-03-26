@@ -157,6 +157,7 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
         getRowId: (row) => row.uuid,
         getRowCanExpand: (row) => isCompositeModification(row.original),
         enableRowSelection: true,
+        enableSubRowSelection: false,
         enableExpanding: true,
         onExpandedChange: handleExpandRow,
         meta: { lastClickedIndex, onRowSelected },
