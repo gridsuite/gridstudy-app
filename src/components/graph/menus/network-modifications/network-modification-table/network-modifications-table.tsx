@@ -39,7 +39,7 @@ import { AppState } from '../../../../../redux/reducer.type';
 import {
     ComposedModificationMetadata,
     fetchSubModificationsForExpandedRows,
-    formatComposedModification,
+    formatComposedModification, isCompositeModification,
     mergeSubModificationsIntoTree,
     refetchSubModificationsForExpandedRows,
 } from './utils';
@@ -154,7 +154,7 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
         getExpandedRowModel: getExpandedRowModel(),
         getSubRows: (row) => row.subModifications,
         getRowId: (row) => row.uuid,
-        getRowCanExpand: (row) => row.original.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type,
+        getRowCanExpand: (row) => isCompositeModification(row.original),
         enableRowSelection: true,
         enableExpanding: true,
         onExpandedChange: handleExpandRow,

@@ -8,6 +8,7 @@
 import { MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { getNetworkModificationsFromComposite } from '../../../../../services/study/network-modifications';
 import { Dispatch, SetStateAction } from 'react';
+import { Row } from '@tanstack/react-table';
 
 export const formatComposedModification = (
     modifications: NetworkModificationMetadata[]
@@ -17,6 +18,10 @@ export const formatComposedModification = (
 
 export interface ComposedModificationMetadata extends NetworkModificationMetadata {
     subModifications: ComposedModificationMetadata[];
+}
+
+export function isCompositeModification(modification: ComposedModificationMetadata | undefined) {
+    return modification?.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type;
 }
 
 export function findModificationsInTree(
@@ -130,7 +135,7 @@ export function fetchSubModificationsForExpandedRows(
 ): void {
     const uuidsToFetch = expandedIds.filter((id) => {
         const mod = findModificationsInTree(id, mods);
-        return mod?.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type && mod.subModifications.length === 0;
+        return isCompositeModification(mod) && mod?.subModifications.length === 0;
     });
 
     // Fire all requests concurrently — each resolves independently and patches the tree
@@ -153,7 +158,7 @@ export function refetchSubModificationsForExpandedRows(
 ): void {
     const uuidsToRefetch = expandedIds.filter((id) => {
         const mod = findModificationsInTree(id, mods);
-        return mod?.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type;
+        return isCompositeModification(mod);
     });
 
     if (uuidsToRefetch.length === 0) {

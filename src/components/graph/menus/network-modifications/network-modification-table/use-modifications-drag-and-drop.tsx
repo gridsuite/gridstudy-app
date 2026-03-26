@@ -20,10 +20,11 @@ import {
     changeCompositeSubModificationOrder,
     changeNetworkModificationOrder,
 } from '../../../../../services/study/network-modifications';
-import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { MODIFICATION_TYPES, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
-import { ComposedModificationMetadata, moveSubModificationInTree } from './utils';
+import { ComposedModificationMetadata, isCompositeModification, moveSubModificationInTree } from './utils';
+import { UUID } from 'node:crypto';
 
 interface UseModificationsDragAndDropParams {
     rows: Row<ComposedModificationMetadata>[];
@@ -49,42 +50,15 @@ const clearRowDragIndicators = (container: HTMLDivElement | null): void => {
     });
 };
 
-/**
- * Returns true when dropping a depth-0 row AFTER an expanded composite row is forbidden.
- *
- * When a composite is expanded, the visual rows immediately after it are its children (depth > 0).
- * Dropping a depth-0 item "after" the composite (i.e. destination === source + 1 while moving down,
- * or the target is the expanded composite and we are coming from above) would place the item between
- * the composite and its children — which is a cross-depth move we currently forbid.
- *
- * The rule: if the target row is at depth 0 and is expanded, and the drag is downward
- * (destination > source), the drop is forbidden because the item would land after the composite
- * header but before its still-visible children.
- */
-const isDropAfterExpandedComposite = (
-    sourceIndex: number,
-    destinationIndex: number,
-    targetRow: Row<ComposedModificationMetadata>
-): boolean => {
-    const isDraggingDown = destinationIndex > sourceIndex;
-    return isDraggingDown && targetRow.depth === 0 && targetRow.getIsExpanded();
-};
-
-/**
- * Determines whether a proposed drop is forbidden based on depth / parent constraints
- * plus the expanded-composite boundary rule.
- */
 const isDropForbidden = (
-    sourceIndex: number,
-    destinationIndex: number,
     sourceRow: Row<ComposedModificationMetadata>,
     targetRow: Row<ComposedModificationMetadata>
 ): boolean => {
-    // Depth-0 drops directly after an expanded composite are forbidden
-    if (sourceRow.depth === 0 && isDropAfterExpandedComposite(sourceIndex, destinationIndex, targetRow)) {
-        return true;
-    }
-    return false;
+    return (
+        isCompositeModification(sourceRow.original) &&
+        ((isCompositeModification(targetRow.original) && targetRow.getIsExpanded()) ||
+            isCompositeModification(targetRow.getParentRow()?.original))
+    );
 };
 
 export const useModificationsDragAndDrop = ({
@@ -115,7 +89,7 @@ export const useModificationsDragAndDrop = ({
                 return;
             }
 
-            const forbidden = isDropForbidden(source.index, destination.index, sourceRow, targetRow);
+            const forbidden = isDropForbidden(sourceRow, targetRow);
             const isMovingDown = destination.index > source.index;
 
             el.style.boxShadow = forbidden
@@ -142,31 +116,43 @@ export const useModificationsDragAndDrop = ({
             const sourceRow = rows[source.index];
             const targetRow = rows[destination.index];
 
-            if (isDropForbidden(source.index, destination.index, sourceRow, targetRow)) {
+            if (isDropForbidden(sourceRow, targetRow)) {
                 return;
             }
 
             const isSubRowInvolved = sourceRow.depth > 0 || targetRow.depth > 0;
 
-            if (isSubRowInvolved) {
+            const isDraggingDown = destination.index > source.index;
+            const droppingIntoExpandedComposite = isDraggingDown && targetRow.getIsExpanded();
+
+            if (isSubRowInvolved || droppingIntoExpandedComposite) {
                 const movingUuid = sourceRow.original.uuid;
                 const sourceCompositeUuid =
                     sourceRow.depth > 0 ? (sourceRow.getParentRow()?.original.uuid ?? null) : null;
-                const targetCompositeUuid =
-                    targetRow.depth > 0 ? (targetRow.getParentRow()?.original.uuid ?? null) : null;
+
+                // When entering an expanded composite from outside, the target composite is the
+                // composite row itself; otherwise derive it from the target row's parent as usual.
+                const targetCompositeUuid = droppingIntoExpandedComposite
+                    ? targetRow.original.uuid
+                    : targetRow.depth > 0
+                      ? (targetRow.getParentRow()?.original.uuid ?? null)
+                      : null;
 
                 const targetSiblings = targetCompositeUuid
                     ? rows.filter((r) => r.depth > 0 && r.getParentRow()?.original.uuid === targetCompositeUuid)
                     : rows.filter((r) => r.depth === 0);
 
-                const landingIndexInSiblings = targetSiblings.findIndex(
-                    (r) => r.original.uuid === targetRow.original.uuid
-                );
-
-                const isDraggingDown = destination.index > source.index;
-                const insertAfterTarget = isDraggingDown && sourceCompositeUuid === targetCompositeUuid;
-                const beforeSiblingIndex = insertAfterTarget ? landingIndexInSiblings + 1 : landingIndexInSiblings;
-                const beforeUuid = targetSiblings[beforeSiblingIndex]?.original.uuid ?? null;
+                let beforeUuid: UUID | null;
+                if (droppingIntoExpandedComposite) {
+                    // Landing on an expanded composite header: enter it at first position
+                    beforeUuid = targetSiblings[0]?.original.uuid ?? null;
+                } else {
+                    const landingIndexInSiblings = targetSiblings.findIndex(
+                        (r) => r.original.uuid === targetRow.original.uuid
+                    );
+                    const beforeSiblingIndex = isDraggingDown ? landingIndexInSiblings + 1 : landingIndexInSiblings;
+                    beforeUuid = targetSiblings[beforeSiblingIndex]?.original.uuid ?? null;
+                }
 
                 const previousComposed = composedModifications;
                 setComposedModifications((prev) =>

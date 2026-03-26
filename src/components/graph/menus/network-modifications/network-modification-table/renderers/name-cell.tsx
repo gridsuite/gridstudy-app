@@ -20,7 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DepthBox from './depth-box';
-import { ComposedModificationMetadata } from '../utils';
+import { ComposedModificationMetadata, isCompositeModification } from '../utils';
 import { useTheme } from '@mui/material/styles';
 
 const NameCell: FunctionComponent<{
@@ -30,7 +30,6 @@ const NameCell: FunctionComponent<{
     const theme = useTheme();
     const { computeLabel } = useModificationLabelComputer();
 
-    const hasSubModifications = row.original.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type;
     const depth = row.depth;
 
     const getModificationLabel = useCallback(
@@ -48,7 +47,7 @@ const NameCell: FunctionComponent<{
     const renderDepthBox = () => {
         const count = depth;
         return Array.from({ length: count }, (_, i) => (
-            <DepthBox key={i} showTick={hasSubModifications && i === count - 1} />
+            <DepthBox key={i} showTick={isCompositeModification(row.original) && i === count - 1} />
         ));
     };
 
@@ -57,7 +56,7 @@ const NameCell: FunctionComponent<{
             {renderDepthBox()}
             <Box sx={styles.nameCellInnerRow}>
                 {/* Always reserve exactly 32px for the toggler so labels align across all depths */}
-                {hasSubModifications && (
+                {isCompositeModification(row.original) && (
                     <Box sx={styles.nameCellTogglerBox}>
                         <IconButton
                             size="small"
