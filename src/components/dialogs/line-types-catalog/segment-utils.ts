@@ -24,6 +24,7 @@ import {
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
+import { CurrentLimitsInfo } from './line-catalog.type';
 
 export const SegmentSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup
@@ -35,9 +36,9 @@ export const SegmentSchema = yup.object().shape({
         .required()
         .test('empty-check', 'SegmentTypeMissing', (value) => (value ? value.length > 0 : false)),
     [SEGMENT_TYPE_ID]: yup.string().required(),
-    [AREA]: yup.string().nullable(),
-    [TEMPERATURE]: yup.string().nullable(),
-    [SHAPE_FACTOR]: yup.number().nullable(),
+    [AREA]: yup.string().nullable().default(null),
+    [TEMPERATURE]: yup.string().nullable().default(null),
+    [SHAPE_FACTOR]: yup.number().nullable().default(null),
     [SEGMENT_RESISTANCE]: yup.number().required(),
     [SEGMENT_REACTANCE]: yup.number().required(),
     [SEGMENT_SUSCEPTANCE]: yup.number().required(),
@@ -66,9 +67,9 @@ export type SegmentFormData = {
     [SEGMENT_RESISTANCE]: number;
     [SEGMENT_REACTANCE]: number;
     [SEGMENT_SUSCEPTANCE]: number;
-    [SEGMENT_CURRENT_LIMITS]: [];
-    [AREA]: string;
-    [TEMPERATURE]: string;
+    [SEGMENT_CURRENT_LIMITS]: CurrentLimitsInfo[];
+    [AREA]: string | null;
+    [TEMPERATURE]: string | null;
     [SHAPE_FACTOR]: number | null;
 };
 
@@ -80,7 +81,7 @@ export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_REACTANCE]: 0.0,
     [SEGMENT_SUSCEPTANCE]: 0.0,
     [SEGMENT_CURRENT_LIMITS]: [],
-    [AREA]: '',
-    [TEMPERATURE]: '',
+    [AREA]: null,
+    [TEMPERATURE]: null,
     [SHAPE_FACTOR]: null,
 };

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -72,6 +72,11 @@ export interface LineTypeSegmentFormProps {
     editData?: LineSegmentInfos[];
 }
 
+type ExpandableHandle = {
+    replaceItems: (newItems: SegmentFormData[]) => void;
+    appendItem: (newItem: SegmentFormData) => void;
+};
+
 export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormProps>) => {
     const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
@@ -80,6 +85,7 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
     const intl = useIntl();
     const [currentLimitResult, setCurrentLimitResult] = useState<CurrentLimitsInfo[]>([]);
     const [limitsColumnDefs, setLimitsColumnDefs] = useState<ColDef[]>([]);
+    const arrayRef = useRef<ExpandableHandle>(null);
 
     const updateSegmentValues = useCallback(
         (index: number) => {
@@ -174,15 +180,8 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
         [setValue]
     );
 
-    const updateLimits = useCallback(
-        (
-            index: number,
-            id: string,
-            area: string | null,
-            temperature: string | null,
-            shapeFactor: number | null,
-            distance: number
-        ) => {
+    const updateSegmentsLimits = useCallback(
+        (id: string, area: string | null, temperature: string | null, shapeFactor: number | null, distance: number) => {
             getLineTypeWithLimits(id, area, temperature, shapeFactor).then((lineTypeWithLimits) => {
                 const newResistance = roundToDefaultPrecision(
                     calculateResistance(distance, lineTypeWithLimits?.linearResistance ?? 0)
@@ -193,16 +192,24 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
                 const newSusceptance = roundToDefaultPrecision(
                     calculateSusceptance(distance, lineTypeWithLimits?.linearCapacity ?? 0)
                 );
-
-                setValue(`${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`, newResistance);
-                setValue(`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`, newReactance);
-                setValue(`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`, newSusceptance);
+                arrayRef?.current?.appendItem({
+                    ...emptyLineSegment,
+                    [SEGMENT_TYPE_ID]: id,
+                    [SEGMENT_TYPE_VALUE]: lineTypeWithLimits?.type ?? '',
+                    [AREA]: area,
+                    [TEMPERATURE]: temperature,
+                    [SHAPE_FACTOR]: shapeFactor,
+                    [SEGMENT_DISTANCE_VALUE]: distance,
+                    [SEGMENT_RESISTANCE]: newResistance,
+                    [SEGMENT_REACTANCE]: newReactance,
+                    [SEGMENT_SUSCEPTANCE]: newSusceptance,
+                    [SEGMENT_CURRENT_LIMITS]: lineTypeWithLimits?.limitsForLineType ?? [],
+                });
                 updateTotals();
-                updateSegmentLimitsValues(index, lineTypeWithLimits.limitsForLineType);
                 keepMostConstrainingLimits();
             });
         },
-        [keepMostConstrainingLimits, setValue, updateSegmentLimitsValues, updateTotals]
+        [keepMostConstrainingLimits, updateTotals]
     );
 
     const loadEditDataSegments = useCallback(
@@ -210,31 +217,19 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
             if (!editData || catalog.length === 0) {
                 return;
             }
+            arrayRef.current?.replaceItems([]);
             for (const [index] of editData?.entries() || []) {
-                const segmentCatalogId = editData[index][SEGMENT_TYPE_ID];
-                setValue(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`, segmentCatalogId);
-                const lineTypeInfo: LineTypeInfo | undefined = catalog.find(
-                    (segment) => segment.id === segmentCatalogId
-                );
-                setValue(`${SEGMENTS}.${index}.${SEGMENT_TYPE_VALUE}`, lineTypeInfo?.type ?? '');
-                setValue(
-                    `${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`,
-                    Number(editData[index][SEGMENT_DISTANCE_VALUE])
-                );
-                setValue(`${SEGMENTS}.${index}.${AREA}`, editData[index][AREA]);
-                setValue(`${SEGMENTS}.${index}.${TEMPERATURE}`, editData[index][TEMPERATURE]);
-                setValue(`${SEGMENTS}.${index}.${SHAPE_FACTOR}`, editData[index][SHAPE_FACTOR]);
-                updateLimits(
-                    index,
-                    segmentCatalogId,
+                const distance = editData[index][SEGMENT_DISTANCE_VALUE];
+                updateSegmentsLimits(
+                    editData[index][SEGMENT_TYPE_ID],
                     editData[index][AREA],
                     editData[index][TEMPERATURE],
                     editData[index][SHAPE_FACTOR],
-                    editData[index][SEGMENT_DISTANCE_VALUE]
+                    distance
                 );
             }
         },
-        [editData, setValue, updateLimits]
+        [editData, updateSegmentsLimits]
     );
 
     // Fetches the lineTypes catalog on startup
@@ -475,6 +470,7 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
                 <GridItem size={1}>{<div />}</GridItem>
             </Grid>
             <ExpandableInput
+                ref={arrayRef}
                 name={SEGMENTS}
                 Field={LineTypeSegmentCreation}
                 fieldProps={{
