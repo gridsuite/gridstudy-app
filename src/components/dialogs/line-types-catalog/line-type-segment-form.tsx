@@ -87,6 +87,19 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
     const [limitsColumnDefs, setLimitsColumnDefs] = useState<ColDef[]>([]);
     const arrayRef = useRef<ExpandableHandle>(null);
 
+    // Fetches the lineTypes catalog on startup
+    useEffect(() => {
+        getLineTypesCatalog()
+            .then((values: LineTypeInfo[]) => {
+                setLineTypesCatalog(values);
+            })
+            .catch((error) =>
+                snackWithFallback(snackError, error, {
+                    headerId: 'LineTypesCatalogFetchingError',
+                })
+            );
+    }, [snackError]);
+
     const updateSegmentValues = useCallback(
         (index: number) => {
             const distance = getValues(`${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`);
@@ -181,25 +194,30 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
     );
 
     const updateSegmentsLimits = useCallback(
-        (id: string, area: string | null, temperature: string | null, shapeFactor: number | null, distance: number) => {
-            getLineTypeWithLimits(id, area, temperature, shapeFactor).then((lineTypeWithLimits) => {
+        (segment: LineSegmentInfos) => {
+            getLineTypeWithLimits(
+                segment[SEGMENT_TYPE_ID],
+                segment[AREA],
+                segment[TEMPERATURE],
+                segment[SHAPE_FACTOR]
+            ).then((lineTypeWithLimits) => {
                 const newResistance = roundToDefaultPrecision(
-                    calculateResistance(distance, lineTypeWithLimits?.linearResistance ?? 0)
+                    calculateResistance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearResistance ?? 0)
                 );
                 const newReactance = roundToDefaultPrecision(
-                    calculateReactance(distance, lineTypeWithLimits?.linearReactance ?? 0)
+                    calculateReactance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearReactance ?? 0)
                 );
                 const newSusceptance = roundToDefaultPrecision(
-                    calculateSusceptance(distance, lineTypeWithLimits?.linearCapacity ?? 0)
+                    calculateSusceptance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearCapacity ?? 0)
                 );
                 arrayRef?.current?.appendItem({
                     ...emptyLineSegment,
-                    [SEGMENT_TYPE_ID]: id,
+                    [SEGMENT_TYPE_ID]: segment[SEGMENT_TYPE_ID],
                     [SEGMENT_TYPE_VALUE]: lineTypeWithLimits?.type ?? '',
-                    [AREA]: area,
-                    [TEMPERATURE]: temperature,
-                    [SHAPE_FACTOR]: shapeFactor,
-                    [SEGMENT_DISTANCE_VALUE]: distance,
+                    [AREA]: segment[AREA],
+                    [TEMPERATURE]: segment[TEMPERATURE],
+                    [SHAPE_FACTOR]: segment[SHAPE_FACTOR],
+                    [SEGMENT_DISTANCE_VALUE]: segment[SEGMENT_DISTANCE_VALUE],
                     [SEGMENT_RESISTANCE]: newResistance,
                     [SEGMENT_REACTANCE]: newReactance,
                     [SEGMENT_SUSCEPTANCE]: newSusceptance,
@@ -212,39 +230,15 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
         [keepMostConstrainingLimits, updateTotals]
     );
 
-    const loadEditDataSegments = useCallback(
-        (catalog: LineTypeInfo[]) => {
-            if (!editData || catalog.length === 0) {
-                return;
-            }
-            arrayRef.current?.replaceItems([]);
-            for (const [index] of editData?.entries() || []) {
-                const distance = editData[index][SEGMENT_DISTANCE_VALUE];
-                updateSegmentsLimits(
-                    editData[index][SEGMENT_TYPE_ID],
-                    editData[index][AREA],
-                    editData[index][TEMPERATURE],
-                    editData[index][SHAPE_FACTOR],
-                    distance
-                );
-            }
-        },
-        [editData, updateSegmentsLimits]
-    );
-
-    // Fetches the lineTypes catalog on startup
     useEffect(() => {
-        getLineTypesCatalog()
-            .then((values: LineTypeInfo[]) => {
-                setLineTypesCatalog(values);
-                loadEditDataSegments(values);
-            })
-            .catch((error) =>
-                snackWithFallback(snackError, error, {
-                    headerId: 'LineTypesCatalogFetchingError',
-                })
-            );
-    }, [loadEditDataSegments, snackError]);
+        if (!editData || editData.length === 0) {
+            return;
+        }
+        arrayRef.current?.replaceItems([]);
+        editData.forEach((segment) => {
+            updateSegmentsLimits(segment);
+        });
+    }, [editData, updateSegmentsLimits]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
