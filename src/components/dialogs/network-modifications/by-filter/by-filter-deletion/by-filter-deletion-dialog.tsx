@@ -11,11 +11,13 @@ import {
     ByFilterDeletionForm,
     ByFilterDeletionFormData,
     byFilterDeletionDtoToForm,
+    byFilterDeletionFormToDto,
     byFilterDeletionFormSchema,
     FieldConstants,
     CustomFormProvider,
     snackWithFallback,
     useSnackMessage,
+    DeepNullable,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
@@ -25,14 +27,15 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipmentByFilter } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { UUID } from 'node:crypto';
 
-const emptyFormData: ByFilterDeletionFormData = {
+const emptyFormData: DeepNullable<ByFilterDeletionFormData> = {
     [FieldConstants.TYPE]: null,
     [FieldConstants.FILTERS]: [],
 };
 
 type ByFilterDeletionDialogProps = NetworkModificationDialogProps & {
-    editData: ByFilterDeletionDto;
+    editData?: ByFilterDeletionDto & { uuid: UUID };
 };
 
 /**
@@ -56,9 +59,9 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
 
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<ByFilterDeletionFormData>({
+    const formMethods = useForm<DeepNullable<ByFilterDeletionFormData>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<ByFilterDeletionFormData>(byFilterDeletionFormSchema),
+        resolver: yupResolver<DeepNullable<ByFilterDeletionFormData>>(byFilterDeletionFormSchema),
     });
 
     const { reset } = formMethods;
@@ -78,13 +81,8 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
 
     const onSubmit = useCallback(
         (formData: ByFilterDeletionFormData) => {
-            deleteEquipmentByFilter(
-                studyUuid,
-                currentNodeUuid,
-                formData[FieldConstants.TYPE],
-                formData[FieldConstants.FILTERS],
-                editData?.uuid
-            ).catch((error) => {
+            const dto = byFilterDeletionFormToDto(formData);
+            deleteEquipmentByFilter(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
             });
         },
