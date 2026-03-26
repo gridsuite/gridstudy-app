@@ -87,18 +87,6 @@ export const areNumbersOrdered = (array?: unknown) => {
     return true;
 };
 
-export const areIdsEqual = (val1: Option, val2: Option) => {
-    if (typeof val1 !== 'string' && typeof val2 !== 'string') {
-        return val1.id === val2.id;
-    } else {
-        return val1 === val2;
-    }
-};
-
-export const getObjectId = (object: string | { id: string }) => {
-    return typeof object === 'string' ? object : (object?.id ?? null);
-};
-
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
     const newBusbarSections: Option[] = [];
     for (let i = 0; i < busbarCount; i++) {

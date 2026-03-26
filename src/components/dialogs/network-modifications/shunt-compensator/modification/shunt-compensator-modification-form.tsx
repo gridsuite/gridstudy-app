@@ -5,10 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextInput, PropertiesForm, filledTextField } from '@gridsuite/commons-ui';
+import {
+    TextInput,
+    PropertiesForm,
+    filledTextField,
+    ConnectivityForm,
+    PowerMeasurementsForm,
+} from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
 import { Grid, TextField } from '@mui/material';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos.js';
@@ -16,7 +21,9 @@ import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
 import CharacteristicsForm from '../characteristics-pane/characteristics-form';
-import { PowerMeasurementsForm } from '../../common/measurements/power-measurements-form';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { useCallback } from 'react';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
 export interface ShuntCompensatorModificationFormProps {
     studyUuid: UUID;
@@ -34,6 +41,16 @@ export default function ShuntCompensatorModificationForm({
     equipmentId,
 }: Readonly<ShuntCompensatorModificationFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
     const shuntCompensatorIdField = (
         <TextField
             size="small"
@@ -63,13 +80,12 @@ export default function ShuntCompensatorModificationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
             previousValues={shuntCompensatorToModify ?? undefined}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

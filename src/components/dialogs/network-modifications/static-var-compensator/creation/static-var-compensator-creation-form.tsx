@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { PropertiesForm } from '@gridsuite/commons-ui';
+import { ConnectivityForm, PropertiesForm } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
 import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
@@ -17,6 +16,8 @@ import type { UUID } from 'node:crypto';
 import GridItem from '../../../commons/grid-item';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
 export interface StaticVarCompensatorCreationFormProps {
     studyUuid: UUID;
@@ -32,14 +33,25 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
     tabIndex,
 }) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
     const connectivityForm = (
         <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
             previousValues={undefined}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

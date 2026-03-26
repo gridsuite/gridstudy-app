@@ -186,6 +186,7 @@ function GlobalFilterAutocomplete() {
         tableUuid,
         globalFilterOptions,
         selectedGlobalFilters,
+        recentGlobalFilters,
         filterCategories,
         filterableEquipmentTypes,
     } = useContext(GlobalFilterContext);
@@ -238,7 +239,7 @@ function GlobalFilterAutocomplete() {
                 .filter((option: GlobalFilter) => {
                     // recent filters are a group in itself
                     if (filterGroupSelected === RECENT_FILTER) {
-                        return !!option.unselectedDate;
+                        return recentGlobalFilters.some((r) => r.id === option.id);
                     } else if (option.filterSubtype) {
                         // if the filter has a subtype it should be filtered through it instead of filterType
                         return option.filterSubtype === filterGroupSelected;
@@ -257,20 +258,17 @@ function GlobalFilterAutocomplete() {
                 });
 
             if (filterGroupSelected === RECENT_FILTER) {
-                // Sort recent options by date from most recent to oldest
+                // Sort filtered options to match recents order (most recent first, recentGlobalFilters is already ordered)
                 filteredOptions.sort((a, b) => {
-                    if (a.unselectedDate && b.unselectedDate) {
-                        return b.unselectedDate - a.unselectedDate;
-                    }
-                    return 0;
+                    const indexA = recentGlobalFilters.findIndex((r) => r.id === a.id);
+                    const indexB = recentGlobalFilters.findIndex((r) => r.id === b.id);
+                    return indexA - indexB;
                 });
-                // Only display the 10 most recent options
-                filteredOptions.splice(10);
             }
 
             return filteredOptions;
         },
-        [filterGroupSelected, translate, filterableEquipmentTypes]
+        [filterGroupSelected, translate, filterableEquipmentTypes, recentGlobalFilters]
     );
 
     const options = useMemo(

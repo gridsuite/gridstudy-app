@@ -18,6 +18,10 @@ import {
     useSnackMessage,
     DeepNullable,
     sanitizeString,
+    getConnectivityFormData,
+    getConnectivityWithPositionSchema,
+    getConnectivityWithPositionEmptyFormData,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -44,14 +48,9 @@ import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import {
     getCharacteristicsCreateFormDataFromSearchCopy,
     getCharacteristicsEmptyFormData,
@@ -62,6 +61,7 @@ import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 import { createShuntCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { ShuntCompensatorCreationDialogSchemaForm, ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
 import { ShuntCompensatorCreationInfos } from '../../../../../services/network-modification-types';
 
@@ -231,7 +231,7 @@ export default function ShuntCompensatorCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

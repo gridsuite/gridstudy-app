@@ -18,6 +18,10 @@ import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
+export interface WithModificationId {
+    uuid: UUID;
+}
+
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
     droop: number;
@@ -73,48 +77,6 @@ export interface BatteryModificationInfos {
     properties: Property[] | null;
     directTransX: AttributeModification<number> | null;
     stepUpTransformerX: AttributeModification<number> | null;
-}
-
-export interface LoadCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name?: string | null;
-    loadType: string;
-    p0: number;
-    q0: number;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    isUpdate: boolean;
-    modificationUuid?: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean;
-    properties?: Property[] | null;
-}
-
-export interface LoadModificationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    modificationUuid?: string;
-    id: string | null;
-    name?: string | null;
-    loadType?: string | null;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    connectionName?: string | null;
-    connectionDirection?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean | null;
-    p0?: number | null;
-    q0?: number | null;
-    pMeasurementValue?: number;
-    pMeasurementValidity?: boolean;
-    qMeasurementValue?: number;
-    qMeasurementValidity?: boolean;
-    isUpdate?: boolean;
-    properties: Property[] | null;
 }
 
 export interface ShuntCompensatorModificationInfos {
@@ -366,11 +328,6 @@ export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
     ipMin: number | null;
     ipMax: number | null;
     topologyKind?: string;
-}
-
-export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
-    lowShortCircuitCurrentLimit: number | null;
-    highShortCircuitCurrentLimit: number | null;
 }
 
 type VariationFilter = {

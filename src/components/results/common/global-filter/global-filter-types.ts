@@ -40,6 +40,11 @@ export interface GlobalFilter {
     maxValue?: number; // only useful for voltage level filters
 }
 
+export interface RecentGlobalFilter {
+    id: string;
+    unselectedDate: number;
+}
+
 export interface ResultsQueryParams {
     sort?: SortConfig[];
     filters: FilterConfig[] | null; // column filters

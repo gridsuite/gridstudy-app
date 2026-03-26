@@ -6,9 +6,9 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import { useController } from 'react-hook-form';
+import { CheckboxNullableInput } from '@gridsuite/commons-ui';
 
 type ConnectionCellRendererProps = {
     name: string;
