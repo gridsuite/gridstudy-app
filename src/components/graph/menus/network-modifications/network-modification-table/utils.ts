@@ -139,7 +139,7 @@ export function fetchSubModificationsForExpandedRows(
     });
 
     // Fire all requests concurrently — each resolves independently and patches the tree
-    uuidsToFetch.map((uuid) =>
+    uuidsToFetch.forEach((uuid) =>
         getNetworkModificationsFromComposite([uuid]).then((subMods) => {
             const liveModifications = subMods.filter((m) => !m.stashed);
             setMods((prev) => updateModificationInTree(uuid, formatComposedModification(liveModifications), prev));
