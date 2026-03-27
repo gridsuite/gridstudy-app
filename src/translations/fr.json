@@ -1715,13 +1715,13 @@
     "Reload": "Recharger",
     "CopyError": "Copier l'erreur",
     "Copied": "Copiée",
-    "downloadNetworkModifications" : "Télécharger les modifications",
+    "downloadNetworkModifications": "Télécharger les modifications",
     "moveToTrash": "Mettre à la corbeille",
     "visualizedRootNetwork": "Réseau racine visualisé : {tag}",
-    "addDescription" : "Ajouter une description",
-    "activateModification" : "Activer la modification réseau",
-    "deactivateModification" : "Désactiver la modification réseau",
-    "deselectModification": "Désélectionner la modification" ,
+    "addDescription": "Ajouter une description",
+    "activateModification": "Activer la modification réseau",
+    "deactivateModification": "Désactiver la modification réseau",
+    "deselectModification": "Désélectionner la modification",
     "selectModification": "Sélectionner la modification",
-    "moveModification": "Déplacer la modification" 
- }
+    "moveModification": "Déplacer la modification"
+}
