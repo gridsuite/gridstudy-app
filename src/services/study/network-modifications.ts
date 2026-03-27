@@ -2007,7 +2007,7 @@ export function moveVoltageLevelFeederBays({
 export function getNetworkModificationsFromComposite(
     compositeModificationUuids: string[],
     onlyMetadata: boolean = true
-): Promise<NetworkModificationMetadata[]> {
+): Promise<Record<UUID, NetworkModificationMetadata[]>> {
     const urlSearchParams = new URLSearchParams();
     compositeModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
     urlSearchParams.append('onlyMetadata', String(onlyMetadata));
