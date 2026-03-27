@@ -175,7 +175,13 @@ export function fetchSubModificationsForExpandedRows(
         setMods((prev) =>
             Object.entries(subModsByUuid).reduce((tree, [uuid, subMods]) => {
                 const liveModifications = formatComposedModification(subMods.filter((m) => !m.stashed));
-                return updateModificationInTree(uuid, liveModifications, tree);
+                // Preserve already-loaded children of any nested composites within the new sub-list
+                const existingMod = findModificationsInTree(uuid, tree);
+                const mergedSubs = mergeSubModificationsIntoTree(
+                    liveModifications,
+                    existingMod?.subModifications ?? []
+                );
+                return updateModificationInTree(uuid, mergedSubs, tree);
             }, prev)
         );
     });
@@ -203,7 +209,13 @@ export function refetchSubModificationsForExpandedRows(
         setMods((prev) =>
             Object.entries(subModsByUuid).reduce((tree, [uuid, subMods]) => {
                 const liveModifications = formatComposedModification(subMods.filter((m) => !m.stashed));
-                return updateModificationInTree(uuid, liveModifications, tree);
+                // Preserve already-loaded children of any nested composites within the new sub-list
+                const existingMod = findModificationsInTree(uuid, tree);
+                const mergedSubs = mergeSubModificationsIntoTree(
+                    liveModifications,
+                    existingMod?.subModifications ?? []
+                );
+                return updateModificationInTree(uuid, mergedSubs, tree);
             }, prev)
         );
     });
