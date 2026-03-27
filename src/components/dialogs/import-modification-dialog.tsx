@@ -13,20 +13,17 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { copyOrMoveModifications } from '../../services/study';
+import { executeCompositeModificationAction } from '../../services/study';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import { NetworkModificationCopyType } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 /**
  * Dialog to select some network modifications and append them in the current node
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param currentNode the current node
- * @param studyUuid Id of the current study
  */
-
 interface ImportModificationDialogProps {
     open: boolean;
     onClose: () => void;
@@ -39,15 +36,20 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const processSelectedElements = (selectedElements: TreeViewFinderNodeProps[]) => {
-        const modificationUuidList = selectedElements.map((e) => e.id);
-        // import selected modifications
-        if (modificationUuidList.length > 0 && studyUuid && currentNode) {
-            const copyInfos = {
-                copyType: NetworkModificationCopyType.SPLIT_COMPOSITE,
-                originStudyUuid: studyUuid,
-                originNodeUuid: currentNode.id,
+        const modificationsToInsert = selectedElements.map((e) => {
+            return {
+                first: e.id,
+                second: e.name,
             };
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationUuidList, copyInfos).catch((error) => {
+        });
+        // import selected modifications
+        if (modificationsToInsert.length > 0 && studyUuid && currentNode) {
+            executeCompositeModificationAction(
+                studyUuid,
+                currentNode.id,
+                modificationsToInsert,
+                CompositeModificationAction.SPLIT
+            ).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'errDuplicateModificationMsg' });
             });
         }
