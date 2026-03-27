@@ -63,6 +63,7 @@ import { RootState } from 'redux/store';
 import { setDirtyComputationParameters } from 'redux/actions';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import { AppState } from 'redux/reducer.type';
+import { getLocalStoragePanelState } from '../../../redux/session-storage/workspace-local-storage';
 
 enum WorkspaceAction {
     RENAME = 'rename',
@@ -142,6 +143,10 @@ export const WorkspaceSwitcher = memo(() => {
         async (workspaceId: UUID) => {
             if (!studyUuid) return;
             const workspace = await getWorkspace(studyUuid, workspaceId);
+            workspace.panels.forEach((panel, index) => {
+                const saved = getLocalStoragePanelState(studyUuid, workspaceId, panel.id);
+                panel.zIndex = saved?.zIndex ?? index + 1;
+            });
             globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace', { detail: workspaceId }));
             dispatch(setActiveWorkspace(workspace));
         },

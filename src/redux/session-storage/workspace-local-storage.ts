@@ -14,6 +14,7 @@ import { ViewBoxLike } from '@svgdotjs/svg.js';
 export interface BasePanelLocalState {
     id: UUID;
     type: PanelType;
+    zIndex?: number;
 }
 
 export interface TreePanelLocalState extends BasePanelLocalState {
@@ -26,7 +27,11 @@ export interface NADPanelLocalState extends BasePanelLocalState {
     viewBox?: ViewBoxLike;
 }
 
-export type PanelLocalState = TreePanelLocalState | NADPanelLocalState;
+export type OtherPanelLocalState = BasePanelLocalState & {
+    type: Exclude<PanelType, PanelType.TREE | PanelType.NAD>;
+};
+
+export type PanelLocalState = TreePanelLocalState | NADPanelLocalState | OtherPanelLocalState;
 
 interface WorkspaceLocalState {
     panels: Record<UUID, PanelLocalState>;
@@ -64,6 +69,26 @@ export function saveLocalStoragePanelState(studyUuid: UUID, workspaceId: UUID, p
     saveWorkspaceLocalState(studyUuid, workspaceId, {
         ...state,
         panels: { ...state.panels, [panelState.id]: { ...state.panels[panelState.id], ...panelState } },
+    });
+}
+
+export function saveLocalStoragePanelZIndex(
+    studyUuid: UUID,
+    workspaceId: UUID,
+    panelId: UUID,
+    panelType: PanelType,
+    zIndex: number
+): void {
+    const workspaceState = getWorkspaceLocalState(studyUuid, workspaceId);
+    const existing = workspaceState.panels[panelId];
+    saveWorkspaceLocalState(studyUuid, workspaceId, {
+        ...workspaceState,
+        panels: {
+            ...workspaceState.panels,
+            [panelId]: existing
+                ? { ...existing, zIndex }
+                : ({ id: panelId, type: panelType, zIndex } as PanelLocalState),
+        },
     });
 }
 
