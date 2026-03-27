@@ -8,11 +8,12 @@
 import React, { memo, useCallback } from 'react';
 import { flexRender, Row } from '@tanstack/react-table';
 import { mergeSx, NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import { TableCell, TableRow } from '@mui/material';
+import { TableCell, TableRow, Tooltip } from '@mui/material';
 import { createCellStyle, createRowSx, styles } from '../styles';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { AUTO_EXTENSIBLE_COLUMNS, BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
+import { FormattedMessage } from 'react-intl';
 
 interface ModificationRowProps {
     virtualRow: VirtualItem;
@@ -46,18 +47,60 @@ const ModificationRow = memo<ModificationRowProps>(
                             data-row-id={row.original.uuid}
                             sx={mergeSx(styles.tableRow, createRowSx(isHighlighted, snapshot.isDragging, virtualRow))}
                         >
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell
-                                    key={cell.id}
-                                    sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
-                                    onClick={() => handleCellClickCallback(cell.column.id)}
-                                    {...(cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
-                                        ? provided.dragHandleProps
-                                        : undefined)}
-                                >
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                            ))}
+                            {row.getVisibleCells().map((cell) => {
+                                const isDragHandle = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id;
+                                const isCheckboxColumn = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.SELECT.id;
+                                const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
+                                // Tooltip for drag
+                                if (isDragHandle) {
+                                    return (
+                                        <TableCell
+                                            key={cell.id}
+                                            sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
+                                        >
+                                            <Tooltip title={<FormattedMessage id={'moveModification'} />} arrow>
+                                                <span {...provided.dragHandleProps}>{cellContent}</span>
+                                            </Tooltip>
+                                        </TableCell>
+                                    );
+                                }
+
+                                // Tooltip for checkbox
+                                if (isCheckboxColumn) {
+                                    return (
+                                        <TableCell
+                                            key={cell.id}
+                                            sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
+                                            onClick={() => handleCellClickCallback(cell.column.id)}
+                                        >
+                                            <Tooltip
+                                                title={
+                                                    <FormattedMessage
+                                                        id={
+                                                            row.getIsSelected()
+                                                                ? 'deselectModification'
+                                                                : 'selectModification'
+                                                        }
+                                                    />
+                                                }
+                                                arrow
+                                            >
+                                                <span>{cellContent}</span>
+                                            </Tooltip>
+                                        </TableCell>
+                                    );
+                                }
+
+                                return (
+                                    <TableCell
+                                        key={cell.id}
+                                        sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
+                                        onClick={() => handleCellClickCallback(cell.column.id)}
+                                    >
+                                        {cellContent}
+                                    </TableCell>
+                                );
+                            })}
                         </TableRow>
                     );
                 }}
