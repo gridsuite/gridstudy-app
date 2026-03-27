@@ -229,6 +229,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     computingStatus: ComputingStatus;
     computingStatusParameters: ComputingStatusParameters;
     lastCompletedComputation: ComputingType | null;
+    securityAnalysisProgress: { current: number; total: number } | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
     oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
