@@ -22,7 +22,7 @@ import { getLineTypeWithAreaAndTemperature } from '../../../services/network-mod
 import { ModificationDialog } from '../commons/modificationDialog';
 import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
+import LineTypesCatalogSelectorForm, { LineCatalogParams } from './line-types-catalog-selector-form';
 
 const formSchema = yup
     .object()
@@ -86,6 +86,7 @@ export type LineTypesCatalogSelectorDialogProps = {
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
+    preselectedParams?: LineCatalogParams;
 };
 
 export default function LineTypesCatalogSelectorDialog({
@@ -93,6 +94,7 @@ export default function LineTypesCatalogSelectorDialog({
     preselectedRowId,
     rowData,
     onClose,
+    preselectedParams,
     ...dialogProps
 }: Readonly<LineTypesCatalogSelectorDialogProps>) {
     const { snackError } = useSnackMessage();
@@ -101,6 +103,7 @@ export default function LineTypesCatalogSelectorDialog({
     const [areasOptions, setAreasOptions] = useState<Option[]>([]);
     const [aerialTemperatures, setAerialTemperatures] = useState<Option[]>([]);
     const [undergroundShapeFactors, setUndergroundShapeFactors] = useState<Option[]>([]);
+    const [initialized, setInitialized] = useState<boolean>(false);
 
     const formMethods = useForm<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -119,7 +122,8 @@ export default function LineTypesCatalogSelectorDialog({
         const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
         const areaId = selectedArea?.id;
         const shapeFactorId = selectedShapeFactor?.id;
-        return { area: areaId, shapeFactor: shapeFactorId } as AreaTemperatureShapeFactorInfo;
+        const numericShapeFactor = shapeFactorId ? Number(shapeFactorId) : null;
+        return { area: areaId, shapeFactor: numericShapeFactor } as AreaTemperatureShapeFactorInfo;
     }, [getValues]);
 
     const onSubmit = useCallback(() => {
@@ -190,13 +194,17 @@ export default function LineTypesCatalogSelectorDialog({
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current?.api?.getSelectedRows();
         if (selectedRows?.length) {
-            setValue(AERIAL_AREAS, null);
-            setValue(AERIAL_TEMPERATURES, null);
-            setValue(UNDERGROUND_AREAS, null);
-            setValue(UNDERGROUND_SHAPE_FACTORS, null);
+            if (initialized) {
+                // if it is first time don't erase data
+                setValue(AERIAL_AREAS, null);
+                setValue(AERIAL_TEMPERATURES, null);
+                setValue(UNDERGROUND_AREAS, null);
+                setValue(UNDERGROUND_SHAPE_FACTORS, null);
+            }
+            setInitialized(true);
             handleSelectedRowData(selectedRows[0]).then();
         }
-    }, [handleSelectedRowData, setValue]);
+    }, [handleSelectedRowData, initialized, setValue]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -222,6 +230,7 @@ export default function LineTypesCatalogSelectorDialog({
                     areasOptions={areasOptions}
                     aerialTemperatures={aerialTemperatures}
                     undergroundShapeFactor={undergroundShapeFactors}
+                    preselectedRowData={preselectedParams}
                 />
             </ModificationDialog>
         </CustomFormProvider>

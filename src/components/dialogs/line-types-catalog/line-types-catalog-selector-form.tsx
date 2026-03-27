@@ -24,6 +24,12 @@ import { useColumnDefinitions } from './use-column-definitions';
 import { useRowData } from './use-row-data';
 import { AgGridReact } from 'ag-grid-react';
 
+export interface LineCatalogParams {
+    area: string;
+    temperature: string;
+    shapeFactor: number;
+}
+
 interface LineTypesCatalogSelectorFormProps {
     gridRef: React.RefObject<AgGridReact | null>;
     selectedRow: LineTypeInfo | null;
@@ -33,6 +39,7 @@ interface LineTypesCatalogSelectorFormProps {
     areasOptions: Option[];
     aerialTemperatures: Option[];
     undergroundShapeFactor: Option[];
+    preselectedRowData?: LineCatalogParams;
 }
 
 export default function LineTypesCatalogSelectorForm({
@@ -44,6 +51,7 @@ export default function LineTypesCatalogSelectorForm({
     areasOptions,
     aerialTemperatures,
     undergroundShapeFactor,
+    preselectedRowData,
 }: Readonly<LineTypesCatalogSelectorFormProps>) {
     const [tabIndex, setTabIndex] = useState<number>(CATEGORIES_TABS.AERIAL.id);
     const { setValue } = useFormContext();
@@ -67,8 +75,25 @@ export default function LineTypesCatalogSelectorForm({
                     ? CATEGORIES_TABS.UNDERGROUND.id
                     : CATEGORIES_TABS.AERIAL.id;
             setValue(SELECTED_CATEGORIES_TAB, newTabIndex);
+            if (preselectedRowData) {
+                if (preselectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name) {
+                    setTabIndex(CATEGORIES_TABS.UNDERGROUND.id);
+                    setValue(UNDERGROUND_AREAS, { id: preselectedRowData.area, label: preselectedRowData.area });
+                    setValue(UNDERGROUND_SHAPE_FACTORS, {
+                        id: preselectedRowData.shapeFactor,
+                        label: preselectedRowData.shapeFactor,
+                    });
+                } else {
+                    setTabIndex(CATEGORIES_TABS.AERIAL.id);
+                    setValue(AERIAL_AREAS, { id: preselectedRowData.area, label: preselectedRowData.area });
+                    setValue(AERIAL_TEMPERATURES, {
+                        id: preselectedRowData.temperature,
+                        label: preselectedRowData.temperature,
+                    });
+                }
+            }
         }
-    }, [rowData, preselectedRowId, setValue]);
+    }, [rowData, preselectedRowId, setValue, preselectedRowData]);
 
     // Tries to find the selected row to highlight it
     const highlightSelectedRow = useCallback(() => {
