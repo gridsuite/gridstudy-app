@@ -167,6 +167,12 @@ const ParametersTabs: FunctionComponent = () => {
         securityAnalysisAvailability,
         securityAnalysisParametersBackend
     );
+    const fetchContingencyCountBackend = useCallback(
+        (contingencyLists: UUID[] | null) => {
+            return fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists);
+        },
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
 
     const sensitivityAnalysisBackend = useParametersBackend(
         user,
@@ -307,9 +313,7 @@ const ParametersTabs: FunctionComponent = () => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
-                        fetchContingencyCount={(contingencyLists: UUID[] | null) =>
-                            fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
-                        }
+                        fetchContingencyCount={fetchContingencyCountBackend}
                         isBuiltCurrentNode={
                             currentNodeBuildStatus !== BUILD_STATUS.NOT_BUILT &&
                             currentNodeBuildStatus !== BUILD_STATUS.BUILDING
@@ -397,6 +401,7 @@ const ParametersTabs: FunctionComponent = () => {
         setDirtyFields,
         isDeveloperMode,
         securityAnalysisParametersBackend,
+        fetchContingencyCountBackend,
         currentNodeBuildStatus,
         currentNodeUuid,
         currentRootNetworkUuid,
