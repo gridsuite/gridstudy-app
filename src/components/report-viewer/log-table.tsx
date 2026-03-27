@@ -450,6 +450,7 @@ const LogTable = ({
                     onGridReady={onGridReady}
                     defaultColDef={defaultColumnDefinition}
                     overrideLocales={AGGRID_LOCALES}
+                    suppressRowVirtualisation
                 />
             </Box>
             <CustomTablePagination
