@@ -96,9 +96,6 @@ const ModificationRow = memo<ModificationRowProps>(
                                         key={cell.id}
                                         sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
                                         onClick={() => handleCellClickCallback(cell.column.id)}
-                                        {...(cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
-                                            ? provided.dragHandleProps
-                                            : undefined)}
                                     >
                                         {cellContent}
                                     </TableCell>
