@@ -103,6 +103,7 @@ export default function LineTypesCatalogSelectorDialog({
     const [areasOptions, setAreasOptions] = useState<Option[]>([]);
     const [aerialTemperatures, setAerialTemperatures] = useState<Option[]>([]);
     const [undergroundShapeFactors, setUndergroundShapeFactors] = useState<Option[]>([]);
+    const [initialized, setInitialized] = useState<boolean>(false);
 
     const formMethods = useForm<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -121,7 +122,8 @@ export default function LineTypesCatalogSelectorDialog({
         const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
         const areaId = selectedArea?.id;
         const shapeFactorId = selectedShapeFactor?.id;
-        return { area: areaId, shapeFactor: shapeFactorId } as AreaTemperatureShapeFactorInfo;
+        const numericShapeFactor = shapeFactorId ? Number(shapeFactorId) : null;
+        return { area: areaId, shapeFactor: numericShapeFactor } as AreaTemperatureShapeFactorInfo;
     }, [getValues]);
 
     const onSubmit = useCallback(() => {
@@ -192,13 +194,17 @@ export default function LineTypesCatalogSelectorDialog({
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current?.api?.getSelectedRows();
         if (selectedRows?.length) {
-            setValue(AERIAL_AREAS, null);
-            setValue(AERIAL_TEMPERATURES, null);
-            setValue(UNDERGROUND_AREAS, null);
-            setValue(UNDERGROUND_SHAPE_FACTORS, null);
+            if (initialized) {
+                // if it is first time don't erase data
+                setValue(AERIAL_AREAS, null);
+                setValue(AERIAL_TEMPERATURES, null);
+                setValue(UNDERGROUND_AREAS, null);
+                setValue(UNDERGROUND_SHAPE_FACTORS, null);
+            }
+            setInitialized(true);
             handleSelectedRowData(selectedRows[0]).then();
         }
-    }, [handleSelectedRowData, setValue]);
+    }, [handleSelectedRowData, initialized, setValue]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>

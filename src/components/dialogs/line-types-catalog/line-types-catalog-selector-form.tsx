@@ -75,12 +75,23 @@ export default function LineTypesCatalogSelectorForm({
                     ? CATEGORIES_TABS.UNDERGROUND.id
                     : CATEGORIES_TABS.AERIAL.id;
             setValue(SELECTED_CATEGORIES_TAB, newTabIndex);
-        }
-        if (preselectedRowData) {
-            setValue(AERIAL_AREAS, preselectedRowData.area);
-            setValue(AERIAL_TEMPERATURES, preselectedRowData.temperature);
-            setValue(UNDERGROUND_AREAS, preselectedRowData.area);
-            setValue(UNDERGROUND_SHAPE_FACTORS, preselectedRowData.shapeFactor);
+            if (preselectedRowData) {
+                if (preselectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name) {
+                    setTabIndex(CATEGORIES_TABS.UNDERGROUND.id);
+                    setValue(UNDERGROUND_AREAS, { id: preselectedRowData.area, label: preselectedRowData.area });
+                    setValue(UNDERGROUND_SHAPE_FACTORS, {
+                        id: preselectedRowData.shapeFactor,
+                        label: preselectedRowData.shapeFactor,
+                    });
+                } else {
+                    setTabIndex(CATEGORIES_TABS.AERIAL.id);
+                    setValue(AERIAL_AREAS, { id: preselectedRowData.area, label: preselectedRowData.area });
+                    setValue(AERIAL_TEMPERATURES, {
+                        id: preselectedRowData.temperature,
+                        label: preselectedRowData.temperature,
+                    });
+                }
+            }
         }
     }, [rowData, preselectedRowId, setValue, preselectedRowData]);
 

@@ -68,14 +68,14 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export interface LineTypeSegmentFormProps {
-    editData?: LineSegmentInfos[];
-}
-
 type ExpandableHandle = {
     replaceItems: (newItems: SegmentFormData[]) => void;
     appendItem: (newItem: SegmentFormData) => void;
 };
+
+export interface LineTypeSegmentFormProps {
+    editData?: LineSegmentInfos[];
+}
 
 export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormProps>) => {
     const { setValue, getValues, clearErrors } = useFormContext();
@@ -264,7 +264,7 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
                         );
                         setValue(
                             `${SEGMENTS}.${openCatalogDialogIndex}.${SHAPE_FACTOR}`,
-                            Number(selectedAreaAndTemperature2LineTypeData?.shapeFactor)
+                            selectedAreaAndTemperature2LineTypeData?.shapeFactor
                         );
                         clearErrors(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`);
                         updateSegmentValues(openCatalogDialogIndex);
