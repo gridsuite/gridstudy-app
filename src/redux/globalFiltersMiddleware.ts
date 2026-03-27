@@ -11,6 +11,7 @@ import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig 
 import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
 import type { AppState } from './reducer.type';
+import { markEditingGlobalFilter, unmarkEditingGlobalFilter } from '../utils/editing-global-filter-sync';
 
 const debouncedSyncTimers: Record<string, ReturnType<typeof setTimeout>> = {};
 
@@ -41,6 +42,10 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             }
 
             const index = tableId ?? tableType;
+
+            // Protection from overriding more recent filters from backend notification
+            markEditingGlobalFilter(index);
+
             const tableFiltersState = state.tableFilters.globalFilters[index];
 
             const selectedFiltersIds = tableFiltersState?.selected ?? [];
@@ -62,16 +67,24 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             if (debouncedSyncTimers[index]) {
                 clearTimeout(debouncedSyncTimers[index]);
             }
+
             debouncedSyncTimers[index] = setTimeout(() => {
-                if (tableType === TableType.Spreadsheet) {
-                    setGlobalFiltersToSpreadsheetConfig(studyUuid, tableId as UUID, globalFilters).catch((error) =>
-                        console.error('Failed to save spreadsheet global filters: ', error)
-                    );
-                } else {
-                    setComputationResultGlobalFilters(studyUuid, tableType, globalFilters).catch((error) =>
-                        console.error('Failed to save computation global filters: ', error)
-                    );
-                }
+                const globalFilterPromise =
+                    tableType === TableType.Spreadsheet
+                        ? setGlobalFiltersToSpreadsheetConfig(studyUuid, tableId as UUID, globalFilters)
+                        : setComputationResultGlobalFilters(studyUuid, tableType, globalFilters);
+
+                globalFilterPromise
+                    .catch((error) => {
+                        console.error('Failed to save global filters: ', error);
+                    })
+                    .finally(() => {
+                        // Only unmark if no new debounce timer was started while the POST was in flight
+                        if (!debouncedSyncTimers[index]) {
+                            unmarkEditingGlobalFilter(index);
+                        }
+                    });
+
                 delete debouncedSyncTimers[index];
             }, 2000);
 
