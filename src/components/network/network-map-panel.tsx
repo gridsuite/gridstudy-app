@@ -787,10 +787,10 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     });
 
     useEffect(() => {
-        if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
+        if (!mapEquipments) {
             return;
         }
-        if (deletedEquipments?.length > 0 && mapEquipments) {
+        if (deletedEquipments?.length > 0) {
             deletedEquipments.forEach((deletedEquipment) =>
                 mapEquipments.removeEquipment(deletedEquipment?.equipmentType, deletedEquipment?.equipmentId)
             );
