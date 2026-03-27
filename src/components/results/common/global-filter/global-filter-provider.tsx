@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
 import { FilterType, isCriteriaFilter } from '../utils';
-import type { UUID } from 'node:crypto';
 import {
     ElementAttributes,
+    ElementType,
     fetchDirectoryElementPath,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { removeFromGlobalFilterOptions } from '../../../../redux/actions';
+import { addToGlobalFilterOptions } from '../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
@@ -63,52 +63,51 @@ export default function GlobalFilterProvider({
 
     const [openedDropdown, setOpenedDropdown] = useState(false);
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    // may be a filter type or a recent filter or whatever category
+    // maybe a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
+
+    const updateGenericFilter = useCallback(
+        async (genericFilter: GlobalFilter) => {
+            try {
+                if (!genericFilter.uuid) {
+                    return;
+                }
+                const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilter.uuid);
+                const parentDirectoriesNames = response.map((parent) => parent.elementName);
+                const label =
+                    response.find((parent) => parent.type === ElementType.FILTER)?.elementName ?? genericFilter.label;
+                const path = computeFullPath(parentDirectoriesNames);
+                if (path !== genericFilter.path || label !== genericFilter.label) {
+                    dispatch(
+                        addToGlobalFilterOptions([{ ...genericFilter, path: path, label: label }], tableType, tableUuid)
+                    );
+                }
+            } catch (responseError) {
+                const error = responseError as Error & { status: number };
+                if (error.status === HttpStatusCode.NOT_FOUND) {
+                    // Not found => updated in global filter options for display
+                    dispatch(addToGlobalFilterOptions([{ ...genericFilter, deleted: true }], tableType, tableUuid));
+                } else {
+                    snackWithFallback(snackError, error, {
+                        headerId: 'ComputationFilterResultsError',
+                    });
+                }
+            }
+        },
+        [dispatch, tableType, tableUuid, snackError]
+    );
 
     // Check the selected global filters and remove them if they do not exist anymore.
     useEffect(() => {
         const checkSelectedFilters = async () => {
-            const mutableFilters: GlobalFilter[] = selectedGlobalFilters.map((filter) => ({ ...filter }));
-
-            const genericFiltersUuids: UUID[] = mutableFilters
-                .filter((globalFilter) => isCriteriaFilter(globalFilter))
-                .map((globalFilter) => globalFilter.uuid)
-                .filter((globalFilterUUID) => globalFilterUUID !== undefined);
-
-            for (const genericFilterUuid of genericFiltersUuids) {
-                try {
-                    // checks if the generic filters still exist, and update their path value
-                    const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
-                    const parentDirectoriesNames = response.map((parent) => parent.elementName);
-                    const path = computeFullPath(parentDirectoriesNames);
-                    const fetchedFilter: GlobalFilter | undefined = mutableFilters.find(
-                        (globalFilter) => globalFilter.uuid === genericFilterUuid
-                    );
-                    if (fetchedFilter && !fetchedFilter.path) {
-                        fetchedFilter.path = path;
-                    }
-                } catch (responseError) {
-                    const error = responseError as Error & { status: number };
-                    if (error.status === HttpStatusCode.NOT_FOUND) {
-                        // not found => remove those missing filters from global filters
-                        dispatch(removeFromGlobalFilterOptions(genericFilterUuid));
-                        snackError({
-                            messageTxt: mutableFilters.find((filter) => filter.uuid === genericFilterUuid)?.path,
-                            headerId: 'ComputationFilterResultsError',
-                        });
-                    } else {
-                        // or whatever error => do nothing except showing error message
-                        snackWithFallback(snackError, error, {
-                            headerId: 'ComputationFilterResultsError',
-                        });
-                    }
-                }
-            }
+            const genericFilters: GlobalFilter[] = selectedGlobalFilters.filter(
+                (globalFilter) => isCriteriaFilter(globalFilter) && !globalFilter.deleted
+            );
+            await Promise.all(genericFilters.map(updateGenericFilter));
         };
 
         checkSelectedFilters().catch((error) => console.error(error));
-    }, [selectedGlobalFilters, dispatch, snackError]);
+    }, [selectedGlobalFilters, updateGenericFilter]);
 
     const value = useMemo(
         () => ({

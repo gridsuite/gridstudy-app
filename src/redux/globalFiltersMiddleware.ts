@@ -6,7 +6,13 @@
  */
 
 import { isAction, Middleware } from '@reduxjs/toolkit';
-import { ADD_GLOBAL_FILTERS, CLEAR_GLOBAL_FILTERS, GlobalFilterAction, REMOVE_GLOBAL_FILTERS } from './actions';
+import {
+    ADD_GLOBAL_FILTERS,
+    ADD_TO_GLOBAL_FILTER_OPTIONS,
+    CLEAR_GLOBAL_FILTERS,
+    GlobalFilterAction,
+    REMOVE_GLOBAL_FILTERS,
+} from './actions';
 import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
@@ -30,6 +36,7 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
     // Synchronize filter changes with the backend
     switch (action.type) {
         case ADD_GLOBAL_FILTERS:
+        case ADD_TO_GLOBAL_FILTER_OPTIONS:
         case REMOVE_GLOBAL_FILTERS:
         case CLEAR_GLOBAL_FILTERS: {
             const { tableType, tableId } = action as GlobalFilterAction;
@@ -37,11 +44,10 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             // State after the action
             const state = store.getState();
             const studyUuid = state.studyUuid;
-            if (!studyUuid) {
+            const index = tableId ?? tableType;
+            if (!studyUuid || !index) {
                 break;
             }
-
-            const index = tableId ?? tableType;
 
             // Protection from overriding more recent filters from backend notification
             markEditingGlobalFilter(index);
@@ -59,8 +65,8 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
                     const filterOption = state.globalFilterOptions.find((opt) => opt.id === recentFilter.id);
                     return filterOption ? { ...filterOption, unselectedDate: recentFilter.unselectedDate } : undefined;
                 })
-                .filter((f) => f !== undefined);
-
+                .filter((f) => f !== undefined)
+                .filter((f) => !f.deleted);
             const globalFilters = [...selectedGlobalFilters, ...recentGlobalFilters];
 
             // Debounce per table to avoid excessive requests
