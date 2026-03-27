@@ -249,13 +249,22 @@ export async function createMapContingencyList(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     selectedEquipments: EquipmentInfos[],
-    nominalVoltages: number[]
+    nominalVoltages: number[],
+    busbarIdAsContingencyName: boolean
 ) {
     let equipmentContingencyList: ContingencyList;
+    // should be in the switch, but TS and eslint do not like fallthrough
+    let equipmentIdAsContingencyName =
+        equipmentType === EquipmentType.BUSBAR_SECTION ? busbarIdAsContingencyName : false;
+
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
         case EquipmentType.LINE:
-            equipmentContingencyList = createIdentifierContingencyList(elementName, selectedEquipments);
+            equipmentContingencyList = createIdentifierContingencyList(
+                elementName,
+                selectedEquipments,
+                equipmentIdAsContingencyName
+            );
 
             break;
 
@@ -279,7 +288,11 @@ export async function createMapContingencyList(
             if (elementsIds?.length === 0) {
                 throw new Error('EmptySelection');
             }
-            equipmentContingencyList = createIdentifierContingencyList(elementName, elementsIds);
+            equipmentContingencyList = createIdentifierContingencyList(
+                elementName,
+                elementsIds,
+                equipmentIdAsContingencyName
+            );
             break;
     }
     if (
@@ -290,16 +303,4 @@ export async function createMapContingencyList(
     }
 
     return createContingencyList(equipmentContingencyList, elementName, '', destinationDirectoryId);
-}
-
-export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
-    console.info(
-        `Fetching all nominal voltages of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
-    );
-
-    const fetchNominalVoltagesUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/network-map/nominal-voltages?inUpstreamBuiltParentNode=true';
-    console.debug(fetchNominalVoltagesUrl);
-    return backendFetchJson(fetchNominalVoltagesUrl);
 }
