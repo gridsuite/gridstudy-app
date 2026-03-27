@@ -9,6 +9,7 @@ import type { UUID } from 'node:crypto';
 import { APP_NAME } from '../../utils/config-params';
 import { PanelType } from '../../components/workspace/types/workspace.types';
 import { Viewport } from '@xyflow/react';
+import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 export interface BasePanelLocalState {
     id: UUID;
@@ -20,7 +21,12 @@ export interface TreePanelLocalState extends BasePanelLocalState {
     viewport?: Viewport;
 }
 
-export type PanelLocalState = TreePanelLocalState;
+export interface NADPanelLocalState extends BasePanelLocalState {
+    type: PanelType.NAD;
+    viewBox?: ViewBoxLike;
+}
+
+export type PanelLocalState = TreePanelLocalState | NADPanelLocalState;
 
 interface WorkspaceLocalState {
     panels: Record<UUID, PanelLocalState>;
