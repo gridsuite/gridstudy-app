@@ -8,8 +8,7 @@
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
 import { TemporaryLimit } from 'services/network-modification-types';
-import { VoltageLevel } from './equipment-types';
-import { AttributeModification, OperationType, Option } from '@gridsuite/commons-ui';
+import { AttributeModification, Identifiable, OperationType, Option } from '@gridsuite/commons-ui';
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
@@ -241,10 +240,10 @@ export function calculateSusceptance(distance: number, linearCapacity: number) {
     return Number(distance) * Number(linearCapacity) * 2 * Math.PI * 50 * Math.pow(10, 6);
 }
 
-export function getNewVoltageLevelOptions(
-    formattedVoltageLevel: VoltageLevel,
+export function getNewVoltageLevelOptions<T extends Identifiable>(
+    formattedVoltageLevel: T,
     oldVoltageLevelId: string | undefined,
-    voltageLevelOptions: VoltageLevel[]
+    voltageLevelOptions: T[]
 ) {
     const newVoltageLevelOptions =
         formattedVoltageLevel.id === oldVoltageLevelId
