@@ -7,14 +7,15 @@
 
 import React, { memo, useCallback } from 'react';
 import { flexRender, Row } from '@tanstack/react-table';
-import { mergeSx } from '@gridsuite/commons-ui';
-import { Box, TableCell, TableRow } from '@mui/material';
+import { Box, TableCell, TableRow, Tooltip } from '@mui/material';
 import { BORDER_SUPPRESSED_COLUMNS, createCellContentWrapperSx, createCellStyle, createRowSx, styles } from '../styles';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { AUTO_EXTENSIBLE_COLUMNS, BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
 import { useTheme } from '@mui/material/styles';
 import { ComposedModificationMetadata } from '../utils';
+import { FormattedMessage } from 'react-intl';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 interface ModificationRowProps {
     virtualRow: VirtualItem;
@@ -54,14 +55,75 @@ const ModificationRow = memo<ModificationRowProps>(
                         >
                             {row.getVisibleCells().map((cell) => {
                                 const isNameColumn = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.NAME.id;
+                                const isDragHandle = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id;
+                                const isCheckboxColumn = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.SELECT.id;
+                                const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
+                                // Tooltip for drag
+                                if (isDragHandle) {
+                                    return (
+                                        <TableCell
+                                            key={cell.id}
+                                            sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
+                                        >
+                                            <Tooltip title={<FormattedMessage id={'moveModification'} />} arrow>
+                                                <Box
+                                                    sx={createCellContentWrapperSx(
+                                                        theme,
+                                                        (isExpanded || row.depth > 0) &&
+                                                            BORDER_SUPPRESSED_COLUMNS.has(
+                                                                cell.column.columnDef.id ?? ''
+                                                            )
+                                                    )}
+                                                    {...provided.dragHandleProps}
+                                                >
+                                                    {cellContent}
+                                                </Box>
+                                            </Tooltip>
+                                        </TableCell>
+                                    );
+                                }
+
+                                // Tooltip for checkbox
+                                if (isCheckboxColumn) {
+                                    return (
+                                        <TableCell
+                                            key={cell.id}
+                                            sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
+                                            onClick={() => handleCellClickCallback(cell.column.id)}
+                                        >
+                                            <Tooltip
+                                                title={
+                                                    <FormattedMessage
+                                                        id={
+                                                            row.getIsSelected()
+                                                                ? 'deselectModification'
+                                                                : 'selectModification'
+                                                        }
+                                                    />
+                                                }
+                                                arrow
+                                            >
+                                                <Box
+                                                    sx={createCellContentWrapperSx(
+                                                        theme,
+                                                        (isExpanded || row.depth > 0) &&
+                                                            BORDER_SUPPRESSED_COLUMNS.has(
+                                                                cell.column.columnDef.id ?? ''
+                                                            )
+                                                    )}
+                                                >
+                                                    {cellContent}
+                                                </Box>
+                                            </Tooltip>
+                                        </TableCell>
+                                    );
+                                }
+
                                 return (
                                     <TableCell
                                         key={cell.id}
                                         sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
                                         onClick={() => handleCellClickCallback(cell.column.id)}
-                                        {...(cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id
-                                            ? provided.dragHandleProps
-                                            : undefined)}
                                     >
                                         {isNameColumn ? (
                                             // NameCell owns its own borders entirely
@@ -74,7 +136,7 @@ const ModificationRow = memo<ModificationRowProps>(
                                                         BORDER_SUPPRESSED_COLUMNS.has(cell.column.columnDef.id ?? '')
                                                 )}
                                             >
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                {cellContent}
                                             </Box>
                                         )}
                                     </TableCell>

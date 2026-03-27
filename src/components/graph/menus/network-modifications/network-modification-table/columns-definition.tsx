@@ -6,7 +6,7 @@
  */
 
 import React, { SetStateAction } from 'react';
-import { Badge, Box } from '@mui/material';
+import { Badge, Box, Tooltip } from '@mui/material';
 import { ColumnDef } from '@tanstack/react-table';
 import DragHandleCell from './renderers/drag-handle-cell';
 import {
@@ -23,6 +23,7 @@ import SelectCell from './renderers/select-cell';
 import SelectHeaderCell from './renderers/select-header-cell';
 import { createRootNetworkChipCellSx, styles } from './styles';
 import { ComposedModificationMetadata } from './utils';
+import { FormattedMessage } from 'react-intl';
 
 const CHIP_PADDING_PX = 24;
 const CHAR_WIDTH_PX = 8;
@@ -135,6 +136,7 @@ export const createRootNetworksColumns = (
 ): ColumnDef<ComposedModificationMetadata>[] => {
     const tagMinSizes = rootNetworks.map((rootNetwork) => computeTagMinSize(rootNetwork.tag ?? ''));
     const sharedSize = Math.max(Math.min(...tagMinSizes), 56);
+    const currentRootNetworkTag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
 
     return rootNetworks.map((rootNetwork, index) => {
         const rootNetworkUuid = rootNetwork.rootNetworkUuid;
@@ -146,9 +148,18 @@ export const createRootNetworksColumns = (
             header: () =>
                 isCurrentRootNetwork && modificationsCount >= 1 ? (
                     <Box sx={styles.rootNetworkHeader}>
-                        <Badge overlap="circular" color="primary" variant="dot">
-                            <RemoveRedEyeIcon />
-                        </Badge>
+                        <Tooltip
+                            title={
+                                <FormattedMessage
+                                    id={'visualizedRootNetwork'}
+                                    values={{ tag: currentRootNetworkTag }}
+                                />
+                            }
+                        >
+                            <Badge overlap="circular" color="primary" variant="dot">
+                                <RemoveRedEyeIcon />
+                            </Badge>
+                        </Tooltip>
                     </Box>
                 ) : null,
             cell: ({ row }) => (

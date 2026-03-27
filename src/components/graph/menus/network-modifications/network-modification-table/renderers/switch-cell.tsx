@@ -66,7 +66,10 @@ const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
     }, [modificationUuid, updateModification, setModifications]);
 
     return (
-        <Tooltip title={<FormattedMessage id={modificationActivated ? 'disable' : 'enable'} />} arrow>
+        <Tooltip
+            title={<FormattedMessage id={modificationActivated ? 'deactivateModification' : 'activateModification'} />}
+            arrow
+        >
             <span>
                 <Switch
                     size="small"
