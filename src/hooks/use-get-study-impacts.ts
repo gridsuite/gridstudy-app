@@ -65,11 +65,18 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
                 if (rootNetworkUuidFromNotif !== currentRootNetworkUuid || nodeUuidFromNotif !== currentNode?.id) {
                     return;
                 }
+                let networkImpacts: NetworkImpactsInfos;
+                try {
+                    networkImpacts = JSON.parse(eventData.payload) as NetworkImpactsInfos;
+                } catch (error) {
+                    console.warn('Failed to parse study notification payload', error);
+                    return;
+                }
                 const {
                     impactedSubstationsIds: substationsIds,
                     deletedEquipments,
                     impactedElementTypes,
-                } = JSON.parse(eventData.payload) as NetworkImpactsInfos;
+                } = networkImpacts;
 
                 if (impactedElementTypes?.length > 0) {
                     setImpactedElementTypes(impactedElementTypes);
