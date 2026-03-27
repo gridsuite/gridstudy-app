@@ -19,9 +19,7 @@ const DEACTIVATED_OPACITY = 0.4;
 
 export const MODIFICATION_ROW_HEIGHT = 41;
 
-// Replicates the exact border color MUI uses internally for TableCell,
-// so custom borders match seamlessly in both light and dark mode.
-export const muiTableCellBorder = (theme: Theme): string =>
+export const createCellBorderColor = (theme: Theme): string =>
     theme.palette.mode === 'light'
         ? lighten(alpha(theme.palette.divider, 1), 0.88)
         : darken(alpha(theme.palette.divider, 1), 0.68);
@@ -197,7 +195,7 @@ export const createRowSx = (
     },
     ...(isDragging && { zIndex: 1, transform: 'none' }),
     ...(depth === 0 && {
-        borderTop: `1px solid ${muiTableCellBorder(theme)}`,
+        borderTop: `1px solid ${createCellBorderColor(theme)}`,
     }),
 });
 
@@ -272,8 +270,8 @@ export const createCellContentWrapperSx = (theme: Theme, areBordersSuppressed: b
     alignItems: 'center',
     width: '100%',
     height: '100%',
-    borderTop: areBordersSuppressed ? 'none' : `1px solid ${muiTableCellBorder(theme)}`,
-    borderBottom: areBordersSuppressed ? 'none' : `1px solid ${muiTableCellBorder(theme)}`,
+    borderTop: areBordersSuppressed ? 'none' : `1px solid ${createCellBorderColor(theme)}`,
+    borderBottom: areBordersSuppressed ? 'none' : `1px solid ${createCellBorderColor(theme)}`,
 });
 
 export const createNameCellRootStyle = (theme: Theme, isExpanded: boolean, depth: number) => ({
@@ -284,27 +282,22 @@ export const createNameCellRootStyle = (theme: Theme, isExpanded: boolean, depth
     gap: 0,
     ...(depth === 0 &&
         !isExpanded && {
-            borderTop: `1px solid ${muiTableCellBorder(theme)}`,
-            borderBottom: `1px solid ${muiTableCellBorder(theme)}`,
+            borderTop: `1px solid ${createCellBorderColor(theme)}`,
+            borderBottom: `1px solid ${createCellBorderColor(theme)}`,
         }),
 });
 
 export const createNameCellLabelBoxSx = (isExpanded: boolean, depth: number): SxProps<Theme> => {
-    return depth > 0 || isExpanded
-        ? {
-              alignSelf: 'stretch',
-              display: 'flex',
-              alignItems: 'center',
-              flex: 1,
-              minWidth: 0,
-              borderTop: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
-              borderBottom: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
-              borderLeft: (theme: Theme) => `1px solid ${muiTableCellBorder(theme)}`,
-          }
-        : {
-              flex: 1,
-              minWidth: 0,
-              // The row-level borderTop (createRowSx depth===0) provides the top separator.
-              // The cell content wrapper provides the bottom border.
-          };
+    return {
+        alignSelf: 'stretch',
+        display: 'flex',
+        alignItems: 'center',
+        flex: 1,
+        minWidth: 0,
+        ...((depth > 0 || isExpanded) && {
+            borderTop: (theme: Theme) => `1px solid ${createCellBorderColor(theme)}`,
+            borderBottom: (theme: Theme) => `1px solid ${createCellBorderColor(theme)}`,
+            borderLeft: (theme: Theme) => `1px solid ${createCellBorderColor(theme)}`,
+        }),
+    };
 };
