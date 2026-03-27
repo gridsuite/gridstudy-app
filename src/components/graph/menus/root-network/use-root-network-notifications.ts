@@ -59,22 +59,34 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
         }
     }, [studyUuid, dispatch, setIsRootNetworksProcessing, snackError]);
 
-    const rootNetworkNotificationHandler = useCallback(
+    const rootNetworksUpdatedNotification = useCallback(
         (event: MessageEvent<string>) => {
             const eventData = parseEventData<CommonStudyEventData>(event);
-            if (!eventData) {
-                return;
-            }
-
-            if (isRootNetworksUpdatedNotification(eventData)) {
+            if (eventData && isRootNetworksUpdatedNotification(eventData)) {
                 doFetchRootNetworks();
-            } else if (isRootNetworkUpdateFailedNotification(eventData)) {
+            }
+        },
+        [doFetchRootNetworks]
+    );
+
+    const rootNetworksUpdateFailedNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isRootNetworkUpdateFailedNotification(eventData)) {
                 doFetchRootNetworks();
                 snackError({
                     messageId: 'importCaseFailure',
                     headerId: 'createRootNetworksError',
                 });
-            } else if (isRootNetworkDeletionStartedNotification(eventData)) {
+            }
+        },
+        [doFetchRootNetworks, snackError]
+    );
+
+    const rootNetworkDeletionStartedNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isRootNetworkDeletionStartedNotification(eventData)) {
                 if (!rootNetworks) {
                     return;
                 }
@@ -92,10 +104,16 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
                 }
             }
         },
-        [doFetchRootNetworks, snackError, currentRootNetworkUuid, rootNetworks, setCurrentRootNetworkUuidWithSync]
+        [currentRootNetworkUuid, rootNetworks, setCurrentRootNetworkUuidWithSync]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: rootNetworkNotificationHandler,
+        listenerCallbackMessage: rootNetworksUpdatedNotification,
+    });
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: rootNetworksUpdateFailedNotification,
+    });
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: rootNetworkDeletionStartedNotification,
     });
 };
