@@ -1285,7 +1285,7 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'delete'} />}>
+                <Tooltip title={<FormattedMessage id={'moveToTrash'} />}>
                     <span>
                         <IconButton
                             onClick={doStashModification}
