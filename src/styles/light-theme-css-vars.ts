@@ -21,4 +21,13 @@ export const lightThemeCssVars = {
     '.nad-textnode-highlight': {
         backgroundColor: '#f0f0f0cc', // same displayed color as #9c9c9c20 but with 0.8 opacity
     },
+    '.sld-active-power': {
+        fill: 'black',
+    },
+    '.sld-reactive-power': {
+        fill: 'blue',
+    },
+    '& .sld-active-power .sld-arrow-out, & .sld-active-power .sld-arrow-in': {
+        fill: 'black',
+    },
 };
