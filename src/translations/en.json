@@ -1358,7 +1358,6 @@
     "highVoltageLimit": "High voltage limit (kV)",
     "SingleEquipment": "Single equipment",
     "MultipleEquipment": "Multiple equipment",
-    "DeleteEquipmentByFilter": "Delete equipment by filter",
     "ratedU1": "Rated voltage 1 (kV)",
     "ratedU2": "Rated voltage 2 (kV)",
     "linearShuntCompensators": "Linear shunt compensators",

@@ -6,44 +6,36 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
-import { FILTERS, ID, NAME, TYPE } from '../../../../utils/field-constants';
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ByFilterDeletionDto,
+    ByFilterDeletionForm,
+    ByFilterDeletionFormData,
+    byFilterDeletionDtoToForm,
+    byFilterDeletionFormToDto,
+    byFilterDeletionFormSchema,
+    FieldConstants,
+    CustomFormProvider,
+    snackWithFallback,
+    useSnackMessage,
+    DeepNullable,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipmentByFilter } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
-import ByFilterDeletionForm from './by-filter-deletion-form';
-import {
-    ByFilterDeletionDialogProps,
-    ByFilterDeletionEditData,
-    ByFilterDeletionFormData,
-} from './by-filter-deletion.type';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { UUID } from 'node:crypto';
 
-const formSchema = yup
-    .object()
-    .shape({
-        [TYPE]: yup.mixed<keyof typeof EQUIPMENT_TYPES>().required(),
-        [FILTERS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [ID]: yup.string().required(),
-                    [NAME]: yup.string().required(),
-                })
-            )
-            .required()
-            .min(1, 'FieldIsRequired'),
-    })
-    .required();
+const emptyFormData: DeepNullable<ByFilterDeletionFormData> = {
+    [FieldConstants.TYPE]: null,
+    [FieldConstants.FILTERS]: [],
+};
 
-const emptyFormData = {
-    [TYPE]: null,
-    [FILTERS]: [],
+type ByFilterDeletionDialogProps = NetworkModificationDialogProps & {
+    editData?: ByFilterDeletionDto & { uuid: UUID };
 };
 
 /**
@@ -67,19 +59,16 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
 
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<ByFilterDeletionFormData>({
+    const formMethods = useForm<DeepNullable<ByFilterDeletionFormData>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<ByFilterDeletionFormData>(formSchema),
+        resolver: yupResolver<DeepNullable<ByFilterDeletionFormData>>(byFilterDeletionFormSchema),
     });
 
     const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (editData: ByFilterDeletionEditData) => {
-            reset({
-                [TYPE]: EQUIPMENT_TYPES[editData.equipmentType] as keyof typeof EQUIPMENT_TYPES,
-                [FILTERS]: editData.filters,
-            });
+        (data: ByFilterDeletionDto) => {
+            reset(byFilterDeletionDtoToForm(data));
         },
         [reset]
     );
@@ -92,13 +81,8 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
 
     const onSubmit = useCallback(
         (formData: ByFilterDeletionFormData) => {
-            deleteEquipmentByFilter(
-                studyUuid,
-                currentNodeUuid,
-                formData[TYPE],
-                formData[FILTERS],
-                editData?.uuid
-            ).catch((error) => {
+            const dto = byFilterDeletionFormToDto(formData);
+            deleteEquipmentByFilter(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
             });
         },
@@ -116,7 +100,7 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={byFilterDeletionFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'md'}
