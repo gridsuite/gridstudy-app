@@ -30,7 +30,11 @@ export interface GetSelectedItemsHandler {
     };
 }
 
-const CurveSelector = forwardRef<GetSelectedItemsHandler>((props, ref) => {
+type CurveSelectorProps = {
+    mapping?: string;
+};
+
+const CurveSelector = forwardRef<GetSelectedItemsHandler, Readonly<CurveSelectorProps>>(({ mapping }, ref) => {
     const equipmentFilterRef = useRef<GetSelectedEquipmentsHandle>(null);
     const modelFilterRef = useRef<GetSelectedVariablesHandle>(null);
 
@@ -94,7 +98,11 @@ const CurveSelector = forwardRef<GetSelectedItemsHandler>((props, ref) => {
                 <Typography sx={styles.h6} variant="h6">
                     <FormattedMessage id={'DynamicSimulationCurveCurveFilter'}></FormattedMessage>
                 </Typography>
-                <ModelFilter ref={modelFilterRef} equipmentType={getReferencedEquipmentTypeForModel(equipmentType)} />
+                <ModelFilter
+                    ref={modelFilterRef}
+                    equipmentType={getReferencedEquipmentTypeForModel(equipmentType)}
+                    mapping={mapping}
+                />
             </Grid>
         </>
     );

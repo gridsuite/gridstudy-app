@@ -43,6 +43,7 @@ export interface GetSelectedVariablesHandle {
 
 interface ModelFilterProps {
     equipmentType: EQUIPMENT_TYPES;
+    mapping?: string;
 }
 
 const modelsToVariablesTree = (models: DynamicSimulationModelBack[]) => {
@@ -160,7 +161,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
-    ({ equipmentType = EQUIPMENT_TYPES.GENERATOR }, ref) => {
+    ({ equipmentType = EQUIPMENT_TYPES.GENERATOR, mapping }, ref) => {
         const intl = useIntl();
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -211,7 +212,7 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
 
         // fetch all associated models and variables for study
         useEffect(() => {
-            fetchDynamicSimulationModels(studyUuid).then((models: DynamicSimulationModelBack[]) => {
+            fetchDynamicSimulationModels(studyUuid, mapping ?? null).then((models: DynamicSimulationModelBack[]) => {
                 setAllModels(
                     models.map((model) => ({
                         name: model.modelName,
@@ -223,7 +224,7 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
                 const variablesTree = modelsToVariablesTree(models);
                 setAllVariables(variablesTree);
             });
-        }, [studyUuid]);
+        }, [studyUuid, mapping]);
 
         const getSelectedVariables = useCallback((): ModelVariable[] => {
             return (
