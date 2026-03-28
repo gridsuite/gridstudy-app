@@ -19,10 +19,16 @@ import {
     Parameter,
     safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
-import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    CompositeModificationsActionType,
+    NetworkModificationCopyInfos,
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
+export const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
+
+export const getBaseNetworkModificationUrl = () => `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1`;
 
 export const getStudyUrl = (studyUuid: UUID | null) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}`;
@@ -239,20 +245,33 @@ export function copyOrMoveModifications(
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
-    // TODO : conversion to a ModificationsToCopyInfos dto => this will be useful and improved when INSERT_COMPOSITE action will be made available from the front
-    const modifications = modificationToCutUuidList.map((modificationUuid) => {
-        return { uuid: modificationUuid };
-    });
-
     return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modifications),
+        body: JSON.stringify(modificationToCutUuidList),
     });
 }
+
+export const insertCompositeModifications = (
+    studyUuid: string,
+    nodeUuid: string,
+    modifications: Record<string, string>[],
+    action: CompositeModificationsActionType
+): Promise<void> => {
+    const urlSearchParams = new URLSearchParams({ action });
+    return backendFetch(`${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modifications?${urlSearchParams}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(modifications),
+    }).then((response) => {
+        if (!response.ok) {
+            return response.json().then((err) => Promise.reject(err));
+        }
+    });
+};
 
 export interface ExportFormatProperties {
     formatName: string;

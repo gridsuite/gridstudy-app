@@ -8,10 +8,10 @@
 import React, { FunctionComponent, useCallback } from 'react';
 import { Checkbox } from '@mui/material';
 import { Table } from '@tanstack/react-table';
-import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { ComposedModificationMetadata } from '../utils';
 
 interface SelectHeaderCellProps {
-    table: Table<NetworkModificationMetadata>;
+    table: Table<ComposedModificationMetadata>;
 }
 
 const SelectHeaderCell: FunctionComponent<SelectHeaderCellProps> = ({ table }) => {
@@ -31,7 +31,7 @@ const SelectHeaderCell: FunctionComponent<SelectHeaderCellProps> = ({ table }) =
         <Checkbox
             size="small"
             checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
+            indeterminate={table.getSelectedRowModel().flatRows.length !== 0 && !table.getIsAllRowsSelected()}
             onClick={handleClick}
         />
     );

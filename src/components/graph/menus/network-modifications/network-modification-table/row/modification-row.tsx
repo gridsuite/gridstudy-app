@@ -7,18 +7,20 @@
 
 import React, { memo, useCallback } from 'react';
 import { flexRender, Row } from '@tanstack/react-table';
-import { mergeSx, NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import { TableCell, TableRow, Tooltip } from '@mui/material';
-import { createCellStyle, createRowSx, styles } from '../styles';
+import { Box, TableCell, TableRow, Tooltip } from '@mui/material';
+import { BORDER_SUPPRESSED_COLUMNS, createCellContentWrapperSx, createCellStyle, createRowSx, styles } from '../styles';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { AUTO_EXTENSIBLE_COLUMNS, BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
+import { useTheme } from '@mui/material/styles';
+import { ComposedModificationMetadata } from '../utils';
 import { FormattedMessage } from 'react-intl';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 interface ModificationRowProps {
     virtualRow: VirtualItem;
-    row: Row<NetworkModificationMetadata>;
-    handleCellClick?: (modification: NetworkModificationMetadata) => void;
+    row: Row<ComposedModificationMetadata>;
+    handleCellClick?: (modification: ComposedModificationMetadata) => void;
     isRowDragDisabled: boolean;
     highlightedModificationUuid: string | null;
 }
@@ -26,6 +28,8 @@ interface ModificationRowProps {
 const ModificationRow = memo<ModificationRowProps>(
     ({ virtualRow, row, handleCellClick, isRowDragDisabled, highlightedModificationUuid }) => {
         const isHighlighted = row.original.uuid === highlightedModificationUuid;
+        const theme = useTheme();
+        const isExpanded = row.getIsExpanded() && !!row.subRows?.length;
 
         const handleCellClickCallback = useCallback(
             (columnId: string) => {
@@ -35,7 +39,6 @@ const ModificationRow = memo<ModificationRowProps>(
             },
             [handleCellClick, row.original]
         );
-
         return (
             <Draggable draggableId={row.id} index={virtualRow.index} isDragDisabled={isRowDragDisabled}>
                 {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => {
@@ -45,9 +48,13 @@ const ModificationRow = memo<ModificationRowProps>(
                             ref={provided.innerRef}
                             {...draggablePropsWithoutStyle}
                             data-row-id={row.original.uuid}
-                            sx={mergeSx(styles.tableRow, createRowSx(isHighlighted, snapshot.isDragging, virtualRow))}
+                            sx={mergeSx(
+                                styles.tableRow,
+                                createRowSx(theme, isHighlighted, snapshot.isDragging, virtualRow, row.depth)
+                            )}
                         >
                             {row.getVisibleCells().map((cell) => {
+                                const isNameColumn = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.NAME.id;
                                 const isDragHandle = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id;
                                 const isCheckboxColumn = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.SELECT.id;
                                 const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
@@ -59,7 +66,18 @@ const ModificationRow = memo<ModificationRowProps>(
                                             sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
                                         >
                                             <Tooltip title={<FormattedMessage id={'moveModification'} />} arrow>
-                                                <span {...provided.dragHandleProps}>{cellContent}</span>
+                                                <Box
+                                                    sx={createCellContentWrapperSx(
+                                                        theme,
+                                                        (isExpanded || row.depth > 0) &&
+                                                            BORDER_SUPPRESSED_COLUMNS.has(
+                                                                cell.column.columnDef.id ?? ''
+                                                            )
+                                                    )}
+                                                    {...provided.dragHandleProps}
+                                                >
+                                                    {cellContent}
+                                                </Box>
                                             </Tooltip>
                                         </TableCell>
                                     );
@@ -85,7 +103,17 @@ const ModificationRow = memo<ModificationRowProps>(
                                                 }
                                                 arrow
                                             >
-                                                <span>{cellContent}</span>
+                                                <Box
+                                                    sx={createCellContentWrapperSx(
+                                                        theme,
+                                                        (isExpanded || row.depth > 0) &&
+                                                            BORDER_SUPPRESSED_COLUMNS.has(
+                                                                cell.column.columnDef.id ?? ''
+                                                            )
+                                                    )}
+                                                >
+                                                    {cellContent}
+                                                </Box>
                                             </Tooltip>
                                         </TableCell>
                                     );
@@ -97,7 +125,20 @@ const ModificationRow = memo<ModificationRowProps>(
                                         sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}
                                         onClick={() => handleCellClickCallback(cell.column.id)}
                                     >
-                                        {cellContent}
+                                        {isNameColumn ? (
+                                            // NameCell owns its own borders entirely
+                                            flexRender(cell.column.columnDef.cell, cell.getContext())
+                                        ) : (
+                                            <Box
+                                                sx={createCellContentWrapperSx(
+                                                    theme,
+                                                    (isExpanded || row.depth > 0) &&
+                                                        BORDER_SUPPRESSED_COLUMNS.has(cell.column.columnDef.id ?? '')
+                                                )}
+                                            >
+                                                {cellContent}
+                                            </Box>
+                                        )}
                                     </TableCell>
                                 );
                             })}

@@ -10,17 +10,28 @@ import { Row } from '@tanstack/react-table';
 import { mergeSx, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, Tooltip } from '@mui/material';
-import { createModificationNameCellStyle, styles } from '../styles';
+import { createModificationNameCellStyle, createNameCellLabelBoxSx, createNameCellRootStyle, styles } from '../styles';
+import IconButton from '@mui/material/IconButton';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import DepthBox from './depth-box';
+import { ComposedModificationMetadata, isCompositeModification } from '../utils';
+import { useTheme } from '@mui/material/styles';
 
-const NameCell: FunctionComponent<{ row: Row<NetworkModificationMetadata> }> = ({ row }) => {
+const NameCell: FunctionComponent<{
+    row: Row<ComposedModificationMetadata>;
+}> = ({ row }) => {
     const intl = useIntl();
+    const theme = useTheme();
     const { computeLabel } = useModificationLabelComputer();
 
+    const depth = row.depth;
+
     const getModificationLabel = useCallback(
-        (modification: NetworkModificationMetadata, formatBold: boolean = true) => {
+        (modification: ComposedModificationMetadata, formatBold: boolean = true) => {
             return intl.formatMessage(
                 { id: `network_modifications.${modification.messageType}` },
-                { ...modification, ...computeLabel(modification, formatBold) }
+                { ...(modification as NetworkModificationMetadata), ...computeLabel(modification, formatBold) }
             );
         },
         [computeLabel, intl]
@@ -28,11 +39,49 @@ const NameCell: FunctionComponent<{ row: Row<NetworkModificationMetadata> }> = (
 
     const label = useMemo(() => getModificationLabel(row.original), [getModificationLabel, row.original]);
 
+    const renderDepthBox = () => {
+        const count = depth;
+        return Array.from({ length: count }, (_, i) => (
+            <DepthBox key={i} showTick={isCompositeModification(row.original) && i === count - 1} />
+        ));
+    };
+
     return (
-        <Box sx={mergeSx(styles.tableCell, createModificationNameCellStyle(row.original.activated))}>
-            <Tooltip disableFocusListener disableTouchListener title={label}>
-                <Box sx={styles.modificationLabel}>{label}</Box>
-            </Tooltip>
+        <Box sx={mergeSx(styles.tableCell, createNameCellRootStyle(theme, row.getIsExpanded(), depth))}>
+            {renderDepthBox()}
+            <Box sx={styles.nameCellInnerRow}>
+                {isCompositeModification(row.original) && (
+                    <Box sx={styles.nameCellTogglerBox}>
+                        <IconButton
+                            size="small"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                row.getToggleExpandedHandler()();
+                            }}
+                            sx={styles.nameCellToggleButton}
+                            aria-label={row.getIsExpanded() ? 'Collapse' : 'Expand'}
+                        >
+                            {row.getIsExpanded() ? (
+                                <KeyboardArrowDownIcon fontSize="small" />
+                            ) : (
+                                <KeyboardArrowRightIcon fontSize="small" />
+                            )}
+                        </IconButton>
+                    </Box>
+                )}
+                <Box sx={createNameCellLabelBoxSx(row.getIsExpanded(), depth)}>
+                    <Tooltip disableFocusListener disableTouchListener title={label}>
+                        <Box
+                            sx={mergeSx(
+                                styles.modificationLabel,
+                                createModificationNameCellStyle(row.original.activated)
+                            )}
+                        >
+                            {label}
+                        </Box>
+                    </Tooltip>
+                </Box>
+            </Box>
         </Box>
     );
 };

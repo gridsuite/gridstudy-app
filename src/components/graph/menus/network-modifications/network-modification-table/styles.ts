@@ -8,7 +8,7 @@
 import { MuiStyles } from '@gridsuite/commons-ui';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { SxProps, Theme } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha, darken, lighten } from '@mui/material/styles';
 import { CSSProperties } from 'react';
 
 const HIGHLIGHT_COLOR_BASE = 'rgba(144, 202, 249, 0.16)';
@@ -18,6 +18,11 @@ const DRAG_OPACITY = 0.5;
 const DEACTIVATED_OPACITY = 0.4;
 
 export const MODIFICATION_ROW_HEIGHT = 41;
+
+export const createCellBorderColor = (theme: Theme): string =>
+    theme.palette.mode === 'light'
+        ? lighten(alpha(theme.palette.divider, 1), 0.88)
+        : darken(alpha(theme.palette.divider, 1), 0.68);
 
 // Static styles
 
@@ -74,7 +79,7 @@ export const styles = {
         border: '1px solid #f5f5f5',
         display: 'flex',
         width: 'fit-content',
-        paddingRight: theme.spacing(1),
+        padding: theme.spacing(1),
     }),
     overflow: {
         whiteSpace: 'pre',
@@ -100,6 +105,7 @@ export const styles = {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
         whiteSpace: 'nowrap',
+        paddingLeft: '0.5vw',
     },
     rootNetworkHeader: {
         width: '100%',
@@ -111,6 +117,53 @@ export const styles = {
         modificationName: { cursor: 'pointer', minWidth: 0, overflow: 'hidden', flex: 1 },
         rootNetworkChip: { textAlign: 'center' },
     },
+    nameCellInnerRow: {
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0,
+        flex: 1,
+        minWidth: 0,
+        alignSelf: 'stretch',
+    },
+    nameCellTogglerBox: {
+        width: '32px',
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    nameCellToggleButton: {
+        padding: '4px',
+        width: '32px',
+        height: '32px',
+    },
+    nameCellLabelBoxPlain: {
+        flex: 1,
+        minWidth: 0,
+    },
+    // depth-box
+    depthBoxOuter: {
+        width: '32px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignSelf: 'stretch',
+        position: 'relative',
+    },
+    depthBoxLine: {
+        width: '1px',
+        backgroundColor: 'divider',
+        alignSelf: 'stretch',
+    },
+    depthBoxTick: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: '5px',
+        height: '1px',
+        backgroundColor: 'divider',
+        transform: 'translateY(-50%)',
+    },
 } as const satisfies MuiStyles;
 
 // Dynamic styles
@@ -118,7 +171,16 @@ export const styles = {
 export const DROP_INDICATOR_TOP = 'inset 0 2px 0 #90caf9';
 export const DROP_INDICATOR_BOTTOM = 'inset 0 -2px 0 #90caf9';
 
-export const createRowSx = (isHighlighted: boolean, isDragging: boolean, virtualRow: VirtualItem): SxProps => ({
+export const DROP_FORBIDDEN_INDICATOR_TOP = 'inset 0 2px 0 #FF3636';
+export const DROP_FORBIDDEN_INDICATOR_BOTTOM = 'inset 0 -2px 0 #FF3636';
+
+export const createRowSx = (
+    theme: Theme,
+    isHighlighted: boolean,
+    isDragging: boolean,
+    virtualRow: VirtualItem,
+    depth: number
+): SxProps => ({
     position: 'absolute',
     top: 0,
     left: 0,
@@ -132,11 +194,13 @@ export const createRowSx = (isHighlighted: boolean, isDragging: boolean, virtual
         backgroundColor: isHighlighted ? HIGHLIGHT_COLOR_HOVER : ROW_HOVER_COLOR,
     },
     ...(isDragging && { zIndex: 1, transform: 'none' }),
+    ...(depth === 0 && {
+        borderTop: `1px solid ${createCellBorderColor(theme)}`,
+    }),
 });
 
 export const createModificationNameCellStyle = (activated: boolean): CSSProperties => ({
     opacity: activated ? 1 : DEACTIVATED_OPACITY,
-    paddingLeft: '0.8vw',
 });
 
 export const createRootNetworkChipCellSx = (activated: boolean): SxProps => ({
@@ -164,6 +228,8 @@ export const createCellStyle = (cell: any, isAutoExtensible: boolean) => {
         height: `${MODIFICATION_ROW_HEIGHT}px`,
         display: 'flex',
         alignItems: 'center',
+        borderTop: 'none',
+        borderBottom: 'none',
     };
 };
 
@@ -195,5 +261,43 @@ export const createHeaderCellStyle = (
         borderTop: darkBorder,
         ...(isFirst && { borderLeft: darkBorder }),
         ...(isLast && { borderRight: darkBorder }),
+    };
+};
+export const BORDER_SUPPRESSED_COLUMNS = new Set(['dragHandle', 'select']);
+
+export const createCellContentWrapperSx = (theme: Theme, areBordersSuppressed: boolean): SxProps => ({
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    borderTop: areBordersSuppressed ? 'none' : `1px solid ${createCellBorderColor(theme)}`,
+    borderBottom: areBordersSuppressed ? 'none' : `1px solid ${createCellBorderColor(theme)}`,
+});
+
+export const createNameCellRootStyle = (theme: Theme, isExpanded: boolean, depth: number) => ({
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    alignItems: 'stretch',
+    gap: 0,
+    ...(depth === 0 &&
+        !isExpanded && {
+            borderTop: `1px solid ${createCellBorderColor(theme)}`,
+            borderBottom: `1px solid ${createCellBorderColor(theme)}`,
+        }),
+});
+
+export const createNameCellLabelBoxSx = (isExpanded: boolean, depth: number): SxProps<Theme> => {
+    return {
+        alignSelf: 'stretch',
+        display: 'flex',
+        alignItems: 'center',
+        flex: 1,
+        minWidth: 0,
+        ...((depth > 0 || isExpanded) && {
+            borderTop: (theme: Theme) => `1px solid ${createCellBorderColor(theme)}`,
+            borderBottom: (theme: Theme) => `1px solid ${createCellBorderColor(theme)}`,
+            borderLeft: (theme: Theme) => `1px solid ${createCellBorderColor(theme)}`,
+        }),
     };
 };

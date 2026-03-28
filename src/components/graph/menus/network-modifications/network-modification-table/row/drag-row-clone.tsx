@@ -6,26 +6,40 @@
  */
 
 import { Box } from '@mui/material';
-import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import { createCellStyle, styles } from '../styles';
-import { flexRender, Row } from '@tanstack/react-table';
-import { AUTO_EXTENSIBLE_COLUMNS, BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
+import { styles } from '../styles';
+import { Row } from '@tanstack/react-table';
+import { ComposedModificationMetadata } from '../utils';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import React, { useCallback } from 'react';
+import { mergeSx, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
 
-const DragCloneRow = ({ row }: { row: Row<NetworkModificationMetadata> }) => (
-    <Box sx={styles.dragRowClone}>
-        {row
-            .getVisibleCells()
-            .filter((cell) =>
-                [BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id, BASE_MODIFICATION_TABLE_COLUMNS.NAME.id].includes(
-                    cell.column.columnDef.id!
-                )
-            )
-            .map((cell) => (
-                <Box key={cell.id} sx={createCellStyle(cell, AUTO_EXTENSIBLE_COLUMNS.includes(cell.column.id))}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+const DragCloneRow = ({ row }: { row: Row<ComposedModificationMetadata> }) => {
+    const intl = useIntl();
+    const { computeLabel } = useModificationLabelComputer();
+
+    const getModificationLabel = useCallback(
+        (modification: ComposedModificationMetadata, formatBold: boolean = true) => {
+            return intl.formatMessage(
+                { id: `network_modifications.${modification.messageType}` },
+                { ...(modification as NetworkModificationMetadata), ...computeLabel(modification, formatBold) }
+            );
+        },
+        [computeLabel, intl]
+    );
+
+    return (
+        <Box sx={styles.dragRowClone}>
+            <Box sx={styles.tableCell}>
+                <Box sx={mergeSx(styles.dragHandle, { opacity: 1 })}>
+                    <DragIndicatorIcon fontSize="small" sx={styles.dragIndicatorIcon} />
                 </Box>
-            ))}
-    </Box>
-);
+            </Box>
+            <Box sx={styles.tableCell}>
+                <Box sx={styles.modificationLabel}>{getModificationLabel(row.original)}</Box>
+            </Box>
+        </Box>
+    );
+};
 
 export default DragCloneRow;

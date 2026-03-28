@@ -5,12 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useMemo, useRef } from 'react';
-import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import React, {
+    Dispatch,
+    FunctionComponent,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { DragDropContext, DragStart, Droppable, DroppableProvided, DropResult } from '@hello-pangea/dnd';
+import {
+    ColumnDef,
+    ExpandedState,
+    flexRender,
+    getCoreRowModel,
+    getExpandedRowModel,
+    Updater,
+    useReactTable,
+} from '@tanstack/react-table';
+import { DragDropContext, Droppable, DroppableProvided } from '@hello-pangea/dnd';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { NetworkModificationEditorNameHeaderProps } from './renderers/network-modification-node-editor-name-header';
 import { ExcludedNetworkModifications } from '../network-modification-menu.type';
@@ -20,14 +36,24 @@ import ModificationRow from './row/modification-row';
 import { useTheme } from '@mui/material/styles';
 import { useModificationsDragAndDrop } from './use-modifications-drag-and-drop';
 import { AppState } from '../../../../../redux/reducer.type';
+import {
+    ComposedModificationMetadata,
+    fetchSubModificationsForExpandedRows,
+    findAllLoadedCompositeModifications,
+    formatComposedModification,
+    isCompositeModification,
+    mergeSubModificationsIntoTree,
+    refetchSubModificationsForExpandedRows,
+} from './utils';
+import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];
     setModifications: Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
     handleCellClick: (modification: NetworkModificationMetadata) => void;
     isRowDragDisabled?: boolean;
-    onRowDragStart: (event: DragStart) => void;
-    onRowDragEnd: (event: DropResult) => void;
+    onRowDragStart: () => void;
+    onRowDragEnd: () => void;
     onRowSelected: (selectedRows: NetworkModificationMetadata[]) => void;
     modificationsToExclude: ExcludedNetworkModifications[];
     setModificationsToExclude: Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
@@ -55,12 +81,54 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     const containerRef = useRef<HTMLDivElement>(null);
     const lastClickedIndex = useRef<number | null>(null);
 
-    const columns = useMemo<ColumnDef<NetworkModificationMetadata>[]>(() => {
+    const [expanded, setExpanded] = useState<ExpandedState>({});
+
+    const [composedModifications, setComposedModifications] = useState<ComposedModificationMetadata[]>(
+        formatComposedModification(modifications)
+    );
+
+    useEffect(() => {
+        setComposedModifications((prevMods) => {
+            // Rebuild from the new modifications prop, carrying over already-fetched subModifications
+            // to avoid a visual flash of empty children while re-fetches are in flight.
+            const nextMods = mergeSubModificationsIntoTree(formatComposedModification(modifications), prevMods);
+
+            // Re-fetch for any composite that already has loaded sub-modifications, regardless of
+            // whether it is currently expanded to avoid stale state
+            let loadedComposite: ComposedModificationMetadata[] = [];
+            findAllLoadedCompositeModifications(nextMods, loadedComposite);
+            refetchSubModificationsForExpandedRows(
+                loadedComposite.map((mod) => mod.uuid),
+                nextMods,
+                setComposedModifications
+            );
+            return nextMods;
+        });
+    }, [modifications]);
+
+    const handleExpandRow = useCallback((updater: Updater<ExpandedState>) => {
+        setExpanded((prevExpanded) => {
+            const nextExpanded = typeof updater === 'function' ? updater(prevExpanded) : updater;
+
+            const prevRecord = prevExpanded === true ? {} : prevExpanded;
+            const nextRecord = nextExpanded === true ? {} : nextExpanded;
+            const newlyExpandedIds = Object.keys(nextRecord).filter((id) => nextRecord[id] && !prevRecord[id]);
+
+            setComposedModifications((prevMods) => {
+                fetchSubModificationsForExpandedRows(newlyExpandedIds, prevMods, setComposedModifications);
+                return prevMods;
+            });
+
+            return nextExpanded;
+        });
+    }, []);
+
+    const columns = useMemo<ColumnDef<ComposedModificationMetadata>[]>(() => {
         const staticColumns = createBaseColumns(
             isRowDragDisabled,
             modifications.length,
             nameHeaderProps,
-            setModifications
+            setComposedModifications
         );
         const dynamicColumns = isMonoRootStudy
             ? []
@@ -77,7 +145,6 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
         isRowDragDisabled,
         modifications,
         nameHeaderProps,
-        setModifications,
         isMonoRootStudy,
         rootNetworks,
         currentRootNetworkUuid,
@@ -86,11 +153,18 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     ]);
 
     const table = useReactTable({
-        data: modifications,
+        data: composedModifications,
         columns,
+        state: { expanded },
         getCoreRowModel: getCoreRowModel(),
+        getExpandedRowModel: getExpandedRowModel(),
+        getSubRows: (row) => row.subModifications,
         getRowId: (row) => row.uuid,
+        getRowCanExpand: (row) => isCompositeModification(row.original),
         enableRowSelection: true,
+        enableSubRowSelection: false,
+        enableExpanding: true,
+        onExpandedChange: handleExpandRow,
         meta: { lastClickedIndex, onRowSelected },
     });
 
@@ -107,11 +181,14 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     const { handleDragUpdate, handleDragEnd, renderClone } = useModificationsDragAndDrop({
         rows,
         containerRef,
-        onRowDragEnd,
+        composedModifications,
+        setComposedModifications,
+        onDragEnd: onRowDragEnd,
     });
 
     useEffect(() => {
         table.resetRowSelection();
+        table.resetExpanded();
         lastClickedIndex.current = null;
     }, [currentTreeNodeId, table]);
 
