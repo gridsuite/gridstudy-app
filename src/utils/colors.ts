@@ -7,7 +7,7 @@
 
 import { BaseVoltage, LIGHT_THEME } from '@gridsuite/commons-ui';
 
-export const INVALID_COMPUTATION_OPACITY = 0.2;
+export const INVALID_COMPUTATION_OPACITY = 0.5;
 
 /**
  * Parse an `rgb(r, g, b)` string into a numeric color tuple.
