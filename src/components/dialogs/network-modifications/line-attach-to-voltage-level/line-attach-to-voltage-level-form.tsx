@@ -19,9 +19,9 @@ import {
     SUBSTATION_CREATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
-import { Identifiable, TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { TextInput } from '@gridsuite/commons-ui';
+import { ConnectivityForm, VoltageLevelOption } from '../../connectivity/connectivity-form';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -52,7 +52,7 @@ interface LineAttachToVoltageLevelFormProps {
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     attachmentPoint: ExtendedVoltageLevelCreationInfo;
     setAttachmentPoint: Dispatch<SetStateAction<ExtendedVoltageLevelCreationInfo>>;
-    allVoltageLevelOptions: Identifiable[];
+    allVoltageLevelOptions: VoltageLevelOption[];
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
 }
@@ -152,21 +152,12 @@ const LineAttachToVoltageLevelForm = ({
 
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
-    const busbarSectionOptions = useMemo(() => {
-        if (isVoltageLevelEdit && voltageLevelToEdit?.busbarSections) {
-            return voltageLevelToEdit.busbarSections;
-        } else {
-            return [];
-        }
-    }, [isVoltageLevelEdit, voltageLevelToEdit]);
-
     const connectivityForm = (
         <ConnectivityForm
             voltageLevelSelectLabel={'AttachedVoltageLevelId'}
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            newBusOrBusbarSectionOptions={busbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}

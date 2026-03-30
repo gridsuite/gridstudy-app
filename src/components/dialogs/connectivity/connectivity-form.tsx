@@ -22,7 +22,8 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import PositionDiagramPane from '../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import PositionDiagramPane
+    from '../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
 import {
@@ -41,6 +42,7 @@ import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } fro
 import type { UUID } from 'node:crypto';
 import { ConnectablePositionFormInfos } from './connectivity.type';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
+import { fetchBusBarSectionsForNewCoupler } from '../../../services/network-modification';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -60,14 +62,26 @@ import { CurrentTreeNode } from '../../graph/tree-node.type';
  * @returns JSX.Element
  */
 
+interface NewVoltageLevelOption extends Identifiable {
+    exist: false;
+    busbarCount: number;
+    sectionCount: number;
+    switchKinds: string[];
+}
+
+interface ExistingVoltageLevelOption extends Identifiable {
+    exist?: true;
+}
+
+export type VoltageLevelOption = NewVoltageLevelOption | ExistingVoltageLevelOption;
+
 interface ConnectivityFormProps {
     id?: string;
     voltageLevelSelectLabel?: string;
     direction?: GridDirection;
     withDirectionsInfos?: boolean;
     withPosition: boolean;
-    voltageLevelOptions?: Identifiable[];
-    newBusOrBusbarSectionOptions?: Option[];
+    voltageLevelOptions?: VoltageLevelOption[];
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
@@ -88,7 +102,6 @@ export function ConnectivityForm({
     withDirectionsInfos = true,
     withPosition = false,
     voltageLevelOptions = [],
-    newBusOrBusbarSectionOptions = [],
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
@@ -119,24 +132,52 @@ export function ConnectivityForm({
         [voltageLevelOptions]
     );
 
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
     useEffect(() => {
         if (watchVoltageLevelId) {
-            const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
-            if (existingVoltageLevelOption) {
-                fetchBusesOrBusbarSectionsForVoltageLevel(
-                    studyUuid,
-                    currentNodeUuid,
-                    currentRootNetworkUuid,
-                    watchVoltageLevelId
-                ).then((busesOrbusbarSections) => {
-                    lastFetchedBusesVlIds.current = watchVoltageLevelId;
-                    setBusOrBusbarSectionOptions(
-                        busesOrbusbarSections?.map((busesOrbusbarSection) => ({
-                            id: busesOrbusbarSection.id,
-                            label: busesOrbusbarSection?.name ?? '',
-                        })) || []
-                    );
-                });
+            const selectedOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
+            if (selectedOption) {
+                if (selectedOption.exist === false) {
+                    fetchBusBarSectionsForNewCoupler(
+                        watchVoltageLevelId,
+                        selectedOption.busbarCount,
+                        selectedOption.sectionCount,
+                        selectedOption.switchKinds
+                    )
+                        .then((ids) => {
+                            lastFetchedBusesVlIds.current = watchVoltageLevelId;
+                            setBusOrBusbarSectionOptions(ids.map((bbsId) => ({ id: bbsId, label: '' })));
+                        })
+                        .catch((error) => {
+                            console.error('Failed to fetch busbar sections for new coupler:', error);
+                            setBusOrBusbarSectionOptions([]);
+                        });
+                } else if (fetchBusesOrBusbarSections) {
+                    fetchBusesOrBusbarSections(watchVoltageLevelId)
+                        .then((busesOrbusbarSections) => {
+                            lastFetchedBusesVlIds.current = watchVoltageLevelId;
+                            setBusOrBusbarSectionOptions(
+                                busesOrbusbarSections?.map((busesOrbusbarSection) => ({
+                                    id: busesOrbusbarSection.id,
+                                    label: busesOrbusbarSection?.name ?? '',
+                                })) || []
+                            );
+                        })
+                        .catch((error) => {
+                            console.error('Failed to fetch buses or busbar sections:', error);
+                            setBusOrBusbarSectionOptions([]);
+                        });
+                }
             }
             if (watchVoltageLevelId !== lastFetchedBusesVlIds.current) {
                 setBusOrBusbarSectionOptions([]);
@@ -144,13 +185,7 @@ export function ConnectivityForm({
         } else {
             setBusOrBusbarSectionOptions([]);
         }
-    }, [watchVoltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelOptions, id]);
-
-    useEffect(() => {
-        if (newBusOrBusbarSectionOptions?.length > 0) {
-            setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
-        }
-    }, [newBusOrBusbarSectionOptions]);
+    }, [fetchBusesOrBusbarSections, voltageLevelOptions, watchVoltageLevelId]);
 
     const handleChangeVoltageLevel = useCallback(() => {
         onVoltageLevelChangeCallback?.();
