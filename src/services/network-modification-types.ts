@@ -13,7 +13,7 @@ import {
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
-import { AttributeModification, ModificationType, Option, Property } from '@gridsuite/commons-ui';
+import { AttributeModification, ModificationType, Property } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
@@ -328,11 +328,6 @@ export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
     ipMin: number | null;
     ipMax: number | null;
     topologyKind?: string;
-}
-
-export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
-    lowShortCircuitCurrentLimit: number | null;
-    highShortCircuitCurrentLimit: number | null;
 }
 
 type VariationFilter = {
@@ -698,7 +693,6 @@ export interface DivideLineInfo {
 
 export interface ExtendedVoltageLevelCreationInfo extends VoltageLevelCreationInfo {
     type: ModificationType.VOLTAGE_LEVEL_CREATION;
-    busbarSections?: Option[];
 }
 
 export interface AttachLineInfo {

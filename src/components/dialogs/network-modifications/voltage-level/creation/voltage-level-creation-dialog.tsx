@@ -25,6 +25,7 @@ import {
     translateSwitchKinds,
     substationCreationEmptyFormData,
     copyEquipmentPropertiesForCreation,
+    VoltageLevelDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -45,7 +46,6 @@ import {
 } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { fetchEquipmentsIds } from 'services/study/network-map';
-import { VoltageLevelDto } from '../voltage-level.type';
 
 const voltageLevelDtoToForm = (formInfos: VoltageLevelDto, intl?: IntlShape) => ({
     [FieldConstants.EQUIPMENT_ID]: formInfos?.id,
