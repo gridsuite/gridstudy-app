@@ -50,7 +50,7 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { divideLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils.type';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
-import { getNewVoltageLevelOptions } from '../../../utils/utils';
+import { getNewVoltageLevelOptions, mergeVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
@@ -244,13 +244,7 @@ const LineSplitWithVoltageLevelDialog = ({
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
             fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((existingVl) => {
-                setVoltageLevelOptions((prev) => {
-                    const nonExistingVl = prev.filter((opt) => opt.exist === false);
-                    return [
-                        ...existingVl.toSorted((a, b) => a?.id?.localeCompare(b?.id)),
-                        ...nonExistingVl,
-                    ] as VoltageLevelOption[];
-                });
+                setVoltageLevelOptions((prev) => mergeVoltageLevelOptions(existingVl, prev));
             });
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);

@@ -49,7 +49,7 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { attachLine } from '../../../../services/study/network-modifications';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import LineAttachToVoltageLevelIllustration from './line-attach-to-voltage-level-illustration';
-import { getNewVoltageLevelOptions } from '../../../utils/utils';
+import { getNewVoltageLevelOptions, mergeVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
@@ -244,13 +244,7 @@ const LineAttachToVoltageLevelDialog = ({
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
             fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((existingVl) => {
-                setVoltageLevelOptions((prev) => {
-                    const nonExistingVl = prev.filter((opt) => opt.exist === false);
-                    return [
-                        ...existingVl.toSorted((a, b) => a?.id?.localeCompare(b?.id)),
-                        ...nonExistingVl,
-                    ] as VoltageLevelOption[];
-                });
+                setVoltageLevelOptions((prev) => mergeVoltageLevelOptions(existingVl, prev));
             });
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);

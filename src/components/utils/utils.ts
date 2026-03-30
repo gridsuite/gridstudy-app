@@ -8,7 +8,7 @@
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
 import { TemporaryLimit } from 'services/network-modification-types';
-import { AttributeModification, Identifiable, OperationType } from '@gridsuite/commons-ui';
+import { AttributeModification, Identifiable, OperationType, VoltageLevelOption } from '@gridsuite/commons-ui';
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
@@ -239,6 +239,14 @@ export function getNewVoltageLevelOptions<T extends Identifiable>(
     newVoltageLevelOptions.push(formattedVoltageLevel);
 
     return newVoltageLevelOptions;
+}
+
+export function mergeVoltageLevelOptions(
+    existingVl: Identifiable[],
+    currentOptions: VoltageLevelOption[]
+): VoltageLevelOption[] {
+    const nonExistingVl = currentOptions.filter((opt) => opt.exist === false);
+    return [...existingVl.toSorted((a, b) => a?.id?.localeCompare(b?.id)), ...nonExistingVl] as VoltageLevelOption[];
 }
 
 // remove elementToToggle from list, or add it if it does not exist yet
