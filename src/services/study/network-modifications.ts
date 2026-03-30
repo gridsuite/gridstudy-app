@@ -9,8 +9,8 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    EquipmentDeletionDto,
     EquipmentInfos,
-    EquipmentType,
     LoadCreationDto,
     LoadModificationDto,
     MODIFICATION_TYPES,
@@ -20,6 +20,7 @@ import {
     toModificationOperation,
     SubstationCreationDto,
     SubstationModificationDto,
+    VoltageLevelModificationDto,
 } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
@@ -56,7 +57,6 @@ import {
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
-    VoltageLeveModificationInfo,
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
@@ -69,7 +69,6 @@ import {
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '../../components/utils/field-constants';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
-import { EquipmentDeletionSpecificInfos } from '../../components/dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1175,16 +1174,13 @@ export function createVoltageLevel({
 export function modifyVoltageLevel({
     studyUuid,
     nodeUuid,
-    modificationUuid = undefined,
-    equipmentId,
-    equipmentName,
-    nominalV,
-    lowVoltageLimit,
-    highVoltageLimit,
-    lowShortCircuitCurrentLimit,
-    highShortCircuitCurrentLimit,
-    properties,
-}: VoltageLeveModificationInfo) {
+    modificationUuid,
+    ...dto
+}: {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: UUID;
+} & VoltageLevelModificationDto) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -1201,17 +1197,7 @@ export function modifyVoltageLevel({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
-            equipmentId,
-            equipmentName: toModificationOperation(equipmentName),
-            nominalV: toModificationOperation(nominalV),
-            lowVoltageLimit: toModificationOperation(lowVoltageLimit),
-            highVoltageLimit: toModificationOperation(highVoltageLimit),
-            ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
-            ipMax: toModificationOperation(highShortCircuitCurrentLimit),
-            properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -1525,44 +1511,27 @@ export function deleteAttachingLine({
     });
 }
 
-export interface DeleteEquipmentInfo {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    equipmentId: UUID;
-    equipmentType: EquipmentType;
-    equipmentSpecificInfos?: EquipmentDeletionSpecificInfos;
-}
-
-export function deleteEquipment({
-    studyUuid,
-    nodeUuid,
-    uuid,
-    equipmentId,
-    equipmentType,
-    equipmentSpecificInfos,
-}: DeleteEquipmentInfo) {
+export function deleteEquipment(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: EquipmentDeletionDto
+) {
     let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (uuid) {
-        deleteEquipmentUrl += '/' + encodeURIComponent(uuid);
+    if (modificationUuid) {
+        deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating equipment deletion');
     } else {
         console.info('Creating equipment deletion');
     }
 
-    return backendFetch(deleteEquipmentUrl, {
-        method: uuid ? 'PUT' : 'POST',
+    return backendFetchText(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
-            equipmentId: equipmentId,
-            equipmentType: equipmentType,
-            equipmentInfos: equipmentSpecificInfos,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 

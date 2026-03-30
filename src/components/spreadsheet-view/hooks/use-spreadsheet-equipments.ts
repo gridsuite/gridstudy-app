@@ -37,7 +37,7 @@ export const useSpreadsheetEquipments = () => {
 
     const applyToAllTypes = useCallback(
         (callback: (type: SpreadsheetEquipmentType) => void) => {
-            tablesDefinitions.map((tableDefinition) => tableDefinition.type).forEach((type) => callback(type));
+            new Set(tablesDefinitions.map((tableDefinition) => tableDefinition.type)).forEach((type) => callback(type));
         },
         [tablesDefinitions]
     );
