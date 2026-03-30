@@ -243,8 +243,14 @@ const LineSplitWithVoltageLevelDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((values) => {
-                setVoltageLevelOptions(values.toSorted((a, b) => a?.id?.localeCompare(b?.id)) as VoltageLevelOption[]);
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((existingVl) => {
+                setVoltageLevelOptions((prev) => {
+                    const nonExistingVl = prev.filter((opt) => opt.exist === false);
+                    return [
+                        ...existingVl.toSorted((a, b) => a?.id?.localeCompare(b?.id)),
+                        ...nonExistingVl,
+                    ] as VoltageLevelOption[];
+                });
             });
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);

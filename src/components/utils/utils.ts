@@ -8,7 +8,7 @@
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
 import { TemporaryLimit } from 'services/network-modification-types';
-import { AttributeModification, Identifiable, OperationType, Option } from '@gridsuite/commons-ui';
+import { AttributeModification, Identifiable, OperationType } from '@gridsuite/commons-ui';
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
@@ -84,19 +84,6 @@ export const areNumbersOrdered = (array?: unknown) => {
         current = nextOne;
     }
     return true;
-};
-
-export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
-    const newBusbarSections: Option[] = [];
-    for (let i = 0; i < busbarCount; i++) {
-        for (let j = 0; j < sectionCount; j++) {
-            newBusbarSections.push({
-                id: equipmentId + '_' + (i + 1) + '_' + (j + 1),
-                label: '',
-            });
-        }
-    }
-    return newBusbarSections;
 };
 
 export function toModificationUnsetOperation<T>(
