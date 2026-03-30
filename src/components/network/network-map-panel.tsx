@@ -62,7 +62,12 @@ import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
 import { isReactFlowRootNodeData } from 'redux/utils';
-import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
+import {
+    isLoadflowResultNotification,
+    isRootNetworksUpdatedNotification,
+    parseEventData,
+    CommonStudyEventData,
+} from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
@@ -744,8 +749,8 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             if (!isInitialized) {
                 return;
             }
-            const eventData: unknown = JSON.parse(event.data);
-            if (isLoadflowResultNotification(eventData)) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isLoadflowResultNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
                 const nodeUuidFromNotification = eventData.headers.node;
                 if (
@@ -766,8 +771,8 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             if (!isInitialized) {
                 return;
             }
-            const eventData: unknown = JSON.parse(event.data);
-            if (isRootNetworksUpdatedNotification(eventData)) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isRootNetworksUpdatedNotification(eventData)) {
                 const rootNetworkUuidsFromNotification = eventData.headers.rootNetworkUuids;
                 if (rootNetworkUuidsFromNotification.includes(currentRootNetworkUuid)) {
                     setIsInitialized(false);
