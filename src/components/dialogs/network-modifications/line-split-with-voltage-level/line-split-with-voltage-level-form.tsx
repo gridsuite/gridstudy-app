@@ -7,10 +7,10 @@
 
 import Grid from '@mui/material/Grid';
 import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/field-constants';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
-import { ConnectivityForm, Identifiable, Option, TextInput } from '@gridsuite/commons-ui';
+import { ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
 import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
@@ -27,9 +27,9 @@ import { VoltageLevelCreationInfo } from '../../../../services/network-modificat
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 export interface ExtendedVoltageLevelFormInfos extends VoltageLevelFormInfos {
-    busbarSections?: Option[];
     sectionCount: number;
     busbarCount: number;
+    switchKinds?: string[];
 }
 
 interface LineSplitWithVoltageLevelFormProps {
@@ -39,7 +39,7 @@ interface LineSplitWithVoltageLevelFormProps {
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit: ExtendedVoltageLevelFormInfos | null;
     onVoltageLevelChange?: () => void;
-    allVoltageLevelOptions: Identifiable[];
+    allVoltageLevelOptions: VoltageLevelOption[];
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
 }
@@ -98,16 +98,11 @@ const LineSplitWithVoltageLevelForm = ({
 
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
-    const busbarSectionOptions = useMemo<Option[]>(() => {
-        return isVoltageLevelEdit && voltageLevelToEdit?.busbarSections ? voltageLevelToEdit.busbarSections : [];
-    }, [isVoltageLevelEdit, voltageLevelToEdit]);
-
     const connectivityForm = (
         <ConnectivityForm
             voltageLevelSelectLabel={'VoltageLevelToSplitAt'}
             withPosition={false}
             withDirectionsInfos={false}
-            newBusOrBusbarSectionOptions={busbarSectionOptions}
             voltageLevelOptions={allVoltageLevelOptions}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
