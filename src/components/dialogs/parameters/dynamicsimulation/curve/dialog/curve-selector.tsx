@@ -10,10 +10,9 @@ import EquipmentFilter, { GetSelectedEquipmentsHandle } from './equipment-filter
 import ModelFilter, { GetSelectedVariablesHandle } from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
-import { type MuiStyles } from '@gridsuite/commons-ui';
+import { IdentifiableAttributes, type MuiStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { getReferencedEquipmentTypeForModel } from './curve-selector-utils';
-import { IdentifiableAttributes } from 'services/study/filter';
 import { ModelVariable } from '../../dynamic-simulation.type';
 
 const styles = {

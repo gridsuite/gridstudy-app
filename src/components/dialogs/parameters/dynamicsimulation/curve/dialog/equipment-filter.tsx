@@ -9,9 +9,15 @@ import { Box, Grid, MenuItem, Select, type SelectChangeEvent, Typography } from 
 import { FormattedMessage, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CustomAGGrid, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomAGGrid,
+    IdentifiableAttributes,
+    type MuiStyles,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
-import { evaluateJsonFilter, type IdentifiableAttributes } from '../../../../../../services/study/filter';
+import { evaluateJsonFilter } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
 import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';

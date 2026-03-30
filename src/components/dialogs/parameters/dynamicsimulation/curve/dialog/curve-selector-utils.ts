@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ExpertFilter } from 'services/study/filter';
 import {
     EQUIPMENT_TYPES,
     EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE,
@@ -15,7 +14,7 @@ import {
     EQUIPMENTS_WITH_TWO_SUBSTATIONS,
 } from '../../../../../utils/equipment-types';
 import { CombinatorType, OperatorType } from '../../../../filter/expert/expert-filter.type';
-import { DataType, FieldType } from '@gridsuite/commons-ui';
+import { DataType, ExpertFilter, FieldType } from '@gridsuite/commons-ui';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,

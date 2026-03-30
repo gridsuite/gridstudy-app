@@ -8,10 +8,9 @@
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Typography } from '@mui/material';
-import { CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
+import { CustomAGGrid, EquipmentType, type MuiStyles } from '@gridsuite/commons-ui';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { AGGRID_LOCALES } from '../../../../../../translations/not-intl/aggrid-locales';
 
 const styles = {
@@ -25,7 +24,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface Curve {
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     equipmentId: string;
     variableId: string | undefined;
 }

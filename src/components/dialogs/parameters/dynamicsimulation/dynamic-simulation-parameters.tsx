@@ -285,7 +285,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                             mapping={
                                 parameters
                                     ? {
-                                          mappings: parameters.mappings,
+                                          mappings: [],
                                       }
                                     : undefined
                             }
