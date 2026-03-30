@@ -20,7 +20,7 @@ import {
     safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
 import {
-    CompositeModificationsActionType,
+    CompositeModificationAction,
     NetworkModificationCopyInfos,
 } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
@@ -225,6 +225,36 @@ export function fetchContingencyCount(
     return backendFetchJson(url);
 }
 
+export function executeCompositeModificationAction(
+    studyUuid: UUID,
+    targetNodeId: UUID,
+    compositeModificationsToInsert: {
+        first: UUID;
+        second: string; // composite modification name (if needed)
+    }[],
+    compositeModificationAction: CompositeModificationAction
+) {
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        safeEncodeURIComponent(studyUuid) +
+        '/nodes/' +
+        safeEncodeURIComponent(targetNodeId) +
+        '/composite-modifications?' +
+        new URLSearchParams({
+            action: compositeModificationAction.toString(),
+        });
+
+    return backendFetch(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(compositeModificationsToInsert),
+    });
+}
+
 export function copyOrMoveModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
@@ -259,7 +289,7 @@ export const insertCompositeModifications = (
     studyUuid: string,
     nodeUuid: string,
     modifications: Record<string, string>[],
-    action: CompositeModificationsActionType
+    action: CompositeModificationAction
 ): Promise<void> => {
     const urlSearchParams = new URLSearchParams({ action });
     return backendFetch(`${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modifications?${urlSearchParams}`, {

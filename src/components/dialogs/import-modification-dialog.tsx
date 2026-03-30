@@ -18,7 +18,7 @@ import { insertCompositeModifications } from '../../services/study';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import { CompositeModificationsActionType } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import {
     Box,
     Button,
@@ -50,7 +50,6 @@ import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/util
  * @param open     Whether the dialog is open
  * @param onClose  Callback to close the dialog
  */
-
 interface ImportModificationDialogProps {
     open: boolean;
     onClose: () => void;
@@ -62,13 +61,13 @@ interface SelectedModification {
 }
 
 interface FormData {
-    [ACTION]: CompositeModificationsActionType;
+    [ACTION]: CompositeModificationAction;
     [SELECTED_MODIFICATIONS]: SelectedModification[];
     [COMPOSITE_NAMES]: Record<string, string>;
 }
 
 const emptyFormData: FormData = {
-    [ACTION]: CompositeModificationsActionType.SPLIT,
+    [ACTION]: CompositeModificationAction.SPLIT,
     [SELECTED_MODIFICATIONS]: [],
     [COMPOSITE_NAMES]: {},
 };
@@ -77,12 +76,12 @@ const formSchema = yup
     .object()
     .shape({
         [ACTION]: yup
-            .mixed<CompositeModificationsActionType>()
-            .oneOf(Object.values(CompositeModificationsActionType))
+            .mixed<CompositeModificationAction>()
+            .oneOf(Object.values(CompositeModificationAction))
             .required(),
         [SELECTED_MODIFICATIONS]: yup.array().min(1).required(),
         [COMPOSITE_NAMES]: yup.mixed<Record<string, string>>().when([ACTION], {
-            is: CompositeModificationsActionType.INSERT,
+            is: CompositeModificationAction.INSERT,
             then: (schema) =>
                 schema.test('all-names-filled', 'FieldIsRequired', function (value) {
                     const selections: SelectedModification[] = this.parent[SELECTED_MODIFICATIONS] ?? [];
@@ -129,7 +128,7 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
     const action = watch(ACTION);
     const selectedModifications = watch(SELECTED_MODIFICATIONS);
     const compositeNames = watch(COMPOSITE_NAMES);
-    const isInsertMode = action === CompositeModificationsActionType.INSERT;
+    const isInsertMode = action === CompositeModificationAction.INSERT;
 
     const handleSelectModification = (selectedElements: TreeViewFinderNodeProps[]) => {
         setIsSelectorOpen(false);
@@ -185,12 +184,12 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
                                 render={({ field }) => (
                                     <RadioGroup row {...field}>
                                         <FormControlLabel
-                                            value={CompositeModificationsActionType.SPLIT}
+                                            value={CompositeModificationAction.SPLIT}
                                             control={<Radio size="small" />}
                                             label={intl.formatMessage({ id: 'CompositeModificationsActionSplit' })}
                                         />
                                         <FormControlLabel
-                                            value={CompositeModificationsActionType.INSERT}
+                                            value={CompositeModificationAction.INSERT}
                                             control={<Radio size="small" />}
                                             label={intl.formatMessage({ id: 'CompositeModificationsActionInsert' })}
                                         />

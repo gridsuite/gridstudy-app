@@ -43,10 +43,9 @@ export enum NetworkModificationCopyType {
     MOVE = 'MOVE',
 }
 
-// New enum for the dedicated composite-modifications endpoint
-export enum CompositeModificationsActionType {
-    SPLIT = 'SPLIT', // Extract individual modifications from the composite
-    INSERT = 'INSERT', // Keep and insert the composite modification as-is
+export enum CompositeModificationAction {
+    SPLIT = 'SPLIT', // the network modifications contained into the composite modifications are extracted and inserted one by one
+    INSERT = 'INSERT', // the composite modifications are fully inserted as composite modifications
 }
 
 export interface NetworkModificationCopyInfos {
