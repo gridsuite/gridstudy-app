@@ -75,10 +75,7 @@ const emptyFormData: FormData = {
 const formSchema = yup
     .object()
     .shape({
-        [ACTION]: yup
-            .mixed<CompositeModificationAction>()
-            .oneOf(Object.values(CompositeModificationAction))
-            .required(),
+        [ACTION]: yup.mixed<CompositeModificationAction>().oneOf(Object.values(CompositeModificationAction)).required(),
         [SELECTED_MODIFICATIONS]: yup.array().min(1).required(),
         [COMPOSITE_NAMES]: yup.mixed<Record<string, string>>().when([ACTION], {
             is: CompositeModificationAction.INSERT,
