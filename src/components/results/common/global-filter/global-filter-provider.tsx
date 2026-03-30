@@ -16,7 +16,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { addToGlobalFilterOptions } from '../../../../redux/actions';
+import { addToGlobalFilterOptions, markNotFoundGlobalFiltersAsDeleted } from '../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
@@ -86,7 +86,7 @@ export default function GlobalFilterProvider({
                 const error = responseError as Error & { status: number };
                 if (error.status === HttpStatusCode.NOT_FOUND) {
                     // Not found => updated in global filter options for display
-                    dispatch(addToGlobalFilterOptions([{ ...genericFilter, deleted: true }], tableType, tableUuid));
+                    dispatch(markNotFoundGlobalFiltersAsDeleted([genericFilter], tableType, tableUuid));
                 } else {
                     snackWithFallback(snackError, error, {
                         headerId: 'ComputationFilterResultsError',
@@ -97,7 +97,7 @@ export default function GlobalFilterProvider({
         [dispatch, tableType, tableUuid, snackError]
     );
 
-    // Check the selected global filters and remove them if they do not exist anymore.
+    // Check the selected global filters and mark them as deleted if they no longer exist.
     useEffect(() => {
         const checkSelectedFilters = async () => {
             const genericFilters: GlobalFilter[] = selectedGlobalFilters.filter(

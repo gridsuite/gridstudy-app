@@ -83,6 +83,8 @@ import {
     type MapDataLoadingAction,
     type MapEquipmentsCreatedAction,
     type MapEquipmentsInitializedAction,
+    MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+    type MarkNotFoundGlobalFiltersAsDeletedAction,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
@@ -1702,6 +1704,30 @@ export const reducer = createReducer(initialState, (builder) => {
         tableState.recents = [...newRecents, ...tableState.recents].slice(0, MAX_RECENT_GLOBAL_FILTERS);
         tableState.selected = [];
     });
+    builder.addCase(
+        MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+        (state, action: MarkNotFoundGlobalFiltersAsDeletedAction) => {
+            const { globalFilters, tableType, tableId } = action;
+            globalFilters.forEach((filter) => {
+                const existingIndex = state.globalFilterOptions.findIndex((obj) => obj.id === filter.id);
+                if (existingIndex >= 0) {
+                    const existing = state.globalFilterOptions[existingIndex];
+                    Object.assign(existing, filter, { deleted: true });
+                } else {
+                    state.globalFilterOptions.push({
+                        ...filter,
+                        deleted: true,
+                    });
+                }
+            });
+            const index = tableId ?? tableType;
+            if (!index) return;
+            const tableState = state.tableFilters.globalFilters[index];
+            if (tableState && tableState.recents?.length) {
+                tableState.recents = tableState.recents.filter((r) => !globalFilters.some((gf) => gf.id === r.id));
+            }
+        }
+    );
 });
 
 function updateSubstationAfterVLDeletion(

@@ -11,6 +11,7 @@ import {
     ADD_TO_GLOBAL_FILTER_OPTIONS,
     CLEAR_GLOBAL_FILTERS,
     GlobalFilterAction,
+    MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
     REMOVE_GLOBAL_FILTERS,
 } from './actions';
 import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
@@ -37,6 +38,7 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
     switch (action.type) {
         case ADD_GLOBAL_FILTERS:
         case ADD_TO_GLOBAL_FILTER_OPTIONS:
+        case MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED:
         case REMOVE_GLOBAL_FILTERS:
         case CLEAR_GLOBAL_FILTERS: {
             const { tableType, tableId } = action as GlobalFilterAction;
@@ -65,8 +67,8 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
                     const filterOption = state.globalFilterOptions.find((opt) => opt.id === recentFilter.id);
                     return filterOption ? { ...filterOption, unselectedDate: recentFilter.unselectedDate } : undefined;
                 })
-                .filter((f) => f !== undefined)
-                .filter((f) => !f.deleted);
+                .filter((f) => f !== undefined);
+
             const globalFilters = [...selectedGlobalFilters, ...recentGlobalFilters];
 
             // Debounce per table to avoid excessive requests
