@@ -49,6 +49,7 @@ import {
     VoltageInitParametersInLine,
     DynamicSecurityAnalysisInline,
     fetchDynamicSecurityAnalysisProviders,
+    BuildStatus,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -67,7 +68,6 @@ import {
     fetchDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisParameters,
 } from '../services/study/dynamic-security-analysis';
-import { BUILD_STATUS } from './network/constants';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -316,8 +316,8 @@ const ParametersTabs: FunctionComponent = () => {
                         parametersBackend={securityAnalysisParametersBackend}
                         fetchContingencyCount={fetchContingencyCountBackend}
                         isBuiltCurrentNode={
-                            currentNodeBuildStatus !== BUILD_STATUS.NOT_BUILT &&
-                            currentNodeBuildStatus !== BUILD_STATUS.BUILDING
+                            currentNodeBuildStatus !== BuildStatus.NOT_BUILT &&
+                            currentNodeBuildStatus !== BuildStatus.BUILDING
                         }
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
