@@ -37,6 +37,7 @@ import CustomTablePagination from 'components/utils/custom-table-pagination';
 import { reportStyles } from './report.styles';
 import { useLogsPagination } from './use-logs-pagination';
 import { useStableComputedArray } from '../../hooks/use-stable-computed-array';
+import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 const getColumnFilterValue = (array: FilterConfig[] | null | undefined, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -116,6 +117,7 @@ const LogTable = ({
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [isGridReady, setIsGridReady] = useState(false);
     const gridRef = useRef<AgGridReact>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -205,7 +207,12 @@ const LogTable = ({
 
     useEffect(() => {
         onFiltersChanged();
-    }, [filters, onFiltersChanged]);
+        const api = gridRef.current?.api;
+        if (!api || !isGridReady) {
+            return;
+        }
+        updateAgGridFilters(api, filters);
+    }, [filters, isGridReady, onFiltersChanged]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
@@ -279,6 +286,7 @@ const LogTable = ({
 
     const onGridReady = ({ api }: { api: GridApi }) => {
         api?.sizeColumnsToFit();
+        setIsGridReady(true);
     };
 
     const defaultColumnDefinition = {

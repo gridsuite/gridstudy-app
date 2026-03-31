@@ -15,13 +15,14 @@ import {
     FilterParams,
     TableType,
 } from '../../../../types/custom-aggrid-types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
 import { persistComputationColumnFilters } from '../../../results/common/column-filter/update-computation-columns-filters';
 import { persistSpreadsheetColumnFilters } from '../../../spreadsheet-view/columns/persist-spreadsheet-column-filters';
 import type { UUID } from 'node:crypto';
+import { updateColumnFiltersAction } from '../../../../redux/actions';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -56,6 +57,7 @@ export const useCustomAggridColumnFilter = (
     const isEditingRef = useRef(false);
 
     const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
     const filters = useSelector<AppState, FilterConfig[]>(
         (state) => getColumnFiltersFromState(state, type, tab) ?? EMPTY_ARRAY
     );
@@ -68,10 +70,9 @@ export const useCustomAggridColumnFilter = (
         [tableDefinitions, tab, colId]
     );
 
-    // data flow is: update backend database -> notification -> update redux state -> useEffect -> update hook state
     const updateFilter = useCallback(
         (data: FilterData): void => {
-            if (!studyUuid || type === TableType.Logs) {
+            if (!studyUuid) {
                 return;
             }
 
@@ -99,13 +100,18 @@ export const useCustomAggridColumnFilter = (
 
             const onError = (error: unknown) => snackWithFallback(snackError, error);
 
-            if (type === TableType.Spreadsheet) {
+            // Data flow for logs table is: update redux state -> useEffect -> update hook state
+            if (type === TableType.Logs) {
+                dispatch(updateColumnFiltersAction(TableType.Logs, tab, updatedFilters));
+            }
+            // Data flow for spreadsheet / computation tables is: update backend database -> notification -> update redux state -> useEffect -> update hook state
+            else if (type === TableType.Spreadsheet) {
                 persistSpreadsheetColumnFilters(studyUuid, tab as UUID, updatedFilters, colDef, onError);
             } else {
                 persistComputationColumnFilters(updatedFilters, colId, studyUuid, type, tab, onError);
             }
         },
-        [filters, studyUuid, type, tab, colId, colDef, snackError]
+        [studyUuid, colId, type, filters, snackError, tab, dispatch, colDef]
     );
 
     // We intentionally exclude `updateFilter` from dependencies.
