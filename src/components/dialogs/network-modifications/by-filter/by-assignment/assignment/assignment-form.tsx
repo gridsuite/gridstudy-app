@@ -7,6 +7,7 @@
 
 import { FC, useCallback, useMemo } from 'react';
 import {
+    areIdsEqual,
     AutocompleteInput,
     DirectoryItemsInput,
     ElementType,
@@ -32,7 +33,7 @@ import {
 import { useFormContext, useWatch } from 'react-hook-form';
 import { getIdOrValue } from '../../../../commons/utils';
 import { DataType } from './assignment.type';
-import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
+import { comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import GridItem from '../../../../commons/grid-item';
 import { useIntl } from 'react-intl';
 import { EQUIPMENTS_FIELDS, EquipmentTypeOptionType } from './assignment-constants';

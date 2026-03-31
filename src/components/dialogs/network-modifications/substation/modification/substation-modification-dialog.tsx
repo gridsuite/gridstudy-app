@@ -12,10 +12,8 @@ import {
     EquipmentType,
     getConcatenatedProperties,
     snackWithFallback,
-    toModificationProperties,
     useSnackMessage,
     DeepNullable,
-    sanitizeString,
     FieldConstants,
     SubstationModificationForm,
     SubstationModificationFormData,
@@ -24,6 +22,7 @@ import {
     SubstationModificationInfos,
     SubstationModificationDto,
     substationModificationDtoToForm,
+    substationModificationFormToDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -126,6 +125,9 @@ const SubstationModificationDialog = ({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
                             setSubstationToModify(undefined);
                         }
@@ -145,20 +147,13 @@ const SubstationModificationDialog = ({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (substation: SubstationModificationFormData) => {
-            modifySubstation({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                id: selectedId,
-                name: sanitizeString(substation[FieldConstants.EQUIPMENT_NAME]),
-                country: substation[FieldConstants.COUNTRY] ?? null,
-                properties: toModificationProperties(substation),
-            }).catch((error) => {
+        (substationForm: SubstationModificationFormData) => {
+            const dto = substationModificationFormToDto(substationForm);
+            modifySubstation(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: unknown) => {
                 snackWithFallback(snackError, error, { headerId: 'SubstationModificationError' });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid, selectedId]
+        [currentNodeUuid, editData?.uuid, snackError, studyUuid]
     );
 
     const open = useOpenShortWaitFetching({

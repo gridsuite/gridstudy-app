@@ -8,15 +8,15 @@
 import { TO_BE_ESTIMATED } from 'components/utils/field-constants';
 import yup from '../../../../utils/yup-config';
 import {
-    getBranchActiveReactivePowerEditDataProperties,
-    getBranchActiveReactivePowerEmptyFormDataProperties,
-    getBranchActiveReactivePowerValidationSchemaProperties,
-} from '../../common/measurements/branch-active-reactive-power-form-utils';
-import {
     getToBeEstimatedEditData,
     getToBeEstimatedEmptyFormData,
     getToBeEstimatedValidationSchema,
 } from './2wt-to-be-estimated/to-be-estimated-form-utils';
+import {
+    getBranchActiveReactivePowerEditDataProperties,
+    getBranchActiveReactivePowerEmptyFormDataProperties,
+    getBranchActiveReactivePowerValidationSchemaProperties,
+} from '@gridsuite/commons-ui';
 
 // We have utils functions to combine the common branch part (measurements) with the 2wt-specific part (toBeEstimated)
 

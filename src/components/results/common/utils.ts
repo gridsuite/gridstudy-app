@@ -7,8 +7,16 @@
 import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
+import { FilterConfig, SortConfig, TableType } from 'types/custom-aggrid-types';
 import { GlobalFilter } from './global-filter/global-filter-types';
+import { Dispatch } from 'redux';
+import { UUID } from 'node:crypto';
+import {
+    getComputationResultColumnFilters,
+    getComputationResultGlobalFilters,
+} from '../../../services/study/study-config';
+import { initOrUpdateGlobalFilters, updateColumnFiltersAction } from '../../../redux/actions';
+import { isEditingGlobalFilter } from '../../../utils/editing-global-filter-sync';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -98,4 +106,50 @@ export interface Page<ResultType> {
     sort?: Sort;
     numberOfElements?: number;
     empty?: boolean;
+}
+
+type ComputationResultColumnFilterInfos = {
+    columnId: string;
+    columnFilterInfos: FilterConfig;
+};
+export const EMPTY_ARRAY: FilterConfig[] = [];
+function toFilterConfig(infos: ComputationResultColumnFilterInfos[] | null): FilterConfig[] {
+    if (!Array.isArray(infos)) {
+        return EMPTY_ARRAY;
+    }
+    return infos.flatMap(({ columnId, columnFilterInfos }) =>
+        (Array.isArray(columnFilterInfos) ? columnFilterInfos : [columnFilterInfos]).map((filter) => ({
+            column: columnId,
+            value: JSON.parse(filter.filterValue),
+            type: filter.filterType,
+            dataType: filter.filterDataType,
+            tolerance: filter.filterTolerance,
+        }))
+    );
+}
+
+export function updateComputationColumnFilters(
+    dispatch: Dispatch,
+    studyUuid: UUID,
+    tableType: TableType,
+    computationSubtype: string
+) {
+    getComputationResultColumnFilters(studyUuid, tableType, computationSubtype).then((infos) => {
+        const filters = toFilterConfig(infos);
+        dispatch(updateColumnFiltersAction(tableType, computationSubtype, filters));
+    });
+}
+
+export function updateComputationGlobalFilters(dispatch: Dispatch, studyUuid: UUID, tableType: TableType) {
+    // Double-check, before and after sending the request
+    if (isEditingGlobalFilter(tableType)) {
+        return;
+    }
+    getComputationResultGlobalFilters(studyUuid, tableType).then((globalFiltersInfos: GlobalFilter[] | null) => {
+        if (isEditingGlobalFilter(tableType)) {
+            return;
+        }
+        const globalFilters = Array.isArray(globalFiltersInfos) ? globalFiltersInfos : [];
+        dispatch(initOrUpdateGlobalFilters(tableType, globalFilters));
+    });
 }

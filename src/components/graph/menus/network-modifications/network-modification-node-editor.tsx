@@ -35,7 +35,9 @@ import BatteryCreationDialog from 'components/dialogs/network-modifications/batt
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import DeleteAttachingLineDialog from 'components/dialogs/network-modifications/delete-attaching-line/delete-attaching-line-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/dialogs/network-modifications/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
-import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import EquipmentDeletionDialog, {
+    EquipmentDeletionDtoWithId,
+} from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import GenerationDispatchDialog from 'components/dialogs/network-modifications/generation-dispatch/generation-dispatch-dialog';
 import GeneratorScalingDialog from 'components/dialogs/network-modifications/generator-scaling/generator-scaling-dialog';
 import GeneratorCreationDialog from 'components/dialogs/network-modifications/generator/creation/generator-creation-dialog';
@@ -96,8 +98,7 @@ import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
-import NetworkModificationsTable from './network-modifications-table';
-import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
+import NetworkModificationsTable from './network-modification-table/network-modifications-table';
 import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
@@ -110,7 +111,7 @@ import {
     ModificationsUpdatingInProgressEventData,
     NotificationType,
     parseEventData,
-    StudyUpdateEventData,
+    CommonStudyEventData,
 } from 'types/notification-types';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level/topology-modification/voltage-level-topology-modification-dialog';
@@ -122,8 +123,8 @@ import { LimitSetsModificationDialog } from '../../../dialogs/network-modificati
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
+import { DragStart, DropResult } from '@hello-pangea/dnd';
 import { FetchStatus } from '../../../../services/utils.type';
-import { EquipmentDeletionInfos } from '../../../dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -244,7 +245,7 @@ const NetworkModificationNodeEditor = () => {
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    editData={editData as EquipmentDeletionInfos}
+                    editData={editData as EquipmentDeletionDtoWithId}
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                     equipmentType={equipmentType}
@@ -793,7 +794,10 @@ const NetworkModificationNodeEditor = () => {
 
     const handleEvent = useCallback(
         (event: MessageEvent) => {
-            const eventData = parseEventData<StudyUpdateEventData>(event);
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (!eventData) {
+                return;
+            }
             if (isNodeDeletedNotification(eventData)) {
                 if (
                     copyInfosRef.current &&
@@ -1041,10 +1045,9 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-    const handleRowSelected = (event: any) => {
-        const selectedRows = event.api.getSelectedRows(); // Get selected rows
+    const handleRowSelected = useCallback((selectedRows: NetworkModificationMetadata[]) => {
         setSelectedNetworkModifications(selectedRows);
-    };
+    }, []);
 
     const renderDialog = () => {
         const menuItem = subMenuItemsList.find(
@@ -1089,7 +1092,6 @@ const NetworkModificationNodeEditor = () => {
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
-                isDragging
                 isRowDragDisabled={isImpactedByNotification() || isAnyNodeBuilding || mapDataLoading}
                 isImpactedByNotification={isImpactedByNotification}
                 notificationMessageId={notificationMessageId}
@@ -1133,23 +1135,29 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleCellClick = useCallback(
-        (event: CellClickedEvent) => {
-            const { colDef, data } = event;
-            if (colDef.colId === 'modificationName' && isModificationClickable(data)) {
+        (modification: NetworkModificationMetadata) => {
+            if (isModificationClickable(modification)) {
                 // Check if the clicked column is the 'modificationName' column
-                doEditModification(data.uuid, data.type);
+                doEditModification(modification.uuid, modification.type);
             }
         },
         [doEditModification, isModificationClickable]
     );
 
-    const onRowDragStart = (event: RowDragEnterEvent<NetworkModificationMetadata>) => {
+    const onRowDragStart = (event: DragStart) => {
         setIsDragging(true);
-        setInitialPosition(event.overIndex);
+        setInitialPosition(event.source.index);
     };
-    const onRowDragEnd = (event: RowDragEndEvent<NetworkModificationMetadata>) => {
-        let newPosition = event.overIndex;
+
+    const onRowDragEnd = (event: DropResult) => {
+        if (!event.destination) {
+            setIsDragging(false);
+            return;
+        }
+
+        let newPosition = event.destination.index;
         const oldPosition = initialPosition;
+
         if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
             setIsDragging(false);
             return;
@@ -1162,7 +1170,6 @@ const NetworkModificationNodeEditor = () => {
         const updatedModifications = [...modifications];
 
         const [movedItem] = updatedModifications.splice(oldPosition, 1);
-
         updatedModifications.splice(newPosition, 0, movedItem);
 
         setModifications(updatedModifications);
@@ -1174,7 +1181,9 @@ const NetworkModificationNodeEditor = () => {
                 snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
                 setModifications(previousModifications);
             })
-            .finally(() => setIsDragging(false));
+            .finally(() => {
+                setIsDragging(false);
+            });
     };
 
     const isPasteButtonDisabled = useMemo(() => {
@@ -1279,7 +1288,7 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'delete'} />}>
+                <Tooltip title={<FormattedMessage id={'moveToTrash'} />}>
                     <span>
                         <IconButton
                             onClick={doStashModification}

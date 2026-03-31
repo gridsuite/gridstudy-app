@@ -18,6 +18,7 @@ import {
     ErrorInput,
     fetchStudyMetadata,
     FieldErrorAlert,
+    getObjectId,
     LANG_FRENCH,
     type MuiStyles,
     type TreeViewFinderNodeProps,
@@ -55,7 +56,6 @@ import { ColDef } from 'ag-grid-community';
 import { BOOLEAN } from '../../../network/constants';
 import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
 import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
-import { getObjectId } from '../../../utils/utils';
 import { useFilterCsvGenerator } from './use-filter-csv-generator';
 import { usePrefilledModelGenerator } from './generation/use-prefilled-model-generator';
 import GeneratePrefilledModelDialog from './generation/generate-prefilled-model-dialog';

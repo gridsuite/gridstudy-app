@@ -54,6 +54,7 @@ import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import GridItem from '../../../../commons/grid-item';
 import { VSC_CREATION_TABS } from '../vsc-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { VscCreationInfos } from '../../../../../../services/network-modification-types';
 import { VscCreationDialogSchemaForm, VscFormInfos } from '../vsc-dialog.type';
@@ -232,7 +233,7 @@ export default function VscCreationDialog({
     );
 
     return (
-        <CustomFormProvider {...formMethods} validationSchema={formSchema}>
+        <CustomFormProvider {...formMethods} validationSchema={formSchema} isNodeBuilt={isNodeBuilt(currentNode)}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

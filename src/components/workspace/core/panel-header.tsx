@@ -5,19 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo } from 'react';
-import { Box, IconButton, Theme } from '@mui/material';
-import { Close, Fullscreen, FullscreenExit, Minimize, PushPin, PushPinOutlined } from '@mui/icons-material';
+import { memo, useCallback, useState } from 'react';
+import { Box, DialogContentText, IconButton, Theme } from '@mui/material';
+import { Close, Minimize, PushPin, PushPinOutlined, Fullscreen, FullscreenExit } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
-import { useIntl } from 'react-intl';
+import { useDispatch, useSelector } from 'react-redux';
+import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer.type';
 import { SldAssociationButton } from './sld-association-button';
+import { setDirtyComputationParameters } from 'redux/actions';
+import { SelectOptionsDialog } from 'utils/dialogs';
 
 const getHeaderStyles = (theme: Theme, isFocused: boolean, maximized: boolean) => {
     let backgroundColor: string;
@@ -93,26 +95,35 @@ interface PanelHeaderProps {
 
 export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized, isFocused }: PanelHeaderProps) => {
     const intl = useIntl();
+    const dispatch = useDispatch();
     const { deletePanel, minimizePanel, maximizePanel, pinPanel } = useWorkspacePanelActions();
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
+    const [isConfirmCloseOpen, setIsConfirmCloseOpen] = useState(false);
 
     const handleClose = () => {
-        // If it's a parameters panel with unsaved changes, trigger confirmation dialog
         if (panelType === PanelType.PARAMETERS && isDirtyComputationParameters) {
-            globalThis.dispatchEvent(new CustomEvent('parametersPanel:requestClose', { detail: panelId }));
+            setIsConfirmCloseOpen(true);
         } else if (
             panelType === PanelType.NAD ||
             panelType === PanelType.SLD_VOLTAGE_LEVEL ||
             panelType === PanelType.SLD_SUBSTATION
         ) {
-            // Diagram panels are deleted
             deletePanel(panelId);
         } else {
-            // Other panels are minimized
             minimizePanel(panelId);
         }
     };
+
+    const handleConfirmClose = useCallback(() => {
+        minimizePanel(panelId);
+        dispatch(setDirtyComputationParameters(false));
+        setIsConfirmCloseOpen(false);
+    }, [panelId, minimizePanel, dispatch]);
+
+    const handleCancelClose = useCallback(() => {
+        setIsConfirmCloseOpen(false);
+    }, []);
 
     return (
         <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, maximized)}>
@@ -168,6 +179,19 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                     <Close fontSize="small" />
                 </IconButton>
             </Box>
+            {/* Confirm panel close with unsaved params */}
+            <SelectOptionsDialog
+                title={''}
+                open={isConfirmCloseOpen}
+                onClose={handleCancelClose}
+                onClick={handleConfirmClose}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage id="genericConfirmQuestion" />
+                    </DialogContentText>
+                }
+                validateKey={'dialog.button.leave'}
+            />
         </Box>
     );
 });

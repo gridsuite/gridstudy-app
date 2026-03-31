@@ -38,7 +38,7 @@ import { getOptionalServices } from '../services/study/index';
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
-    initOrUpdateSpreadsheetGlobalFilters,
+    initOrUpdateGlobalFilters,
     initTableDefinitions,
     renameTableDefinition,
     selectComputedLanguage,
@@ -52,7 +52,12 @@ import {
     updateTableColumns,
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
-import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
+import {
+    isComputationResultColumnFilterUpdatedNotification,
+    isComputationResultGlobalFilterUpdatedNotification,
+    isNetworkVisualizationParametersUpdatedNotification,
+    NotificationType,
+} from 'types/notification-types';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
     getSpreadsheetModel,
@@ -67,6 +72,8 @@ import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-para
 import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
+import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
+import { isEditingGlobalFilter } from '../utils/editing-global-filter-sync.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -203,7 +210,9 @@ const App = () => {
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
-                    dispatch(initOrUpdateSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
+                    if (!isEditingGlobalFilter(tabUuid)) {
+                        dispatch(initOrUpdateGlobalFilters(tabUuid, formattedGlobalFilters));
+                    }
                     dispatch(
                         addSortForNewSpreadsheet(tabUuid, [
                             {
@@ -257,6 +266,27 @@ const App = () => {
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: onSpreadsheetNotification,
+    });
+
+    const onComputationTabNotification = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            if (isComputationResultColumnFilterUpdatedNotification(eventData)) {
+                updateComputationColumnFilters(
+                    dispatch,
+                    studyUuid,
+                    eventData.headers.computationType,
+                    eventData.headers.computationSubtype
+                );
+            } else if (isComputationResultGlobalFilterUpdatedNotification(eventData)) {
+                updateComputationGlobalFilters(dispatch, studyUuid, eventData.headers.computationType);
+            }
+        },
+        [dispatch, studyUuid]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: onComputationTabNotification,
     });
 
     // Can't use lazy initializer because useRouteMatch is a hook

@@ -153,12 +153,7 @@ export default function CreateVoltageLevelTopologyDialog({
                     />
                 )}
                 {selectedId != null && (
-                    <CreateVoltageLevelTopologyForm
-                        studyUuid={studyUuid}
-                        voltageLevelId={selectedId}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                    />
+                    <CreateVoltageLevelTopologyForm voltageLevelId={selectedId} currentNode={currentNode} />
                 )}
             </ModificationDialog>
         </CustomFormProvider>

@@ -20,6 +20,7 @@ import { useStudyScopedNavigationKeys } from './use-study-scoped-navigation-keys
 const useStudyNavigationSync = () => {
     const syncEnabled = useSelector((state: AppState) => state.syncEnabled);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const dispatch = useDispatch();
@@ -29,15 +30,20 @@ const useStudyNavigationSync = () => {
     const updateRootNetworkUuid = useCallback(
         (uuid: UUID | null) => {
             if (uuid !== null && uuid !== currentRootNetworkUuid) {
-                dispatch(setCurrentRootNetworkUuid(uuid));
+                // Only update if the root network UUID exists in the current study's root networks
+                const rootNetwork = rootNetworks.find((rn) => rn.rootNetworkUuid === uuid);
+                if (rootNetwork) {
+                    dispatch(setCurrentRootNetworkUuid(uuid));
+                }
             }
         },
-        [dispatch, currentRootNetworkUuid]
+        [dispatch, currentRootNetworkUuid, rootNetworks]
     );
 
     const updateTreeNode = useCallback(
         (uuid: UUID | null) => {
             if (uuid !== null && uuid !== currentTreeNode?.id) {
+                // Only update if the tree node exists in the current study's tree model
                 const currentNode = treeModel?.treeNodes.find((node) => node.id === uuid);
                 if (currentNode) {
                     dispatch(setCurrentTreeNode({ ...currentNode }));

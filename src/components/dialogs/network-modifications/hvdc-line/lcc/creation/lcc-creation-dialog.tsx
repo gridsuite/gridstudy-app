@@ -38,6 +38,7 @@ import {
     DeepNullable,
     sanitizeString,
     FieldConstants,
+    Connectivity,
 } from '@gridsuite/commons-ui';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
@@ -60,8 +61,8 @@ import {
     getLccHvdcLineFromSearchCopy,
     getLccHvdcLineSchema,
 } from '../common/lcc-utils';
+import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { Connectivity } from '../../../../connectivity/connectivity.type';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -231,7 +232,7 @@ export function LccCreationDialog({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
