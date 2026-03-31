@@ -19,8 +19,8 @@ import {
     SUBSTATION_CREATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
-import { ConnectivityForm, Identifiable, TextInput } from '@gridsuite/commons-ui';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -52,7 +52,7 @@ interface LineAttachToVoltageLevelFormProps {
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     attachmentPoint: ExtendedVoltageLevelCreationInfo;
     setAttachmentPoint: Dispatch<SetStateAction<ExtendedVoltageLevelCreationInfo>>;
-    allVoltageLevelOptions: Identifiable[];
+    allVoltageLevelOptions: VoltageLevelOption[];
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
 }
@@ -163,20 +163,11 @@ const LineAttachToVoltageLevelForm = ({
 
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
-    const busbarSectionOptions = useMemo(() => {
-        if (isVoltageLevelEdit && voltageLevelToEdit?.busbarSections) {
-            return voltageLevelToEdit.busbarSections;
-        } else {
-            return [];
-        }
-    }, [isVoltageLevelEdit, voltageLevelToEdit]);
-
     const connectivityForm = (
         <ConnectivityForm
             voltageLevelSelectLabel={'AttachedVoltageLevelId'}
             withPosition={false}
             withDirectionsInfos={false}
-            newBusOrBusbarSectionOptions={busbarSectionOptions}
             voltageLevelOptions={allVoltageLevelOptions}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />

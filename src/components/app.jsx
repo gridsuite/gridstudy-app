@@ -74,6 +74,7 @@ import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
 import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
+import { isEditingGlobalFilter } from '../utils/editing-global-filter-sync.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -210,7 +211,9 @@ const App = () => {
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(updateColumnFiltersAction(TableType.Spreadsheet, tabUuid, columnsFilters));
-                    dispatch(initOrUpdateGlobalFilters(tabUuid, formattedGlobalFilters));
+                    if (!isEditingGlobalFilter(tabUuid)) {
+                        dispatch(initOrUpdateGlobalFilters(tabUuid, formattedGlobalFilters));
+                    }
                     dispatch(
                         addSortForNewSpreadsheet(tabUuid, [
                             {
