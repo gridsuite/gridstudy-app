@@ -25,6 +25,8 @@ import {
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
 import { InferType } from 'yup';
+import { LineSegmentInfos } from '../../../services/network-modification-types';
+import { DeepNullable } from '@gridsuite/commons-ui';
 
 export const SegmentTemporaryLimitSchema = yup.object().shape({
     [LIMIT_VALUE]: yup.number().required(),
@@ -73,3 +75,17 @@ export const emptyLineSegment: SegmentFormData = {
     [TEMPERATURE]: null,
     [SHAPE_FACTOR]: null,
 };
+
+export function convertToLineSegmentInfos(lineSegments: DeepNullable<SegmentFormData | null>[]): LineSegmentInfos[] {
+    return (
+        lineSegments?.map((segment) => {
+            return {
+                segmentTypeId: segment?.segmentTypeId ?? '',
+                segmentDistanceValue: segment?.segmentDistanceValue ?? 0,
+                area: segment?.area ?? '',
+                temperature: segment?.temperature ?? '',
+                shapeFactor: segment?.shapeFactor ?? null,
+            };
+        }) ?? []
+    );
+}

@@ -718,6 +718,7 @@ export function modifyLine({
     p2MeasurementValidity,
     q2MeasurementValue,
     q2MeasurementValidity,
+    lineSegments,
 }: LineModificationInfos) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
@@ -772,6 +773,7 @@ export function modifyLine({
             p2MeasurementValidity: toModificationOperation(p2MeasurementValidity),
             q2MeasurementValue: toModificationOperation(q2MeasurementValue),
             q2MeasurementValidity: toModificationOperation(q2MeasurementValidity),
+            lineSegments: lineSegments,
         }),
     });
 }
