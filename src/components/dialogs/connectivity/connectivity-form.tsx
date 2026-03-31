@@ -22,8 +22,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import PositionDiagramPane
-    from '../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import PositionDiagramPane from '../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
 import {
