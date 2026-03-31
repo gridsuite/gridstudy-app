@@ -12,8 +12,8 @@ import {
     ByFilterDeletionFormData,
     byFilterDeletionDtoToForm,
     byFilterDeletionFormToDto,
+    emptyFormData,
     byFilterDeletionFormSchema,
-    FieldConstants,
     CustomFormProvider,
     snackWithFallback,
     useSnackMessage,
@@ -28,11 +28,6 @@ import { deleteEquipmentByFilter } from '../../../../../services/study/network-m
 import { FetchStatus } from '../../../../../services/utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { UUID } from 'node:crypto';
-
-const emptyFormData: DeepNullable<ByFilterDeletionFormData> = {
-    [FieldConstants.TYPE]: null,
-    [FieldConstants.FILTERS]: [],
-};
 
 type ByFilterDeletionDialogProps = NetworkModificationDialogProps & {
     editData?: ByFilterDeletionDto & { uuid: UUID };
