@@ -7,7 +7,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { Identifiable, LANG_FRENCH, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, Identifiable, LANG_FRENCH, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
 import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import { isFieldTypeOk, PredefinedEquipmentProperties, TabularField } from '../tabular-common';
@@ -15,12 +15,12 @@ import { getNetworkElementsInfosByGlobalFilter } from 'services/study/filter';
 import { fetchNetworkElementsInfos } from 'services/study/network';
 import type { UUID } from 'node:crypto';
 import { getPrefilledColumnGroups } from './prefillable-columns-config';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { mapPrefilledEquipments, PrefilledModelGenerationParams } from './utils';
 import { TABULAR_MODIFICATION_FIELDS } from '../tabular-modification-utils';
 
 export interface UsePrefilledModelGeneratorProps {
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     csvColumns: string[];
     commentLines: string[][];
     predefinedEquipmentProperties: PredefinedEquipmentProperties;

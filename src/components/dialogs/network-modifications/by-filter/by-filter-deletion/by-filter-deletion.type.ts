@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 import { Filter } from '../commons/by-filter.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 export interface ByFilterDeletionEditData {
     uuid: string;
-    equipmentType: keyof typeof EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     filters: Filter[];
 }
 
 export interface ByFilterDeletionFormData {
-    type: keyof typeof EQUIPMENT_TYPES | null;
+    type: EquipmentType | null;
     filters: Filter[];
 }
 

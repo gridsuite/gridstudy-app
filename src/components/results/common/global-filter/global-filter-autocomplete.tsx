@@ -29,8 +29,7 @@ import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch } from 'react-redux';
 import { FilterType } from '../utils';
-import { OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { EquipmentType, OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import GlobalFilterPaper from './global-filter-paper';
@@ -246,8 +245,8 @@ function GlobalFilterAutocomplete() {
                     } else if (
                         filterGroupSelected === FilterType.GENERIC_FILTER &&
                         filterableEquipmentTypes?.length === 1 &&
-                        filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION &&
-                        option.equipmentType === EQUIPMENT_TYPES.SUBSTATION
+                        filterableEquipmentTypes[0] === EquipmentType.SUBSTATION &&
+                        option.equipmentType === EquipmentType.SUBSTATION
                     ) {
                         // when filtering substations, the substation filters are displayed in the GENERIC_FILTER category
                         // (because there are no voltage level so the SUBSTATION_OR_VL category doesn't make sense)
@@ -278,7 +277,7 @@ function GlobalFilterAutocomplete() {
                     (filter) =>
                         filterCategories.includes(filter.filterType) &&
                         (genericFiltersStrictMode && filter.filterType === FilterType.GENERIC_FILTER
-                            ? filterableEquipmentTypes.includes(filter.equipmentType as EQUIPMENT_TYPES)
+                            ? filterableEquipmentTypes.includes(filter.equipmentType as EquipmentType)
                             : true)
                 )
                 .sort((a: GlobalFilter, b: GlobalFilter) => {

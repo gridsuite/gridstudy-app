@@ -6,13 +6,12 @@
  */
 
 import { Grid, Typography } from '@mui/material';
-import { areIdsEqual, AutocompleteInput, getObjectId, snackWithFallback } from '@gridsuite/commons-ui';
+import { areIdsEqual, AutocompleteInput, EquipmentType, getObjectId, snackWithFallback } from '@gridsuite/commons-ui';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../../percentage-area/percentage-area';
 import { useWatch } from 'react-hook-form';
 import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import GridItem from '../../commons/grid-item';
 
@@ -32,7 +31,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode, current
                 currentNode?.id,
                 currentRootNetworkUuid,
                 undefined,
-                EQUIPMENT_TYPES.LINE,
+                EquipmentType.LINE,
                 true
             )
                 .then((values) => {

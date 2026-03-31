@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { ComputingType, mergeSx, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType, mergeSx, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
@@ -38,7 +38,6 @@ import { AppState } from 'redux/reducer.type';
 import RunningStatus from './utils/running-status';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import { TableType } from 'types/custom-aggrid-types';
 
 const styles = {
@@ -410,7 +409,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                     </Box>
                     <Box sx={mergeSx(tabIndex === 0 || tabIndex === 2 ? styles.show : styles.hide)}>
                         <GlobalFilterSelector
-                            filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            filterableEquipmentTypes={[EquipmentType.VOLTAGE_LEVEL]}
                             genericFiltersStrictMode={true}
                             tableType={TableType.VoltageInit}
                         />

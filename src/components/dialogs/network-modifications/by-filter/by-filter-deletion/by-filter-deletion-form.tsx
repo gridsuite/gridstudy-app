@@ -8,10 +8,15 @@
 import { Grid } from '@mui/material';
 import { useCallback, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, DirectoryItemsInput, ElementType, useGetLabelEquipmentTypes } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    DirectoryItemsInput,
+    ElementType,
+    EquipmentType,
+    useGetLabelEquipmentTypes,
+} from '@gridsuite/commons-ui';
 import { FILTERS, TYPE } from 'components/utils/field-constants';
 import { richTypeEquals } from 'components/utils/utils';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import GridItem from '../../../commons/grid-item';
 
 const ByFilterDeletionForm = () => {
@@ -25,17 +30,17 @@ const ByFilterDeletionForm = () => {
 
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([
-            EQUIPMENT_TYPES.SWITCH,
-            EQUIPMENT_TYPES.DISCONNECTOR,
-            EQUIPMENT_TYPES.BREAKER,
-            EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.BUS,
-            EQUIPMENT_TYPES.BUSBAR_SECTION,
-            EQUIPMENT_TYPES.TIE_LINE,
+            EquipmentType.SWITCH,
+            EquipmentType.DISCONNECTOR,
+            EquipmentType.BREAKER,
+            EquipmentType.LCC_CONVERTER_STATION,
+            EquipmentType.VSC_CONVERTER_STATION,
+            EquipmentType.HVDC_CONVERTER_STATION,
+            EquipmentType.BUS,
+            EquipmentType.BUSBAR_SECTION,
+            EquipmentType.TIE_LINE,
         ]);
-        return Object.values(EQUIPMENT_TYPES).filter((equipmentType) => !equipmentTypesToExclude.has(equipmentType));
+        return Object.values(EquipmentType).filter((equipmentType) => !equipmentTypesToExclude.has(equipmentType));
     }, []);
 
     const handleEquipmentTypeChange = useCallback(() => {

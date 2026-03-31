@@ -20,13 +20,13 @@ import {
     DirectoryItemSelector,
     ElementAttributes,
     ElementType,
+    EquipmentType,
     fetchElementsInfos,
     mergeSx,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
 import SelectedGlobalFilters from './selected-global-filters';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { TextWithInfoIcon } from './text-with-info-icon';
 import {
     addToSelectedGlobalFilters,
@@ -70,7 +70,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
     }, []);
 
     const filteringOnlySubstations = useMemo(() => {
-        return filterableEquipmentTypes?.length === 1 && filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION;
+        return filterableEquipmentTypes?.length === 1 && filterableEquipmentTypes[0] === EquipmentType.SUBSTATION;
     }, [filterableEquipmentTypes]);
 
     const standardCategories: string[] = useMemo(() => {
@@ -82,9 +82,9 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 // because the SUBSTATION_OR_VL FilterType handles all the possible filters
                 const onlyVoltageLevels = filterableEquipmentTypes?.every(
                     (equipment) =>
-                        equipment === EQUIPMENT_TYPES.VOLTAGE_LEVEL ||
-                        equipment === EQUIPMENT_TYPES.BUS ||
-                        equipment === EQUIPMENT_TYPES.BUSBAR_SECTION
+                        equipment === EquipmentType.VOLTAGE_LEVEL ||
+                        equipment === EquipmentType.BUS ||
+                        equipment === EquipmentType.BUSBAR_SECTION
                 );
                 return !(category === FilterType.GENERIC_FILTER && onlyVoltageLevels);
             })
@@ -148,8 +148,8 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
                     // add the others
                     const substationOrVoltageLevel =
-                        element.specificMetadata?.equipmentType === EQUIPMENT_TYPES.SUBSTATION ||
-                        element.specificMetadata?.equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL;
+                        element.specificMetadata?.equipmentType === EquipmentType.SUBSTATION ||
+                        element.specificMetadata?.equipmentType === EquipmentType.VOLTAGE_LEVEL;
                     newlySelectedFilters.push({
                         id: element.elementUuid,
                         uuid: element.elementUuid,
@@ -180,14 +180,14 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
      */
     const allowedEquipmentTypes = useMemo(() => {
         if (filterGroupSelected === FilterType.SUBSTATION_OR_VL) {
-            return [EQUIPMENT_TYPES.SUBSTATION, EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+            return [EquipmentType.SUBSTATION, EquipmentType.VOLTAGE_LEVEL];
         }
 
         return genericFiltersStrictMode
             ? filterableEquipmentTypes
-            : Object.values(EQUIPMENT_TYPES).filter(
+            : Object.values(EquipmentType).filter(
                   (equipmentType) =>
-                      equipmentType !== EQUIPMENT_TYPES.SUBSTATION && equipmentType !== EQUIPMENT_TYPES.VOLTAGE_LEVEL
+                      equipmentType !== EquipmentType.SUBSTATION && equipmentType !== EquipmentType.VOLTAGE_LEVEL
               );
     }, [filterableEquipmentTypes, genericFiltersStrictMode, filterGroupSelected]);
 

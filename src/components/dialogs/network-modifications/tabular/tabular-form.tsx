@@ -15,6 +15,7 @@ import {
     DefaultCellRenderer,
     DirectoryItemSelector,
     ElementType,
+    EquipmentType,
     ErrorInput,
     fetchStudyMetadata,
     FieldErrorAlert,
@@ -32,7 +33,6 @@ import {
     TABULAR_PROPERTIES,
     TYPE,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import Papa from 'papaparse';
@@ -182,7 +182,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
 
             // For shunt compensators, display a warning message if maxSusceptance is set along with shuntCompensatorType or maxQAtNominalV
             if (
-                equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
+                equipmentType === EquipmentType.SHUNT_COMPENSATOR &&
                 results.data.some(
                     (creation) =>
                         creation.maxSusceptance != null &&
@@ -229,7 +229,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
 
             // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
             if (
-                equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
+                equipmentType === EquipmentType.SHUNT_COMPENSATOR &&
                 results.data.some(
                     (modification) =>
                         modification.maxSusceptance != null &&
@@ -367,7 +367,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const typesOptions = useMemo(() => {
         return Object.keys(
             dialogMode === TabularModificationType.CREATION ? TABULAR_CREATION_FIELDS : TABULAR_MODIFICATION_FIELDS
-        ).filter((type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]);
+        ).filter((type) => EquipmentType[type as EquipmentType]);
     }, [dialogMode]);
 
     const handleTypeChange = useCallback(() => {

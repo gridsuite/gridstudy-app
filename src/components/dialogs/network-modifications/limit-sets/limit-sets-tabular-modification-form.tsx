@@ -13,6 +13,7 @@ import {
     BooleanNullableCellRenderer,
     CustomAGGrid,
     DefaultCellRenderer,
+    EquipmentType,
     ErrorInput,
     FieldErrorAlert,
     IntegerInput,
@@ -26,7 +27,6 @@ import {
     MODIFICATIONS_TABLE,
     TYPE,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import Papa from 'papaparse';
@@ -217,7 +217,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
 
     const typesOptions = useMemo(() => {
         return Object.keys(LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS).filter(
-            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
+            (type) => EquipmentType[type as keyof typeof EquipmentType]
         );
     }, []);
 

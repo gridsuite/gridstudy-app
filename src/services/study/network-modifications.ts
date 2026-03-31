@@ -21,9 +21,9 @@ import {
     SubstationCreationDto,
     SubstationModificationDto,
     VoltageLevelModificationDto,
+    EquipmentType,
 } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
@@ -1538,7 +1538,7 @@ export function deleteEquipment(
 export function deleteEquipmentByFilter(
     studyUuid: string,
     nodeUuid: string,
-    equipmentType: keyof typeof EQUIPMENT_TYPES | null,
+    equipmentType: EquipmentType | null,
     filters: Filter[],
     modificationUuid: string
 ) {
@@ -1610,7 +1610,7 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-            equipmentType: EQUIPMENT_TYPES.SWITCH,
+            equipmentType: EquipmentType.SWITCH,
             equipmentId: switchId,
             equipmentAttributeName: 'open',
             equipmentAttributeValue: open,
