@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFormContext } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
     AREA,
     FINAL_CURRENT_LIMITS,
@@ -37,6 +36,7 @@ import {
     ExpandableInput,
     fetchStudyMetadata,
     type MuiStyles,
+    ReadOnlyInput,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';

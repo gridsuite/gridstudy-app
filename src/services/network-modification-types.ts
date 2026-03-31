@@ -337,11 +337,6 @@ export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
     topologyKind?: string;
 }
 
-export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
-    lowShortCircuitCurrentLimit: number | null;
-    highShortCircuitCurrentLimit: number | null;
-}
-
 type VariationFilter = {
     id: string;
     name: string;
@@ -715,7 +710,6 @@ export interface DivideLineInfo {
 
 export interface ExtendedVoltageLevelCreationInfo extends VoltageLevelCreationInfo {
     type: ModificationType.VOLTAGE_LEVEL_CREATION;
-    busbarSections?: Option[];
 }
 
 export interface AttachLineInfo {

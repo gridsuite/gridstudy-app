@@ -6,50 +6,38 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
-import { DELETION_SPECIFIC_DATA, EQUIPMENT_ID, TYPE } from '../../../utils/field-constants';
 import {
     CustomFormProvider,
     DeepNullable,
+    equipmentDeletionEmptyFormData,
+    EquipmentDeletionDto,
     EquipmentType,
     snackWithFallback,
     useSnackMessage,
+    equipmentDeletionFormSchema,
+    EquipmentDeletionFormData,
+    EquipmentDeletionForm,
+    equipmentDeletionDtoToForm,
+    equipmentDeletionFormToDto,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import { ModificationDialog } from '../../commons/modificationDialog';
-import DeleteEquipmentForm from './equipment-deletion-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipment } from '../../../../services/study/network-modifications';
 import { UUID } from 'node:crypto';
 import { FetchStatus } from 'services/utils.type';
-import { EquipmentDeletionInfos } from './equipement-deletion-dialog.type';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
-import { getHvdcLccDeletionSchema } from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
+import { WithModificationId } from 'services/network-modification-types';
+import { fetchEquipmentsIds, fetchHvdcLineWithShuntCompensators } from 'services/study/network-map';
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().nullable().required(),
-        [TYPE]: yup.mixed<EquipmentType>().oneOf(Object.values(EquipmentType)).nullable().required(),
-        [DELETION_SPECIFIC_DATA]: getHvdcLccDeletionSchema(),
-    })
-    .required();
-
-export type EquipmentDeletionFormInfos = yup.InferType<typeof formSchema>;
-
-const emptyFormData: DeepNullable<EquipmentDeletionFormInfos> = {
-    [EQUIPMENT_ID]: '',
-    [TYPE]: null,
-    [DELETION_SPECIFIC_DATA]: null,
-};
+export interface EquipmentDeletionDtoWithId extends EquipmentDeletionDto, WithModificationId {}
 
 type EquipmentDeletionDialogProps = NetworkModificationDialogProps & {
-    editData?: EquipmentDeletionInfos;
+    editData?: EquipmentDeletionDtoWithId;
     defaultIdValue?: UUID;
-    equipmentType: EquipmentType;
-    editDataFetchStatus?: FetchStatus;
+    equipmentType?: EquipmentType;
 };
 
 /**
@@ -59,8 +47,8 @@ type EquipmentDeletionDialogProps = NetworkModificationDialogProps & {
  * @param currentRootNetworkUuid
  * @param editData the data to edit
  * @param isUpdate check if edition form
- * @param defaultIdValue the default equipment id
- * @param equipmentType
+ * @param defaultIdValue in creation mode, we can specify the equipment ID we want to delete
+ * @param equipmentType in creation mode, we can specify the equipment type we want to delete
  * @param editDataFetchStatus indicates the status of fetching EditData
  * @param onClose a callback when dialog has been closed
  * @param onValidated a callback when dialog has been validated
@@ -83,39 +71,39 @@ const EquipmentDeletionDialog = ({
 
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<DeepNullable<EquipmentDeletionFormInfos>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<EquipmentDeletionFormInfos>>(formSchema),
+    const formMethods = useForm<DeepNullable<EquipmentDeletionFormData>>({
+        defaultValues: equipmentDeletionEmptyFormData,
+        resolver: yupResolver<DeepNullable<EquipmentDeletionFormData>>(equipmentDeletionFormSchema),
     });
 
     const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (editData: EquipmentDeletionInfos) => {
+        (editData: EquipmentDeletionDto) => {
+            const formData = equipmentDeletionDtoToForm(editData);
             reset({
-                [TYPE]: editData.equipmentType,
-                [EQUIPMENT_ID]: editData.equipmentId,
-                [DELETION_SPECIFIC_DATA]: null,
+                ...formData,
+                equipmentInfos: null, // this prop will be computed (cf LCC specific part)
             });
         },
         [reset]
     );
 
-    const fromMenuDataValues = useCallback(
-        (menuSelectId: UUID) => {
+    const presetTypeAndId = useCallback(
+        (equipmentType: EquipmentType, equipmentId: UUID) => {
             reset({
-                [TYPE]: EquipmentType.HVDC_LINE,
-                [EQUIPMENT_ID]: menuSelectId,
-                [DELETION_SPECIFIC_DATA]: null,
+                equipmentID: equipmentId,
+                type: equipmentType,
+                equipmentInfos: null,
             });
         },
         [reset]
     );
 
-    const resetFormWithEquipmentType = useCallback(
+    const presetType = useCallback(
         (equipmentType: EquipmentType) => {
             reset({
-                [TYPE]: equipmentType,
+                type: equipmentType,
             });
         },
         [reset]
@@ -123,31 +111,21 @@ const EquipmentDeletionDialog = ({
 
     useEffect(() => {
         if (editData) {
+            // edition mode
             fromEditDataToFormValues(editData);
-        } else if (defaultIdValue) {
-            fromMenuDataValues(defaultIdValue);
+        } else if (equipmentType && defaultIdValue) {
+            // creation mode with both Id and Type (ex: from diagram)
+            presetTypeAndId(equipmentType, defaultIdValue);
         } else if (equipmentType) {
-            resetFormWithEquipmentType(equipmentType);
+            // creation mode with only Type (ex: from node modifications menu)
+            presetType(equipmentType);
         }
-    }, [
-        fromEditDataToFormValues,
-        editData,
-        fromMenuDataValues,
-        defaultIdValue,
-        equipmentType,
-        resetFormWithEquipmentType,
-    ]);
+    }, [defaultIdValue, editData, equipmentType, fromEditDataToFormValues, presetType, presetTypeAndId]);
 
     const onSubmit = useCallback(
-        (formData: EquipmentDeletionFormInfos) => {
-            deleteEquipment({
-                studyUuid,
-                nodeUuid: currentNodeUuid,
-                uuid: editData?.uuid,
-                equipmentId: formData[EQUIPMENT_ID] as UUID,
-                equipmentType: formData[TYPE],
-                equipmentSpecificInfos: formData[DELETION_SPECIFIC_DATA] ?? undefined,
-            }).catch((error) => {
+        (formData: EquipmentDeletionFormData) => {
+            const dto = equipmentDeletionFormToDto(formData);
+            deleteEquipment(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: unknown) => {
                 snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
             });
         },
@@ -155,7 +133,7 @@ const EquipmentDeletionDialog = ({
     );
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(equipmentDeletionEmptyFormData);
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
@@ -169,8 +147,20 @@ const EquipmentDeletionDialog = ({
         [editDataFetchStatus, isUpdate]
     );
 
+    const fetchEquipmentIds = useCallback(
+        (equipmentType: EquipmentType) =>
+            fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, equipmentType, true),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
+    const fetchHvdcWithShuntCompensators = useCallback(
+        (hvdcLineId: UUID) =>
+            fetchHvdcLineWithShuntCompensators(studyUuid, currentNodeUuid, currentRootNetworkUuid, hvdcLineId),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={equipmentDeletionFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -183,11 +173,10 @@ const EquipmentDeletionDialog = ({
                 isDataFetching={waitingForData}
                 {...dialogProps}
             >
-                <DeleteEquipmentForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
+                <EquipmentDeletionForm
                     editData={editData}
+                    fetchEquipmentIds={fetchEquipmentIds}
+                    fetchHvdcWithShuntCompensators={fetchHvdcWithShuntCompensators}
                 />
             </ModificationDialog>
         </CustomFormProvider>
