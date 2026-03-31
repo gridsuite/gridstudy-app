@@ -28,20 +28,23 @@ const ByFilterDeletionForm = () => {
 
     const getOptionLabel = useGetLabelEquipmentTypes();
 
-    const typesOptions = useMemo(() => {
-        const equipmentTypesToExclude = new Set([
-            EquipmentType.SWITCH,
-            EquipmentType.DISCONNECTOR,
-            EquipmentType.BREAKER,
-            EquipmentType.LCC_CONVERTER_STATION,
-            EquipmentType.VSC_CONVERTER_STATION,
-            EquipmentType.HVDC_CONVERTER_STATION,
-            EquipmentType.BUS,
-            EquipmentType.BUSBAR_SECTION,
-            EquipmentType.TIE_LINE,
-        ]);
-        return Object.values(EquipmentType).filter((equipmentType) => !equipmentTypesToExclude.has(equipmentType));
-    }, []);
+    const typesOptions = useMemo(
+        () => [
+            EquipmentType.SUBSTATION,
+            EquipmentType.VOLTAGE_LEVEL,
+            EquipmentType.LINE,
+            EquipmentType.TWO_WINDINGS_TRANSFORMER,
+            EquipmentType.THREE_WINDINGS_TRANSFORMER,
+            EquipmentType.GENERATOR,
+            EquipmentType.BATTERY,
+            EquipmentType.LOAD,
+            EquipmentType.SHUNT_COMPENSATOR,
+            EquipmentType.STATIC_VAR_COMPENSATOR,
+            EquipmentType.HVDC_LINE,
+            EquipmentType.DANGLING_LINE,
+        ],
+        []
+    );
 
     const handleEquipmentTypeChange = useCallback(() => {
         setValue(FILTERS, []);
