@@ -56,9 +56,7 @@ const DynamicSimulationEventMenuItem = (props: DynamicSimulationEventMenuItemPro
                 primary={
                     <Typography noWrap>
                         {intl.formatMessage({
-                            id: `${getEventType(equipmentType)}${
-                                EQUIPMENT_TYPE_LABEL_KEYS[EquipmentType[equipmentType]]
-                            }`,
+                            id: `${getEventType(equipmentType)}${EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]}`,
                         })}
                         {' ('}
                         {intl.formatMessage({
