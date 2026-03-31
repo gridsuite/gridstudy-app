@@ -206,7 +206,7 @@ export const buildExpertRules = (
     // create rule IN or VOLTAGE_LEVEL_ID IN or SUBSTATION_ID IN for ids
     if (ids && Object.keys(ids).length) {
         for (const eqType in ids) {
-            if ((eqType as EquipmentType) === EquipmentType.SUBSTATION) {
+            if (eqType === EquipmentType.SUBSTATION) {
                 if (EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType)) {
                     const idsRule = {
                         field: equipmentType !== EquipmentType.SUBSTATION ? FieldType.SUBSTATION_ID : FieldType.ID,
@@ -236,7 +236,7 @@ export const buildExpertRules = (
                     };
                     rules.push(idsRule);
                 }
-            } else if ((eqType as EquipmentType) === EquipmentType.VOLTAGE_LEVEL) {
+            } else if (eqType === EquipmentType.VOLTAGE_LEVEL) {
                 if (EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE.includes(equipmentType)) {
                     const idsRule = {
                         field:

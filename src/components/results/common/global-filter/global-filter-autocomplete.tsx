@@ -277,7 +277,7 @@ function GlobalFilterAutocomplete() {
                     (filter) =>
                         filterCategories.includes(filter.filterType) &&
                         (genericFiltersStrictMode && filter.filterType === FilterType.GENERIC_FILTER
-                            ? filterableEquipmentTypes.includes(filter.equipmentType as EquipmentType)
+                            ? filterableEquipmentTypes.includes(filter.equipmentType!) // there is an equipment type because it is a generic filter
                             : true)
                 )
                 .sort((a: GlobalFilter, b: GlobalFilter) => {

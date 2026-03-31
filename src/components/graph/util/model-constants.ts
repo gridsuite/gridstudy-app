@@ -19,7 +19,7 @@ export const nodeTypes = {
 
 // used to generate translation combined keys with a prefix/suffix for each equipment type
 // for example `${EventType.DISCONNECT}${EQUIPMENT_TYPE_LABEL_KEYS[EquipmentType.BUS]}` => 'DisconnectBus'
-export const EQUIPMENT_TYPE_LABEL_KEYS = {
+export const EQUIPMENT_TYPE_LABEL_KEYS: Record<EquipmentType, string> = {
     [EquipmentType.LINE]: 'Line',
     [EquipmentType.TWO_WINDINGS_TRANSFORMER]: '2WTransformer',
     [EquipmentType.THREE_WINDINGS_TRANSFORMER]: '3WTransformer',

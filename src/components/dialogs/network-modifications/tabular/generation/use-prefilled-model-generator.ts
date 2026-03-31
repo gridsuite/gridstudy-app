@@ -128,7 +128,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
      */
     const getFieldDefinition = useCallback(
         (columnName: string): TabularField | undefined => {
-            return TABULAR_MODIFICATION_FIELDS[equipmentType].find((field) => field.id === columnName);
+            return TABULAR_MODIFICATION_FIELDS[equipmentType]?.find((field) => field.id === columnName);
         },
         [equipmentType]
     );

@@ -38,7 +38,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
 import { isFieldTypeOk, setFieldTypeError, TabularField, transformIfFrenchNumber } from '../tabular/tabular-common';
 import {
-    LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
 } from '../tabular/tabular-modification-utils';
@@ -215,11 +214,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         setIsFetching(dataFetching);
     }, [dataFetching]);
 
-    const typesOptions = useMemo(() => {
-        return Object.keys(LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS).filter(
-            (type) => EquipmentType[type as keyof typeof EquipmentType]
-        );
-    }, []);
+    const typesOptions = useMemo(() => [EquipmentType.LINE, EquipmentType.TWO_WINDINGS_TRANSFORMER], []);
 
     useEffect(() => {
         if (selectedFileError) {

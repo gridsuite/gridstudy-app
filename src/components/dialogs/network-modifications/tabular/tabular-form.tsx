@@ -101,7 +101,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const csvFields = useMemo(() => {
         const fields =
             dialogMode === TabularModificationType.CREATION ? TABULAR_CREATION_FIELDS : TABULAR_MODIFICATION_FIELDS;
-        return fields[equipmentType] ?? [];
+        return fields[equipmentType as EquipmentType] ?? [];
     }, [equipmentType, dialogMode]);
 
     const handleTabularCreationParsingError = useCallback(
@@ -367,7 +367,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const typesOptions = useMemo(() => {
         return Object.keys(
             dialogMode === TabularModificationType.CREATION ? TABULAR_CREATION_FIELDS : TABULAR_MODIFICATION_FIELDS
-        ).filter((type) => EquipmentType[type as EquipmentType]);
+        );
     }, [dialogMode]);
 
     const handleTypeChange = useCallback(() => {
