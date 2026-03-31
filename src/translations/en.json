@@ -8,9 +8,7 @@
 
     "button.delete": "Delete",
     "button.continue": "Continue",
-    "filter": "Filter",
-    "enable": "Enable",
-    "disable": "Disable",
+    "filter": "Filter", 
 
     "deleteStudy": "Delete Study",
     "studyNameDidNotMatchMsg": "The given study name did not match with ",
@@ -1723,5 +1721,13 @@
     "Reload": "Reload",
     "CopyError": "Copy Error",
     "Copied": "Copied",
-    "downloadNetworkModifications" : "Download modifications"
-}
+    "downloadNetworkModifications" : "Download modifications",
+    "moveToTrash": "Move to trash",
+    "visualizedRootNetwork": "Visualized root network : {tag}",
+    "addDescription" : "Add description",
+    "activateModification" : "Activate network modification",
+    "deactivateModification" : "Deactivate network modification",
+    "deselectModification": "Deselect modification",
+    "selectModification": "Select modification",
+    "moveModification": "Move modification"
+} 
