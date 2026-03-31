@@ -11,7 +11,14 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { ComputingType, EquipmentType, mergeSx, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    mergeSx,
+    type MuiStyles,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,

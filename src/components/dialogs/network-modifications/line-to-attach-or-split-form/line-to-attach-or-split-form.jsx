@@ -26,14 +26,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode, current
 
     useEffect(() => {
         if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNode?.id,
-                currentRootNetworkUuid,
-                undefined,
-                EquipmentType.LINE,
-                true
-            )
+            fetchEquipmentsIds(studyUuid, currentNode?.id, currentRootNetworkUuid, undefined, EquipmentType.LINE, true)
                 .then((values) => {
                     setLinesOptions(values.sort());
                 })

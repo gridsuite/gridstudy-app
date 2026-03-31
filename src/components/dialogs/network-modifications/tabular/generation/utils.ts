@@ -4,7 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType, Identifiable, type MuiStyles, type UseStateBooleanReturn, yupConfig as yup } from '@gridsuite/commons-ui';
+import {
+    EquipmentType,
+    Identifiable,
+    type MuiStyles,
+    type UseStateBooleanReturn,
+    yupConfig as yup,
+} from '@gridsuite/commons-ui';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {

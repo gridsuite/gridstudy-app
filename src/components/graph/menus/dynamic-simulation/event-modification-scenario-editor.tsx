@@ -30,7 +30,6 @@ import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { AppState } from '../../../../redux/reducer.type';
 import { AppDispatch } from '../../../../redux/store';
-import { EquipmentType } from '@gridsuite/commons-ui';
 import {
     EventCreatingInProgressEventData,
     EventDeletingInProgressEventData,

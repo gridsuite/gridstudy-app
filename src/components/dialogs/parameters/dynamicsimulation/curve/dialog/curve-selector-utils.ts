@@ -29,7 +29,7 @@ export const getReferencedEquipmentTypeForModel = (equipmentType: EquipmentType)
     return equipmentType === EquipmentType.BUSBAR_SECTION ? EquipmentType.BUS : equipmentType;
 };
 
-// this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS
+// this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EquipmentType.BUS
 export const getTopologyKindIfNecessary = (equipmentType: string) => {
     return equipmentType === EquipmentType.BUS
         ? {

@@ -78,7 +78,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
             // removes the SUBSTATION_PROPERTY type because we want to display them by subtype
             .filter((category) => category !== FilterType.SUBSTATION_PROPERTY)
             .filter((category) => {
-                // for the following EQUIPMENT_TYPES the GENERIC_FILTER FilterType is hidden
+                // for the following EquipmentTypes the GENERIC_FILTER FilterType is hidden
                 // because the SUBSTATION_OR_VL FilterType handles all the possible filters
                 const onlyVoltageLevels = filterableEquipmentTypes?.every(
                     (equipment) =>

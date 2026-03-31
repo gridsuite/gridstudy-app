@@ -211,7 +211,7 @@ export async function fetchNetworkElementsInfos<T extends Identifiable[] = Ident
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     substationsIds: string[] | undefined,
-    elementType: string, //TODO found which EQUIPMENT_TYPES enum to use
+    elementType: EquipmentType,
     infoType: string, // TODO migrate to EquipmentInfosTypes
     inUpstreamBuiltParentNode?: boolean,
     nominalVoltages?: number[]

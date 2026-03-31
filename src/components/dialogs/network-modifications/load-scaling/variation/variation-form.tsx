@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemsInput, SelectInput, FloatInput, ElementType, EquipmentType, ActivePowerAdornment } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemsInput,
+    SelectInput,
+    FloatInput,
+    ElementType,
+    EquipmentType,
+    ActivePowerAdornment,
+} from '@gridsuite/commons-ui';
 import {
     FILTERS,
     REACTIVE_VARIATION_MODE,
