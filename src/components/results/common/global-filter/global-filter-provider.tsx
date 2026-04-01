@@ -25,7 +25,10 @@ import { TableType } from '../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../redux/reducer.type';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
-
+type FilterUpdateResult =
+    | { kind: 'updated'; filter: GlobalFilter; path: string; label: string }
+    | { kind: 'notFound'; filter: GlobalFilter }
+    | { kind: 'unchanged' };
 export default function GlobalFilterProvider({
     children,
     filterCategories,
@@ -67,10 +70,10 @@ export default function GlobalFilterProvider({
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
 
     const updateGenericFilter = useCallback(
-        async (genericFilter: GlobalFilter) => {
+        async (genericFilter: GlobalFilter): Promise<FilterUpdateResult> => {
             try {
                 if (!genericFilter.uuid) {
-                    return;
+                    return { kind: 'unchanged' };
                 }
                 const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilter.uuid);
                 const parentDirectoriesNames = response.map((parent) => parent.elementName);
@@ -78,23 +81,21 @@ export default function GlobalFilterProvider({
                     response.find((parent) => parent.type === ElementType.FILTER)?.elementName ?? genericFilter.label;
                 const path = computeFullPath(parentDirectoriesNames);
                 if (path !== genericFilter.path || label !== genericFilter.label) {
-                    dispatch(
-                        addToGlobalFilterOptions([{ ...genericFilter, path: path, label: label }], tableType, tableUuid)
-                    );
+                    return { kind: 'updated', filter: genericFilter, path, label };
                 }
+                return { kind: 'unchanged' };
             } catch (responseError) {
                 const error = responseError as Error & { status: number };
                 if (error.status === HttpStatusCode.NOT_FOUND) {
-                    // Not found => updated in global filter options for display
-                    dispatch(markNotFoundGlobalFiltersAsDeleted([genericFilter], tableType, tableUuid));
-                } else {
-                    snackWithFallback(snackError, error, {
-                        headerId: 'ComputationFilterResultsError',
-                    });
+                    return { kind: 'notFound', filter: genericFilter };
                 }
+                snackWithFallback(snackError, error, {
+                    headerId: 'ComputationFilterResultsError',
+                });
+                return { kind: 'unchanged' };
             }
         },
-        [dispatch, tableType, tableUuid, snackError]
+        [snackError]
     );
 
     // Check the selected global filters and mark them as deleted if they no longer exist.
@@ -103,11 +104,28 @@ export default function GlobalFilterProvider({
             const genericFilters: GlobalFilter[] = selectedGlobalFilters.filter(
                 (globalFilter) => isCriteriaFilter(globalFilter) && !globalFilter.deleted
             );
-            await Promise.all(genericFilters.map(updateGenericFilter));
+            const results = await Promise.all(genericFilters.map(updateGenericFilter));
+            const { updatedFilters, notFoundFilters } = results.reduce(
+                (acc, result) => {
+                    if (result.kind === 'updated') {
+                        acc.updatedFilters.push({ ...result.filter, path: result.path, label: result.label });
+                    } else if (result.kind === 'notFound') {
+                        acc.notFoundFilters.push(result.filter);
+                    }
+                    return acc;
+                },
+                { updatedFilters: [] as GlobalFilter[], notFoundFilters: [] as GlobalFilter[] }
+            );
+            if (updatedFilters.length) {
+                dispatch(addToGlobalFilterOptions(updatedFilters));
+            }
+            if (notFoundFilters.length) {
+                dispatch(markNotFoundGlobalFiltersAsDeleted(notFoundFilters, tableUuid));
+            }
         };
 
         checkSelectedFilters().catch((error) => console.error(error));
-    }, [selectedGlobalFilters, updateGenericFilter]);
+    }, [dispatch, selectedGlobalFilters, tableUuid, updateGenericFilter]);
 
     const value = useMemo(
         () => ({

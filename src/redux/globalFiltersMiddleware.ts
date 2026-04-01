@@ -8,7 +8,6 @@
 import { isAction, Middleware } from '@reduxjs/toolkit';
 import {
     ADD_GLOBAL_FILTERS,
-    ADD_TO_GLOBAL_FILTER_OPTIONS,
     CLEAR_GLOBAL_FILTERS,
     GlobalFilterAction,
     MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
@@ -37,7 +36,6 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
     // Synchronize filter changes with the backend
     switch (action.type) {
         case ADD_GLOBAL_FILTERS:
-        case ADD_TO_GLOBAL_FILTER_OPTIONS:
         case MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED:
         case REMOVE_GLOBAL_FILTERS:
         case CLEAR_GLOBAL_FILTERS: {
@@ -46,10 +44,10 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             // State after the action
             const state = store.getState();
             const studyUuid = state.studyUuid;
-            const index = tableId ?? tableType;
-            if (!studyUuid || !index) {
+            if (!studyUuid) {
                 break;
             }
+            const index = tableId ?? tableType;
 
             // Protection from overriding more recent filters from backend notification
             markEditingGlobalFilter(index);

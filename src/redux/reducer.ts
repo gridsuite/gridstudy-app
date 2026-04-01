@@ -1707,12 +1707,11 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
         (state, action: MarkNotFoundGlobalFiltersAsDeletedAction) => {
-            const { globalFilters, tableType, tableId } = action;
+            const { globalFilters, tableId } = action;
             globalFilters.forEach((filter) => {
                 const existingIndex = state.globalFilterOptions.findIndex((obj) => obj.id === filter.id);
-                if (existingIndex >= 0) {
-                    const existing = state.globalFilterOptions[existingIndex];
-                    Object.assign(existing, filter, { deleted: true });
+                if (existingIndex !== -1) {
+                    state.globalFilterOptions[existingIndex] = { ...filter, deleted: true };
                 } else {
                     state.globalFilterOptions.push({
                         ...filter,
@@ -1720,10 +1719,8 @@ export const reducer = createReducer(initialState, (builder) => {
                     });
                 }
             });
-            const index = tableId ?? tableType;
-            if (!index) return;
-            const tableState = state.tableFilters.globalFilters[index];
-            if (tableState && tableState.recents?.length) {
+            const tableState = state.tableFilters.globalFilters[tableId];
+            if (tableState?.recents?.length) {
                 tableState.recents = tableState.recents.filter((r) => !globalFilters.some((gf) => gf.id === r.id));
             }
         }

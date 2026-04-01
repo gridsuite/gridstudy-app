@@ -955,20 +955,12 @@ export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircui
 export const ADD_TO_GLOBAL_FILTER_OPTIONS = 'ADD_TO_GLOBAL_FILTER_OPTIONS';
 export type AddToGlobalFilterOptionsAction = Readonly<Action<typeof ADD_TO_GLOBAL_FILTER_OPTIONS>> & {
     globalFilters: GlobalFilter[];
-    tableType?: string;
-    tableId?: string;
 };
 
-export function addToGlobalFilterOptions(
-    globalFilters: GlobalFilter[],
-    tableType?: string,
-    tableId?: string
-): AddToGlobalFilterOptionsAction {
+export function addToGlobalFilterOptions(globalFilters: GlobalFilter[]): AddToGlobalFilterOptionsAction {
     return {
         type: ADD_TO_GLOBAL_FILTER_OPTIONS,
         globalFilters: globalFilters,
-        tableType: tableType,
-        tableId: tableId,
     };
 }
 
@@ -989,19 +981,16 @@ export type MarkNotFoundGlobalFiltersAsDeletedAction = Readonly<
     Action<typeof MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED>
 > & {
     globalFilters: GlobalFilter[];
-    tableType?: string;
-    tableId?: string;
+    tableId: string;
 };
 
 export function markNotFoundGlobalFiltersAsDeleted(
     globalFilters: GlobalFilter[],
-    tableType?: string,
-    tableId?: string
+    tableId: string
 ): MarkNotFoundGlobalFiltersAsDeletedAction {
     return {
         type: MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
         globalFilters: globalFilters,
-        tableType: tableType,
         tableId: tableId,
     };
 }
