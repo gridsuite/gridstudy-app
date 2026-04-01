@@ -10,6 +10,7 @@ import {
     EquipmentType,
     ExtendedEquipmentType,
     HvdcType,
+    newEquipmentDeletionDto,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -98,13 +99,13 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
 
     const removeEquipment = useCallback(
         (equipmentType: EquipmentType, equipmentId: string) => {
-            if (studyUuid) {
-                deleteEquipment({
+            if (studyUuid && currentNode?.id) {
+                deleteEquipment(
                     studyUuid,
-                    nodeUuid: currentNode?.id,
-                    equipmentId: equipmentId as UUID,
-                    equipmentType,
-                }).catch((error) => {
+                    currentNode.id,
+                    undefined,
+                    newEquipmentDeletionDto(equipmentType, equipmentId as UUID)
+                ).catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
                 });
             }
@@ -200,7 +201,7 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     defaultIdValue={equipmentToModify.equipmentId}
-                    isUpdate={true}
+                    isUpdate={false}
                     onClose={closeModificationDialog}
                     editData={undefined}
                     editDataFetchStatus={undefined}
@@ -220,11 +221,11 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    defaultIdValue={equipmentToDelete.equipmentId as UUID}
-                    isUpdate={true}
+                    isUpdate={false}
                     onClose={closeDeletionDialog}
                     editData={undefined}
                     editDataFetchStatus={undefined}
+                    defaultIdValue={equipmentToDelete.equipmentId as UUID}
                     equipmentType={equipmentToDelete.equipmentType}
                 />
             );

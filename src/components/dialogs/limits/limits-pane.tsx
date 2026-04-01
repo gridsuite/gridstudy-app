@@ -63,14 +63,8 @@ export function LimitsPane({
         name: operationalLimitsGroupsFormName,
     });
 
-    const watchedOperationalLimitsGroups = useWatch({ name: operationalLimitsGroupsFormName });
-
-    // Merge
-    const controlledOperationalLimitsGroups = operationalLimitsGroups.map((operationalLimitsGroup, index) => {
-        return {
-            ...operationalLimitsGroup,
-            ...watchedOperationalLimitsGroups[index],
-        };
+    const watchedOperationalLimitsGroups: OperationalLimitsGroupFormSchema[] = useWatch({
+        name: operationalLimitsGroupsFormName,
     });
 
     const isAModification: boolean = useMemo(() => !!equipmentToModify, [equipmentToModify]);
@@ -124,14 +118,14 @@ export function LimitsPane({
     const addNewLimitSet = useCallback(() => {
         let name = 'DEFAULT';
 
-        // Try to generate unique name
-        if (controlledOperationalLimitsGroups?.length > 0) {
-            const ids: string[] = controlledOperationalLimitsGroups.map((l) => l.name);
+        // Try to generate unique name (we relie on watched table because name can be changed without using useFieldArray functions)
+        if (watchedOperationalLimitsGroups?.length > 0) {
+            const ids: string[] = watchedOperationalLimitsGroups.map((l) => l.name);
             name = generateUniqueId('DEFAULT', ids);
         }
         prependEmptyOperationalLimitsGroup(name);
         setIndexSelectedLimitSet(0);
-    }, [controlledOperationalLimitsGroups, prependEmptyOperationalLimitsGroup]);
+    }, [watchedOperationalLimitsGroups, prependEmptyOperationalLimitsGroup]);
 
     return (
         <>
@@ -199,9 +193,7 @@ export function LimitsPane({
                     </Box>
                     <OperationalLimitsGroupsTabs
                         parentFormName={id}
-                        operationalLimitsGroups={controlledOperationalLimitsGroups}
                         appendToLimitsGroups={appendToLimitsGroups}
-                        prependToLimitsGroups={prependToLimitsGroups}
                         removeLimitsGroups={removeLimitsGroups}
                         indexSelectedLimitSet={indexSelectedLimitSet}
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
@@ -211,7 +203,7 @@ export function LimitsPane({
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
                     {indexSelectedLimitSet !== null &&
-                        controlledOperationalLimitsGroups.map(
+                        operationalLimitsGroups.map(
                             (operationalLimitsGroup: OperationalLimitsGroupFormSchema, index: number) =>
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
