@@ -30,7 +30,6 @@ import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { AppState } from '../../../../redux/reducer.type';
 import { AppDispatch } from '../../../../redux/store';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     EventCreatingInProgressEventData,
     EventDeletingInProgressEventData,
@@ -239,11 +238,9 @@ const EventModificationScenarioEditor = memo(() => {
             ),
         } as {};
 
-        const equipmentTypeLabelKeys = EQUIPMENT_TYPE_LABEL_KEYS as Record<EQUIPMENT_TYPES, string>;
-
         return intl.formatMessage(
             {
-                id: `Event${item.eventType}${equipmentTypeLabelKeys[item.equipmentType as EQUIPMENT_TYPES]}`,
+                id: `Event${item.eventType}${EQUIPMENT_TYPE_LABEL_KEYS[item.equipmentType]}`,
             },
             {
                 ...computedValues,

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CancelButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CancelButton, snackWithFallback, useSnackMessage, BuildStatus } from '@gridsuite/commons-ui';
 import { StopCircleOutlined } from '@mui/icons-material';
 import {
     Button,
@@ -22,7 +22,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { unbuildAllStudyNodes } from 'services/study/study';
 import { NETWORK_MODIFICATION } from '../../../../utils/report/report.constant';
-import { BUILD_STATUS } from '../../../network/constants';
 
 const styles = {
     button: {
@@ -73,7 +72,7 @@ export const UnbuildAllNodesButton = () => {
             .filter((treeNode) => treeNode.type === NETWORK_MODIFICATION)
             .every(
                 (treeNode) =>
-                    treeNode.data.globalBuildStatus === BUILD_STATUS.NOT_BUILT ||
+                    treeNode.data.globalBuildStatus === BuildStatus.NOT_BUILT ||
                     treeNode.data.globalBuildStatus === undefined
             );
     }, [treeModel]);

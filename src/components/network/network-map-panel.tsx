@@ -52,7 +52,6 @@ import { PanelType } from '../workspace/types/workspace.types';
 import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { deleteEquipment } from '../../services/study/network-modifications';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
@@ -983,7 +982,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                         <GenericPopoverContent
                             equipmentInfos={equipmentInfos}
                             loadFlowStatus={loadFlowStatus}
-                            equipmentType={EQUIPMENT_TYPES.LINE}
+                            equipmentType={EquipmentType.LINE}
                         />
                     )}
                 </GenericEquipmentPopover>

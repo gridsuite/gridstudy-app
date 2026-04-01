@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Identifiable, SelectInput } from '@gridsuite/commons-ui';
+import { EquipmentType, Identifiable, SelectInput } from '@gridsuite/commons-ui';
 import {
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
@@ -18,7 +18,6 @@ import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
 import Grid from '@mui/material/Grid';
 import { RegulatingTerminalForm } from '../../../regulating-terminal/regulating-terminal-form';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { getTapChangerEquipmentSectionTypeValue } from '../../../../utils/utils';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
@@ -76,7 +75,7 @@ export default function RegulatedTerminalSection({
         <RegulatingTerminalForm
             id={id}
             disabled={tapChangerDisabled}
-            equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
+            equipmentSectionTypeDefaultValue={EquipmentType.TWO_WINDINGS_TRANSFORMER}
             studyUuid={studyUuid}
             currentNodeUuid={currentNode?.id}
             currentRootNetworkUuid={currentRootNetworkUuid}
