@@ -544,6 +544,7 @@
     "importComposites.action.insert": "Composites",
     "importComposites.select": "Select composite modifications",
     "importComposites.selected": "Selected composite modifications: ",
+    "importComposites.error": "Error during the composite modification import.",
     "descriptionProperty": "Description",
     "DeleteModificationText": "{numberToDelete, plural, =0 {No modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
     "HybridDisplay": "Hybrid display",

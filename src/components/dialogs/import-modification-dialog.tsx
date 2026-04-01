@@ -147,7 +147,7 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
             );
             insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, values[ACTION]).catch(
                 (error) => {
-                    snackWithFallback(snackError, error, { headerId: 'errInsertCompositeModificationMsg' });
+                    snackWithFallback(snackError, error, { headerId: 'importComposites.error' });
                 }
             );
             onClose();
