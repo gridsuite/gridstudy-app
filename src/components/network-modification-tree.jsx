@@ -300,7 +300,9 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                 edges={edges}
                 onNodesChange={handleNodesChange}
                 onEdgesChange={onEdgesChange}
-                // fitView : see fix in onReactFlowInit function above
+                // We need to keep this to fitView for the render before onReactFlowInit call
+                // otherwise the react flow seems to blink with the wrong zoom level.
+                fitView
                 onInit={onReactFlowInit}
                 snapToGrid
                 snapGrid={snapGrid}
