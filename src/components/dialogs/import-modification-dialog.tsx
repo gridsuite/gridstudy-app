@@ -10,26 +10,17 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    RadioInput,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { insertCompositeModifications } from '../../services/study';
-import { FunctionComponent, useCallback, useState } from 'react';
+import { JSX, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import {
-    Box,
-    Button,
-    FormControl,
-    FormControlLabel,
-    Grid,
-    Radio,
-    RadioGroup,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { Box, Button, Grid, Stack, TextField, Typography } from '@mui/material';
 import { NoteAlt as NoteAltIcon } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -55,14 +46,14 @@ interface ImportModificationDialogProps {
     onClose: () => void;
 }
 
-interface SelectedModification {
+interface SelectedComposite {
     id: string;
     name: string;
 }
 
 interface FormData {
     [ACTION]: CompositeModificationAction;
-    [SELECTED_MODIFICATIONS]: SelectedModification[];
+    [SELECTED_MODIFICATIONS]: SelectedComposite[];
     [COMPOSITE_NAMES]: Record<string, string>;
 }
 
@@ -81,7 +72,7 @@ const formSchema = yup
             is: CompositeModificationAction.INSERT,
             then: (schema) =>
                 schema.test('all-names-filled', 'FieldIsRequired', function (value) {
-                    const selections: SelectedModification[] = this.parent[SELECTED_MODIFICATIONS] ?? [];
+                    const selections: SelectedComposite[] = this.parent[SELECTED_MODIFICATIONS] ?? [];
                     for (const m of selections) {
                         const name = value?.[m.id] ?? '';
                         if (!name.trim()) {
@@ -101,7 +92,10 @@ const formSchema = yup
 
 type FormSchemaType = yup.InferType<typeof formSchema>;
 
-const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps> = ({ open, onClose }) => {
+const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationDialogProps>) => JSX.Element = ({
+    open,
+    onClose,
+}) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -164,36 +158,32 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                maxWidth="sm"
+                maxWidth="md"
                 open={open}
                 onClose={onClose}
                 onClear={handleClear}
                 onSave={handleSave}
-                titleId="ModificationsImport"
+                titleId="importComposites.title"
                 disabledSave={!isValid}
             >
                 <Grid container spacing={2} direction="column" marginTop="auto">
                     <Grid item>
-                        <FormControl>
-                            <Controller
+                        <Stack direction="row" sx={{ alignItems: 'center' }}>
+                            <FormattedMessage id="importComposites.label" />
+                            <RadioInput
                                 name={ACTION}
-                                control={control}
-                                render={({ field }) => (
-                                    <RadioGroup row {...field}>
-                                        <FormControlLabel
-                                            value={CompositeModificationAction.SPLIT}
-                                            control={<Radio size="small" />}
-                                            label={intl.formatMessage({ id: 'CompositeModificationsActionSplit' })}
-                                        />
-                                        <FormControlLabel
-                                            value={CompositeModificationAction.INSERT}
-                                            control={<Radio size="small" />}
-                                            label={intl.formatMessage({ id: 'CompositeModificationsActionInsert' })}
-                                        />
-                                    </RadioGroup>
-                                )}
+                                options={[
+                                    {
+                                        id: CompositeModificationAction.SPLIT,
+                                        label: 'importComposites.action.split',
+                                    },
+                                    {
+                                        id: CompositeModificationAction.INSERT,
+                                        label: 'importComposites.action.insert',
+                                    },
+                                ]}
                             />
-                        </FormControl>
+                        </Stack>
                     </Grid>
                     <Grid container alignItems="center" item>
                         <Grid item display="flex" marginLeft={1}>
