@@ -25,8 +25,8 @@ import {
     USER_VALIDATION_ERROR,
     type UserAction,
     type UserValidationErrorAction,
+    EquipmentType,
 } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_GLOBAL_FILTERS,
@@ -1230,22 +1230,22 @@ export const reducer = createReducer(initialState, (builder) => {
                 //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === SpreadsheetEquipmentType.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
                         ] as Record<string, Substation>,
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.VOLTAGE_LEVEL].equipmentsByNodeId[
                             action.nodeId
                         ],
                         formattedEquipments as Record<string, Substation>
                     );
 
                     if (updatedSubstations != null) {
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
                         ] = updatedSubstations;
                     }
                     if (updatedVoltageLevels != null) {
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.VOLTAGE_LEVEL].equipmentsByNodeId[
                             action.nodeId
                         ] = updatedVoltageLevels;
                     }
@@ -1310,9 +1310,9 @@ export const reducer = createReducer(initialState, (builder) => {
             nodesIds: [],
             equipments: {
                 ...initialSpreadsheetNetworkState.equipments,
-                [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.SUBSTATION],
-                [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-                [EQUIPMENT_TYPES.HVDC_LINE]: state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.HVDC_LINE],
+                [EquipmentType.SUBSTATION]: state.spreadsheetNetwork.equipments[EquipmentType.SUBSTATION],
+                [EquipmentType.VOLTAGE_LEVEL]: state.spreadsheetNetwork.equipments[EquipmentType.VOLTAGE_LEVEL],
+                [EquipmentType.HVDC_LINE]: state.spreadsheetNetwork.equipments[EquipmentType.HVDC_LINE],
             },
         };
     });
