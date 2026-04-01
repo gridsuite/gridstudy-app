@@ -1357,7 +1357,6 @@
     "highVoltageLimit": "Limite tension haute (kV)",
     "SingleEquipment": "Un ouvrage",
     "MultipleEquipment": "Plusieurs ouvrages",
-    "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre",
     "ratedU1": "Tension d'enroulement 1 (kV)",
     "ratedU2": "Tension d'enroulement 2 (kV)",
     "linearShuntCompensators": "MCS linéaires",
