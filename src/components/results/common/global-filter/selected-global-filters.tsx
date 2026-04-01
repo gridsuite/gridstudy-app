@@ -6,7 +6,7 @@
  */
 
 import { GlobalFilter } from './global-filter-types';
-import { OverflowableChip } from '@gridsuite/commons-ui';
+import { EquipmentType, OverflowableChip } from '@gridsuite/commons-ui';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import { Box, Divider, List, ListItem, Typography } from '@mui/material';
 import { getOptionLabel } from './global-filter-utils';
@@ -15,7 +15,6 @@ import { GlobalFilterContext } from './global-filter-context';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { FilterType } from '../utils';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { removeFromSelectedGlobalFilters } from '../../../../redux/actions';
 import { useDispatch } from 'react-redux';
 
@@ -37,7 +36,7 @@ function SelectedGlobalFilters() {
                 // for clarity : if only substation filters are selected SUBSTATION_OR_VL are displayed as substations only
                 const onlySubstationFilters = selectedGlobalFilters
                     .filter((filter) => filter.filterType === FilterType.SUBSTATION_OR_VL)
-                    .every((filter) => filter.equipmentType === EQUIPMENT_TYPES.SUBSTATION);
+                    .every((filter) => filter.equipmentType === EquipmentType.SUBSTATION);
                 if (onlySubstationFilters) {
                     displayedCategoryTitle = 'results.globalFilter.substationFilter';
                 }

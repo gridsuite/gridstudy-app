@@ -14,7 +14,7 @@ import CheckboxTreeview, { GetSelectedItemsHandle } from '../common/checkbox-tre
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
 import { ModelVariable } from '../../dynamic-simulation.type';
 
@@ -25,14 +25,14 @@ interface ModelVariableDefinitionInfos {
 
 interface DynamicSimulationModelBack {
     modelName: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     variableDefinitions: ModelVariableDefinitionInfos[];
     variablesSets: { name: string; variableDefinitions: ModelVariableDefinitionInfos[] }[];
 }
 
 interface DynamicSimulationModel {
     name: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
 }
 
 export interface GetSelectedVariablesHandle {
@@ -42,7 +42,7 @@ export interface GetSelectedVariablesHandle {
 }
 
 interface ModelFilterProps {
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
 }
 
 const modelsToVariablesTree = (models: DynamicSimulationModelBack[]) => {
@@ -160,7 +160,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
-    ({ equipmentType = EQUIPMENT_TYPES.GENERATOR }, ref) => {
+    ({ equipmentType = EquipmentType.GENERATOR }, ref) => {
         const intl = useIntl();
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
