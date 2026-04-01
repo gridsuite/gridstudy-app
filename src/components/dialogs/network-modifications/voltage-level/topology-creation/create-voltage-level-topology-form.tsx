@@ -7,7 +7,6 @@
 
 import { filledTextField, IntegerInput, SwitchesBetweenSections } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
-import GridItem from '../../../commons/grid-item';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
