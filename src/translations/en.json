@@ -210,15 +210,19 @@
     "options": "options",
 
     "Dynawo": "Dynawo",
+
     "DynamicSimulation": "Dynamic simulation",
+    "DynamicSimulationRunError": "An error occurred while executing the dynamic simulation",
+    "DynamicSimulationResults": "Dynamic simulation results",
+
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
-    "DynamicSimulationResults": "Dynamic simulation results",
-    "DynamicSimulationRunError": "An error occurred while executing the dynamic simulation",
     "DynamicSimulationParametersSelection": "Dynamic simulation parameters selection",
+
     "DynamicSimulationStartTime": "Start time",
     "DynamicSimulationStopTime": "Stop time",
     "DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime": "Stop time must be greater than or equal to start time",
+
     "DynamicSimulationMappingSelection": "Select a mapping",
     "DynamicSimulationResultTab": "Page",
     "DynamicSimulationResultChart": "Graph",
@@ -238,14 +242,17 @@
     "DynamicSimulationSeriesListAvailableCurves": "Available curves",
     "DynamicSimulationSeriesListRightAxis": "Right axis",
     "DynamicSimulationResultLayoutCols": "Columns",
+
     "DynamicSimulationTimeDelay": "Time delay",
     "DynamicSimulationSolver": "Solver",
     "DynamicSimulationMapping": "Mapping",
     "DynamicSimulationNetwork": "Network",
     "DynamicSimulationCurve": "Curves",
+
     "DynamicSimulationSolverType": "Solver type",
     "DynamicSimulationSolverIDA": "IDA Solver",
     "DynamicSimulationSolverSIM": "Simplified Solver",
+
     "DynamicSimulationIDASolverOrder": "Order (1 or 2)",
     "DynamicSimulationIDASolverInitStep": "Initial time step",
     "DynamicSimulationIDASolverMinStep": "Minimum time step",
@@ -253,6 +260,7 @@
     "DynamicSimulationIDASolverAbsAccuracy": "Absolute accuracy",
     "DynamicSimulationIDASolverRelAccuracy": "Relative accuracy",
     "DynamicSimulationIDASolverOrderMustBeOneOfValues": "Order must be 1 or 2",
+
     "DynamicSimulationSimplifiedSolverHMin": "Minimum time step",
     "DynamicSimulationSimplifiedSolverHMax": "Maximum time step",
     "DynamicSimulationSimplifiedSolverKReduceStep": "Time step reduction factor",
@@ -271,6 +279,7 @@
     "DynamicSimulationSimplifiedSolverOptimizeReInitAlgebraicResidualsEvaluations": "Enable the optimizations of algebraic residuals evaluations during algebraic restoration",
     "DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestoration": "Specify the minimum mode change type for which an algebraic restoration is done (ALGEBRAIC or ALGEBRAIC_J_UPDATE)",
     "DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestorationInit": "Specify the minimum mode change type for which an algebraic restoration is done at init (ALGEBRAIC or ALGEBRAIC_J_UPDATE)",
+
     "DynamicSimulationSolverFNormTolAlg": "Stopping tolerance on L2-norm of residual function for algebraic restoration",
     "DynamicSimulationSolverInitialAddTolAlg": "Stopping tolerance on initialization for algebraic restoration",
     "DynamicSimulationSolverScStepTolAlg": "Scaled step length tolerance for algebraic restoration",
@@ -294,6 +303,7 @@
     "DynamicSimulationSolverPrintFlAlgInit": "Level of verbosity of output for algebraic restoration (for Init update)",
     "DynamicSimulationSolverMaximumNumberSlowStepIncrease": "Maximum number of consecutive steps with a too small time step",
     "DynamicSimulationSolverMinimalAcceptableStep": "Minimal acceptable value for a time step",
+
     "DynamicSimulationNetworkCapacitorNoReclosingDelay": "Time lag before reclosing in s (capacitor)",
     "DynamicSimulationNetworkReactanceNoReclosingDelay": "Time lag before reclosing in s (reactance)",
     "DynamicSimulationNetworkDanglingLineCurrentLimitMaxTimeOperation": "Time threshold over which current limiter should not operate in s",
@@ -314,6 +324,7 @@
     "DynamicSimulationNetworkTransformerTNextHT": "Time delay before changing tap (HV voltage) in s",
     "DynamicSimulationNetworkTransformerTNextTHT": "Time delay before changing tap (VHV voltage) in s",
     "DynamicSimulationNetworkTransformerTolV": "Voltage regulation tolerance (half deadband of the tap changer) in pu",
+
     "DynamicSimulationCurveSelectedNumber": "Selected",
     "DynamicSimulationCurveDynamicModelHeader": "Network object name",
     "DynamicSimulationCurveVariableHeader": "Variable",
@@ -330,10 +341,12 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Add",
     "DynamicSimulationClose": "Close",
+
     "FetchCountryError": "An error occurred while fetching countries",
     "FetchNominalVoltagesError": "An error occurred while fetching nominal voltages",
     "FetchVoltageLevelsError": "An error occurred while fetching voltage levels",
     "FetchHvdcLineWithShuntCompensatorsError": "An error occurred while fetching HVDC lines and related shunt compensators",
+
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
@@ -347,6 +360,7 @@
     "DynamicSimulationEventCreating": "Creating event ...",
     "DynamicSimulationEventUpdating": "Updating event ...",
     "DynamicSimulationEventDeleting": "Deleting event ...",
+
     "DynamicSimulationTabTimeSeries": "Curves",
     "DynamicSimulationTabTimeline": "Chronology",
     "DynamicSimulationTabStatus": "Status",
@@ -357,11 +371,13 @@
     "startDynamicSecurityAnalysisError": "An error occurred while starting the dynamic security analysis",
     "DynamicSecurityAnalysis": "Dynamic security analysis",
     "DynamicSecurityAnalysisRunError": "An error occurred while executing the dynamic security analysis",
+    "DynamicSecurityAnalysisTabStatus": "Status",
+
     "DynamicSecurityAnalysisContingency": "Contingency",
     "DynamicSecurityAnalysisScenario": "Scenario",
+
     "DynamicSecurityAnalysisScenarioDuration": "Scenario duration",
     "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
-    "DynamicSecurityAnalysisTabStatus": "Status",
 
     "startDynamicMarginCalculationError": "An error occurred while starting the dynamic margin calculation",
     "DynamicMarginCalculation": "Dynamic margin calculation",
