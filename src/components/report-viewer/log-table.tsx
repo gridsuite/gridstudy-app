@@ -108,7 +108,6 @@ const LogTable = ({
     const { pagination, setPagination } = useLogsPagination(reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
-    const [rowData, setRowData] = useState<Log[] | null>(null);
     const [searchMatches, setSearchMatches] = useState<{ rowIndex: number; page: number }[]>([]);
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
@@ -141,7 +140,7 @@ const LogTable = ({
 
     const refreshLogsOnSelectedReport = useCallback(() => {
         if (severityFilter.length === 0) {
-            setRowData([]);
+            gridRef.current?.api?.setGridOption('rowData', []);
             return;
         }
         fetchLogs(selectedReport.id, severityFilter, messageFilter, selectedReport.type, page, rowsPerPage)?.then(
@@ -152,7 +151,10 @@ const LogTable = ({
                 }
                 setCount(totalElements);
                 setSelectedRowIndex(-1);
-                setRowData(content);
+                // Scroll to top to reset scroll position before updating row data: AG Grid's scroll cache becomes stale on data replacement
+                // causing an empty viewport if the previous scroll position exceeded the new data size (on rowsPerPage change)
+                gridRef.current?.api?.ensureIndexVisible(0, 'top');
+                gridRef.current?.api?.setGridOption('rowData', content);
             }
         );
     }, [
@@ -444,7 +446,6 @@ const LogTable = ({
                 <CustomAGGrid
                     ref={gridRef}
                     columnDefs={COLUMNS_DEFINITIONS}
-                    rowData={rowData}
                     onCellClicked={handleRowClick}
                     getRowStyle={rowStyleFormat}
                     onGridReady={onGridReady}
