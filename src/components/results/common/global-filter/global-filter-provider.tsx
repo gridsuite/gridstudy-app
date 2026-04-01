@@ -25,10 +25,7 @@ import { TableType } from '../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../redux/reducer.type';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
-type FilterUpdateResult =
-    | { kind: 'updated'; filter: GlobalFilter; path: string; label: string }
-    | { kind: 'notFound'; filter: GlobalFilter }
-    | { kind: 'unchanged' };
+type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilter } | { kind: 'unchanged' };
 export default function GlobalFilterProvider({
     children,
     filterCategories,
@@ -81,7 +78,7 @@ export default function GlobalFilterProvider({
                     response.find((parent) => parent.type === ElementType.FILTER)?.elementName ?? genericFilter.label;
                 const path = computeFullPath(parentDirectoriesNames);
                 if (path !== genericFilter.path || label !== genericFilter.label) {
-                    return { kind: 'updated', filter: genericFilter, path, label };
+                    return { kind: 'updated', filter: { ...genericFilter, path, label } };
                 }
                 return { kind: 'unchanged' };
             } catch (responseError) {
@@ -105,17 +102,12 @@ export default function GlobalFilterProvider({
                 (globalFilter) => isCriteriaFilter(globalFilter) && !globalFilter.deleted
             );
             const results = await Promise.all(genericFilters.map(updateGenericFilter));
-            const { updatedFilters, notFoundFilters } = results.reduce(
-                (acc, result) => {
-                    if (result.kind === 'updated') {
-                        acc.updatedFilters.push({ ...result.filter, path: result.path, label: result.label });
-                    } else if (result.kind === 'notFound') {
-                        acc.notFoundFilters.push(result.filter);
-                    }
-                    return acc;
-                },
-                { updatedFilters: [] as GlobalFilter[], notFoundFilters: [] as GlobalFilter[] }
-            );
+            const updatedFilters: GlobalFilter[] = [];
+            const notFoundFilters: GlobalFilter[] = [];
+            for (const result of results) {
+                if (result.kind === 'updated') updatedFilters.push(result.filter);
+                else if (result.kind === 'notFound') notFoundFilters.push(result.filter);
+            }
             if (updatedFilters.length) {
                 dispatch(addToGlobalFilterOptions(updatedFilters));
             }

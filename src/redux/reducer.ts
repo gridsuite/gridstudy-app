@@ -1708,20 +1708,13 @@ export const reducer = createReducer(initialState, (builder) => {
         MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
         (state, action: MarkNotFoundGlobalFiltersAsDeletedAction) => {
             const { globalFilters, tableId } = action;
-            globalFilters.forEach((filter) => {
-                const existingIndex = state.globalFilterOptions.findIndex((obj) => obj.id === filter.id);
-                if (existingIndex !== -1) {
-                    state.globalFilterOptions[existingIndex] = { ...filter, deleted: true };
-                } else {
-                    state.globalFilterOptions.push({
-                        ...filter,
-                        deleted: true,
-                    });
-                }
+            const ids = new Set(globalFilters.map((f) => f.id));
+            state.globalFilterOptions.forEach((globalFilter) => {
+                if (ids.has(globalFilter.id)) globalFilter.deleted = true;
             });
             const tableState = state.tableFilters.globalFilters[tableId];
             if (tableState?.recents?.length) {
-                tableState.recents = tableState.recents.filter((r) => !globalFilters.some((gf) => gf.id === r.id));
+                tableState.recents = tableState.recents.filter((r) => !ids.has(r.id));
             }
         }
     );
