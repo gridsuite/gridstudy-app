@@ -8,13 +8,12 @@ import { Grid, TextField } from '@mui/material';
 import { Event, EventDefinition, EventPropertyName } from './types/event.type';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import GridItem from '../../commons/grid-item';
-import { filledTextField } from '@gridsuite/commons-ui';
+import { EquipmentType, filledTextField } from '@gridsuite/commons-ui';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     eventDefinition?: EventDefinition;
     event?: Event;
 };

@@ -6,12 +6,11 @@
  */
 
 import type { NonEmptyTuple } from 'type-fest';
-import { backendFetchJson, Identifiable } from '@gridsuite/commons-ui';
+import { backendFetchJson, EquipmentType, Identifiable } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { getRequestParamFromList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import type { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 import type { FilterEquipmentType } from '../../types/filter-lib/filter';
 
@@ -19,7 +18,7 @@ export interface ExpertFilter {
     id?: UUID;
     name?: string;
     type: 'EXPERT';
-    equipmentType: string; // TODO must be EquipmentType enum
+    equipmentType: EquipmentType;
     rules: RuleGroupTypeExport;
     topologyKind?: string; // TODO must be TopologyKind enum
 }
@@ -37,7 +36,7 @@ export interface FilterEquipments {
 
 export interface IdentifiableAttributes {
     id: string;
-    type: EQUIPMENT_TYPES;
+    type: EquipmentType;
     distributionKey: number;
 }
 

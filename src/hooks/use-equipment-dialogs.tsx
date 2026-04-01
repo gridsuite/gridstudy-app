@@ -14,7 +14,7 @@ import {
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from '../components/utils/equipment-types';
 import { deleteEquipment } from '../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../services/study/network';
 import { CurrentTreeNode } from '../components/graph/tree-node.type';
@@ -242,7 +242,7 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
         return (
             <DynamicSimulationEventDialog
                 equipmentId={equipmentToConfigDynamicSimulationEvent.equipmentId}
-                equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType as unknown as EQUIPMENT_TYPES}
+                equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType}
                 onClose={handleCloseDynamicSimulationEventDialog}
                 title={dynamicSimulationEventDialogTitle}
             />
