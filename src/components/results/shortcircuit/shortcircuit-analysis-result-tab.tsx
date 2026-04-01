@@ -18,7 +18,7 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
@@ -28,7 +28,6 @@ import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button'
 import type { UUID } from 'node:crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { PaginationType, ShortcircuitAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
@@ -150,8 +149,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         }
     }, []);
 
-    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
-        return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+    const filterableEquipmentTypes: EquipmentType[] = useMemo(() => {
+        return [EquipmentType.VOLTAGE_LEVEL];
     }, []);
 
     return (

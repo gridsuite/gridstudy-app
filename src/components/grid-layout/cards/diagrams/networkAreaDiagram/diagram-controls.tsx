@@ -37,7 +37,7 @@ import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { fetchNetworkElementInfos } from 'services/study/network';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import VoltageLevelSearchMenu from './voltage-level-search-menu';
 
 const styles = {
@@ -374,7 +374,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             open={isLoadSelectorOpen}
                             onClose={selectElement}
                             types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
-                            equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            equipmentTypes={[EquipmentType.VOLTAGE_LEVEL]}
                             title={intl.formatMessage({
                                 id: 'elementSelection',
                             })}
@@ -386,7 +386,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             open={isFilterSelectorOpen}
                             onClose={handleSelectFilter}
                             types={[ElementType.FILTER]}
-                            equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            equipmentTypes={[EquipmentType.VOLTAGE_LEVEL]}
                             title={intl.formatMessage({
                                 id: 'elementSelection',
                             })}
