@@ -20,13 +20,14 @@ import { JSX, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { Box, Button, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Button, Grid, TextField, Typography } from '@mui/material';
 import { NoteAlt as NoteAltIcon } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from './commons/modificationDialog';
 import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
+import GridItem from './commons/grid-item';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -166,74 +167,67 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
                 titleId="importComposites.title"
                 disabledSave={!isValid}
             >
-                <Grid container spacing={2} direction="column" marginTop="auto">
-                    <Grid item>
-                        <Stack direction="row" sx={{ alignItems: 'center' }}>
-                            <FormattedMessage id="importComposites.label" />
-                            <RadioInput
-                                name={ACTION}
-                                options={[
-                                    {
-                                        id: CompositeModificationAction.SPLIT,
-                                        label: 'importComposites.action.split',
-                                    },
-                                    {
-                                        id: CompositeModificationAction.INSERT,
-                                        label: 'importComposites.action.insert',
-                                    },
-                                ]}
-                            />
-                        </Stack>
-                    </Grid>
-                    <Grid container alignItems="center" item>
-                        <Grid item display="flex" marginLeft={1}>
+                <Grid container spacing={2} marginTop="auto" sx={{ alignItems: 'center' }}>
+                    <GridItem size={12}>
+                        <Button size="medium" onClick={() => setIsSelectorOpen(true)}>
                             <NoteAltIcon />
-                        </Grid>
-                        <Typography m={1} component="span">
-                            <Box fontWeight="fontWeightBold">{selectedModifications.map((m) => m.name).join(', ')}</Box>
-                        </Typography>
-                        <Grid item>
-                            <Button
-                                size={selectedModifications.length ? 'small' : 'medium'}
-                                onClick={() => setIsSelectorOpen(true)}
-                            >
-                                <FormattedMessage id={'ChooseModifications'} />
-                            </Button>
-                        </Grid>
-                    </Grid>
-
-                    {isInsertMode && selectedModifications.length > 0 && (
-                        <Grid item>
-                            <Grid container spacing={1} direction="column">
-                                {selectedModifications.map((m) => (
-                                    <Grid item key={m.id}>
-                                        <Controller
-                                            name={`${COMPOSITE_NAMES}.${m.id}`}
-                                            control={control}
-                                            render={({ field, fieldState }) => {
-                                                return (
-                                                    <TextField
-                                                        {...field}
-                                                        label={m.name}
-                                                        fullWidth
-                                                        required
-                                                        size="small"
-                                                        error={!!fieldState.error}
-                                                        helperText={
-                                                            fieldState.error
-                                                                ? intl.formatMessage({ id: 'FieldIsRequired' })
-                                                                : undefined
-                                                        }
-                                                    />
-                                                );
-                                            }}
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </Grid>
-                    )}
+                            <FormattedMessage id={'importComposites.select'} />
+                        </Button>
+                    </GridItem>
+                    <GridItem size={4}>
+                        <FormattedMessage id="importComposites.label" />
+                    </GridItem>
+                    <GridItem size={8}>
+                        <RadioInput
+                            name={ACTION}
+                            options={[
+                                {
+                                    id: CompositeModificationAction.SPLIT,
+                                    label: 'importComposites.action.split',
+                                },
+                                {
+                                    id: CompositeModificationAction.INSERT,
+                                    label: 'importComposites.action.insert',
+                                },
+                            ]}
+                        />
+                    </GridItem>
                 </Grid>
+                {selectedModifications.length > 0 && (
+                    <Grid container spacing={1} direction="column" sx={{ padding: 2 }}>
+                        <FormattedMessage id="importComposites.selected" />
+                        {selectedModifications.map((m) => (
+                            <GridItem key={m.id}>
+                                {isInsertMode ? (
+                                    <Controller
+                                        name={`${COMPOSITE_NAMES}.${m.id}`}
+                                        control={control}
+                                        render={({ field, fieldState }) => {
+                                            return (
+                                                <TextField
+                                                    {...field}
+                                                    label={m.name}
+                                                    required
+                                                    size="small"
+                                                    error={!!fieldState.error}
+                                                    helperText={
+                                                        fieldState.error
+                                                            ? intl.formatMessage({ id: 'FieldIsRequired' })
+                                                            : undefined
+                                                    }
+                                                />
+                                            );
+                                        }}
+                                    />
+                                ) : (
+                                    <Typography variant="body1" component="span" fontWeight="fontWeightMedium">
+                                        {m.name}
+                                    </Typography>
+                                )}
+                            </GridItem>
+                        ))}
+                    </Grid>
+                )}
             </ModificationDialog>
 
             <DirectoryItemSelector
