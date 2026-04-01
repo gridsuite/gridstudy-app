@@ -14,7 +14,7 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import {
@@ -24,7 +24,6 @@ import {
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
 import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
@@ -76,8 +75,8 @@ function SensitivityAnalysisResultTab({
     const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
 
-    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
-        return sensiTab === SENSITIVITY_AT_NODE ? [] : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+    const filterableEquipmentTypes: EquipmentType[] = useMemo(() => {
+        return sensiTab === SENSITIVITY_AT_NODE ? [] : [EquipmentType.TWO_WINDINGS_TRANSFORMER, EquipmentType.LINE];
     }, [sensiTab]);
 
     const filterTypes: FilterType[] = useMemo(() => {

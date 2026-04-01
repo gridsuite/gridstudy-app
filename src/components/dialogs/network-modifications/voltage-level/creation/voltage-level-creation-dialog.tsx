@@ -33,7 +33,7 @@ import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-co
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+
 import { IntlShape, useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -248,7 +248,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         };
     }, [subscribe, trigger, getValues]);
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.VOLTAGE_LEVEL);
 
     useEffect(() => {
         if (editData) {

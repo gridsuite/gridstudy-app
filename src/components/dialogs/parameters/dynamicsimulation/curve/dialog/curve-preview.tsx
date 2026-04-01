@@ -11,7 +11,7 @@ import { Box, Grid, Typography } from '@mui/material';
 import { CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from '../../../../../../translations/not-intl/aggrid-locales';
 
 const styles = {
@@ -25,7 +25,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface Curve {
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     equipmentId: string;
     variableId: string | undefined;
 }

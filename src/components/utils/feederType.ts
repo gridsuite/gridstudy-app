@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from './equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 import { ValueOf } from 'type-fest';
 
 export const FEEDER_TYPES = {
-    ...EQUIPMENT_TYPES,
+    ...EquipmentType,
     /**
      * these are ComponentTypeNames from powsybl-single-line-diagram,
      * but we put them here because some ComponentTypeNames are also EquipmentsNames

@@ -21,6 +21,7 @@ import {
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import {
+    EquipmentType,
     FloatInput,
     ReactivePowerAdornment,
     SelectInput,
@@ -33,7 +34,6 @@ import type { UUID } from 'node:crypto';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { RegulatingTerminalForm } from '../../../regulating-terminal/regulating-terminal-form';
 import { FormattedMessage } from 'react-intl';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
 
@@ -98,7 +98,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             currentNodeUuid={currentNode.id}
             currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
-            equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR}
+            equipmentSectionTypeDefaultValue={EquipmentType.STATIC_VAR_COMPENSATOR}
             regulatingTerminalVlId={undefined}
             equipmentSectionType={undefined}
         />
