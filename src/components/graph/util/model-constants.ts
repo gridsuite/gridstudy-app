@@ -7,7 +7,7 @@
 
 import RootNode from '../nodes/root-node';
 import NetworkModificationNode from '../nodes/network-modification-node';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 import { LabeledGroupNode } from '../nodes/labeled-group-node';
 import { LABELED_GROUP_TYPE } from '../nodes/labeled-group-node.type';
 
@@ -18,27 +18,27 @@ export const nodeTypes = {
 };
 
 // used to generate translation combined keys with a prefix/suffix for each equipment type
-// for example `${EventType.DISCONNECT}${EQUIPMENT_TYPE_LABEL_KEYS[EQUIPMENT_TYPES.BUS]}` => 'DisconnectBus'
-export const EQUIPMENT_TYPE_LABEL_KEYS = {
-    [EQUIPMENT_TYPES.LINE]: 'Line',
-    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: '2WTransformer',
-    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: '3WTransformer',
-    [EQUIPMENT_TYPES.HVDC_LINE]: 'HvdcLine',
-    [EQUIPMENT_TYPES.LOAD]: 'Load',
-    [EQUIPMENT_TYPES.GENERATOR]: 'Generator',
-    [EQUIPMENT_TYPES.BUS]: 'Bus',
-    [EQUIPMENT_TYPES.SUBSTATION]: 'Substation',
-    [EQUIPMENT_TYPES.SWITCH]: 'Switch',
-    [EQUIPMENT_TYPES.DISCONNECTOR]: 'Disconnector',
-    [EQUIPMENT_TYPES.BREAKER]: 'Breaker',
-    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: 'VoltageLevel',
-    [EQUIPMENT_TYPES.BUSBAR_SECTION]: 'BusbarSection',
-    [EQUIPMENT_TYPES.BATTERY]: 'Battery',
-    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: 'StaticVarCompensator',
-    [EQUIPMENT_TYPES.DANGLING_LINE]: 'DanglingLine',
-    [EQUIPMENT_TYPES.HVDC_CONVERTER_STATION]: 'HvdcConverterStation',
-    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: 'VscConverterStation',
-    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: 'LccConverterStation',
-    [EQUIPMENT_TYPES.TIE_LINE]: 'TieLine',
-    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: 'ShuntCompensator',
+// for example `${EventType.DISCONNECT}${EQUIPMENT_TYPE_LABEL_KEYS[EquipmentType.BUS]}` => 'DisconnectBus'
+export const EQUIPMENT_TYPE_LABEL_KEYS: Record<EquipmentType, string> = {
+    [EquipmentType.LINE]: 'Line',
+    [EquipmentType.TWO_WINDINGS_TRANSFORMER]: '2WTransformer',
+    [EquipmentType.THREE_WINDINGS_TRANSFORMER]: '3WTransformer',
+    [EquipmentType.HVDC_LINE]: 'HvdcLine',
+    [EquipmentType.LOAD]: 'Load',
+    [EquipmentType.GENERATOR]: 'Generator',
+    [EquipmentType.BUS]: 'Bus',
+    [EquipmentType.SUBSTATION]: 'Substation',
+    [EquipmentType.SWITCH]: 'Switch',
+    [EquipmentType.DISCONNECTOR]: 'Disconnector',
+    [EquipmentType.BREAKER]: 'Breaker',
+    [EquipmentType.VOLTAGE_LEVEL]: 'VoltageLevel',
+    [EquipmentType.BUSBAR_SECTION]: 'BusbarSection',
+    [EquipmentType.BATTERY]: 'Battery',
+    [EquipmentType.STATIC_VAR_COMPENSATOR]: 'StaticVarCompensator',
+    [EquipmentType.DANGLING_LINE]: 'DanglingLine',
+    [EquipmentType.HVDC_CONVERTER_STATION]: 'HvdcConverterStation',
+    [EquipmentType.VSC_CONVERTER_STATION]: 'VscConverterStation',
+    [EquipmentType.LCC_CONVERTER_STATION]: 'LccConverterStation',
+    [EquipmentType.TIE_LINE]: 'TieLine',
+    [EquipmentType.SHUNT_COMPENSATOR]: 'ShuntCompensator',
 };
