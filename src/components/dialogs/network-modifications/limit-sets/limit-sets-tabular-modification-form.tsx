@@ -51,6 +51,8 @@ export interface TabularModificationFormProps {
     dataFetching: boolean;
 }
 
+const equipmentTypesOptions = [EquipmentType.LINE, EquipmentType.TWO_WINDINGS_TRANSFORMER];
+
 export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<TabularModificationFormProps>) {
     const intl = useIntl();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
@@ -214,8 +216,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         setIsFetching(dataFetching);
     }, [dataFetching]);
 
-    const typesOptions = useMemo(() => [EquipmentType.LINE, EquipmentType.TWO_WINDINGS_TRANSFORMER], []);
-
     useEffect(() => {
         if (selectedFileError) {
             setValue(MODIFICATIONS_TABLE, []);
@@ -247,7 +247,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         <AutocompleteInput
             name={TYPE}
             label="Type"
-            options={typesOptions}
+            options={equipmentTypesOptions}
             onChangeCallback={handleChange}
             getOptionLabel={(option: any) => getTypeLabel(option as string)}
             size={'small'}
