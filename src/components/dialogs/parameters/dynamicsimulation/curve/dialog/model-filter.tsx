@@ -8,13 +8,12 @@
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Box, Grid, Typography } from '@mui/material';
-import { type MuiStyles } from '@gridsuite/commons-ui';
+import { EquipmentType, type MuiStyles } from '@gridsuite/commons-ui';
 import CheckboxSelect from '../common/checkbox-select';
 import CheckboxTreeview, { GetSelectedItemsHandle } from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
-import { EquipmentType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
 import { ModelVariable } from '../../dynamic-simulation.type';
 
@@ -43,6 +42,7 @@ export interface GetSelectedVariablesHandle {
 
 interface ModelFilterProps {
     equipmentType: EquipmentType;
+    mapping?: string;
 }
 
 const modelsToVariablesTree = (models: DynamicSimulationModelBack[]) => {
@@ -160,7 +160,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
-    ({ equipmentType = EquipmentType.GENERATOR }, ref) => {
+    ({ equipmentType = EquipmentType.GENERATOR, mapping }, ref) => {
         const intl = useIntl();
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -211,7 +211,7 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
 
         // fetch all associated models and variables for study
         useEffect(() => {
-            fetchDynamicSimulationModels(studyUuid).then((models: DynamicSimulationModelBack[]) => {
+            fetchDynamicSimulationModels(studyUuid, mapping ?? null).then((models: DynamicSimulationModelBack[]) => {
                 setAllModels(
                     models.map((model) => ({
                         name: model.modelName,
@@ -223,7 +223,7 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
                 const variablesTree = modelsToVariablesTree(models);
                 setAllVariables(variablesTree);
             });
-        }, [studyUuid]);
+        }, [studyUuid, mapping]);
 
         const getSelectedVariables = useCallback((): ModelVariable[] => {
             return (
