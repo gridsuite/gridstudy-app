@@ -306,6 +306,11 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                PaperProps={{
+                    sx: {
+                        height: '75vh', // we want the dialog height to be fixed even when switching tabs
+                    },
+                }}
                 {...dialogProps}
             >
                 <VoltageLevelCreationForm
