@@ -4,10 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Identifiable, type MuiStyles, type UseStateBooleanReturn, yupConfig as yup } from '@gridsuite/commons-ui';
+import {
+    EquipmentType,
+    Identifiable,
+    type MuiStyles,
+    type UseStateBooleanReturn,
+    yupConfig as yup,
+} from '@gridsuite/commons-ui';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     MAX_Q_AT_NOMINAL_V,
     REACTIVE_CAPABILITY_CURVE,
@@ -100,7 +105,7 @@ export const emptyFormData: PrefilledModelFormType = {
 
 export interface GeneratePrefilledModelDialogProps {
     open: UseStateBooleanReturn;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     onGenerate: (params: PrefilledModelGenerationParams) => void;
 }
 
@@ -183,14 +188,14 @@ export const mapShuntCompensatorToFormFields = (shuntCompensator: Record<string,
     };
 };
 
-export const mapPrefilledEquipments = (equipmentType: EQUIPMENT_TYPES, equipments: Identifiable[]) => {
+export const mapPrefilledEquipments = (equipmentType: EquipmentType, equipments: Identifiable[]) => {
     switch (equipmentType) {
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+        case EquipmentType.TWO_WINDINGS_TRANSFORMER:
             return equipments.map(mapTwtDataForTable);
-        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+        case EquipmentType.SHUNT_COMPENSATOR:
             return equipments.map(mapShuntCompensatorToFormFields);
-        case EQUIPMENT_TYPES.GENERATOR:
-        case EQUIPMENT_TYPES.BATTERY:
+        case EquipmentType.GENERATOR:
+        case EquipmentType.BATTERY:
             return equipments.map(mapReactiveCapabilityCurvePointsToFormFields);
         default:
             return equipments;

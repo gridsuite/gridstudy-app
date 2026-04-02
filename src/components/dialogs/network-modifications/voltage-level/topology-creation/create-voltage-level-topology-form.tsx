@@ -7,7 +7,6 @@
 
 import { filledTextField, IntegerInput, SwitchesBetweenSections } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
-import GridItem from '../../../commons/grid-item';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
@@ -53,8 +52,6 @@ export default function CreateVoltageLevelTopologyForm({
         [intl, voltageLevelId]
     );
 
-    const sectionCountField = <IntegerInput name={`${SECTION_COUNT}`} label={'SectionCount'} />;
-
     const diagramToolTip = useMemo(
         () => (
             <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}>
@@ -66,22 +63,32 @@ export default function CreateVoltageLevelTopologyForm({
 
     return (
         <>
-            <Grid container spacing={3}>
-                <GridItem size={4}>{voltageLevelIdField}</GridItem>
-                {isNodeBuilt(currentNode) && (
-                    <GridItem size={3}>
-                        <Button onClick={handleClickOpenDiagramPane} variant="outlined">
-                            <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
-                        </Button>
-                        {diagramToolTip}
-                    </GridItem>
-                )}
-            </Grid>
-            <Grid container spacing={3} sx={{ paddingTop: 4 }}>
-                <GridItem size={4}>{sectionCountField}</GridItem>
-                <GridItem size={8}>
+            <Grid container direction="column">
+                <Grid item>
+                    <Grid container spacing={3}>
+                        <Grid item xs={4}>
+                            {voltageLevelIdField}
+                        </Grid>
+                        {isNodeBuilt(currentNode) && (
+                            <Grid item xs={3}>
+                                <Button onClick={handleClickOpenDiagramPane} variant="outlined">
+                                    <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
+                                </Button>
+                                {diagramToolTip}
+                            </Grid>
+                        )}
+                    </Grid>
+                </Grid>
+                <Grid item>
+                    <Grid container>
+                        <Grid item xs={4}>
+                            <IntegerInput name={`${SECTION_COUNT}`} label={'SectionCount'} />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item>
                     <SwitchesBetweenSections />
-                </GridItem>
+                </Grid>
             </Grid>
             <Box>
                 <PositionDiagramPane

@@ -32,14 +32,13 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS, TableType } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
@@ -244,12 +243,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return loadflowResult;
     }, [tabIndex, loadflowResult, intl]);
 
-    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
+    const filterableEquipmentTypes: EquipmentType[] = useMemo(() => {
         switch (tabIndex) {
             case 0:
-                return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+                return [EquipmentType.TWO_WINDINGS_TRANSFORMER, EquipmentType.LINE];
             case 1:
-                return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+                return [EquipmentType.VOLTAGE_LEVEL];
         }
         return [];
     }, [tabIndex]);
