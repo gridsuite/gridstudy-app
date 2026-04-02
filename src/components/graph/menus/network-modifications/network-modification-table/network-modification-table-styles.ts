@@ -26,7 +26,6 @@ export const createCellBorderColor = (theme: Theme): string =>
         : darken(alpha(theme.palette.divider, 1), 0.68);
 
 // Static styles
-
 export const networkModificationTableStyles = {
     tableWrapper: (theme) => ({
         display: 'flex',
@@ -193,7 +192,8 @@ export const createRowSx = (
     isHighlighted: boolean,
     isDragging: boolean,
     virtualRow: VirtualItem,
-    depth: number
+    depth: number,
+    isComposite: boolean
 ): SxProps => ({
     position: 'absolute',
     top: 0,
@@ -202,7 +202,13 @@ export const createRowSx = (
     width: '100%',
     height: `${virtualRow.size}px`,
     transform: `translateY(${virtualRow.start}px)`,
-    backgroundColor: isHighlighted ? HIGHLIGHT_COLOR_BASE : 'transparent',
+    backgroundColor: isHighlighted
+        ? HIGHLIGHT_COLOR_BASE
+        : isComposite
+          ? theme.palette.mode === 'light'
+              ? darken(theme.palette.background.paper, 0.04)
+              : lighten(theme.palette.background.paper, 0.08)
+          : 'transparent',
     opacity: isDragging ? DRAG_OPACITY : 1,
     '&:hover': {
         backgroundColor: isHighlighted ? HIGHLIGHT_COLOR_HOVER : ROW_HOVER_COLOR,

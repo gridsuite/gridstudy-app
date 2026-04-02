@@ -19,7 +19,7 @@ import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pan
 import { VirtualItem } from '@tanstack/react-virtual';
 import { AUTO_EXTENSIBLE_COLUMNS, BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
 import { useTheme } from '@mui/material/styles';
-import { ComposedModificationMetadata } from '../utils';
+import { ComposedModificationMetadata, isCompositeModification } from '../utils';
 import { FormattedMessage } from 'react-intl';
 import { mergeSx } from '@gridsuite/commons-ui';
 
@@ -56,7 +56,14 @@ const ModificationRow = memo<ModificationRowProps>(
                             data-row-id={row.original.uuid}
                             sx={mergeSx(
                                 networkModificationTableStyles.tableRow,
-                                createRowSx(theme, isHighlighted, snapshot.isDragging, virtualRow, row.depth)
+                                createRowSx(
+                                    theme,
+                                    isHighlighted,
+                                    snapshot.isDragging,
+                                    virtualRow,
+                                    row.depth,
+                                    isCompositeModification(row.original)
+                                )
                             )}
                         >
                             {row.getVisibleCells().map((cell) => {
