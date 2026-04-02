@@ -88,19 +88,23 @@ export function DynamicSimulationParametersSelector({
 
     useEffect(() => {
         fetchDynamicSimulationParameters(studyUuid)
-            .then((paramsPlusMappings) => {
+            .then((params) => {
                 // save all params to state
-                setDynamicSimulationParams(paramsPlusMappings);
-                getDynamicMappings().then((mappingInfosList: MappingInfos[]) => {
-                    const mappings = mappingInfosList?.map((elem) => elem.name);
-                    setMappingNames(mappings ?? []);
-                    reset({ ...emptyFormData, [MAPPING]: paramsPlusMappings.mapping });
-                });
+                setDynamicSimulationParams(params);
+                getDynamicMappings()
+                    .then((mappingInfosList: MappingInfos[]) => {
+                        const mappings = mappingInfosList?.map((elem) => elem.name);
+                        setMappingNames(mappings ?? []);
+                        reset({ ...emptyFormData, [MAPPING]: params.mapping });
+                    })
+                    .catch((error) => {
+                        snackWithFallback(snackError, error, {
+                            headerId: 'DynamicSimulationGetMappingError',
+                        });
+                    });
             })
             .catch((error) => {
-                snackWithFallback(snackError, error, {
-                    headerId: 'DynamicSimulationGetMappingError',
-                });
+                snackWithFallback(snackError, error);
             });
     }, [snackError, studyUuid, reset]);
 
