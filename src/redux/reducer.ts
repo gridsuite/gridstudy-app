@@ -200,8 +200,6 @@ import {
     ShortcircuitAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
-    STORE_NAD_VIEW_BOX,
-    StoreNadViewBoxAction,
     TABLE_SORT,
     type TableSortAction,
     UPDATE_COLUMN_FILTERS,
@@ -467,7 +465,6 @@ const initialState: AppState = {
         copyType: null,
         allChildren: null,
     },
-    nadViewBox: {},
     copiedNetworkModifications: {
         networkModificationUuids: [],
         copyInfos: null,
@@ -1102,11 +1099,6 @@ export const reducer = createReducer(initialState, (builder) => {
             )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
-    });
-
-    builder.addCase(STORE_NAD_VIEW_BOX, (state, action: StoreNadViewBoxAction) => {
-        const { nadUuid, viewBox } = action.nadViewBox;
-        state.nadViewBox[nadUuid] = viewBox;
     });
 
     builder.addCase(COPIED_NETWORK_MODIFICATIONS, (state, action: CopiedNetworkModificationsAction) => {
