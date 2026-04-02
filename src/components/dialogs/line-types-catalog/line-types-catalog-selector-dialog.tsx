@@ -83,7 +83,6 @@ export type LineTypesCatalogSelectorDialogSchemaForm = yup.InferType<typeof form
 
 export type LineTypesCatalogSelectorDialogProps = {
     onSelectLine: (selectedLine: LineTypeInfo, selectedAreaAndTemperature: AreaTemperatureShapeFactorInfo) => void;
-    preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
     preselectedParams?: LineCatalogParams;
@@ -91,7 +90,6 @@ export type LineTypesCatalogSelectorDialogProps = {
 
 export default function LineTypesCatalogSelectorDialog({
     onSelectLine,
-    preselectedRowId,
     rowData,
     onClose,
     preselectedParams,
@@ -103,7 +101,6 @@ export default function LineTypesCatalogSelectorDialog({
     const [areasOptions, setAreasOptions] = useState<Option[]>([]);
     const [aerialTemperatures, setAerialTemperatures] = useState<Option[]>([]);
     const [undergroundShapeFactors, setUndergroundShapeFactors] = useState<Option[]>([]);
-    const [initialized, setInitialized] = useState<boolean>(false);
 
     const formMethods = useForm<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -191,20 +188,22 @@ export default function LineTypesCatalogSelectorDialog({
         [setValue, snackError]
     );
 
+    const onRowClicked = useCallback(() => {
+        const selectedRows = gridRef.current?.api?.getSelectedRows();
+        if (selectedRows?.length) {
+            setValue(AERIAL_AREAS, null);
+            setValue(AERIAL_TEMPERATURES, null);
+            setValue(UNDERGROUND_AREAS, null);
+            setValue(UNDERGROUND_SHAPE_FACTORS, null);
+        }
+    }, [setValue]);
+
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current?.api?.getSelectedRows();
         if (selectedRows?.length) {
-            if (initialized) {
-                // if it is first time don't erase data
-                setValue(AERIAL_AREAS, null);
-                setValue(AERIAL_TEMPERATURES, null);
-                setValue(UNDERGROUND_AREAS, null);
-                setValue(UNDERGROUND_SHAPE_FACTORS, null);
-            }
-            setInitialized(true);
             handleSelectedRowData(selectedRows[0]).then();
         }
-    }, [handleSelectedRowData, initialized, setValue]);
+    }, [handleSelectedRowData]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -224,8 +223,8 @@ export default function LineTypesCatalogSelectorDialog({
                 <LineTypesCatalogSelectorForm
                     gridRef={gridRef}
                     selectedRow={selectedRow}
-                    preselectedRowId={preselectedRowId}
                     rowData={rowData}
+                    onRowClicked={onRowClicked}
                     onSelectionChanged={onSelectionChanged}
                     areasOptions={areasOptions}
                     aerialTemperatures={aerialTemperatures}

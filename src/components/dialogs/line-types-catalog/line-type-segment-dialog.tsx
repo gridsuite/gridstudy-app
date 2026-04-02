@@ -46,9 +46,8 @@ const emptyFormData = {
 export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: (data: ComputedLineCharacteristics) => void;
+    onSave: (data: ComputedLineCharacteristics, lineSegments: LineSegmentInfos[]) => void;
     editData?: LineSegmentInfos[];
-    setSegments?: (segments: LineSegmentInfos[]) => void;
 }
 
 export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
@@ -58,7 +57,6 @@ export default function LineTypeSegmentDialog({
     onSave,
     onClose,
     editData,
-    setSegments,
 }: Readonly<LineTypeSegmentDialogProps>) {
     const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -74,8 +72,8 @@ export default function LineTypeSegmentDialog({
     const onSubmit = useCallback(
         (data: ComputedLineCharacteristics) => {
             const segmentsData = getValues(`${SEGMENTS}`);
-            if (segmentsData && setSegments) {
-                const segments: LineSegmentInfos[] = segmentsData.map((segment) => {
+            const segments: LineSegmentInfos[] =
+                segmentsData?.map((segment) => {
                     return {
                         segmentTypeId: segment?.segmentTypeId ?? '',
                         segmentDistanceValue: segment?.segmentDistanceValue ?? 0,
@@ -83,12 +81,10 @@ export default function LineTypeSegmentDialog({
                         temperature: segment?.temperature ?? '',
                         shapeFactor: segment?.shapeFactor ?? null,
                     };
-                });
-                setSegments(segments ?? []);
-            }
-            onSave(data);
+                }) ?? [];
+            onSave(data, segments);
         },
-        [getValues, onSave, setSegments]
+        [getValues, onSave]
     );
 
     return (

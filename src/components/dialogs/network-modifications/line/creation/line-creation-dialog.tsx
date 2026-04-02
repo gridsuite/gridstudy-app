@@ -59,7 +59,7 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect, useState } from 'react';
-import { FieldErrors, useForm } from 'react-hook-form';
+import { FieldErrors, useForm, useWatch } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { APPLICABILITY, FORM_LOADING_DELAY } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
@@ -107,6 +107,7 @@ const emptyFormData: any = {
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(false),
     ...emptyProperties,
+    [LINE_SEGMENTS]: [],
 };
 
 type LineCreationDialogProps = NetworkModificationDialogProps & {
@@ -164,14 +165,7 @@ const LineCreationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, setValue, getValues } = formMethods;
-
-    const setSegments = useCallback(
-        (segments: LineSegmentInfos[]) => {
-            setValue(LINE_SEGMENTS, segments);
-        },
-        [setValue]
-    );
+    const { reset, setValue, control } = formMethods;
 
     const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
@@ -215,6 +209,7 @@ const LineCreationDialog = ({
                 line.selectedOperationalLimitsGroupId2 ?? null
             ),
             ...copyEquipmentPropertiesForCreation(line),
+            [LINE_SEGMENTS]: [],
         };
         reset(formData, { keepDefaultValues: true });
     };
@@ -281,7 +276,7 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics) => {
+    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics, lineSegments: LineSegmentInfos[]) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
@@ -316,6 +311,7 @@ const LineCreationDialog = ({
             });
         });
         setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
+        setValue(LINE_SEGMENTS, lineSegments);
     };
 
     const onSubmit = useCallback(
@@ -425,6 +421,8 @@ const LineCreationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
+    const editSegmentValue = useWatch({ name: LINE_SEGMENTS, control }) ?? [];
+
     return (
         <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -471,8 +469,7 @@ const LineCreationDialog = ({
                     open={isOpenLineTypesCatalogDialog}
                     onClose={handleCloseLineTypesCatalogDialog}
                     onSave={handleLineSegmentsBuildSubmit}
-                    editData={getValues(LINE_SEGMENTS)}
-                    setSegments={setSegments}
+                    editData={editSegmentValue}
                 />
             </ModificationDialog>
         </CustomFormProvider>

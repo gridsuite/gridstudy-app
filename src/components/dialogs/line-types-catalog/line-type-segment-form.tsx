@@ -34,6 +34,7 @@ import {
     CustomAGGrid,
     DefaultCellRenderer,
     ExpandableInput,
+    ExpandableInputHandle,
     fetchStudyMetadata,
     type MuiStyles,
     ReadOnlyInput,
@@ -68,16 +69,11 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-type ExpandableHandle = {
-    replaceItems: (newItems: SegmentFormData[]) => void;
-    appendItem: (newItem: SegmentFormData) => void;
-};
-
 export interface LineTypeSegmentFormProps {
     editData?: LineSegmentInfos[];
 }
 
-export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormProps>) => {
+export function LineTypeSegmentForm({ editData }: Readonly<LineTypeSegmentFormProps>) {
     const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
@@ -85,7 +81,7 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
     const intl = useIntl();
     const [currentLimitResult, setCurrentLimitResult] = useState<CurrentLimitsInfo[]>([]);
     const [limitsColumnDefs, setLimitsColumnDefs] = useState<ColDef[]>([]);
-    const arrayRef = useRef<ExpandableHandle>(null);
+    const arrayRef = useRef<ExpandableInputHandle>(null);
 
     // Fetches the lineTypes catalog on startup
     useEffect(() => {
@@ -193,7 +189,7 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
         [setValue]
     );
 
-    const updateSegmentsLimits = useCallback(
+    const appendSegmentsLimits = useCallback(
         (segment: LineSegmentInfos) => {
             getLineTypeWithLimits(
                 segment[SEGMENT_TYPE_ID],
@@ -236,9 +232,9 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
         }
         arrayRef.current?.replaceItems([]);
         editData.forEach((segment) => {
-            updateSegmentsLimits(segment);
+            appendSegmentsLimits(segment);
         });
-    }, [editData, updateSegmentsLimits]);
+    }, [editData, appendSegmentsLimits]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
@@ -315,16 +311,10 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
         [setValue, updateTotals, keepMostConstrainingLimits]
     );
 
-    const getPreselectedRowIdForCatalog = useCallback(
-        (index: number) => {
-            return getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
-        },
-        [getValues]
-    );
-
     const getPreselectedRowData = useCallback(
         (index: number) => {
             return {
+                id: getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`),
                 temperature: getValues(`${SEGMENTS}.${index}.${TEMPERATURE}`),
                 area: getValues(`${SEGMENTS}.${index}.${AREA}`),
                 shapeFactor: getValues(`${SEGMENTS}.${index}.${SHAPE_FACTOR}`),
@@ -499,10 +489,9 @@ export const LineTypeSegmentForm = ({ editData }: Readonly<LineTypeSegmentFormPr
                     onClose={onCatalogDialogClose}
                     rowData={lineTypesCatalog}
                     onSelectLine={onSelectCatalogLine}
-                    preselectedRowId={getPreselectedRowIdForCatalog(openCatalogDialogIndex)}
                     preselectedParams={getPreselectedRowData(openCatalogDialogIndex)}
                 />
             )}
         </>
     );
-};
+}
