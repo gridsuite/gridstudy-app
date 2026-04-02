@@ -61,7 +61,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -288,7 +288,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.STATIC_VAR_COMPENSATOR);
 
     useEffect(() => {
         if (editData) {

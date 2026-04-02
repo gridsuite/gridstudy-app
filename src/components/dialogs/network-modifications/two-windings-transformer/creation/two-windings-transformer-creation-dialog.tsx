@@ -68,7 +68,7 @@ import {
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+
 import { useCallback, useEffect, useState } from 'react';
 import { Resolver, useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -461,7 +461,7 @@ const TwoWindingsTransformerCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.TWO_WINDINGS_TRANSFORMER);
 
     useEffect(() => {
         if (editData) {
@@ -517,7 +517,7 @@ const TwoWindingsTransformerCreationDialog = ({
         }
 
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
-            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
+            return EquipmentType.TWO_WINDINGS_TRANSFORMER;
         }
 
         return undefined;

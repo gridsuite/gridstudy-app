@@ -21,7 +21,6 @@ import {
 } from '../diagram-utils';
 import {
     DiagramMetadata,
-    EQUIPMENT_TYPES,
     NadViewerParametersOptions,
     NetworkAreaDiagramViewer,
     OnSelectNodeCallbackType,
@@ -300,7 +299,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     studyUuid,
                     currentNode?.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.HVDC_LINE,
+                    EquipmentType.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.MAP.type,
                     equipmentId,
                     false
