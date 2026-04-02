@@ -28,7 +28,7 @@
     stroke-width: 1%;
 }
 .nad-pst-arrow {
-    stroke: #6a6a6a;
+    stroke: var(--vl-color, lightgrey);
     stroke-width: 0.2%;
     fill: none;
 }

@@ -67,6 +67,9 @@ export const getBaseVoltagesCssVars = (
         const vlStyleClassName = `.sld-${interval.name}, .nad-${interval.name}`;
         css[vlStyleClassName] = { '--vl-color': themeColors.default };
 
+        const groupWithPstSelector = `g:has(.nad-${interval.name}.nad-winding)`;
+        css[groupWithPstSelector] = { '--vl-color': themeColors.default };
+
         for (let i = 1; i < Object.keys(themeColors).length; i++) {
             const busColor = themeColors[`bus-${i}`];
             if (!busColor) continue;

@@ -31,7 +31,6 @@ export const styles = {
             fontFamily: theme.typography.fontFamily,
         },
         '& .nad-pst-arrow': {
-            stroke: theme.palette.text.primary,
             strokeWidth: 3,
         },
     }),
