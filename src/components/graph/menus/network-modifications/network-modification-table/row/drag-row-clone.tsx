@@ -6,7 +6,7 @@
  */
 
 import { Box } from '@mui/material';
-import { styles } from '../styles';
+import { networkModificationTableStyles } from '../network-modification-table-styles';
 import { Row } from '@tanstack/react-table';
 import { ComposedModificationMetadata } from '../utils';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -29,14 +29,14 @@ const DragCloneRow = ({ row }: { row: Row<ComposedModificationMetadata> }) => {
     );
 
     return (
-        <Box sx={styles.dragRowClone}>
-            <Box sx={styles.tableCell}>
-                <Box sx={mergeSx(styles.dragHandle, { opacity: 1 })}>
-                    <DragIndicatorIcon fontSize="small" sx={styles.dragIndicatorIcon} />
+        <Box sx={networkModificationTableStyles.dragRowClone}>
+            <Box sx={networkModificationTableStyles.tableCell}>
+                <Box sx={mergeSx(networkModificationTableStyles.dragHandle, { opacity: 1 })}>
+                    <DragIndicatorIcon fontSize="small" sx={networkModificationTableStyles.dragIndicatorIcon} />
                 </Box>
             </Box>
-            <Box sx={styles.tableCell}>
-                <Box sx={styles.modificationLabel}>{getModificationLabel(row.original)}</Box>
+            <Box sx={networkModificationTableStyles.tableCell}>
+                <Box sx={networkModificationTableStyles.modificationLabel}>{getModificationLabel(row.original)}</Box>
             </Box>
         </Box>
     );

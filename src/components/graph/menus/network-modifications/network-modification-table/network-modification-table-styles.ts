@@ -18,6 +18,7 @@ const DRAG_OPACITY = 0.5;
 const DEACTIVATED_OPACITY = 0.4;
 
 export const MODIFICATION_ROW_HEIGHT = 41;
+export const DEPTH_CELL_WIDTH: number = 32;
 
 export const createCellBorderColor = (theme: Theme): string =>
     theme.palette.mode === 'light'
@@ -26,7 +27,7 @@ export const createCellBorderColor = (theme: Theme): string =>
 
 // Static styles
 
-export const styles = {
+export const networkModificationTableStyles = {
     tableWrapper: (theme) => ({
         display: 'flex',
         flexDirection: 'column',
@@ -127,7 +128,7 @@ export const styles = {
         alignSelf: 'stretch',
     },
     nameCellTogglerBox: {
-        width: '32px',
+        width: `${DEPTH_CELL_WIDTH}px`,
         flexShrink: 0,
         display: 'flex',
         alignItems: 'center',
@@ -135,7 +136,7 @@ export const styles = {
     },
     nameCellToggleButton: {
         padding: '4px',
-        width: '32px',
+        width: `${DEPTH_CELL_WIDTH}px`,
         height: '32px',
     },
     nameCellLabelBoxPlain: {
@@ -143,12 +144,19 @@ export const styles = {
         minWidth: 0,
     },
     // depth-box
-    depthBoxOuter: {
-        width: '32px',
+    firstLevelDepthBox: (folder: boolean) => ({
+        width: folder ? `${1 + DEPTH_CELL_WIDTH / 2}px` : `${DEPTH_CELL_WIDTH}px`,
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: folder ? 'right' : 'center',
         alignSelf: 'stretch',
         position: 'relative',
+    }),
+    depthBox: {
+        width: `${DEPTH_CELL_WIDTH / 2}px`,
+        display: 'flex',
+        alignSelf: 'stretch',
+        position: 'relative',
+        justifyContent: 'flex-start',
     },
     depthBoxLine: {
         width: '1px',
@@ -158,11 +166,10 @@ export const styles = {
     depthBoxTick: {
         position: 'absolute',
         top: '50%',
-        left: '50%',
+        left: '100%',
         width: '5px',
         height: '1px',
         backgroundColor: 'divider',
-        transform: 'translateY(-50%)',
     },
 } as const satisfies MuiStyles;
 

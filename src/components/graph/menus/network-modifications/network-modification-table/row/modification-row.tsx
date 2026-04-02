@@ -8,7 +8,13 @@
 import React, { memo, useCallback } from 'react';
 import { flexRender, Row } from '@tanstack/react-table';
 import { Box, TableCell, TableRow, Tooltip } from '@mui/material';
-import { BORDER_SUPPRESSED_COLUMNS, createCellContentWrapperSx, createCellStyle, createRowSx, styles } from '../styles';
+import {
+    BORDER_SUPPRESSED_COLUMNS,
+    createCellContentWrapperSx,
+    createCellStyle,
+    createRowSx,
+    networkModificationTableStyles,
+} from '../network-modification-table-styles';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { VirtualItem } from '@tanstack/react-virtual';
 import { AUTO_EXTENSIBLE_COLUMNS, BASE_MODIFICATION_TABLE_COLUMNS } from '../columns-definition';
@@ -49,7 +55,7 @@ const ModificationRow = memo<ModificationRowProps>(
                             {...draggablePropsWithoutStyle}
                             data-row-id={row.original.uuid}
                             sx={mergeSx(
-                                styles.tableRow,
+                                networkModificationTableStyles.tableRow,
                                 createRowSx(theme, isHighlighted, snapshot.isDragging, virtualRow, row.depth)
                             )}
                         >

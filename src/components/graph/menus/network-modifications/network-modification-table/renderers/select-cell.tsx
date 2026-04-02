@@ -8,7 +8,7 @@
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { Checkbox } from '@mui/material';
 import { Row, Table } from '@tanstack/react-table';
-import { styles } from '../styles';
+import { networkModificationTableStyles } from '../network-modification-table-styles';
 import { ComposedModificationMetadata } from '../utils';
 
 interface SelectCellRendererProps {
@@ -78,7 +78,7 @@ const SelectCell: FunctionComponent<SelectCellRendererProps> = ({ row, table }) 
             indeterminate={hasPartiallySelectedSubRows}
             disabled={!row.getCanSelect()}
             onClick={handleChange}
-            sx={styles.selectCheckBox}
+            sx={networkModificationTableStyles.selectCheckBox}
         />
     );
 };

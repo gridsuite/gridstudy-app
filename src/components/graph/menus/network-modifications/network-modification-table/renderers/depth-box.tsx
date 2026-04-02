@@ -6,17 +6,24 @@
  */
 
 import Box from '@mui/material/Box';
-import { styles } from '../styles';
+import { networkModificationTableStyles } from '../network-modification-table-styles';
 
 interface DepthBoxProps {
-    showTick?: boolean;
+    firstLevel: boolean;
+    folder?: boolean;
 }
 
-const DepthBox = ({ showTick = false }: DepthBoxProps) => {
+const DepthBox = ({ firstLevel, folder = false }: DepthBoxProps) => {
     return (
-        <Box sx={styles.depthBoxOuter}>
-            <Box sx={styles.depthBoxLine} />
-            {showTick && <Box sx={styles.depthBoxTick} />}
+        <Box
+            sx={
+                firstLevel
+                    ? networkModificationTableStyles.firstLevelDepthBox(folder)
+                    : networkModificationTableStyles.depthBox
+            }
+        >
+            <Box sx={networkModificationTableStyles.depthBoxLine} />
+            {folder && <Box sx={networkModificationTableStyles.depthBoxTick} />}
         </Box>
     );
 };

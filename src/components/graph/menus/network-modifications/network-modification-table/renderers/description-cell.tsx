@@ -10,7 +10,7 @@ import { Tooltip } from '@mui/material';
 import { useSelector } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../../../utils/is-any-node-building-hook';
-import { createEditDescriptionStyle } from '../styles';
+import { createEditDescriptionStyle } from '../network-modification-table-styles';
 import { setModificationMetadata } from '../../../../../../services/study/network-modifications';
 import { AppState } from '../../../../../../redux/reducer.type';
 import { ComposedModificationMetadata } from '../utils';

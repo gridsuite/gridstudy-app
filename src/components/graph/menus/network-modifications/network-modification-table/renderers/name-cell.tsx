@@ -10,7 +10,12 @@ import { Row } from '@tanstack/react-table';
 import { mergeSx, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, Tooltip } from '@mui/material';
-import { createModificationNameCellStyle, createNameCellLabelBoxSx, createNameCellRootStyle, styles } from '../styles';
+import {
+    createModificationNameCellStyle,
+    createNameCellLabelBoxSx,
+    createNameCellRootStyle,
+    networkModificationTableStyles,
+} from '../network-modification-table-styles';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -40,25 +45,35 @@ const NameCell: FunctionComponent<{
     const label = useMemo(() => getModificationLabel(row.original), [getModificationLabel, row.original]);
 
     const renderDepthBox = () => {
-        const count = depth;
-        return Array.from({ length: count }, (_, i) => (
-            <DepthBox key={i} showTick={isCompositeModification(row.original) && i === count - 1} />
+        let depthLevelCount = depth;
+        return Array.from({ length: depthLevelCount }, (_, i) => (
+            <DepthBox
+                key={i}
+                isCompositeModification={isCompositeModification(row.original)}
+                firstLevel={i === 0}
+                folder={isCompositeModification(row.original) && i === depthLevelCount - 1}
+            />
         ));
     };
 
     return (
-        <Box sx={mergeSx(styles.tableCell, createNameCellRootStyle(theme, row.getIsExpanded(), depth))}>
+        <Box
+            sx={mergeSx(
+                networkModificationTableStyles.tableCell,
+                createNameCellRootStyle(theme, row.getIsExpanded(), depth)
+            )}
+        >
             {renderDepthBox()}
-            <Box sx={styles.nameCellInnerRow}>
+            <Box sx={networkModificationTableStyles.nameCellInnerRow}>
                 {isCompositeModification(row.original) && (
-                    <Box sx={styles.nameCellTogglerBox}>
+                    <Box sx={networkModificationTableStyles.nameCellTogglerBox}>
                         <IconButton
                             size="small"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 row.getToggleExpandedHandler()();
                             }}
-                            sx={styles.nameCellToggleButton}
+                            sx={networkModificationTableStyles.nameCellToggleButton}
                             aria-label={row.getIsExpanded() ? 'Collapse' : 'Expand'}
                         >
                             {row.getIsExpanded() ? (
@@ -73,7 +88,7 @@ const NameCell: FunctionComponent<{
                     <Tooltip disableFocusListener disableTouchListener title={label}>
                         <Box
                             sx={mergeSx(
-                                styles.modificationLabel,
+                                networkModificationTableStyles.modificationLabel,
                                 createModificationNameCellStyle(row.original.activated)
                             )}
                         >

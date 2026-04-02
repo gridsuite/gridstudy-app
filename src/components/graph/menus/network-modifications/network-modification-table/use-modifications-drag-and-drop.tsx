@@ -14,7 +14,7 @@ import {
     DROP_FORBIDDEN_INDICATOR_TOP,
     DROP_INDICATOR_BOTTOM,
     DROP_INDICATOR_TOP,
-} from './styles';
+} from './network-modification-table-styles';
 
 import {
     changeCompositeSubModificationOrder,
