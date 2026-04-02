@@ -69,7 +69,7 @@ export default function LineTypesCatalogSelectorForm({
 
     // Select the correct tab when opening the dialog, if a row is preselected
     useEffect(() => {
-        if (preselectedRowData && rowData) {
+        if (preselectedRowData?.id && rowData) {
             const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowData.id);
             const newTabIndex =
                 preselectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name

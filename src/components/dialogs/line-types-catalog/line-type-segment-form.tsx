@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -73,7 +73,7 @@ export interface LineTypeSegmentFormProps {
     editData?: LineSegmentInfos[];
 }
 
-export function LineTypeSegmentForm({ editData }: Readonly<LineTypeSegmentFormProps>) {
+export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData }) => {
     const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
@@ -189,52 +189,59 @@ export function LineTypeSegmentForm({ editData }: Readonly<LineTypeSegmentFormPr
         [setValue]
     );
 
-    const appendSegmentsLimits = useCallback(
-        (segment: LineSegmentInfos) => {
-            getLineTypeWithLimits(
-                segment[SEGMENT_TYPE_ID],
-                segment[AREA],
-                segment[TEMPERATURE],
-                segment[SHAPE_FACTOR]
-            ).then((lineTypeWithLimits) => {
-                const newResistance = roundToDefaultPrecision(
-                    calculateResistance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearResistance ?? 0)
-                );
-                const newReactance = roundToDefaultPrecision(
-                    calculateReactance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearReactance ?? 0)
-                );
-                const newSusceptance = roundToDefaultPrecision(
-                    calculateSusceptance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearCapacity ?? 0)
-                );
-                arrayRef?.current?.appendItem({
-                    ...emptyLineSegment,
-                    [SEGMENT_TYPE_ID]: segment[SEGMENT_TYPE_ID],
-                    [SEGMENT_TYPE_VALUE]: lineTypeWithLimits?.type ?? '',
-                    [AREA]: segment[AREA],
-                    [TEMPERATURE]: segment[TEMPERATURE],
-                    [SHAPE_FACTOR]: segment[SHAPE_FACTOR],
-                    [SEGMENT_DISTANCE_VALUE]: segment[SEGMENT_DISTANCE_VALUE],
-                    [SEGMENT_RESISTANCE]: newResistance,
-                    [SEGMENT_REACTANCE]: newReactance,
-                    [SEGMENT_SUSCEPTANCE]: newSusceptance,
-                    [SEGMENT_CURRENT_LIMITS]: lineTypeWithLimits?.limitsForLineType ?? [],
-                });
-                updateTotals();
-                keepMostConstrainingLimits();
+    const appendSegmentLimits = useCallback((segment: LineSegmentInfos) => {
+        return getLineTypeWithLimits(
+            segment[SEGMENT_TYPE_ID],
+            segment[AREA],
+            segment[TEMPERATURE],
+            segment[SHAPE_FACTOR]
+        ).then((lineTypeWithLimits) => {
+            const newResistance = roundToDefaultPrecision(
+                calculateResistance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearResistance ?? 0)
+            );
+            const newReactance = roundToDefaultPrecision(
+                calculateReactance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearReactance ?? 0)
+            );
+            const newSusceptance = roundToDefaultPrecision(
+                calculateSusceptance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearCapacity ?? 0)
+            );
+            arrayRef?.current?.appendItem({
+                ...emptyLineSegment,
+                [SEGMENT_TYPE_ID]: segment[SEGMENT_TYPE_ID],
+                [SEGMENT_TYPE_VALUE]: lineTypeWithLimits?.type ?? '',
+                [AREA]: segment[AREA],
+                [TEMPERATURE]: segment[TEMPERATURE],
+                [SHAPE_FACTOR]: segment[SHAPE_FACTOR],
+                [SEGMENT_DISTANCE_VALUE]: segment[SEGMENT_DISTANCE_VALUE],
+                [SEGMENT_RESISTANCE]: newResistance,
+                [SEGMENT_REACTANCE]: newReactance,
+                [SEGMENT_SUSCEPTANCE]: newSusceptance,
+                [SEGMENT_CURRENT_LIMITS]: lineTypeWithLimits?.limitsForLineType ?? [],
             });
-        },
-        [keepMostConstrainingLimits, updateTotals]
-    );
+        });
+    }, []);
 
     useEffect(() => {
         if (!editData || editData.length === 0) {
             return;
         }
         arrayRef.current?.replaceItems([]);
-        editData.forEach((segment) => {
-            appendSegmentsLimits(segment);
+        const updateSegmentsLimits = async () => {
+            const promises = editData.map((segment) => appendSegmentLimits(segment));
+
+            try {
+                await Promise.all(promises);
+            } catch (error) {
+                snackWithFallback(snackError, error, {
+                    headerId: 'LineTypesCatalogFetchingError',
+                });
+            }
+        };
+        updateSegmentsLimits().then(() => {
+            updateTotals();
+            keepMostConstrainingLimits();
         });
-    }, [editData, appendSegmentsLimits]);
+    }, [editData, appendSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
@@ -494,4 +501,4 @@ export function LineTypeSegmentForm({ editData }: Readonly<LineTypeSegmentFormPr
             )}
         </>
     );
-}
+};
