@@ -6,7 +6,7 @@
  */
 
 import { Box, Grid } from '@mui/material';
-import { AutocompleteInput, ConnectivityForm, EquipmentType, TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, EquipmentType, TextInput, VoltageLevelConnectivityForm } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -94,10 +94,8 @@ const LinesAttachToSplitLinesForm = ({
     );
 
     const connectivityForm = (
-        <ConnectivityForm
+        <VoltageLevelConnectivityForm
             voltageLevelSelectLabel={'AttachedVoltageLevelId'}
-            withDirectionsInfos={false}
-            withPosition={false}
             voltageLevelOptions={voltageLevelOptions}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />

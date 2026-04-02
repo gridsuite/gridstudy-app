@@ -134,7 +134,6 @@ export default function BatteryModificationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            withPosition={true}
             isEquipmentModification={true}
             previousValues={{
                 connectablePosition: batteryToModify?.connectablePosition,

@@ -52,7 +52,6 @@ export default function ShuntCompensatorCreationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            withPosition={true}
             voltageLevelOptions={voltageLevelOptions}
             PositionDiagramPane={PositionDiagramPane}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}

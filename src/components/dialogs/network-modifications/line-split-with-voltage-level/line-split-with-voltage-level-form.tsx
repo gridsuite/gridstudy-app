@@ -10,7 +10,7 @@ import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/fie
 import { useCallback, useState } from 'react';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
-import { ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
+import { TextInput, VoltageLevelConnectivityForm, VoltageLevelOption } from '@gridsuite/commons-ui';
 import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
@@ -99,10 +99,8 @@ const LineSplitWithVoltageLevelForm = ({
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     const connectivityForm = (
-        <ConnectivityForm
+        <VoltageLevelConnectivityForm
             voltageLevelSelectLabel={'VoltageLevelToSplitAt'}
-            withPosition={false}
-            withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
