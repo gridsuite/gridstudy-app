@@ -111,8 +111,8 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     }, [modifications]);
 
     const handleExpandRow = useCallback((updater: Updater<ExpandedState>) => {
-        setExpanded((prevExpanded) => {
-            const nextExpanded = typeof updater === 'function' ? updater(prevExpanded) : updater;
+        setExpanded((prevExpanded: ExpandedState) => {
+            const nextExpanded: ExpandedState = typeof updater === 'function' ? updater(prevExpanded) : updater;
 
             const prevRecord = prevExpanded === true ? {} : prevExpanded;
             const nextRecord = nextExpanded === true ? {} : nextExpanded;
@@ -120,7 +120,7 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
 
             setComposedModifications((prevMods) => {
                 fetchSubModificationsForExpandedRows(newlyExpandedIds, prevMods, setComposedModifications);
-                return prevMods;
+                return [...prevMods];
             });
 
             return nextExpanded;
