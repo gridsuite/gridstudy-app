@@ -1690,7 +1690,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
         const now = Date.now();
         filterIds.forEach((filterId) => {
-            tableState.recents.unshift({ id: filterId, unselectedDate: now });
+            const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
+            if (!filterOption?.deleted) {
+                tableState.recents.unshift({ id: filterId, unselectedDate: now });
+            }
         });
         tableState.recents = tableState.recents.slice(0, MAX_RECENT_GLOBAL_FILTERS);
     });
@@ -1700,7 +1703,12 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
         const now = Date.now();
-        const newRecents = tableState.selected.map((filterId) => ({ id: filterId, unselectedDate: now }));
+        const newRecents = tableState.selected
+            .filter((filterId) => {
+                const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
+                return !filterOption?.deleted;
+            })
+            .map((filterId) => ({ id: filterId, unselectedDate: now }));
         tableState.recents = [...newRecents, ...tableState.recents].slice(0, MAX_RECENT_GLOBAL_FILTERS);
         tableState.selected = [];
     });
