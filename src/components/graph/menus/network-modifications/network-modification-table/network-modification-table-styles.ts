@@ -137,17 +137,24 @@ export const networkModificationTableStyles = {
     nameCellToggleButton: {
         padding: '4px',
         width: `${DEPTH_CELL_WIDTH}px`,
-        height: '32px',
+        height: `${DEPTH_CELL_WIDTH}px`,
     },
     nameCellLabelBoxPlain: {
         flex: 1,
         minWidth: 0,
     },
     // depth-box
-    firstLevelDepthBox: (folder: boolean) => ({
-        width: folder ? `${1 + DEPTH_CELL_WIDTH / 2}px` : `${DEPTH_CELL_WIDTH}px`,
+    firstLevelDepthBox: {
+        width: `${DEPTH_CELL_WIDTH}px`,
         display: 'flex',
-        justifyContent: folder ? 'right' : 'center',
+        justifyContent: 'center',
+        alignSelf: 'stretch',
+        position: 'relative',
+    },
+    folderDepthBox: () => ({
+        width: `${1 + DEPTH_CELL_WIDTH / 2}px`,
+        display: 'flex',
+        justifyContent: 'right',
         alignSelf: 'stretch',
         position: 'relative',
     }),

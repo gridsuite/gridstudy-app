@@ -49,7 +49,6 @@ const NameCell: FunctionComponent<{
         return Array.from({ length: depthLevelCount }, (_, i) => (
             <DepthBox
                 key={i}
-                isCompositeModification={isCompositeModification(row.original)}
                 firstLevel={i === 0}
                 folder={isCompositeModification(row.original) && i === depthLevelCount - 1}
             />

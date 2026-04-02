@@ -17,9 +17,11 @@ const DepthBox = ({ firstLevel, folder = false }: DepthBoxProps) => {
     return (
         <Box
             sx={
-                firstLevel
-                    ? networkModificationTableStyles.firstLevelDepthBox(folder)
-                    : networkModificationTableStyles.depthBox
+                folder
+                    ? networkModificationTableStyles.folderDepthBox
+                    : firstLevel
+                      ? networkModificationTableStyles.firstLevelDepthBox
+                      : networkModificationTableStyles.depthBox
             }
         >
             <Box sx={networkModificationTableStyles.depthBoxLine} />
