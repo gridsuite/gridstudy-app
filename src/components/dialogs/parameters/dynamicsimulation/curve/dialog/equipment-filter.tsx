@@ -16,7 +16,7 @@ import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/net
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
 import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
 import { buildExpertFilter, CURVE_EQUIPMENT_TYPES, NOMINAL_VOLTAGE_UNIT } from './curve-selector-utils';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import { AGGRID_LOCALES } from '../../../../../../translations/not-intl/aggrid-locales';
@@ -28,8 +28,8 @@ export interface GetSelectedEquipmentsHandle {
 }
 
 interface EquipmentFilterProps {
-    equipmentType: EQUIPMENT_TYPES;
-    onChangeEquipmentType: (newEquipmentType: EQUIPMENT_TYPES) => void;
+    equipmentType: EquipmentType;
+    onChangeEquipmentType: (newEquipmentType: EquipmentType) => void;
 }
 
 const styles = {
@@ -68,7 +68,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         const handleEquipmentTypeChange = useCallback(
             (event: SelectChangeEvent) => {
-                const selectedEquipmentType = event.target.value as EQUIPMENT_TYPES;
+                const selectedEquipmentType = event.target.value as EquipmentType;
                 setEquipmentType(selectedEquipmentType);
                 onChangeEquipmentType(selectedEquipmentType);
             },

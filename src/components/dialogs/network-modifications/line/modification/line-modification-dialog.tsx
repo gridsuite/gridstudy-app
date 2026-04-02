@@ -9,12 +9,19 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     convertInputValue,
     convertOutputValue,
+    createConnectivityData,
     CustomFormProvider,
     emptyProperties,
     EquipmentType,
     FieldConstants,
     FieldType,
+    getBranchActiveReactivePowerEditData,
+    getBranchActiveReactivePowerEmptyFormData,
+    getBranchActiveReactivePowerValidationSchema,
+    getCon1andCon2WithPositionValidationSchema,
     getConcatenatedProperties,
+    getConnectivityFormData,
+    getCont1Cont2WithPositionEmptyFormData,
     getPropertiesFromModification,
     modificationPropertiesSchema,
     sanitizeString,
@@ -85,17 +92,6 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    createConnectivityData,
-    getCon1andCon2WithPositionValidationSchema,
-    getConnectivityFormData,
-    getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils';
-import {
-    getBranchActiveReactivePowerEditData,
-    getBranchActiveReactivePowerEmptyFormData,
-    getBranchActiveReactivePowerValidationSchema,
-} from '../../common/measurements/branch-active-reactive-power-form-utils';
 import { LineModificationDialogTab } from '../line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import type { UUID } from 'node:crypto';
@@ -195,8 +191,14 @@ const LineModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: lineModification.equipmentName?.value ?? '',
                 [CONNECTIVITY]: {
-                    ...getConnectivityFormData(createConnectivityData(lineModification, 1), CONNECTIVITY_1),
-                    ...getConnectivityFormData(createConnectivityData(lineModification, 2), CONNECTIVITY_2),
+                    ...getConnectivityFormData(
+                        createConnectivityData(lineModification, 1),
+                        FieldConstants.CONNECTIVITY_1
+                    ),
+                    ...getConnectivityFormData(
+                        createConnectivityData(lineModification, 2),
+                        FieldConstants.CONNECTIVITY_2
+                    ),
                 },
                 ...getBranchActiveReactivePowerEditData(STATE_ESTIMATION, lineModification),
                 ...getCharacteristicsWithOutConnectivityFormData({

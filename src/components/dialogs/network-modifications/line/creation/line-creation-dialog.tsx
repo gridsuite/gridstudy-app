@@ -13,14 +13,17 @@ import {
     CustomFormProvider,
     emptyProperties,
     EquipmentType,
+    FieldConstants,
     FieldType,
     filledTextField,
+    getConnectivityFormData,
     getPropertiesFromModification,
     ModificationType,
     sanitizeString,
     snackWithFallback,
     TextInput,
     toModificationProperties,
+    UNDEFINED_CONNECTION_DIRECTION,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -53,14 +56,13 @@ import {
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { APPLICABILITY, FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { APPLICABILITY, FORM_LOADING_DELAY } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import {
     getCharacteristicsEmptyFormData,
@@ -92,6 +94,7 @@ import { LineCreationInfos } from '../../../../../services/network-modification-
 import { LineModificationFormSchema } from '../modification/line-modification-type';
 import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import {
     OperationalLimitsGroupFormSchema,
     TemporaryLimitFormSchema,
@@ -184,7 +187,7 @@ const LineCreationDialog = ({
                         connectionPosition: line.connectablePosition1.connectionPosition,
                         terminalConnected: line.terminal1Connected,
                     },
-                    CONNECTIVITY_1
+                    FieldConstants.CONNECTIVITY_1
                 ),
                 ...getConnectivityFormData(
                     {
@@ -195,7 +198,7 @@ const LineCreationDialog = ({
                         connectionPosition: line.connectablePosition2.connectionPosition,
                         terminalConnected: line.terminal2Connected,
                     },
-                    CONNECTIVITY_2
+                    FieldConstants.CONNECTIVITY_2
                 ),
             }),
             ...getAllLimitsFormData(
@@ -231,7 +234,7 @@ const LineCreationDialog = ({
                             voltageLevelId: line.voltageLevelId1,
                             terminalConnected: line.connected1,
                         },
-                        CONNECTIVITY_1
+                        FieldConstants.CONNECTIVITY_1
                     ),
                     ...getConnectivityFormData(
                         {
@@ -242,7 +245,7 @@ const LineCreationDialog = ({
                             voltageLevelId: line.voltageLevelId2,
                             terminalConnected: line.connected2,
                         },
-                        CONNECTIVITY_2
+                        FieldConstants.CONNECTIVITY_2
                     ),
                 }),
                 ...getAllLimitsFormData(
@@ -261,7 +264,7 @@ const LineCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.LINE);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.LINE);
 
     useEffect(() => {
         if (editData) {
@@ -412,7 +415,7 @@ const LineCreationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

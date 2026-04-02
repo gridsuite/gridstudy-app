@@ -7,20 +7,21 @@
 
 import { CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import {
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
-} from '../../../../connectivity/connectivity-form-utils';
-import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
 } from '../../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
 import { CharacteristicsFormSchema, ConnectivityFormSchema } from '../../two-windings-transformer.types';
+import {
+    FieldConstants,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+} from '@gridsuite/commons-ui';
 
 const twoWindingsTransformerValidationSchema = () =>
     getCharacteristicsValidationSchema(false, {
-        ...getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_1),
-        ...getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_2),
+        ...getConnectivityWithPositionValidationSchema(false, FieldConstants.CONNECTIVITY_1),
+        ...getConnectivityWithPositionValidationSchema(false, FieldConstants.CONNECTIVITY_2),
     });
 
 export const getTwoWindingsTransformerValidationSchema = () => {
@@ -29,8 +30,8 @@ export const getTwoWindingsTransformerValidationSchema = () => {
 
 const twoWindingsTransformerEmptyFormData = () =>
     getCharacteristicsEmptyFormData({
-        ...getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_1),
-        ...getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_2),
+        ...getConnectivityWithPositionEmptyFormData(false, FieldConstants.CONNECTIVITY_1),
+        ...getConnectivityWithPositionEmptyFormData(false, FieldConstants.CONNECTIVITY_2),
     });
 
 export const getTwoWindingsTransformerEmptyFormData = () => {

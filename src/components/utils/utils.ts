@@ -8,8 +8,7 @@
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
 import { TemporaryLimit } from 'services/network-modification-types';
-import { VoltageLevel } from './equipment-types';
-import { AttributeModification, OperationType, Option } from '@gridsuite/commons-ui';
+import { AttributeModification, Identifiable, OperationType, VoltageLevelOption } from '@gridsuite/commons-ui';
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
@@ -85,31 +84,6 @@ export const areNumbersOrdered = (array?: unknown) => {
         current = nextOne;
     }
     return true;
-};
-
-export const areIdsEqual = (val1: Option, val2: Option) => {
-    if (typeof val1 !== 'string' && typeof val2 !== 'string') {
-        return val1.id === val2.id;
-    } else {
-        return val1 === val2;
-    }
-};
-
-export const getObjectId = (object: string | { id: string }) => {
-    return typeof object === 'string' ? object : (object?.id ?? null);
-};
-
-export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
-    const newBusbarSections: Option[] = [];
-    for (let i = 0; i < busbarCount; i++) {
-        for (let j = 0; j < sectionCount; j++) {
-            newBusbarSections.push({
-                id: equipmentId + '_' + (i + 1) + '_' + (j + 1),
-                label: '',
-            });
-        }
-    }
-    return newBusbarSections;
 };
 
 export function toModificationUnsetOperation<T>(
@@ -253,10 +227,10 @@ export function calculateSusceptance(distance: number, linearCapacity: number) {
     return Number(distance) * Number(linearCapacity) * 2 * Math.PI * 50 * Math.pow(10, 6);
 }
 
-export function getNewVoltageLevelOptions(
-    formattedVoltageLevel: VoltageLevel,
+export function getNewVoltageLevelOptions<T extends Identifiable>(
+    formattedVoltageLevel: T,
     oldVoltageLevelId: string | undefined,
-    voltageLevelOptions: VoltageLevel[]
+    voltageLevelOptions: T[]
 ) {
     const newVoltageLevelOptions =
         formattedVoltageLevel.id === oldVoltageLevelId
@@ -265,6 +239,14 @@ export function getNewVoltageLevelOptions(
     newVoltageLevelOptions.push(formattedVoltageLevel);
 
     return newVoltageLevelOptions;
+}
+
+export function mergeVoltageLevelOptions(
+    existingVl: Identifiable[],
+    currentOptions: VoltageLevelOption[]
+): VoltageLevelOption[] {
+    const nonExistingVl = currentOptions.filter((opt) => opt.exist === false);
+    return [...existingVl.toSorted((a, b) => a?.id?.localeCompare(b?.id)), ...nonExistingVl] as VoltageLevelOption[];
 }
 
 // remove elementToToggle from list, or add it if it does not exist yet

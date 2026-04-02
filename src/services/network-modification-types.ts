@@ -13,10 +13,14 @@ import {
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
-import { AttributeModification, ModificationType, Option, Property } from '@gridsuite/commons-ui';
+import { AttributeModification, ModificationType, Property } from '@gridsuite/commons-ui';
 import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
+
+export interface WithModificationId {
+    uuid: UUID;
+}
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
@@ -73,48 +77,6 @@ export interface BatteryModificationInfos {
     properties: Property[] | null;
     directTransX: AttributeModification<number> | null;
     stepUpTransformerX: AttributeModification<number> | null;
-}
-
-export interface LoadCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name?: string | null;
-    loadType: string;
-    p0: number;
-    q0: number;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    isUpdate: boolean;
-    modificationUuid?: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean;
-    properties?: Property[] | null;
-}
-
-export interface LoadModificationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    modificationUuid?: string;
-    id: string | null;
-    name?: string | null;
-    loadType?: string | null;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    connectionName?: string | null;
-    connectionDirection?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean | null;
-    p0?: number | null;
-    q0?: number | null;
-    pMeasurementValue?: number;
-    pMeasurementValidity?: boolean;
-    qMeasurementValue?: number;
-    qMeasurementValidity?: boolean;
-    isUpdate?: boolean;
-    properties: Property[] | null;
 }
 
 export interface ShuntCompensatorModificationInfos {
@@ -366,11 +328,6 @@ export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
     ipMin: number | null;
     ipMax: number | null;
     topologyKind?: string;
-}
-
-export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
-    lowShortCircuitCurrentLimit: number | null;
-    highShortCircuitCurrentLimit: number | null;
 }
 
 type VariationFilter = {
@@ -736,7 +693,6 @@ export interface DivideLineInfo {
 
 export interface ExtendedVoltageLevelCreationInfo extends VoltageLevelCreationInfo {
     type: ModificationType.VOLTAGE_LEVEL_CREATION;
-    busbarSections?: Option[];
 }
 
 export interface AttachLineInfo {

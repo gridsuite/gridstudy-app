@@ -13,7 +13,6 @@ import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../../../../network/constants';
 import { getVoltageLevelSingleLineDiagramUrl } from '../../../../../../services/study/network';
 import { AppState } from 'redux/reducer.type';
-import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
 import { PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 
@@ -21,33 +20,26 @@ interface PositionDiagramPaneProps {
     open: boolean;
     onClose: () => void;
     voltageLevelId: string;
-    currentNodeUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    studyUuid: UUID;
 }
 
-const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
-    open,
-    onClose,
-    voltageLevelId,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    studyUuid,
-}) => {
+const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({ open, onClose, voltageLevelId }) => {
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const nodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
+    const rootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const voltageLevelSingleLineDiagramUrl = useMemo(() => {
-        if (!voltageLevelId) {
+        if (!voltageLevelId || !studyUuid || !nodeUuid || !rootNetworkUuid) {
             return '';
         }
         return getVoltageLevelSingleLineDiagramUrl({
             studyUuid: studyUuid,
-            currentNodeUuid: currentNodeUuid,
-            currentRootNetworkUuid: currentRootNetworkUuid,
+            currentNodeUuid: nodeUuid,
+            currentRootNetworkUuid: rootNetworkUuid,
             voltageLevelId: voltageLevelId,
         });
-    }, [voltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+    }, [voltageLevelId, studyUuid, nodeUuid, rootNetworkUuid]);
     const sldRequestInfos = {
         useName: useName,
         centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,

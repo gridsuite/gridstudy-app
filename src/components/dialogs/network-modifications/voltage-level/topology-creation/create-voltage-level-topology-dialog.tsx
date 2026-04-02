@@ -142,6 +142,7 @@ export default function CreateVoltageLevelTopologyDialog({
                 titleId={'CreateVoltageLevelTopology'}
                 keepMounted={true}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                PaperProps={{ sx: { height: '75vh' } }}
                 {...dialogProps}
             >
                 {selectedId == null && (
@@ -153,12 +154,7 @@ export default function CreateVoltageLevelTopologyDialog({
                     />
                 )}
                 {selectedId != null && (
-                    <CreateVoltageLevelTopologyForm
-                        studyUuid={studyUuid}
-                        voltageLevelId={selectedId}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                    />
+                    <CreateVoltageLevelTopologyForm voltageLevelId={selectedId} currentNode={currentNode} />
                 )}
             </ModificationDialog>
         </CustomFormProvider>

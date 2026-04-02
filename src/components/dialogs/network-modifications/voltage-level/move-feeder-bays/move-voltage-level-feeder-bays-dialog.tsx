@@ -384,8 +384,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         currentNode={currentNode}
                         selectedId={selectedId}
                         isUpdate={isUpdate}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        studyUuid={studyUuid}
                         isReady={dataFetchStatus === FetchStatus.SUCCEED}
                         feederBaysPreviousValues={feederBaysPreviousValues}
                     />
