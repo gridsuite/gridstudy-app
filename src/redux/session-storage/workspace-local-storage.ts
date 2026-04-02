@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { APP_NAME } from '../../utils/config-params';
+import { LOCAL_STORAGE_KEY_PREFIX } from '../../utils/config-params';
 import { PanelType } from '../../components/workspace/types/workspace.types';
 import { Viewport } from '@xyflow/react';
 import { ViewBoxLike } from '@svgdotjs/svg.js';
@@ -32,10 +32,10 @@ interface WorkspaceLocalState {
     panels: Record<UUID, PanelLocalState>;
 }
 
-const WORKSPACE_STATE_KEY = `${APP_NAME.toUpperCase()}_WORKSPACE_STATE`;
+const WORKSPACE_STATE_KEY = `${LOCAL_STORAGE_KEY_PREFIX}:workspace-state`;
 
 function getKey(studyUuid: UUID, workspaceId: UUID): string {
-    return `${WORKSPACE_STATE_KEY}-${studyUuid}-${workspaceId}`;
+    return `${WORKSPACE_STATE_KEY}:${studyUuid}:${workspaceId}`;
 }
 
 function getWorkspaceLocalState(studyUuid: UUID, workspaceId: UUID): WorkspaceLocalState {

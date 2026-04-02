@@ -25,6 +25,7 @@ import {
     translateSwitchKinds,
     substationCreationEmptyFormData,
     copyEquipmentPropertiesForCreation,
+    VoltageLevelDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -32,7 +33,7 @@ import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-co
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+
 import { IntlShape, useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -45,7 +46,6 @@ import {
 } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { fetchEquipmentsIds } from 'services/study/network-map';
-import { VoltageLevelDto } from '../voltage-level.type';
 
 const voltageLevelDtoToForm = (formInfos: VoltageLevelDto, intl?: IntlShape) => ({
     [FieldConstants.EQUIPMENT_ID]: formInfos?.id,
@@ -248,7 +248,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         };
     }, [subscribe, trigger, getValues]);
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.VOLTAGE_LEVEL);
 
     useEffect(() => {
         if (editData) {
@@ -306,6 +306,11 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                PaperProps={{
+                    sx: {
+                        height: '75vh', // we want the dialog height to be fixed even when switching tabs
+                    },
+                }}
                 {...dialogProps}
             >
                 <VoltageLevelCreationForm

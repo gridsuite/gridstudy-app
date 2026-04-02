@@ -6,35 +6,28 @@
  */
 
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { useCallback, useEffect, useState } from 'react';
-import VoltageLevelModificationForm from './voltage-level-modification-form';
-import {
-    EQUIPMENT_NAME,
-    HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-    HIGH_VOLTAGE_LIMIT,
-    LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-    LOW_VOLTAGE_LIMIT,
-    NOMINAL_V,
-    SUBSTATION_ID,
-} from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     convertInputValue,
-    convertOutputValue,
     CustomFormProvider,
-    emptyProperties,
+    DeepNullable,
     EquipmentType,
     EquipmentWithProperties,
     FieldConstants,
     FieldType,
     getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
     snackWithFallback,
-    toModificationProperties,
     useSnackMessage,
+    VoltageLevelDto,
+    VoltageLevelModificationDto,
+    VoltageLevelModificationForm,
+    VoltageLevelModificationFormData,
+    voltageLevelModificationDtoToForm,
+    voltageLevelModificationEmptyFormData,
+    voltageLevelModificationFormSchema,
+    voltageLevelModificationFormToDto,
 } from '@gridsuite/commons-ui';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
@@ -49,21 +42,8 @@ import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 type FetchStatusType = (typeof FetchStatus)[keyof typeof FetchStatus];
 
-interface EditData {
-    uuid?: UUID;
-    equipmentId?: string;
-    equipmentName?: { value: string };
-    substationId?: { value: string };
-    nominalV?: { value: number };
-    lowVoltageLimit?: { value: number };
-    highVoltageLimit?: { value: number };
-    ipMin?: { value: number };
-    ipMax?: { value: number };
-    properties?: any;
-}
-
 interface VoltageLevelModificationDialogProps {
-    editData?: EditData;
+    editData?: VoltageLevelModificationDto;
     defaultIdValue?: string | null;
     currentNode: CurrentTreeNode | null;
     currentRootNetworkUuid: UUID;
@@ -73,59 +53,6 @@ interface VoltageLevelModificationDialogProps {
     [key: string]: any;
 }
 
-interface VoltageLevelFormData {
-    [EQUIPMENT_NAME]?: string;
-    [SUBSTATION_ID]?: string;
-    [NOMINAL_V]?: number;
-    [LOW_VOLTAGE_LIMIT]?: number;
-    [HIGH_VOLTAGE_LIMIT]?: number;
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]?: number;
-    [FieldConstants.ADDITIONAL_PROPERTIES]?: any;
-    [key: string]: any;
-}
-
-const emptyFormData = {
-    [EQUIPMENT_NAME]: '',
-    [SUBSTATION_ID]: null,
-    [NOMINAL_V]: null,
-    [LOW_VOLTAGE_LIMIT]: null,
-    [HIGH_VOLTAGE_LIMIT]: null,
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
-    ...emptyProperties,
-};
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [SUBSTATION_ID]: yup.string().nullable(),
-        [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [LOW_VOLTAGE_LIMIT]: yup
-            .number()
-            .nullable()
-            .min(0, 'mustBeGreaterOrEqualToZero')
-            .when([HIGH_VOLTAGE_LIMIT], {
-                is: (highVoltageLimit: number) => highVoltageLimit != null,
-                then: (schema) => schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
-            }),
-        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-            .number()
-            .nullable()
-            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-            .when([HIGH_SHORT_CIRCUIT_CURRENT_LIMIT], {
-                is: (highShortCircuitCurrentLimit: number) => highShortCircuitCurrentLimit != null,
-                then: (schema) =>
-                    schema.max(yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT), 'ShortCircuitCurrentLimitMinMaxError'),
-            }),
-        [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-            .number()
-            .nullable()
-            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero'),
-    })
-    .concat(modificationPropertiesSchema);
 const VoltageLevelModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
@@ -139,25 +66,33 @@ const VoltageLevelModificationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
-    const [voltageLevelInfos, setVoltageLevelInfos] = useState<VoltageLevelFormData | null>(null);
+    const [voltageLevelToModify, setVoltageLevelToModify] = useState<VoltageLevelDto | undefined>();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const formMethods = useFormWithDirtyTracking({
+    const emptyFormData = useMemo(
+        () => ({
+            ...voltageLevelModificationEmptyFormData,
+            [FieldConstants.HIDE_SUBSTATION_FIELD]: false,
+        }),
+        []
+    );
+
+    const formMethods = useFormWithDirtyTracking<DeepNullable<VoltageLevelModificationFormData>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<VoltageLevelModificationFormData>>(voltageLevelModificationFormSchema),
     });
 
     const { reset, getValues, subscribe, trigger } = formMethods;
 
     useEffect(() => {
         const callback = subscribe({
-            name: [`${HIGH_VOLTAGE_LIMIT}`],
+            name: [FieldConstants.HIGH_VOLTAGE_LIMIT],
             formState: {
                 values: true,
             },
             callback: ({ isSubmitted }) => {
                 if (isSubmitted) {
-                    trigger(`${LOW_VOLTAGE_LIMIT}`).then();
+                    trigger(FieldConstants.LOW_VOLTAGE_LIMIT).then();
                 }
             },
         });
@@ -166,21 +101,10 @@ const VoltageLevelModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            if (editData?.equipmentId) {
+            if (editData.equipmentId) {
                 setSelectedId(editData.equipmentId);
             }
-            reset({
-                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                [SUBSTATION_ID]: editData?.substationId?.value ?? null,
-                [NOMINAL_V]: editData?.nominalV?.value ?? null,
-                [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value ?? null,
-                [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value ?? null,
-                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    convertInputValue(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, editData?.ipMin?.value) ?? null,
-                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    convertInputValue(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, editData?.ipMax?.value) ?? null,
-                ...getPropertiesFromModification(editData.properties),
-            });
+            reset({ ...voltageLevelModificationDtoToForm(editData), [FieldConstants.HIDE_SUBSTATION_FIELD]: false });
         }
     }, [editData, reset]);
 
@@ -197,7 +121,7 @@ const VoltageLevelModificationDialog = ({
                     equipmentId,
                     true
                 )
-                    .then((voltageLevel: VoltageLevelFormData) => {
+                    .then((voltageLevel: VoltageLevelDto) => {
                         if (voltageLevel) {
                             //We convert values of low short circuit current limit and high short circuit current limit from A to KA
                             if (voltageLevel.identifiableShortCircuit) {
@@ -210,16 +134,17 @@ const VoltageLevelModificationDialog = ({
                                     voltageLevel.identifiableShortCircuit?.ipMin
                                 );
                             }
-                            setVoltageLevelInfos(voltageLevel);
+                            setVoltageLevelToModify(voltageLevel);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                             reset(
                                 (formValues) => ({
                                     ...formValues,
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
                                         voltageLevel as EquipmentWithProperties,
                                         getValues
                                     ),
-                                    [SUBSTATION_ID]: voltageLevel?.substationId,
+                                    [FieldConstants.SUBSTATION_ID]: voltageLevel.substationId ?? null,
                                 }),
                                 { keepDirty: true }
                             );
@@ -227,16 +152,19 @@ const VoltageLevelModificationDialog = ({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
-                            setVoltageLevelInfos(null);
+                            setVoltageLevelToModify(undefined);
                         }
                     });
             } else {
-                setVoltageLevelInfos(null);
+                setVoltageLevelToModify(undefined);
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData?.equipmentId, emptyFormData]
     );
 
     useEffect(() => {
@@ -246,37 +174,22 @@ const VoltageLevelModificationDialog = ({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (voltageLevel: VoltageLevelFormData) => {
-            if (selectedId != null) {
-                modifyVoltageLevel({
-                    studyUuid: studyUuid,
-                    nodeUuid: currentNodeUuid as UUID,
-                    modificationUuid: editData?.uuid,
-                    equipmentId: selectedId,
-                    equipmentName: voltageLevel[EQUIPMENT_NAME],
-                    nominalV: voltageLevel[NOMINAL_V],
-                    lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
-                    highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                    lowShortCircuitCurrentLimit: convertOutputValue(
-                        FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                        voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
-                    ),
-                    highShortCircuitCurrentLimit: convertOutputValue(
-                        FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                        voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
-                    ),
-                    properties: toModificationProperties(voltageLevel),
-                }).catch((error: Error) => {
-                    snackWithFallback(snackError, error, { headerId: 'VoltageLevelModificationError' });
-                });
-            }
+        (voltageLevel: VoltageLevelModificationFormData) => {
+            modifyVoltageLevel({
+                studyUuid,
+                nodeUuid: currentNodeUuid as UUID,
+                modificationUuid: editData?.uuid,
+                ...voltageLevelModificationFormToDto(voltageLevel),
+            }).catch((error: Error) => {
+                snackWithFallback(snackError, error, { headerId: 'VoltageLevelModificationError' });
+            });
         },
-        [editData, studyUuid, currentNodeUuid, selectedId, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError]
     );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-    }, [reset]);
+    }, [emptyFormData, reset]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -288,7 +201,7 @@ const VoltageLevelModificationDialog = ({
 
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={voltageLevelModificationFormSchema}
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -315,9 +228,7 @@ const VoltageLevelModificationDialog = ({
                         fillerHeight={4}
                     />
                 )}
-                {selectedId != null && (
-                    <VoltageLevelModificationForm voltageLevelInfos={voltageLevelInfos} equipmentId={selectedId} />
-                )}
+                {selectedId != null && <VoltageLevelModificationForm voltageLevelToModify={voltageLevelToModify} />}
             </ModificationDialog>
         </CustomFormProvider>
     );
