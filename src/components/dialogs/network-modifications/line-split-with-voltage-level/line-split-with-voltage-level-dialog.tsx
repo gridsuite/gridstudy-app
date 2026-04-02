@@ -7,15 +7,16 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
+    getConnectivityData,
+    getConnectivityWithoutPositionEmptyFormData,
+    getConnectivityWithoutPositionValidationSchema,
+    getNewVoltageLevelData,
     MODIFICATION_TYPES,
+    sanitizeString,
     snackWithFallback,
     useSnackMessage,
-    DeepNullable,
-    sanitizeString,
-    getNewVoltageLevelData,
-    getConnectivityData,
-    getConnectivityWithoutPositionValidationSchema,
-    getConnectivityWithoutPositionEmptyFormData,
+    VoltageLevelOption,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -44,18 +45,16 @@ import {
     getLineToAttachOrSplitFormData,
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
-import { buildNewBusbarSections } from 'components/utils/utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { divideLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils.type';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
-import { getNewVoltageLevelOptions } from '../../../utils/utils';
+import { getNewVoltageLevelOptions, mergeVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
-import { VoltageLevel } from '../../../utils/equipment-types';
 
 interface ConnectivityData {
     [VOLTAGE_LEVEL]: { [ID]: string };
@@ -140,7 +139,7 @@ const LineSplitWithVoltageLevelDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }: LineSplitWithVoltageLevelDialogProps) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState<VoltageLevel[]>([]);
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState<VoltageLevelOption[]>([]);
 
     const currentNodeUuid = currentNode?.id;
 
@@ -184,12 +183,16 @@ const LineSplitWithVoltageLevelDialog = ({
             reset(formData);
 
             if (newVoltageLevel) {
-                newVoltageLevel.busbarSections = buildNewBusbarSections(
-                    newVoltageLevel?.equipmentId,
-                    newVoltageLevel?.sectionCount,
-                    newVoltageLevel?.busbarCount
-                );
                 setNewVoltageLevel(newVoltageLevel);
+                const formattedVoltageLevel = {
+                    id: newVoltageLevel.equipmentId,
+                    name: newVoltageLevel.equipmentName ?? '',
+                    exist: false,
+                    busbarCount: newVoltageLevel.busbarCount!,
+                    sectionCount: newVoltageLevel.sectionCount!,
+                    switchKinds: newVoltageLevel.switchKinds ?? [],
+                };
+                setVoltageLevelOptions((prev) => getNewVoltageLevelOptions(formattedVoltageLevel, undefined, prev));
             }
         },
         [reset]
@@ -240,8 +243,8 @@ const LineSplitWithVoltageLevelDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((values) => {
-                setVoltageLevelOptions(values.toSorted((a, b) => a?.id?.localeCompare(b?.id)) as VoltageLevel[]);
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((existingVl) => {
+                setVoltageLevelOptions((prev) => mergeVoltageLevelOptions(existingVl, prev));
             });
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
@@ -281,10 +284,6 @@ const LineSplitWithVoltageLevelDialog = ({
                     switchKinds: switchKinds,
                     couplingDevices: couplingDevices,
                     topologyKind: topologyKind,
-                    busbarSections:
-                        sectionCount && busbarCount
-                            ? buildNewBusbarSections(equipmentId, sectionCount, busbarCount)
-                            : [],
                     properties: properties,
                 };
                 // we keep the old voltage level id, so it can be removed for from voltage level options
@@ -293,9 +292,10 @@ const LineSplitWithVoltageLevelDialog = ({
                 const formattedVoltageLevel = {
                     id: preparedVoltageLevel.equipmentId,
                     name: preparedVoltageLevel.equipmentName ?? '',
-                    substationId: preparedVoltageLevel.substationId ?? undefined,
-                    nominalV: preparedVoltageLevel.nominalV ?? 0,
-                    topologyKind: preparedVoltageLevel.topologyKind,
+                    exist: false,
+                    busbarCount: busbarCount!,
+                    sectionCount: sectionCount!,
+                    switchKinds: switchKinds ?? [],
                 };
 
                 // we add the new voltage level (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)

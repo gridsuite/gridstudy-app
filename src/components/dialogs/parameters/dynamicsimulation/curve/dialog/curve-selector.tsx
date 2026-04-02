@@ -10,8 +10,7 @@ import EquipmentFilter, { GetSelectedEquipmentsHandle } from './equipment-filter
 import ModelFilter, { GetSelectedVariablesHandle } from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
-import { IdentifiableAttributes, type MuiStyles } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { IdentifiableAttributes, EquipmentType, type MuiStyles } from '@gridsuite/commons-ui';
 import { getReferencedEquipmentTypeForModel } from './curve-selector-utils';
 import { ModelVariable } from '../../dynamic-simulation.type';
 
@@ -37,9 +36,9 @@ const CurveSelector = forwardRef<GetSelectedItemsHandler, Readonly<CurveSelector
     const equipmentFilterRef = useRef<GetSelectedEquipmentsHandle>(null);
     const modelFilterRef = useRef<GetSelectedVariablesHandle>(null);
 
-    const [equipmentType, setEquipmentType] = useState(EQUIPMENT_TYPES.GENERATOR);
+    const [equipmentType, setEquipmentType] = useState(EquipmentType.GENERATOR);
 
-    const handleChangeEquipmentType = useCallback((newEquipmentType: EQUIPMENT_TYPES) => {
+    const handleChangeEquipmentType = useCallback((newEquipmentType: EquipmentType) => {
         setEquipmentType(newEquipmentType);
     }, []);
 

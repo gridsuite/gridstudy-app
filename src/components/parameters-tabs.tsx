@@ -31,6 +31,7 @@ import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
 import type { UUID } from 'node:crypto';
 import {
+    BuildStatus,
     ComputingType,
     DynamicMarginCalculationInline,
     DynamicSecurityAnalysisInline,
@@ -68,7 +69,6 @@ import {
     fetchDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisParameters,
 } from '../services/study/dynamic-security-analysis';
-import { BUILD_STATUS } from './network/constants';
 import {
     fetchDynamicSimulationParameters,
     updateDynamicSimulationParameters,
@@ -96,6 +96,7 @@ const ParametersTabs: FunctionComponent = () => {
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode ?? null);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -174,6 +175,12 @@ const ParametersTabs: FunctionComponent = () => {
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
         securityAnalysisParametersBackend
+    );
+    const fetchContingencyCountBackend = useCallback(
+        (contingencyLists: UUID[] | null) => {
+            return fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists);
+        },
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
 
     const sensitivityAnalysisBackend = useParametersBackend(
@@ -332,12 +339,10 @@ const ParametersTabs: FunctionComponent = () => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
-                        fetchContingencyCount={(contingencyLists: UUID[] | null) =>
-                            fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
-                        }
+                        fetchContingencyCount={fetchContingencyCountBackend}
                         isBuiltCurrentNode={
-                            currentNodeBuildStatus !== BUILD_STATUS.NOT_BUILT &&
-                            currentNodeBuildStatus !== BUILD_STATUS.BUILDING
+                            currentNodeBuildStatus !== BuildStatus.NOT_BUILT &&
+                            currentNodeBuildStatus !== BuildStatus.BUILDING
                         }
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
@@ -351,6 +356,7 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
+                        globalBuildStatus={currentNode?.data?.globalBuildStatus}
                         isDeveloperMode={isDeveloperMode}
                     />
                 );
@@ -444,6 +450,7 @@ const ParametersTabs: FunctionComponent = () => {
                 );
         }
     }, [
+        currentNode,
         tabValue,
         studyUuid,
         languageLocal,
@@ -451,6 +458,7 @@ const ParametersTabs: FunctionComponent = () => {
         setDirtyFields,
         isDeveloperMode,
         securityAnalysisParametersBackend,
+        fetchContingencyCountBackend,
         currentNodeBuildStatus,
         currentNodeUuid,
         currentRootNetworkUuid,

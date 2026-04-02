@@ -9,23 +9,50 @@ import { BaseVoltage, LIGHT_THEME } from '@gridsuite/commons-ui';
 
 export const INVALID_COMPUTATION_OPACITY = 0.2;
 
-function parseRGB(stringRGB: string): number[] | undefined {
+/**
+ * Parse an `rgb(r, g, b)` string into a numeric color tuple.
+ *
+ * @param stringRGB - RGB string such as `rgb(10, 20, 30)`
+ * @returns tuple [r, g, b] or `undefined` when parsing fails.
+ */
+function parseRGB(stringRGB: string): [number, number, number] | undefined {
     const rgbRegex = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/;
     const match = rgbRegex.exec(stringRGB);
-    return match?.slice(1).map(Number);
+    return match?.slice(1).map(Number) as [number, number, number] | undefined;
 }
 
-export const getBaseVoltageNetworkMapColor = (baseVoltage: BaseVoltage | undefined): number[] => {
+/**
+ * Return the network map color as an RGB tuple for a base voltage.
+ * Defaults to black when no valid color is available.
+ *
+ * @param baseVoltage - optional base voltage object from commons-ui
+ * @returns color in [r, g, b] format
+ */
+export const getBaseVoltageNetworkMapColor = (baseVoltage: BaseVoltage | undefined): [number, number, number] => {
     const color = baseVoltage?.networkMapColor;
     return (color ? parseRGB(color) : [0, 0, 0]) ?? [0, 0, 0];
 };
 
+/**
+ * Retrieve SLD/NAD theme color mapping for a base voltage depending on current theme.
+ *
+ * @param baseVoltage - base voltage object containing sldAndNadColors
+ * @param theme - current theme identifier (e.g. LIGHT_THEME or dark mode string)
+ * @returns color object for the selected theme
+ */
 export const getBaseVoltageSldAndNadThemeColors = (baseVoltage: BaseVoltage, theme: string) => {
     return theme === LIGHT_THEME
         ? baseVoltage.sldAndNadColors.lightThemeColors
         : baseVoltage.sldAndNadColors.darkThemeColors;
 };
 
+/**
+ * Build CSS vars map per base-voltage style selectors for SLD and NAD color rendering.
+ *
+ * @param theme - current theme key to choose light or dark colors
+ * @param baseVoltages - list of base voltage definitions to generate CSS for
+ * @returns CSS variable map by selector
+ */
 export const getBaseVoltagesCssVars = (
     theme: string,
     baseVoltages: BaseVoltage[]

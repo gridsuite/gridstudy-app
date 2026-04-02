@@ -25,8 +25,8 @@ import {
     USER_VALIDATION_ERROR,
     type UserAction,
     type UserValidationErrorAction,
+    EquipmentType,
 } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_GLOBAL_FILTERS,
@@ -198,8 +198,6 @@ import {
     ShortcircuitAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
-    STORE_NAD_VIEW_BOX,
-    StoreNadViewBoxAction,
     TABLE_SORT,
     type TableSortAction,
     UPDATE_COLUMN_FILTERS,
@@ -296,6 +294,7 @@ import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants'
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 import { isCriteriaFilter } from '../components/results/common/utils';
 import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
+import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {
@@ -349,6 +348,15 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): Spread
         default:
             return;
     }
+}
+
+const MAX_RECENT_GLOBAL_FILTERS = 10;
+
+function buildSortedRecents(filters: GlobalFilter[]): RecentGlobalFilter[] {
+    return filters
+        .map((f) => ({ id: getGlobalFilterId(f), unselectedDate: f.unselectedDate! }))
+        .sort((a, b) => b.unselectedDate - a.unselectedDate)
+        .slice(0, MAX_RECENT_GLOBAL_FILTERS);
 }
 
 export const DEFAULT_PAGINATION: PaginationConfig = {
@@ -455,7 +463,6 @@ const initialState: AppState = {
         copyType: null,
         allChildren: null,
     },
-    nadViewBox: {},
     copiedNetworkModifications: {
         networkModificationUuids: [],
         copyInfos: null,
@@ -805,8 +812,12 @@ export const reducer = createReducer(initialState, (builder) => {
             }, {} as TableSortConfig);
         const spreadsheetGlobalFilters = action.globalFilters ?? {};
         Object.entries(spreadsheetGlobalFilters).forEach(([tabUuid, filters]) => {
-            // Store only IDs in globalFilters
-            state.tableFilters.globalFilters[tabUuid] = filters.map(getGlobalFilterId);
+            const selectedFilters = filters.filter((f) => !f.unselectedDate);
+            const recentFilters = filters.filter((f) => !!f.unselectedDate);
+            state.tableFilters.globalFilters[tabUuid] = {
+                selected: selectedFilters.map(getGlobalFilterId),
+                recents: buildSortedRecents(recentFilters),
+            };
             // Store full objects in globalFilterOptions only if not already present
             filters.filter(isCriteriaFilter).forEach((filter) => {
                 const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
@@ -1088,11 +1099,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
 
-    builder.addCase(STORE_NAD_VIEW_BOX, (state, action: StoreNadViewBoxAction) => {
-        const { nadUuid, viewBox } = action.nadViewBox;
-        state.nadViewBox[nadUuid] = viewBox;
-    });
-
     builder.addCase(COPIED_NETWORK_MODIFICATIONS, (state, action: CopiedNetworkModificationsAction) => {
         state.copiedNetworkModifications = action.copiedNetworkModifications;
     });
@@ -1214,22 +1220,22 @@ export const reducer = createReducer(initialState, (builder) => {
                 //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === SpreadsheetEquipmentType.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
                         ] as Record<string, Substation>,
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.VOLTAGE_LEVEL].equipmentsByNodeId[
                             action.nodeId
                         ],
                         formattedEquipments as Record<string, Substation>
                     );
 
                     if (updatedSubstations != null) {
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
                         ] = updatedSubstations;
                     }
                     if (updatedVoltageLevels != null) {
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.VOLTAGE_LEVEL].equipmentsByNodeId[
                             action.nodeId
                         ] = updatedVoltageLevels;
                     }
@@ -1294,9 +1300,9 @@ export const reducer = createReducer(initialState, (builder) => {
             nodesIds: [],
             equipments: {
                 ...initialSpreadsheetNetworkState.equipments,
-                [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.SUBSTATION],
-                [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-                [EQUIPMENT_TYPES.HVDC_LINE]: state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.HVDC_LINE],
+                [EquipmentType.SUBSTATION]: state.spreadsheetNetwork.equipments[EquipmentType.SUBSTATION],
+                [EquipmentType.VOLTAGE_LEVEL]: state.spreadsheetNetwork.equipments[EquipmentType.VOLTAGE_LEVEL],
+                [EquipmentType.HVDC_LINE]: state.spreadsheetNetwork.equipments[EquipmentType.HVDC_LINE],
             },
         };
     });
@@ -1409,11 +1415,11 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(REMOVE_FROM_GLOBAL_FILTER_OPTIONS, (state, action: RemoveFromGlobalFilterOptionsAction) => {
         state.globalFilterOptions = state.globalFilterOptions.filter((opt) => opt.id !== action.id);
-        // We also need to remove it from the selected filter IDs.
+        // We also need to remove it from the selected and recent filters for each table.
         for (const key of Object.keys(state.tableFilters.globalFilters)) {
-            state.tableFilters.globalFilters[key] = state.tableFilters.globalFilters[key].filter(
-                (id) => id !== action.id
-            );
+            const tableState = state.tableFilters.globalFilters[key];
+            tableState.selected = tableState.selected?.filter((id) => id !== action.id) ?? [];
+            tableState.recents = tableState.recents?.filter((r) => r.id !== action.id) ?? [];
         }
     });
 
@@ -1585,15 +1591,37 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(INIT_OR_UPDATE_GLOBAL_FILTER, (state, action: InitOrUpdateGlobalFilterAction) => {
-        // Replace selected IDs in globalFilters only if different to avoid unnecessary re-render and re-fetch
-        const currentIds = state.tableFilters.globalFilters[action.tabUuid];
-        const newIds = action.filters.map(getGlobalFilterId);
-        const areEqual =
-            currentIds?.length === newIds.length &&
-            currentIds.every((id) => newIds.includes(id)) &&
-            newIds.every((id) => currentIds.includes(id));
-        if (!areEqual) {
-            state.tableFilters.globalFilters[action.tabUuid] = newIds;
+        // Replace global filters state only if different to avoid unnecessary re-render and re-fetch
+        const currentState = state.tableFilters.globalFilters[action.tabUuid];
+
+        // Selected filters
+        const selectedFilters = action.filters.filter((f) => !f.unselectedDate);
+        const newSelectedIds = selectedFilters.map(getGlobalFilterId);
+        const currentSelectedIds = currentState?.selected;
+        const areSelectedEqual =
+            newSelectedIds.length === currentSelectedIds?.length &&
+            newSelectedIds.every((id) => currentSelectedIds.includes(id)) &&
+            currentSelectedIds.every((id) => newSelectedIds.includes(id));
+
+        // Recent filters
+        const recentFilters = action.filters.filter((f) => !!f.unselectedDate);
+        const newRecents = buildSortedRecents(recentFilters);
+        const currentRecents = currentState?.recents;
+        const areRecentsEqual =
+            newRecents.length === currentRecents?.length &&
+            newRecents.every(
+                (r, i) => r.id === currentRecents[i]?.id && r.unselectedDate === currentRecents[i]?.unselectedDate
+            );
+
+        // Update only if different
+        if (!areSelectedEqual || !areRecentsEqual) {
+            state.tableFilters.globalFilters[action.tabUuid] ??= { selected: [], recents: [] };
+            if (!areSelectedEqual) {
+                state.tableFilters.globalFilters[action.tabUuid].selected = newSelectedIds;
+            }
+            if (!areRecentsEqual) {
+                state.tableFilters.globalFilters[action.tabUuid].recents = newRecents;
+            }
         }
 
         // Store full objects in globalFilterOptions only if not already present (same as above and also preserve the recent status)
@@ -1631,46 +1659,40 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ADD_GLOBAL_FILTERS, (state, action: AddGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= [];
+        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
+        const tableState = state.tableFilters.globalFilters[tableId];
 
         filterIds.forEach((id) => {
-            if (!state.tableFilters.globalFilters[tableId].includes(id)) {
-                state.tableFilters.globalFilters[tableId].push(id);
+            if (!tableState.selected.includes(id)) {
+                tableState.selected.push(id);
             }
-            const option = state.globalFilterOptions.find((opt) => opt.id === id);
-            if (option?.unselectedDate) {
-                delete option.unselectedDate;
-            }
+            tableState.recents = tableState.recents.filter((r) => r.id !== id);
         });
     });
 
     builder.addCase(REMOVE_GLOBAL_FILTERS, (state, action: RemoveGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= [];
+        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
+        const tableState = state.tableFilters.globalFilters[tableId];
 
-        state.tableFilters.globalFilters[tableId] = state.tableFilters.globalFilters[tableId].filter(
-            (id) => !filterIds.includes(id)
-        );
+        tableState.selected = tableState.selected.filter((id) => !filterIds.includes(id));
 
+        const now = Date.now();
         filterIds.forEach((filterId) => {
-            const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (option) {
-                option.unselectedDate = Date.now();
-            }
+            tableState.recents.unshift({ id: filterId, unselectedDate: now });
         });
+        tableState.recents = tableState.recents.slice(0, MAX_RECENT_GLOBAL_FILTERS);
     });
 
     builder.addCase(CLEAR_GLOBAL_FILTERS, (state, action: ClearGlobalFiltersAction) => {
         const { tableId } = action;
-        const previousFilterIds = state.tableFilters.globalFilters[tableId] ?? [];
-        previousFilterIds.forEach((filterId) => {
-            const option = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (option) {
-                option.unselectedDate = Date.now();
-            }
-        });
-        state.tableFilters.globalFilters[tableId] = [];
+        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
+        const tableState = state.tableFilters.globalFilters[tableId];
+        const now = Date.now();
+        const newRecents = tableState.selected.map((filterId) => ({ id: filterId, unselectedDate: now }));
+        tableState.recents = [...newRecents, ...tableState.recents].slice(0, MAX_RECENT_GLOBAL_FILTERS);
+        tableState.selected = [];
     });
 });
 

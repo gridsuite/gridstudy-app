@@ -30,9 +30,9 @@ import {
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
+    BuildStatus,
 } from '@gridsuite/commons-ui';
 import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog';
-import { BUILD_STATUS } from './network/constants';
 import {
     copySubtree,
     copyTreeNode,
@@ -59,7 +59,7 @@ import { exportNetworkFile } from '../services/study/network.js';
 import { useCopiedNodes } from 'hooks/copy-paste/use-copied-nodes';
 import { fetchNetworkModificationsToExport } from 'services/study/network-modifications';
 
-export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
+export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
     const { snackError, snackWarning } = useSnackMessage();
     const [nodesToRestore, setNodesToRestore] = useState([]);
@@ -261,8 +261,8 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     createTreeNode(studyUuid, element.id, insertMode, {
                         name: response,
                         type: type,
-                        localBuildStatus: BUILD_STATUS.NOT_BUILT,
-                        globalBuildStatus: BUILD_STATUS.NOT_BUILT,
+                        localBuildStatus: BuildStatus.NOT_BUILT,
+                        globalBuildStatus: BuildStatus.NOT_BUILT,
                         nodeType: networkModificationNodeType,
                     }).catch((error) => {
                         snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
@@ -469,7 +469,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     return (
         <>
-            <NetworkModificationTree onNodeContextMenu={onNodeContextMenu} studyUuid={studyUuid} />
+            <NetworkModificationTree panelId={panelId} onNodeContextMenu={onNodeContextMenu} studyUuid={studyUuid} />
             {createNodeMenu.display && (
                 <CreateNodeMenu
                     position={createNodeMenu.position}
@@ -518,6 +518,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 export default NetworkModificationTreePane;
 
 NetworkModificationTreePane.propTypes = {
+    panelId: PropTypes.string.isRequired,
     studyUuid: PropTypes.string.isRequired,
     currentRootNetworkUuid: PropTypes.string.isRequired,
 };
