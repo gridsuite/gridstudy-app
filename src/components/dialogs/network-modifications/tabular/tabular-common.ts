@@ -86,9 +86,7 @@ export interface TabularField {
     requiredIf?: { id: string };
 }
 
-export interface TabularFields {
-    [key: string]: TabularField[];
-}
+export type TabularFields = Partial<Record<EquipmentType, TabularField[]>>;
 
 export const formatModification = (modification: Modification) => {
     //exclude type, date and uuid from the modification object
