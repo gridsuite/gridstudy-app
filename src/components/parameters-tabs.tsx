@@ -177,8 +177,14 @@ const ParametersTabs: FunctionComponent = () => {
         securityAnalysisParametersBackend
     );
     const fetchContingencyCountBackend = useCallback(
-        (contingencyLists: UUID[] | null) => {
-            return fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists);
+        (contingencyLists: UUID[] | null, abortSignal: AbortSignal) => {
+            return fetchContingencyCount(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                contingencyLists,
+                abortSignal
+            );
         },
         [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
