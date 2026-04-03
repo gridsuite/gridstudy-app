@@ -11,7 +11,6 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
-    DeepNullable,
     emptyProperties,
     EquipmentType,
     FieldConstants,
@@ -280,10 +279,7 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const handleLineSegmentsBuildSubmit = (
-        data: ComputedLineCharacteristics,
-        lineSegments: DeepNullable<SegmentFormData>[] | null
-    ) => {
+    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics, lineSegments: SegmentFormData[]) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });

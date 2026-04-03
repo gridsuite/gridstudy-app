@@ -46,7 +46,7 @@ const emptyFormData = {
 export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: (data: ComputedLineCharacteristics, lineSegments: DeepNullable<SegmentFormData>[] | null) => void;
+    onSave: (data: ComputedLineCharacteristics, lineSegments: SegmentFormData[]) => void;
     editData?: LineSegmentInfos[];
 }
 
@@ -71,7 +71,7 @@ export default function LineTypeSegmentDialog({
 
     const onSubmit = useCallback(
         (data: ComputedLineCharacteristics) => {
-            onSave(data, getValues(`${SEGMENTS}`) as DeepNullable<SegmentFormData>[] | null);
+            onSave(data, (getValues(`${SEGMENTS}`) ?? []) as SegmentFormData[]);
         },
         [getValues, onSave]
     );

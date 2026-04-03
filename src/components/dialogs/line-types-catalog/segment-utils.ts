@@ -26,6 +26,18 @@ import {
 import yup from '../../utils/yup-config';
 import { InferType } from 'yup';
 
+export const SegmentTemporaryLimitSchema = yup.object().shape({
+    [LIMIT_VALUE]: yup.number().required(),
+    [TEMPORARY_LIMIT_DURATION]: yup.number().required(),
+    [TEMPORARY_LIMIT_NAME]: yup.string().required(),
+});
+
+export const SegmentCurrentLimitsSchema = yup.object().shape({
+    [LIMIT_SET_NAME]: yup.string().required(),
+    [PERMANENT_LIMIT]: yup.number().required(),
+    [TEMPORARY_LIMITS]: yup.array().of(SegmentTemporaryLimitSchema).nullable(),
+});
+
 export const SegmentSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup
         .number()
@@ -42,25 +54,12 @@ export const SegmentSchema = yup.object().shape({
     [SEGMENT_RESISTANCE]: yup.number().required(),
     [SEGMENT_REACTANCE]: yup.number().required(),
     [SEGMENT_SUSCEPTANCE]: yup.number().required(),
-    [SEGMENT_CURRENT_LIMITS]: yup.array().of(
-        yup.object().shape({
-            [LIMIT_SET_NAME]: yup.string().required(),
-            [PERMANENT_LIMIT]: yup.number().required(),
-            [TEMPORARY_LIMITS]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [LIMIT_VALUE]: yup.number().required(),
-                        [TEMPORARY_LIMIT_DURATION]: yup.number().required(),
-                        [TEMPORARY_LIMIT_NAME]: yup.string().required(),
-                    })
-                )
-                .nullable(),
-        })
-    ),
+    [SEGMENT_CURRENT_LIMITS]: yup.array().of(SegmentCurrentLimitsSchema),
 });
 
 export type SegmentFormData = InferType<typeof SegmentSchema>;
+export type SegmentTemporaryLimitFormData = InferType<typeof SegmentTemporaryLimitSchema>;
+export type SegmentCurrentLimitsFormData = InferType<typeof SegmentCurrentLimitsSchema>;
 
 export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_DISTANCE_VALUE]: 0.0,

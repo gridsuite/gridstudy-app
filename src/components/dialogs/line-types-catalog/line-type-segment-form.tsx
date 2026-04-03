@@ -151,11 +151,11 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         const segments: SegmentFormData[] = getValues(SEGMENTS);
         const mostContrainingLimits = new Map<string, CurrentLimitsInfo>();
         segments.forEach((segment) => {
-            segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit: CurrentLimitsInfo) => {
+            segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit) => {
                 if (mostContrainingLimits.has(limit.limitSetName)) {
                     let computedLimit: CurrentLimitsInfo | undefined = mostContrainingLimits.get(limit.limitSetName);
                     if (computedLimit !== undefined && computedLimit.temporaryLimits !== null) {
-                        limit.temporaryLimits.forEach((temporaryLimit) => {
+                        limit.temporaryLimits?.forEach((temporaryLimit) => {
                             const foundTemporaryLimit = computedLimit?.temporaryLimits.find(
                                 (temporaryLimitData) => temporaryLimitData.name === temporaryLimit.name
                             );
@@ -174,7 +174,11 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                     }
                 } else {
                     // need deep copy else segment[SEGMENT_CURRENT_LIMITS] will be modified with computedLimit
-                    mostContrainingLimits.set(limit.limitSetName, structuredClone(limit));
+                    mostContrainingLimits.set(limit.limitSetName, {
+                        limitSetName: limit.limitSetName,
+                        permanentLimit: limit.permanentLimit,
+                        temporaryLimits: [...(limit?.temporaryLimits ?? [])],
+                    } as CurrentLimitsInfo);
                 }
             });
         });
