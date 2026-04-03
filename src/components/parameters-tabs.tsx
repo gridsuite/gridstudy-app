@@ -377,34 +377,21 @@ const ParametersTabs: FunctionComponent = () => {
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
+                if (!studyUuid || !currentNodeUuid || !currentRootNetworkUuid) {
+                    return null;
+                }
                 return (
                     <DynamicSimulationInline
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         parametersBackend={dynamicSimulationParametersBackend}
-                        voltageLevelsFetcher={() => {
-                            if (!studyUuid || !currentNodeUuid || !currentRootNetworkUuid) {
-                                return Promise.resolve([]);
-                            }
-                            return fetchVoltageLevelsMapInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
-                        }}
-                        countriesFetcher={() => {
-                            if (!studyUuid || !currentNodeUuid || !currentRootNetworkUuid) {
-                                return Promise.resolve([]);
-                            }
-                            return fetchAllCountries(studyUuid!, currentNodeUuid!, currentRootNetworkUuid!);
-                        }}
-                        evaluateFilterFetcher={(expertFilter) => {
-                            if (!studyUuid || !currentNodeUuid || !currentRootNetworkUuid) {
-                                return Promise.resolve([]);
-                            }
-                            return evaluateJsonFilter(
-                                studyUuid!,
-                                currentNodeUuid!,
-                                currentRootNetworkUuid!,
-                                expertFilter
-                            );
-                        }}
+                        voltageLevelsFetcher={() =>
+                            fetchVoltageLevelsMapInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid)
+                        }
+                        countriesFetcher={() => fetchAllCountries(studyUuid, currentNodeUuid, currentRootNetworkUuid)}
+                        evaluateFilterFetcher={(expertFilter) =>
+                            evaluateJsonFilter(studyUuid, currentNodeUuid, currentRootNetworkUuid, expertFilter)
+                        }
                     />
                 );
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
