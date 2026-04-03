@@ -85,14 +85,14 @@ export type LineTypesCatalogSelectorDialogProps = {
     onSelectLine: (selectedLine: LineTypeInfo, selectedAreaAndTemperature: AreaTemperatureShapeFactorInfo) => void;
     rowData: LineTypeInfo[];
     onClose: () => void;
-    preselectedParams?: LineCatalogParams;
+    getPreselectedParams?: () => LineCatalogParams;
 };
 
 export default function LineTypesCatalogSelectorDialog({
     onSelectLine,
     rowData,
     onClose,
-    preselectedParams,
+    getPreselectedParams,
     ...dialogProps
 }: Readonly<LineTypesCatalogSelectorDialogProps>) {
     const { snackError } = useSnackMessage();
@@ -229,7 +229,7 @@ export default function LineTypesCatalogSelectorDialog({
                     areasOptions={areasOptions}
                     aerialTemperatures={aerialTemperatures}
                     undergroundShapeFactor={undergroundShapeFactors}
-                    preselectedRowData={preselectedParams}
+                    getPreselectedRowData={getPreselectedParams}
                 />
             </ModificationDialog>
         </CustomFormProvider>

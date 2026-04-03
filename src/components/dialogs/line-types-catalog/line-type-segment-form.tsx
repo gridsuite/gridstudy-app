@@ -318,17 +318,17 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         [setValue, updateTotals, keepMostConstrainingLimits]
     );
 
-    const getPreselectedRowData = useCallback(
-        (index: number) => {
-            return {
-                id: getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`),
-                temperature: getValues(`${SEGMENTS}.${index}.${TEMPERATURE}`),
-                area: getValues(`${SEGMENTS}.${index}.${AREA}`),
-                shapeFactor: getValues(`${SEGMENTS}.${index}.${SHAPE_FACTOR}`),
-            };
-        },
-        [getValues]
-    );
+    const getPreselectedRowData = useCallback(() => {
+        const currentSegment = getValues(`${SEGMENTS}.${openCatalogDialogIndex}`);
+        return currentSegment
+            ? {
+                  id: currentSegment[SEGMENT_TYPE_ID],
+                  temperature: currentSegment[TEMPERATURE],
+                  area: currentSegment[AREA],
+                  shapeFactor: currentSegment[SHAPE_FACTOR],
+              }
+            : { id: undefined, temperature: undefined, area: undefined, shapeFactor: undefined };
+    }, [getValues, openCatalogDialogIndex]);
 
     const segmentTypeHeader = (
         <Box sx={styles.header}>
@@ -465,8 +465,8 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 name={SEGMENTS}
                 Field={LineTypeSegmentCreation}
                 fieldProps={{
-                    onSegmentDistanceChange: (index: number) => handleSegmentDistantChange(index),
-                    onEditButtonClick: (index: number) => openCatalogDialog(index),
+                    onSegmentDistanceChange: handleSegmentDistantChange,
+                    onEditButtonClick: openCatalogDialog,
                 }}
                 addButtonLabel={'AddSegment'}
                 initialValue={emptyLineSegment}
@@ -496,7 +496,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                     onClose={onCatalogDialogClose}
                     rowData={lineTypesCatalog}
                     onSelectLine={onSelectCatalogLine}
-                    preselectedParams={getPreselectedRowData(openCatalogDialogIndex)}
+                    getPreselectedParams={getPreselectedRowData}
                 />
             )}
         </>

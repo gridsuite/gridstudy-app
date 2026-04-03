@@ -40,7 +40,7 @@ interface LineTypesCatalogSelectorFormProps {
     areasOptions: Option[];
     aerialTemperatures: Option[];
     undergroundShapeFactor: Option[];
-    preselectedRowData?: LineCatalogParams;
+    getPreselectedRowData?: () => LineCatalogParams;
 }
 
 export default function LineTypesCatalogSelectorForm({
@@ -52,12 +52,13 @@ export default function LineTypesCatalogSelectorForm({
     areasOptions,
     aerialTemperatures,
     undergroundShapeFactor,
-    preselectedRowData,
+    getPreselectedRowData,
 }: Readonly<LineTypesCatalogSelectorFormProps>) {
     const [tabIndex, setTabIndex] = useState<number>(CATEGORIES_TABS.AERIAL.id);
     const { setValue } = useFormContext();
     const { aerialColumnDefs, undergroundColumnDefs } = useColumnDefinitions();
     const { aerialRowData, undergroundRowData } = useRowData(rowData);
+    const [rowId, setRowId] = useState<string | null>(null);
 
     const handleTabChange = useCallback(
         (newValue: number) => {
@@ -69,7 +70,9 @@ export default function LineTypesCatalogSelectorForm({
 
     // Select the correct tab when opening the dialog, if a row is preselected
     useEffect(() => {
+        const preselectedRowData = getPreselectedRowData ? getPreselectedRowData() : null;
         if (preselectedRowData?.id && rowData) {
+            setRowId(preselectedRowData.id);
             const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowData.id);
             const newTabIndex =
                 preselectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name
@@ -91,23 +94,23 @@ export default function LineTypesCatalogSelectorForm({
                 });
             }
         }
-    }, [rowData, setValue, preselectedRowData]);
+    }, [rowData, setValue, getPreselectedRowData]);
 
     // Tries to find the selected row to highlight it
     const highlightSelectedRow = useCallback(() => {
-        const rowIdToHighlight = selectedRow?.id ?? preselectedRowData?.id;
+        const rowIdToHighlight = selectedRow?.id ?? rowId;
         if (rowIdToHighlight && rowData) {
             gridRef.current?.api?.forEachNode(function (node: any) {
                 node.setSelected(node.data?.id === rowIdToHighlight);
             });
         }
-    }, [selectedRow?.id, preselectedRowData?.id, rowData, gridRef]);
+    }, [selectedRow?.id, rowData, gridRef, rowId]);
 
     const scrollToPreselectedElement = useCallback(() => {
-        const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowData?.id);
+        const preselectedRow = rowData?.find((entry) => entry.id === rowId);
         preselectedRow && gridRef.current?.api?.ensureNodeVisible(preselectedRow, 'middle');
         highlightSelectedRow();
-    }, [rowData, gridRef, highlightSelectedRow, preselectedRowData?.id]);
+    }, [rowData, gridRef, highlightSelectedRow, rowId]);
 
     // Tries to highlight the preselected row when changing tabs
     useEffect(() => {
