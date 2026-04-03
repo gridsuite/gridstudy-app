@@ -24,7 +24,7 @@ import {
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
-import { CurrentLimitsInfo } from './line-catalog.type';
+import { InferType } from 'yup';
 
 export const SegmentSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup
@@ -60,18 +60,7 @@ export const SegmentSchema = yup.object().shape({
     ),
 });
 
-export type SegmentFormData = {
-    [SEGMENT_DISTANCE_VALUE]: number;
-    [SEGMENT_TYPE_VALUE]: string;
-    [SEGMENT_TYPE_ID]: string;
-    [SEGMENT_RESISTANCE]: number;
-    [SEGMENT_REACTANCE]: number;
-    [SEGMENT_SUSCEPTANCE]: number;
-    [SEGMENT_CURRENT_LIMITS]: CurrentLimitsInfo[];
-    [AREA]: string | null;
-    [TEMPERATURE]: string | null;
-    [SHAPE_FACTOR]: number | null;
-};
+export type SegmentFormData = InferType<typeof SegmentSchema>;
 
 export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_DISTANCE_VALUE]: 0.0,

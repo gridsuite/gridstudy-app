@@ -11,6 +11,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentType,
     FieldConstants,
@@ -101,6 +102,7 @@ import {
     TemporaryLimitFormSchema,
 } from '../../../limits/operational-limits-groups-types';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { SegmentFormData } from '../../../line-types-catalog/segment-utils';
 
 const emptyFormData: any = {
     ...getHeaderEmptyFormData(),
@@ -278,7 +280,10 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics, lineSegments: LineSegmentInfos[]) => {
+    const handleLineSegmentsBuildSubmit = (
+        data: ComputedLineCharacteristics,
+        lineSegments: DeepNullable<SegmentFormData>[] | null
+    ) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
@@ -313,7 +318,17 @@ const LineCreationDialog = ({
             });
         });
         setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
-        setValue(LINE_SEGMENTS, lineSegments);
+        const segments: LineSegmentInfos[] =
+            lineSegments?.map((segment) => {
+                return {
+                    segmentTypeId: segment?.segmentTypeId ?? '',
+                    segmentDistanceValue: segment?.segmentDistanceValue ?? 0,
+                    area: segment?.area ?? '',
+                    temperature: segment?.temperature ?? '',
+                    shapeFactor: segment?.shapeFactor ?? null,
+                };
+            }) ?? [];
+        setValue(LINE_SEGMENTS, segments);
     };
 
     const onSubmit = useCallback(

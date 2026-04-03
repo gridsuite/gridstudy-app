@@ -13,7 +13,7 @@ import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider, DeepNullable } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
-import { SegmentSchema } from './segment-utils';
+import { SegmentFormData, SegmentSchema } from './segment-utils';
 import {
     FINAL_CURRENT_LIMITS,
     SEGMENTS,
@@ -46,7 +46,7 @@ const emptyFormData = {
 export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: (data: ComputedLineCharacteristics, lineSegments: LineSegmentInfos[]) => void;
+    onSave: (data: ComputedLineCharacteristics, lineSegments: DeepNullable<SegmentFormData>[] | null) => void;
     editData?: LineSegmentInfos[];
 }
 
@@ -71,18 +71,7 @@ export default function LineTypeSegmentDialog({
 
     const onSubmit = useCallback(
         (data: ComputedLineCharacteristics) => {
-            const segmentsData = getValues(`${SEGMENTS}`);
-            const segments: LineSegmentInfos[] =
-                segmentsData?.map((segment) => {
-                    return {
-                        segmentTypeId: segment?.segmentTypeId ?? '',
-                        segmentDistanceValue: segment?.segmentDistanceValue ?? 0,
-                        area: segment?.area ?? '',
-                        temperature: segment?.temperature ?? '',
-                        shapeFactor: segment?.shapeFactor ?? null,
-                    };
-                }) ?? [];
-            onSave(data, segments);
+            onSave(data, getValues(`${SEGMENTS}`) as DeepNullable<SegmentFormData>[] | null);
         },
         [getValues, onSave]
     );
