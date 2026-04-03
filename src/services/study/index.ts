@@ -204,7 +204,8 @@ export function fetchContingencyCount(
     studyUuid: UUID | null,
     currentNodeUuid: UUID | null,
     currentRootNetworkUuid: UUID | null,
-    contingencyListIds: UUID[] | null
+    contingencyListIds: UUID[] | null,
+    abortSignal: AbortSignal
 ): Promise<ContingencyCount> {
     console.info(
         `Fetching contingency count for ${contingencyListIds} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
@@ -219,7 +220,7 @@ export function fetchContingencyCount(
         urlSearchParams;
 
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchJson(url, { signal: abortSignal });
 }
 
 export function executeCompositeModificationAction(
