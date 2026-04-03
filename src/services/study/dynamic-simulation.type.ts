@@ -6,15 +6,14 @@
  */
 import type { UUID } from 'node:crypto';
 
-export enum SolverTypeInfos {
+export enum SolverType {
     IDA = 'IDA',
     SIM = 'SIM',
 }
 
 type CommonSolverInfos = {
-    id: string;
-    name: string;
-    type: SolverTypeInfos;
+    id: UUID;
+    type: SolverType;
     fNormTolAlg: number;
     initialAddTolAlg: number;
     scStepTolAlg: number;
@@ -41,8 +40,7 @@ type CommonSolverInfos = {
 };
 
 type IdaSolverInfos = CommonSolverInfos & {
-    name: 'IDA';
-    type: SolverTypeInfos.IDA;
+    type: SolverType.IDA;
     order: number;
     initStep: number;
     minStep: number;
@@ -52,8 +50,7 @@ type IdaSolverInfos = CommonSolverInfos & {
 };
 
 type SimSolverInfos = CommonSolverInfos & {
-    name: 'SIM';
-    type: SolverTypeInfos.SIM;
+    type: SolverType.SIM;
     hMin: number;
     hMax: number;
     kReduceStep: number;
@@ -74,9 +71,10 @@ type SimSolverInfos = CommonSolverInfos & {
     minimumModeChangeTypeForAlgebraicRestorationInit: string;
 };
 
-type NetworkInfos = Record<string, number | string | boolean>;
+type NetworkInfos = Record<string, UUID | number | string | boolean>;
 
 type CurveInfos = {
+    id?: UUID;
     equipmentType?: string;
     equipmentId: string;
     variableId: string;
@@ -113,11 +111,12 @@ export type MappingInfos = {
 };
 
 export type DynamicSimulationParametersInfos = {
+    id?: UUID;
     provider?: string;
     startTime?: number;
     stopTime?: number;
     mapping?: string;
-    solverId: string;
+    solver: SolverType;
     solvers?: SolverInfos[];
     network?: NetworkInfos;
     curves?: CurveInfos[] | null;
