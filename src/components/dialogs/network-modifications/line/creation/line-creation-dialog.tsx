@@ -59,7 +59,7 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect, useState } from 'react';
-import { FieldErrors, useForm, useWatch } from 'react-hook-form';
+import { FieldErrors, useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { APPLICABILITY, FORM_LOADING_DELAY } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
@@ -165,7 +165,9 @@ const LineCreationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, setValue, control } = formMethods;
+    const { reset, setValue, watch } = formMethods;
+
+    const editSegmentValue = watch(LINE_SEGMENTS);
 
     const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
@@ -420,8 +422,6 @@ const LineCreationDialog = ({
             !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
-
-    const editSegmentValue = useWatch({ name: LINE_SEGMENTS, control }) ?? [];
 
     return (
         <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
