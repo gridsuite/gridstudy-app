@@ -692,7 +692,10 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             const impactedMapEquipmentTypes = impactedElementTypes?.filter((type: string) => {
                 return mapEquipmentsTypes.includes(type as EquipmentType);
             });
-            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
+            const hasDeletedMapEquipments = deletedEquipments?.some((d) =>
+                mapEquipmentsTypes.includes(d.equipmentType as unknown as EquipmentType)
+            );
+            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0 || hasDeletedMapEquipments;
             const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
 
             // @TODO restore this optimization after refactoring
@@ -710,16 +713,19 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             dispatch(setReloadMapNeeded(false));
             resetImpactedElementTypes();
             resetImpactedSubstationsIds();
+            resetDeletedEquipments();
             return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend).catch((error) =>
                 snackWithFallback(snackError, error)
             );
         },
         [
             impactedElementTypes,
+            deletedEquipments,
             impactedSubstationsIds,
             dispatch,
             resetImpactedElementTypes,
             resetImpactedSubstationsIds,
+            resetDeletedEquipments,
             reloadMapEquipments,
             snackError,
         ]
