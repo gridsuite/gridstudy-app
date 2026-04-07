@@ -11,7 +11,7 @@ import { useCallback, useState } from 'react';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import { ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
-import { Button, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
@@ -119,11 +119,10 @@ const LineSplitWithVoltageLevelForm = ({
                     {
                         <Button
                             onClick={openVoltageLevelDialog}
+                            size="small"
                             startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
                         >
-                            <Typography align="left">
-                                <FormattedMessage id="NewVoltageLevel" />
-                            </Typography>
+                            <FormattedMessage id="NewVoltageLevel" />
                         </Button>
                     }
                 </GridItem>

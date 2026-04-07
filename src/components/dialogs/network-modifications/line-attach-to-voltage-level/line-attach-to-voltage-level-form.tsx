@@ -21,7 +21,7 @@ import {
 } from 'components/utils/field-constants';
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
@@ -187,6 +187,7 @@ const LineAttachToVoltageLevelForm = ({
                             onClick={openAttachmentPointDialog}
                             // as equipmentId and equipmentName are synchronized to check if the icon is add or edit
                             // other attributes than id and name must be present
+                            size="small"
                             startIcon={
                                 attachmentPoint != null &&
                                 Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION) ? (
@@ -196,9 +197,7 @@ const LineAttachToVoltageLevelForm = ({
                                 )
                             }
                         >
-                            <Typography align="left">
-                                <FormattedMessage id="SpecifyAttachmentPoint" />
-                            </Typography>
+                            <FormattedMessage id="SpecifyAttachmentPoint" />
                         </Button>
                     }
                 </GridItem>
@@ -210,11 +209,10 @@ const LineAttachToVoltageLevelForm = ({
                     {
                         <Button
                             onClick={openVoltageLevelDialog}
+                            size="small"
                             startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
                         >
-                            <Typography align="left">
-                                <FormattedMessage id="NewVoltageLevel" />
-                            </Typography>
+                            <FormattedMessage id="NewVoltageLevel" />
                         </Button>
                     }
                 </GridItem>
@@ -225,10 +223,12 @@ const LineAttachToVoltageLevelForm = ({
                 <Box width="100%" />
                 <GridItem>
                     {
-                        <Button onClick={openLineDialog} startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}>
-                            <Typography align="left">
-                                <FormattedMessage id="AttachedLine" />
-                            </Typography>
+                        <Button
+                            onClick={openLineDialog}
+                            size="small"
+                            startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}
+                        >
+                            <FormattedMessage id="AttachedLine" />
                         </Button>
                     }
                 </GridItem>
