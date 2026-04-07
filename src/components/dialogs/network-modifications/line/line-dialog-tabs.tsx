@@ -41,7 +41,7 @@ const LineDialogTabs = ({
                     />
                 )}
                 <Tab
-                    label={<FormattedMessage id="LineCharacteristicsTab" />}
+                    label={<FormattedMessage id="CharacteristicsTab" />}
                     sx={getTabStyle(
                         tabIndexesWithError,
                         isModification
