@@ -11,7 +11,7 @@ import type {
     NodeCreatedEventData,
     NodeMovedEventData,
     NodesColumnPositionsChangedEventData,
-    StudyUpdateEventData,
+    TreeModelUpdateEventData,
 } from 'types/notification-types';
 import { NotificationType } from 'types/notification-types';
 import {
@@ -125,7 +125,7 @@ export const handleTreeModelUpdate = (
     dispatch: AppDispatch,
     studyUuid: UUID,
     rootNetworkUuid: UUID,
-    eventData: StudyUpdateEventData,
+    eventData: TreeModelUpdateEventData,
     currentNodeId?: UUID
 ): void => {
     switch (eventData.headers.updateType) {
@@ -150,11 +150,14 @@ export const handleTreeModelUpdate = (
         case NotificationType.SUBTREE_MOVED:
             fetchAndHandleSubtree(dispatch, studyUuid, eventData.headers.movedNode, eventData.headers.parentNode);
             break;
-        case NotificationType.NODES_COLUMN_POSITION_CHANGED: {
-            const { headers, payload } = eventData as NodesColumnPositionsChangedEventData;
-            dispatch(reorderNetworkModificationTreeNodes(headers.parentNode, JSON.parse(payload)));
+        case NotificationType.NODES_COLUMN_POSITION_CHANGED:
+            dispatch(
+                reorderNetworkModificationTreeNodes(
+                    eventData.headers.parentNode,
+                    JSON.parse((eventData as NodesColumnPositionsChangedEventData).payload)
+                )
+            );
             break;
-        }
         case NotificationType.NODES_DELETED:
             dispatch(networkModificationTreeNodesRemoved(eventData.headers.nodes));
             break;
