@@ -26,11 +26,11 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-const CurveParameters = ({ path }: { path: string }) => {
+const CurveParameters = ({ path, mappingPath }: { path: string; mappingPath: string }) => {
     const intl = useIntl();
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
 
-    const { control } = useFormContext();
+    const { control, getValues } = useFormContext();
     const { fields, append, remove } = useFieldArray({
         control,
         name: `${path}.${Curve.CURVES}`,
@@ -176,7 +176,14 @@ const CurveParameters = ({ path }: { path: string }) => {
                     </Box>
                 </Grid>
             </Grid>
-            {open && <CurveSelectorDialog open={open} onClose={handleClose} onSave={handleAppend} />}
+            {open && (
+                <CurveSelectorDialog
+                    open={open}
+                    onClose={handleClose}
+                    onSave={handleAppend}
+                    mapping={getValues(mappingPath)}
+                />
+            )}
         </>
     );
 };
