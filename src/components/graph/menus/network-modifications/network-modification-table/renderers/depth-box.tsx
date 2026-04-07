@@ -10,14 +10,14 @@ import { networkModificationTableStyles } from '../network-modification-table-st
 
 interface DepthBoxProps {
     firstLevel: boolean;
-    folder?: boolean;
+    displayAsFolder?: boolean;
 }
 
-const DepthBox = ({ firstLevel, folder = false }: DepthBoxProps) => {
+const DepthBox = ({ firstLevel, displayAsFolder = false }: DepthBoxProps) => {
     return (
         <Box
             sx={
-                folder
+                displayAsFolder
                     ? networkModificationTableStyles.folderDepthBox
                     : firstLevel
                       ? networkModificationTableStyles.firstLevelDepthBox
@@ -25,7 +25,7 @@ const DepthBox = ({ firstLevel, folder = false }: DepthBoxProps) => {
             }
         >
             <Box sx={networkModificationTableStyles.depthBoxLine} />
-            {folder && <Box sx={networkModificationTableStyles.depthBoxTick} />}
+            {displayAsFolder && <Box sx={networkModificationTableStyles.depthBoxTick} />}
         </Box>
     );
 };

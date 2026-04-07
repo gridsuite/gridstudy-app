@@ -50,7 +50,7 @@ const NameCell: FunctionComponent<{
             <DepthBox
                 key={i}
                 firstLevel={i === 0}
-                folder={isCompositeModification(row.original) && i === depthLevelCount - 1}
+                displayAsFolder={isCompositeModification(row.original) && i === depthLevelCount - 1}
             />
         ));
     };
