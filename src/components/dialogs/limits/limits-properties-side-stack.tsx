@@ -8,11 +8,10 @@ import { LimitsTagChip } from './limits-tag-chip';
 import { Autocomplete, AutocompleteRenderInputParams, Box, Stack, TextField, IconButton, Button } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
 import { Delete } from '@mui/icons-material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { LimitsProperty } from '../../../services/network-modification-types';
 import { useFieldArray } from 'react-hook-form';
-import { usePredefinedProperties } from '@gridsuite/commons-ui';
-import AddIcon from '@mui/icons-material/ControlPoint';
+import { AddButton, usePredefinedProperties } from '@gridsuite/commons-ui';
 
 export interface LimitsPropertiesSideStackProps {
     name: string;
@@ -89,17 +88,7 @@ export function LimitsPropertiesSideStack({ name, disabled }: Readonly<LimitsPro
                         showTooltip
                     />
                 ))}
-                {!isEditing && (
-                    <Button
-                        color="primary"
-                        sx={{ verticalAlign: 'center' }}
-                        onClick={() => setIsEditing(true)}
-                        startIcon={<AddIcon />}
-                        disabled={disabled}
-                    >
-                        <FormattedMessage id="AddProperty" />
-                    </Button>
-                )}
+                {!isEditing && <AddButton disabled={disabled} label="AddProperty" onClick={() => setIsEditing(true)} />}
             </Stack>
             {isEditing && !disabled ? (
                 <Box

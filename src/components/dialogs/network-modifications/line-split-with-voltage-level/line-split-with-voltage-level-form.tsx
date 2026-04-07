@@ -8,11 +8,7 @@
 import Grid from '@mui/material/Grid';
 import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/field-constants';
 import { useCallback, useState } from 'react';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import EditIcon from '@mui/icons-material/Edit';
-import { ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
-import { Button } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { AddButton, AddButtonMode, ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants';
@@ -116,15 +112,11 @@ const LineSplitWithVoltageLevelForm = ({
             <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
                 <GridItem>
-                    {
-                        <Button
-                            onClick={openVoltageLevelDialog}
-                            size="small"
-                            startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
-                        >
-                            <FormattedMessage id="NewVoltageLevel" />
-                        </Button>
-                    }
+                    <AddButton
+                        label="NewVoltageLevel"
+                        onClick={openVoltageLevelDialog}
+                        mode={isVoltageLevelEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                    />
                 </GridItem>
             </Grid>
             <GridSection title="Line1" />

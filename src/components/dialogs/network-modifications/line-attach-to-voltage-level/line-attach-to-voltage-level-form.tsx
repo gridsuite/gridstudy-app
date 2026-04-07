@@ -19,12 +19,9 @@ import {
     SUBSTATION_CREATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
-import { ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
-import { Box, Button } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import EditIcon from '@mui/icons-material/Edit';
+import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
+import { AddButton, ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
+import { Box } from '@mui/material';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
@@ -40,6 +37,7 @@ import {
 } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
+import { AddButtonMode } from '@gridsuite/commons-ui/components/addButton/AddButton';
 
 interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
@@ -173,6 +171,13 @@ const LineAttachToVoltageLevelForm = ({
         />
     );
 
+    // as equipmentId and equipmentName are synchronized to check if the icon is add or edit
+    // other attributes than id and name must be present
+    const hasSubstationCreation = useMemo(
+        () => attachmentPoint != null && Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION),
+        [attachmentPoint]
+    );
+
     return (
         <>
             <GridSection title="LineToAttachTo" />
@@ -182,39 +187,22 @@ const LineAttachToVoltageLevelForm = ({
                 <GridItem>{attachmentPointIdField}</GridItem>
                 <GridItem>{attachmentPointNameField}</GridItem>
                 <GridItem>
-                    {
-                        <Button
-                            onClick={openAttachmentPointDialog}
-                            // as equipmentId and equipmentName are synchronized to check if the icon is add or edit
-                            // other attributes than id and name must be present
-                            size="small"
-                            startIcon={
-                                attachmentPoint != null &&
-                                Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION) ? (
-                                    <EditIcon />
-                                ) : (
-                                    <AddIcon />
-                                )
-                            }
-                        >
-                            <FormattedMessage id="SpecifyAttachmentPoint" />
-                        </Button>
-                    }
+                    <AddButton
+                        onClick={openAttachmentPointDialog}
+                        mode={hasSubstationCreation ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                        label="SpecifyAttachmentPoint"
+                    />
                 </GridItem>
             </Grid>
             <GridSection title="VOLTAGE_LEVEL" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
                 <GridItem>
-                    {
-                        <Button
-                            onClick={openVoltageLevelDialog}
-                            size="small"
-                            startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
-                        >
-                            <FormattedMessage id="NewVoltageLevel" />
-                        </Button>
-                    }
+                    <AddButton
+                        onClick={openVoltageLevelDialog}
+                        mode={isVoltageLevelEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                        label="NewVoltageLevel"
+                    />
                 </GridItem>
             </Grid>
             <GridSection title="AttachedLine" />
@@ -222,15 +210,11 @@ const LineAttachToVoltageLevelForm = ({
                 <GridItem>{lineToIdField}</GridItem>
                 <Box width="100%" />
                 <GridItem>
-                    {
-                        <Button
-                            onClick={openLineDialog}
-                            size="small"
-                            startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}
-                        >
-                            <FormattedMessage id="AttachedLine" />
-                        </Button>
-                    }
+                    <AddButton
+                        onClick={openLineDialog}
+                        mode={lineToEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                        label="AttachedLine"
+                    />
                 </GridItem>
             </Grid>
             <GridSection title="Line1" />
