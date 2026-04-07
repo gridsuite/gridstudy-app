@@ -187,6 +187,18 @@ export const DROP_INDICATOR_BOTTOM = 'inset 0 -2px 0 #90caf9';
 export const DROP_FORBIDDEN_INDICATOR_TOP = 'inset 0 2px 0 #FF3636';
 export const DROP_FORBIDDEN_INDICATOR_BOTTOM = 'inset 0 -2px 0 #FF3636';
 
+function getRowBackgroundColor(isHighlighted: boolean, isComposite: boolean, theme: Theme) {
+    if (isHighlighted) {
+        return HIGHLIGHT_COLOR_BASE;
+    }
+    if (!isComposite) {
+        return 'transparent';
+    }
+    return theme.palette.mode === 'light'
+        ? darken(theme.palette.background.paper, 0.04)
+        : lighten(theme.palette.background.paper, 0.08);
+}
+
 export const createRowSx = (
     theme: Theme,
     isHighlighted: boolean,
@@ -202,13 +214,7 @@ export const createRowSx = (
     width: '100%',
     height: `${virtualRow.size}px`,
     transform: `translateY(${virtualRow.start}px)`,
-    backgroundColor: isHighlighted
-        ? HIGHLIGHT_COLOR_BASE
-        : isComposite
-          ? theme.palette.mode === 'light'
-              ? darken(theme.palette.background.paper, 0.04)
-              : lighten(theme.palette.background.paper, 0.08)
-          : 'transparent',
+    backgroundColor: getRowBackgroundColor(isHighlighted, isComposite, theme),
     opacity: isDragging ? DRAG_OPACITY : 1,
     '&:hover': {
         backgroundColor: isHighlighted ? HIGHLIGHT_COLOR_HOVER : ROW_HOVER_COLOR,
