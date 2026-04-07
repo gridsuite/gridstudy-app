@@ -21,6 +21,9 @@ import {
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     reorderNetworkModificationTreeNodes,
+    removeNotificationByNode,
+    resetLogsFilter,
+    resetLogsPagination,
 } from '../redux/actions';
 import type { AppDispatch } from '../redux/store';
 import {
@@ -56,7 +59,7 @@ export const refreshStashedNodes = (studyUuid: UUID, setNodesToRestore: Dispatch
     });
 };
 
-export const fetchAndDispatchAddedNode = (
+const fetchAndDispatchAddedNode = (
     dispatch: AppDispatch,
     studyUuid: UUID,
     currentRootNetworkUuid: UUID,
@@ -76,7 +79,7 @@ export const fetchAndDispatchAddedNode = (
     );
 };
 
-export const fetchAndDispatchMovedNode = (
+const fetchAndDispatchMovedNode = (
     dispatch: AppDispatch,
     studyUuid: UUID,
     currentRootNetworkUuid: UUID,
@@ -96,12 +99,7 @@ export const fetchAndDispatchMovedNode = (
     );
 };
 
-export const fetchAndHandleSubtree = (
-    dispatch: AppDispatch,
-    studyUuid: UUID,
-    rootNodeId: UUID,
-    parentNode: UUID
-): void => {
+const fetchAndHandleSubtree = (dispatch: AppDispatch, studyUuid: UUID, rootNodeId: UUID, parentNode: UUID): void => {
     fetchNetworkModificationSubtree(studyUuid, rootNodeId).then((nodes: NetworkModificationNodeData | RootNodeData) => {
         dispatch(networkModificationHandleSubtree(nodes, parentNode));
     });
@@ -127,12 +125,18 @@ export const handleTreeModelUpdate = (
     dispatch: AppDispatch,
     studyUuid: UUID,
     rootNetworkUuid: UUID,
-    eventData: StudyUpdateEventData
+    eventData: StudyUpdateEventData,
+    currentNodeId?: UUID
 ): void => {
     switch (eventData.headers.updateType) {
         case NotificationType.NODE_BUILD_STATUS_UPDATED:
             if (eventData.headers.rootNetworkUuid !== rootNetworkUuid) break;
             fetchAndDispatchUpdatedNodes(dispatch, studyUuid, rootNetworkUuid, eventData.headers.nodes);
+            if (currentNodeId && eventData.headers.nodes.includes(currentNodeId)) {
+                dispatch(removeNotificationByNode([currentNodeId]));
+                dispatch(resetLogsFilter());
+                dispatch(resetLogsPagination());
+            }
             break;
         case NotificationType.NODE_CREATED:
             fetchAndDispatchAddedNode(dispatch, studyUuid, rootNetworkUuid, eventData as NodeCreatedEventData);
@@ -156,11 +160,12 @@ export const handleTreeModelUpdate = (
             break;
         case NotificationType.NODES_UPDATED:
             fetchAndDispatchUpdatedNodes(dispatch, studyUuid, rootNetworkUuid, eventData.headers.nodes);
+            if (currentNodeId && eventData.headers.nodes.includes(currentNodeId)) {
+                dispatch(removeNotificationByNode([currentNodeId]));
+            }
             break;
         case NotificationType.NODE_EDITED:
-            fetchNetworkModificationTreeNode(studyUuid, eventData.headers.node, rootNetworkUuid).then((node) =>
-                dispatch(networkModificationTreeNodesUpdated([node]))
-            );
+            fetchAndDispatchUpdatedNodes(dispatch, studyUuid, rootNetworkUuid, [eventData.headers.node]);
             break;
         default:
             break;

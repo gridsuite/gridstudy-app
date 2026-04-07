@@ -20,7 +20,6 @@ import { useStudyScopedNavigationKeys } from './use-study-scoped-navigation-keys
 const useStudyNavigationSync = () => {
     const syncEnabled = useSelector((state: AppState) => state.syncEnabled);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const dispatch = useDispatch();
@@ -30,13 +29,10 @@ const useStudyNavigationSync = () => {
     const updateRootNetworkUuid = useCallback(
         (uuid: UUID | null) => {
             if (uuid !== null && uuid !== currentRootNetworkUuid) {
-                const rootNetwork = rootNetworks.find((rn) => rn.rootNetworkUuid === uuid);
-                if (rootNetwork) {
-                    dispatch(setCurrentRootNetworkUuid(uuid));
-                }
+                dispatch(setCurrentRootNetworkUuid(uuid));
             }
         },
-        [dispatch, currentRootNetworkUuid, rootNetworks]
+        [dispatch, currentRootNetworkUuid]
     );
 
     const updateTreeNode = useCallback(

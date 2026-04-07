@@ -41,7 +41,7 @@ import { getFirstNodeOfType } from './graph/util/model-functions';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
-import { handleTreeModelUpdate } from './network-modification-tree-pane-event-handlers';
+import { useTreeModelSync } from '../hooks/use-tree-model-sync';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
@@ -152,6 +152,7 @@ export function StudyContainer() {
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     useExportNotification();
+    useTreeModelSync(studyUuid);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -270,16 +271,8 @@ export function StudyContainer() {
                 return; // here, we do not want to update the redux state
             }
             displayErrorNotifications(eventData);
-            // Handle tree model updates globally so all workspaces (including those without a tree panel)
-            // stay synchronized. This ensures navigation sync works across browser tabs regardless of
-            // which panels are open in each tab's active workspace.
-            if (!currentRootNetworkUuidRef.current) {
-                return; // root networks not yet loaded, skip tree sync
-            }
-            handleTreeModelUpdate(dispatch, studyUuid, currentRootNetworkUuidRef.current, eventData);
         },
-        // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications, sendAlert, studyUuid]
+        [displayErrorNotifications, sendAlert]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyUpdate });
