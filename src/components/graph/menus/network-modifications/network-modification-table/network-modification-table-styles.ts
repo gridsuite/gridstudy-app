@@ -150,13 +150,13 @@ export const networkModificationTableStyles = {
         alignSelf: 'stretch',
         position: 'relative',
     },
-    folderDepthBox: () => ({
+    folderDepthBox: {
         width: `${1 + DEPTH_CELL_WIDTH / 2}px`,
         display: 'flex',
         justifyContent: 'right',
         alignSelf: 'stretch',
         position: 'relative',
-    }),
+    },
     depthBox: {
         width: `${DEPTH_CELL_WIDTH / 2}px`,
         display: 'flex',
