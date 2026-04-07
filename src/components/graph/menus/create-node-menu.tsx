@@ -68,6 +68,7 @@ interface CreateNodeMenuProps {
     handleCutSubtree: (nodeId: UUID | null) => void;
     handleCopySubtree: (nodeId: UUID) => void;
     handlePasteSubtree: (referenceNodeId: string) => void;
+    handleRenameNode: () => void;
     handleOpenRestoreNodesDialog: (nodeId: UUID) => void;
     disableRestoreNodes: boolean;
 }
@@ -127,6 +128,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleCutSubtree,
     handleCopySubtree,
     handlePasteSubtree,
+    handleRenameNode,
     handleOpenRestoreNodesDialog,
     disableRestoreNodes,
 }) => {
@@ -158,6 +160,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
 
     function createSecuritySequence() {
         handleSecuritySequenceCreation(activeNode);
+        handleClose();
+    }
+
+    function renameNode() {
+        handleRenameNode();
         handleClose();
     }
 
@@ -360,6 +367,12 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             action: () => unbuildNode(),
             id: 'unbuildNode',
             disabled: !isNodeUnbuildingAllowed(),
+            withDivider: true,
+        },
+        RENAME_NODE: {
+            onRoot: false,
+            action: () => renameNode(),
+            id: 'renameNode',
             withDivider: true,
         },
         COPY_MODIFICATION_NODE: {
