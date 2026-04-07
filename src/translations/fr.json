@@ -8,9 +8,7 @@
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
-    "filter": "Filtre",
-    "enable": "Activer",
-    "disable": "Désactiver",
+    "filter": "Filtre", 
 
     "deleteStudy": "Supprimer l'étude",
     "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
@@ -1359,7 +1357,6 @@
     "highVoltageLimit": "Limite tension haute (kV)",
     "SingleEquipment": "Un ouvrage",
     "MultipleEquipment": "Plusieurs ouvrages",
-    "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre",
     "ratedU1": "Tension d'enroulement 1 (kV)",
     "ratedU2": "Tension d'enroulement 2 (kV)",
     "linearShuntCompensators": "MCS linéaires",
@@ -1610,11 +1607,6 @@
     "voltage-level": "poste",
     "substation": "site",
     "notValidVoltageLevel": "Poste invalide pour l'ajout de section/tronçon. Veuillez re-créer le poste.",
-    "BUILT": "Réalisé",
-    "BUILT_WITH_WARNING": "Alertes",
-    "BUILT_WITH_ERROR": "Erreurs",
-    "NOT_BUILT": "Non réalisé",
-    "BUILDING": "En cours de réalisation",
     "allBusbarSections": "Tous",
     "allOptionHelperText": "Tous les jeux de barres n'ont pas les memes sections (index et nombre)",
     "enableNavigationSync": "Activer la navigation dans l'arbre en multi-onglets",
@@ -1717,5 +1709,13 @@
     "Reload": "Recharger",
     "CopyError": "Copier l'erreur",
     "Copied": "Copiée",
-    "downloadNetworkModifications" : "Télécharger les modifications"
+    "downloadNetworkModifications": "Télécharger les modifications",
+    "moveToTrash": "Mettre à la corbeille",
+    "visualizedRootNetwork": "Réseau racine visualisé : {tag}",
+    "addDescription": "Ajouter une description",
+    "activateModification": "Activer la modification réseau",
+    "deactivateModification": "Désactiver la modification réseau",
+    "deselectModification": "Désélectionner la modification",
+    "selectModification": "Sélectionner la modification",
+    "moveModification": "Déplacer la modification"
 }

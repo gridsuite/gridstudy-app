@@ -7,7 +7,6 @@
 
 import { ExpertFilter } from 'services/study/filter';
 import {
-    EQUIPMENT_TYPES,
     EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE,
     EQUIPMENTS_WITH_ONE_SUBSTATION,
     EQUIPMENTS_WITH_THREE_NOMINAL_VOLTAGES,
@@ -15,24 +14,24 @@ import {
     EQUIPMENTS_WITH_TWO_SUBSTATIONS,
 } from '../../../../../utils/equipment-types';
 import { CombinatorType, OperatorType } from '../../../../filter/expert/expert-filter.type';
-import { DataType, FieldType } from '@gridsuite/commons-ui';
+import { DataType, EquipmentType, FieldType } from '@gridsuite/commons-ui';
 
 export const CURVE_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.GENERATOR,
-    EQUIPMENT_TYPES.LOAD,
-    EQUIPMENT_TYPES.BUS,
-    EQUIPMENT_TYPES.BUSBAR_SECTION,
+    EquipmentType.GENERATOR,
+    EquipmentType.LOAD,
+    EquipmentType.BUS,
+    EquipmentType.BUSBAR_SECTION,
 ];
 
 // this function is used to redirect an equipment type to the referenced equipment type which is used in the default model.
-export const getReferencedEquipmentTypeForModel = (equipmentType: EQUIPMENT_TYPES) => {
+export const getReferencedEquipmentTypeForModel = (equipmentType: EquipmentType) => {
     // particular case, BUSBAR_SECTION and BUS use the same default model for Bus
-    return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION ? EQUIPMENT_TYPES.BUS : equipmentType;
+    return equipmentType === EquipmentType.BUSBAR_SECTION ? EquipmentType.BUS : equipmentType;
 };
 
-// this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS
+// this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EquipmentType.BUS
 export const getTopologyKindIfNecessary = (equipmentType: string) => {
-    return equipmentType === EQUIPMENT_TYPES.BUS
+    return equipmentType === EquipmentType.BUS
         ? {
               topologyKind: 'BUS_BREAKER',
           }
@@ -40,13 +39,13 @@ export const getTopologyKindIfNecessary = (equipmentType: string) => {
 };
 
 const buildSubstationPropertiesRules = (
-    equipmentType: EQUIPMENT_TYPES,
+    equipmentType: EquipmentType,
     substationProperties: Record<string, string[]>,
     rules: any[]
 ) => {
     if (EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType)) {
         let propertyField = FieldType.SUBSTATION_PROPERTIES;
-        if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+        if (equipmentType === EquipmentType.SUBSTATION) {
             propertyField = FieldType.FREE_PROPERTIES;
         }
 
@@ -92,7 +91,7 @@ const buildSubstationPropertiesRules = (
 };
 
 export const buildExpertRules = (
-    equipmentType: EQUIPMENT_TYPES,
+    equipmentType: EquipmentType,
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined,
@@ -207,10 +206,10 @@ export const buildExpertRules = (
     // create rule IN or VOLTAGE_LEVEL_ID IN or SUBSTATION_ID IN for ids
     if (ids && Object.keys(ids).length) {
         for (const eqType in ids) {
-            if ((eqType as EQUIPMENT_TYPES) === EQUIPMENT_TYPES.SUBSTATION) {
+            if (eqType === EquipmentType.SUBSTATION) {
                 if (EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType)) {
                     const idsRule = {
-                        field: equipmentType !== EQUIPMENT_TYPES.SUBSTATION ? FieldType.SUBSTATION_ID : FieldType.ID,
+                        field: equipmentType !== EquipmentType.SUBSTATION ? FieldType.SUBSTATION_ID : FieldType.ID,
                         operator: OperatorType.IN,
                         values: ids[eqType],
                         dataType: DataType.STRING,
@@ -237,11 +236,11 @@ export const buildExpertRules = (
                     };
                     rules.push(idsRule);
                 }
-            } else if ((eqType as EQUIPMENT_TYPES) === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
+            } else if (eqType === EquipmentType.VOLTAGE_LEVEL) {
                 if (EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE.includes(equipmentType)) {
                     const idsRule = {
                         field:
-                            equipmentType !== EQUIPMENT_TYPES.VOLTAGE_LEVEL ? FieldType.VOLTAGE_LEVEL_ID : FieldType.ID,
+                            equipmentType !== EquipmentType.VOLTAGE_LEVEL ? FieldType.VOLTAGE_LEVEL_ID : FieldType.ID,
                         operator: OperatorType.IN,
                         values: ids[eqType],
                         dataType: DataType.STRING,
@@ -317,7 +316,7 @@ export const buildExpertRules = (
  *      A new endpoint is now available to evaluate a global-filter on a network. To migrate to it.
  */
 export const buildExpertFilter = (
-    equipmentType: EQUIPMENT_TYPES,
+    equipmentType: EquipmentType,
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined,

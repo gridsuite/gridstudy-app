@@ -8,9 +8,7 @@
 
     "button.delete": "Delete",
     "button.continue": "Continue",
-    "filter": "Filter",
-    "enable": "Enable",
-    "disable": "Disable",
+    "filter": "Filter", 
 
     "deleteStudy": "Delete Study",
     "studyNameDidNotMatchMsg": "The given study name did not match with ",
@@ -1360,7 +1358,6 @@
     "highVoltageLimit": "High voltage limit (kV)",
     "SingleEquipment": "Single equipment",
     "MultipleEquipment": "Multiple equipment",
-    "DeleteEquipmentByFilter": "Delete equipment by filter",
     "ratedU1": "Rated voltage 1 (kV)",
     "ratedU2": "Rated voltage 2 (kV)",
     "linearShuntCompensators": "Linear shunt compensators",
@@ -1615,11 +1612,6 @@
     "voltage-level": "voltage level",
     "substation": "substation",
     "notValidVoltageLevel": "Invalid voltage level to add busbar section. Please re-create the voltage level.",
-    "BUILT": "Built",
-    "BUILT_WITH_WARNING": "Warnings",
-    "BUILT_WITH_ERROR": "Errors",
-    "NOT_BUILT": "Not built",
-    "BUILDING": "Building",
     "allBusbarSections": "All",
     "allOptionHelperText": "Busbars have different sections (number or index)",
     "enableNavigationSync": "Enable multi-tab tree navigation",
@@ -1724,5 +1716,13 @@
     "Reload": "Reload",
     "CopyError": "Copy Error",
     "Copied": "Copied",
-    "downloadNetworkModifications" : "Download modifications"
-}
+    "downloadNetworkModifications" : "Download modifications",
+    "moveToTrash": "Move to trash",
+    "visualizedRootNetwork": "Visualized root network : {tag}",
+    "addDescription" : "Add description",
+    "activateModification" : "Activate network modification",
+    "deactivateModification" : "Deactivate network modification",
+    "deselectModification": "Deselect modification",
+    "selectModification": "Select modification",
+    "moveModification": "Move modification"
+} 
