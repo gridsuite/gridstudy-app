@@ -24,6 +24,7 @@ import { isNodeExists } from 'services/study';
 import { DESCRIPTION, NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { updateTreeNode } from 'services/study/tree-subtree';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 export const MAX_CHAR_NODE_DESCRIPTION = 10000;
 
@@ -36,6 +37,7 @@ interface NetworkModificationNodeDialogProps {
     open: boolean;
     onClose: () => void;
     titleId: string;
+    currentNode?: CurrentTreeNode;
 }
 
 const getSchema = () =>
@@ -56,9 +58,11 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
     open,
     onClose,
     titleId,
+    currentNode,
     ...dialogProps
 }) => {
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
+    const nodeForRename = currentNode ?? currentTreeNode;
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const formMethods = useForm<FormData>({
@@ -74,11 +78,11 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
     useEffect(() => {
         if (open) {
             reset({
-                [NAME]: currentTreeNode?.data.label ?? '',
-                [DESCRIPTION]: currentTreeNode?.data.description ?? '',
+                [NAME]: nodeForRename?.data.label ?? '',
+                [DESCRIPTION]: nodeForRename?.data.description ?? '',
             });
         }
-    }, [open, reset, currentTreeNode?.data.label, currentTreeNode?.data.description]);
+    }, [open, reset, nodeForRename?.data.label, nodeForRename?.data.description]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -87,15 +91,15 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
     const handleSave = useCallback(
         (values: FormData) => {
             updateTreeNode(studyUuid, {
-                id: currentTreeNode?.id,
-                type: currentTreeNode?.type,
+                id: nodeForRename?.id,
+                type: nodeForRename?.type,
                 name: values[NAME],
                 description: values[DESCRIPTION],
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'NodeUpdateError' });
             });
         },
-        [currentTreeNode?.id, currentTreeNode?.type, snackError, studyUuid]
+        [nodeForRename?.id, nodeForRename?.type, snackError, studyUuid]
     );
 
     const isFormValid = isObjectEmpty(errors);

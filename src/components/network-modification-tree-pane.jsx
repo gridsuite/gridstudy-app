@@ -516,6 +516,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     open={openRenameNodeDialog}
                     onClose={() => setOpenRenameNodeDialog(false)}
                     titleId="editNode"
+                    currentNode={activeNode}
                 />
             )}
             {openRestoreDialog && (
