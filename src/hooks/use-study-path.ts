@@ -17,7 +17,7 @@ import {
 import { computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import type { UUID } from 'node:crypto';
-import { isMetadataUpdatedNotification, parseEventData, StudyUpdateEventData } from 'types/notification-types';
+import { isMetadataUpdatedNotification, parseEventData, CommonStudyEventData } from 'types/notification-types';
 
 export default function useStudyPath(studyUuid: UUID | null) {
     const [studyName, setStudyName] = useState<string>();
@@ -112,7 +112,7 @@ export default function useStudyPath(studyUuid: UUID | null) {
 
     const handleEvent = useCallback(
         (event: MessageEvent) => {
-            const eventData = parseEventData<StudyUpdateEventData>(event);
+            const eventData = parseEventData<CommonStudyEventData>(event);
             if (eventData?.headers) {
                 if (isMetadataUpdatedNotification(eventData)) {
                     fetchStudyPath();

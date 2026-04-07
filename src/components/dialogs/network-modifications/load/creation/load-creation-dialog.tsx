@@ -36,7 +36,7 @@ import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+
 import { createLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -102,7 +102,7 @@ export function LoadCreationDialog({
 
     const searchCopy = useFormSearchCopy((data) => {
         reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
-    }, EQUIPMENT_TYPES.LOAD);
+    }, EquipmentType.LOAD);
 
     const fetchBusesOrBusbarSections = useCallback(
         (voltageLevelId: string) =>

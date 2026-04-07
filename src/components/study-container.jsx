@@ -37,10 +37,10 @@ import {
     useIntlRef,
     useNotificationsListener,
     useSnackMessage,
+    BuildStatus,
 } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
-import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchNetworkModificationTree, fetchNetworkModificationTreeNode } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
@@ -338,9 +338,9 @@ export function StudyContainer() {
                     if (initIndexationStatus === RootNetworkIndexationStatus.INDEXED) {
                         firstSelectedNode =
                             getFirstNodeOfType(tree, NodeType.NETWORK_MODIFICATION, [
-                                BUILD_STATUS.BUILT,
-                                BUILD_STATUS.BUILT_WITH_WARNING,
-                                BUILD_STATUS.BUILT_WITH_ERROR,
+                                BuildStatus.BUILT,
+                                BuildStatus.BUILT_WITH_WARNING,
+                                BuildStatus.BUILT_WITH_ERROR,
                             ]) || firstSelectedNode;
                     }
 
