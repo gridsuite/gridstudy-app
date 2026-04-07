@@ -29,7 +29,7 @@ import {
     isCompositeModification,
     moveSubModificationInTree,
 } from './utils';
-import { UUID } from 'node:crypto';
+import type { UUID } from 'node:crypto';
 
 interface UseModificationsDragAndDropParams {
     rows: Row<ComposedModificationMetadata>[];
