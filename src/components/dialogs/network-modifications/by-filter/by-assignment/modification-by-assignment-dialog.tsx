@@ -17,6 +17,7 @@ import {
     snackWithFallback,
     useSnackMessage,
     type ModificationByAssignmentFormData,
+    ModificationByAssignmentDto,
 } from '@gridsuite/commons-ui';
 import { FC, useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
@@ -26,10 +27,10 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { modifyByAssignment } from '../../../../../services/study/network-modifications';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { ModificationByAssignmentInfos } from '../../../../../services/network-modification-types';
+import { UUID } from 'node:crypto';
 
 type ModificationByAssignmentDialogProps = NetworkModificationDialogProps & {
-    editData?: ModificationByAssignmentInfos;
+    editData?: ModificationByAssignmentDto & { uuid: UUID };
 };
 
 const ModificationByAssignmentDialog: FC<ModificationByAssignmentDialogProps> = ({
@@ -70,11 +71,8 @@ const ModificationByAssignmentDialog: FC<ModificationByAssignmentDialogProps> = 
 
     const onSubmit = useCallback(
         (formData: ModificationByAssignmentFormData) => {
-            const dto: ModificationByAssignmentInfos = {
-                ...modificationByAssignmentFormToDto(formData),
-                uuid: editData?.uuid ?? null,
-            };
-            modifyByAssignment(studyUuid, currentNodeUuid, dto).catch((error) => {
+            const dto = modificationByAssignmentFormToDto(formData);
+            modifyByAssignment(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'ModifyByAssignment' });
             });
         },

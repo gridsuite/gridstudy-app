@@ -13,7 +13,6 @@ import {
     AssignmentDataType,
     AssignmentFieldValue,
     AttributeModification,
-    ModificationByAssignmentDto,
     ModificationType,
     Property,
 } from '@gridsuite/commons-ui';
@@ -788,10 +787,6 @@ export interface ByFormulaModificationInfos {
     identifiableType: string;
     formulaInfosList: FormulaInfos[];
 }
-
-export type ModificationByAssignmentInfos = ModificationByAssignmentDto & {
-    uuid: UUID | null;
-};
 
 export interface LCCCreationInfo {
     studyUuid: string;

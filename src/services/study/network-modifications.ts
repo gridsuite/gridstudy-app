@@ -23,6 +23,7 @@ import {
     VoltageLevelModificationDto,
     ByFilterDeletionDto,
     EquipmentType,
+    ModificationByAssignmentDto,
 } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -46,7 +47,6 @@ import {
     LineCreationInfos,
     LineModificationInfos,
     LinesAttachToSplitLinesInfo,
-    ModificationByAssignmentInfos,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfos,
@@ -1805,18 +1805,23 @@ export function modifyByFormula(
     });
 }
 
-export function modifyByAssignment(studyUuid: string, nodeUuid: UUID, dto: ModificationByAssignmentInfos) {
+export function modifyByAssignment(
+    studyUuid: string,
+    nodeUuid: UUID,
+    modificationUuid: string | undefined,
+    dto: ModificationByAssignmentDto
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (dto.uuid) {
-        modificationUrl += '/' + safeEncodeURIComponent(dto.uuid);
+    if (modificationUuid) {
+        modificationUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating modification by assignment');
     } else {
         console.info('Creating modification by assignment');
     }
 
     return backendFetchText(modificationUrl, {
-        method: dto.uuid ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
