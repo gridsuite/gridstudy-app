@@ -53,7 +53,11 @@ function getWorkspaceLocalState(studyUuid: UUID, workspaceId: UUID): WorkspaceLo
 }
 
 function saveWorkspaceLocalState(studyUuid: UUID, workspaceId: UUID, state: WorkspaceLocalState): void {
-    localStorage.setItem(getKey(studyUuid, workspaceId), JSON.stringify(state));
+    try {
+        localStorage.setItem(getKey(studyUuid, workspaceId), JSON.stringify(state));
+    } catch {
+        // Ignore persistence failure to keep UI flows functional
+    }
 }
 
 export function getLocalStoragePanelStates(studyUuid: UUID, workspaceId: UUID): Record<UUID, PanelLocalState> {
@@ -108,5 +112,9 @@ export function deleteLocalStoragePanelStates(studyUuid: UUID, workspaceId: UUID
 }
 
 export function clearLocalStorageWorkspaceState(studyUuid: UUID, workspaceId: UUID): void {
-    localStorage.removeItem(getKey(studyUuid, workspaceId));
+    try {
+        localStorage.removeItem(getKey(studyUuid, workspaceId));
+    } catch {
+        // Ignore cleanup failure
+    }
 }
