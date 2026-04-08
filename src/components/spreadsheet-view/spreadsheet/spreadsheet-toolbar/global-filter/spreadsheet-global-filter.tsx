@@ -11,8 +11,8 @@ import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector, {
     type GlobalFilterSelectorProps,
 } from '../../../../results/common/global-filter/global-filter-selector';
-import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { TableType } from '../../../../../types/custom-aggrid-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;
@@ -34,8 +34,8 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     const equipmentTypes = useMemo<GlobalFilterSelectorProps['filterableEquipmentTypes']>(() => {
         return [
             ...(tableDefinition.type === SpreadsheetEquipmentType.BRANCH
-                ? [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]
-                : [tableDefinition.type as unknown as EQUIPMENT_TYPES]),
+                ? [EquipmentType.LINE, EquipmentType.TWO_WINDINGS_TRANSFORMER]
+                : [tableDefinition.type as unknown as EquipmentType]),
         ];
     }, [tableDefinition.type]);
 

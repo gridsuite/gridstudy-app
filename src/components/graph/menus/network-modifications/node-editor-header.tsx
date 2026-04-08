@@ -110,6 +110,7 @@ export const NodeEditorHeader = () => {
                     open={openEditDialog}
                     onClose={() => setOpenEditDialog(false)}
                     titleId="editNode"
+                    node={currentTreeNode}
                 />
             </Box>
 

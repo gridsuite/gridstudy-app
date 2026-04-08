@@ -52,7 +52,6 @@ import { PanelType } from '../workspace/types/workspace.types';
 import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { deleteEquipment } from '../../services/study/network-modifications';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
@@ -62,7 +61,12 @@ import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
 import { isReactFlowRootNodeData } from 'redux/utils';
-import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
+import {
+    isLoadflowResultNotification,
+    isRootNetworksUpdatedNotification,
+    parseEventData,
+    CommonStudyEventData,
+} from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
@@ -688,7 +692,10 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             const impactedMapEquipmentTypes = impactedElementTypes?.filter((type: string) => {
                 return mapEquipmentsTypes.includes(type as EquipmentType);
             });
-            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
+            const hasDeletedMapEquipments = deletedEquipments?.some((d) =>
+                mapEquipmentsTypes.includes(d.equipmentType as unknown as EquipmentType)
+            );
+            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0 || hasDeletedMapEquipments;
             const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
 
             // @TODO restore this optimization after refactoring
@@ -706,16 +713,19 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             dispatch(setReloadMapNeeded(false));
             resetImpactedElementTypes();
             resetImpactedSubstationsIds();
+            resetDeletedEquipments();
             return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend).catch((error) =>
                 snackWithFallback(snackError, error)
             );
         },
         [
             impactedElementTypes,
+            deletedEquipments,
             impactedSubstationsIds,
             dispatch,
             resetImpactedElementTypes,
             resetImpactedSubstationsIds,
+            resetDeletedEquipments,
             reloadMapEquipments,
             snackError,
         ]
@@ -744,8 +754,8 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             if (!isInitialized) {
                 return;
             }
-            const eventData: unknown = JSON.parse(event.data);
-            if (isLoadflowResultNotification(eventData)) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isLoadflowResultNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
                 const nodeUuidFromNotification = eventData.headers.node;
                 if (
@@ -766,8 +776,8 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             if (!isInitialized) {
                 return;
             }
-            const eventData: unknown = JSON.parse(event.data);
-            if (isRootNetworksUpdatedNotification(eventData)) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isRootNetworksUpdatedNotification(eventData)) {
                 const rootNetworkUuidsFromNotification = eventData.headers.rootNetworkUuids;
                 if (rootNetworkUuidsFromNotification.includes(currentRootNetworkUuid)) {
                     setIsInitialized(false);
@@ -972,7 +982,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                         <GenericPopoverContent
                             equipmentInfos={equipmentInfos}
                             loadFlowStatus={loadFlowStatus}
-                            equipmentType={EQUIPMENT_TYPES.LINE}
+                            equipmentType={EquipmentType.LINE}
                         />
                     )}
                 </GenericEquipmentPopover>

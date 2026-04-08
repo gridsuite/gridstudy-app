@@ -10,11 +10,11 @@ import GlobalFilterAutocomplete from './global-filter-autocomplete';
 import { FilterType } from '../utils';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 export type GlobalFilterSelectorProps = {
     filterCategories?: FilterType[];
-    filterableEquipmentTypes: EQUIPMENT_TYPES[];
+    filterableEquipmentTypes: EquipmentType[];
     genericFiltersStrictMode?: boolean;
     tableType: TableType;
     tableUuid?: UUID;
