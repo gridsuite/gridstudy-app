@@ -35,7 +35,7 @@ const ModificationRow = memo<ModificationRowProps>(
     ({ virtualRow, row, handleCellClick, isRowDragDisabled, highlightedModificationUuid }) => {
         const isHighlighted = row.original.uuid === highlightedModificationUuid;
         const theme = useTheme();
-        const isExpanded = row.getIsExpanded() && !!row.subRows?.length;
+        const isExpanded = row.getIsExpanded() && row.subRows.length > 0;
 
         const handleCellClickCallback = useCallback(
             (columnId: string) => {

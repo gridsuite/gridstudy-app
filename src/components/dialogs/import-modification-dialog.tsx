@@ -28,6 +28,7 @@ import yup from 'components/utils/yup-config';
 import { ModificationDialog } from './commons/modificationDialog';
 import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
 import GridItem from './commons/grid-item';
+import { Schema } from 'yup';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -71,7 +72,7 @@ const formSchema = yup
         [SELECTED_MODIFICATIONS]: yup.array().min(1).required(),
         [COMPOSITE_NAMES]: yup.mixed<Record<string, string>>().when([ACTION], {
             is: CompositeModificationAction.INSERT,
-            then: (schema) =>
+            then: (schema: Schema) =>
                 schema.test('all-names-filled', 'FieldIsRequired', function (value) {
                     const selections: SelectedComposite[] = this.parent[SELECTED_MODIFICATIONS] ?? [];
                     for (const m of selections) {
@@ -89,7 +90,7 @@ const formSchema = yup
             otherwise: (schema) => schema.optional(),
         }),
     })
-    .required();
+    .required() as yup.ObjectSchema<FormData>;
 
 type FormSchemaType = yup.InferType<typeof formSchema>;
 

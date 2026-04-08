@@ -91,6 +91,13 @@ function getTargetSiblings(targetCompositeUuid: UUID | null, rows: Row<ComposedM
         : rows.filter((r) => r.depth === 0);
 }
 
+function getContainerShadow(forbidden: boolean, isMovingDown: boolean) {
+    if (forbidden) {
+        return isMovingDown ? DROP_FORBIDDEN_INDICATOR_BOTTOM : DROP_FORBIDDEN_INDICATOR_TOP;
+    }
+    return isMovingDown ? DROP_INDICATOR_BOTTOM : DROP_INDICATOR_TOP;
+}
+
 export const useModificationsDragAndDrop = ({
     rows,
     containerRef,
@@ -122,13 +129,7 @@ export const useModificationsDragAndDrop = ({
             const forbidden = isDropForbidden(sourceRow, targetRow);
             const isMovingDown = destination.index > source.index;
 
-            el.style.boxShadow = forbidden
-                ? isMovingDown
-                    ? DROP_FORBIDDEN_INDICATOR_BOTTOM
-                    : DROP_FORBIDDEN_INDICATOR_TOP
-                : isMovingDown
-                  ? DROP_INDICATOR_BOTTOM
-                  : DROP_INDICATOR_TOP;
+            el.style.boxShadow = getContainerShadow(forbidden, isMovingDown);
         },
         [rows, containerRef]
     );
