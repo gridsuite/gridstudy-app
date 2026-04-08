@@ -28,7 +28,6 @@ import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } fr
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
-    Assignment,
     AttachLineInfo,
     BalancesAdjustmentInfos,
     BatteryCreationInfos,
@@ -47,6 +46,7 @@ import {
     LineCreationInfos,
     LineModificationInfos,
     LinesAttachToSplitLinesInfo,
+    ModificationByAssignmentInfos,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfos,
@@ -1805,36 +1805,23 @@ export function modifyByFormula(
     });
 }
 
-export function modifyByAssignment(
-    studyUuid: string,
-    nodeUuid: UUID,
-    equipmentType: string,
-    assignmentsList: Assignment[],
-    isUpdate: boolean,
-    modificationUuid: UUID | null
-) {
+export function modifyByAssignment(studyUuid: string, nodeUuid: UUID, dto: ModificationByAssignmentInfos) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
-        modificationUrl += '/' + safeEncodeURIComponent(modificationUuid);
+    if (dto.uuid) {
+        modificationUrl += '/' + safeEncodeURIComponent(dto.uuid);
         console.info('Updating modification by assignment');
     } else {
         console.info('Creating modification by assignment');
     }
 
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
-        equipmentType: equipmentType,
-        assignmentInfosList: assignmentsList,
-    });
-
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: dto.uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify(dto),
     });
 }
 

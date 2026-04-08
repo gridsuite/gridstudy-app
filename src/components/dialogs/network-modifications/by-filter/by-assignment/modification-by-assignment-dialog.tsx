@@ -13,7 +13,6 @@ import {
     modificationByAssignmentDtoToForm,
     modificationByAssignmentFormSchema,
     modificationByAssignmentFormToDto,
-    ModificationType,
     ModificationByAssignmentForm,
     snackWithFallback,
     useSnackMessage,
@@ -26,8 +25,14 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { modifyByAssignment } from '../../../../../services/study/network-modifications';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { ModificationByAssignmentInfos } from '../../../../../services/network-modification-types';
 
-const ModificationByAssignmentDialog: FC<any> = ({
+type ModificationByAssignmentDialogProps = NetworkModificationDialogProps & {
+    editData?: ModificationByAssignmentInfos;
+};
+
+const ModificationByAssignmentDialog: FC<ModificationByAssignmentDialogProps> = ({
     editData,
     currentNode,
     studyUuid,
@@ -55,13 +60,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
 
     useEffect(() => {
         if (editData) {
-            reset(
-                modificationByAssignmentDtoToForm({
-                    type: ModificationType.MODIFICATION_BY_ASSIGNMENT,
-                    equipmentType: editData.equipmentType,
-                    assignmentInfosList: editData.assignmentInfosList,
-                })
-            );
+            reset(modificationByAssignmentDtoToForm(editData));
         }
     }, [editData, reset]);
 
@@ -71,15 +70,11 @@ const ModificationByAssignmentDialog: FC<any> = ({
 
     const onSubmit = useCallback(
         (formData: ModificationByAssignmentFormData) => {
-            const dto = modificationByAssignmentFormToDto(formData);
-            modifyByAssignment(
-                studyUuid,
-                currentNodeUuid,
-                dto.equipmentType,
-                dto.assignmentInfosList,
-                !!editData,
-                editData?.uuid ?? null
-            ).catch((error) => {
+            const dto: ModificationByAssignmentInfos = {
+                ...modificationByAssignmentFormToDto(formData),
+                uuid: editData?.uuid ?? null,
+            };
+            modifyByAssignment(studyUuid, currentNodeUuid, dto).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'ModifyByAssignment' });
             });
         },
@@ -103,7 +98,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 }}
                 {...dialogProps}
             >
-                <ModificationByAssignmentForm />
+                <ModificationByAssignmentForm isModification={isUpdate} />
             </ModificationDialog>
         </CustomFormProvider>
     );
