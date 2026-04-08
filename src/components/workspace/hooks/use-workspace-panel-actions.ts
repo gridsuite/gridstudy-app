@@ -34,7 +34,11 @@ import {
 } from './workspace-panel-utils';
 import { getPanelConfig } from '../constants/workspace.constants';
 import { panelBackendManager } from '../utils/panel-backend-manager';
-import { deleteLocalStoragePanelStates } from '../../../redux/session-storage/workspace-local-storage';
+import {
+    deleteLocalStoragePanelStates,
+    saveLocalStoragePanelZIndex,
+    saveLocalStoragePanelsZIndex,
+} from '../../../redux/session-storage/workspace-local-storage';
 
 // compute the next available zIndex value
 const getNextZIndex = (panels: PanelState[]): number => {
@@ -77,9 +81,12 @@ export const useWorkspacePanelActions = () => {
                 const nextZ = getNextZIndex(allPanels);
                 const syncToBackend = panel.minimized === true;
                 savePanels([{ ...panel, minimized: false, zIndex: nextZ }], syncToBackend);
+                if (studyUuid && workspaceId) {
+                    saveLocalStoragePanelZIndex(studyUuid, workspaceId, panel.id, panel.type, nextZ);
+                }
             }
         },
-        [savePanels]
+        [savePanels, studyUuid, workspaceId]
     );
 
     const saveAndFocusPanel = useCallback(
@@ -87,8 +94,11 @@ export const useWorkspacePanelActions = () => {
             const allPanels = selectPanels(store.getState());
             const nextZ = getNextZIndex(allPanels);
             savePanels([{ ...panel, minimized: false, zIndex: nextZ }], syncToBackend);
+            if (studyUuid && workspaceId) {
+                saveLocalStoragePanelZIndex(studyUuid, workspaceId, panel.id, panel.type, nextZ);
+            }
         },
-        [savePanels]
+        [savePanels, studyUuid, workspaceId]
     );
 
     const deletePanel = useCallback(
@@ -401,9 +411,12 @@ export const useWorkspacePanelActions = () => {
                     zIndex: nextZ++,
                 }));
                 savePanels(panelsWithZIndex);
+                if (studyUuid && workspaceId) {
+                    saveLocalStoragePanelsZIndex(studyUuid, workspaceId, panelsWithZIndex);
+                }
             }
         },
-        [savePanels]
+        [savePanels, studyUuid, workspaceId]
     );
 
     // Spreadsheet operations
