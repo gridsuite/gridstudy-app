@@ -25,7 +25,7 @@ import {
 import { setWorkspacesMetadata, setActiveWorkspace } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
 import { getWorkspacesMetadata, getWorkspace } from '../services/study/workspace';
-import { getLocalStoragePanelState } from '../redux/session-storage/workspace-local-storage';
+import { getLocalStoragePanelStates } from '../redux/session-storage/workspace-local-storage';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
@@ -525,9 +525,9 @@ export function StudyContainer() {
                 })
                 .then((workspace) => {
                     if (workspace) {
+                        const savedPanels = getLocalStoragePanelStates(studyUuid, workspace.id);
                         workspace.panels.forEach((panel, index) => {
-                            const saved = getLocalStoragePanelState(studyUuid, workspace.id, panel.id);
-                            panel.zIndex = saved?.zIndex ?? index + 1;
+                            panel.zIndex = savedPanels[panel.id]?.zIndex ?? index + 1;
                         });
                         dispatch(setActiveWorkspace(workspace));
                     }

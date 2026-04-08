@@ -56,6 +56,10 @@ function saveWorkspaceLocalState(studyUuid: UUID, workspaceId: UUID, state: Work
     localStorage.setItem(getKey(studyUuid, workspaceId), JSON.stringify(state));
 }
 
+export function getLocalStoragePanelStates(studyUuid: UUID, workspaceId: UUID): Record<UUID, PanelLocalState> {
+    return getWorkspaceLocalState(studyUuid, workspaceId).panels;
+}
+
 export function getLocalStoragePanelState(
     studyUuid: UUID,
     workspaceId: UUID,
@@ -97,4 +101,8 @@ export function deleteLocalStoragePanelStates(studyUuid: UUID, workspaceId: UUID
     const panels = { ...state.panels };
     panelIds.forEach((id) => delete panels[id]);
     saveWorkspaceLocalState(studyUuid, workspaceId, { ...state, panels });
+}
+
+export function clearLocalStorageWorkspaceState(studyUuid: UUID, workspaceId: UUID): void {
+    localStorage.removeItem(getKey(studyUuid, workspaceId));
 }
