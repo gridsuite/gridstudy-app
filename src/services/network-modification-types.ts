@@ -13,7 +13,7 @@ import {
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
-import { AttributeModification, ModificationType, Option, Property } from '@gridsuite/commons-ui';
+import { AttributeModification, ModificationType, Property } from '@gridsuite/commons-ui';
 import {
     AREA,
     ENABLE_OLG_MODIFICATION,

@@ -52,7 +52,6 @@ import {
 import { emptyLineSegment, SegmentFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
 import GridSection from '../commons/grid-section';
-import { LineSegmentInfos } from '../../../services/network-modification-types';
 
 const styles = {
     h3: {
@@ -70,7 +69,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface LineTypeSegmentFormProps {
-    editData?: LineSegmentInfos[];
+    editData?: SegmentFormData[];
 }
 
 export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData }) => {
@@ -118,6 +117,13 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
             setValue(`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`, newSusceptance);
         },
         [getValues, setValue, lineTypesCatalog]
+    );
+
+    const updateSegmentLimitsValues = useCallback(
+        (index: number, limitInfo: CurrentLimitsInfo[]) => {
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, limitInfo);
+        },
+        [setValue]
     );
 
     const updateTotals = useCallback(() => {
@@ -186,14 +192,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         setValue(FINAL_CURRENT_LIMITS, Array.from(mostContrainingLimits.values()));
     }, [getValues, setValue, setCurrentLimitResult]);
 
-    const updateSegmentLimitsValues = useCallback(
-        (index: number, limitInfo: CurrentLimitsInfo[]) => {
-            setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, limitInfo);
-        },
-        [setValue]
-    );
-
-    const appendSegmentLimits = useCallback((segment: LineSegmentInfos) => {
+    const appendSegmentLimits = useCallback((segment: SegmentFormData) => {
         return getLineTypeWithLimits(
             segment[SEGMENT_TYPE_ID],
             segment[AREA],

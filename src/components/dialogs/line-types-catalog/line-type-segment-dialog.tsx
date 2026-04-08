@@ -22,7 +22,6 @@ import {
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import { InferType } from 'yup';
-import { LineSegmentInfos } from '../../../services/network-modification-types';
 
 const LineTypeSegmentSchema = yup
     .object()
@@ -46,8 +45,8 @@ const emptyFormData = {
 export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: (data: ComputedLineCharacteristics, lineSegments: SegmentFormData[]) => void;
-    editData?: LineSegmentInfos[];
+    onSave: (data: ComputedLineCharacteristics, lineSegments: DeepNullable<SegmentFormData | null>[]) => void;
+    editData?: SegmentFormData[];
 }
 
 export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
@@ -71,7 +70,7 @@ export default function LineTypeSegmentDialog({
 
     const onSubmit = useCallback(
         (data: ComputedLineCharacteristics) => {
-            onSave(data, (getValues(`${SEGMENTS}`) ?? []) as SegmentFormData[]);
+            onSave(data, getValues(`${SEGMENTS}`) ?? []);
         },
         [getValues, onSave]
     );
