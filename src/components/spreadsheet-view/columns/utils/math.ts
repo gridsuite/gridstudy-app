@@ -20,8 +20,8 @@ export class MathJsValidationError extends Error {
 
 // Solve the problem of numeric index for Record (RatioTapChanger and PhaseTapChanger)
 function transformExpression(expr: string): string {
-    const regex = /((?:phase|ratio)TapChanger)\.steps\[(\d+)\]/g;
-    return expr.replaceAll(regex, `$1.steps['$2']`);
+    const regex = /((?:phase|ratio)TapChanger)\.steps\[([^\]]*)\]/g;
+    return expr.replaceAll(regex, `$1.steps[string($2)]`);
 }
 
 const originalEvaluate = instance.evaluate;

@@ -12,12 +12,11 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
@@ -55,8 +54,8 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
-        return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+    const filterableEquipmentTypes: EquipmentType[] = useMemo(() => {
+        return [EquipmentType.VOLTAGE_LEVEL];
     }, []);
 
     return (

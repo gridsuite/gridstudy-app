@@ -27,7 +27,6 @@ import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
-import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
@@ -48,6 +47,9 @@ import {
     ShortCircuitParametersInLine,
     useParametersBackend,
     VoltageInitParametersInLine,
+    DynamicSecurityAnalysisInline,
+    fetchDynamicSecurityAnalysisProviders,
+    BuildStatus,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -62,7 +64,10 @@ import {
     fetchDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
 } from '../services/study/dynamic-margin-calculation';
-import { BUILD_STATUS } from './network/constants';
+import {
+    fetchDynamicSecurityAnalysisParameters,
+    updateDynamicSecurityAnalysisParameters,
+} from '../services/study/dynamic-security-analysis';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -83,6 +88,7 @@ const ParametersTabs: FunctionComponent = () => {
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode ?? null);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -162,6 +168,18 @@ const ParametersTabs: FunctionComponent = () => {
         securityAnalysisAvailability,
         securityAnalysisParametersBackend
     );
+    const fetchContingencyCountBackend = useCallback(
+        (contingencyLists: UUID[] | null, abortSignal: AbortSignal) => {
+            return fetchContingencyCount(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                contingencyLists,
+                abortSignal
+            );
+        },
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
 
     const sensitivityAnalysisBackend = useParametersBackend(
         user,
@@ -183,14 +201,14 @@ const ParametersTabs: FunctionComponent = () => {
         user,
         studyUuid,
         ComputingType.SHORT_CIRCUIT,
-        OptionalServicesStatus.Up,
+        shortCircuitAvailability,
         {
             backendFetchParameters: getShortCircuitParameters,
             backendUpdateParameters: setShortCircuitParameters,
             backendFetchSpecificParametersDescription: getShortCircuitSpecificParametersDescription,
         }
     );
-    useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
+    useParametersNotification(ComputingType.SHORT_CIRCUIT, shortCircuitAvailability, shortCircuitParametersBackend);
 
     const dynamicMarginCalculationParametersBackend = useParametersBackend(
         user,
@@ -207,6 +225,23 @@ const ParametersTabs: FunctionComponent = () => {
         ComputingType.DYNAMIC_MARGIN_CALCULATION,
         dynamicMarginCalculationAvailability,
         dynamicMarginCalculationParametersBackend
+    );
+
+    const dynamicSecurityAnalysisParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        {
+            backendFetchProviders: fetchDynamicSecurityAnalysisProviders,
+            backendFetchParameters: fetchDynamicSecurityAnalysisParameters,
+            backendUpdateParameters: updateDynamicSecurityAnalysisParameters,
+        }
+    );
+    useParametersNotification(
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        dynamicSecurityAnalysisParametersBackend
     );
 
     const pccMinParameters = useGetPccMinParameters();
@@ -285,12 +320,10 @@ const ParametersTabs: FunctionComponent = () => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
-                        fetchContingencyCount={(contingencyLists: UUID[] | null) =>
-                            fetchContingencyCount(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyLists)
-                        }
+                        fetchContingencyCount={fetchContingencyCountBackend}
                         isBuiltCurrentNode={
-                            currentNodeBuildStatus !== BUILD_STATUS.NOT_BUILT &&
-                            currentNodeBuildStatus !== BUILD_STATUS.BUILDING
+                            currentNodeBuildStatus !== BuildStatus.NOT_BUILT &&
+                            currentNodeBuildStatus !== BuildStatus.BUILDING
                         }
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
@@ -304,6 +337,7 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
+                        globalBuildStatus={currentNode?.data?.globalBuildStatus}
                         isDeveloperMode={isDeveloperMode}
                     />
                 );
@@ -313,7 +347,6 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         parametersBackend={shortCircuitParametersBackend}
-                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case TAB_VALUES.pccMinTabValue:
@@ -327,7 +360,13 @@ const ParametersTabs: FunctionComponent = () => {
             case TAB_VALUES.dynamicSimulationParamsTabValue:
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setDirtyFields} />;
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
-                return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setDirtyFields} />;
+                return (
+                    <DynamicSecurityAnalysisInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        parametersBackend={dynamicSecurityAnalysisParametersBackend}
+                    />
+                );
             case TAB_VALUES.dynamicMarginCalculationParamsTabValue:
                 return (
                     <DynamicMarginCalculationInline
@@ -363,6 +402,7 @@ const ParametersTabs: FunctionComponent = () => {
                 );
         }
     }, [
+        currentNode,
         tabValue,
         studyUuid,
         languageLocal,
@@ -370,6 +410,7 @@ const ParametersTabs: FunctionComponent = () => {
         setDirtyFields,
         isDeveloperMode,
         securityAnalysisParametersBackend,
+        fetchContingencyCountBackend,
         currentNodeBuildStatus,
         currentNodeUuid,
         currentRootNetworkUuid,
@@ -378,6 +419,7 @@ const ParametersTabs: FunctionComponent = () => {
         pccMinParameters,
         user,
         dynamicMarginCalculationParametersBackend,
+        dynamicSecurityAnalysisParametersBackend,
         voltageInitParameters,
         useStateEstimationParameters,
         networkVisualizationsParameters,

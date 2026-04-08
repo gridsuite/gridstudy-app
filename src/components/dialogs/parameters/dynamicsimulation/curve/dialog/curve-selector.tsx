@@ -10,8 +10,7 @@ import EquipmentFilter, { GetSelectedEquipmentsHandle } from './equipment-filter
 import ModelFilter, { GetSelectedVariablesHandle } from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
-import { type MuiStyles } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { EquipmentType, type MuiStyles } from '@gridsuite/commons-ui';
 import { getReferencedEquipmentTypeForModel } from './curve-selector-utils';
 import { IdentifiableAttributes } from 'services/study/filter';
 import { ModelVariable } from '../../dynamic-simulation.type';
@@ -30,13 +29,17 @@ export interface GetSelectedItemsHandler {
     };
 }
 
-const CurveSelector = forwardRef<GetSelectedItemsHandler>((props, ref) => {
+type CurveSelectorProps = {
+    mapping?: string;
+};
+
+const CurveSelector = forwardRef<GetSelectedItemsHandler, Readonly<CurveSelectorProps>>(({ mapping }, ref) => {
     const equipmentFilterRef = useRef<GetSelectedEquipmentsHandle>(null);
     const modelFilterRef = useRef<GetSelectedVariablesHandle>(null);
 
-    const [equipmentType, setEquipmentType] = useState(EQUIPMENT_TYPES.GENERATOR);
+    const [equipmentType, setEquipmentType] = useState(EquipmentType.GENERATOR);
 
-    const handleChangeEquipmentType = useCallback((newEquipmentType: EQUIPMENT_TYPES) => {
+    const handleChangeEquipmentType = useCallback((newEquipmentType: EquipmentType) => {
         setEquipmentType(newEquipmentType);
     }, []);
 
@@ -94,7 +97,11 @@ const CurveSelector = forwardRef<GetSelectedItemsHandler>((props, ref) => {
                 <Typography sx={styles.h6} variant="h6">
                     <FormattedMessage id={'DynamicSimulationCurveCurveFilter'}></FormattedMessage>
                 </Typography>
-                <ModelFilter ref={modelFilterRef} equipmentType={getReferencedEquipmentTypeForModel(equipmentType)} />
+                <ModelFilter
+                    ref={modelFilterRef}
+                    equipmentType={getReferencedEquipmentTypeForModel(equipmentType)}
+                    mapping={mapping}
+                />
             </Grid>
         </>
     );

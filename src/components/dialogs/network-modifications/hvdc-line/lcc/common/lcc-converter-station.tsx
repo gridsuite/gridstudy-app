@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, PercentageAdornment, TextInput } from '@gridsuite/commons-ui';
+import { ConnectivityForm, FloatInput, PercentageAdornment, TextInput } from '@gridsuite/commons-ui';
 import {
     CONNECTIVITY,
     CONVERTER_STATION_ID,
@@ -14,7 +14,6 @@ import {
     POWER_FACTOR,
 } from '../../../../../utils/field-constants';
 import type { UUID } from 'node:crypto';
-import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
@@ -25,6 +24,8 @@ import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 import { LccConverterStationFormInfos } from './lcc-type';
 import ModificationFiltersShuntCompensatorTable from '../modification/filter-shunt-compensator-table-modification';
 import { useCallback } from 'react';
+import PositionDiagramPane from '../../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../../services/study/network';
 
 interface LccConverterStationProps {
     id: string;
@@ -47,6 +48,17 @@ export default function LccConverterStation({
 }: Readonly<LccConverterStationProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
     const stationNameField = (
         <TextInput
             name={`${id}.${CONVERTER_STATION_NAME}`}
@@ -58,12 +70,11 @@ export default function LccConverterStation({
     const connectivityForm = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
             previousValues={undefined}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

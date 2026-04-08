@@ -20,11 +20,10 @@ import {
     SubstationCreationForm,
     SubstationCreationFormData,
     substationCreationFormSchema,
-    toModificationProperties,
     useSnackMessage,
     DeepNullable,
-    sanitizeString,
     substationCreationDtoToForm,
+    substationCreationFormToDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
@@ -113,21 +112,13 @@ const SubstationCreationDialog = ({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (substation: SubstationCreationFormData) => {
-            createSubstation({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                substationId: substation.equipmentID,
-                substationName: sanitizeString(substation.equipmentName),
-                country: substation.country ?? null,
-                isUpdate: !!editData,
-                modificationUuid: editData ? editData.uuid : undefined,
-                properties: toModificationProperties(substation),
-            }).catch((error) => {
+        (substationForm: SubstationCreationFormData) => {
+            const dto = substationCreationFormToDto(substationForm);
+            createSubstation(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: unknown) => {
                 snackWithFallback(snackError, error, { headerId: 'SubstationCreationError' });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData?.uuid, snackError, studyUuid]
     );
 
     const open = useOpenShortWaitFetching({

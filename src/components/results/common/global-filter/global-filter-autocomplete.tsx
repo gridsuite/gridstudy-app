@@ -29,8 +29,7 @@ import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch } from 'react-redux';
 import { FilterType } from '../utils';
-import { OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { EquipmentType, OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import GlobalFilterPaper from './global-filter-paper';
@@ -103,8 +102,6 @@ function RenderOption({
     const dispatch = useDispatch<AppDispatch>();
     const { translate } = useLocalizedCountries();
 
-    // recent selected options are not displayed in the recent tab :
-    const hideOption = state.selected && option.recent;
     const label = getOptionLabel(option, translate, intl) ?? '';
 
     let content: React.ReactNode;
@@ -143,12 +140,10 @@ function RenderOption({
     }
 
     return (
-        !hideOption && (
-            <ListItemButton selected={state.selected} component="li" {...otherProps}>
-                <Checkbox size="small" checked={state.selected} />
-                {content}
-            </ListItemButton>
-        )
+        <ListItemButton selected={state.selected} component="li" {...otherProps}>
+            <Checkbox size="small" checked={state.selected} />
+            {content}
+        </ListItemButton>
     );
 }
 
@@ -190,6 +185,7 @@ function GlobalFilterAutocomplete() {
         tableUuid,
         globalFilterOptions,
         selectedGlobalFilters,
+        recentGlobalFilters,
         filterCategories,
         filterableEquipmentTypes,
     } = useContext(GlobalFilterContext);
@@ -229,50 +225,60 @@ function GlobalFilterAutocomplete() {
         return '';
     }, [genericFiltersStrictMode, selectedGlobalFilters, filterableEquipmentTypes, intl]);
 
-    // Filters the 3options 'on the fly' based on the user's search input value and the category he selected (country, voltage level, recent...)
+    // Filter / sort the options 'on the fly' based on the user's search input value and the category he selected (country, voltage level, recent...)
     const filterOptions = useCallback(
         (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
-            return (
-                options
-                    // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
-                    .filter((option: GlobalFilter) => {
-                        const labelToMatch: string =
-                            option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
-                        return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
-                    })
-                    .filter((option: GlobalFilter) => {
-                        // recent filters are a group in itself
-                        if (filterGroupSelected === RECENT_FILTER) {
-                            return option.recent === true;
-                        } else if (option.filterSubtype) {
-                            // if the filter has a subtype it should be filtered through it instead of filterType
-                            return option.filterSubtype === filterGroupSelected;
-                        } else if (
-                            filterGroupSelected === FilterType.GENERIC_FILTER &&
-                            filterableEquipmentTypes?.length === 1 &&
-                            filterableEquipmentTypes[0] === EQUIPMENT_TYPES.SUBSTATION &&
-                            option.equipmentType === EQUIPMENT_TYPES.SUBSTATION
-                        ) {
-                            // when filtering substations, the substation filters are displayed in the GENERIC_FILTER category
-                            // (because there are no voltage level so the SUBSTATION_OR_VL category doesn't make sense)
-                            return true;
-                        } else {
-                            return option.filterType === filterGroupSelected;
-                        }
-                    })
-            );
+            const filteredOptions = options
+                // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
+                .filter((option: GlobalFilter) => {
+                    const labelToMatch: string =
+                        option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                    return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
+                })
+                .filter((option: GlobalFilter) => {
+                    // recent filters are a group in itself
+                    if (filterGroupSelected === RECENT_FILTER) {
+                        return recentGlobalFilters.some((r) => r.id === option.id);
+                    } else if (option.filterSubtype) {
+                        // if the filter has a subtype it should be filtered through it instead of filterType
+                        return option.filterSubtype === filterGroupSelected;
+                    } else if (
+                        filterGroupSelected === FilterType.GENERIC_FILTER &&
+                        filterableEquipmentTypes?.length === 1 &&
+                        filterableEquipmentTypes[0] === EquipmentType.SUBSTATION &&
+                        option.equipmentType === EquipmentType.SUBSTATION
+                    ) {
+                        // when filtering substations, the substation filters are displayed in the GENERIC_FILTER category
+                        // (because there are no voltage level so the SUBSTATION_OR_VL category doesn't make sense)
+                        return true;
+                    } else {
+                        return option.filterType === filterGroupSelected;
+                    }
+                });
+
+            if (filterGroupSelected === RECENT_FILTER) {
+                // Sort filtered options to match recents order (most recent first, recentGlobalFilters is already ordered)
+                filteredOptions.sort((a, b) => {
+                    const indexA = recentGlobalFilters.findIndex((r) => r.id === a.id);
+                    const indexB = recentGlobalFilters.findIndex((r) => r.id === b.id);
+                    return indexA - indexB;
+                });
+            }
+
+            return filteredOptions;
         },
-        [filterGroupSelected, translate, filterableEquipmentTypes]
+        [filterGroupSelected, translate, filterableEquipmentTypes, recentGlobalFilters]
     );
 
     const options = useMemo(
         () =>
             globalFilterOptions
+                .filter((filter) => !filter.deleted)
                 .filter(
                     (filter) =>
                         filterCategories.includes(filter.filterType) &&
                         (genericFiltersStrictMode && filter.filterType === FilterType.GENERIC_FILTER
-                            ? filterableEquipmentTypes.includes(filter.equipmentType as EQUIPMENT_TYPES)
+                            ? filterableEquipmentTypes.includes(filter.equipmentType!) // there is an equipment type because it is a generic filter
                             : true)
                 )
                 .sort((a: GlobalFilter, b: GlobalFilter) => {
@@ -297,7 +303,7 @@ function GlobalFilterAutocomplete() {
                         label={label}
                         {...getTagsProps({ index })}
                         key={key}
-                        sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                        sx={getResultsGlobalFiltersChipStyle(element)}
                     />
                 );
             }

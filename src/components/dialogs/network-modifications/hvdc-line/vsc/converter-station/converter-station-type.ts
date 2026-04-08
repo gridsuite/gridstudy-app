@@ -8,7 +8,6 @@ import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '../../../../reactive-limits/reactive-limits.type';
-import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
@@ -30,6 +29,7 @@ import {
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
+import { ConnectablePositionInfos } from '@gridsuite/commons-ui';
 
 export interface VscConverterStationFormInfos {
     id: string;

@@ -9,8 +9,7 @@ import { FunctionComponent, useCallback, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { FilterOptionsState } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { areIdsEqual } from '../../../../../utils/utils';
+import { areIdsEqual, AutocompleteInput } from '@gridsuite/commons-ui';
 
 const ReferenceAutocompleteInput: FunctionComponent<{
     name: string;

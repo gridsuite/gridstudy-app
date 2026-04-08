@@ -7,9 +7,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    networkModificationHandleSubtree,
-    networkModificationTreeNodeAdded,
-    networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
@@ -17,6 +14,13 @@ import {
     resetLogsFilter,
     resetLogsPagination,
 } from '../redux/actions';
+import {
+    fetchAndDispatchAddedNode,
+    fetchAndDispatchMovedNode,
+    fetchAndHandleSubtree,
+    invalidateClipboardIfImpacted,
+    refreshStashedNodes,
+} from './network-modification-tree-pane-event-handlers';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import NetworkModificationTree from './network-modification-tree';
@@ -26,9 +30,9 @@ import {
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
+    BuildStatus,
 } from '@gridsuite/commons-ui';
 import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog';
-import { BUILD_STATUS } from './network/constants';
 import {
     copySubtree,
     copyTreeNode,
@@ -36,7 +40,6 @@ import {
     createTreeNode,
     cutSubtree,
     cutTreeNode,
-    fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
     fetchStashedNodes,
     stashSubtree,
@@ -44,6 +47,7 @@ import {
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
+import NetworkModificationNodeDialog from './graph/menus/network-modifications/network-modification-node-dialog';
 import { CopyType } from './network-modification.type';
 import {
     NodeSequenceType,
@@ -56,7 +60,7 @@ import { exportNetworkFile } from '../services/study/network.js';
 import { useCopiedNodes } from 'hooks/copy-paste/use-copied-nodes';
 import { fetchNetworkModificationsToExport } from 'services/study/network-modifications';
 
-export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
+export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
     const { snackError, snackWarning } = useSnackMessage();
     const [nodesToRestore, setNodesToRestore] = useState([]);
@@ -105,19 +109,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         [studyUuid, currentRootNetworkUuid, dispatch]
     );
 
-    const isSubtreeImpacted = useCallback(
-        (nodes) =>
-            (nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_COPY ||
-                nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_CUT) &&
-            nodes.some(
-                (nodeId) =>
-                    nodeId === nodeSelectionForCopyRef.current.nodeId ||
-                    nodeSelectionForCopyRef.current.allChildren?.map((node) => node.id).includes(nodeId)
-            ),
-
-        []
-    );
-
     const resetNodeClipboard = useCallback(() => {
         cleanClipboard();
     }, [cleanClipboard]);
@@ -146,94 +137,93 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
     const handleEvent = useCallback(
         (event) => {
             const eventData = parseEventData(event);
-            if (eventData.headers) {
-                if (eventData.headers.updateType === NotificationType.NODE_CREATED) {
-                    fetchNetworkModificationTreeNode(studyUuid, eventData.headers.newNode, currentRootNetworkUuid).then(
-                        (node) => {
-                            dispatch(
-                                networkModificationTreeNodeAdded(
-                                    node,
-                                    eventData.headers.parentNode,
-                                    eventData.headers.insertMode,
-                                    eventData.headers.referenceNodeUuid
-                                )
-                            );
-                        }
-                    );
+            if (!eventData.headers) return;
 
-                    if (isSubtreeImpacted([eventData.headers.parentNode])) {
-                        resetNodeClipboard();
-                    }
-                    fetchStashedNodes(studyUuid).then((res) => {
-                        setNodesToRestore(res);
-                    });
-                } else if (eventData.headers.updateType === NotificationType.SUBTREE_CREATED) {
-                    if (isSubtreeImpacted([eventData.headers.parentNode])) {
-                        resetNodeClipboard();
-                    }
-                    fetchNetworkModificationSubtree(studyUuid, eventData.headers.newNode).then((nodes) => {
-                        dispatch(networkModificationHandleSubtree(nodes, eventData.headers.parentNode));
-                    });
-                } else if (eventData.headers.updateType === NotificationType.NODES_COLUMN_POSITION_CHANGED) {
+            switch (eventData.headers.updateType) {
+                case NotificationType.NODE_CREATED: {
+                    fetchAndDispatchAddedNode(dispatch, studyUuid, currentRootNetworkUuid, eventData);
+                    invalidateClipboardIfImpacted(
+                        [eventData.headers.parentNode],
+                        nodeSelectionForCopyRef.current,
+                        resetNodeClipboard
+                    );
+                    refreshStashedNodes(studyUuid, setNodesToRestore);
+                    break;
+                }
+
+                case NotificationType.SUBTREE_CREATED: {
+                    invalidateClipboardIfImpacted(
+                        [eventData.headers.parentNode],
+                        nodeSelectionForCopyRef.current,
+                        resetNodeClipboard
+                    );
+                    fetchAndHandleSubtree(dispatch, studyUuid, eventData.headers.newNode, eventData.headers.parentNode);
+                    break;
+                }
+
+                case NotificationType.NODES_COLUMN_POSITION_CHANGED: {
                     reorderSubtree(eventData.headers.parentNode, JSON.parse(eventData.payload));
-                } else if (eventData.headers.updateType === NotificationType.NODE_MOVED) {
-                    fetchNetworkModificationTreeNode(
+                    break;
+                }
+
+                case NotificationType.NODE_MOVED: {
+                    fetchAndDispatchMovedNode(dispatch, studyUuid, currentRootNetworkUuid, eventData);
+                    invalidateClipboardIfImpacted(
+                        [eventData.headers.movedNode, eventData.headers.parentNode],
+                        nodeSelectionForCopyRef.current,
+                        resetNodeClipboard
+                    );
+                    break;
+                }
+
+                case NotificationType.SUBTREE_MOVED: {
+                    fetchAndHandleSubtree(
+                        dispatch,
                         studyUuid,
                         eventData.headers.movedNode,
-                        currentRootNetworkUuid
-                    ).then((node) => {
-                        dispatch(
-                            networkModificationTreeNodeMoved(
-                                node,
-                                eventData.headers.parentNode,
-                                eventData.headers.insertMode,
-                                eventData.headers.referenceNodeUuid
-                            )
-                        );
-                    });
-                    const movedNode = eventData.headers.movedNode;
-                    const parentNode = eventData.headers.parentNode;
-                    if (isSubtreeImpacted([movedNode, parentNode])) {
-                        resetNodeClipboard();
-                    }
-                } else if (eventData.headers.updateType === NotificationType.SUBTREE_MOVED) {
-                    fetchNetworkModificationSubtree(studyUuid, eventData.headers.movedNode).then((nodes) => {
-                        dispatch(networkModificationHandleSubtree(nodes, eventData.headers.parentNode));
-                    });
-                    const movedNode = eventData.headers.movedNode;
-                    const parentNode = eventData.headers.parentNode;
+                        eventData.headers.parentNode
+                    );
+                    invalidateClipboardIfImpacted(
+                        [eventData.headers.movedNode, eventData.headers.parentNode],
+                        nodeSelectionForCopyRef.current,
+                        resetNodeClipboard
+                    );
+                    break;
+                }
 
-                    if (isSubtreeImpacted([movedNode, parentNode])) {
-                        resetNodeClipboard();
-                    }
-                } else if (eventData.headers.updateType === NotificationType.NODES_DELETED) {
-                    if (
-                        eventData.headers.nodes.some((nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId) ||
-                        isSubtreeImpacted(eventData.headers.nodes)
-                    ) {
-                        resetNodeClipboard();
-                    }
+                case NotificationType.NODES_DELETED: {
+                    invalidateClipboardIfImpacted(
+                        eventData.headers.nodes,
+                        nodeSelectionForCopyRef.current,
+                        resetNodeClipboard
+                    );
                     dispatch(networkModificationTreeNodesRemoved(eventData.headers.nodes));
-                    fetchStashedNodes(studyUuid).then((res) => {
-                        setNodesToRestore(res);
-                    });
-                } else if (eventData.headers.updateType === NotificationType.NODES_UPDATED) {
+                    refreshStashedNodes(studyUuid, setNodesToRestore);
+                    break;
+                }
+
+                case NotificationType.NODES_UPDATED: {
                     updateNodes(eventData.headers.nodes);
+
                     if (eventData.headers.nodes.some((nodeId) => nodeId === currentNodeRef.current?.id)) {
                         dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
                     }
-                    if (
-                        eventData.headers.nodes.some((nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId) ||
-                        isSubtreeImpacted(eventData.headers.nodes)
-                    ) {
-                        resetNodeClipboard();
-                    }
-                } else if (eventData.headers.updateType === NotificationType.NODE_EDITED) {
+                    invalidateClipboardIfImpacted(
+                        eventData.headers.nodes,
+                        nodeSelectionForCopyRef.current,
+                        resetNodeClipboard
+                    );
+                    break;
+                }
+
+                case NotificationType.NODE_EDITED: {
                     updateNodes([eventData.headers.node]);
-                } else if (
-                    eventData.headers.updateType === NotificationType.NODE_BUILD_STATUS_UPDATED &&
-                    eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current
-                ) {
+                    break;
+                }
+
+                case NotificationType.NODE_BUILD_STATUS_UPDATED: {
+                    if (eventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) break;
+
                     // Note: The actual node updates are now handled globally in study-container.jsx
                     // to ensure all workspaces open in other browser tabs (including those without tree panel) stay synchronized.
                     // Here we only handle tree-specific cleanup operations.
@@ -243,26 +233,22 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                         dispatch(resetLogsFilter());
                         dispatch(resetLogsPagination());
                     }
-                    //creating, updating or deleting modifications must invalidate the node clipboard
-                } else if (PENDING_MODIFICATION_NOTIFICATION_TYPES.includes(eventData.headers.updateType)) {
-                    if (
-                        eventData.headers.parentNode === nodeSelectionForCopyRef.current.nodeId ||
-                        isSubtreeImpacted([eventData.headers.parentNode])
-                    ) {
-                        resetNodeClipboard();
+                    break;
+                }
+                //creating, updating or deleting modifications must invalidate the node clipboard
+                default: {
+                    if (PENDING_MODIFICATION_NOTIFICATION_TYPES.includes(eventData.headers.updateType)) {
+                        invalidateClipboardIfImpacted(
+                            [eventData.headers.parentNode],
+                            nodeSelectionForCopyRef.current,
+                            resetNodeClipboard
+                        );
                     }
+                    break;
                 }
             }
         },
-        [
-            studyUuid,
-            updateNodes,
-            reorderSubtree,
-            dispatch,
-            currentRootNetworkUuid,
-            isSubtreeImpacted,
-            resetNodeClipboard,
-        ]
+        [studyUuid, updateNodes, reorderSubtree, dispatch, currentRootNetworkUuid, resetNodeClipboard]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
@@ -276,8 +262,8 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     createTreeNode(studyUuid, element.id, insertMode, {
                         name: response,
                         type: type,
-                        localBuildStatus: BUILD_STATUS.NOT_BUILT,
-                        globalBuildStatus: BUILD_STATUS.NOT_BUILT,
+                        localBuildStatus: BuildStatus.NOT_BUILT,
+                        globalBuildStatus: BuildStatus.NOT_BUILT,
                         nodeType: networkModificationNodeType,
                     }).catch((error) => {
                         snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
@@ -391,6 +377,12 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         setOpenRestoreDialog(true);
     };
 
+    const [openRenameNodeDialog, setOpenRenameNodeDialog] = useState(false);
+
+    const handleRenameNode = useCallback(() => {
+        setOpenRenameNodeDialog(true);
+    }, []);
+
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: { x: -1, y: -1 },
         display: null,
@@ -484,7 +476,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     return (
         <>
-            <NetworkModificationTree onNodeContextMenu={onNodeContextMenu} studyUuid={studyUuid} />
+            <NetworkModificationTree panelId={panelId} onNodeContextMenu={onNodeContextMenu} studyUuid={studyUuid} />
             {createNodeMenu.display && (
                 <CreateNodeMenu
                     position={createNodeMenu.position}
@@ -505,6 +497,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     handleCutSubtree={handleCutSubtree}
                     handleCopySubtree={handleCopySubtree}
                     handlePasteSubtree={handlePasteSubtree}
+                    handleRenameNode={handleRenameNode}
                     handleOpenRestoreNodesDialog={handleOpenRestoreNodesDialog}
                     disableRestoreNodes={nodesToRestore.length === 0}
                 />
@@ -516,6 +509,14 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     onClick={handleClickExportNodeNetwork}
                     studyUuid={studyUuid}
                     nodeUuid={activeNode?.id}
+                />
+            )}
+            {openRenameNodeDialog && (
+                <NetworkModificationNodeDialog
+                    open={openRenameNodeDialog}
+                    onClose={() => setOpenRenameNodeDialog(false)}
+                    titleId="editNode"
+                    node={activeNode}
                 />
             )}
             {openRestoreDialog && (
@@ -533,6 +534,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 export default NetworkModificationTreePane;
 
 NetworkModificationTreePane.propTypes = {
+    panelId: PropTypes.string.isRequired,
     studyUuid: PropTypes.string.isRequired,
     currentRootNetworkUuid: PropTypes.string.isRequired,
 };

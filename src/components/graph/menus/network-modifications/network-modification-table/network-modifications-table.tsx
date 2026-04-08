@@ -62,15 +62,15 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
             nameHeaderProps,
             setModifications
         );
-        const dynamicColumns = !isMonoRootStudy
-            ? createRootNetworksColumns(
+        const dynamicColumns = isMonoRootStudy
+            ? []
+            : createRootNetworksColumns(
                   rootNetworks,
                   currentRootNetworkUuid!,
                   modifications.length,
                   modificationsToExclude,
                   setModificationsToExclude
-              )
-            : [];
+              );
 
         return [...staticColumns, ...dynamicColumns];
     }, [

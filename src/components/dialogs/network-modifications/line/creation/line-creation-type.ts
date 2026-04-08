@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ConnectablePositionInfos, Connectivity } from '../../../connectivity/connectivity.type';
 import { CurrentLimitsData } from '../../../../../services/study/network-map.type';
 import {
     CHARACTERISTICS,
@@ -21,7 +20,7 @@ import {
 } from '../../../../utils/field-constants';
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
 import { LineCharacteristics } from '../modification/line-modification-type';
-import { FieldConstants, Property } from '@gridsuite/commons-ui';
+import { ConnectablePositionInfos, Connectivity, FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export interface LineCreationFormSchema {
     [TAB_HEADER]: {

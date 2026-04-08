@@ -12,8 +12,7 @@ import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import ChildMenuItem from './create-child-menu-item';
 import { CustomDialog } from '../../utils/custom-dialog';
-import { CustomNestedMenuItem, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
-import { BUILD_STATUS } from '../../network/constants';
+import { CustomNestedMenuItem, PARAM_DEVELOPER_MODE, BuildStatus } from '@gridsuite/commons-ui';
 import { type AppState, type NodeSelectionForCopy } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
@@ -69,6 +68,7 @@ interface CreateNodeMenuProps {
     handleCutSubtree: (nodeId: UUID | null) => void;
     handleCopySubtree: (nodeId: UUID) => void;
     handlePasteSubtree: (referenceNodeId: string) => void;
+    handleRenameNode: () => void;
     handleOpenRestoreNodesDialog: (nodeId: UUID) => void;
     disableRestoreNodes: boolean;
 }
@@ -128,6 +128,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleCutSubtree,
     handleCopySubtree,
     handlePasteSubtree,
+    handleRenameNode,
     handleOpenRestoreNodesDialog,
     disableRestoreNodes,
 }) => {
@@ -159,6 +160,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
 
     function createSecuritySequence() {
         handleSecuritySequenceCreation(activeNode);
+        handleClose();
+    }
+
+    function renameNode() {
+        handleRenameNode();
         handleClose();
     }
 
@@ -354,13 +360,19 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             id: 'buildNode',
             disabled:
                 activeNode?.data?.globalBuildStatus?.startsWith('BUILT') ||
-                activeNode?.data?.globalBuildStatus === BUILD_STATUS.BUILDING,
+                activeNode?.data?.globalBuildStatus === BuildStatus.BUILDING,
         },
         UNBUILD_NODE: {
             onRoot: false,
             action: () => unbuildNode(),
             id: 'unbuildNode',
             disabled: !isNodeUnbuildingAllowed(),
+            withDivider: true,
+        },
+        RENAME_NODE: {
+            onRoot: false,
+            action: () => renameNode(),
+            id: 'renameNode',
             withDivider: true,
         },
         COPY_MODIFICATION_NODE: {
