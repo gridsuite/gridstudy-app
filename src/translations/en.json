@@ -540,7 +540,7 @@
     "UpdateCompositeModificationLabel": "Replace an existing composite modification",
     "importComposites.title": "Import composite modifications",
     "importComposites.label": "Modifications organisation: ",
-    "importComposites.action.split": "Unitary network modifications",
+    "importComposites.action.split": "Only unitary",
     "importComposites.action.insert": "Composites",
     "importComposites.select": "Select composite modifications",
     "importComposites.selected": "Selected composite modifications: ",

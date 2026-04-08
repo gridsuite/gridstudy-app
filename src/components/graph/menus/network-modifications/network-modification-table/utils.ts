@@ -8,6 +8,7 @@
 import { MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { getNetworkModificationsFromComposite } from '../../../../../services/study/network-modifications';
 import { Dispatch, SetStateAction } from 'react';
+import type { UUID } from 'node:crypto';
 
 export const formatComposedModification = (
     modifications: NetworkModificationMetadata[]
@@ -51,17 +52,30 @@ export function findModificationsInTree(
     return undefined;
 }
 
-export function updateModificationInTree(
-    uuid: string,
+/**
+ * in the tree, replaces the sub-modifications of 'parentModUuid' with 'subModifications' and returns the result
+ * @param parentModUuid
+ * @param subModifications new subModifications of parentModUuid
+ * @param tree all the modifications of the tree
+ */
+export function updateSubModificationsOfACompositeInTree(
+    parentModUuid: string,
     subModifications: ComposedModificationMetadata[],
-    mods: ComposedModificationMetadata[]
+    tree: ComposedModificationMetadata[]
 ): ComposedModificationMetadata[] {
-    return mods.map((m) => {
-        if (m.uuid === uuid) {
+    return tree.map((m) => {
+        if (m.uuid === parentModUuid) {
             return { ...m, subModifications };
         }
         if (m.subModifications.length > 0) {
-            return { ...m, subModifications: updateModificationInTree(uuid, subModifications, m.subModifications) };
+            return {
+                ...m,
+                subModifications: updateSubModificationsOfACompositeInTree(
+                    parentModUuid,
+                    subModifications,
+                    m.subModifications
+                ),
+            };
         }
         return m;
     });
@@ -111,48 +125,80 @@ export function updateModificationFieldInTree(
     });
 }
 
+function getModificationInTree(
+    modUuid: UUID,
+    sourceParentUuid: UUID | null,
+    mods: ComposedModificationMetadata[]
+): ComposedModificationMetadata | undefined {
+    if (sourceParentUuid) {
+        const sourceMod = findModificationsInTree(sourceParentUuid, mods);
+        if (!sourceMod) {
+            return undefined;
+        }
+        return sourceMod.subModifications.find((m) => m.uuid === modUuid);
+    }
+    // modUuid is at the root of the tree
+    return mods.find((m) => m.uuid === modUuid);
+}
+
+/**
+ * @param movingUuid moved submodification uuid
+ * @param sourceParentUuid composite from which movingUuid comes from. null if movingUuid is at the root level
+ * @param targetParentUuid composite where movingUuid is moved. null if movingUuid is moved to the root level
+ * @param beforeUuid movingUuid is moved just after beforeUuid. If null, movingUuid is moved to the end.
+ * @param mods all the network modifications of the tree
+ * @return mods updated according to the moved submodification
+ */
 export function moveSubModificationInTree(
-    movingUuid: string,
-    sourceParentUuid: string | null,
-    targetParentUuid: string | null,
-    beforeUuid: string | null,
+    movingUuid: UUID,
+    sourceParentUuid: UUID | null,
+    targetParentUuid: UUID | null,
+    beforeUuid: UUID | null,
     mods: ComposedModificationMetadata[]
 ): ComposedModificationMetadata[] {
-    let movedItem: ComposedModificationMetadata | undefined;
-    let next: ComposedModificationMetadata[];
+    const movedMod: ComposedModificationMetadata | undefined = getModificationInTree(
+        movingUuid,
+        sourceParentUuid,
+        mods
+    );
+    if (!movedMod) {
+        console.error("Can't find the " + movingUuid + ' modification that should be moved');
+        return mods;
+    }
+    let modsWithoutTheMovedModification: ComposedModificationMetadata[];
 
     if (sourceParentUuid) {
         const sourceMod = findModificationsInTree(sourceParentUuid, mods);
         if (!sourceMod) {
             return mods;
         }
-        movedItem = sourceMod.subModifications.find((m) => m.uuid === movingUuid);
-        if (!movedItem) {
-            return mods;
-        }
         const newSourceSubs = sourceMod.subModifications.filter((m) => m.uuid !== movingUuid);
-        next = updateModificationInTree(sourceParentUuid, newSourceSubs, mods);
+        modsWithoutTheMovedModification = updateSubModificationsOfACompositeInTree(
+            sourceParentUuid,
+            newSourceSubs,
+            mods
+        );
     } else {
-        movedItem = mods.find((m) => m.uuid === movingUuid);
-        if (!movedItem) {
-            return mods;
-        }
-        next = mods.filter((m) => m.uuid !== movingUuid);
+        modsWithoutTheMovedModification = mods.filter((m) => m.uuid !== movingUuid);
     }
 
     if (targetParentUuid) {
-        const targetMod = findModificationsInTree(targetParentUuid, next);
+        const targetMod = findModificationsInTree(targetParentUuid, modsWithoutTheMovedModification);
         if (!targetMod) {
             return mods;
         }
         const newTargetSubs = [...targetMod.subModifications];
         const insertIdx = beforeUuid ? newTargetSubs.findIndex((m) => m.uuid === beforeUuid) : -1;
-        newTargetSubs.splice(insertIdx === -1 ? newTargetSubs.length : insertIdx, 0, movedItem);
-        return updateModificationInTree(targetParentUuid, newTargetSubs, next);
+        newTargetSubs.splice(insertIdx === -1 ? newTargetSubs.length : insertIdx, 0, movedMod);
+        return updateSubModificationsOfACompositeInTree(
+            targetParentUuid,
+            newTargetSubs,
+            modsWithoutTheMovedModification
+        );
     } else {
-        const insertIdx = beforeUuid ? next.findIndex((m) => m.uuid === beforeUuid) : -1;
-        const result = [...next];
-        result.splice(insertIdx === -1 ? result.length : insertIdx, 0, movedItem);
+        const insertIdx = beforeUuid ? modsWithoutTheMovedModification.findIndex((m) => m.uuid === beforeUuid) : -1;
+        const result = [...modsWithoutTheMovedModification];
+        result.splice(insertIdx === -1 ? result.length : insertIdx, 0, movedMod);
         return result;
     }
 }
@@ -181,7 +227,7 @@ export function fetchSubModificationsForExpandedRows(
                     liveModifications,
                     existingMod?.subModifications ?? []
                 );
-                return updateModificationInTree(uuid, mergedSubs, tree);
+                return updateSubModificationsOfACompositeInTree(uuid, mergedSubs, tree);
             }, prev)
         );
     });
@@ -215,7 +261,7 @@ export function refetchSubModificationsForExpandedRows(
                     liveModifications,
                     existingMod?.subModifications ?? []
                 );
-                return updateModificationInTree(uuid, mergedSubs, tree);
+                return updateSubModificationsOfACompositeInTree(uuid, mergedSubs, tree);
             }, prev)
         );
     });
