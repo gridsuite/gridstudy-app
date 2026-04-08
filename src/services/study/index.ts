@@ -299,7 +299,9 @@ export const insertCompositeModifications = (
         body: JSON.stringify(modifications),
     }).then((response) => {
         if (!response.ok) {
-            return response.json().then((err) => Promise.reject(err));
+            return response.json().then((err) => {
+                throw err;
+            });
         }
     });
 };
