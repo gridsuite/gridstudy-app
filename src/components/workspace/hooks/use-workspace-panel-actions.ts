@@ -37,6 +37,7 @@ import { panelBackendManager } from '../utils/panel-backend-manager';
 import {
     deleteLocalStoragePanelStates,
     saveLocalStoragePanelZIndex,
+    saveLocalStoragePanelsZIndex,
 } from '../../../redux/session-storage/workspace-local-storage';
 
 // compute the next available zIndex value
@@ -411,9 +412,7 @@ export const useWorkspacePanelActions = () => {
                 }));
                 savePanels(panelsWithZIndex);
                 if (studyUuid && workspaceId) {
-                    panelsWithZIndex.forEach((p) => {
-                        saveLocalStoragePanelZIndex(studyUuid, workspaceId, p.id, p.type, p.zIndex);
-                    });
+                    saveLocalStoragePanelsZIndex(studyUuid, workspaceId, panelsWithZIndex);
                 }
             }
         },

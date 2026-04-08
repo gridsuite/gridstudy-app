@@ -83,17 +83,21 @@ export function saveLocalStoragePanelZIndex(
     panelType: PanelType,
     zIndex: number
 ): void {
+    saveLocalStoragePanelsZIndex(studyUuid, workspaceId, [{ id: panelId, type: panelType, zIndex }]);
+}
+
+export function saveLocalStoragePanelsZIndex(
+    studyUuid: UUID,
+    workspaceId: UUID,
+    panels: { id: UUID; type: PanelType; zIndex: number }[]
+): void {
     const workspaceState = getWorkspaceLocalState(studyUuid, workspaceId);
-    const existing = workspaceState.panels[panelId];
-    saveWorkspaceLocalState(studyUuid, workspaceId, {
-        ...workspaceState,
-        panels: {
-            ...workspaceState.panels,
-            [panelId]: existing
-                ? { ...existing, zIndex }
-                : ({ id: panelId, type: panelType, zIndex } as PanelLocalState),
-        },
-    });
+    const updatedPanels = { ...workspaceState.panels };
+    for (const { id, type, zIndex } of panels) {
+        const existing = updatedPanels[id];
+        updatedPanels[id] = existing ? { ...existing, zIndex } : ({ id, type, zIndex } as PanelLocalState);
+    }
+    saveWorkspaceLocalState(studyUuid, workspaceId, { ...workspaceState, panels: updatedPanels });
 }
 
 export function deleteLocalStoragePanelStates(studyUuid: UUID, workspaceId: UUID, panelIds: UUID[]): void {
