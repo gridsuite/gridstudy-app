@@ -9,7 +9,7 @@ import React, { memo, useCallback } from 'react';
 import { flexRender, Row } from '@tanstack/react-table';
 import { Box, TableCell, TableRow, Tooltip } from '@mui/material';
 import {
-    BORDER_SUPPRESSED_COLUMNS,
+    COLUMNS_WITHOUT_BORDER,
     createCellContentWrapperSx,
     createCellStyle,
     createRowSx,
@@ -71,9 +71,9 @@ const ModificationRow = memo<ModificationRowProps>(
                                 const isDragHandle = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id;
                                 const isCheckboxColumn = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.SELECT.id;
                                 const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
-                                const areBordersSuppressed =
+                                const cellWithoutBorders =
                                     (isExpanded || row.depth > 0) &&
-                                    BORDER_SUPPRESSED_COLUMNS.has(cell.column.columnDef.id ?? '');
+                                    COLUMNS_WITHOUT_BORDER.has(cell.column.columnDef.id ?? '');
                                 // Tooltip for drag
                                 if (isDragHandle) {
                                     return (
@@ -83,7 +83,7 @@ const ModificationRow = memo<ModificationRowProps>(
                                         >
                                             <Tooltip title={<FormattedMessage id={'moveModification'} />} arrow>
                                                 <Box
-                                                    sx={createCellContentWrapperSx(theme, areBordersSuppressed)}
+                                                    sx={createCellContentWrapperSx(theme, cellWithoutBorders)}
                                                     {...provided.dragHandleProps}
                                                 >
                                                     {cellContent}
@@ -113,7 +113,7 @@ const ModificationRow = memo<ModificationRowProps>(
                                                 }
                                                 arrow
                                             >
-                                                <Box sx={createCellContentWrapperSx(theme, areBordersSuppressed)}>
+                                                <Box sx={createCellContentWrapperSx(theme, cellWithoutBorders)}>
                                                     {cellContent}
                                                 </Box>
                                             </Tooltip>
@@ -131,7 +131,7 @@ const ModificationRow = memo<ModificationRowProps>(
                                             // NameCell owns its own borders entirely
                                             flexRender(cell.column.columnDef.cell, cell.getContext())
                                         ) : (
-                                            <Box sx={createCellContentWrapperSx(theme, areBordersSuppressed)}>
+                                            <Box sx={createCellContentWrapperSx(theme, cellWithoutBorders)}>
                                                 {cellContent}
                                             </Box>
                                         )}

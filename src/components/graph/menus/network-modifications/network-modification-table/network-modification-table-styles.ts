@@ -266,7 +266,6 @@ export const createHeaderCellStyle = (
     isLast: boolean,
     isAutoExtensible: boolean
 ) => {
-    const darkBorder = `1px solid ${alpha(theme.palette.text.secondary, 0.4)}`;
     const size = header.column.getSize();
     const minSize = header.column.columnDef.minSize;
 
@@ -282,22 +281,22 @@ export const createHeaderCellStyle = (
         alignItems: 'center',
         paddingTop: '1.5vh',
         paddingBottom: '1.5vh',
-        backgroundColor: theme.palette.background.paper,
-        borderBottom: darkBorder,
-        borderTop: darkBorder,
-        ...(isFirst && { borderLeft: darkBorder }),
-        ...(isLast && { borderRight: darkBorder }),
+        backgroundColor: getRowBackgroundColor(false, true, theme),
+        borderBottom: createCellBorderColor(theme),
+        borderTop: createCellBorderColor(theme),
+        ...(isFirst && { borderLeft: createCellBorderColor(theme) }),
+        ...(isLast && { borderRight: createCellBorderColor(theme) }),
     };
 };
-export const BORDER_SUPPRESSED_COLUMNS = new Set(['dragHandle', 'select']);
+export const COLUMNS_WITHOUT_BORDER = new Set(['dragHandle', 'select']);
 
-export const createCellContentWrapperSx = (theme: Theme, areBordersSuppressed: boolean): SxProps => ({
+export const createCellContentWrapperSx = (theme: Theme, withoutBorders: boolean): SxProps => ({
     display: 'flex',
     alignItems: 'center',
     width: '100%',
     height: '100%',
-    borderTop: areBordersSuppressed ? 'none' : `1px solid ${createCellBorderColor(theme)}`,
-    borderBottom: areBordersSuppressed ? 'none' : `1px solid ${createCellBorderColor(theme)}`,
+    borderTop: withoutBorders ? 'none' : `1px solid ${createCellBorderColor(theme)}`,
+    borderBottom: withoutBorders ? 'none' : `1px solid ${createCellBorderColor(theme)}`,
 });
 
 export const createNameCellRootStyle = (theme: Theme, isExpanded: boolean, depth: number) => ({

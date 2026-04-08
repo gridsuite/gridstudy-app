@@ -10,7 +10,7 @@ import { getNetworkModificationsFromComposite } from '../../../../../services/st
 import { Dispatch, SetStateAction } from 'react';
 import type { UUID } from 'node:crypto';
 
-export const formatComposedModification = (
+export const formatToComposedModification = (
     modifications: NetworkModificationMetadata[]
 ): ComposedModificationMetadata[] => {
     return modifications.map((modification) => ({ ...modification, subModifications: [] }));
@@ -24,6 +24,11 @@ export function isCompositeModification(modification: ComposedModificationMetada
     return modification?.messageType === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type;
 }
 
+/**
+ *
+ * @param modifications source where the composite modifications are looked for
+ * @param composites result : all the composite modificcations found
+ */
 export function findAllLoadedCompositeModifications(
     modifications: ComposedModificationMetadata[],
     composites: ComposedModificationMetadata[]
@@ -220,7 +225,7 @@ export function fetchSubModificationsForExpandedRows(
     getNetworkModificationsFromComposite(uuidsToFetch).then((subModsByUuid) => {
         setMods((prev) =>
             Object.entries(subModsByUuid).reduce((tree, [uuid, subMods]) => {
-                const liveModifications = formatComposedModification(subMods.filter((m) => !m.stashed));
+                const liveModifications = formatToComposedModification(subMods.filter((m) => !m.stashed));
                 // Preserve already-loaded children of any nested composites within the new sub-list
                 const existingMod = findModificationInTree(uuid, tree);
                 const mergedSubs = mergeSubModificationsIntoTree(
@@ -254,7 +259,7 @@ export function refetchSubModificationsForExpandedRows(
     getNetworkModificationsFromComposite(uuidsToRefetch).then((subModsByUuid) => {
         setMods((prev) =>
             Object.entries(subModsByUuid).reduce((tree, [uuid, subMods]) => {
-                const liveModifications = formatComposedModification(subMods.filter((m) => !m.stashed));
+                const liveModifications = formatToComposedModification(subMods.filter((m) => !m.stashed));
                 // Preserve already-loaded children of any nested composites within the new sub-list
                 const existingMod = findModificationInTree(uuid, tree);
                 const mergedSubs = mergeSubModificationsIntoTree(

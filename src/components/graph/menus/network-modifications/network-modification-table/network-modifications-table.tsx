@@ -44,7 +44,7 @@ import {
     ComposedModificationMetadata,
     fetchSubModificationsForExpandedRows,
     findAllLoadedCompositeModifications,
-    formatComposedModification,
+    formatToComposedModification,
     isCompositeModification,
     mergeSubModificationsIntoTree,
     refetchSubModificationsForExpandedRows,
@@ -88,14 +88,14 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
     const [expanded, setExpanded] = useState<ExpandedState>({});
 
     const [composedModifications, setComposedModifications] = useState<ComposedModificationMetadata[]>(
-        formatComposedModification(modifications)
+        formatToComposedModification(modifications)
     );
 
     useEffect(() => {
         setComposedModifications((prevMods) => {
             // Rebuild from the new modifications prop, carrying over already-fetched subModifications
             // to avoid a visual flash of empty children while re-fetches are in flight.
-            const nextMods = mergeSubModificationsIntoTree(formatComposedModification(modifications), prevMods);
+            const nextMods = mergeSubModificationsIntoTree(formatToComposedModification(modifications), prevMods);
 
             // Re-fetch for any composite that already has loaded sub-modifications, regardless of
             // whether it is currently expanded to avoid stale state
