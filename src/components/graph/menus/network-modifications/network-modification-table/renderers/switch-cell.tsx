@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { AppState } from '../../../../../../redux/reducer.type';
-import { ComposedModificationMetadata, findModificationsInTree, updateModificationFieldInTree } from '../utils';
+import { ComposedModificationMetadata, findModificationInTree, updateModificationFieldInTree } from '../utils';
 
 export interface SwitchCellRendererProps {
     data: ComposedModificationMetadata;
@@ -55,7 +55,7 @@ const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
     const toggleModificationActive = useCallback(() => {
         setIsLoading(true);
         setModifications((oldModifications) => {
-            const target = findModificationsInTree(modificationUuid, oldModifications);
+            const target = findModificationInTree(modificationUuid, oldModifications);
             if (!target) {
                 return oldModifications;
             }

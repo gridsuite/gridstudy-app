@@ -36,7 +36,7 @@ export function findAllLoadedCompositeModifications(
     }
 }
 
-export function findModificationsInTree(
+export function findModificationInTree(
     uuid: string,
     mods: ComposedModificationMetadata[]
 ): ComposedModificationMetadata | undefined {
@@ -44,7 +44,7 @@ export function findModificationsInTree(
         if (mod.uuid === uuid) {
             return mod;
         }
-        const found = findModificationsInTree(uuid, mod.subModifications);
+        const found = findModificationInTree(uuid, mod.subModifications);
         if (found) {
             return found;
         }
@@ -131,7 +131,7 @@ function getModificationInTree(
     mods: ComposedModificationMetadata[]
 ): ComposedModificationMetadata | undefined {
     if (sourceParentUuid) {
-        const sourceMod = findModificationsInTree(sourceParentUuid, mods);
+        const sourceMod = findModificationInTree(sourceParentUuid, mods);
         if (!sourceMod) {
             return undefined;
         }
@@ -168,7 +168,7 @@ export function moveSubModificationInTree(
     let modsWithoutTheMovedModification: ComposedModificationMetadata[];
 
     if (sourceParentUuid) {
-        const sourceMod = findModificationsInTree(sourceParentUuid, mods);
+        const sourceMod = findModificationInTree(sourceParentUuid, mods);
         if (!sourceMod) {
             return mods;
         }
@@ -183,7 +183,7 @@ export function moveSubModificationInTree(
     }
 
     if (targetParentUuid) {
-        const targetMod = findModificationsInTree(targetParentUuid, modsWithoutTheMovedModification);
+        const targetMod = findModificationInTree(targetParentUuid, modsWithoutTheMovedModification);
         if (!targetMod) {
             return mods;
         }
@@ -209,7 +209,7 @@ export function fetchSubModificationsForExpandedRows(
     setMods: Dispatch<SetStateAction<ComposedModificationMetadata[]>>
 ): void {
     const uuidsToFetch = expandedIds.filter((id) => {
-        const mod = findModificationsInTree(id, mods);
+        const mod = findModificationInTree(id, mods);
         return isCompositeModification(mod) && mod?.subModifications.length === 0;
     });
 
@@ -222,7 +222,7 @@ export function fetchSubModificationsForExpandedRows(
             Object.entries(subModsByUuid).reduce((tree, [uuid, subMods]) => {
                 const liveModifications = formatComposedModification(subMods.filter((m) => !m.stashed));
                 // Preserve already-loaded children of any nested composites within the new sub-list
-                const existingMod = findModificationsInTree(uuid, tree);
+                const existingMod = findModificationInTree(uuid, tree);
                 const mergedSubs = mergeSubModificationsIntoTree(
                     liveModifications,
                     existingMod?.subModifications ?? []
@@ -243,7 +243,7 @@ export function refetchSubModificationsForExpandedRows(
     setMods: Dispatch<SetStateAction<ComposedModificationMetadata[]>>
 ): void {
     const uuidsToRefetch = expandedIds.filter((id) => {
-        const mod = findModificationsInTree(id, mods);
+        const mod = findModificationInTree(id, mods);
         return isCompositeModification(mod);
     });
 
@@ -256,7 +256,7 @@ export function refetchSubModificationsForExpandedRows(
             Object.entries(subModsByUuid).reduce((tree, [uuid, subMods]) => {
                 const liveModifications = formatComposedModification(subMods.filter((m) => !m.stashed));
                 // Preserve already-loaded children of any nested composites within the new sub-list
-                const existingMod = findModificationsInTree(uuid, tree);
+                const existingMod = findModificationInTree(uuid, tree);
                 const mergedSubs = mergeSubModificationsIntoTree(
                     liveModifications,
                     existingMod?.subModifications ?? []

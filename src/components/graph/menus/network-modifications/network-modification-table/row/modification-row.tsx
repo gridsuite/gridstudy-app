@@ -71,6 +71,9 @@ const ModificationRow = memo<ModificationRowProps>(
                                 const isDragHandle = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id;
                                 const isCheckboxColumn = cell.column.id === BASE_MODIFICATION_TABLE_COLUMNS.SELECT.id;
                                 const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
+                                const areBordersSuppressed =
+                                    (isExpanded || row.depth > 0) &&
+                                    BORDER_SUPPRESSED_COLUMNS.has(cell.column.columnDef.id ?? '');
                                 // Tooltip for drag
                                 if (isDragHandle) {
                                     return (
@@ -80,13 +83,7 @@ const ModificationRow = memo<ModificationRowProps>(
                                         >
                                             <Tooltip title={<FormattedMessage id={'moveModification'} />} arrow>
                                                 <Box
-                                                    sx={createCellContentWrapperSx(
-                                                        theme,
-                                                        (isExpanded || row.depth > 0) &&
-                                                            BORDER_SUPPRESSED_COLUMNS.has(
-                                                                cell.column.columnDef.id ?? ''
-                                                            )
-                                                    )}
+                                                    sx={createCellContentWrapperSx(theme, areBordersSuppressed)}
                                                     {...provided.dragHandleProps}
                                                 >
                                                     {cellContent}
@@ -116,15 +113,7 @@ const ModificationRow = memo<ModificationRowProps>(
                                                 }
                                                 arrow
                                             >
-                                                <Box
-                                                    sx={createCellContentWrapperSx(
-                                                        theme,
-                                                        (isExpanded || row.depth > 0) &&
-                                                            BORDER_SUPPRESSED_COLUMNS.has(
-                                                                cell.column.columnDef.id ?? ''
-                                                            )
-                                                    )}
-                                                >
+                                                <Box sx={createCellContentWrapperSx(theme, areBordersSuppressed)}>
                                                     {cellContent}
                                                 </Box>
                                             </Tooltip>
@@ -142,13 +131,7 @@ const ModificationRow = memo<ModificationRowProps>(
                                             // NameCell owns its own borders entirely
                                             flexRender(cell.column.columnDef.cell, cell.getContext())
                                         ) : (
-                                            <Box
-                                                sx={createCellContentWrapperSx(
-                                                    theme,
-                                                    (isExpanded || row.depth > 0) &&
-                                                        BORDER_SUPPRESSED_COLUMNS.has(cell.column.columnDef.id ?? '')
-                                                )}
-                                            >
+                                            <Box sx={createCellContentWrapperSx(theme, areBordersSuppressed)}>
                                                 {cellContent}
                                             </Box>
                                         )}

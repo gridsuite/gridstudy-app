@@ -24,7 +24,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
 import {
     ComposedModificationMetadata,
-    findModificationsInTree,
+    findModificationInTree,
     isCompositeModification,
     moveSubModificationInTree,
 } from './utils';
@@ -72,7 +72,7 @@ const isDropForbidden = (
     //Can't drag a composite in its own subtree
     return !!(
         isCompositeModification(sourceRow.original) &&
-        findModificationsInTree(targetRow.original.uuid, [sourceRow.original])
+        findModificationInTree(targetRow.original.uuid, [sourceRow.original])
     );
 };
 
