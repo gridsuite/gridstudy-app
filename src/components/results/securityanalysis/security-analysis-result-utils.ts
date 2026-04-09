@@ -479,10 +479,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 'disconnectedGenerationActivePower',
                 intl,
                 filterParams,
-                {
-                    ...sortParams,
-                    isChildren: true,
-                }
+                undefined
             )
         ),
     ];
