@@ -10,6 +10,7 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    SensitivityAnalysisParametersInfos,
     SensitivityHVDC,
     SensitivityInjection,
     SensitivityInjectionsSet,
@@ -20,14 +21,17 @@ import type { UUID } from 'node:crypto';
 import {
     CsvConfig,
     SelectorFilterOptions,
-    SensitivityAnalysisParametersInfos,
     SensitivityResult,
     SensitivityResultFilterOptions,
 } from './sensitivity-analysis.type';
 import { FilterConfig } from '../../types/custom-aggrid-types';
 import { GlobalFilters } from 'components/results/common/global-filter/global-filter-types';
-import { EquipmentsContainer } from '@gridsuite/commons-ui/dist/components/parameters/common/parameter-table';
-import { CONTAINER_ID } from '../../components/utils/field-constants';
+import { CONTAINER_ID, CONTAINER_NAME } from '../../components/utils/field-constants';
+
+export interface EquipmentsContainer {
+    [CONTAINER_ID]: string;
+    [CONTAINER_NAME]: string | null;
+}
 
 const GET_PARAMETERS_PREFIX = import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
 
@@ -127,70 +131,7 @@ export function fetchSensitivityAnalysisFilterOptions(
     return backendFetchJson(url);
 }
 
-function mapSensitivityAnalysisParameters(
-    parametersInfos: SensitivityAnalysisParametersInfos<EquipmentsContainer>
-): SensitivityAnalysisParametersInfos<string> {
-    const mapEquipmentsContainerToIds = (containers: EquipmentsContainer[]): string[] => {
-        return containers.map((c) => c.containerId);
-    };
-    return {
-        ...parametersInfos,
-        sensitivityInjectionsSet: parametersInfos.sensitivityInjectionsSet?.map((injectionsSet) => {
-            return {
-                ...injectionsSet,
-                monitoredBranches: injectionsSet.monitoredBranches
-                    ? mapEquipmentsContainerToIds(injectionsSet.monitoredBranches)
-                    : [],
-                injections: injectionsSet.injections ? mapEquipmentsContainerToIds(injectionsSet.injections) : [],
-                contingencyLists: injectionsSet.contingencyLists
-                    ? mapEquipmentsContainerToIds(injectionsSet.contingencyLists)
-                    : [],
-            };
-        }),
-        sensitivityInjection: parametersInfos.sensitivityInjection?.map((injection) => {
-            return {
-                ...injection,
-                monitoredBranches: injection.monitoredBranches
-                    ? mapEquipmentsContainerToIds(injection.monitoredBranches)
-                    : [],
-                injections: injection.injections ? mapEquipmentsContainerToIds(injection.injections) : [],
-                contingencyLists: injection.contingencyLists
-                    ? mapEquipmentsContainerToIds(injection.contingencyLists)
-                    : [],
-            };
-        }),
-        sensitivityHVDC: parametersInfos.sensitivityHVDC?.map((hvdc) => {
-            return {
-                ...hvdc,
-                monitoredBranches: hvdc.monitoredBranches ? mapEquipmentsContainerToIds(hvdc.monitoredBranches) : [],
-                hvdcs: hvdc.hvdcs ? mapEquipmentsContainerToIds(hvdc.hvdcs) : [],
-                contingencyLists: hvdc.contingencyLists ? mapEquipmentsContainerToIds(hvdc.contingencyLists) : [],
-            };
-        }),
-        sensitivityPST: parametersInfos.sensitivityPST?.map((pst) => {
-            return {
-                ...pst,
-                monitoredBranches: pst.monitoredBranches ? mapEquipmentsContainerToIds(pst.monitoredBranches) : [],
-                psts: pst.psts ? mapEquipmentsContainerToIds(pst.psts) : [],
-                contingencyLists: pst.contingencyLists ? mapEquipmentsContainerToIds(pst.contingencyLists) : [],
-            };
-        }),
-        sensitivityNodes: parametersInfos.sensitivityNodes?.map((nodes) => {
-            return {
-                ...nodes,
-                monitoredVoltageLevels: nodes.monitoredVoltageLevels
-                    ? mapEquipmentsContainerToIds(nodes.monitoredVoltageLevels)
-                    : [],
-                equipmentsInVoltageRegulation: nodes.equipmentsInVoltageRegulation
-                    ? mapEquipmentsContainerToIds(nodes.equipmentsInVoltageRegulation)
-                    : [],
-                contingencyLists: nodes.contingencyLists ? mapEquipmentsContainerToIds(nodes.contingencyLists) : [],
-            };
-        }),
-    };
-}
-
-function getEquipmentsContainerIds(params: SensitivityAnalysisParametersInfos<string>): Set<string> {
+function getEquipmentsContainerIds(params: SensitivityAnalysisParametersInfos<UUID>): Set<string> {
     const allContainerIds = new Set<string>();
 
     params.sensitivityInjection?.forEach((i) => {
@@ -226,7 +167,7 @@ function getEquipmentsContainerIds(params: SensitivityAnalysisParametersInfos<st
     return allContainerIds;
 }
 
-function fetchElementNames(elementUuids: Set<string>): Promise<Map<string, string>> {
+function fetchElementNames(elementUuids: Set<string>) {
     console.info('fetch directory element names');
 
     const params = new URLSearchParams();
@@ -234,29 +175,35 @@ function fetchElementNames(elementUuids: Set<string>): Promise<Map<string, strin
         params.append('ids', id);
     });
 
-    const url = `explore/v1/element/name?${params.toString()}`; // TODO
+    const url = `${import.meta.env.VITE_API_GATEWAY}/explore/v1/explore/elements/name?${params.toString()}`;
     console.debug(url);
 
     return backendFetchJson(url);
 }
 
-export function getSensitivityAnalysisParameters(
-    studyUuid: UUID
-): Promise<SensitivityAnalysisParametersInfos<EquipmentsContainer>> {
+export function getSensitivityAnalysisParameters(studyUuid: UUID): Promise<SensitivityAnalysisParametersInfos<UUID>> {
     console.info('get sensitivity analysis parameters');
     const url = `${getStudyUrl(studyUuid)}/sensitivity-analysis/parameters`;
     console.debug(url);
-    const parametersPromise: Promise<SensitivityAnalysisParametersInfos<string>> = backendFetchJson(url);
+    return backendFetchJson(url);
+}
+
+export function getSensitivityAnalysisParametersEnriched(
+    studyUuid: UUID
+): Promise<SensitivityAnalysisParametersInfos<EquipmentsContainer>> {
+    const parametersPromise: Promise<SensitivityAnalysisParametersInfos<UUID>> =
+        getSensitivityAnalysisParameters(studyUuid);
 
     // enrich directory elements with their names
     return parametersPromise.then(
         (
-            parameters: SensitivityAnalysisParametersInfos<string>
+            parameters: SensitivityAnalysisParametersInfos<UUID>
         ): Promise<SensitivityAnalysisParametersInfos<EquipmentsContainer>> => {
             const allElementIds = getEquipmentsContainerIds(parameters);
 
             return fetchElementNames(allElementIds).then((elementNames) => {
-                const mapIdsToEquipmentsContainer = (ids?: string[]): EquipmentsContainer[] => {
+                console.log(allElementIds);
+                const mapIdsToEquipmentsContainer = (ids?: UUID[]): EquipmentsContainer[] => {
                     return ids
                         ? ids.map((id) => ({
                               [CONTAINER_ID]: id,
@@ -334,7 +281,7 @@ export function fetchSensitivityAnalysisParameters(parameterUuid: string) {
 
 export function setSensitivityAnalysisParameters(
     studyUuid: UUID | null,
-    newParams: SensitivityAnalysisParametersInfos | null
+    newParams: SensitivityAnalysisParametersInfos<EquipmentsContainer> | null
 ) {
     console.info('set sensitivity analysis parameters');
     const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';

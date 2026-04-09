@@ -19,7 +19,10 @@ import {
 } from 'services/loadflow';
 import { getLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
 import { getSecurityAnalysisParameters, setSecurityAnalysisParameters } from 'services/study/security-analysis';
-import { getSensitivityAnalysisParameters } from 'services/study/sensitivity-analysis';
+import {
+    getSensitivityAnalysisParameters,
+    getSensitivityAnalysisParametersEnriched,
+} from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
@@ -30,6 +33,7 @@ import { useGetStateEstimationParameters } from './dialogs/parameters/state-esti
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
+import type { UUID } from 'node:crypto';
 import {
     ComputingType,
     DynamicMarginCalculationInline,
@@ -187,7 +191,7 @@ const ParametersTabs: FunctionComponent = () => {
         sensitivityAnalysisAvailability,
         {
             backendFetchProviders: fetchSensitivityAnalysisProviders,
-            backendFetchParameters: getSensitivityAnalysisParameters,
+            backendFetchParameters: getSensitivityAnalysisParametersEnriched,
         }
     );
     useParametersNotification(
