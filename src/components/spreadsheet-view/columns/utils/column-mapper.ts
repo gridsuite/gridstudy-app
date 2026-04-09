@@ -16,7 +16,6 @@ import {
 import { isValidationError, validateFormulaResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
-import { CalculationRowType } from '../../types/calculation.type';
 import { ErrorCellRenderer, SnackInputs } from '@gridsuite/commons-ui';
 import { COLUMN_TYPES, CustomAggridValue, CustomColDef } from '../../../../types/custom-aggrid-types';
 import { RunningStatus } from 'components/utils/running-status';
@@ -58,15 +57,27 @@ const computeLoadflowDependentColumnIds = (columns: ColumnDefinition[], fields: 
     const dependents = new Map<string, string[]>();
     for (const col of columns) {
         for (const dep of col.dependencies ?? []) {
-            dependents.set(dep, [...(dependents.get(dep) ?? []), col.id]);
+            const list = dependents.get(dep);
+            if (list) {
+                list.push(col.id);
+            } else {
+                dependents.set(dep, [col.id]);
+            }
         }
     }
 
     // Start from directly-dependent columns (those whose formula references an invalid field),
-    // then propagate transitively to their dependents
+    // then propagate transitively to their dependents.
+    // we need to skip fields that are overridden by a same-named dependency column in the formula scope.
     const result = new Set<string>();
     const dependentIdsToVisit = columns
-        .filter((col) => col.formula && fields.some((field) => formulaReferencesField(col.formula, field)))
+        .filter(
+            (col) =>
+                col.formula &&
+                fields.some(
+                    (field) => formulaReferencesField(col.formula, field) && !(col.dependencies ?? []).includes(field)
+                )
+        )
         .map((col) => col.id);
     while (dependentIdsToVisit.length > 0) {
         const id = dependentIdsToVisit.pop();
@@ -108,11 +119,14 @@ export const mapColumns = (
     loadFlowStatus: RunningStatus,
     isSecurityNode: boolean
 ) => {
+    if (!tableDefinition) {
+        return [];
+    }
     const loadflowDependentColumnIds = computeLoadflowDependentColumnIds(
-        tableDefinition?.columns ?? [],
-        getInvalidFields(tableDefinition?.type, isSecurityNode)
+        tableDefinition.columns,
+        getInvalidFields(tableDefinition.type, isSecurityNode)
     );
-    return tableDefinition?.columns.map((colDef): CustomColDef => {
+    return tableDefinition.columns.map((colDef): CustomColDef => {
         const isInvalid = loadflowDependentColumnIds.has(colDef.id) && loadFlowStatus !== RunningStatus.SUCCEED;
         let baseDefinition: ColDef;
 
@@ -149,12 +163,7 @@ export const mapColumns = (
                 },
                 isInvalid,
             },
-            cellClass: (params) => {
-                if (isInvalid && params.data?.rowType !== CalculationRowType.CALCULATION_BUTTON) {
-                    return SPREADSHEET_INVALID_CELL_CLASS;
-                }
-                return undefined;
-            },
+            cellClass: isInvalid ? SPREADSHEET_INVALID_CELL_CLASS : undefined,
             valueGetter: createValueGetter(colDef),
             cellRendererSelector: (params) =>
                 isValidationError(params.value) ? { component: ErrorCellRenderer } : undefined, //Returning undefined make it so the originally defined renderer is used
