@@ -50,7 +50,7 @@ import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floatin
 import { isFormulaContentSizeOk } from './utils/formula-validator';
 import { MAX_FORMULA_CHARACTERS } from '../constants';
 import InfoIcon from '@mui/icons-material/Info';
-import { persistSpreadsheetColumnFilters } from './persist-spreadsheet-column-filters';
+import { persistSpreadsheetColumnFilters } from './utils/persist-spreadsheet-column-filters';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -233,7 +233,7 @@ export default function ColumnCreationDialog({
     const persistFilters = useCallback(
         (studyUuid: UUID, newFilters: FilterConfig[]) => {
             const onError = (error: unknown) => snackWithFallback(snackError, error);
-            persistSpreadsheetColumnFilters(studyUuid, spreadsheetConfigUuid, newFilters, columnDefinition, onError);
+            persistSpreadsheetColumnFilters(studyUuid, spreadsheetConfigUuid, columnDefinition, newFilters, onError);
         },
         [spreadsheetConfigUuid, columnDefinition, snackError]
     );

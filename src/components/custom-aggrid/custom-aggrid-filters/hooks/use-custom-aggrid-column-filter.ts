@@ -19,10 +19,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
-import { persistComputationColumnFilters } from '../../../results/common/column-filter/update-computation-columns-filters';
-import { persistSpreadsheetColumnFilters } from '../../../spreadsheet-view/columns/persist-spreadsheet-column-filters';
+import { persistSpreadsheetColumnFilters } from '../../../spreadsheet-view/columns/utils/persist-spreadsheet-column-filters';
 import type { UUID } from 'node:crypto';
 import { updateColumnFiltersAction } from '../../../../redux/actions';
+
+import { persistComputationColumnFilters } from '../../../results/common/column-filter/persist-computation-column-filters';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -106,9 +107,9 @@ export const useCustomAggridColumnFilter = (
             }
             // Data flow for spreadsheet / computation tables is: update backend database -> notification -> update redux state -> useEffect -> update hook state
             else if (type === TableType.Spreadsheet) {
-                persistSpreadsheetColumnFilters(studyUuid, tab as UUID, updatedFilters, colDef, onError);
+                persistSpreadsheetColumnFilters(studyUuid, tab as UUID, colDef, updatedFilters, onError);
             } else {
-                persistComputationColumnFilters(updatedFilters, colId, studyUuid, type, tab, onError);
+                persistComputationColumnFilters(studyUuid, type, tab, colId, updatedFilters, onError);
             }
         },
         [studyUuid, colId, type, filters, snackError, tab, dispatch, colDef]

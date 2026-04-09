@@ -5,17 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import type { UUID } from 'node:crypto';
-import { FilterConfig } from '../../../types/custom-aggrid-types';
-import { ColumnDefinition } from '../types/spreadsheet.type';
+import { FilterConfig } from '../../../../types/custom-aggrid-types';
+import { ColumnDefinition } from '../../types/spreadsheet.type';
 import { updateSpreadsheetColumn } from 'services/study/study-config';
-import { mapColDefToDto } from '../add-spreadsheet/dialogs/add-spreadsheet-utils';
+import { mapColDefToDto } from '../../add-spreadsheet/dialogs/add-spreadsheet-utils';
 
 export const persistSpreadsheetColumnFilters = (
     studyUuid: UUID,
     tabUuid: UUID,
+    colDef: ColumnDefinition | undefined,
     filters: FilterConfig[],
-    colDef?: ColumnDefinition,
-    onError?: (error: unknown) => void
+    onError: (error: unknown) => void
 ) => {
     if (!colDef) {
         return;
@@ -23,6 +23,6 @@ export const persistSpreadsheetColumnFilters = (
     const colFilter = filters.find((f) => f.column === colDef.id);
     const columnDto = mapColDefToDto(colDef, colFilter);
     updateSpreadsheetColumn(studyUuid, tabUuid, colDef.uuid, columnDto).catch((error) => {
-        onError?.(error);
+        onError(error);
     });
 };

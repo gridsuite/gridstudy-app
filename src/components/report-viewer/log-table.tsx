@@ -39,7 +39,7 @@ import { useLogsPagination } from './use-logs-pagination';
 import { useStableComputedArray } from '../../hooks/use-stable-computed-array';
 import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
-const getColumnFilterValue = (array: FilterConfig[] | null | undefined, columnName: string): any => {
+const getColumnFilterValue = (array: FilterConfig[] | undefined, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
 };
 
