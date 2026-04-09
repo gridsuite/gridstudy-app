@@ -286,10 +286,15 @@ export function copyOrMoveModifications(
     });
 }
 
+export interface ModificationPair {
+    first: UUID;
+    second: string;
+}
+
 export const insertCompositeModifications = (
     studyUuid: string,
     nodeUuid: string,
-    modifications: Record<string, string>[],
+    modifications: ModificationPair[],
     action: CompositeModificationAction
 ): Promise<void> => {
     const urlSearchParams = new URLSearchParams({ action });

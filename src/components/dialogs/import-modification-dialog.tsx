@@ -15,7 +15,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { insertCompositeModifications } from '../../services/study';
+import { insertCompositeModifications, ModificationPair } from '../../services/study';
 import { JSX, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
@@ -28,6 +28,7 @@ import yup from 'components/utils/yup-config';
 import { ModificationDialog } from './commons/modificationDialog';
 import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
 import GridItem from './commons/grid-item';
+import { UUID } from 'node:crypto';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -48,14 +49,15 @@ interface ImportModificationDialogProps {
 }
 
 interface SelectedComposite {
-    id: string;
+    id: UUID;
     name: string;
 }
+type CompositeNameOverrides = Record<UUID, string>;
 
 interface FormData {
     [ACTION]: CompositeModificationAction;
     [SELECTED_MODIFICATIONS]: SelectedComposite[];
-    [COMPOSITE_NAMES]: Record<string, string>;
+    [COMPOSITE_NAMES]: CompositeNameOverrides;
 }
 
 const emptyFormData: FormData = {
@@ -69,7 +71,7 @@ const formSchema = yup
     .shape({
         [ACTION]: yup.mixed<CompositeModificationAction>().oneOf(Object.values(CompositeModificationAction)).required(),
         [SELECTED_MODIFICATIONS]: yup.array().min(1).required(),
-        [COMPOSITE_NAMES]: yup.mixed<Record<string, string>>().when(ACTION, ([action], schema) => {
+        [COMPOSITE_NAMES]: yup.mixed<CompositeNameOverrides>().when(ACTION, ([action], schema) => {
             if (action === CompositeModificationAction.INSERT) {
                 return schema.test('all-names-filled', 'FieldIsRequired', function (value) {
                     const selections: SelectedComposite[] = this.parent[SELECTED_MODIFICATIONS] ?? [];
@@ -166,9 +168,10 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
     const handleSave = useCallback(
         (values: FormData) => {
             if (!studyUuid || !currentNode) return;
-            const modificationsToInsert: { first: string; second: string }[] = values[SELECTED_MODIFICATIONS].map(
-                (m) => ({ first: m.id, second: values[COMPOSITE_NAMES][m.id] ?? m.name })
-            );
+            const modificationsToInsert: ModificationPair[] = values[SELECTED_MODIFICATIONS].map((m) => ({
+                first: m.id,
+                second: values[COMPOSITE_NAMES][m.id] ?? m.name,
+            }));
             insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, values[ACTION]).catch(
                 (error) => {
                     snackWithFallback(snackError, error, { headerId: 'importComposites.error' });
