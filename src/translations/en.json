@@ -1013,6 +1013,7 @@
 
     "insertNodeAbove": "Above",
     "insertNodeBelow": "Below",
+    "renameNode": "Rename",
     "copyNetworkModificationNode": "Copy",
     "cutNetworkModificationNode": "Cut",
     "pasteNetworkModificationNode": "Paste",
