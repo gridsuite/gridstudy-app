@@ -962,6 +962,25 @@ export function removeFromGlobalFilterOptions(id: string): RemoveFromGlobalFilte
     };
 }
 
+export const MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED = 'MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED';
+export type MarkNotFoundGlobalFiltersAsDeletedAction = Readonly<
+    Action<typeof MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED>
+> & {
+    globalFilters: GlobalFilter[];
+    tableId: string;
+};
+
+export function markNotFoundGlobalFiltersAsDeleted(
+    globalFilters: GlobalFilter[],
+    tableId: string
+): MarkNotFoundGlobalFiltersAsDeletedAction {
+    return {
+        type: MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+        globalFilters: globalFilters,
+        tableId: tableId,
+    };
+}
+
 export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
 export type SetLastCompletedComputationAction = Readonly<Action<typeof SET_LAST_COMPLETED_COMPUTATION>> & {
     lastCompletedComputation: ComputingType | null;
