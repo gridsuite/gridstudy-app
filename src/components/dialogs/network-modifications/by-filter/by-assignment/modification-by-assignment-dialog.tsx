@@ -96,7 +96,7 @@ const ModificationByAssignmentDialog: FC<ModificationByAssignmentDialogProps> = 
                 }}
                 {...dialogProps}
             >
-                <ModificationByAssignmentForm isModification={isUpdate} />
+                <ModificationByAssignmentForm />
             </ModificationDialog>
         </CustomFormProvider>
     );
