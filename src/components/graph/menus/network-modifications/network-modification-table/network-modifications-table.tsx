@@ -47,7 +47,6 @@ import {
     formatToComposedModification,
     isCompositeModification,
     mergeSubModificationsIntoTree,
-    refetchSubModificationsForExpandedRows,
 } from './utils';
 import { NetworkModificationMetadata } from '@gridsuite/commons-ui';
 
@@ -101,10 +100,11 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
             // whether it is currently expanded to avoid stale state
             let loadedComposite: ComposedModificationMetadata[] = [];
             findAllLoadedCompositeModifications(nextMods, loadedComposite);
-            refetchSubModificationsForExpandedRows(
+            fetchSubModificationsForExpandedRows(
                 loadedComposite.map((mod) => mod.uuid),
                 nextMods,
-                setComposedModifications
+                setComposedModifications,
+                true
             );
             return nextMods;
         });

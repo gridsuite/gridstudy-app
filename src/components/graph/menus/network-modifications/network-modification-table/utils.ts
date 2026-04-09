@@ -211,11 +211,12 @@ export function moveSubModificationInTree(
 export function fetchSubModificationsForExpandedRows(
     expandedIds: string[],
     mods: ComposedModificationMetadata[],
-    setMods: Dispatch<SetStateAction<ComposedModificationMetadata[]>>
+    setMods: Dispatch<SetStateAction<ComposedModificationMetadata[]>>,
+    force = false
 ): void {
     const uuidsToFetch = expandedIds.filter((id) => {
         const mod = findModificationInTree(id, mods);
-        return isCompositeModification(mod) && mod?.subModifications.length === 0;
+        return isCompositeModification(mod) && (force || mod?.subModifications.length === 0);
     });
 
     if (uuidsToFetch.length === 0) {
@@ -223,40 +224,6 @@ export function fetchSubModificationsForExpandedRows(
     }
 
     getNetworkModificationsFromComposite(uuidsToFetch).then((subModsByUuid) => {
-        setMods((prev) =>
-            Object.entries(subModsByUuid).reduce((tree, [uuid, subMods]) => {
-                const liveModifications = formatToComposedModification(subMods.filter((m) => !m.stashed));
-                // Preserve already-loaded children of any nested composites within the new sub-list
-                const existingMod = findModificationInTree(uuid, tree);
-                const mergedSubs = mergeSubModificationsIntoTree(
-                    liveModifications,
-                    existingMod?.subModifications ?? []
-                );
-                return updateSubModificationsOfACompositeInTree(uuid, mergedSubs, tree);
-            }, prev)
-        );
-    });
-}
-
-/**
- * Re-fetches sub-modifications for all expanded composite rows
- * Used when `modifications` changes to ensure no stale sub-modification data remains.
- */
-export function refetchSubModificationsForExpandedRows(
-    expandedIds: string[],
-    mods: ComposedModificationMetadata[],
-    setMods: Dispatch<SetStateAction<ComposedModificationMetadata[]>>
-): void {
-    const uuidsToRefetch = expandedIds.filter((id) => {
-        const mod = findModificationInTree(id, mods);
-        return isCompositeModification(mod);
-    });
-
-    if (uuidsToRefetch.length === 0) {
-        return;
-    }
-
-    getNetworkModificationsFromComposite(uuidsToRefetch).then((subModsByUuid) => {
         setMods((prev) =>
             Object.entries(subModsByUuid).reduce((tree, [uuid, subMods]) => {
                 const liveModifications = formatToComposedModification(subMods.filter((m) => !m.stashed));
