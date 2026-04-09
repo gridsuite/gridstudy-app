@@ -29,10 +29,10 @@ const workspacesSlice = createSlice({
 
         setActiveWorkspace: (state, action: PayloadAction<Workspace>) => {
             state.activeWorkspace = action.payload;
-            // Initialize zIndex on panels if not present
+            // Initialize zIndex only if not already set (allows callers to pre-populate from localStorage)
             if (state.activeWorkspace) {
                 state.activeWorkspace.panels.forEach((panel, index) => {
-                    panel.zIndex = index + 1;
+                    panel.zIndex ??= index + 1;
                 });
             }
         },

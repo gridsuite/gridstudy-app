@@ -947,6 +947,7 @@
 
     "insertNodeAbove": "Au-dessus",
     "insertNodeBelow": "En-dessous",
+    "renameNode": "Renommer",
     "copyNetworkModificationNode": "Copier",
     "cutNetworkModificationNode": "Couper",
     "pasteNetworkModificationNode": "Coller",
