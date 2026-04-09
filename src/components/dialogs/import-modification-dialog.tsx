@@ -15,7 +15,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { insertCompositeModifications, ModificationPair } from '../../services/study';
+import { insertCompositeModifications, type ModificationPair } from '../../services/study';
 import { JSX, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
