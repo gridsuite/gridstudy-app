@@ -97,7 +97,7 @@ export const useCopiedNodes = () => {
 
     const cleanClipboard = useCallback(
         (showSnackInfo = true, snackInfoMessage?: string) => {
-            cleanCurrentTabClipboard(showSnackInfo ? (snackInfoMessage ?? 'copiedNodeInvalidationMsg') : undefined);
+            cleanCurrentTabClipboard();
             cleanOtherTabsClipboard(
                 showSnackInfo ? (snackInfoMessage ?? 'copiedNodeInvalidationMsgFromOtherStudy') : undefined
             );
