@@ -492,7 +492,6 @@
     "ContingenciesFromConstraints": "Contraintes -> aléas",
 
     "Equipment": "Ouvrage",
-    "EquipmentType": "Type d'ouvrage",
     "selectionType": "Type de sélection",
     "loadType": "Type",
     "ConstantP": "P constant (MW)",
@@ -1265,7 +1264,6 @@
     "rootNetworkIndexationError": "L'indexation de réseau racine a échoué.",
     "checkRootNetworkIndexationError": "La récupération de l'état d'indexation du réseau racine a échoué.",
     "rootNetworkIndexationStatusUnknown": "L'état d'indexation du réseau racine est inconnu : \"{status}\".",
-    "EditedField": "Champ modifié",
     "ReferenceFieldOrValue": "Champ de référence ou valeur",
     "Operator": "Opérateur",
     "ModifyByFormula": "Modification par formule",
@@ -1275,7 +1273,6 @@
     "ValueMustBeNumericWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une valeur numérique positive valide",
     "ValueMustBeRefWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une référence de champ valide",
     "addNewFormula": "Ajouter une nouvelle formule",
-    "addNewAssignment": "Modifier un autre champ",
     "waitingRootNetworkIndexation": "En attente de l'indexation de réseau racine...",
     "undefined": "non défini",
     "GenerationStages": "Paliers",
