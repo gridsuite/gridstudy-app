@@ -612,8 +612,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     // list of visible runnable isn't static
     const activeRunnables = useMemo(() => {
         return [
-            'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS',
             'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS',
+            'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS',
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up ? [ComputingType.SECURITY_ANALYSIS] : []),
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [ComputingType.SENSITIVITY_ANALYSIS]

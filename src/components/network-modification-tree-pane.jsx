@@ -47,6 +47,7 @@ import {
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
+import NetworkModificationNodeDialog from './graph/menus/network-modifications/network-modification-node-dialog';
 import { CopyType } from './network-modification.type';
 import {
     NodeSequenceType,
@@ -376,6 +377,12 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
         setOpenRestoreDialog(true);
     };
 
+    const [openRenameNodeDialog, setOpenRenameNodeDialog] = useState(false);
+
+    const handleRenameNode = useCallback(() => {
+        setOpenRenameNodeDialog(true);
+    }, []);
+
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: { x: -1, y: -1 },
         display: null,
@@ -490,6 +497,7 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
                     handleCutSubtree={handleCutSubtree}
                     handleCopySubtree={handleCopySubtree}
                     handlePasteSubtree={handlePasteSubtree}
+                    handleRenameNode={handleRenameNode}
                     handleOpenRestoreNodesDialog={handleOpenRestoreNodesDialog}
                     disableRestoreNodes={nodesToRestore.length === 0}
                 />
@@ -501,6 +509,14 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
                     onClick={handleClickExportNodeNetwork}
                     studyUuid={studyUuid}
                     nodeUuid={activeNode?.id}
+                />
+            )}
+            {openRenameNodeDialog && (
+                <NetworkModificationNodeDialog
+                    open={openRenameNodeDialog}
+                    onClose={() => setOpenRenameNodeDialog(false)}
+                    titleId="editNode"
+                    node={activeNode}
                 />
             )}
             {openRestoreDialog && (
