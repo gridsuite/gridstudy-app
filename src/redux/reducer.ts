@@ -83,6 +83,8 @@ import {
     type MapDataLoadingAction,
     type MapEquipmentsCreatedAction,
     type MapEquipmentsInitializedAction,
+    MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+    type MarkNotFoundGlobalFiltersAsDeletedAction,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
@@ -1680,7 +1682,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
         const now = Date.now();
         filterIds.forEach((filterId) => {
-            tableState.recents.unshift({ id: filterId, unselectedDate: now });
+            const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
+            if (!filterOption?.deleted) {
+                tableState.recents.unshift({ id: filterId, unselectedDate: now });
+            }
         });
         tableState.recents = tableState.recents.slice(0, MAX_RECENT_GLOBAL_FILTERS);
     });
@@ -1690,10 +1695,29 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
         const now = Date.now();
-        const newRecents = tableState.selected.map((filterId) => ({ id: filterId, unselectedDate: now }));
+        const newRecents = tableState.selected
+            .filter((filterId) => {
+                const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
+                return !filterOption?.deleted;
+            })
+            .map((filterId) => ({ id: filterId, unselectedDate: now }));
         tableState.recents = [...newRecents, ...tableState.recents].slice(0, MAX_RECENT_GLOBAL_FILTERS);
         tableState.selected = [];
     });
+    builder.addCase(
+        MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+        (state, action: MarkNotFoundGlobalFiltersAsDeletedAction) => {
+            const { globalFilters, tableId } = action;
+            const ids = new Set(globalFilters.map((f) => f.id));
+            state.globalFilterOptions.forEach((globalFilter) => {
+                if (ids.has(globalFilter.id)) globalFilter.deleted = true;
+            });
+            const tableState = state.tableFilters.globalFilters[tableId];
+            if (tableState?.recents?.length) {
+                tableState.recents = tableState.recents.filter((r) => !ids.has(r.id));
+            }
+        }
+    );
 });
 
 function updateSubstationAfterVLDeletion(

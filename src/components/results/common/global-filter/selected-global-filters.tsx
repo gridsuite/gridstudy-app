@@ -75,7 +75,7 @@ function SelectedGlobalFilters() {
                             <OverflowableChip
                                 key={element.id}
                                 label={getOptionLabel(element, translate, intl)}
-                                sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                                sx={getResultsGlobalFiltersChipStyle(element)}
                                 onDelete={() => {
                                     dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, [element.id]));
                                 }}

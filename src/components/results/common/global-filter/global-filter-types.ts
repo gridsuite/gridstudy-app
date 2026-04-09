@@ -38,6 +38,7 @@ export interface GlobalFilter {
     path?: string; // only useful for generic filters
     minValue?: number; // only useful for voltage level filters
     maxValue?: number; // only useful for voltage level filters
+    deleted?: boolean; // only useful for generic filters
 }
 
 export interface RecentGlobalFilter {
