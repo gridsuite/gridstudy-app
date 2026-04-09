@@ -15,7 +15,9 @@ interface DepthBoxProps {
 
 function getDepthBoxStyle(displayAsFolder: boolean | undefined, firstLevel: boolean) {
     if (displayAsFolder) {
-        return networkModificationTableStyles.folderDepthBox;
+        return firstLevel
+            ? networkModificationTableStyles.firstLevelFolderDepthBox
+            : networkModificationTableStyles.folderDepthBox;
     }
     return firstLevel ? networkModificationTableStyles.firstLevelDepthBox : networkModificationTableStyles.depthBox;
 }
@@ -23,8 +25,11 @@ function getDepthBoxStyle(displayAsFolder: boolean | undefined, firstLevel: bool
 const DepthBox = ({ firstLevel, displayAsFolder = false }: DepthBoxProps) => {
     return (
         <Box sx={getDepthBoxStyle(displayAsFolder, firstLevel)}>
-            <Box sx={networkModificationTableStyles.depthBoxLine} />
-            {displayAsFolder && <Box sx={networkModificationTableStyles.depthBoxTick} />}
+            {displayAsFolder ? (
+                <Box sx={networkModificationTableStyles.depthBoxTick} />
+            ) : (
+                <Box sx={networkModificationTableStyles.depthBoxLine} />
+            )}
         </Box>
     );
 };

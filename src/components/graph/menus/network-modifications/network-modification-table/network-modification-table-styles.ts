@@ -150,33 +150,41 @@ export const networkModificationTableStyles = {
         alignSelf: 'stretch',
         position: 'relative',
     },
-    folderDepthBox: {
-        width: `${1 + DEPTH_CELL_WIDTH / 2}px`,
-        display: 'flex',
-        justifyContent: 'right',
-        alignSelf: 'stretch',
-        position: 'relative',
-    },
-    depthBox: {
+    firstLevelFolderDepthBox: (theme) => ({
         width: `${DEPTH_CELL_WIDTH / 2}px`,
         display: 'flex',
         alignSelf: 'stretch',
         position: 'relative',
-        justifyContent: 'flex-start',
-    },
-    depthBoxLine: {
-        width: '1px',
-        backgroundColor: 'divider',
+        borderRight: `1px solid ${createCellBorderColor(theme)}`,
+    }),
+    folderDepthBox: (theme) => ({
+        width: `${1 + DEPTH_CELL_WIDTH / 2}px`,
+        display: 'flex',
         alignSelf: 'stretch',
+        position: 'relative',
+        borderRight: `1px solid ${createCellBorderColor(theme)}`,
+        borderLeft: `1px solid ${createCellBorderColor(theme)}`,
+    }),
+    depthBox: {
+        width: `${DEPTH_CELL_WIDTH / 2}px`,
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignSelf: 'stretch',
+        position: 'relative',
     },
-    depthBoxTick: {
+    depthBoxLine: (theme) => ({
+        width: '1px',
+        backgroundColor: createCellBorderColor(theme),
+        alignSelf: 'stretch',
+    }),
+    depthBoxTick: (theme) => ({
         position: 'absolute',
         top: '50%',
         left: '100%',
         width: '5px',
         height: '1px',
-        backgroundColor: 'divider',
-    },
+        backgroundColor: createCellBorderColor(theme),
+    }),
 } as const satisfies MuiStyles;
 
 // Dynamic styles
