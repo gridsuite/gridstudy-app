@@ -16,7 +16,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { insertCompositeModifications } from '../../services/study';
-import { JSX, useCallback, useState } from 'react';
+import { JSX, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
@@ -104,6 +104,13 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
 
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
 
+    const [hasConfirmedFirstSelection, setHasConfirmedFirstSelection] = useState(false);
+    useEffect(() => {
+        if (open) {
+            setIsSelectorOpen(true);
+        }
+    }, [open]);
+
     const formMethods = useForm<FormSchemaType>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -122,18 +129,35 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
     const compositeNames = watch(COMPOSITE_NAMES);
     const isInsertMode = action === CompositeModificationAction.INSERT;
 
-    const handleSelectModification = (selectedElements: TreeViewFinderNodeProps[]) => {
-        setIsSelectorOpen(false);
-        if (!selectedElements.length) return;
+    const handleOpenSelector = useCallback(() => {
+        setIsSelectorOpen(true);
+    }, []);
 
-        const newSelections = selectedElements.map((e) => ({ id: e.id, name: e.name }));
-        setValue(SELECTED_MODIFICATIONS, newSelections, { shouldValidate: true, shouldDirty: true });
+    const handleSelectModification = useCallback(
+        (selectedElements: TreeViewFinderNodeProps[]) => {
+            setIsSelectorOpen(false);
 
-        const currentNames = compositeNames ?? {};
-        setValue(COMPOSITE_NAMES, Object.fromEntries(newSelections.map((e) => [e.id, currentNames[e.id] ?? e.name])), {
-            shouldValidate: true,
-        });
-    };
+            if (!selectedElements.length) {
+                // Cancel before any confirmed selection -> close the whole dialog.
+                if (!hasConfirmedFirstSelection) {
+                    onClose();
+                }
+                return;
+            }
+
+            setHasConfirmedFirstSelection(true);
+            const newSelections = selectedElements.map((e) => ({ id: e.id, name: e.name }));
+            setValue(SELECTED_MODIFICATIONS, newSelections, { shouldValidate: true, shouldDirty: true });
+
+            const currentNames = compositeNames ?? {};
+            setValue(
+                COMPOSITE_NAMES,
+                Object.fromEntries(newSelections.map((e) => [e.id, currentNames[e.id] ?? e.name])),
+                { shouldValidate: true }
+            );
+        },
+        [hasConfirmedFirstSelection, compositeNames, onClose, setValue]
+    );
 
     const handleClear = useCallback(() => {
         reset(emptyFormData);
@@ -158,18 +182,18 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
-                fullWidth
-                maxWidth="md"
                 open={open}
                 onClose={onClose}
                 onClear={handleClear}
                 onSave={handleSave}
                 titleId="importComposites.title"
                 disabledSave={!isValid}
+                PaperProps={{ sx: { minWidth: '50%' } }}
+                sx={{ visibility: hasConfirmedFirstSelection ? 'visible' : 'hidden' }}
             >
                 <Grid container spacing={2} marginTop="auto" sx={{ alignItems: 'center' }}>
                     <GridItem size={12}>
-                        <Button size="medium" onClick={() => setIsSelectorOpen(true)}>
+                        <Button size="medium" onClick={handleOpenSelector}>
                             <NoteAltIcon />
                             <FormattedMessage id={'importComposites.select'} />
                         </Button>
