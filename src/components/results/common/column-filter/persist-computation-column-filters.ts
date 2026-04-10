@@ -10,8 +10,8 @@ import { updateComputationResultFiltersColumn } from '../../../../services/study
 
 export const persistComputationColumnFilters = (
     studyUuid: UUID,
-    tableType: TableType,
-    tableId: string,
+    computationType: TableType,
+    computationSubType: string,
     colId: string,
     filters: FilterConfig[],
     onError: (error: unknown) => void
@@ -28,7 +28,9 @@ export const persistComputationColumnFilters = (
               }
             : null,
     };
-    updateComputationResultFiltersColumn(studyUuid, tableType, tableId, columnFilterInfos).catch((error) => {
-        onError(error);
-    });
+    updateComputationResultFiltersColumn(studyUuid, computationType, computationSubType, columnFilterInfos).catch(
+        (error) => {
+            onError(error);
+        }
+    );
 };
