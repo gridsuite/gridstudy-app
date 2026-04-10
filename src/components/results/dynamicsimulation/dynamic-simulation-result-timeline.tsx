@@ -29,7 +29,6 @@ import { dynamicSimulationResultInvalidations } from '../../computing-status/use
 import { useNodeData } from 'components/use-node-data';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/study/dynamic-simulation';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 const styles = {
@@ -91,7 +90,6 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.NUMBER,
                                 comparators: Object.values(FILTER_NUMBER_COMPARATORS),
                             },
@@ -116,7 +114,6 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
@@ -140,7 +137,6 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
