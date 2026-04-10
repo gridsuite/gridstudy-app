@@ -52,7 +52,6 @@ import { PanelType } from '../workspace/types/workspace.types';
 import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { deleteEquipment } from '../../services/study/network-modifications';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
@@ -693,7 +692,10 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             const impactedMapEquipmentTypes = impactedElementTypes?.filter((type: string) => {
                 return mapEquipmentsTypes.includes(type as EquipmentType);
             });
-            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
+            const hasDeletedMapEquipments = deletedEquipments?.some((d) =>
+                mapEquipmentsTypes.includes(d.equipmentType as unknown as EquipmentType)
+            );
+            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0 || hasDeletedMapEquipments;
             const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
 
             // @TODO restore this optimization after refactoring
@@ -711,16 +713,19 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             dispatch(setReloadMapNeeded(false));
             resetImpactedElementTypes();
             resetImpactedSubstationsIds();
+            resetDeletedEquipments();
             return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend).catch((error) =>
                 snackWithFallback(snackError, error)
             );
         },
         [
             impactedElementTypes,
+            deletedEquipments,
             impactedSubstationsIds,
             dispatch,
             resetImpactedElementTypes,
             resetImpactedSubstationsIds,
+            resetDeletedEquipments,
             reloadMapEquipments,
             snackError,
         ]
@@ -977,7 +982,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                         <GenericPopoverContent
                             equipmentInfos={equipmentInfos}
                             loadFlowStatus={loadFlowStatus}
-                            equipmentType={EQUIPMENT_TYPES.LINE}
+                            equipmentType={EquipmentType.LINE}
                         />
                     )}
                 </GenericEquipmentPopover>

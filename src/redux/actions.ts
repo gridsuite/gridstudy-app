@@ -68,7 +68,6 @@ import type { RootNetworkMetadata } from 'components/graph/menus/network-modific
 import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
-import { ViewBoxLike } from '@svgdotjs/svg.js';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -102,7 +101,6 @@ export type AppActions =
     | MapEquipmentsInitializedAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
-    | StoreNadViewBoxAction
     | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
@@ -749,18 +747,6 @@ export function setNodeSelectionForCopy(
     };
 }
 
-export const STORE_NAD_VIEW_BOX = 'STORE_NAD_VIEW_BOX';
-
-export type StoreNadViewBoxAction = {
-    type: typeof STORE_NAD_VIEW_BOX;
-    nadViewBox: { nadUuid: UUID; viewBox: ViewBoxLike | null };
-};
-
-export const StoreNadViewBox = (nadUuid: UUID, viewBox: ViewBoxLike | null): StoreNadViewBoxAction => ({
-    type: STORE_NAD_VIEW_BOX,
-    nadViewBox: { nadUuid, viewBox },
-});
-
 export const COPIED_NETWORK_MODIFICATIONS = 'COPIED_NETWORK_MODIFICATIONS';
 export type CopiedNetworkModificationsAction = Readonly<Action<typeof COPIED_NETWORK_MODIFICATIONS>> & {
     copiedNetworkModifications: NonNullable<CopiedNetworkModifications>;
@@ -973,6 +959,25 @@ export function removeFromGlobalFilterOptions(id: string): RemoveFromGlobalFilte
     return {
         type: REMOVE_FROM_GLOBAL_FILTER_OPTIONS,
         id,
+    };
+}
+
+export const MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED = 'MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED';
+export type MarkNotFoundGlobalFiltersAsDeletedAction = Readonly<
+    Action<typeof MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED>
+> & {
+    globalFilters: GlobalFilter[];
+    tableId: string;
+};
+
+export function markNotFoundGlobalFiltersAsDeleted(
+    globalFilters: GlobalFilter[],
+    tableId: string
+): MarkNotFoundGlobalFiltersAsDeletedAction {
+    return {
+        type: MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+        globalFilters: globalFilters,
+        tableId: tableId,
     };
 }
 

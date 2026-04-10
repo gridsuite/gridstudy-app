@@ -30,9 +30,9 @@ import {
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
+    BuildStatus,
 } from '@gridsuite/commons-ui';
 import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog';
-import { BUILD_STATUS } from './network/constants';
 import {
     copySubtree,
     copyTreeNode,
@@ -47,6 +47,7 @@ import {
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
+import NetworkModificationNodeDialog from './graph/menus/network-modifications/network-modification-node-dialog';
 import { CopyType } from './network-modification.type';
 import {
     NodeSequenceType,
@@ -59,7 +60,7 @@ import { exportNetworkFile } from '../services/study/network.js';
 import { useCopiedNodes } from 'hooks/copy-paste/use-copied-nodes';
 import { fetchNetworkModificationsToExport } from 'services/study/network-modifications';
 
-export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
+export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
     const { snackError, snackWarning } = useSnackMessage();
     const [nodesToRestore, setNodesToRestore] = useState([]);
@@ -261,8 +262,8 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     createTreeNode(studyUuid, element.id, insertMode, {
                         name: response,
                         type: type,
-                        localBuildStatus: BUILD_STATUS.NOT_BUILT,
-                        globalBuildStatus: BUILD_STATUS.NOT_BUILT,
+                        localBuildStatus: BuildStatus.NOT_BUILT,
+                        globalBuildStatus: BuildStatus.NOT_BUILT,
                         nodeType: networkModificationNodeType,
                     }).catch((error) => {
                         snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
@@ -376,6 +377,12 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         setOpenRestoreDialog(true);
     };
 
+    const [openRenameNodeDialog, setOpenRenameNodeDialog] = useState(false);
+
+    const handleRenameNode = useCallback(() => {
+        setOpenRenameNodeDialog(true);
+    }, []);
+
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: { x: -1, y: -1 },
         display: null,
@@ -469,7 +476,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     return (
         <>
-            <NetworkModificationTree onNodeContextMenu={onNodeContextMenu} studyUuid={studyUuid} />
+            <NetworkModificationTree panelId={panelId} onNodeContextMenu={onNodeContextMenu} studyUuid={studyUuid} />
             {createNodeMenu.display && (
                 <CreateNodeMenu
                     position={createNodeMenu.position}
@@ -490,6 +497,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     handleCutSubtree={handleCutSubtree}
                     handleCopySubtree={handleCopySubtree}
                     handlePasteSubtree={handlePasteSubtree}
+                    handleRenameNode={handleRenameNode}
                     handleOpenRestoreNodesDialog={handleOpenRestoreNodesDialog}
                     disableRestoreNodes={nodesToRestore.length === 0}
                 />
@@ -501,6 +509,14 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     onClick={handleClickExportNodeNetwork}
                     studyUuid={studyUuid}
                     nodeUuid={activeNode?.id}
+                />
+            )}
+            {openRenameNodeDialog && (
+                <NetworkModificationNodeDialog
+                    open={openRenameNodeDialog}
+                    onClose={() => setOpenRenameNodeDialog(false)}
+                    titleId="editNode"
+                    node={activeNode}
                 />
             )}
             {openRestoreDialog && (
@@ -518,6 +534,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 export default NetworkModificationTreePane;
 
 NetworkModificationTreePane.propTypes = {
+    panelId: PropTypes.string.isRequired,
     studyUuid: PropTypes.string.isRequired,
     currentRootNetworkUuid: PropTypes.string.isRequired,
 };

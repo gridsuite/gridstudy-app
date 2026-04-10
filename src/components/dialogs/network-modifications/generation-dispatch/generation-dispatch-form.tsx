@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     DirectoryItemsInput,
     ElementType,
@@ -72,7 +71,7 @@ const GenerationDispatchForm = ({
             <Grid item xs={4}>
                 <DirectoryItemsInput
                     name={GENERATORS_WITH_FIXED_ACTIVE_POWER}
-                    equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
+                    equipmentTypes={[EquipmentType.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
                     label={''}
@@ -102,7 +101,7 @@ const GenerationDispatchForm = ({
             <Grid item xs={4}>
                 <DirectoryItemsInput
                     name={GENERATORS_WITHOUT_OUTAGE}
-                    equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
+                    equipmentTypes={[EquipmentType.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
                     label={''}
