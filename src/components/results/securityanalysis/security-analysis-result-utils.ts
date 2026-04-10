@@ -440,6 +440,24 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             { ...sortParams, isChildren: true },
             filterParams
         ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn(
+                'disconnectedLoadActivePower',
+                'disconnectedLoadActivePower',
+                intl,
+                filterParams,
+                sortParams
+            )
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn(
+                'disconnectedGenerationActivePower',
+                'disconnectedGenerationActivePower',
+                intl,
+                filterParams,
+                sortParams
+            )
+        ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
@@ -447,24 +465,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'linkedElementId',
             hide: true,
         }),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedLoadActivePower',
-                'disconnectedLoadActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
-        ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedGenerationActivePower',
-                'disconnectedGenerationActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
-        ),
     ];
 };
 
@@ -576,6 +576,24 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             { ...sortParams, isChildren: true },
             filterParams
         ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('disconnectedLoadActivePower', 'disconnectedLoadActivePower', intl, filterParams, {
+                ...sortParams,
+                isChildren: true,
+            })
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn(
+                'disconnectedGenerationActivePower',
+                'disconnectedGenerationActivePower',
+                intl,
+                filterParams,
+                {
+                    ...sortParams,
+                    isChildren: true,
+                }
+            )
+        ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
@@ -583,24 +601,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'linkedElementId',
             hide: true,
         }),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedLoadActivePower',
-                'disconnectedLoadActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
-        ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedGenerationActivePower',
-                'disconnectedGenerationActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
-        ),
     ];
 };
 
