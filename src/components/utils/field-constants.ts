@@ -382,12 +382,6 @@ export const EDITED_FIELD = 'editedField';
 export const OPERATOR = 'operator';
 export const REFERENCE_FIELD_OR_VALUE_1 = 'referenceFieldOrValue1';
 export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
-export const EQUIPMENT_FIELD = 'equipmentField';
-
-// By filter
-export const ASSIGNMENTS = 'assignments';
-export const PROPERTY_NAME_FIELD = 'propertyName';
-export const VALUE_FIELD = 'value';
 
 export const ADD_STAND_BY_AUTOMATON = 'addStandbyAutomaton';
 export const LOW_VOLTAGE_SET_POINT = 'lowVoltageSetpoint';
