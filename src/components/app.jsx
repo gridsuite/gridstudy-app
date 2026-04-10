@@ -36,7 +36,6 @@ import { StudyContainer } from './study-container';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
-    addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
     initOrUpdateGlobalFilters,
     initTableDefinitions,
@@ -49,8 +48,10 @@ import {
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
+    updateColumnFiltersAction,
     updateTableColumns,
 } from '../redux/actions';
+import { TableType } from '../types/custom-aggrid-types';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import {
     isComputationResultColumnFilterUpdatedNotification,
@@ -209,7 +210,7 @@ const App = () => {
                     const formattedGlobalFilters = model.globalFilters ?? [];
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
-                    dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
+                    dispatch(updateColumnFiltersAction(TableType.Spreadsheet, tabUuid, columnsFilters));
                     if (!isEditingGlobalFilter(tabUuid)) {
                         dispatch(initOrUpdateGlobalFilters(tabUuid, formattedGlobalFilters));
                     }

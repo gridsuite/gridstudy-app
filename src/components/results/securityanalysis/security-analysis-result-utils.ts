@@ -16,7 +16,7 @@ import {
     SubjectIdRendererType,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
-import { ColDef, GridApi, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { ComputingType, ContingencyCellRenderer } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
@@ -45,8 +45,6 @@ import {
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { MAX_INT32 } from 'services/utils';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
-import type { UUID } from 'node:crypto';
 import { createEnumColumn } from '../common/column-filter/utilis';
 
 interface TableParams {
@@ -54,11 +52,10 @@ interface TableParams {
     filterParams: {
         type: TableType;
         tab: string;
-        updateFilterCallback: typeof updateComputationColumnsFilters;
     };
 }
 
-const createTableParams = (tabIndex: number, goToFirstPage: () => void): TableParams => {
+const createTableParams = (tabIndex: number): TableParams => {
     const tab = getStoreFields(tabIndex);
     return {
         sortParams: {
@@ -68,23 +65,6 @@ const createTableParams = (tabIndex: number, goToFirstPage: () => void): TablePa
         filterParams: {
             type: TableType.SecurityAnalysis,
             tab,
-            updateFilterCallback: (
-                agGridApi?: GridApi,
-                filters?: FilterConfig[],
-                colId?: string,
-                studyUuid?: UUID,
-                filterType?: TableType,
-                filterSubType?: string
-            ) =>
-                updateComputationColumnsFilters(
-                    agGridApi,
-                    filters,
-                    colId,
-                    studyUuid,
-                    filterType,
-                    filterSubType,
-                    goToFirstPage
-                ),
         },
     };
 };
@@ -192,7 +172,6 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
 interface AgGridFilterParams {
     type: TableType;
     tab: string;
-    updateFilterCallback: () => void;
 }
 
 const makeAgGridStringColumn = (
@@ -288,10 +267,9 @@ export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
-    goToFirstPage: () => void
+    tabIndex: number
 ): ColDef[] => {
-    const { sortParams, filterParams } = createTableParams(tabIndex, goToFirstPage);
+    const { sortParams, filterParams } = createTableParams(tabIndex);
 
     return [
         makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, sortParams)),
@@ -349,10 +327,9 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
-    goToFirstPage: () => void
+    tabIndex: number
 ): ColDef[] => {
-    const { sortParams, filterParams } = createTableParams(tabIndex, goToFirstPage);
+    const { sortParams, filterParams } = createTableParams(tabIndex);
 
     return [
         makeAgGridCustomHeaderColumn({
@@ -493,10 +470,9 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number,
-    goToFirstPage: () => void
+    tabIndex: number
 ): ColDef[] => {
-    const { sortParams, filterParams } = createTableParams(tabIndex, goToFirstPage);
+    const { sortParams, filterParams } = createTableParams(tabIndex);
 
     return [
         makeAgGridCustomHeaderColumn({
