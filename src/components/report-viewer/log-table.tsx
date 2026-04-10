@@ -8,10 +8,10 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid, MessageLogCellRenderer, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
-import { setLogsFilter } from '../../redux/actions';
+import { updateColumnFiltersAction } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
@@ -29,15 +29,17 @@ import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.con
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS, FilterConfig, TableType } from '../../types/custom-aggrid-types';
+import { AppState } from '../../redux/reducer.type';
+import { getColumnFiltersFromState } from '../../redux/selectors/filter-selectors';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
 import { reportStyles } from './report.styles';
 import { useLogsPagination } from './use-logs-pagination';
 import { useStableComputedArray } from '../../hooks/use-stable-computed-array';
+import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
-const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
+const getColumnFilterValue = (array: FilterConfig[] | undefined, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
 };
 
@@ -104,7 +106,9 @@ const LogTable = ({
     const [, , , fetchLogs, fetchLogMatches] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
-    const { filters } = useFilterSelector(TableType.Logs, reportType);
+    const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
+        getColumnFiltersFromState(state, TableType.Logs, reportType)
+    );
     const { pagination, setPagination } = useLogsPagination(reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
@@ -113,6 +117,7 @@ const LogTable = ({
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [isGridReady, setIsGridReady] = useState(false);
     const gridRef = useRef<AgGridReact>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -180,7 +185,7 @@ const LogTable = ({
 
             if (needsInitialization) {
                 dispatch(
-                    setLogsFilter(reportType, [
+                    updateColumnFiltersAction(TableType.Logs, reportType, [
                         {
                             column: 'severity',
                             dataType: FILTER_DATA_TYPES.TEXT,
@@ -202,7 +207,12 @@ const LogTable = ({
 
     useEffect(() => {
         onFiltersChanged();
-    }, [filters, onFiltersChanged]);
+        const api = gridRef.current?.api;
+        if (!api || !isGridReady) {
+            return;
+        }
+        updateAgGridFilters(api, filters);
+    }, [filters, isGridReady, onFiltersChanged]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
@@ -276,6 +286,7 @@ const LogTable = ({
 
     const onGridReady = ({ api }: { api: GridApi }) => {
         api?.sizeColumnsToFit();
+        setIsGridReady(true);
     };
 
     const defaultColumnDefinition = {
@@ -372,7 +383,7 @@ const LogTable = ({
                 : [...severityFilter, severity];
 
             dispatch(
-                setLogsFilter(reportType, [
+                updateColumnFiltersAction(TableType.Logs, reportType, [
                     {
                         column: 'severity',
                         dataType: FILTER_DATA_TYPES.TEXT,
