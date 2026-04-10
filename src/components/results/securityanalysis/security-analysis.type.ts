@@ -65,7 +65,8 @@ export interface SecurityAnalysisNmkTableRow {
     acceptableDuration?: number | null;
     upcomingAcceptableDuration?: number | null;
     status?: string;
-    connectivityResult?: ConnectivityResult;
+    disconnectedLoadActivePower?: number;
+    disconnectedGenerationActivePower?: number;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
     limit?: number;

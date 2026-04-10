@@ -110,7 +110,8 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
             contingencyId,
             contingencyEquipmentsIds: elements.map((element) => element.id),
             status: status,
-            connectivityResult: connectivityResult,
+            disconnectedLoadActivePower: connectivityResult?.disconnectedLoadActivePower,
+            disconnectedGenerationActivePower: connectivityResult?.disconnectedGenerationActivePower,
             violationCount: subjectLimitViolations.length,
         });
         subjectLimitViolations?.forEach((constraint: Constraint) => {
@@ -159,7 +160,9 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     contingencyId: contingency.contingencyId,
                     contingencyEquipmentsIds: contingency.elements?.map((element) => element.id),
                     status: contingency.status,
-                    connectivityResult: contingency.connectivityResult,
+                    disconnectedLoadActivePower: contingency.connectivityResult?.disconnectedLoadActivePower,
+                    disconnectedGenerationActivePower:
+                        contingency.connectivityResult?.disconnectedGenerationActivePower,
                     limitType: limitViolation.limitType,
                     limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                     nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
