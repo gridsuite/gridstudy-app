@@ -448,10 +448,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             hide: true,
         }),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('disconnectedLoadActivePower', 'disconnectedLoadActivePower', intl, filterParams, {
-                ...sortParams,
-                isChildren: true,
-            })
+            makeAgGridFloatColumn(
+                'disconnectedLoadActivePower',
+                'disconnectedLoadActivePower',
+                intl,
+                filterParams,
+                undefined
+            )
         ),
         makeAgGridCustomHeaderColumn(
             makeAgGridFloatColumn(
