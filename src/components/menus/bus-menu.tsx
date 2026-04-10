@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { RunningStatus } from 'components/utils/running-status';
-import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
@@ -24,7 +24,7 @@ import { tripEquipment } from '../../services/study/network-modifications';
 import {
     ComputingType,
     CustomMenuItem,
-    type EquipmentType,
+    EquipmentType,
     type MuiStyles,
     PARAM_DEVELOPER_MODE,
     snackWithFallback,
@@ -93,7 +93,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             studyUuid,
             currentNode?.id,
             currentRootNetworkUuid,
-            EQUIPMENT_TYPES.BUSBAR_SECTION,
+            EquipmentType.BUSBAR_SECTION,
             EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
             busId,
             false
@@ -177,10 +177,10 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     />
                 </CustomMenuItem>
             )}
-            {isDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
+            {isDeveloperMode && getEventType(EquipmentType.BUS) && (
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}
-                    equipmentType={convertToEquipmentType(EQUIPMENT_TYPES.BUS)}
+                    equipmentType={EquipmentType.BUS}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     disabled={!isNodeEditable}
                 />

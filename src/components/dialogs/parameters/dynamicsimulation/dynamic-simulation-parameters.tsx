@@ -37,7 +37,7 @@ import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import { User } from 'oidc-client';
 import { PROVIDER } from '../../../utils/field-constants';
-import { SolverInfos } from 'services/study/dynamic-simulation.type';
+import { SolverInfos, SolverType } from '../../../../services/study/dynamic-simulation.type';
 import {
     Curve,
     curveEmptyFormData,
@@ -172,12 +172,12 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
             updateParameters({
                 [PROVIDER]: newParams.provider,
                 ...newParams.timeDelay,
-                [Solver.ID]: newParams.solver.solverId,
+                [Solver.SOLVER]: newParams.solver.solver as SolverType,
                 // merge only the current selected solver, others are ignored
                 [Solver.SOLVERS]: parameters?.solvers?.reduce(
                     (arr, curr, index) => [
                         ...arr,
-                        newParams.solver.solvers?.[index].id === newParams.solver.solverId
+                        newParams.solver.solvers?.[index].type === newParams.solver.solver
                             ? newParams.solver.solvers[index]
                             : curr,
                     ],
@@ -200,7 +200,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                     [TimeDelay.STOP_TIME]: parameters.stopTime,
                 },
                 [TAB_VALUES.SOLVER]: {
-                    [Solver.ID]: parameters.solverId,
+                    [Solver.SOLVER]: parameters.solver,
                     [Solver.SOLVERS]: parameters.solvers,
                 },
                 [TAB_VALUES.MAPPING]: {
@@ -271,8 +271,8 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                             solver={
                                 parameters
                                     ? {
-                                          solverId: parameters.solverId,
-                                          solvers: parameters.solvers as Record<string, any>[],
+                                          solver: parameters.solver,
+                                          solvers: parameters.solvers,
                                       }
                                     : undefined
                             }
@@ -296,7 +296,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                         <NetworkParameters path={TAB_VALUES.NETWORK} />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={TAB_VALUES.CURVE}>
-                        <CurveParameters path={TAB_VALUES.CURVE} />
+                        <CurveParameters path={TAB_VALUES.CURVE} mappingPath={`${TAB_VALUES.MAPPING}.${MAPPING}`} />
                     </TabPanel>
                 </Grid>
 

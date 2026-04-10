@@ -21,13 +21,14 @@ import {
     SubstationCreationDto,
     SubstationModificationDto,
     VoltageLevelModificationDto,
+    ByFilterDeletionDto,
+    EquipmentType,
+    ModificationByAssignmentDto,
 } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
-    Assignment,
     AttachLineInfo,
     BalancesAdjustmentInfos,
     BatteryCreationInfos,
@@ -60,7 +61,6 @@ import {
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
-import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
@@ -1538,9 +1538,8 @@ export function deleteEquipment(
 export function deleteEquipmentByFilter(
     studyUuid: string,
     nodeUuid: string,
-    equipmentType: keyof typeof EQUIPMENT_TYPES | null,
-    filters: Filter[],
-    modificationUuid: string
+    modificationUuid: string | undefined,
+    dto: ByFilterDeletionDto
 ) {
     let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1557,11 +1556,7 @@ export function deleteEquipmentByFilter(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
-            filters: filters,
-            equipmentType: equipmentType,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -1610,7 +1605,7 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-            equipmentType: EQUIPMENT_TYPES.SWITCH,
+            equipmentType: EquipmentType.SWITCH,
             equipmentId: switchId,
             equipmentAttributeName: 'open',
             equipmentAttributeValue: open,
@@ -1813,33 +1808,25 @@ export function modifyByFormula(
 export function modifyByAssignment(
     studyUuid: string,
     nodeUuid: UUID,
-    equipmentType: string,
-    assignmentsList: Assignment[],
-    isUpdate: boolean,
-    modificationUuid: UUID | null
+    modificationUuid: string | undefined,
+    dto: ModificationByAssignmentDto
 ) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
+    if (modificationUuid) {
         modificationUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating modification by assignment');
     } else {
         console.info('Creating modification by assignment');
     }
 
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
-        equipmentType: equipmentType,
-        assignmentInfosList: assignmentsList,
-    });
-
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify(dto),
     });
 }
 

@@ -243,7 +243,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         );
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid, startComputationAsync]);
 
-    const handleStartDynamicSimulation = (dynamicSimulationConfiguration, debug) => {
+    const handleStartDynamicSimulation = (debug) => {
         startComputationAsync(
             ComputingType.DYNAMIC_SIMULATION,
             null,
@@ -252,7 +252,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     studyUuid,
                     currentNodeUuid: currentNode?.id,
                     currentRootNetworkUuid,
-                    dynamicSimulationConfiguration,
                     debug,
                 }),
             () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
@@ -614,8 +613,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     // list of visible runnable isn't static
     const activeRunnables = useMemo(() => {
         return [
-            'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS',
             'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS',
+            'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS',
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up ? [ComputingType.SECURITY_ANALYSIS] : []),
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [ComputingType.SENSITIVITY_ANALYSIS]
@@ -662,8 +661,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 <DynamicSimulationParametersSelector
                     open={showDynamicSimulationParametersSelector}
                     onClose={() => setShowDynamicSimulationParametersSelector(false)}
-                    onStart={(params) => {
-                        handleStartDynamicSimulation(params, runWithDebug);
+                    onStart={() => {
+                        handleStartDynamicSimulation(runWithDebug);
                         setShowDynamicSimulationParametersSelector(false);
                         setRunWithDebug(false);
                     }}
