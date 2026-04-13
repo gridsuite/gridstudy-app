@@ -521,7 +521,7 @@ export interface ShuntCompensatorCreationInfos {
 export interface LineSegmentInfos {
     [SEGMENT_TYPE_ID]: string; //used to fetch LineTypeInfo
     [SEGMENT_DISTANCE_VALUE]: number;
-    [AREA]: string;
+    [AREA]: string | null;
     [TEMPERATURE]: string;
     [SHAPE_FACTOR]: number | null;
 }
