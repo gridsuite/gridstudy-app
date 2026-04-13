@@ -119,10 +119,6 @@ function PagedSensitivityAnalysisResult({
         [dispatchPagination]
     );
 
-    const goToFirstPage = useCallback(() => {
-        dispatchPagination({ ...pagination, page: 0 });
-    }, [pagination, dispatchPagination]);
-
     const fetchFilterOptions = useCallback(() => {
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
@@ -218,7 +214,6 @@ function PagedSensitivityAnalysisResult({
                 result={result?.sensitivities ?? []}
                 nOrNkIndex={nOrNkIndex}
                 sensiKind={sensiKind}
-                goToFirstPage={goToFirstPage}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
                 setCsvHeaders={setCsvHeaders}
