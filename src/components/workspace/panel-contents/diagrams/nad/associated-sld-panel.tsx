@@ -36,15 +36,13 @@ const calculatePanelDimensions = (
     containerRect: DOMRect,
     minSize: { width: number; height: number }
 ) => {
-    let width = size.width * containerRect.width;
-    let height = size.height * containerRect.height;
+    // Round to integer pixels to prevent subpixel blur on Chromium 125-133
+    // (CSS transform: translate() with fractional values causes blurry panel content)
+    const width = Math.round(Math.max(minSize.width, size.width * containerRect.width));
+    const height = Math.round(Math.max(minSize.height, size.height * containerRect.height));
 
-    // Apply minimum constraints
-    width = Math.max(minSize.width, width);
-    height = Math.max(minSize.height, height);
-
-    const x = Math.max(0, Math.min(position.x * containerRect.width, containerRect.width - width));
-    const y = Math.max(0, Math.min(position.y * containerRect.height, containerRect.height - height));
+    const x = Math.round(Math.max(0, Math.min(position.x * containerRect.width, containerRect.width - width)));
+    const y = Math.round(Math.max(0, Math.min(position.y * containerRect.height, containerRect.height - height)));
     return { x, y, width, height };
 };
 
