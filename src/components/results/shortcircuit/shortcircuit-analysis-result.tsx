@@ -108,10 +108,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         [dispatchPagination]
     );
 
-    const goToFirstPage = useCallback(() => {
-        dispatchPagination({ ...pagination, page: 0 });
-    }, [pagination, dispatchPagination]);
-
     // Effects
     useEffect(() => {
         if (analysisStatus !== RunningStatus.SUCCEED) {
@@ -242,7 +238,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 analysisType={analysisType}
                 isFetching={isFetching}
                 filterEnums={filterEnums}
-                goToFirstPage={goToFirstPage}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 computationSubType={mappingTabs(analysisType)}

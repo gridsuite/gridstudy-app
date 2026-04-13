@@ -11,9 +11,10 @@ import {
     setComputationStarting,
     setComputingStatus,
     setComputingStatusParameters,
-    setLogsFilter,
+    updateColumnFiltersAction,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import { TableType } from '../types/custom-aggrid-types';
 
 import RunningStatus from './utils/running-status';
 
@@ -203,7 +204,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     dispatch(setComputationStarting(false));
                     resetPaginationForComputingType(computingType);
                     // we clear the computation logs filter when a new computation is started
-                    dispatch(setLogsFilter(computingType, []));
+                    dispatch(updateColumnFiltersAction(TableType.Logs, computingType, []));
                 });
         },
         [dispatch, snackError, resetPaginationForComputingType]
