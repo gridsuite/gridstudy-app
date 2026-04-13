@@ -39,7 +39,7 @@ export const createBaseColumns = (
     isRowDragDisabled: boolean,
     modificationsCount: number,
     nameHeaderProps: NameHeaderProps,
-    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>
+    setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
 ): ColumnDef<ComposedModificationMetadata>[] => [
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,

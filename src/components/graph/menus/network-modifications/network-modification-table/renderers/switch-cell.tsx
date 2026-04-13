@@ -7,7 +7,12 @@
 
 import React, { FunctionComponent, SetStateAction, useCallback, useState } from 'react';
 import { Switch, Tooltip } from '@mui/material';
-import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComposedModificationMetadata,
+    NetworkModificationMetadata,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { setModificationMetadata } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -16,7 +21,7 @@ import { AppState } from '../../../../../../redux/reducer.type';
 
 export interface SwitchCellRendererProps {
     data: NetworkModificationMetadata;
-    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
+    setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>;
 }
 
 const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
