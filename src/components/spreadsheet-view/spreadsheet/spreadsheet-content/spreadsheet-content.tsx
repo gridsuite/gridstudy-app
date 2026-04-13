@@ -15,7 +15,7 @@ import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
-import { CustomColDef, TableType } from 'types/custom-aggrid-types';
+import { CustomColDef, FilterConfig, TableType } from 'types/custom-aggrid-types';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
 import { PanelType } from 'components/workspace/types/workspace.types';
@@ -28,8 +28,8 @@ import type { RootState } from '../../../../redux/store';
 import { selectPanelTargetEquipment } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import { useWorkspacePanelActions } from '../../../workspace/hooks/use-workspace-panel-actions';
-import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { updateAgGridFilters } from '../../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
 
 const styles = {
     table: (theme) => ({
@@ -180,7 +180,9 @@ export const SpreadsheetContent = memo(
             }
         }, [transformedRowData, gridRef, isGridReady]);
 
-        const { filters } = useFilterSelector(TableType.Spreadsheet, tableDefinition?.uuid);
+        const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
+            getColumnFiltersFromState(state, TableType.Spreadsheet, tableDefinition?.uuid)
+        );
 
         useEffect(() => {
             const api = gridRef.current?.api;
