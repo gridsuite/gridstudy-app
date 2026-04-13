@@ -446,7 +446,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 'disconnectedLoadActivePower',
                 intl,
                 filterParams,
-                sortParams
+                undefined
             )
         ),
         makeAgGridCustomHeaderColumn(
@@ -455,7 +455,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 'disconnectedGenerationActivePower',
                 intl,
                 filterParams,
-                sortParams
+                undefined
             )
         ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
@@ -577,10 +577,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterParams
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('disconnectedLoadActivePower', 'disconnectedLoadActivePower', intl, filterParams, {
-                ...sortParams,
-                isChildren: true,
-            })
+            makeAgGridFloatColumn(
+                'disconnectedLoadActivePower',
+                'disconnectedLoadActivePower',
+                intl,
+                filterParams,
+                undefined
+            )
         ),
         makeAgGridCustomHeaderColumn(
             makeAgGridFloatColumn(
@@ -588,10 +591,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 'disconnectedGenerationActivePower',
                 intl,
                 filterParams,
-                {
-                    ...sortParams,
-                    isChildren: true,
-                }
+                undefined
             )
         ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
@@ -764,6 +764,8 @@ export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     value: 'contingencyLimitViolations.value',
     loading: 'contingencyLimitViolations.loading',
     patlLoading: 'contingencyLimitViolations.patlLoading',
+    disconnectedLoadActivePower: 'connectivityResult.disconnectedLoadActivePower',
+    disconnectedGenerationActivePower: 'connectivityResult.disconnectedGenerationActivePower',
 };
 
 export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> = {
@@ -782,6 +784,10 @@ export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> =
     value: 'contingencyLimitViolations.value',
     loading: 'contingencyLimitViolations.loading',
     patlLoading: 'contingencyLimitViolations.patlLoading',
+    disconnectedLoadActivePower:
+        'contingencyLimitViolations.contingency.connectivityResult.disconnectedLoadActivePower',
+    disconnectedGenerationActivePower:
+        'contingencyLimitViolations.contingency.connectivityResult.disconnectedGenerationActivePower',
 };
 
 export enum NMK_TYPE {
