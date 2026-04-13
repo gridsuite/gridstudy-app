@@ -6,15 +6,24 @@
  */
 
 import type { UUID } from 'node:crypto';
-import {
-    DataType,
-    FieldValue,
-} from '../components/dialogs/network-modifications/by-filter/by-assignment/assignment/assignment.type';
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
-import { AttributeModification, ModificationType, Property } from '@gridsuite/commons-ui';
-import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
+import {
+    AssignmentDataType,
+    AssignmentFieldValue,
+    AttributeModification,
+    ModificationType,
+    Property,
+} from '@gridsuite/commons-ui';
+import {
+    AREA,
+    ENABLE_OLG_MODIFICATION,
+    SEGMENT_DISTANCE_VALUE,
+    SEGMENT_TYPE_ID,
+    SHAPE_FACTOR,
+    TEMPERATURE,
+} from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
@@ -419,8 +428,8 @@ export interface VSCModificationConverterStation {
 }
 
 export interface Assignment {
-    dataType?: DataType;
-    value?: FieldValue;
+    dataType?: AssignmentDataType;
+    value?: AssignmentFieldValue;
     filters: Filter[];
     editedField: string;
     propertyName?: string;
@@ -509,6 +518,14 @@ export interface ShuntCompensatorCreationInfos {
     properties: Property[] | null;
 }
 
+export interface LineSegmentInfos {
+    [SEGMENT_TYPE_ID]: string; //used to fetch LineTypeInfo
+    [SEGMENT_DISTANCE_VALUE]: number;
+    [AREA]: string;
+    [TEMPERATURE]: string;
+    [SHAPE_FACTOR]: number | null;
+}
+
 export interface LineCreationInfos {
     type: ModificationType;
     uuid?: string | null;
@@ -536,6 +553,7 @@ export interface LineCreationInfos {
     connected1: boolean | null;
     connected2: boolean | null;
     properties: Property[] | null;
+    lineSegments?: LineSegmentInfos[];
 }
 
 export interface LineModificationInfos {
@@ -569,6 +587,7 @@ export interface LineModificationInfos {
     connected1: boolean;
     connected2: boolean;
     properties: Property[] | null;
+    lineSegments?: LineSegmentInfos[];
     p1MeasurementValue: number | null;
     p1MeasurementValidity: boolean | null;
     q1MeasurementValue: number | null;

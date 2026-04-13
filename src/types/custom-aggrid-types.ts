@@ -92,15 +92,6 @@ export type FilterParams = {
     dataType?: string;
     comparators?: string[];
     debounceMs?: number;
-    updateFilterCallback?: (
-        agGridApi?: GridApi,
-        filters?: FilterConfig[],
-        colId?: string,
-        studyUuid?: UUID,
-        filterType?: TableType,
-        filterSubType?: string,
-        onBeforePersist?: () => void
-    ) => void;
 };
 
 export type PaginationConfig = {
