@@ -36,7 +36,9 @@ import BatteryCreationDialog from 'components/dialogs/network-modifications/batt
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import DeleteAttachingLineDialog from 'components/dialogs/network-modifications/delete-attaching-line/delete-attaching-line-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/dialogs/network-modifications/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
-import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import EquipmentDeletionDialog, {
+    EquipmentDeletionDtoWithId,
+} from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import GenerationDispatchDialog from 'components/dialogs/network-modifications/generation-dispatch/generation-dispatch-dialog';
 import GeneratorScalingDialog from 'components/dialogs/network-modifications/generator-scaling/generator-scaling-dialog';
 import GeneratorCreationDialog from 'components/dialogs/network-modifications/generator/creation/generator-creation-dialog';
@@ -109,7 +111,7 @@ import {
     ModificationsUpdatingInProgressEventData,
     NotificationType,
     parseEventData,
-    StudyUpdateEventData,
+    CommonStudyEventData,
 } from 'types/notification-types';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level/topology-modification/voltage-level-topology-modification-dialog';
@@ -123,7 +125,6 @@ import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modificat
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
 import { DragStart, DropResult } from '@hello-pangea/dnd';
 import { FetchStatus } from '../../../../services/utils.type';
-import { EquipmentDeletionInfos } from '../../../dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -244,7 +245,7 @@ const NetworkModificationNodeEditor = () => {
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    editData={editData as EquipmentDeletionInfos}
+                    editData={editData as EquipmentDeletionDtoWithId}
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                     equipmentType={equipmentType}
@@ -793,7 +794,10 @@ const NetworkModificationNodeEditor = () => {
 
     const handleEvent = useCallback(
         (event: MessageEvent) => {
-            const eventData = parseEventData<StudyUpdateEventData>(event);
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (!eventData) {
+                return;
+            }
             if (isNodeDeletedNotification(eventData)) {
                 if (
                     copyInfosRef.current &&
@@ -1284,7 +1288,7 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'delete'} />}>
+                <Tooltip title={<FormattedMessage id={'moveToTrash'} />}>
                     <span>
                         <IconButton
                             onClick={doStashModification}

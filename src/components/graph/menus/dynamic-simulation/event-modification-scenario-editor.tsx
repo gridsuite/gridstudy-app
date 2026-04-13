@@ -30,7 +30,6 @@ import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { AppState } from '../../../../redux/reducer.type';
 import { AppDispatch } from '../../../../redux/store';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     EventCreatingInProgressEventData,
     EventDeletingInProgressEventData,
@@ -39,7 +38,7 @@ import {
     isEventNotification,
     NotificationType,
     parseEventData,
-    StudyUpdateEventData,
+    CommonStudyEventData,
 } from 'types/notification-types';
 import {
     deleteDynamicSimulationEvents,
@@ -168,7 +167,10 @@ const EventModificationScenarioEditor = memo(() => {
 
     const handleEvent = useCallback(
         (event: MessageEvent) => {
-            const eventData = parseEventData<StudyUpdateEventData>(event);
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (!eventData) {
+                return;
+            }
             if (isEventNotification(eventData)) {
                 if (currentNodeIdRef.current !== eventData.headers.parentNode) {
                     return;
@@ -236,11 +238,9 @@ const EventModificationScenarioEditor = memo(() => {
             ),
         } as {};
 
-        const equipmentTypeLabelKeys = EQUIPMENT_TYPE_LABEL_KEYS as Record<EQUIPMENT_TYPES, string>;
-
         return intl.formatMessage(
             {
-                id: `Event${item.eventType}${equipmentTypeLabelKeys[item.equipmentType as EQUIPMENT_TYPES]}`,
+                id: `Event${item.eventType}${EQUIPMENT_TYPE_LABEL_KEYS[item.equipmentType]}`,
             },
             {
                 ...computedValues,

@@ -19,7 +19,10 @@ import {
     Parameter,
     safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
-import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    CompositeModificationAction,
+    NetworkModificationCopyInfos,
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
@@ -201,7 +204,8 @@ export function fetchContingencyCount(
     studyUuid: UUID | null,
     currentNodeUuid: UUID | null,
     currentRootNetworkUuid: UUID | null,
-    contingencyListIds: UUID[] | null
+    contingencyListIds: UUID[] | null,
+    abortSignal: AbortSignal
 ): Promise<ContingencyCount> {
     console.info(
         `Fetching contingency count for ${contingencyListIds} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
@@ -216,7 +220,37 @@ export function fetchContingencyCount(
         urlSearchParams;
 
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchJson(url, { signal: abortSignal });
+}
+
+export function executeCompositeModificationAction(
+    studyUuid: UUID,
+    targetNodeId: UUID,
+    compositeModificationsToInsert: {
+        first: UUID;
+        second: string; // composite modification name (if needed)
+    }[],
+    compositeModificationAction: CompositeModificationAction
+) {
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        safeEncodeURIComponent(studyUuid) +
+        '/nodes/' +
+        safeEncodeURIComponent(targetNodeId) +
+        '/composite-modifications?' +
+        new URLSearchParams({
+            action: compositeModificationAction.toString(),
+        });
+
+    return backendFetch(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(compositeModificationsToInsert),
+    });
 }
 
 export function copyOrMoveModifications(
@@ -239,18 +273,13 @@ export function copyOrMoveModifications(
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
-    // TODO : conversion to a ModificationsToCopyInfos dto => this will be useful and improved when INSERT_COMPOSITE action will be made available from the front
-    const modifications = modificationToCutUuidList.map((modificationUuid) => {
-        return { uuid: modificationUuid };
-    });
-
     return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modifications),
+        body: JSON.stringify(modificationToCutUuidList),
     });
 }
 

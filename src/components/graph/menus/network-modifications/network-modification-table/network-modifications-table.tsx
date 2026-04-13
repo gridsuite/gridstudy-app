@@ -113,6 +113,8 @@ const NetworkModificationsTable: FunctionComponent<NetworkModificationsTableProp
         rows,
         containerRef,
         onRowDragEnd,
+        studyUuid,
+        currentNodeId,
     });
 
     useEffect(() => {

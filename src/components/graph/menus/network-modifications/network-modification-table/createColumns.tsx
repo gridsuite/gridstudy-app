@@ -6,6 +6,7 @@
  */
 import {
     BASE_MODIFICATION_TABLE_COLUMNS,
+    ComposedModificationMetadata,
     computeTagMinSize,
     createRootNetworkChipCellSx,
     DragHandleCell,
@@ -14,7 +15,7 @@ import {
     NameHeaderProps,
     NetworkModificationEditorNameHeader,
     NetworkModificationMetadata,
-    networkTableStyles,
+    networkModificationTableStyles,
     SelectCell,
     SelectHeaderCell,
 } from '@gridsuite/commons-ui';
@@ -23,9 +24,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import DescriptionCell from './renderers/description-cell';
 import SwitchCell from './renderers/switch-cell';
 import { RootNetworkMetadata } from '../network-modification-menu.type';
-import { Badge, Box } from '@mui/material';
+import { Badge, Box, Tooltip } from '@mui/material';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import RootNetworkChipCell from './renderers/root-network-chip-cell';
+import { FormattedMessage } from 'react-intl';
 
 /**
  * Column definition is broken up in 2 parts : base columns which are always on display and root networks columns.
@@ -38,10 +40,10 @@ export const createBaseColumns = (
     modificationsCount: number,
     nameHeaderProps: NameHeaderProps,
     setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>
-): ColumnDef<NetworkModificationMetadata>[] => [
+): ColumnDef<ComposedModificationMetadata>[] => [
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
-        cell: () => <DragHandleCell isRowDragDisabled />,
+        cell: () => <DragHandleCell isRowDragDisabled={isRowDragDisabled} />,
         size: 24,
         minSize: 24,
         meta: {
@@ -57,7 +59,7 @@ export const createBaseColumns = (
         size: 32,
         minSize: 32,
         meta: {
-            cellStyle: networkTableStyles.columnCell.select,
+            cellStyle: networkModificationTableStyles.columnCell.select,
         },
     },
     {
@@ -67,7 +69,7 @@ export const createBaseColumns = (
         ),
         cell: ({ row }) => <NameCell row={row} />,
         meta: {
-            cellStyle: networkTableStyles.columnCell.modificationName,
+            cellStyle: networkModificationTableStyles.columnCell.modificationName,
         },
         minSize: 160,
     },
@@ -99,6 +101,7 @@ export const createRootNetworksColumns = (
 ): ColumnDef<NetworkModificationMetadata>[] => {
     const tagMinSizes = rootNetworks.map((rootNetwork) => computeTagMinSize(rootNetwork.tag ?? ''));
     const sharedSize = Math.max(Math.min(...tagMinSizes), 56);
+    const currentRootNetworkTag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
 
     return rootNetworks.map((rootNetwork, index) => {
         const rootNetworkUuid = rootNetwork.rootNetworkUuid;
@@ -109,10 +112,19 @@ export const createRootNetworksColumns = (
             id: rootNetworkUuid,
             header: () =>
                 isCurrentRootNetwork && modificationsCount >= 1 ? (
-                    <Box sx={networkTableStyles.rootNetworkHeader}>
-                        <Badge overlap="circular" color="primary" variant="dot">
-                            <RemoveRedEyeIcon />
-                        </Badge>
+                    <Box sx={networkModificationTableStyles.rootNetworkHeader}>
+                        <Tooltip
+                            title={
+                                <FormattedMessage
+                                    id={'visualizedRootNetwork'}
+                                    values={{ tag: currentRootNetworkTag }}
+                                />
+                            }
+                        >
+                            <Badge overlap="circular" color="primary" variant="dot">
+                                <RemoveRedEyeIcon />
+                            </Badge>
+                        </Tooltip>
                     </Box>
                 ) : null,
             cell: ({ row }) => (
@@ -128,7 +140,7 @@ export const createRootNetworksColumns = (
             size: sharedSize,
             minSize: tagMinSize,
             meta: {
-                cellStyle: networkTableStyles.columnCell.rootNetworkChip,
+                cellStyle: networkModificationTableStyles.columnCell.rootNetworkChip,
             },
         };
     });

@@ -25,8 +25,8 @@ import {
     USER_VALIDATION_ERROR,
     type UserAction,
     type UserValidationErrorAction,
+    EquipmentType,
 } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_GLOBAL_FILTERS,
@@ -83,6 +83,8 @@ import {
     type MapDataLoadingAction,
     type MapEquipmentsCreatedAction,
     type MapEquipmentsInitializedAction,
+    MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+    type MarkNotFoundGlobalFiltersAsDeletedAction,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
@@ -198,8 +200,6 @@ import {
     ShortcircuitAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
-    STORE_NAD_VIEW_BOX,
-    StoreNadViewBoxAction,
     TABLE_SORT,
     type TableSortAction,
     UPDATE_COLUMN_FILTERS,
@@ -465,7 +465,6 @@ const initialState: AppState = {
         copyType: null,
         allChildren: null,
     },
-    nadViewBox: {},
     copiedNetworkModifications: {
         networkModificationUuids: [],
         copyInfos: null,
@@ -1102,11 +1101,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
 
-    builder.addCase(STORE_NAD_VIEW_BOX, (state, action: StoreNadViewBoxAction) => {
-        const { nadUuid, viewBox } = action.nadViewBox;
-        state.nadViewBox[nadUuid] = viewBox;
-    });
-
     builder.addCase(COPIED_NETWORK_MODIFICATIONS, (state, action: CopiedNetworkModificationsAction) => {
         state.copiedNetworkModifications = action.copiedNetworkModifications;
     });
@@ -1228,22 +1222,22 @@ export const reducer = createReducer(initialState, (builder) => {
                 //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === SpreadsheetEquipmentType.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
                         ] as Record<string, Substation>,
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.VOLTAGE_LEVEL].equipmentsByNodeId[
                             action.nodeId
                         ],
                         formattedEquipments as Record<string, Substation>
                     );
 
                     if (updatedSubstations != null) {
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
                         ] = updatedSubstations;
                     }
                     if (updatedVoltageLevels != null) {
-                        state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[
+                        state.spreadsheetNetwork.equipments[EquipmentType.VOLTAGE_LEVEL].equipmentsByNodeId[
                             action.nodeId
                         ] = updatedVoltageLevels;
                     }
@@ -1308,9 +1302,9 @@ export const reducer = createReducer(initialState, (builder) => {
             nodesIds: [],
             equipments: {
                 ...initialSpreadsheetNetworkState.equipments,
-                [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.SUBSTATION],
-                [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-                [EQUIPMENT_TYPES.HVDC_LINE]: state.spreadsheetNetwork.equipments[EQUIPMENT_TYPES.HVDC_LINE],
+                [EquipmentType.SUBSTATION]: state.spreadsheetNetwork.equipments[EquipmentType.SUBSTATION],
+                [EquipmentType.VOLTAGE_LEVEL]: state.spreadsheetNetwork.equipments[EquipmentType.VOLTAGE_LEVEL],
+                [EquipmentType.HVDC_LINE]: state.spreadsheetNetwork.equipments[EquipmentType.HVDC_LINE],
             },
         };
     });
@@ -1688,7 +1682,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
         const now = Date.now();
         filterIds.forEach((filterId) => {
-            tableState.recents.unshift({ id: filterId, unselectedDate: now });
+            const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
+            if (!filterOption?.deleted) {
+                tableState.recents.unshift({ id: filterId, unselectedDate: now });
+            }
         });
         tableState.recents = tableState.recents.slice(0, MAX_RECENT_GLOBAL_FILTERS);
     });
@@ -1698,10 +1695,29 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
         const now = Date.now();
-        const newRecents = tableState.selected.map((filterId) => ({ id: filterId, unselectedDate: now }));
+        const newRecents = tableState.selected
+            .filter((filterId) => {
+                const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
+                return !filterOption?.deleted;
+            })
+            .map((filterId) => ({ id: filterId, unselectedDate: now }));
         tableState.recents = [...newRecents, ...tableState.recents].slice(0, MAX_RECENT_GLOBAL_FILTERS);
         tableState.selected = [];
     });
+    builder.addCase(
+        MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+        (state, action: MarkNotFoundGlobalFiltersAsDeletedAction) => {
+            const { globalFilters, tableId } = action;
+            const ids = new Set(globalFilters.map((f) => f.id));
+            state.globalFilterOptions.forEach((globalFilter) => {
+                if (ids.has(globalFilter.id)) globalFilter.deleted = true;
+            });
+            const tableState = state.tableFilters.globalFilters[tableId];
+            if (tableState?.recents?.length) {
+                tableState.recents = tableState.recents.filter((r) => !ids.has(r.id));
+            }
+        }
+    );
 });
 
 function updateSubstationAfterVLDeletion(

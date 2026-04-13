@@ -8,7 +8,7 @@
 import { useCallback, useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
 import EditIcon from '@mui/icons-material/Edit';
-import { FloatInput, KilometerAdornment } from '@gridsuite/commons-ui';
+import { ButtonReadOnlyInput, FloatInput, KilometerAdornment, ReadOnlyInput } from '@gridsuite/commons-ui';
 import { IconButton } from '@mui/material';
 import {
     SEGMENT_DISTANCE_VALUE,
@@ -17,8 +17,6 @@ import {
     SEGMENT_SUSCEPTANCE,
     SEGMENT_TYPE_VALUE,
 } from '../../utils/field-constants';
-import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
-import { ButtonReadOnlyInput } from '../../utils/rhf-inputs/read-only/button-read-only-input';
 import GridItem from '../commons/grid-item';
 
 export interface LineTypeSegmentCreationProps {

@@ -54,7 +54,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -175,7 +175,7 @@ export default function ShuntCompensatorModificationDialog({
                     studyUuid,
                     currentNode?.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
+                    EquipmentType.SHUNT_COMPENSATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
