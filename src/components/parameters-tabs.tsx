@@ -18,11 +18,6 @@ import {
     getLoadFlowSpecificParametersDescription,
 } from 'services/loadflow';
 import { getLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
-import { getSecurityAnalysisParameters, setSecurityAnalysisParameters } from 'services/study/security-analysis';
-import {
-    getSensitivityAnalysisParameters,
-    getSensitivityAnalysisParametersEnriched,
-} from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
@@ -53,6 +48,9 @@ import {
     DynamicSecurityAnalysisInline,
     fetchDynamicSecurityAnalysisProviders,
     BuildStatus,
+    getSecurityAnalysisParameters,
+    setSecurityAnalysisParameters,
+    getSensitivityAnalysisParameters,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -191,7 +189,7 @@ const ParametersTabs: FunctionComponent = () => {
         sensitivityAnalysisAvailability,
         {
             backendFetchProviders: fetchSensitivityAnalysisProviders,
-            backendFetchParameters: getSensitivityAnalysisParametersEnriched,
+            backendFetchParameters: getSensitivityAnalysisParameters,
         }
     );
     useParametersNotification(
