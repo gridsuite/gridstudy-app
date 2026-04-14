@@ -66,6 +66,7 @@ import { AppState } from 'redux/reducer.type';
 import {
     getLocalStoragePanelStates,
     clearLocalStorageWorkspaceState,
+    saveLocalStorageActiveWorkspaceId,
 } from '../../../redux/session-storage/workspace-local-storage';
 
 enum WorkspaceAction {
@@ -152,6 +153,7 @@ export const WorkspaceSwitcher = memo(() => {
             });
             globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace', { detail: workspaceId }));
             dispatch(setActiveWorkspace(workspace));
+            saveLocalStorageActiveWorkspaceId(studyUuid, workspaceId);
         },
         [studyUuid, dispatch]
     );

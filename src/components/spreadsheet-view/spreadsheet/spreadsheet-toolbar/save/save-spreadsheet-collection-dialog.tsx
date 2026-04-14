@@ -40,10 +40,10 @@ import {
 } from '../../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
+import { SortConfig, TableType } from '../../../../../types/custom-aggrid-types';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
-import { SortConfig } from '../../../../../types/custom-aggrid-types';
 
 interface SaveSpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
@@ -81,7 +81,9 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     const { nodeAliases } = useNodeAliases();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
-    const tablesFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD]);
+    const tablesFilters = useSelector(
+        (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet] ?? {}
+    );
     const tablesGlobalFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters);
     const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]);

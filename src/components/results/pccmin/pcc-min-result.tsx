@@ -95,10 +95,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         [dispatchPagination]
     );
 
-    const goToFirstPage = useCallback(() => {
-        dispatchPagination({ ...pagination, page: 0 });
-    }, [pagination, dispatchPagination]);
-
     useEffect(() => {
         if (pccMinStatus !== RunningStatus.SUCCEED) {
             return;
@@ -174,7 +170,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 isFetching={isFetching}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                goToFirstPage={goToFirstPage}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
