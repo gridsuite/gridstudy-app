@@ -79,16 +79,13 @@ export const emptyLineSegment: SegmentFormData = {
 export function convertToLineSegmentInfos(lineSegments: DeepNullable<SegmentFormData | null>[]): LineSegmentInfos[] {
     return (
         lineSegments
-            ?.filter(
-                (segment): segment is SegmentFormData =>
-                    segment !== null && segment !== undefined && !!segment.segmentTypeId
-            )
+            ?.filter((segment): segment is SegmentFormData => segment != null && segment[SEGMENT_TYPE_ID] !== null)
             .map((segment) => ({
-                segmentTypeId: segment.segmentTypeId,
-                segmentDistanceValue: segment.segmentDistanceValue,
-                area: segment.area,
-                temperature: segment.temperature ?? '',
-                shapeFactor: segment.shapeFactor,
+                [SEGMENT_TYPE_ID]: segment[SEGMENT_TYPE_ID],
+                [SEGMENT_DISTANCE_VALUE]: segment[SEGMENT_DISTANCE_VALUE],
+                [AREA]: segment[AREA],
+                [TEMPERATURE]: segment[TEMPERATURE] ?? '',
+                [SHAPE_FACTOR]: segment[SHAPE_FACTOR],
             })) ?? []
     );
 }
