@@ -136,7 +136,6 @@ export function StudyContainer() {
 
     // For the first network existence check and indexation check StudyPane is not rendered until network is found
     // then those states will be true even after root network change
-    const [isFirstStudyNetworkFound, setIsFirstStudyNetworkFound] = useState(false);
     const [isFirstRootNetworkIndexationFound, setIsFirstRootNetworkIndexationFound] = useState(false);
 
     const rootNetworkIndexationStatus = useSelector((state) => state.rootNetworkIndexationStatus);
@@ -409,16 +408,15 @@ export function StudyContainer() {
                 .then((response) => {
                     if (response.status === HttpStatusCode.OK) {
                         successCallback && successCallback();
-                        setIsFirstStudyNetworkFound(true);
                         checkRootNetworkIndexation().then(loadTree);
                     } else {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
-                        setIsFirstStudyNetworkFound(false);
                         recreateStudyNetwork(studyUuid, currentRootNetworkUuid)
                             .then(() => {
                                 snackWarning({
                                     headerId: 'recreatingNetworkStudy',
+                                    persist: true,
                                 });
                             })
                             .catch((error) => {
@@ -456,13 +454,8 @@ export function StudyContainer() {
         if (!studyUuid || !currentRootNetworkUuid) {
             return;
         }
-        if (
-            !isFirstStudyNetworkFound ||
-            (currentRootNetworkUuidRef.current && currentRootNetworkUuidRef.current !== currentRootNetworkUuid)
-        ) {
-            checkNetworkExistenceAndRecreateIfNotFound();
-        }
-    }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid, isFirstStudyNetworkFound]);
+        checkNetworkExistenceAndRecreateIfNotFound();
+    }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
 
     // checking another time if we can find network, if we do, we display a snackbar info
     const handleEvent = useCallback(
@@ -561,7 +554,7 @@ export function StudyContainer() {
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
-            loading={studyPending || !paramsLoaded || !isFirstStudyNetworkFound || !isFirstRootNetworkIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            loading={studyPending || !paramsLoaded || !isFirstRootNetworkIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane />
