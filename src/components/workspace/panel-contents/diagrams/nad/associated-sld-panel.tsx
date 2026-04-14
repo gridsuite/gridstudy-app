@@ -18,33 +18,7 @@ import { selectPanel } from '../../../../../redux/slices/workspace-selectors';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { VoltageLevelPanelContent } from '../sld/voltage-level-panel-content';
 import { NAD_SLD_CONSTANTS } from './constants';
-
-// Helper functions from workspace panels
-const positionToRelative = (position: { x: number; y: number }, containerRect: DOMRect) => ({
-    x: position.x / containerRect.width,
-    y: position.y / containerRect.height,
-});
-
-const sizeToRelative = (size: { width: number; height: number }, containerRect: DOMRect) => ({
-    width: size.width / containerRect.width,
-    height: size.height / containerRect.height,
-});
-
-const calculatePanelDimensions = (
-    position: { x: number; y: number },
-    size: { width: number; height: number },
-    containerRect: DOMRect,
-    minSize: { width: number; height: number }
-) => {
-    // Round to integer pixels to prevent subpixel blur on Chromium 125-133
-    // (CSS transform: translate() with fractional values causes blurry panel content)
-    const width = Math.round(Math.max(minSize.width, size.width * containerRect.width));
-    const height = Math.round(Math.max(minSize.height, size.height * containerRect.height));
-
-    const x = Math.round(Math.max(0, Math.min(position.x * containerRect.width, containerRect.width - width)));
-    const y = Math.round(Math.max(0, Math.min(position.y * containerRect.height, containerRect.height - height)));
-    return { x, y, width, height };
-};
+import { calculatePanelDimensions, positionToRelative, sizeToRelative } from '../../../core/utils/coordinate-utils';
 
 const DEFAULT_POSITION = { x: 0.01, y: 0.5 };
 const DEFAULT_SIZE = { width: 0.35, height: 0.5 };
