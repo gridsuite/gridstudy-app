@@ -961,16 +961,19 @@ export type MarkNotFoundGlobalFiltersAsDeletedAction = Readonly<
 > & {
     globalFilters: GlobalFilter[];
     tableId: string;
+    tableType: string;
 };
 
 export function markNotFoundGlobalFiltersAsDeleted(
     globalFilters: GlobalFilter[],
-    tableId: string
+    tableId: string,
+    tableType: string
 ): MarkNotFoundGlobalFiltersAsDeletedAction {
     return {
         type: MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
         globalFilters: globalFilters,
         tableId: tableId,
+        tableType: tableType,
     };
 }
 

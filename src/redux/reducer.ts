@@ -1702,12 +1702,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
         (state, action: MarkNotFoundGlobalFiltersAsDeletedAction) => {
-            const { globalFilters, tableId } = action;
+            const { globalFilters, tableId, tableType } = action;
             const ids = new Set(globalFilters.map((f) => f.id));
             state.globalFilterOptions.forEach((globalFilter) => {
                 if (ids.has(globalFilter.id)) globalFilter.deleted = true;
             });
-            const tableState = state.tableFilters.globalFilters[tableId];
+            const index = tableId ?? tableType;
+            const tableState = state.tableFilters.globalFilters[index];
             if (tableState?.recents?.length) {
                 tableState.recents = tableState.recents.filter((r) => !ids.has(r.id));
             }
