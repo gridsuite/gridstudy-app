@@ -4,18 +4,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { DescriptionModificationDialog, EditNoteIcon, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { DescriptionModificationDialog, EditNoteIcon } from '@gridsuite/commons-ui';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { useSelector } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../../../utils/is-any-node-building-hook';
-import { createEditDescriptionStyle } from '../styles';
+import { createEditDescriptionStyle } from '../network-modification-table-styles';
 import { setModificationMetadata } from '../../../../../../services/study/network-modifications';
 import { AppState } from '../../../../../../redux/reducer.type';
+import { ComposedModificationMetadata } from '../utils';
 import { FormattedMessage } from 'react-intl';
 
-const DescriptionCell: FunctionComponent<{ data: NetworkModificationMetadata }> = (props) => {
+const DescriptionCell: FunctionComponent<{ data: ComposedModificationMetadata }> = (props) => {
     const { data } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
