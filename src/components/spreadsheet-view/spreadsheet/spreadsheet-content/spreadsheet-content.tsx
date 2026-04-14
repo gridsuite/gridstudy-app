@@ -31,6 +31,8 @@ import { useWorkspacePanelActions } from '../../../workspace/hooks/use-workspace
 import { updateAgGridFilters } from '../../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
 
+import { SPREADSHEET_INVALID_CELL_CLASS } from '../../columns/utils/column-mapper';
+
 const styles = {
     table: (theme) => ({
         marginTop: theme.spacing(2.5),
@@ -39,6 +41,9 @@ const styles = {
         // Hide the vertical scrollbar for pinned bottom rows
         '.ag-floating-bottom.ag-selectable': {
             overflowY: 'hidden !important',
+        },
+        [`.ag-cell.${SPREADSHEET_INVALID_CELL_CLASS}`]: {
+            color: theme.palette.text.disabled,
         },
     }),
     invalidNode: {

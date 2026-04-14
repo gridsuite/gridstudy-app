@@ -6,13 +6,14 @@
  */
 
 import { useState, useCallback, useMemo, SetStateAction, FunctionComponent } from 'react';
-import { ActivableChip, NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { ActivableChip, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { ExcludedNetworkModifications, RootNetworkMetadata } from '../../network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import type { UUID } from 'node:crypto';
 import { AppState } from '../../../../../../redux/reducer.type';
+import { ComposedModificationMetadata } from '../utils';
 
 function getUpdatedExcludedModifications(
     prev: ExcludedNetworkModifications[],
@@ -54,7 +55,7 @@ function getUpdatedExcludedModifications(
 }
 
 interface RootNetworkChipCellRendererProps {
-    data?: NetworkModificationMetadata;
+    data?: ComposedModificationMetadata;
     modificationsToExclude: ExcludedNetworkModifications[];
     setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
     rootNetwork: RootNetworkMetadata;
