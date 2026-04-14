@@ -174,6 +174,7 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
+    const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
     const { networkModificationsToCopy, copyInfos, copyNetworkModifications, cutNetworkModifications, cleanClipboard } =
         useCopiedNetworkModifications();
@@ -1095,10 +1096,8 @@ const NetworkModificationNodeEditor = () => {
                 notificationMessageId={notificationMessageId}
                 isFetchingModifications={isFetchingModifications}
                 pendingState={pendingState}
-                modificationsToExclude={modificationsToExclude}
-                setModificationsToExclude={setModificationsToExclude}
                 createAllColumns={createBaseColumns} // TODO : ajouter createRootNetworksColumns
-                highlightedModificationUuid={null}
+                highlightedModificationUuid={highlightedModificationUuid}
                 studyUuid={studyUuid}
                 currentNodeId={currentNode?.id}
             />
