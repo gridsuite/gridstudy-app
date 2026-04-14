@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    ComposedModificationMetadata,
     createEditDescriptionStyle,
     DescriptionModificationDialog,
     EditNoteIcon,
-    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { Tooltip } from '@mui/material';
@@ -19,7 +19,7 @@ import { setModificationMetadata } from '../../../../../../services/study/networ
 import { AppState } from '../../../../../../redux/reducer.type';
 import { FormattedMessage } from 'react-intl';
 
-const DescriptionCell: FunctionComponent<{ data: NetworkModificationMetadata }> = (props) => {
+const DescriptionCell: FunctionComponent<{ data: ComposedModificationMetadata }> = (props) => {
     const { data } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);

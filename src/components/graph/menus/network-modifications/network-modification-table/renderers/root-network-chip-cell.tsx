@@ -8,8 +8,8 @@
 import React, { useState, useCallback, useMemo, SetStateAction, FunctionComponent } from 'react';
 import {
     ActivableChip,
+    ComposedModificationMetadata,
     ExcludedNetworkModifications,
-    NetworkModificationMetadata,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -60,7 +60,7 @@ function getUpdatedExcludedModifications(
 }
 
 interface RootNetworkChipCellRendererProps {
-    data?: NetworkModificationMetadata;
+    data?: ComposedModificationMetadata;
     modificationsToExclude: ExcludedNetworkModifications[];
     setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
     rootNetwork: RootNetworkMetadata;

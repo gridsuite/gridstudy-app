@@ -14,7 +14,6 @@ import {
     NameCell,
     NameHeaderProps,
     NetworkModificationEditorNameHeader,
-    NetworkModificationMetadata,
     networkModificationTableStyles,
     SelectCell,
     SelectHeaderCell,
@@ -98,7 +97,7 @@ export const createRootNetworksColumns = (
     modificationsCount: number,
     modificationsToExclude: ExcludedNetworkModifications[],
     setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>
-): ColumnDef<NetworkModificationMetadata>[] => {
+): ColumnDef<ComposedModificationMetadata>[] => {
     const tagMinSizes = rootNetworks.map((rootNetwork) => computeTagMinSize(rootNetwork.tag ?? ''));
     const sharedSize = Math.max(Math.min(...tagMinSizes), 56);
     const currentRootNetworkTag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
