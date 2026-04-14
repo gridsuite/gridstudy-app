@@ -21,7 +21,6 @@ import type {
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { ValueOf } from 'type-fest';
-import type { ViewBoxLike } from '@svgdotjs/svg.js';
 import type {
     FilterConfig,
     LogsPaginationConfig,
@@ -58,12 +57,10 @@ import type { NodeAlias } from '../components/spreadsheet-view/types/node-alias.
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import {
     LOGS_PAGINATION_STORE_FIELD,
-    LOGS_STORE_FIELD,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
-    SPREADSHEET_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE, PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
@@ -135,29 +132,19 @@ export type SpreadsheetNetworkState = {
     equipments: Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
 };
 
-export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
-
-export type ComputationResultColumnFilter = {
-    columns: FilterConfig[];
-};
-
 export type GlobalFiltersState = {
     selected: string[];
     recents: RecentGlobalFilter[]; // sorted by unselectedDate descending (most recent first), max 10
 };
 
 export type TableFiltersState = {
-    columnsFilters: Record<string, Record<string, ComputationResultColumnFilter>>;
+    columnsFilters: Record<string, Record<string, FilterConfig[]>>;
     globalFilters: Record<string, GlobalFiltersState>;
 };
-
-export type LogsFilterState = Record<string, FilterConfig[]>;
 
 export type LogsPaginationState = Record<string, LogsPaginationConfig>;
 
 // ——— Diagrams ———
-
-export type NadViewBox = Record<UUID, ViewBoxLike | null>;
 
 export type NadNodeMovement = {
     diagramId: UUID;
@@ -242,7 +229,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nodeAliases: NodeAlias[];
 
     nodeSelectionForCopy: NodeSelectionForCopy;
-    nadViewBox: NadViewBox;
     copiedNetworkModifications: CopiedNetworkModifications;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
@@ -269,9 +255,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
     [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: Record<PccminTab, PaginationConfig>;
 
-    [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
-
-    [LOGS_STORE_FIELD]: LogsFilterState;
     [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationState;
 
     calculationSelections: Record<UUID, CalculationType[]>;

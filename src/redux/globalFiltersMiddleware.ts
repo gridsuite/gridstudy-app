@@ -6,7 +6,13 @@
  */
 
 import { isAction, Middleware } from '@reduxjs/toolkit';
-import { ADD_GLOBAL_FILTERS, CLEAR_GLOBAL_FILTERS, GlobalFilterAction, REMOVE_GLOBAL_FILTERS } from './actions';
+import {
+    ADD_GLOBAL_FILTERS,
+    CLEAR_GLOBAL_FILTERS,
+    GlobalFilterAction,
+    MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+    REMOVE_GLOBAL_FILTERS,
+} from './actions';
 import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
@@ -30,6 +36,7 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
     // Synchronize filter changes with the backend
     switch (action.type) {
         case ADD_GLOBAL_FILTERS:
+        case MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED:
         case REMOVE_GLOBAL_FILTERS:
         case CLEAR_GLOBAL_FILTERS: {
             const { tableType, tableId } = action as GlobalFilterAction;
@@ -40,7 +47,6 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             if (!studyUuid) {
                 break;
             }
-
             const index = tableId ?? tableType;
 
             // Protection from overriding more recent filters from backend notification

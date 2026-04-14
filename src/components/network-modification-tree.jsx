@@ -33,6 +33,11 @@ import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 import { PanelType } from './workspace/types/workspace.types';
+import { selectActiveWorkspaceId } from '../redux/slices/workspace-selectors';
+import {
+    getLocalStoragePanelState,
+    saveLocalStoragePanelState,
+} from '../redux/session-storage/workspace-local-storage';
 
 const styles = {
     modificationTree: (theme) => ({
@@ -59,7 +64,7 @@ const styles = {
     }),
 };
 
-const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
+const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, panelId }) => {
     const dispatch = useDispatch();
     const { openToolPanel } = useWorkspacePanelActions();
     const { snackError } = useSnackMessage();
@@ -68,6 +73,14 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const workspaceId = useSelector(selectActiveWorkspaceId);
+
+    const initialViewport = useRef(
+        (() => {
+            const localState = getLocalStoragePanelState(studyUuid, workspaceId, panelId);
+            return localState?.type === PanelType.TREE ? (localState.viewport ?? null) : null;
+        })()
+    );
 
     const { fitView, setCenter, getZoom } = useReactFlow();
 
@@ -282,6 +295,15 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
         setCenter(centerX, centerY, { zoom: getZoom() });
     }, [currentNode, nodes, setCenter, getZoom]);
 
+    const handleMoveEnd = useCallback(
+        (_event, viewport) => {
+            if (workspaceId) {
+                saveLocalStoragePanelState(studyUuid, workspaceId, { id: panelId, type: PanelType.TREE, viewport });
+            }
+        },
+        [studyUuid, workspaceId, panelId]
+    );
+
     // trigger focus when requested from outside (ex: from root network modification results)
     useTreeNodeFocus(handleFocusNode);
 
@@ -302,8 +324,10 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                 onEdgesChange={onEdgesChange}
                 // We need to keep this to fitView for the render before onReactFlowInit call
                 // otherwise the react flow seems to blink with the wrong zoom level.
-                fitView
-                onInit={onReactFlowInit}
+                {...(initialViewport.current
+                    ? { defaultViewport: initialViewport.current }
+                    : { fitView: true, onInit: onReactFlowInit })}
+                onMoveEnd={handleMoveEnd}
                 snapToGrid
                 snapGrid={snapGrid}
                 onNodeContextMenu={onNodeContextMenu}
@@ -352,6 +376,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
 export default NetworkModificationTree;
 
 NetworkModificationTree.propTypes = {
+    panelId: PropTypes.string.isRequired,
     onNodeContextMenu: PropTypes.func.isRequired,
     studyUuid: PropTypes.string.isRequired,
 };
