@@ -78,7 +78,6 @@ import { AppState } from 'redux/reducer.type';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
-    changeNetworkModificationOrder,
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
     stashModifications,
@@ -123,7 +122,6 @@ import { LimitSetsModificationDialog } from '../../../dialogs/network-modificati
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
-import { DragStart, DropResult } from '@hello-pangea/dnd';
 import { FetchStatus } from '../../../../services/utils.type';
 
 const nonEditableModificationTypes = new Set([
@@ -163,7 +161,6 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationMetadata[]>([]);
 
     const [isDragging, setIsDragging] = useState(false);
-    const [initialPosition, setInitialPosition] = useState<number | undefined>(undefined);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
@@ -1144,47 +1141,13 @@ const NetworkModificationNodeEditor = () => {
         [doEditModification, isModificationClickable]
     );
 
-    const onRowDragStart = (event: DragStart) => {
+    const onRowDragStart = useCallback(() => {
         setIsDragging(true);
-        setInitialPosition(event.source.index);
-    };
+    }, []);
 
-    const onRowDragEnd = (event: DropResult) => {
-        if (!event.destination) {
-            setIsDragging(false);
-            return;
-        }
-
-        let newPosition = event.destination.index;
-        const oldPosition = initialPosition;
-
-        if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
-            setIsDragging(false);
-            return;
-        }
-        if (newPosition === -1) {
-            newPosition = modifications.length;
-        }
-
-        const previousModifications = [...modifications];
-        const updatedModifications = [...modifications];
-
-        const [movedItem] = updatedModifications.splice(oldPosition, 1);
-        updatedModifications.splice(newPosition, 0, movedItem);
-
-        setModifications(updatedModifications);
-
-        const before = updatedModifications[newPosition + 1]?.uuid || null;
-
-        changeNetworkModificationOrder(studyUuid, currentNode?.id, movedItem.uuid, before)
-            .catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
-                setModifications(previousModifications);
-            })
-            .finally(() => {
-                setIsDragging(false);
-            });
-    };
+    const onRowDragEnd = useCallback(() => {
+        setIsDragging(false);
+    }, []);
 
     const isPasteButtonDisabled = useMemo(() => {
         return networkModificationsToCopy.length <= 0 || isAnyNodeBuilding || mapDataLoading || !currentNode;

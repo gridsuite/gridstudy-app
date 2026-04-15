@@ -13,6 +13,7 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LIMITS,
+    LINE_SEGMENTS,
     OPERATIONAL_LIMITS_GROUPS,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
@@ -21,6 +22,7 @@ import {
 import { OperationalLimitsGroupFormSchema } from '../../../limits/operational-limits-groups-types';
 import { LineCharacteristics } from '../modification/line-modification-type';
 import { ConnectablePositionInfos, Connectivity, FieldConstants, Property } from '@gridsuite/commons-ui';
+import { LineSegmentInfos } from '../../../../../services/network-modification-types';
 
 export interface LineCreationFormSchema {
     [TAB_HEADER]: {
@@ -37,6 +39,7 @@ export interface LineCreationFormSchema {
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
     };
     [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
+    [LINE_SEGMENTS]: LineSegmentInfos[] | undefined;
 }
 
 export interface LineFormInfos {

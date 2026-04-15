@@ -8,19 +8,12 @@
 import type { UUID } from 'node:crypto';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
-import {
-    ColumnContext,
-    FilterConfig,
-    numericFilterParams,
-    TableType,
-    textFilterParams,
-} from 'types/custom-aggrid-types';
+import { ColumnContext, numericFilterParams, TableType, textFilterParams } from 'types/custom-aggrid-types';
 import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
-import { GridApi, ICellRendererParams } from 'ag-grid-community';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
+import { ICellRendererParams } from 'ag-grid-community';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
@@ -42,7 +35,6 @@ export type PagedPccMinResults = Page<SinglePccMinResultInfos>;
 export interface PccMinResultTableProps {
     result: SinglePccMinResultInfos[] | undefined;
     isFetching: boolean;
-    goToFirstPage: () => void;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
 }
@@ -69,8 +61,7 @@ export const FROM_COLUMN_TO_FIELD_PCC_MIN: Record<string, string> = {
 };
 export const getPccMinColumns = (
     intl: IntlShape,
-    voltageLevelIdRenderer: (cellData: ICellRendererParams) => React.JSX.Element | undefined,
-    goToFirstPage: () => void
+    voltageLevelIdRenderer: (cellData: ICellRendererParams) => React.JSX.Element | undefined
 ) => {
     const sortParams: ColumnContext['sortParams'] = {
         table: PCCMIN_ANALYSIS_RESULT_SORT_STORE,
@@ -80,23 +71,6 @@ export const getPccMinColumns = (
     const pccMinFilterParams = {
         type: TableType.PccMin,
         tab: PCCMIN_RESULT,
-        updateFilterCallback: (
-            agGridApi?: GridApi,
-            filters?: FilterConfig[],
-            colId?: string,
-            studyUuid?: UUID,
-            filterType?: TableType,
-            filterSubType?: string
-        ) =>
-            updateComputationColumnsFilters(
-                agGridApi,
-                filters,
-                colId,
-                studyUuid,
-                filterType,
-                filterSubType,
-                goToFirstPage
-            ),
     };
 
     const createFilterContext = (

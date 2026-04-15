@@ -16,18 +16,23 @@ import {
     MODIFICATION_TYPES,
     ModificationType,
     safeEncodeURIComponent,
-    NetworkModificationMetadata,
     toModificationOperation,
     SubstationCreationDto,
     SubstationModificationDto,
+    NetworkModificationMetadata,
     VoltageLevelModificationDto,
+    ByFilterDeletionDto,
+    EquipmentType,
+    ModificationByAssignmentDto,
 } from '@gridsuite/commons-ui';
-import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
+import {
+    getBaseNetworkModificationUrl,
+    getStudyUrlWithNodeUuid,
+    getStudyUrlWithNodeUuidAndRootNetworkUuid,
+} from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
-    Assignment,
     AttachLineInfo,
     BalancesAdjustmentInfos,
     BatteryCreationInfos,
@@ -60,7 +65,6 @@ import {
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
-import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
@@ -87,6 +91,40 @@ export function changeNetworkModificationOrder(
         itemUuid +
         '?' +
         new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
+    console.debug(url);
+    return backendFetch(url, { method: 'put' });
+}
+
+/**
+ * Move a composite sub-modification within or between composites, or between a composite and the group root.
+ *
+ * The four scenarios are encoded by the nullable sourceCompositeUuid / targetCompositeUuid:
+ *  - both present  → sub-to-sub (same composite = reorder, different = cross-composite move)
+ *  - source only   → extract from composite to root level
+ *  - target only   → embed root-level modification into a composite
+ *
+ * @param sourceCompositeUuid  UUID of the composite that currently owns the modification; null if at root
+ * @param targetCompositeUuid  UUID of the target composite; null to place at root level
+ * @param beforeUuid           insert before this UUID in the target collection; null to append at end
+ */
+export function changeCompositeSubModificationOrder(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuid: UUID,
+    sourceCompositeUuid: UUID | null,
+    targetCompositeUuid: UUID | null,
+    beforeUuid: UUID | null
+) {
+    console.info('move composite sub-modification ' + modificationUuid + ' in node ' + nodeUuid);
+    const params = new URLSearchParams();
+    if (sourceCompositeUuid) params.set('sourceCompositeUuid', sourceCompositeUuid);
+    if (targetCompositeUuid) params.set('targetCompositeUuid', targetCompositeUuid);
+    if (beforeUuid) params.set('beforeUuid', beforeUuid);
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/composite-sub-modification/' +
+        modificationUuid +
+        (params.toString() ? '?' + params.toString() : '');
     console.debug(url);
     return backendFetch(url, { method: 'put' });
 }
@@ -1538,9 +1576,8 @@ export function deleteEquipment(
 export function deleteEquipmentByFilter(
     studyUuid: string,
     nodeUuid: string,
-    equipmentType: keyof typeof EQUIPMENT_TYPES | null,
-    filters: Filter[],
-    modificationUuid: string
+    modificationUuid: string | undefined,
+    dto: ByFilterDeletionDto
 ) {
     let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1557,11 +1594,7 @@ export function deleteEquipmentByFilter(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
-            filters: filters,
-            equipmentType: equipmentType,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -1610,7 +1643,7 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-            equipmentType: EQUIPMENT_TYPES.SWITCH,
+            equipmentType: EquipmentType.SWITCH,
             equipmentId: switchId,
             equipmentAttributeName: 'open',
             equipmentAttributeValue: open,
@@ -1813,33 +1846,25 @@ export function modifyByFormula(
 export function modifyByAssignment(
     studyUuid: string,
     nodeUuid: UUID,
-    equipmentType: string,
-    assignmentsList: Assignment[],
-    isUpdate: boolean,
-    modificationUuid: UUID | null
+    modificationUuid: string | undefined,
+    dto: ModificationByAssignmentDto
 ) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
+    if (modificationUuid) {
         modificationUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating modification by assignment');
     } else {
         console.info('Creating modification by assignment');
     }
 
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
-        equipmentType: equipmentType,
-        assignmentInfosList: assignmentsList,
-    });
-
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify(dto),
     });
 }
 
@@ -1964,4 +1989,19 @@ export function moveVoltageLevelFeederBays({
         },
         body: JSON.stringify(moveVoltageLevelFeederBaysInfos),
     });
+}
+
+export function getNetworkModificationsFromComposite(
+    compositeModificationUuids: string[],
+    onlyMetadata: boolean = true
+): Promise<Record<UUID, NetworkModificationMetadata[]>> {
+    const urlSearchParams = new URLSearchParams();
+    compositeModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    urlSearchParams.append('onlyMetadata', String(onlyMetadata));
+    const url =
+        getBaseNetworkModificationUrl() +
+        '/network-composite-modifications/network-modifications?' +
+        urlSearchParams.toString();
+    console.debug(url);
+    return backendFetchJson(url);
 }

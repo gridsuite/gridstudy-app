@@ -17,7 +17,7 @@ import {
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType, GsLangUser, type MuiStyles, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType, GsLangUser, type MuiStyles, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -38,7 +38,6 @@ import { securityAnalysisResultInvalidations } from '../../computing-status/use-
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
@@ -121,10 +120,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const { page, rowsPerPage } = pagination;
 
     const { filters } = useComputationColumnFilters(TableType.SecurityAnalysis, getStoreFields(tabIndex));
-
-    const goToFirstPage = useCallback(() => {
-        dispatchPagination({ ...pagination, page: 0 });
-    }, [pagination, dispatchPagination]);
 
     const resetPaginationIfNKResults = useCallback(() => {
         if (tabIndex === NMK_RESULTS_TAB_INDEX) {
@@ -234,7 +229,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex, goToFirstPage);
+    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
     const downloadZipResult = useCallback(
@@ -268,9 +263,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         // empty array result
         result.length === 0;
 
-    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
+    const filterableEquipmentTypes: EquipmentType[] = useMemo(() => {
         if (tabIndex === NMK_RESULTS_TAB_INDEX) {
-            return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+            return [EquipmentType.TWO_WINDINGS_TRANSFORMER, EquipmentType.LINE];
         }
         return [];
     }, [tabIndex]);

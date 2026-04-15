@@ -142,6 +142,7 @@ export default function CreateVoltageLevelTopologyDialog({
                 titleId={'CreateVoltageLevelTopology'}
                 keepMounted={true}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                PaperProps={{ sx: { height: '75vh' } }}
                 {...dialogProps}
             >
                 {selectedId == null && (
