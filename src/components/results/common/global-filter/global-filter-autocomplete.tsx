@@ -273,6 +273,7 @@ function GlobalFilterAutocomplete() {
     const options = useMemo(
         () =>
             globalFilterOptions
+                .filter((filter) => !filter.deleted)
                 .filter(
                     (filter) =>
                         filterCategories.includes(filter.filterType) &&
@@ -302,7 +303,7 @@ function GlobalFilterAutocomplete() {
                         label={label}
                         {...getTagsProps({ index })}
                         key={key}
-                        sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                        sx={getResultsGlobalFiltersChipStyle(element)}
                     />
                 );
             }

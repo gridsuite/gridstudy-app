@@ -63,6 +63,11 @@ import { RootState } from 'redux/store';
 import { setDirtyComputationParameters } from 'redux/actions';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import { AppState } from 'redux/reducer.type';
+import {
+    getLocalStoragePanelStates,
+    clearLocalStorageWorkspaceState,
+    saveLocalStorageActiveWorkspaceId,
+} from '../../../redux/session-storage/workspace-local-storage';
 
 enum WorkspaceAction {
     RENAME = 'rename',
@@ -142,8 +147,13 @@ export const WorkspaceSwitcher = memo(() => {
         async (workspaceId: UUID) => {
             if (!studyUuid) return;
             const workspace = await getWorkspace(studyUuid, workspaceId);
+            const savedPanels = getLocalStoragePanelStates(studyUuid, workspaceId);
+            workspace.panels.forEach((panel, index) => {
+                panel.zIndex = savedPanels[panel.id]?.zIndex ?? index + 1;
+            });
             globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace', { detail: workspaceId }));
             dispatch(setActiveWorkspace(workspace));
+            saveLocalStorageActiveWorkspaceId(studyUuid, workspaceId);
         },
         [studyUuid, dispatch]
     );
@@ -205,7 +215,10 @@ export const WorkspaceSwitcher = memo(() => {
     const handleConfirmReset = useCallback(() => {
         if (workspaceAction?.action === WorkspaceAction.RESET && studyUuid) {
             deletePanels(studyUuid, workspaceAction.workspaceId)
-                .then(() => dispatch(clearWorkspaceAction()))
+                .then(() => {
+                    clearLocalStorageWorkspaceState(studyUuid, workspaceAction.workspaceId);
+                    dispatch(clearWorkspaceAction());
+                })
                 .catch((error) => console.error('Failed to reset workspace:', error));
         }
         setWorkspaceAction(null);
@@ -271,6 +284,8 @@ export const WorkspaceSwitcher = memo(() => {
                     snackInfo({
                         messageTxt: intl.formatMessage({ id: 'workspaceReplaceSuccess' }),
                     });
+
+                    clearLocalStorageWorkspaceState(studyUuid, workspaceAction.workspaceId);
 
                     // Reload the workspace if it's the active one
                     if (workspaceAction.workspaceId === activeWorkspaceId) {

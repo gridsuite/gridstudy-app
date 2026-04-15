@@ -7,16 +7,17 @@
 
 import React, { FunctionComponent, SetStateAction, useCallback, useState } from 'react';
 import { Switch, Tooltip } from '@mui/material';
-import { NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationMetadata } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { AppState } from '../../../../../../redux/reducer.type';
+import { ComposedModificationMetadata, findModificationInTree, updateModificationFieldInTree } from '../utils';
 
 export interface SwitchCellRendererProps {
-    data: NetworkModificationMetadata;
-    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
+    data: ComposedModificationMetadata;
+    setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>;
 }
 
 const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
@@ -54,19 +55,13 @@ const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
     const toggleModificationActive = useCallback(() => {
         setIsLoading(true);
         setModifications((oldModifications) => {
-            const modificationToUpdateIndex = oldModifications.findIndex((m) => m.uuid === modificationUuid);
-            if (modificationToUpdateIndex === -1) {
+            const target = findModificationInTree(modificationUuid, oldModifications);
+            if (!target) {
                 return oldModifications;
             }
-            const newModifications = [...oldModifications];
-            const newStatus = !newModifications[modificationToUpdateIndex].activated;
-
-            newModifications[modificationToUpdateIndex] = {
-                ...newModifications[modificationToUpdateIndex],
-            };
-
+            const newStatus = !target.activated;
             updateModification(newStatus);
-            return newModifications;
+            return updateModificationFieldInTree(modificationUuid, { activated: newStatus }, oldModifications);
         });
     }, [modificationUuid, updateModification, setModifications]);
 

@@ -24,6 +24,10 @@ import {
 import { setWorkspacesMetadata, setActiveWorkspace } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
 import { getWorkspacesMetadata, getWorkspace } from '../services/study/workspace';
+import {
+    getLocalStorageActiveWorkspaceId,
+    getLocalStoragePanelStates,
+} from '../redux/session-storage/workspace-local-storage';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
@@ -58,6 +62,7 @@ import {
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
 import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
+import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -493,19 +498,28 @@ export function StudyContainer() {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
             dispatch(openStudy(studyUuid));
+            saveStudyAccessTimestamp(studyUuid);
 
             // Load workspaces metadata from backend
             getWorkspacesMetadata(studyUuid)
                 .then((workspacesMetadata) => {
                     dispatch(setWorkspacesMetadata(workspacesMetadata));
 
-                    // Load the first workspace for now (maybe remember last active workspace per study and load it instead later)
                     if (workspacesMetadata.length > 0) {
-                        return getWorkspace(studyUuid, workspacesMetadata[0].id);
+                        const savedId = getLocalStorageActiveWorkspaceId(studyUuid);
+                        const targetId =
+                            savedId && workspacesMetadata.some((w) => w.id === savedId)
+                                ? savedId
+                                : workspacesMetadata[0].id;
+                        return getWorkspace(studyUuid, targetId);
                     }
                 })
                 .then((workspace) => {
                     if (workspace) {
+                        const savedPanels = getLocalStoragePanelStates(studyUuid, workspace.id);
+                        workspace.panels.forEach((panel, index) => {
+                            panel.zIndex = savedPanels[panel.id]?.zIndex ?? index + 1;
+                        });
                         dispatch(setActiveWorkspace(workspace));
                     }
                 });
