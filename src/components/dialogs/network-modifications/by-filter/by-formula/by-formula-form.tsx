@@ -10,9 +10,14 @@ import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../../utils/field-constant
 import FormulaForm from './formula/formula-form';
 import { getFormulaInitialValue } from './formula/formula-utils';
 import { useFormContext } from 'react-hook-form';
-import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
 import { Box, Grid } from '@mui/material';
-import { EquipmentType, ExpandableInput, mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
+import {
+    EquipmentType,
+    ExpandableInput,
+    mergeSx,
+    unscrollableDialogStyles,
+    SelectWithConfirmationInput,
+} from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
 
 interface ByFormulaFormProps {}

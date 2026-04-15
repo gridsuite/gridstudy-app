@@ -26,6 +26,9 @@ import {
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
+export const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
+
+export const getBaseNetworkModificationUrl = () => `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1`;
 
 export const getStudyUrl = (studyUuid: UUID | null) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}`;
@@ -204,7 +207,8 @@ export function fetchContingencyCount(
     studyUuid: UUID | null,
     currentNodeUuid: UUID | null,
     currentRootNetworkUuid: UUID | null,
-    contingencyListIds: UUID[] | null
+    contingencyListIds: UUID[] | null,
+    abortSignal: AbortSignal
 ): Promise<ContingencyCount> {
     console.info(
         `Fetching contingency count for ${contingencyListIds} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
@@ -219,7 +223,7 @@ export function fetchContingencyCount(
         urlSearchParams;
 
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchJson(url, { signal: abortSignal });
 }
 
 export function executeCompositeModificationAction(
@@ -281,6 +285,31 @@ export function copyOrMoveModifications(
         body: JSON.stringify(modificationToCutUuidList),
     });
 }
+
+export interface ModificationPair {
+    first: UUID;
+    second: string;
+}
+
+export const insertCompositeModifications = (
+    studyUuid: string,
+    nodeUuid: string,
+    modifications: ModificationPair[],
+    action: CompositeModificationAction
+): Promise<void> => {
+    const urlSearchParams = new URLSearchParams({ action });
+    return backendFetch(`${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modifications?${urlSearchParams}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(modifications),
+    }).then((response) => {
+        if (!response.ok) {
+            return response.json().then((err) => {
+                throw err;
+            });
+        }
+    });
+};
 
 export interface ExportFormatProperties {
     formatName: string;

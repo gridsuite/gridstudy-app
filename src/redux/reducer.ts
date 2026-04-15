@@ -28,13 +28,11 @@ import {
     EquipmentType,
 } from '@gridsuite/commons-ui';
 import {
-    ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_GLOBAL_FILTERS,
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_SPREADSHEET_LOADED_NODES_IDS,
     ADD_TO_GLOBAL_FILTER_OPTIONS,
-    type AddFilterForNewSpreadsheetAction,
     AddGlobalFiltersAction,
     type AddNotificationAction,
     type AddSortForNewSpreadsheetAction,
@@ -73,9 +71,7 @@ import {
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     type LoadEquipmentsAction,
     type LoadNetworkModificationTreeSuccessAction,
-    LOGS_FILTER,
     LOGS_RESULT_PAGINATION,
-    type LogsFilterAction,
     LogsResultPaginationAction,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
@@ -83,6 +79,8 @@ import {
     type MapDataLoadingAction,
     type MapEquipmentsCreatedAction,
     type MapEquipmentsInitializedAction,
+    MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+    type MarkNotFoundGlobalFiltersAsDeletedAction,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
@@ -196,10 +194,6 @@ import {
     SetSpreadsheetFetchingAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
     ShortcircuitAnalysisResultPaginationAction,
-    SPREADSHEET_FILTER,
-    type SpreadsheetFilterAction,
-    STORE_NAD_VIEW_BOX,
-    StoreNadViewBoxAction,
     TABLE_SORT,
     type TableSortAction,
     UPDATE_COLUMN_FILTERS,
@@ -224,11 +218,11 @@ import {
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
-    getLocalStorageSyncEnabled,
     getLocalStorageTheme,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
+import { getLocalStorageSyncEnabled } from './session-storage/navigation-local-storage';
 import { PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
@@ -242,7 +236,6 @@ import {
     LOADFLOW_RESULT_SORT_STORE,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
     LOGS_PAGINATION_STORE_FIELD,
-    LOGS_STORE_FIELD,
     ONE_BUS,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     PCCMIN_ANALYSIS_RESULT_SORT_STORE,
@@ -262,7 +255,6 @@ import {
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
     SPREADSHEET_SORT_STORE,
-    SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
     STATEESTIMATION_RESULT_SORT_STORE,
@@ -281,18 +273,24 @@ import {
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
+    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PCCMIN_ANALYSIS_TABS,
+    PccminTab,
     SECURITY_ANALYSIS_TABS,
+    SecurityAnalysisTab,
     SENSITIVITY_ANALYSIS_TABS,
+    SensitivityAnalysisTab,
     SHORTCIRCUIT_ANALYSIS_TABS,
+    ShortcircuitAnalysisTab,
     SortWay,
     TableSortConfig,
+    TableType,
 } from '../types/custom-aggrid-types';
 import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
-import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
+import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 import { isCriteriaFilter } from '../components/results/common/utils';
 import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
@@ -303,7 +301,6 @@ import {
     type AppState,
     type Bus,
     EquipmentUpdateType,
-    type LogsFilterState,
     type LogsPaginationState,
     type SpreadsheetNetworkState,
     type Substation,
@@ -375,7 +372,7 @@ export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
 
 export type Actions = AppActions | AuthenticationActions;
 
-const initialLogsFilterState: LogsFilterState = {
+const initialLogsFilterState: Record<string, FilterConfig[]> = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SECURITY_ANALYSIS]: [],
@@ -465,7 +462,6 @@ const initialState: AppState = {
         copyType: null,
         allChildren: null,
     },
-    nadViewBox: {},
     copiedNetworkModifications: {
         networkModificationUuids: [],
         copyInfos: null,
@@ -571,10 +567,6 @@ const initialState: AppState = {
         [PCCMIN_RESULT]: { ...DEFAULT_PAGINATION },
     },
 
-    // Spreadsheet filters
-    [SPREADSHEET_STORE_FIELD]: {},
-
-    [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
     [LOGS_PAGINATION_STORE_FIELD]: { ...initialLogsPaginationState },
 
     [TABLE_SORT_STORE]: {
@@ -647,7 +639,9 @@ const initialState: AppState = {
         },
     },
     tableFilters: {
-        columnsFilters: {},
+        columnsFilters: {
+            [TableType.Logs]: { ...initialLogsFilterState },
+        },
         globalFilters: {},
     },
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
@@ -793,7 +787,7 @@ export const reducer = createReducer(initialState, (builder) => {
             }
         }
         state.tables.addedTable = null;
-        state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
+        state.tableFilters.columnsFilters[TableType.Spreadsheet] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce(
                 (acc, tabUuid) => ({
@@ -850,8 +844,8 @@ export const reducer = createReducer(initialState, (builder) => {
         // Replace the definitions array with the new one
         state.tables.definitions = newDefinitions;
 
-        if (state[SPREADSHEET_STORE_FIELD]) {
-            delete state[SPREADSHEET_STORE_FIELD][removedTable.uuid];
+        if (state.tableFilters.columnsFilters[TableType.Spreadsheet]) {
+            delete state.tableFilters.columnsFilters[TableType.Spreadsheet][removedTable.uuid];
         }
 
         if (state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE]) {
@@ -1100,11 +1094,6 @@ export const reducer = createReducer(initialState, (builder) => {
             )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
-    });
-
-    builder.addCase(STORE_NAD_VIEW_BOX, (state, action: StoreNadViewBoxAction) => {
-        const { nadUuid, viewBox } = action.nadViewBox;
-        state.nadViewBox[nadUuid] = viewBox;
     });
 
     builder.addCase(COPIED_NETWORK_MODIFICATIONS, (state, action: CopiedNetworkModificationsAction) => {
@@ -1510,21 +1499,8 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
-        state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
-    });
-
-    builder.addCase(ADD_FILTER_FOR_NEW_SPREADSHEET, (state, action: AddFilterForNewSpreadsheetAction) => {
-        const { tabUuid, value } = action.payload;
-        state[SPREADSHEET_STORE_FIELD][tabUuid] = value;
-    });
-
-    builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
-        state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
-    });
-
     builder.addCase(RESET_LOGS_FILTER, (state, _action: ResetLogsFilterAction) => {
-        state[LOGS_STORE_FIELD] = {
+        state.tableFilters.columnsFilters[TableType.Logs] = {
             ...initialLogsFilterState,
         };
     });
@@ -1582,7 +1558,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const { uuid, value } = action.definition;
         const tableDefinition = state.tables.definitions.find((tabDef) => tabDef.uuid === uuid);
         const tableSort = state.tableSort[SPREADSHEET_SORT_STORE];
-        const tableFilter = state[SPREADSHEET_STORE_FIELD];
+        const tableFilter = state.tableFilters.columnsFilters[TableType.Spreadsheet];
 
         if (tableDefinition) {
             tableDefinition.columns = tableDefinition.columns.filter((col) => col.id !== value);
@@ -1591,7 +1567,7 @@ export const reducer = createReducer(initialState, (builder) => {
         if (tableDefinition && tableSort[tableDefinition.name]) {
             tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort) => sort.colId !== value);
         }
-        if (tableDefinition && tableFilter[tableDefinition.uuid]) {
+        if (tableDefinition && tableFilter?.[tableDefinition.uuid]) {
             tableFilter[tableDefinition.uuid] = tableFilter[tableDefinition.uuid].filter(
                 (filter) => filter.column !== value
             );
@@ -1658,10 +1634,23 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
         const { filterType, filterSubType, filters } = action;
         state.tableFilters.columnsFilters[filterType] ??= {};
-        state.tableFilters.columnsFilters[filterType][filterSubType] ??= {
-            columns: [],
-        };
-        state.tableFilters.columnsFilters[filterType][filterSubType].columns = filters;
+        state.tableFilters.columnsFilters[filterType][filterSubType] = filters;
+
+        // Reset pagination to page 0 when column filters change
+        switch (filterType) {
+            case TableType.SecurityAnalysis:
+                state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][filterSubType as SecurityAnalysisTab].page = 0;
+                break;
+            case TableType.SensitivityAnalysis:
+                state[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD][filterSubType as SensitivityAnalysisTab].page = 0;
+                break;
+            case TableType.ShortcircuitAnalysis:
+                state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD][filterSubType as ShortcircuitAnalysisTab].page = 0;
+                break;
+            case TableType.PccMin:
+                state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][filterSubType as PccminTab].page = 0;
+                break;
+        }
     });
 
     builder.addCase(ADD_GLOBAL_FILTERS, (state, action: AddGlobalFiltersAction) => {
@@ -1688,7 +1677,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
         const now = Date.now();
         filterIds.forEach((filterId) => {
-            tableState.recents.unshift({ id: filterId, unselectedDate: now });
+            const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
+            if (!filterOption?.deleted) {
+                tableState.recents.unshift({ id: filterId, unselectedDate: now });
+            }
         });
         tableState.recents = tableState.recents.slice(0, MAX_RECENT_GLOBAL_FILTERS);
     });
@@ -1698,10 +1690,29 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
         const now = Date.now();
-        const newRecents = tableState.selected.map((filterId) => ({ id: filterId, unselectedDate: now }));
+        const newRecents = tableState.selected
+            .filter((filterId) => {
+                const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
+                return !filterOption?.deleted;
+            })
+            .map((filterId) => ({ id: filterId, unselectedDate: now }));
         tableState.recents = [...newRecents, ...tableState.recents].slice(0, MAX_RECENT_GLOBAL_FILTERS);
         tableState.selected = [];
     });
+    builder.addCase(
+        MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+        (state, action: MarkNotFoundGlobalFiltersAsDeletedAction) => {
+            const { globalFilters, tableId } = action;
+            const ids = new Set(globalFilters.map((f) => f.id));
+            state.globalFilterOptions.forEach((globalFilter) => {
+                if (ids.has(globalFilter.id)) globalFilter.deleted = true;
+            });
+            const tableState = state.tableFilters.globalFilters[tableId];
+            if (tableState?.recents?.length) {
+                tableState.recents = tableState.recents.filter((r) => !ids.has(r.id));
+            }
+        }
+    );
 });
 
 function updateSubstationAfterVLDeletion(
@@ -1778,11 +1789,8 @@ function synchCurrentTreeNode(state: Draft<AppState>, nextCurrentNodeUuid?: UUID
          * we need to sync the current tree node uuid to localStorage
          * to avoid having deleted node selected in other tabs for example.
          */
-        if (state.syncEnabled) {
-            localStorage.setItem(
-                `${BASE_NAVIGATION_KEYS.TREE_NODE_UUID}-${state.studyUuid}`,
-                JSON.stringify(nextCurrentNode.id)
-            );
+        if (state.syncEnabled && state.studyUuid) {
+            saveStudyNavigationSync(state.studyUuid, { treeNodeUuid: nextCurrentNode.id });
         }
     }
 }

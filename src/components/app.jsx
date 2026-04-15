@@ -16,6 +16,7 @@ import {
     COMMON_APP_NAME,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchStudyMetadata,
     getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
@@ -36,7 +37,6 @@ import { StudyContainer } from './study-container';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
-    addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
     initOrUpdateGlobalFilters,
     initTableDefinitions,
@@ -49,8 +49,10 @@ import {
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
+    updateColumnFiltersAction,
     updateTableColumns,
 } from '../redux/actions';
+import { TableType } from '../types/custom-aggrid-types';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import {
     isComputationResultColumnFilterUpdatedNotification,
@@ -74,11 +76,18 @@ import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
 import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
 import { isEditingGlobalFilter } from '../utils/editing-global-filter-sync.ts';
+import { cleanupStaleStudyData } from '../redux/session-storage/local-storage';
 
 const noUserManager = { instance: null, error: null };
 
 const App = () => {
     const { snackError } = useSnackMessage();
+
+    useEffect(() => {
+        fetchStudyMetadata()
+            .then((metadata) => cleanupStaleStudyData(metadata?.localStorageTtlDays))
+            .catch(() => cleanupStaleStudyData());
+    }, []);
 
     const user = useSelector((state) => state.user);
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -209,7 +218,7 @@ const App = () => {
                     const formattedGlobalFilters = model.globalFilters ?? [];
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
-                    dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
+                    dispatch(updateColumnFiltersAction(TableType.Spreadsheet, tabUuid, columnsFilters));
                     if (!isEditingGlobalFilter(tabUuid)) {
                         dispatch(initOrUpdateGlobalFilters(tabUuid, formattedGlobalFilters));
                     }
