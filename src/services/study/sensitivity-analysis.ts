@@ -119,7 +119,7 @@ export function exportSensitivityResultsAsCsv(
     currentRootNetworkUuid: UUID,
     csvConfig: CsvConfig,
     selector: any,
-    filters: FilterConfig[],
+    filters: FilterConfig[] | undefined,
     globalFilters: GlobalFilters | undefined
 ) {
     console.info(
