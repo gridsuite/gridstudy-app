@@ -122,37 +122,32 @@ export function getComputingStatusParametersFetcher(
 }
 
 export function getRunningStatusByComputingType(
-    allStatuses: Map<ComputingType, string>,
+    statusValue: string,
     computingType: ComputingType
 ): RunningStatus {
-    const status = allStatuses.get(computingType);
-    if (status === undefined) {
-        return RunningStatus.IDLE;
-    }
-
     switch (computingType) {
         case ComputingType.PCC_MIN:
-            return getPccMinRunningStatus(status);
+            return getPccMinRunningStatus(statusValue);
         case ComputingType.LOAD_FLOW:
-            return getLoadFlowRunningStatus(status);
+            return getLoadFlowRunningStatus(statusValue);
         case ComputingType.SECURITY_ANALYSIS:
-            return getSecurityAnalysisRunningStatus(status);
+            return getSecurityAnalysisRunningStatus(statusValue);
         case ComputingType.SENSITIVITY_ANALYSIS:
-            return getSensitivityAnalysisRunningStatus(status);
+            return getSensitivityAnalysisRunningStatus(statusValue);
         case ComputingType.SHORT_CIRCUIT:
-            return getShortCircuitAnalysisRunningStatus(status);
+            return getShortCircuitAnalysisRunningStatus(statusValue);
         case ComputingType.SHORT_CIRCUIT_ONE_BUS:
-            return getShortCircuitAnalysisRunningStatus(status);
+            return getShortCircuitAnalysisRunningStatus(statusValue);
         case ComputingType.DYNAMIC_SIMULATION:
-            return getDynamicSimulationRunningStatus(status);
+            return getDynamicSimulationRunningStatus(statusValue);
         case ComputingType.DYNAMIC_SECURITY_ANALYSIS:
-            return getDynamicSecurityAnalysisRunningStatus(status);
+            return getDynamicSecurityAnalysisRunningStatus(statusValue);
         case ComputingType.DYNAMIC_MARGIN_CALCULATION:
-            return getDynamicMarginCalculationRunningStatus(status);
+            return getDynamicMarginCalculationRunningStatus(statusValue);
         case ComputingType.VOLTAGE_INITIALIZATION:
-            return getVoltageInitRunningStatus(status);
+            return getVoltageInitRunningStatus(statusValue);
         case ComputingType.STATE_ESTIMATION:
-            return getStateEstimationRunningStatus(status);
+            return getStateEstimationRunningStatus(statusValue);
         default:
             return RunningStatus.IDLE;
     }
@@ -168,6 +163,5 @@ export function fetchAllComputationStatus(
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/computations/status';
-    console.debug(url);
     return backendFetchJson(url);
 }

@@ -168,8 +168,9 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
             const allStatusInfos = computingStatusResult;
             if (allStatusInfos != null) {
                 // for each status
-                for (const computingType of Object.values(ComputingType)) {
-                    const status = getRunningStatusByComputingType(allStatusInfos, computingType);
+                const allStatusInfosMap = new Map(Object.entries(allStatusInfos) as [ComputingType, string][]);
+                allStatusInfosMap.forEach(async (statusValue, computingType) => {
+                    const status = getRunningStatusByComputingType(statusValue, computingType);
                     dispatch(setComputingStatus(computingType, status));
                     if (isComputationCompleted(status, getCompletions(computingType))) {
                         dispatch(setLastCompletedComputation(computingType));
@@ -180,7 +181,7 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
                         computingType,
                         getComputingStatusParametersFetcher(computingType)
                     );
-                }
+                });
             }
         } catch (e: any) {
             if (!canceledRequest) {
