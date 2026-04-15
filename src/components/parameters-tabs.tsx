@@ -339,7 +339,7 @@ const ParametersTabs: FunctionComponent = () => {
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
                         globalBuildStatus={currentNode?.data?.globalBuildStatus}
-                        isRootNode={currentNode?.type == NodeType.ROOT}
+                        isRootNode={currentNode?.type === NodeType.ROOT}
                         isDeveloperMode={isDeveloperMode}
                     />
                 );
