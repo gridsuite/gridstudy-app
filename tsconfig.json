@@ -2,6 +2,10 @@
     "compilerOptions": {
         /* Language and Environment */
         "target": "es6",
+        "paths": {
+            "@gridsuite/commons-ui": ["../../commons-ui/src"],
+            "@gridsuite/commons-ui/*": ["../../commons-ui/src/*"]
+        },
         "lib": ["dom", "dom.iterable", "esnext"],
         "jsx": "react-jsx",
 

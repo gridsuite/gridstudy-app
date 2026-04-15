@@ -111,20 +111,6 @@ export function unbuildAllStudyNodes(studyUuid: UUID) {
     return backendFetch(url, { method: 'post' });
 }
 
-export interface AllComputationStatusInfos {
-    pccMinStatus: string;
-    dynamicMarginCalculationStatus: string;
-    dynamicSecurityAnalysisStatus: string;
-    dynamicSimulationStatus: string;
-    stateEstimationStatus: string;
-    sensitivityAnalysisStatus: string;
-    loadFlowStatus: string;
-    securityAnalysisStatus: string;
-    oneBusShortCircuitStatus: string;
-    allBusShortCircuitStatus: string;
-    voltageInitStatus: string;
-}
-
 export function getComputingStatusParametersFetcher(
     computingType: ComputingType
 ): ((studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>) | undefined {

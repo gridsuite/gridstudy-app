@@ -15,7 +15,6 @@ import { AppDispatch } from '../../redux/store';
 import { isParameterizedComputingType, toComputingStatusParameters } from './computing-status-utils';
 import { NotificationType, parseEventData, StudyUpdatedEventData } from '../../types/notification-types';
 import {
-    AllComputationStatusInfos,
     getComputingStatusParametersFetcher,
     getRunningStatusByComputingType,
 } from '../../services/study/study';
