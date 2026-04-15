@@ -218,11 +218,11 @@ import {
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
-    getLocalStorageSyncEnabled,
     getLocalStorageTheme,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
+import { getLocalStorageSyncEnabled } from './session-storage/navigation-local-storage';
 import { PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
@@ -290,7 +290,7 @@ import {
 } from '../types/custom-aggrid-types';
 import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
-import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
+import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 import { isCriteriaFilter } from '../components/results/common/utils';
 import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
@@ -1789,11 +1789,8 @@ function synchCurrentTreeNode(state: Draft<AppState>, nextCurrentNodeUuid?: UUID
          * we need to sync the current tree node uuid to localStorage
          * to avoid having deleted node selected in other tabs for example.
          */
-        if (state.syncEnabled) {
-            localStorage.setItem(
-                `${BASE_NAVIGATION_KEYS.TREE_NODE_UUID}-${state.studyUuid}`,
-                JSON.stringify(nextCurrentNode.id)
-            );
+        if (state.syncEnabled && state.studyUuid) {
+            saveStudyNavigationSync(state.studyUuid, { treeNodeUuid: nextCurrentNode.id });
         }
     }
 }
