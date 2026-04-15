@@ -12,7 +12,7 @@ import {
     ComputingType,
     getPccMinStudyParameters,
     NotificationsUrlKeys,
-    PccMinParameters,
+    PccMinParametersEnriched,
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -22,10 +22,10 @@ import type { UUID } from 'node:crypto';
 import { haveComputationParametersChanged } from './use-parameters-notification';
 import { isComputationParametersUpdatedNotification } from 'types/notification-types';
 
-export const useGetPccMinParameters = (): PccMinParameters | null => {
+export const useGetPccMinParameters = (): PccMinParametersEnriched | null => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
-    const [pccMinParams, setPccMinParams] = useState<PccMinParameters | null>(null);
+    const [pccMinParams, setPccMinParams] = useState<PccMinParametersEnriched | null>(null);
 
     const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
 

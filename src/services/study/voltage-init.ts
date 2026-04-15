@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import type { UUID } from 'node:crypto';
-import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, backendFetchText, VoltageInitStudyParameters } from '@gridsuite/commons-ui';
 import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 
 export function startVoltageInit(
@@ -76,6 +76,13 @@ export function fetchVoltageInitResult(
 
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);
+}
+
+export function getVoltageInitStudyParameters(studyUuid: UUID): Promise<VoltageInitStudyParameters> {
+    console.info('get voltage init study parameters');
+    const getVoltageInitParams = getStudyUrl(studyUuid) + '/voltage-init/parameters';
+    console.debug(getVoltageInitParams);
+    return backendFetchJson(getVoltageInitParams);
 }
 
 export function getVoltageInitModifications(studyUuid: UUID, currentNodeId: UUID, currentRootNetworkUuid: UUID) {
