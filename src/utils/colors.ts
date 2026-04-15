@@ -49,7 +49,7 @@ export const getBaseVoltageSldAndNadThemeColors = (baseVoltage: BaseVoltage, the
 /**
  * Extract the numeric level from a voltage level name (e.g. 'voltage-level-6' → 6)
  */
-const getVoltageLevel = (name: string): number => parseInt(name.split('-').pop() ?? '0', 10);
+const getVoltageLevel = (name: string): number => Number.parseInt(name.split('-').pop() ?? '0', 10);
 
 export const getBaseVoltagesCssVars = (
     theme: string,
