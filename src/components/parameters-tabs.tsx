@@ -68,6 +68,7 @@ import {
     fetchDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisParameters,
 } from '../services/study/dynamic-security-analysis';
+import { NodeType } from './graph/tree-node.type';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -337,7 +338,11 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
-                        globalBuildStatus={currentNode?.data?.globalBuildStatus}
+                        globalBuildStatus={
+                            currentNode.type == NodeType.ROOT
+                                ? BuildStatus.ROOT_NODE
+                                : currentNode?.data?.globalBuildStatus
+                        }
                         isDeveloperMode={isDeveloperMode}
                     />
                 );
