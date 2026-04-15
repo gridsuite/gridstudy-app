@@ -13,7 +13,7 @@ const STUDY_LAST_ACCESSED_KEY = `${LOCAL_STORAGE_KEY_PREFIX}:last-accessed`;
 const STUDY_TTL_DAYS = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
-// FIXME: remove on next release, old navigation keys to be cleaned up
+// TODO: remove on next release, old navigation keys to be cleaned up
 const LEGACY_NAVIGATION_PREFIXES = ['SYNC_ENABLED-', 'ROOT_NETWORK_UUID-', 'TREE_NODE_UUID-'];
 
 const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();
@@ -66,7 +66,7 @@ export function cleanupStaleStudyData(ttlDays: number = STUDY_TTL_DAYS): void {
             .filter((key) => !freshUuids.some((uuid) => key.includes(uuid)))
             .forEach((key) => localStorage.removeItem(key));
 
-        // FIXME: remove on next release, cleaning old navigation keys
+        // TODO: remove on next release, cleaning old navigation keys
         Object.keys(localStorage)
             .filter((key) => LEGACY_NAVIGATION_PREFIXES.some((prefix) => key.startsWith(prefix)))
             .forEach((key) => localStorage.removeItem(key));
