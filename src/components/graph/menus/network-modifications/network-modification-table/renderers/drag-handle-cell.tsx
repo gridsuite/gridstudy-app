@@ -7,13 +7,15 @@
 
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box } from '@mui/material';
-import { styles } from '../styles';
+import { networkModificationTableStyles } from '../network-modification-table-styles';
 import { FunctionComponent } from 'react';
 
 const DragHandleCell: FunctionComponent<{ isRowDragDisabled: boolean }> = ({ isRowDragDisabled }) => {
     return (
-        <Box sx={styles.dragHandle}>
-            {!isRowDragDisabled && <DragIndicatorIcon fontSize="small" sx={styles.dragIndicatorIcon} />}
+        <Box sx={networkModificationTableStyles.dragHandle}>
+            {!isRowDragDisabled && (
+                <DragIndicatorIcon fontSize="small" sx={networkModificationTableStyles.dragIndicatorIcon} />
+            )}
         </Box>
     );
 };
