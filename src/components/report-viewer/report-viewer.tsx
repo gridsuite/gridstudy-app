@@ -68,7 +68,12 @@ export default function ReportViewer({
     useEffect(() => {
         const newType = reportTreeMap[reportTree.id]?.type;
         setSelectedReport((currentSelected) => {
-            if (currentSelected.id !== reportTree.id || currentSelected.type !== newType) {
+            const isCurrentlyOnRoot = currentSelected.id === reportTree.id;
+            const rootTypeChanged = currentSelected.type !== newType;
+            if (isCurrentlyOnRoot && rootTypeChanged) {
+                return { id: reportTree.id, type: newType };
+            }
+            if (!reportTreeMap[currentSelected.id]) {
                 setExpandedTreeReports([reportTree.id]);
                 return { id: reportTree.id, type: newType };
             }
