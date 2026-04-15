@@ -7,7 +7,7 @@
 
 import { BaseVoltage, LIGHT_THEME } from '@gridsuite/commons-ui';
 
-export const INVALID_COMPUTATION_OPACITY = 0.2;
+export const INVALID_COMPUTATION_OPACITY = 0.5;
 
 /**
  * Parse an `rgb(r, g, b)` string into a numeric color tuple.
@@ -47,12 +47,10 @@ export const getBaseVoltageSldAndNadThemeColors = (baseVoltage: BaseVoltage, the
 };
 
 /**
- * Build CSS vars map per base-voltage style selectors for SLD and NAD color rendering.
- *
- * @param theme - current theme key to choose light or dark colors
- * @param baseVoltages - list of base voltage definitions to generate CSS for
- * @returns CSS variable map by selector
+ * Extract the numeric level from a voltage level name (e.g. 'voltage-level-6' → 6)
  */
+const getVoltageLevel = (name: string): number => Number.parseInt(name.split('-').pop() ?? '0', 10);
+
 export const getBaseVoltagesCssVars = (
     theme: string,
     baseVoltages: BaseVoltage[]
@@ -66,6 +64,17 @@ export const getBaseVoltagesCssVars = (
 
         const vlStyleClassName = `.sld-${interval.name}, .nad-${interval.name}`;
         css[vlStyleClassName] = { '--vl-color': themeColors.default };
+
+        const higherLevels = baseVoltages
+            .filter((v) => getVoltageLevel(v.name) > getVoltageLevel(interval.name))
+            .map((v) => `.nad-${v.name}.nad-winding`)
+            .join(', ');
+
+        const groupWithPstSelector = higherLevels
+            ? `g:has(.nad-${interval.name}.nad-winding):not(:has(${higherLevels}))`
+            : `g:has(.nad-${interval.name}.nad-winding)`;
+
+        css[groupWithPstSelector] = { '--vl-color': themeColors.default };
 
         for (let i = 1; i < Object.keys(themeColors).length; i++) {
             const busColor = themeColors[`bus-${i}`];
