@@ -62,6 +62,7 @@ import {
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
 import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
+import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -515,6 +516,7 @@ export function StudyContainer() {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
             dispatch(openStudy(studyUuid));
+            saveStudyAccessTimestamp(studyUuid);
 
             // Load workspaces metadata from backend
             getWorkspacesMetadata(studyUuid)
