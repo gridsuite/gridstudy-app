@@ -29,7 +29,7 @@ interface UseComputingStatusProps {
             studyUuid: UUID,
             nodeUuid: UUID,
             currentRootNetworkUuid: UUID
-        ) => Promise<AllComputationStatusInfos | null>,
+        ) => Promise<Map<ComputingType, string> | null>,
         getCompletions: (computingType: ComputingType) => NotificationType[]
     ): void;
 }
@@ -40,7 +40,7 @@ interface LastUpdateProps {
         studyUuid: UUID,
         nodeUuid: UUID,
         currentRootNetworkUuid: UUID
-    ) => Promise<AllComputationStatusInfos | null>;
+    ) => Promise<Map<ComputingType, string> | null>;
 }
 
 function isWorthUpdate(
@@ -152,7 +152,7 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
         rootNetworkUuidRef.current = currentRootNetworkUuid;
         try {
             // fetch computing status
-            const computingStatusResult: AllComputationStatusInfos | null = await allComputingStatusFetcher(
+            const computingStatusResult: Map<ComputingType, string> | null = await allComputingStatusFetcher(
                 studyUuid,
                 nodeUuid,
                 currentRootNetworkUuid

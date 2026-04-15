@@ -136,32 +136,37 @@ export function getComputingStatusParametersFetcher(
 }
 
 export function getRunningStatusByComputingType(
-    allStatuses: AllComputationStatusInfos,
+    allStatuses: Map<ComputingType, string>,
     computingType: ComputingType
 ): RunningStatus {
+    const status = allStatuses.get(computingType);
+    if (status === undefined) {
+        return RunningStatus.IDLE;
+    }
+
     switch (computingType) {
         case ComputingType.PCC_MIN:
-            return getPccMinRunningStatus(allStatuses.pccMinStatus);
+            return getPccMinRunningStatus(status);
         case ComputingType.LOAD_FLOW:
-            return getLoadFlowRunningStatus(allStatuses.loadFlowStatus);
+            return getLoadFlowRunningStatus(status);
         case ComputingType.SECURITY_ANALYSIS:
-            return getSecurityAnalysisRunningStatus(allStatuses.securityAnalysisStatus);
+            return getSecurityAnalysisRunningStatus(status);
         case ComputingType.SENSITIVITY_ANALYSIS:
-            return getSensitivityAnalysisRunningStatus(allStatuses.sensitivityAnalysisStatus);
+            return getSensitivityAnalysisRunningStatus(status);
         case ComputingType.SHORT_CIRCUIT:
-            return getShortCircuitAnalysisRunningStatus(allStatuses.allBusShortCircuitStatus);
+            return getShortCircuitAnalysisRunningStatus(status);
         case ComputingType.SHORT_CIRCUIT_ONE_BUS:
-            return getShortCircuitAnalysisRunningStatus(allStatuses.oneBusShortCircuitStatus);
+            return getShortCircuitAnalysisRunningStatus(status);
         case ComputingType.DYNAMIC_SIMULATION:
-            return getDynamicSimulationRunningStatus(allStatuses.dynamicSimulationStatus);
+            return getDynamicSimulationRunningStatus(status);
         case ComputingType.DYNAMIC_SECURITY_ANALYSIS:
-            return getDynamicSecurityAnalysisRunningStatus(allStatuses.dynamicSecurityAnalysisStatus);
+            return getDynamicSecurityAnalysisRunningStatus(status);
         case ComputingType.DYNAMIC_MARGIN_CALCULATION:
-            return getDynamicMarginCalculationRunningStatus(allStatuses.dynamicMarginCalculationStatus);
+            return getDynamicMarginCalculationRunningStatus(status);
         case ComputingType.VOLTAGE_INITIALIZATION:
-            return getVoltageInitRunningStatus(allStatuses.voltageInitStatus);
+            return getVoltageInitRunningStatus(status);
         case ComputingType.STATE_ESTIMATION:
-            return getStateEstimationRunningStatus(allStatuses.stateEstimationStatus);
+            return getStateEstimationRunningStatus(status);
         default:
             return RunningStatus.IDLE;
     }
@@ -169,15 +174,14 @@ export function getRunningStatusByComputingType(
 
 export function fetchAllComputationStatus(
     studyUuid: UUID,
-    currentNodeUuid: UUID,
+    nodeUuid: UUID,
     currentRootNetworkUuid: UUID
-): Promise<AllComputationStatusInfos> {
+): Promise<Map<ComputingType, string>> {
     console.info(
-        `Fetching all computation status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching all computation status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${nodeUuid}' ...`
     );
     const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/computations/status';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/computations/status';
     console.debug(url);
     return backendFetchJson(url);
 }
