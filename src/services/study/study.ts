@@ -154,7 +154,7 @@ export function fetchAllComputationStatus(
     studyUuid: UUID,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID
-): Promise<Map<ComputingType, string>> {
+): Promise<Record<ComputingType, string>> {
     console.info(
         `Fetching all computation status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${nodeUuid}' ...`
     );
