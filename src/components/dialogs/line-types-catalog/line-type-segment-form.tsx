@@ -230,10 +230,11 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         }
         arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
-            const promises = editData.map((segment) => appendSegmentLimits(segment));
-
             try {
-                await Promise.all(promises);
+                // We should append in order thats why we don't do await Promise.all
+                for (const segment of editData) {
+                    await appendSegmentLimits(segment);
+                }
             } catch (error) {
                 snackWithFallback(snackError, error, {
                     headerId: 'LineTypesCatalogFetchingError',
