@@ -8,7 +8,7 @@
 
     "button.delete": "Delete",
     "button.continue": "Continue",
-    "filter": "Filter", 
+    "filter": "Filter",
 
     "deleteStudy": "Delete Study",
     "studyNameDidNotMatchMsg": "The given study name did not match with ",
@@ -1470,6 +1470,9 @@
     "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
     "previousConnection": "Prev. connection",
 
+    "SetpointsAndLimitsTab": "Setpoints & Limits",
+    "SpecificTab": "Specifics",
+
     "confirmRootNetworkCreation": "The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.",
     "RegulationSection": "Regulation",
     "TapsSection": "Taps",
@@ -1678,9 +1681,9 @@
     "downloadNetworkModifications": "Download modifications",
     "moveToTrash": "Move to trash",
     "visualizedRootNetwork": "Visualized root network : {tag}",
-    "addDescription" : "Add description",
-    "activateModification" : "Activate network modification",
-    "deactivateModification" : "Deactivate network modification",
+    "addDescription": "Add description",
+    "activateModification": "Activate network modification",
+    "deactivateModification": "Deactivate network modification",
     "deselectModification": "Deselect modification",
     "selectModification": "Select modification",
     "moveModification": "Move modification"
