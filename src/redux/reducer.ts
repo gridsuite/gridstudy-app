@@ -405,6 +405,7 @@ const initialLogsPaginationState: LogsPaginationState = {
 const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: {},
     isFetching: false,
+    isInitialized: false,
 };
 
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
@@ -1142,6 +1143,7 @@ export const reducer = createReducer(initialState, (builder) => {
         ).forEach(([nodeId, equipments]) => {
             state.spreadsheetNetwork.equipments[action.equipmentType].equipmentsByNodeId[nodeId] = equipments;
         });
+        state.spreadsheetNetwork.equipments[action.equipmentType].isInitialized = true;
     });
 
     builder.addCase(REMOVE_NODE_DATA, (state, action: RemoveNodeDataAction) => {
@@ -1152,17 +1154,12 @@ export const reducer = createReducer(initialState, (builder) => {
             Object.entries(equipmentsByNodeId).filter(([nodeId]) => !action.nodesIdToRemove.includes(nodeId))
         );
 
-        state.spreadsheetNetwork.equipments[action.spreadsheetEquipmentType] = {
-            equipmentsByNodeId: updatedEquipmentsByNodeId,
-            isFetching: false,
-        };
+        state.spreadsheetNetwork.equipments[action.spreadsheetEquipmentType].equipmentsByNodeId =
+            updatedEquipmentsByNodeId;
     });
 
     builder.addCase(REMOVE_EQUIPMENT_DATA, (state, action: RemoveEquipmentDataAction) => {
-        state.spreadsheetNetwork.equipments[action.equipmentType] = {
-            equipmentsByNodeId: {},
-            isFetching: false,
-        };
+        state.spreadsheetNetwork.equipments[action.equipmentType] = emptySpreadsheetEquipmentsByNodes;
     });
 
     builder.addCase(SET_SPREADSHEET_FETCHING, (state, action: SetSpreadsheetFetchingAction) => {
