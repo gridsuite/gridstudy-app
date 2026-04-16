@@ -33,7 +33,7 @@ export function buildValidGlobalFilters(filters: GlobalFilter[]): GlobalFilters 
                 countryCodes.add(filter.label);
                 break;
             case FilterType.GENERIC_FILTER:
-                if (filter.uuid) genericFilters.add(filter.uuid);
+                if (filter.uuid && !filter.deleted) genericFilters.add(filter.uuid);
                 break;
             case FilterType.SUBSTATION_OR_VL:
                 if (filter.uuid) {

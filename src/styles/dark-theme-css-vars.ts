@@ -18,6 +18,31 @@ export const darkThemeCssVars = {
     '.nad-textnode-highlight': {
         backgroundColor: '#32373bd9', // same displayed color as #6c6c6c20 but with 0.85 opacity
     },
+    '.nad-arrow-out, .nad-arrow-in': {
+        fill: 'white',
+    },
+    '& .nad-reactive.nad-arrow-out, & .nad-reactive.nad-arrow-in': {
+        fill: '#77b5fe',
+    },
+    '& .nad-reactive': {
+        fill: '#77b5fe',
+    },
+    'text.nad-reactive': {
+        fill: '#77b5fe',
+    },
+
+    '.nad-active, .nad-permanent-limit-percentage, .nad-bus-descr': {
+        fill: 'white',
+    },
+
+    '.nad-edge-infos path.nad-reactive, .nad-reactive path': {
+        fill: '#77b5fe',
+        stroke: '#77b5fe',
+    },
+    '.nad-edge-infos path.nad-permanent-limit-percentage, .nad-permanent-limit-percentage path': {
+        fill: 'white',
+        stroke: 'white',
+    },
     '.sld-active-power': {
         fill: 'black',
     },
