@@ -13,7 +13,7 @@ import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider, DeepNullable } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
-import { SegmentSchema } from './segment-utils';
+import { SegmentFormData, SegmentSchema } from './segment-utils';
 import {
     FINAL_CURRENT_LIMITS,
     SEGMENTS,
@@ -45,22 +45,35 @@ const emptyFormData = {
 export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: (data: ComputedLineCharacteristics) => void;
+    onSave: (data: ComputedLineCharacteristics, lineSegments: DeepNullable<SegmentFormData | null>[]) => void;
+    editData?: SegmentFormData[];
 }
 
 export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
 
-export default function LineTypeSegmentDialog({ open, onSave, onClose }: Readonly<LineTypeSegmentDialogProps>) {
+export default function LineTypeSegmentDialog({
+    open,
+    onSave,
+    onClose,
+    editData,
+}: Readonly<LineTypeSegmentDialogProps>) {
     const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LineTypeSegmentDialogSchemaForm>>(LineTypeSegmentSchema),
     });
 
     const { reset } = formMethods;
-
+    const { getValues } = formMethods;
     const handleClear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
+
+    const onSubmit = useCallback(
+        (data: ComputedLineCharacteristics) => {
+            onSave(data, getValues(`${SEGMENTS}`) ?? []);
+        },
+        [getValues, onSave]
+    );
 
     return (
         <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
@@ -71,9 +84,9 @@ export default function LineTypeSegmentDialog({ open, onSave, onClose }: Readonl
                 titleId="LineTypesCatalogDialogTitle"
                 open={open}
                 onClose={onClose}
-                onSave={onSave}
+                onSave={onSubmit}
             >
-                <LineTypeSegmentForm />
+                <LineTypeSegmentForm editData={editData} />
             </ModificationDialog>
         </CustomFormProvider>
     );

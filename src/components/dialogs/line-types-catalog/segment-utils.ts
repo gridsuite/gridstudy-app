@@ -6,6 +6,7 @@
  */
 
 import {
+    AREA,
     LIMIT_SET_NAME,
     LIMIT_VALUE,
     PERMANENT_LIMIT,
@@ -16,11 +17,28 @@ import {
     SEGMENT_SUSCEPTANCE,
     SEGMENT_TYPE_ID,
     SEGMENT_TYPE_VALUE,
+    SHAPE_FACTOR,
+    TEMPERATURE,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
+import { InferType } from 'yup';
+import { LineSegmentInfos } from '../../../services/network-modification-types';
+import { DeepNullable } from '@gridsuite/commons-ui';
+
+export const SegmentTemporaryLimitSchema = yup.object().shape({
+    [LIMIT_VALUE]: yup.number().required(),
+    [TEMPORARY_LIMIT_DURATION]: yup.number().required(),
+    [TEMPORARY_LIMIT_NAME]: yup.string().required(),
+});
+
+export const SegmentCurrentLimitsSchema = yup.object().shape({
+    [LIMIT_SET_NAME]: yup.string().required(),
+    [PERMANENT_LIMIT]: yup.number().required(),
+    [TEMPORARY_LIMITS]: yup.array().of(SegmentTemporaryLimitSchema).nullable(),
+});
 
 export const SegmentSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup
@@ -32,36 +50,18 @@ export const SegmentSchema = yup.object().shape({
         .required()
         .test('empty-check', 'SegmentTypeMissing', (value) => (value ? value.length > 0 : false)),
     [SEGMENT_TYPE_ID]: yup.string().required(),
+    [AREA]: yup.string().nullable().default(null),
+    [TEMPERATURE]: yup.string().nullable().default(null),
+    [SHAPE_FACTOR]: yup.number().nullable().default(null),
     [SEGMENT_RESISTANCE]: yup.number().required(),
     [SEGMENT_REACTANCE]: yup.number().required(),
     [SEGMENT_SUSCEPTANCE]: yup.number().required(),
-    [SEGMENT_CURRENT_LIMITS]: yup.array().of(
-        yup.object().shape({
-            [LIMIT_SET_NAME]: yup.string().required(),
-            [PERMANENT_LIMIT]: yup.number().required(),
-            [TEMPORARY_LIMITS]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [LIMIT_VALUE]: yup.number().required(),
-                        [TEMPORARY_LIMIT_DURATION]: yup.number().required(),
-                        [TEMPORARY_LIMIT_NAME]: yup.string().required(),
-                    })
-                )
-                .nullable(),
-        })
-    ),
+    [SEGMENT_CURRENT_LIMITS]: yup.array().of(SegmentCurrentLimitsSchema),
 });
 
-export type SegmentFormData = {
-    [SEGMENT_DISTANCE_VALUE]: number;
-    [SEGMENT_TYPE_VALUE]: string;
-    [SEGMENT_TYPE_ID]: string;
-    [SEGMENT_RESISTANCE]: number;
-    [SEGMENT_REACTANCE]: number;
-    [SEGMENT_SUSCEPTANCE]: number;
-    [SEGMENT_CURRENT_LIMITS]: [];
-};
+export type SegmentFormData = InferType<typeof SegmentSchema>;
+export type SegmentTemporaryLimitFormData = InferType<typeof SegmentTemporaryLimitSchema>;
+export type SegmentCurrentLimitsFormData = InferType<typeof SegmentCurrentLimitsSchema>;
 
 export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_DISTANCE_VALUE]: 0.0,
@@ -71,4 +71,21 @@ export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_REACTANCE]: 0.0,
     [SEGMENT_SUSCEPTANCE]: 0.0,
     [SEGMENT_CURRENT_LIMITS]: [],
+    [AREA]: null,
+    [TEMPERATURE]: null,
+    [SHAPE_FACTOR]: null,
 };
+
+export function convertToLineSegmentInfos(lineSegments: DeepNullable<SegmentFormData | null>[]): LineSegmentInfos[] {
+    return (
+        lineSegments
+            ?.filter((segment): segment is SegmentFormData => segment != null && segment[SEGMENT_TYPE_ID] !== null)
+            .map((segment) => ({
+                [SEGMENT_TYPE_ID]: segment[SEGMENT_TYPE_ID],
+                [SEGMENT_DISTANCE_VALUE]: segment[SEGMENT_DISTANCE_VALUE],
+                [AREA]: segment[AREA],
+                [TEMPERATURE]: segment[TEMPERATURE] ?? '',
+                [SHAPE_FACTOR]: segment[SHAPE_FACTOR],
+            })) ?? []
+    );
+}

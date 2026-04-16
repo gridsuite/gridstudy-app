@@ -11,6 +11,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentType,
     FieldConstants,
@@ -45,6 +46,7 @@ import {
     G1,
     G2,
     LIMITS,
+    LINE_SEGMENTS,
     OPERATIONAL_LIMITS_GROUPS,
     R,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
@@ -100,12 +102,14 @@ import {
     TemporaryLimitFormSchema,
 } from '../../../limits/operational-limits-groups-types';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { convertToLineSegmentInfos, SegmentFormData } from '../../../line-types-catalog/segment-utils';
 
 const emptyFormData: any = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(false),
     ...emptyProperties,
+    [LINE_SEGMENTS]: [],
 };
 
 type LineCreationDialogProps = NetworkModificationDialogProps & {
@@ -163,7 +167,9 @@ const LineCreationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, setValue } = formMethods;
+    const { reset, setValue, watch } = formMethods;
+
+    const editSegmentValue = watch(LINE_SEGMENTS);
 
     const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
@@ -207,6 +213,7 @@ const LineCreationDialog = ({
                 line.selectedOperationalLimitsGroupId2 ?? null
             ),
             ...copyEquipmentPropertiesForCreation(line),
+            [LINE_SEGMENTS]: [],
         };
         reset(formData, { keepDefaultValues: true });
     };
@@ -258,6 +265,7 @@ const LineCreationDialog = ({
                     line?.selectedOperationalLimitsGroupId2 ?? null
                 ),
                 ...getPropertiesFromModification(line.properties),
+                [LINE_SEGMENTS]: line.lineSegments,
             };
             reset(formData, { keepDefaultValues: true });
         },
@@ -272,7 +280,10 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics) => {
+    const handleLineSegmentsBuildSubmit = (
+        data: ComputedLineCharacteristics,
+        lineSegments: DeepNullable<SegmentFormData | null>[]
+    ) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
@@ -307,6 +318,7 @@ const LineCreationDialog = ({
             });
         });
         setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
+        setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
     };
 
     const onSubmit = useCallback(
@@ -314,6 +326,7 @@ const LineCreationDialog = ({
             const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
+            const segments = line[LINE_SEGMENTS];
             const lineCreationInfos: LineCreationInfos = {
                 type: ModificationType.LINE_CREATION,
                 equipmentId: header[EQUIPMENT_ID],
@@ -342,6 +355,7 @@ const LineCreationDialog = ({
                 connected1: characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
                 connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
                 properties: toModificationProperties(line),
+                lineSegments: segments,
             } satisfies LineCreationInfos;
             onCreateLine({
                 lineCreationInfos,
@@ -353,7 +367,7 @@ const LineCreationDialog = ({
                 snackWithFallback(snackError, error, { headerId: 'LineCreationError' });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
+        [onCreateLine, studyUuid, currentNodeUuid, editData, snackError]
     );
 
     const onValidationError = (errors: FieldErrors<LineModificationFormSchema>) => {
@@ -460,6 +474,7 @@ const LineCreationDialog = ({
                     open={isOpenLineTypesCatalogDialog}
                     onClose={handleCloseLineTypesCatalogDialog}
                     onSave={handleLineSegmentsBuildSubmit}
+                    editData={editSegmentValue}
                 />
             </ModificationDialog>
         </CustomFormProvider>
