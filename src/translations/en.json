@@ -1678,5 +1678,5 @@
     "selectModification": "Select modification",
     "moveModification": "Move modification",
     "disconnectedLoadActivePower": "Load cut off (MW)",
-    "disconnectedGenerationActivePower": "Power cut off (Mvar)"
+    "disconnectedGenerationActivePower": "Power cut off (MW)"
 }

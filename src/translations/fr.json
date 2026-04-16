@@ -1671,5 +1671,5 @@
     "selectModification": "Sélectionner la modification",
     "moveModification": "Déplacer la modification",
     "disconnectedLoadActivePower": "Consommation coupée (MW)",
-    "disconnectedGenerationActivePower": "Puissance coupée (Mvar)"
+    "disconnectedGenerationActivePower": "Puissance coupée (MW)"
 }
