@@ -460,6 +460,7 @@ export const WorkspaceSwitcher = memo(() => {
             {workspaceAction?.action === WorkspaceAction.RESET && (
                 <PopupConfirmationDialog
                     message={intl.formatMessage({ id: 'resetWorkspaceConfirmation' })}
+                    isTranslationNeeded={false}
                     openConfirmationPopup
                     setOpenConfirmationPopup={() => setWorkspaceAction(null)}
                     handlePopupConfirmation={handleConfirmReset}

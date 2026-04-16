@@ -165,6 +165,7 @@ export default function AddSpreadsheetsFromCollectionDialog({ open }: Readonly<D
                     message={intl.formatMessage({
                         id: 'spreadsheet/create_new_spreadsheet/replace_collection_confirmation',
                     })}
+                    isTranslationNeeded={false}
                     openConfirmationPopup={confirmationDialogOpen}
                     setOpenConfirmationPopup={setConfirmationDialogOpen}
                     handlePopupConfirmation={() => importCollection(collectionToImport)}
