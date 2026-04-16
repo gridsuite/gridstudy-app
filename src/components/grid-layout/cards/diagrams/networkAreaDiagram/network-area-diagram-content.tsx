@@ -505,7 +505,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 initialViewBox:
                     diagramViewerRef.current?.getViewBox() ?? initialLocalStorageViewBox.current ?? undefined,
                 enableAdaptiveTextZoom: true,
-                adaptiveTextZoomThreshold: 3500,
+                adaptiveTextZoomThreshold: 6000,
             };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,

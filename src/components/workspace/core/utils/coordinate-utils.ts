@@ -19,10 +19,10 @@ export const toPixels = (
     values: { x?: number; y?: number; width?: number; height?: number },
     containerRect: DOMRect
 ) => ({
-    ...(values.x !== undefined && { x: values.x * containerRect.width }),
-    ...(values.y !== undefined && { y: values.y * containerRect.height }),
-    ...(values.width !== undefined && { width: values.width * containerRect.width }),
-    ...(values.height !== undefined && { height: values.height * containerRect.height }),
+    ...(values.x !== undefined && { x: Math.round(values.x * containerRect.width) }),
+    ...(values.y !== undefined && { y: Math.round(values.y * containerRect.height) }),
+    ...(values.width !== undefined && { width: Math.round(values.width * containerRect.width) }),
+    ...(values.height !== undefined && { height: Math.round(values.height * containerRect.height) }),
 });
 
 export const calculatePanelDimensions = (
@@ -32,10 +32,12 @@ export const calculatePanelDimensions = (
     minSize: { width: number; height: number }
 ) => {
     // make sure size is not smaller than minSize
-    const width = Math.max(minSize.width, size.width * containerRect.width);
-    const height = Math.max(minSize.height, size.height * containerRect.height);
+    // Round to integer pixels to prevent subpixel blur on Chromium 125-133
+    // (CSS transform: translate() with fractional values causes blurry panel content)
+    const width = Math.round(Math.max(minSize.width, size.width * containerRect.width));
+    const height = Math.round(Math.max(minSize.height, size.height * containerRect.height));
     // make sure position + size does not exceed container bounds
-    const x = Math.max(0, Math.min(position.x * containerRect.width, containerRect.width - width));
-    const y = Math.max(0, Math.min(position.y * containerRect.height, containerRect.height - height));
+    const x = Math.round(Math.max(0, Math.min(position.x * containerRect.width, containerRect.width - width)));
+    const y = Math.round(Math.max(0, Math.min(position.y * containerRect.height, containerRect.height - height)));
     return { x, y, width, height };
 };
