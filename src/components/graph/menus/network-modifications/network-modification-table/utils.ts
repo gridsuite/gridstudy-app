@@ -9,6 +9,7 @@ import { MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/comm
 import { getNetworkModificationsFromComposite } from '../../../../../services/study/network-modifications';
 import { Dispatch, SetStateAction } from 'react';
 import type { UUID } from 'node:crypto';
+import { Row } from '@tanstack/react-table';
 
 export const formatToComposedModification = (
     modifications: NetworkModificationMetadata[]
@@ -18,6 +19,7 @@ export const formatToComposedModification = (
 
 export interface ComposedModificationMetadata extends NetworkModificationMetadata {
     subModifications: ComposedModificationMetadata[];
+    maxDepth?: number;
 }
 
 export function isCompositeModification(modification: ComposedModificationMetadata | undefined) {
@@ -237,4 +239,12 @@ export function fetchSubModificationsForExpandedRows(
             }, prev)
         );
     });
+}
+
+export function getNestedRowRootParent(nestedRow: Row<ComposedModificationMetadata>) {
+    if (nestedRow.getParentRow() !== undefined) {
+        return getNestedRowRootParent(nestedRow.getParentRow()!);
+    } else {
+        return nestedRow;
+    }
 }
