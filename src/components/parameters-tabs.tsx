@@ -69,6 +69,7 @@ import {
     fetchDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisParameters,
 } from '../services/study/dynamic-security-analysis';
+import { NodeType } from './graph/tree-node.type';
 import {
     fetchDynamicSimulationParameters,
     updateDynamicSimulationParameters,
@@ -100,7 +101,7 @@ const ParametersTabs: FunctionComponent = () => {
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-
+    const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
@@ -362,7 +363,12 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
-                        globalBuildStatus={currentNode?.data?.globalBuildStatus}
+                        globalBuildStatus={
+                            // to avoid bad current node globalBuildStatus at root network change
+                            // pass not built status by defaut to avoid unwanted fetch
+                            isTreeModelUpToDate ? currentNode?.data?.globalBuildStatus : BuildStatus.NOT_BUILT
+                        }
+                        isRootNode={currentNode?.type === NodeType.ROOT}
                         isDeveloperMode={isDeveloperMode}
                     />
                 );
@@ -443,7 +449,6 @@ const ParametersTabs: FunctionComponent = () => {
                 );
         }
     }, [
-        currentNode,
         tabValue,
         studyUuid,
         languageLocal,
@@ -456,12 +461,15 @@ const ParametersTabs: FunctionComponent = () => {
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,
+        isTreeModelUpToDate,
+        currentNode?.data?.globalBuildStatus,
+        currentNode?.type,
         shortCircuitParametersBackend,
         pccMinParameters,
         user,
         dynamicSimulationParametersBackend,
-        dynamicMarginCalculationParametersBackend,
         dynamicSecurityAnalysisParametersBackend,
+        dynamicMarginCalculationParametersBackend,
         voltageInitParameters,
         useStateEstimationParameters,
         networkVisualizationsParameters,
