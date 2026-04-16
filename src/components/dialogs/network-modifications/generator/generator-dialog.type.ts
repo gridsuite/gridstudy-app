@@ -24,6 +24,8 @@ import {
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
+    MEASUREMENT_P,
+    MEASUREMENT_Q,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     NAME,
@@ -36,6 +38,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
+    STATE_ESTIMATION,
     SUBSTATION_ID,
     TOPOLOGY_KIND,
     TRANSFORMER_REACTANCE,
@@ -52,7 +55,7 @@ import {
 } from '../../reactive-limits/reactive-limits.type';
 import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
 import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
-import { ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
+import { ConnectablePositionFormInfos, FieldConstants, MeasurementInfo, Property } from '@gridsuite/commons-ui';
 
 export type GeneratorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -104,13 +107,17 @@ export type GeneratorDialogSchemaBaseForm = {
         [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
         [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
     };
-    // Properties
     [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 export type GeneratorCreationDialogSchemaForm = { [EQUIPMENT_ID]: string } & GeneratorDialogSchemaBaseForm;
 
-export type GeneratorModificationDialogSchemaForm = Partial<GeneratorDialogSchemaBaseForm>;
+export type GeneratorModificationDialogSchemaForm = {
+    [STATE_ESTIMATION]?: {
+        [MEASUREMENT_P]?: MeasurementInfo;
+        [MEASUREMENT_Q]?: MeasurementInfo;
+    };
+} & Partial<GeneratorDialogSchemaBaseForm>;
 
 export interface GeneratorFormInfos {
     id: string;
@@ -141,6 +148,8 @@ export interface GeneratorFormInfos {
     connectionPosition?: string | null;
     terminalConnected?: boolean | null;
     properties: Record<string, string> | undefined;
+    measurementP: MeasurementInfo | undefined;
+    measurementQ: MeasurementInfo | undefined;
 }
 
 interface CoordinatedReactiveControlInfos {

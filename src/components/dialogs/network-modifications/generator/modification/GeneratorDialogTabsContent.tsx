@@ -15,6 +15,7 @@ import {
     ConnectivityNetworkProps,
     FloatInput,
     MVAPowerAdornment,
+    PowerMeasurementsForm,
     PropertiesForm,
     SetPointsForm,
 } from '@gridsuite/commons-ui';
@@ -252,6 +253,11 @@ export function GeneratorDialogTabsContent({
                         <GridItem size={4}>{forcedOutageRateField}</GridItem>
                     </Grid>
                 </Grid>
+                <GridSection title="MeasurementsSection" />
+                <PowerMeasurementsForm
+                    activePowerMeasurement={generatorToModify?.measurementP}
+                    reactivePowerMeasurement={generatorToModify?.measurementQ}
+                />
             </Box>
 
             <Box hidden={tabIndex !== GeneratorDialogTab.ADDITIONAL_INFORMATION_TAB}>
