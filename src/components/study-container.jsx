@@ -13,7 +13,6 @@ import { PARAMS_LOADED } from '../utils/config-params';
 import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
-    networkModificationTreeNodesUpdated,
     openStudy,
     resetEquipmentsPostComputation,
     setCurrentRootNetworkUuid,
@@ -45,7 +44,8 @@ import {
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchNetworkModificationTree, fetchNetworkModificationTreeNode } from '../services/study/tree-subtree';
+import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { useTreeModelSync } from '../hooks/use-tree-model-sync';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
@@ -62,6 +62,7 @@ import {
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
 import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
+import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -155,6 +156,7 @@ export function StudyContainer() {
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     useExportNotification();
+    useTreeModelSync(studyUuid);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -268,32 +270,13 @@ export function StudyContainer() {
     const handleStudyUpdate = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.STUDY_ALERT) {
+            if (eventData.headers.updateType === NotificationType.STUDY_ALERT) {
                 sendAlert(eventData);
                 return; // here, we do not want to update the redux state
             }
             displayErrorNotifications(eventData);
-
-            // Handle build status updates globally so all workspaces open in other browser tabs update currentTreeNode
-            // This fixes the issue where tabs without tree panel don't get updates
-            if (
-                updateTypeHeader === NotificationType.NODE_BUILD_STATUS_UPDATED &&
-                eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current
-            ) {
-                // Fetch updated nodes and dispatch to Redux to sync currentTreeNode
-                const updatedNodeIds = eventData.headers.nodes;
-                Promise.all(
-                    updatedNodeIds.map((nodeId) =>
-                        fetchNetworkModificationTreeNode(studyUuid, nodeId, currentRootNetworkUuidRef.current)
-                    )
-                ).then((values) => {
-                    dispatch(networkModificationTreeNodesUpdated(values));
-                });
-            }
         },
-        // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications, sendAlert, studyUuid]
+        [displayErrorNotifications, sendAlert]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyUpdate });
@@ -508,6 +491,7 @@ export function StudyContainer() {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
             dispatch(openStudy(studyUuid));
+            saveStudyAccessTimestamp(studyUuid);
 
             // Load workspaces metadata from backend
             getWorkspacesMetadata(studyUuid)
