@@ -234,10 +234,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                     debug && subscribeDebug(ComputingType.SHORT_CIRCUIT_ONE_BUS);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'startShortCircuitError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'startShortCircuitError' });
                     dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
                     resetOneBusShortcircuitAnalysisLoader();
                 })
