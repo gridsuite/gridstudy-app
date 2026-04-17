@@ -457,7 +457,7 @@ export const componentColumnsDefinition = (
             field: 'losses',
             context: {
                 numeric: true,
-                fractionDigits: 2,
+                fractionDigits: 3,
                 ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
             },
         }),
