@@ -159,6 +159,7 @@ const NetworkModificationNodeEditor = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -1084,13 +1085,13 @@ const NetworkModificationNodeEditor = () => {
             setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
         ): ColumnDef<ComposedModificationMetadata>[] => [
             ...createBaseColumns(isRowDragDisabled, modificationsCount, nameHeaderProps, setModifications),
-            ...createRootNetworksColumns(
+            ...(isMonoRootStudy ? [] : createRootNetworksColumns(
                 rootNetworks,
                 currentRootNetworkUuid!,
                 modificationsCount,
                 modificationsToExclude,
                 setModificationsToExclude
-            ),
+            )),
         ],
         [rootNetworks, currentRootNetworkUuid, modificationsToExclude, setModificationsToExclude]
     );
