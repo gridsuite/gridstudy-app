@@ -1085,15 +1085,17 @@ const NetworkModificationNodeEditor = () => {
             setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
         ): ColumnDef<ComposedModificationMetadata>[] => [
             ...createBaseColumns(isRowDragDisabled, modificationsCount, nameHeaderProps, setModifications),
-            ...(isMonoRootStudy ? [] : createRootNetworksColumns(
-                rootNetworks,
-                currentRootNetworkUuid!,
-                modificationsCount,
-                modificationsToExclude,
-                setModificationsToExclude
-            )),
+            ...(isMonoRootStudy
+                ? []
+                : createRootNetworksColumns(
+                      rootNetworks,
+                      currentRootNetworkUuid!,
+                      modificationsCount,
+                      modificationsToExclude,
+                      setModificationsToExclude
+                  )),
         ],
-        [isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude, setModificationsToExclude]
+        [isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude]
     );
 
     const renderNetworkModificationsTable = () => {
