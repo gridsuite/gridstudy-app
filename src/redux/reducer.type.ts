@@ -65,6 +65,11 @@ import {
 import { PARAM_COMPUTED_LANGUAGE, PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 
+export type UserToken = {
+    access_token: string;
+    id_token: string;
+    expires_at: number;
+};
 // ——— Equipments ———
 
 export enum EquipmentUpdateType {
@@ -260,4 +265,5 @@ export interface AppState extends CommonStoreState, AppConfigState {
     calculationSelections: Record<UUID, CalculationType[]>;
     highlightedModificationUuid: UUID | null;
     tableFilters: TableFiltersState;
+    userToken: UserToken | null;
 }

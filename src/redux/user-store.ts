@@ -27,6 +27,11 @@ import { User } from 'oidc-client';
 
 type UserStoreState = {
     user: User | null;
+    userToken: {
+        access_token: string;
+        id_token: string;
+        expires_at: number;
+    } | null;
 };
 
 interface UserStore {
@@ -41,5 +46,5 @@ export function setUserStore(store: UserStore): void {
 
 //TODO use the one from commons-ui instead when exported in next version
 export function getUserToken() {
-    return userStore?.getState().user?.id_token ?? undefined;
+    return userStore?.getState().userToken?.id_token ?? undefined;
 }
