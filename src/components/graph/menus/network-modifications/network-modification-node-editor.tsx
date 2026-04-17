@@ -1093,7 +1093,7 @@ const NetworkModificationNodeEditor = () => {
                 setModificationsToExclude
             )),
         ],
-        [rootNetworks, currentRootNetworkUuid, modificationsToExclude, setModificationsToExclude]
+        [isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude, setModificationsToExclude]
     );
 
     const renderNetworkModificationsTable = () => {
