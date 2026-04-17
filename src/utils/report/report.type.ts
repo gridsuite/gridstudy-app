@@ -29,14 +29,17 @@ export enum ReportType {
 interface BaseReport<T> {
     message: string;
     severity: SeverityLevel;
-    parentId: string | null;
+    parentOrder: number | null;
     id: string;
+    order: number;
     subReports: T[];
 }
 
-export interface ReportTree extends Omit<BaseReport<ReportTree>, 'severity'> {
+export interface ReportTree extends Omit<BaseReport<ReportTree>, 'severity' | 'parentOrder'> {
     type: ReportType;
     severity: ReportSeverity;
+    reportId: string;
+    parentId: string | null;
 }
 
 export interface Report extends BaseReport<Report> {}
@@ -46,19 +49,20 @@ export type Log = {
     severity: string;
     backgroundColor: string;
     depth: number;
-    parentId: string;
+    parentId: string | null;
 };
 
 export type ReportLog = {
     message: string;
     severity: SeverityLevel;
     depth: number;
-    parentId: string;
+    parentOrder: number | null;
     backgroundColor?: string;
 };
 
 export type SelectedReportLog = {
     id: string;
+    reportId: string;
     type: ReportType;
 };
 

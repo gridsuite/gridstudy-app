@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 
 import { useReportFetcher } from '../hooks/use-report-fetcher';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE, GLOBAL_REPORT_NODE_LABEL } from '../utils/report/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { ReportType } from 'utils/report/report.type';
 import { sortSeverityList } from 'utils/report/report-severity';
@@ -87,7 +87,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
         fetchReport(nodeOnlyReport).then((r) => {
             if (r !== undefined) {
                 setReport(r);
-                fetchReportSeverities(r.id, r.parentId ? ReportType.NODE : ReportType.GLOBAL).then((severities) => {
+                fetchReportSeverities(r.id, r.message !== GLOBAL_REPORT_NODE_LABEL ? ReportType.NODE : ReportType.GLOBAL).then((severities) => {
                     setSeverities(sortSeverityList(severities));
                 });
             }
