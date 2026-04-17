@@ -132,6 +132,7 @@ const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
     'GROOVY_SCRIPT',
     'OPERATING_STATUS_MODIFICATION',
+    'COMPOSITE_MODIFICATION',
 ]);
 
 const isEditableModification = (modif: NetworkModificationMetadata) => {
