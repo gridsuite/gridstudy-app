@@ -13,7 +13,7 @@ import {
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { type AppState } from 'redux/reducer.type';
-import { getUrlWithToken, getWsBase } from 'services/utils';
+import { getWsBase } from 'services/utils';
 import { APP_NAME } from 'utils/config-params';
 
 const useNotificationsUrlGenerator = (): Partial<Record<NotificationsUrlKeys, string | undefined>> => {
@@ -27,31 +27,25 @@ const useNotificationsUrlGenerator = (): Partial<Record<NotificationsUrlKeys, st
     return useMemo(
         () => ({
             [NotificationsUrlKeys.CONFIG]: isAuthenticated
-                ? getUrlWithToken(
-                      `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/notify?${new URLSearchParams({
-                          appName: APP_NAME,
-                      })}`
-                  )
+                ? `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/notify?${new URLSearchParams({
+                      appName: APP_NAME,
+                  })}`
                 : undefined,
             [NotificationsUrlKeys.GLOBAL_CONFIG]: isAuthenticated
-                ? getUrlWithToken(`${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/global`)
+                ? `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/global`
                 : undefined,
             [NotificationsUrlKeys.STUDY]:
                 isAuthenticated && studyUuid
-                    ? getUrlWithToken(
-                          `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`
-                      )
+                    ? `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`
                     : undefined,
             [NotificationsUrlKeys.DIRECTORY_DELETE_STUDY]:
                 isAuthenticated && studyUuid
-                    ? getUrlWithToken(
-                          `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=deleteElement&elementUuid=${encodeURIComponent(
-                              studyUuid
-                          )}`
-                      )
+                    ? `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=deleteElement&elementUuid=${encodeURIComponent(
+                          studyUuid
+                      )}`
                     : undefined,
             [NotificationsUrlKeys.DIRECTORY]: isAuthenticated
-                ? getUrlWithToken(`${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`)
+                ? `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`
                 : undefined,
         }),
         [isAuthenticated, wsBase, studyUuid]
