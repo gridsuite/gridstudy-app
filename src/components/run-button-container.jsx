@@ -22,6 +22,7 @@ import { PARAM_PROVIDER_DYNAFLOW, PARAM_PROVIDER_DYNAWO } from '../utils/config-
 import {
     ComputingType,
     formatComputingTypeLabel,
+    isEmpty,
     PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
@@ -64,10 +65,8 @@ import useDebugNotification from '../hooks/computation-debug/use-debug-notificat
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
         // check mapping configuration
-        const mappings = params.mappings.map((elem) => elem.name);
         const mapping = params.mapping;
-        const isMappingValid = mappings.includes(mapping);
-        return isMappingValid;
+        return !isEmpty(mapping);
     });
 };
 

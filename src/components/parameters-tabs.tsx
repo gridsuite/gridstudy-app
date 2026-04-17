@@ -19,7 +19,6 @@ import {
 } from 'services/loadflow';
 import { getLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
-import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
@@ -30,11 +29,19 @@ import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
 import type { UUID } from 'node:crypto';
 import {
+    BuildStatus,
     ComputingType,
     DynamicMarginCalculationInline,
+    DynamicSecurityAnalysisInline,
+    DynamicSimulationInline,
     fetchDynamicMarginCalculationProviders,
+    fetchDynamicSecurityAnalysisProviders,
+    fetchDynamicSimulationProviders,
     fetchSecurityAnalysisProviders,
     getSecurityAnalysisDefaultLimitReductions,
+    getSecurityAnalysisParameters,
+    setSecurityAnalysisParameters,
+    getSensitivityAnalysisParameters,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
     PARAM_DEVELOPER_MODE,
@@ -45,12 +52,6 @@ import {
     ShortCircuitParametersInLine,
     useParametersBackend,
     VoltageInitParametersInLine,
-    DynamicSecurityAnalysisInline,
-    fetchDynamicSecurityAnalysisProviders,
-    BuildStatus,
-    getSecurityAnalysisParameters,
-    setSecurityAnalysisParameters,
-    getSensitivityAnalysisParameters,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -69,6 +70,14 @@ import {
     fetchDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisParameters,
 } from '../services/study/dynamic-security-analysis';
+import { NodeType } from './graph/tree-node.type';
+import {
+    fetchDynamicSimulationParameters,
+    updateDynamicSimulationParameters,
+} from '../services/study/dynamic-simulation';
+import { fetchVoltageLevelsMapInfos } from '../services/study/network';
+import { fetchAllCountries } from '../services/study/network-map';
+import { evaluateJsonFilter } from '../services/study/filter';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -93,7 +102,7 @@ const ParametersTabs: FunctionComponent = () => {
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-
+    const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
@@ -211,21 +220,21 @@ const ParametersTabs: FunctionComponent = () => {
     );
     useParametersNotification(ComputingType.SHORT_CIRCUIT, shortCircuitAvailability, shortCircuitParametersBackend);
 
-    const dynamicMarginCalculationParametersBackend = useParametersBackend(
+    const dynamicSimulationParametersBackend = useParametersBackend(
         user,
         studyUuid,
-        ComputingType.DYNAMIC_MARGIN_CALCULATION,
-        dynamicMarginCalculationAvailability,
+        ComputingType.DYNAMIC_SIMULATION,
+        dynamicSimulationAvailability,
         {
-            backendFetchProviders: fetchDynamicMarginCalculationProviders,
-            backendFetchParameters: fetchDynamicMarginCalculationParameters,
-            backendUpdateParameters: updateDynamicMarginCalculationParameters,
+            backendFetchProviders: fetchDynamicSimulationProviders,
+            backendFetchParameters: fetchDynamicSimulationParameters,
+            backendUpdateParameters: updateDynamicSimulationParameters,
         }
     );
     useParametersNotification(
-        ComputingType.DYNAMIC_MARGIN_CALCULATION,
-        dynamicMarginCalculationAvailability,
-        dynamicMarginCalculationParametersBackend
+        ComputingType.DYNAMIC_SIMULATION,
+        dynamicSimulationAvailability,
+        dynamicSimulationParametersBackend
     );
 
     const dynamicSecurityAnalysisParametersBackend = useParametersBackend(
@@ -243,6 +252,23 @@ const ParametersTabs: FunctionComponent = () => {
         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
         dynamicSecurityAnalysisAvailability,
         dynamicSecurityAnalysisParametersBackend
+    );
+
+    const dynamicMarginCalculationParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.DYNAMIC_MARGIN_CALCULATION,
+        dynamicMarginCalculationAvailability,
+        {
+            backendFetchProviders: fetchDynamicMarginCalculationProviders,
+            backendFetchParameters: fetchDynamicMarginCalculationParameters,
+            backendUpdateParameters: updateDynamicMarginCalculationParameters,
+        }
+    );
+    useParametersNotification(
+        ComputingType.DYNAMIC_MARGIN_CALCULATION,
+        dynamicMarginCalculationAvailability,
+        dynamicMarginCalculationParametersBackend
     );
 
     const pccMinParameters = useGetPccMinParameters();
@@ -338,7 +364,12 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
-                        globalBuildStatus={currentNode?.data?.globalBuildStatus}
+                        globalBuildStatus={
+                            // to avoid bad current node globalBuildStatus at root network change
+                            // pass not built status by defaut to avoid unwanted fetch
+                            isTreeModelUpToDate ? currentNode?.data?.globalBuildStatus : BuildStatus.NOT_BUILT
+                        }
+                        isRootNode={currentNode?.type === NodeType.ROOT}
                         isDeveloperMode={isDeveloperMode}
                     />
                 );
@@ -359,7 +390,23 @@ const ParametersTabs: FunctionComponent = () => {
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
-                return <DynamicSimulationParameters user={user} setHaveDirtyFields={setDirtyFields} />;
+                if (!studyUuid || !currentNodeUuid || !currentRootNetworkUuid) {
+                    return null;
+                }
+                return (
+                    <DynamicSimulationInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        parametersBackend={dynamicSimulationParametersBackend}
+                        voltageLevelsFetcher={() =>
+                            fetchVoltageLevelsMapInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid)
+                        }
+                        countriesFetcher={() => fetchAllCountries(studyUuid, currentNodeUuid, currentRootNetworkUuid)}
+                        evaluateFilterFetcher={(expertFilter) =>
+                            evaluateJsonFilter(studyUuid, currentNodeUuid, currentRootNetworkUuid, expertFilter)
+                        }
+                    />
+                );
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
                 return (
                     <DynamicSecurityAnalysisInline
@@ -403,7 +450,6 @@ const ParametersTabs: FunctionComponent = () => {
                 );
         }
     }, [
-        currentNode,
         tabValue,
         studyUuid,
         languageLocal,
@@ -416,11 +462,15 @@ const ParametersTabs: FunctionComponent = () => {
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,
+        isTreeModelUpToDate,
+        currentNode?.data?.globalBuildStatus,
+        currentNode?.type,
         shortCircuitParametersBackend,
         pccMinParameters,
         user,
-        dynamicMarginCalculationParametersBackend,
+        dynamicSimulationParametersBackend,
         dynamicSecurityAnalysisParametersBackend,
+        dynamicMarginCalculationParametersBackend,
         voltageInitParameters,
         useStateEstimationParameters,
         networkVisualizationsParameters,
