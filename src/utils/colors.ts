@@ -79,7 +79,7 @@ export const getBaseVoltagesCssVars = (
         for (let i = 1; i < Object.keys(themeColors).length; i++) {
             const busColor = themeColors[`bus-${i}`];
             if (!busColor) continue;
-            const busStyleClassName = `.sld-${interval.name}.sld-bus-${i}, .nad-${interval.name}.nad-bus-${i}`;
+            const busStyleClassName = `.sld-${interval.name}.sld-bus-${i}, .nad-${interval.name} .nad-bus-${i}`;
             css[busStyleClassName] = { '--vl-color': busColor };
         }
     }
