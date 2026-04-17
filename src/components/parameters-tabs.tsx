@@ -18,8 +18,6 @@ import {
     getLoadFlowSpecificParametersDescription,
 } from 'services/loadflow';
 import { getLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
-import { getSecurityAnalysisParameters, setSecurityAnalysisParameters } from 'services/study/security-analysis';
-import { getSensitivityAnalysisParameters } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import RunningStatus from './utils/running-status';
@@ -41,6 +39,9 @@ import {
     fetchDynamicSimulationProviders,
     fetchSecurityAnalysisProviders,
     getSecurityAnalysisDefaultLimitReductions,
+    getSecurityAnalysisParameters,
+    setSecurityAnalysisParameters,
+    getSensitivityAnalysisParameters,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
     PARAM_DEVELOPER_MODE,
