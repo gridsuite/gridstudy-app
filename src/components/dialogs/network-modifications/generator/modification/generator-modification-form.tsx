@@ -16,7 +16,7 @@ import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 interface GeneratorModificationFormProps
     extends GeneratorDialogHeaderProps,
-        Omit<GeneratorDialogTabsContentProps, 'tabIndex' | 'isModification'> {
+        Omit<GeneratorDialogTabsContentProps, 'tabIndex'> {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
