@@ -529,7 +529,7 @@ export const countryAdequaciesColumnsDefinition = (intl: IntlShape): ColDef[] =>
             field: 'losses',
             context: {
                 numeric: true,
-                fractionDigits: 2,
+                fractionDigits: 3,
             },
         }),
         makeAgGridCustomHeaderColumn({
