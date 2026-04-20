@@ -192,7 +192,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         setValue(FINAL_CURRENT_LIMITS, Array.from(mostContrainingLimits.values()));
     }, [getValues, setValue, setCurrentLimitResult]);
 
-    const appendSegmentLimits = useCallback((segment: SegmentFormData) => {
+    const getSegmentLimits = useCallback((segment: SegmentFormData) => {
         return getLineTypeWithLimits(
             segment[SEGMENT_TYPE_ID],
             segment[AREA],
@@ -208,7 +208,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
             const newSusceptance = roundToDefaultPrecision(
                 calculateSusceptance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearCapacity ?? 0)
             );
-            arrayRef?.current?.appendItem({
+            return {
                 ...emptyLineSegment,
                 [SEGMENT_TYPE_ID]: segment[SEGMENT_TYPE_ID],
                 [SEGMENT_TYPE_VALUE]: lineTypeWithLimits?.type ?? '',
@@ -220,7 +220,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 [SEGMENT_REACTANCE]: newReactance,
                 [SEGMENT_SUSCEPTANCE]: newSusceptance,
                 [SEGMENT_CURRENT_LIMITS]: lineTypeWithLimits?.limitsForLineType ?? [],
-            });
+            };
         });
     }, []);
 
@@ -230,10 +230,13 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         }
         arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
-            const promises = editData.map((segment) => appendSegmentLimits(segment));
+            const promises = editData.map((segment) => getSegmentLimits(segment));
 
             try {
-                await Promise.all(promises);
+                const segmentsWithLimits = await Promise.all(promises);
+                for (const segmentWithLimits of segmentsWithLimits) {
+                    arrayRef?.current?.appendItem(segmentWithLimits);
+                }
             } catch (error) {
                 snackWithFallback(snackError, error, {
                     headerId: 'LineTypesCatalogFetchingError',
@@ -244,7 +247,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
             updateTotals();
             keepMostConstrainingLimits();
         });
-    }, [editData, appendSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits]);
+    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
