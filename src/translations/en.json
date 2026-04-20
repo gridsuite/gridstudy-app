@@ -1376,7 +1376,7 @@
     "previousConnection": "Prev. connection",
 
     "SetpointsAndLimitsTab": "Setpoints & Limits",
-    "SpecificTab": "Specifics",
+    "SpecificTab": "Specific",
 
     "confirmRootNetworkCreation": "The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.",
     "RegulationSection": "Regulation",
