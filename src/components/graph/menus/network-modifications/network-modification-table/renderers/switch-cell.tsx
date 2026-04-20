@@ -7,13 +7,18 @@
 
 import React, { FunctionComponent, SetStateAction, useCallback, useState } from 'react';
 import { Switch, Tooltip } from '@mui/material';
-import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComposedModificationMetadata,
+    findModificationInTree,
+    snackWithFallback,
+    updateModificationFieldInTree,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { setModificationMetadata } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { AppState } from '../../../../../../redux/reducer.type';
-import { ComposedModificationMetadata, findModificationInTree, updateModificationFieldInTree } from '../utils';
 
 export interface SwitchCellRendererProps {
     data: ComposedModificationMetadata;
