@@ -13,7 +13,6 @@ import { PARAMS_LOADED } from '../utils/config-params';
 import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
-    networkModificationTreeNodesUpdated,
     openStudy,
     resetEquipmentsPostComputation,
     setCurrentRootNetworkUuid,
@@ -25,6 +24,10 @@ import {
 import { setWorkspacesMetadata, setActiveWorkspace } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
 import { getWorkspacesMetadata, getWorkspace } from '../services/study/workspace';
+import {
+    getLocalStorageActiveWorkspaceId,
+    getLocalStoragePanelStates,
+} from '../redux/session-storage/workspace-local-storage';
 
 import WaitingLoader from './utils/waiting-loader';
 import {
@@ -41,7 +44,8 @@ import {
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchNetworkModificationTree, fetchNetworkModificationTreeNode } from '../services/study/tree-subtree';
+import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { useTreeModelSync } from '../hooks/use-tree-model-sync';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
@@ -58,6 +62,7 @@ import {
 } from 'types/notification-types';
 import useExportNotification from '../hooks/use-export-notification.js';
 import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
+import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -132,7 +137,6 @@ export function StudyContainer() {
 
     // For the first network existence check and indexation check StudyPane is not rendered until network is found
     // then those states will be true even after root network change
-    const [isFirstStudyNetworkFound, setIsFirstStudyNetworkFound] = useState(false);
     const [isFirstRootNetworkIndexationFound, setIsFirstRootNetworkIndexationFound] = useState(false);
 
     const rootNetworkIndexationStatus = useSelector((state) => state.rootNetworkIndexationStatus);
@@ -152,6 +156,7 @@ export function StudyContainer() {
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     useExportNotification();
+    useTreeModelSync(studyUuid);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -265,32 +270,13 @@ export function StudyContainer() {
     const handleStudyUpdate = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.STUDY_ALERT) {
+            if (eventData.headers.updateType === NotificationType.STUDY_ALERT) {
                 sendAlert(eventData);
                 return; // here, we do not want to update the redux state
             }
             displayErrorNotifications(eventData);
-
-            // Handle build status updates globally so all workspaces open in other browser tabs update currentTreeNode
-            // This fixes the issue where tabs without tree panel don't get updates
-            if (
-                updateTypeHeader === NotificationType.NODE_BUILD_STATUS_UPDATED &&
-                eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current
-            ) {
-                // Fetch updated nodes and dispatch to Redux to sync currentTreeNode
-                const updatedNodeIds = eventData.headers.nodes;
-                Promise.all(
-                    updatedNodeIds.map((nodeId) =>
-                        fetchNetworkModificationTreeNode(studyUuid, nodeId, currentRootNetworkUuidRef.current)
-                    )
-                ).then((values) => {
-                    dispatch(networkModificationTreeNodesUpdated(values));
-                });
-            }
         },
-        // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications, sendAlert, studyUuid]
+        [displayErrorNotifications, sendAlert]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyUpdate });
@@ -405,16 +391,15 @@ export function StudyContainer() {
                 .then((response) => {
                     if (response.status === HttpStatusCode.OK) {
                         successCallback && successCallback();
-                        setIsFirstStudyNetworkFound(true);
                         checkRootNetworkIndexation().then(loadTree);
                     } else {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
-                        setIsFirstStudyNetworkFound(false);
                         recreateStudyNetwork(studyUuid, currentRootNetworkUuid)
                             .then(() => {
                                 snackWarning({
                                     headerId: 'recreatingNetworkStudy',
+                                    persist: true,
                                 });
                             })
                             .catch((error) => {
@@ -452,13 +437,8 @@ export function StudyContainer() {
         if (!studyUuid || !currentRootNetworkUuid) {
             return;
         }
-        if (
-            !isFirstStudyNetworkFound ||
-            (currentRootNetworkUuidRef.current && currentRootNetworkUuidRef.current !== currentRootNetworkUuid)
-        ) {
-            checkNetworkExistenceAndRecreateIfNotFound();
-        }
-    }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid, isFirstStudyNetworkFound]);
+        checkNetworkExistenceAndRecreateIfNotFound();
+    }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
 
     // checking another time if we can find network, if we do, we display a snackbar info
     const handleEvent = useCallback(
@@ -511,19 +491,28 @@ export function StudyContainer() {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
             dispatch(openStudy(studyUuid));
+            saveStudyAccessTimestamp(studyUuid);
 
             // Load workspaces metadata from backend
             getWorkspacesMetadata(studyUuid)
                 .then((workspacesMetadata) => {
                     dispatch(setWorkspacesMetadata(workspacesMetadata));
 
-                    // Load the first workspace for now (maybe remember last active workspace per study and load it instead later)
                     if (workspacesMetadata.length > 0) {
-                        return getWorkspace(studyUuid, workspacesMetadata[0].id);
+                        const savedId = getLocalStorageActiveWorkspaceId(studyUuid);
+                        const targetId =
+                            savedId && workspacesMetadata.some((w) => w.id === savedId)
+                                ? savedId
+                                : workspacesMetadata[0].id;
+                        return getWorkspace(studyUuid, targetId);
                     }
                 })
                 .then((workspace) => {
                     if (workspace) {
+                        const savedPanels = getLocalStoragePanelStates(studyUuid, workspace.id);
+                        workspace.panels.forEach((panel, index) => {
+                            panel.zIndex = savedPanels[panel.id]?.zIndex ?? index + 1;
+                        });
                         dispatch(setActiveWorkspace(workspace));
                     }
                 });
@@ -549,7 +538,7 @@ export function StudyContainer() {
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
-            loading={studyPending || !paramsLoaded || !isFirstStudyNetworkFound || !isFirstRootNetworkIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            loading={studyPending || !paramsLoaded || !isFirstRootNetworkIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane />

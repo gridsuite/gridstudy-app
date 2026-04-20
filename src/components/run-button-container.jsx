@@ -11,9 +11,10 @@ import {
     setComputationStarting,
     setComputingStatus,
     setComputingStatusParameters,
-    setLogsFilter,
+    updateColumnFiltersAction,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import { TableType } from '../types/custom-aggrid-types';
 
 import RunningStatus from './utils/running-status';
 
@@ -21,6 +22,7 @@ import { PARAM_PROVIDER_DYNAFLOW, PARAM_PROVIDER_DYNAWO } from '../utils/config-
 import {
     ComputingType,
     formatComputingTypeLabel,
+    isEmpty,
     PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
@@ -63,10 +65,8 @@ import useDebugNotification from '../hooks/computation-debug/use-debug-notificat
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
         // check mapping configuration
-        const mappings = params.mappings.map((elem) => elem.name);
         const mapping = params.mapping;
-        const isMappingValid = mappings.includes(mapping);
-        return isMappingValid;
+        return !isEmpty(mapping);
     });
 };
 
@@ -204,7 +204,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     dispatch(setComputationStarting(false));
                     resetPaginationForComputingType(computingType);
                     // we clear the computation logs filter when a new computation is started
-                    dispatch(setLogsFilter(computingType, []));
+                    dispatch(updateColumnFiltersAction(TableType.Logs, computingType, []));
                 });
         },
         [dispatch, snackError, resetPaginationForComputingType]
@@ -612,8 +612,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     // list of visible runnable isn't static
     const activeRunnables = useMemo(() => {
         return [
-            'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS',
             'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS',
+            'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS',
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up ? [ComputingType.SECURITY_ANALYSIS] : []),
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [ComputingType.SENSITIVITY_ANALYSIS]

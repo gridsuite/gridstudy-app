@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    AREA,
     FINAL_CURRENT_LIMITS,
     SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
@@ -19,6 +20,8 @@ import {
     SEGMENT_TYPE_ID,
     SEGMENT_TYPE_VALUE,
     SEGMENTS,
+    SHAPE_FACTOR,
+    TEMPERATURE,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
@@ -31,6 +34,7 @@ import {
     CustomAGGrid,
     DefaultCellRenderer,
     ExpandableInput,
+    ExpandableInputHandle,
     fetchStudyMetadata,
     type MuiStyles,
     ReadOnlyInput,
@@ -64,7 +68,11 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const LineTypeSegmentForm = () => {
+export interface LineTypeSegmentFormProps {
+    editData?: SegmentFormData[];
+}
+
+export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData }) => {
     const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
@@ -72,6 +80,7 @@ export const LineTypeSegmentForm = () => {
     const intl = useIntl();
     const [currentLimitResult, setCurrentLimitResult] = useState<CurrentLimitsInfo[]>([]);
     const [limitsColumnDefs, setLimitsColumnDefs] = useState<ColDef[]>([]);
+    const arrayRef = useRef<ExpandableInputHandle>(null);
 
     // Fetches the lineTypes catalog on startup
     useEffect(() => {
@@ -148,11 +157,11 @@ export const LineTypeSegmentForm = () => {
         const segments: SegmentFormData[] = getValues(SEGMENTS);
         const mostContrainingLimits = new Map<string, CurrentLimitsInfo>();
         segments.forEach((segment) => {
-            segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit: CurrentLimitsInfo) => {
+            segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit) => {
                 if (mostContrainingLimits.has(limit.limitSetName)) {
                     let computedLimit: CurrentLimitsInfo | undefined = mostContrainingLimits.get(limit.limitSetName);
                     if (computedLimit !== undefined && computedLimit.temporaryLimits !== null) {
-                        limit.temporaryLimits.forEach((temporaryLimit) => {
+                        limit.temporaryLimits?.forEach((temporaryLimit) => {
                             const foundTemporaryLimit = computedLimit?.temporaryLimits.find(
                                 (temporaryLimitData) => temporaryLimitData.name === temporaryLimit.name
                             );
@@ -171,13 +180,74 @@ export const LineTypeSegmentForm = () => {
                     }
                 } else {
                     // need deep copy else segment[SEGMENT_CURRENT_LIMITS] will be modified with computedLimit
-                    mostContrainingLimits.set(limit.limitSetName, structuredClone(limit));
+                    mostContrainingLimits.set(limit.limitSetName, {
+                        limitSetName: limit.limitSetName,
+                        permanentLimit: limit.permanentLimit,
+                        temporaryLimits: [...(limit?.temporaryLimits ?? [])],
+                    } as CurrentLimitsInfo);
                 }
             });
         });
         setCurrentLimitResult(Array.from(mostContrainingLimits.values()));
         setValue(FINAL_CURRENT_LIMITS, Array.from(mostContrainingLimits.values()));
     }, [getValues, setValue, setCurrentLimitResult]);
+
+    const getSegmentLimits = useCallback((segment: SegmentFormData) => {
+        return getLineTypeWithLimits(
+            segment[SEGMENT_TYPE_ID],
+            segment[AREA],
+            segment[TEMPERATURE],
+            segment[SHAPE_FACTOR]
+        ).then((lineTypeWithLimits) => {
+            const newResistance = roundToDefaultPrecision(
+                calculateResistance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearResistance ?? 0)
+            );
+            const newReactance = roundToDefaultPrecision(
+                calculateReactance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearReactance ?? 0)
+            );
+            const newSusceptance = roundToDefaultPrecision(
+                calculateSusceptance(segment[SEGMENT_DISTANCE_VALUE], lineTypeWithLimits?.linearCapacity ?? 0)
+            );
+            return {
+                ...emptyLineSegment,
+                [SEGMENT_TYPE_ID]: segment[SEGMENT_TYPE_ID],
+                [SEGMENT_TYPE_VALUE]: lineTypeWithLimits?.type ?? '',
+                [AREA]: segment[AREA],
+                [TEMPERATURE]: segment[TEMPERATURE],
+                [SHAPE_FACTOR]: segment[SHAPE_FACTOR],
+                [SEGMENT_DISTANCE_VALUE]: segment[SEGMENT_DISTANCE_VALUE],
+                [SEGMENT_RESISTANCE]: newResistance,
+                [SEGMENT_REACTANCE]: newReactance,
+                [SEGMENT_SUSCEPTANCE]: newSusceptance,
+                [SEGMENT_CURRENT_LIMITS]: lineTypeWithLimits?.limitsForLineType ?? [],
+            };
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!editData || editData.length === 0) {
+            return;
+        }
+        arrayRef.current?.replaceItems([]);
+        const updateSegmentsLimits = async () => {
+            const promises = editData.map((segment) => getSegmentLimits(segment));
+
+            try {
+                const segmentsWithLimits = await Promise.all(promises);
+                for (const segmentWithLimits of segmentsWithLimits) {
+                    arrayRef?.current?.appendItem(segmentWithLimits);
+                }
+            } catch (error) {
+                snackWithFallback(snackError, error, {
+                    headerId: 'LineTypesCatalogFetchingError',
+                });
+            }
+        };
+        updateSegmentsLimits().then(() => {
+            updateTotals();
+            keepMostConstrainingLimits();
+        });
+    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
@@ -193,6 +263,18 @@ export const LineTypeSegmentForm = () => {
                         const selectedTypeId = lineTypeWithLimits.id ?? '';
                         setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`, selectedType);
                         setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_ID}`, selectedTypeId);
+                        setValue(
+                            `${SEGMENTS}.${openCatalogDialogIndex}.${AREA}`,
+                            selectedAreaAndTemperature2LineTypeData?.area
+                        );
+                        setValue(
+                            `${SEGMENTS}.${openCatalogDialogIndex}.${TEMPERATURE}`,
+                            selectedAreaAndTemperature2LineTypeData?.temperature
+                        );
+                        setValue(
+                            `${SEGMENTS}.${openCatalogDialogIndex}.${SHAPE_FACTOR}`,
+                            selectedAreaAndTemperature2LineTypeData?.shapeFactor
+                        );
                         clearErrors(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`);
                         updateSegmentValues(openCatalogDialogIndex);
                         updateSegmentLimitsValues(openCatalogDialogIndex, lineTypeWithLimits.limitsForLineType);
@@ -242,12 +324,17 @@ export const LineTypeSegmentForm = () => {
         [setValue, updateTotals, keepMostConstrainingLimits]
     );
 
-    const getPreselectedRowIdForCatalog = useCallback(
-        (index: number) => {
-            return getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
-        },
-        [getValues]
-    );
+    const getPreselectedRowData = useCallback(() => {
+        const currentSegment = getValues(`${SEGMENTS}.${openCatalogDialogIndex}`);
+        return currentSegment
+            ? {
+                  id: currentSegment[SEGMENT_TYPE_ID],
+                  temperature: currentSegment[TEMPERATURE],
+                  area: currentSegment[AREA],
+                  shapeFactor: currentSegment[SHAPE_FACTOR],
+              }
+            : { id: undefined, temperature: undefined, area: undefined, shapeFactor: undefined };
+    }, [getValues, openCatalogDialogIndex]);
 
     const segmentTypeHeader = (
         <Box sx={styles.header}>
@@ -380,11 +467,12 @@ export const LineTypeSegmentForm = () => {
                 <GridItem size={1}>{<div />}</GridItem>
             </Grid>
             <ExpandableInput
+                ref={arrayRef}
                 name={SEGMENTS}
                 Field={LineTypeSegmentCreation}
                 fieldProps={{
-                    onSegmentDistanceChange: (index: number) => handleSegmentDistantChange(index),
-                    onEditButtonClick: (index: number) => openCatalogDialog(index),
+                    onSegmentDistanceChange: handleSegmentDistantChange,
+                    onEditButtonClick: openCatalogDialog,
                 }}
                 addButtonLabel={'AddSegment'}
                 initialValue={emptyLineSegment}
@@ -414,7 +502,7 @@ export const LineTypeSegmentForm = () => {
                     onClose={onCatalogDialogClose}
                     rowData={lineTypesCatalog}
                     onSelectLine={onSelectCatalogLine}
-                    preselectedRowId={getPreselectedRowIdForCatalog(openCatalogDialogIndex)}
+                    getPreselectedParams={getPreselectedRowData}
                 />
             )}
         </>

@@ -24,12 +24,10 @@ import type { UnknownArray } from 'type-fest';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
-    AppState,
     ComputingStatusParameters,
     CopiedNetworkModifications,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
-    SpreadsheetFilterState,
 } from './reducer.type';
 import type { TableSortConfig, TableSortKeysType } from '../types/custom-aggrid-types';
 import {
@@ -48,12 +46,10 @@ import type { IOptionalService } from '../components/utils/optional-services';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     LOGS_PAGINATION_STORE_FIELD,
-    LOGS_STORE_FIELD,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
-    SPREADSHEET_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
@@ -117,13 +113,10 @@ export type AppActions =
     | AddToGlobalFilterOptionsAction
     | RemoveFromGlobalFilterOptionsAction
     | SetLastCompletedComputationAction
-    | SpreadsheetFilterAction
     | UpdateSpreadsheetPartialDataAction
-    | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
-    | AddFilterForNewSpreadsheetAction
     | InitOrUpdateGlobalFilterAction
     | RemoveTableDefinitionAction
     | SetCalculationSelectionsAction
@@ -962,6 +955,28 @@ export function removeFromGlobalFilterOptions(id: string): RemoveFromGlobalFilte
     };
 }
 
+export const MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED = 'MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED';
+export type MarkNotFoundGlobalFiltersAsDeletedAction = Readonly<
+    Action<typeof MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED>
+> & {
+    globalFilters: GlobalFilter[];
+    tableId: string;
+    tableType: TableType;
+};
+
+export function markNotFoundGlobalFiltersAsDeleted(
+    globalFilters: GlobalFilter[],
+    tableId: string,
+    tableType: TableType
+): MarkNotFoundGlobalFiltersAsDeletedAction {
+    return {
+        type: MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+        globalFilters: globalFilters,
+        tableId: tableId,
+        tableType: tableType,
+    };
+}
+
 export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
 export type SetLastCompletedComputationAction = Readonly<Action<typeof SET_LAST_COMPLETED_COMPUTATION>> & {
     lastCompletedComputation: ComputingType | null;
@@ -1084,12 +1099,6 @@ export function setPccminAnalysisResultPagination(
     };
 }
 
-export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
-export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>> & {
-    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD];
-    [SPREADSHEET_STORE_FIELD]: FilterConfig[];
-};
-
 export const UPDATE_COLUMN_FILTERS = 'UPDATE_COLUMN_FILTERS';
 export const ADD_GLOBAL_FILTERS = 'ADD_GLOBAL_FILTERS';
 export const CLEAR_GLOBAL_FILTERS = 'CLEAR_GLOBAL_FILTERS';
@@ -1161,23 +1170,6 @@ export const removeFromSelectedGlobalFilters = (
     filterIds,
 });
 
-export const LOGS_FILTER = 'LOGS_FILTER';
-export type LogsFilterAction = Readonly<Action<typeof LOGS_FILTER>> & {
-    filterTab: keyof AppState[typeof LOGS_STORE_FIELD];
-    [LOGS_STORE_FIELD]: FilterConfig[];
-};
-
-export function setLogsFilter(
-    filterTab: keyof AppState[typeof LOGS_STORE_FIELD],
-    logsFilter: FilterConfig[]
-): LogsFilterAction {
-    return {
-        type: LOGS_FILTER,
-        filterTab: filterTab,
-        [LOGS_STORE_FIELD]: logsFilter,
-    };
-}
-
 export const RESET_LOGS_FILTER = 'RESET_LOGS_FILTER';
 export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
 
@@ -1240,17 +1232,6 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
         table,
         tab,
         sort,
-    };
-}
-
-export function setSpreadsheetFilter(
-    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
-    spreadsheetFilter: FilterConfig[]
-): SpreadsheetFilterAction {
-    return {
-        type: SPREADSHEET_FILTER,
-        filterTab: filterTab,
-        [SPREADSHEET_STORE_FIELD]: spreadsheetFilter,
     };
 }
 
@@ -1363,7 +1344,7 @@ export type InitTableDefinitionsAction = {
     type: typeof INIT_TABLE_DEFINITIONS;
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
-    tablesFilters?: SpreadsheetFilterState;
+    tablesFilters?: Record<string, FilterConfig[]>;
     globalFilters?: Record<UUID, GlobalFilter[]>;
     tablesSorts?: TableSortConfig;
 };
@@ -1371,7 +1352,7 @@ export type InitTableDefinitionsAction = {
 export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
-    tablesFilters: SpreadsheetFilterState = {},
+    tablesFilters: Record<string, FilterConfig[]> = {},
     globalFilters: Record<UUID, GlobalFilter[]> = {},
     tablesSorts: TableSortConfig = {}
 ): InitTableDefinitionsAction => ({
@@ -1392,21 +1373,6 @@ export type ReorderTableDefinitionsAction = {
 export const reorderTableDefinitions = (definitions: SpreadsheetTabDefinition[]): ReorderTableDefinitionsAction => ({
     type: REORDER_TABLE_DEFINITIONS,
     definitions,
-});
-
-export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
-
-export type AddFilterForNewSpreadsheetAction = {
-    type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { tabUuid: UUID; value: FilterConfig[] };
-};
-
-export const addFilterForNewSpreadsheet = (tabUuid: UUID, value: FilterConfig[]): AddFilterForNewSpreadsheetAction => ({
-    type: ADD_FILTER_FOR_NEW_SPREADSHEET,
-    payload: {
-        tabUuid,
-        value,
-    },
 });
 
 export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
