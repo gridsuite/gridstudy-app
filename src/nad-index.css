@@ -155,7 +155,7 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
     display:none;
 }
 
-:is(.nad-zoom-5000, .nad-zoom-3500, .nad-zoom-2000, .nad-zoom-1000, .nad-zoom-500, .nad-zoom-0) :is(.nad-active, .nad-permanent-limit-percentage) {
+:is(.nad-zoom-6000, .nad-zoom-5000, .nad-zoom-3500, .nad-zoom-2000, .nad-zoom-1000, .nad-zoom-500, .nad-zoom-0) :is(.nad-active, .nad-permanent-limit-percentage) {
    display: inline;
 }
 :is(.nad-zoom-500, .nad-zoom-0) :is(.nad-reactive) {
@@ -289,15 +289,27 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 .nad-zoom-0 .nad-edge-infos text { font-size: 20px; stroke-width: 5px; }
 .nad-zoom-500 .nad-edge-infos text { font-size: 20px; stroke-width: 5px; }
 .nad-zoom-1000 .nad-edge-infos text { font-size: 30px; stroke-width: 5.5px; }
-.nad-zoom-2000 .nad-edge-infos text { font-size: 40px; stroke-width: 7px; }
-.nad-zoom-3500 .nad-edge-infos text { font-size: 60px; stroke-width: 9px; }
-.nad-zoom-5000 .nad-edge-infos text { font-size: 70px; stroke-width: 10px; }
- 
+.nad-zoom-2000 .nad-edge-infos text { font-size: 30px; stroke-width: 7px; }
+:is(.nad-zoom-3500, .nad-zoom-5000, .nad-zoom-6000) .nad-edge-infos text { display: none; }
+:is(.nad-zoom-3500, .nad-zoom-5000, .nad-zoom-6000) .nad-label-box {
+    display: none;
+}
+.nad-zoom-2000 .nad-permanent-limit-percentage {
+    display: none;
+}
+.nad-zoom-2000 .nad-arrow-out.nad-permanent-limit-percentage {
+    display: inline;
+}
 /* Make arrows scale with zoom */
+:is(.nad-zoom-2000) .nad-edge-infos path {
+    stroke-width: 2px;
+} 
+:is(.nad-zoom-3500) .nad-edge-infos path {
+    stroke-width: 8px;
+}
 .nad-zoom-5000 .nad-edge-infos path {
     stroke-width: 12px;
 }
-:is(.nad-zoom-2000, .nad-zoom-3500) .nad-edge-infos path {
-    stroke-width: 10px;
-} 
- 
+.nad-zoom-6000 .nad-edge-infos path {
+    stroke-width: 16px;
+}
