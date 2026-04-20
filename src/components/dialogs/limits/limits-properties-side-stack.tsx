@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { LimitsTagChip } from './limits-tag-chip';
-import { Autocomplete, AutocompleteRenderInputParams, Box, Stack, TextField, IconButton, Button } from '@mui/material';
+import { Autocomplete, AutocompleteRenderInputParams, Box, Stack, TextField, IconButton } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
 import { Delete } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
