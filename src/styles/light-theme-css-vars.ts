@@ -48,4 +48,13 @@ export const lightThemeCssVars = {
         fill: 'black',
         stroke: 'black',
     },
+    '.sld-active-power': {
+        fill: 'black',
+    },
+    '.sld-reactive-power': {
+        fill: 'blue',
+    },
+    '& .sld-active-power .sld-arrow-out, & .sld-active-power .sld-arrow-in': {
+        fill: 'black',
+    },
 };

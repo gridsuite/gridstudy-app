@@ -43,4 +43,13 @@ export const darkThemeCssVars = {
         fill: 'white',
         stroke: 'white',
     },
+    '.sld-active-power': {
+        fill: 'black',
+    },
+    '.sld-reactive-power': {
+        fill: '#77b5fe',
+    },
+    '& .sld-active-power .sld-arrow-out, & .sld-active-power .sld-arrow-in': {
+        fill: 'white',
+    },
 };
