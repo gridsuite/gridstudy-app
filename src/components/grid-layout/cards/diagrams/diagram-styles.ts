@@ -31,7 +31,6 @@ export const styles = {
             fontFamily: theme.typography.fontFamily,
         },
         '& .nad-pst-arrow': {
-            stroke: theme.palette.text.primary,
             strokeWidth: 3,
         },
     }),
@@ -124,15 +123,12 @@ export const styles = {
         },
     },
     divDiagramLoadflowInvalid: {
-        '& .sld-active-power, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum, & .sld-balance':
+        '& .sld-active-power, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum, & .sld-balance , & .nad-reactive, & text.nad-permanent-limit-percentage, & path.nad-permanent-limit-percentage, & .nad-active':
             {
                 opacity: INVALID_COMPUTATION_OPACITY,
             },
         '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
             animation: 'none !important',
-        },
-        '& .nad-active': {
-            fill: '#787F81', // Text color of the values and arrows on lines (same color in light and dark mode)
         },
         '& .nad-bus-descr': {
             color: '#787F81',

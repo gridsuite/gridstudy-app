@@ -16,6 +16,7 @@ import {
     COMMON_APP_NAME,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchStudyMetadata,
     getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
@@ -75,11 +76,18 @@ import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
 import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
 import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
 import { isEditingGlobalFilter } from '../utils/editing-global-filter-sync.ts';
+import { cleanupStaleStudyData } from '../redux/session-storage/local-storage';
 
 const noUserManager = { instance: null, error: null };
 
 const App = () => {
     const { snackError } = useSnackMessage();
+
+    useEffect(() => {
+        fetchStudyMetadata()
+            .then((metadata) => cleanupStaleStudyData(metadata?.localStorageTtlDays))
+            .catch(() => cleanupStaleStudyData());
+    }, []);
 
     const user = useSelector((state) => state.user);
     const studyUuid = useSelector((state) => state.studyUuid);
