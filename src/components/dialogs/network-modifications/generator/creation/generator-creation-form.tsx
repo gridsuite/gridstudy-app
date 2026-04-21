@@ -7,6 +7,7 @@
 
 import {
     ActivePowerAdornment,
+    ActivePowerControlForm,
     ConnectivityForm,
     filledTextField,
     FloatInput,
@@ -38,7 +39,6 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { FormattedMessage } from 'react-intl';
-import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import { useWatch } from 'react-hook-form';
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import type { UUID } from 'node:crypto';

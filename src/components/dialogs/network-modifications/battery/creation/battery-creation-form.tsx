@@ -7,6 +7,7 @@
 
 import {
     ActivePowerAdornment,
+    ActivePowerControlForm,
     ConnectivityForm,
     filledTextField,
     FloatInput,
@@ -25,7 +26,6 @@ import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-for
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
-import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import ShortCircuitForm from '../../../short-circuit/short-circuit-form';

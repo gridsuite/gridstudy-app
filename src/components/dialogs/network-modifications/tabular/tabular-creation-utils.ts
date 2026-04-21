@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CONNECTION_DIRECTIONS, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { CONNECTION_DIRECTIONS, FieldConstants, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION_ID,
     CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
-    DROOP,
     ENERGY_SOURCE,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -117,7 +116,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID, required: false },
         { id: Q_PERCENT, required: false, type: NUMBER },
         { id: PARTICIPATE, required: true, type: BOOLEAN },
-        { id: DROOP, required: false, type: NUMBER },
+        { id: FieldConstants.DROOP, required: false, type: NUMBER },
         { id: TRANSIENT_REACTANCE, required: false, type: NUMBER },
         { id: STEP_UP_TRANSFORMER_REACTANCE, required: false, type: NUMBER },
         { id: PLANNED_ACTIVE_POWER_SET_POINT, required: false, type: NUMBER },
@@ -154,7 +153,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         { id: TARGET_P, required: true, type: NUMBER },
         { id: TARGET_Q, required: true, type: NUMBER },
         { id: PARTICIPATE, required: true, type: BOOLEAN },
-        { id: DROOP, required: false, type: NUMBER },
+        { id: FieldConstants.DROOP, required: false, type: NUMBER },
     ],
     SHUNT_COMPENSATOR: [
         { id: EQUIPMENT_ID, required: true },

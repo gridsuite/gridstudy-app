@@ -15,6 +15,7 @@ import {
 import { Grid, TextField } from '@mui/material';
 import {
     ActivePowerAdornment,
+    ActivePowerControlForm,
     ConnectivityForm,
     filledTextField,
     FloatInput,
@@ -26,7 +27,6 @@ import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-for
 import { FormattedMessage } from 'react-intl';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
-import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import type { UUID } from 'node:crypto';
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import { BatteryFormInfos } from '../battery-dialog.type';

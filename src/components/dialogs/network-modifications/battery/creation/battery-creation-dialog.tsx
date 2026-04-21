@@ -29,6 +29,9 @@ import {
     getSetPointsSchema,
     getSetPointsEmptyFormData,
     UNDEFINED_CONNECTION_DIRECTION,
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
+    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -40,10 +43,8 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    FREQUENCY_REGULATION,
     ID,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
@@ -67,10 +68,6 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { createBattery } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { BatteryCreationDialogSchemaForm, BatteryFormInfos } from '../battery-dialog.type';
-import {
-    getActivePowerControlEmptyFormData,
-    getActivePowerControlSchema,
-} from '../../../active-power-control/active-power-control-utils';
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import BatteryCreationForm from './battery-creation-form';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
@@ -141,8 +138,8 @@ export default function BatteryCreationDialog({
                 [MINIMUM_ACTIVE_POWER]: battery.minP,
                 [ACTIVE_POWER_SET_POINT]: battery.targetP,
                 [REACTIVE_POWER_SET_POINT]: battery.targetQ,
-                [FREQUENCY_REGULATION]: battery.activePowerControl?.participate,
-                [DROOP]: battery.activePowerControl?.droop,
+                [FieldConstants.FREQUENCY_REGULATION]: battery.activePowerControl?.participate,
+                [FieldConstants.DROOP]: battery.activePowerControl?.droop,
                 ...getConnectivityFormData({
                     voltageLevelId: battery.voltageLevelId,
                     busbarSectionId: battery.busOrBusbarSectionId,
@@ -177,8 +174,8 @@ export default function BatteryCreationDialog({
                 [MINIMUM_ACTIVE_POWER]: editData.minP,
                 [ACTIVE_POWER_SET_POINT]: editData.targetP,
                 [REACTIVE_POWER_SET_POINT]: editData.targetQ,
-                [FREQUENCY_REGULATION]: editData.participate,
-                [DROOP]: editData.droop,
+                [FieldConstants.FREQUENCY_REGULATION]: editData.participate,
+                [FieldConstants.DROOP]: editData.droop,
                 ...getConnectivityFormData({
                     voltageLevelId: editData.voltageLevelId,
                     busbarSectionId: editData.busOrBusbarSectionId,
@@ -234,8 +231,8 @@ export default function BatteryCreationDialog({
                     : null,
                 targetP: battery[ACTIVE_POWER_SET_POINT] ?? null,
                 targetQ: battery[REACTIVE_POWER_SET_POINT] ?? null,
-                participate: battery[FREQUENCY_REGULATION] ?? null,
-                droop: battery[DROOP] ?? null,
+                participate: battery[FieldConstants.FREQUENCY_REGULATION] ?? null,
+                droop: battery[FieldConstants.DROOP] ?? null,
                 properties: toModificationProperties(battery) ?? null,
                 directTransX: battery[TRANSIENT_REACTANCE] ?? null,
                 stepUpTransformerX: battery[TRANSFORMER_REACTANCE] ?? null,

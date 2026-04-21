@@ -26,6 +26,8 @@ import {
     getConnectivityWithPositionSchema,
     getSetPointsEmptyFormData,
     getSetPointsSchema,
+    getActivePowerControlSchema,
+    getActivePowerControlEmptyFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -37,9 +39,7 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    DROOP,
     EQUIPMENT_NAME,
-    FREQUENCY_REGULATION,
     ID,
     MAX_Q,
     MAXIMUM_ACTIVE_POWER,
@@ -70,10 +70,6 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
 import { FetchStatus } from '../../../../../services/utils.type';
-import {
-    getActivePowerControlEmptyFormData,
-    getActivePowerControlSchema,
-} from '../../../active-power-control/active-power-control-utils';
 import { BatteryModificationInfos } from '../../../../../services/network-modification-types';
 import BatteryModificationForm from './battery-modification-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -156,8 +152,8 @@ export default function BatteryModificationDialog({
                 [MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
                 [ACTIVE_POWER_SET_POINT]: editData?.targetP?.value ?? null,
                 [REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
-                [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
-                [DROOP]: editData?.droop?.value ?? null,
+                [FieldConstants.FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
+                [FieldConstants.DROOP]: editData?.droop?.value ?? null,
                 ...getConnectivityFormData({
                     voltageLevelId: editData?.voltageLevelId?.value ?? null,
                     busbarSectionId: editData?.busOrBusbarSectionId?.value ?? null,
@@ -299,8 +295,8 @@ export default function BatteryModificationDialog({
                 connectionPosition: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTION_POSITION]),
                 terminalConnected: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTED]),
                 reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
-                participate: toModificationOperation(battery[FREQUENCY_REGULATION]),
-                droop: toModificationOperation(battery[DROOP]) ?? null,
+                participate: toModificationOperation(battery[FieldConstants.FREQUENCY_REGULATION]),
+                droop: toModificationOperation(battery[FieldConstants.DROOP]) ?? null,
                 maxQ: toModificationOperation(
                     isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MAXIMUM_REACTIVE_POWER]
                 ),

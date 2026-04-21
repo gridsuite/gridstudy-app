@@ -13,10 +13,8 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    FREQUENCY_REGULATION,
     ID,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
@@ -34,9 +32,8 @@ import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '../../reactive-limits/reactive-limits.type';
-import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
 import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
-import { ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
+import { ActivePowerControlInfos, ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type BatteryDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -52,8 +49,8 @@ export type BatteryDialogSchemaBaseForm = {
         [CONNECTION_POSITION]?: number;
         [CONNECTED]?: boolean;
     };
-    [FREQUENCY_REGULATION]?: boolean | null;
-    [DROOP]?: number | null;
+    [FieldConstants.FREQUENCY_REGULATION]?: boolean | null;
+    [FieldConstants.DROOP]?: number | null;
     [REACTIVE_LIMITS]: {
         [MINIMUM_REACTIVE_POWER]?: number | null;
         [MAXIMUM_REACTIVE_POWER]?: number | null;

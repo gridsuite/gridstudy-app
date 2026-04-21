@@ -50,7 +50,6 @@ import {
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
     Q_PERCENT,
     PARTICIPATE,
-    DROOP,
     TRANSIENT_REACTANCE,
     STEP_UP_TRANSFORMER_REACTANCE,
     PLANNED_ACTIVE_POWER_SET_POINT,
@@ -379,8 +378,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['activePowerControl.participate'],
         },
         {
-            labelId: DROOP,
-            csvColumns: [DROOP],
+            labelId: FieldConstants.DROOP,
+            csvColumns: [FieldConstants.DROOP],
             networkFields: ['activePowerControl.droop'],
         },
         {
@@ -525,8 +524,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['activePowerControl.participate'],
         },
         {
-            labelId: DROOP,
-            csvColumns: [DROOP],
+            labelId: FieldConstants.DROOP,
+            csvColumns: [FieldConstants.DROOP],
             networkFields: ['activePowerControl.droop'],
         },
     ],

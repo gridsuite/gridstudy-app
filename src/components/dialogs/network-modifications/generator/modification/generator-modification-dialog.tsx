@@ -27,6 +27,8 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getSetPointsSchema,
     getSetPointsEmptyFormData,
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -38,12 +40,10 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    DROOP,
     ENERGY_SOURCE,
     EQUIPMENT,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
-    FREQUENCY_REGULATION,
     ID,
     MARGINAL_COST,
     MAX_Q,
@@ -90,10 +90,6 @@ import {
     getVoltageRegulationEmptyFormData,
     getVoltageRegulationSchema,
 } from '../../../voltage-regulation/voltage-regulation-utils';
-import {
-    getActivePowerControlEmptyFormData,
-    getActivePowerControlSchema,
-} from '../../../active-power-control/active-power-control-utils';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -199,8 +195,8 @@ export default function GeneratorModificationDialog({
                 [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
                 [PLANNED_OUTAGE_RATE]: editData?.plannedOutageRate?.value ?? null,
                 [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
-                [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
-                [DROOP]: editData?.droop?.value ?? null,
+                [FieldConstants.FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
+                [FieldConstants.DROOP]: editData?.droop?.value ?? null,
                 ...getShortCircuitFormData({
                     directTransX: editData?.directTransX?.value ?? null,
                     stepUpTransformerX: editData?.stepUpTransformerX?.value ?? null,
@@ -371,8 +367,8 @@ export default function GeneratorModificationDialog({
                 regulatingTerminalType: toModificationOperation(generator[EQUIPMENT]?.type),
                 regulatingTerminalVlId: toModificationOperation(generator[VOLTAGE_LEVEL]?.id),
                 reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
-                participate: toModificationOperation(generator[FREQUENCY_REGULATION]),
-                droop: toModificationOperation(generator[DROOP]),
+                participate: toModificationOperation(generator[FieldConstants.FREQUENCY_REGULATION]),
+                droop: toModificationOperation(generator[FieldConstants.DROOP]),
                 maxQ: toModificationOperation(
                     isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MAXIMUM_REACTIVE_POWER]
                 ),

@@ -30,6 +30,9 @@ import {
     testValueWithinPowerInterval,
     getSetPointsEmptyFormData,
     UNDEFINED_CONNECTION_DIRECTION,
+    FieldConstants,
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -40,13 +43,11 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    DROOP,
     ENERGY_SOURCE,
     EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
-    FREQUENCY_REGULATION,
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
@@ -81,10 +82,6 @@ import {
     getVoltageRegulationEmptyFormData,
     getVoltageRegulationSchema,
 } from '../../../voltage-regulation/voltage-regulation-utils';
-import {
-    getActivePowerControlEmptyFormData,
-    getActivePowerControlSchema,
-} from '../../../active-power-control/active-power-control-utils';
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -190,8 +187,8 @@ export default function GeneratorCreationDialog({
                 [MARGINAL_COST]: generator.generatorStartup?.marginalCost,
                 [PLANNED_OUTAGE_RATE]: generator.generatorStartup?.plannedOutageRate,
                 [FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
-                [FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
-                [DROOP]: generator.activePowerControl?.droop,
+                [FieldConstants.FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
+                [FieldConstants.DROOP]: generator.activePowerControl?.droop,
                 ...getShortCircuitFormData({
                     directTransX: generator.generatorShortCircuit?.directTransX,
                     stepUpTransformerX: generator.generatorShortCircuit?.stepUpTransformerX,
@@ -246,8 +243,8 @@ export default function GeneratorCreationDialog({
                 [MARGINAL_COST]: editData.marginalCost,
                 [PLANNED_OUTAGE_RATE]: editData.plannedOutageRate,
                 [FORCED_OUTAGE_RATE]: editData.forcedOutageRate,
-                [FREQUENCY_REGULATION]: editData.participate,
-                [DROOP]: editData.droop,
+                [FieldConstants.FREQUENCY_REGULATION]: editData.participate,
+                [FieldConstants.DROOP]: editData.droop,
                 ...getShortCircuitFormData({
                     directTransX: editData.directTransX,
                     stepUpTransformerX: editData.stepUpTransformerX,
@@ -318,8 +315,8 @@ export default function GeneratorCreationDialog({
                 regulatingTerminalType: isDistantRegulation ? (generator[EQUIPMENT]?.type ?? null) : null,
                 regulatingTerminalVlId: isDistantRegulation ? (generator[VOLTAGE_LEVEL]?.id ?? null) : null,
                 reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-                participate: generator[FREQUENCY_REGULATION] ?? null,
-                droop: generator[DROOP] ?? null,
+                participate: generator[FieldConstants.FREQUENCY_REGULATION] ?? null,
+                droop: generator[FieldConstants.DROOP] ?? null,
                 maxQ: isReactiveCapabilityCurveOn ? null : (reactiveLimits[MAXIMUM_REACTIVE_POWER] ?? null),
                 minQ: isReactiveCapabilityCurveOn ? null : (reactiveLimits[MINIMUM_REACTIVE_POWER] ?? null),
                 connectionDirection: generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,

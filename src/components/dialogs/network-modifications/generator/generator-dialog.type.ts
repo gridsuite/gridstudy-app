@@ -13,13 +13,11 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    DROOP,
     ENERGY_SOURCE,
     EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
-    FREQUENCY_REGULATION,
     ID,
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
@@ -50,9 +48,8 @@ import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '../../reactive-limits/reactive-limits.type';
-import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
 import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
-import { ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
+import { ActivePowerControlInfos, ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
 
 export type GeneratorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -96,8 +93,8 @@ export type GeneratorDialogSchemaBaseForm = {
         [NAME]?: string | null;
         [TYPE]?: string;
     };
-    [FREQUENCY_REGULATION]?: boolean | null;
-    [DROOP]?: number | null;
+    [FieldConstants.FREQUENCY_REGULATION]?: boolean | null;
+    [FieldConstants.DROOP]?: number | null;
     [REACTIVE_LIMITS]: {
         [MINIMUM_REACTIVE_POWER]?: number | null;
         [MAXIMUM_REACTIVE_POWER]?: number | null;
