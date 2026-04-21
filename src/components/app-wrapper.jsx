@@ -118,7 +118,6 @@ import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag
 import { getBaseVoltagesCssVars } from '../utils/colors.ts';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars.ts';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars.ts';
-import { getUserToken } from '../redux/user-store.ts';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -508,7 +507,7 @@ const AppWrapperWithRedux = () => {
                             <CssBaseline />
                             <GlobalStyles styles={{ ':root': rootCssVars }} />
                             <CardErrorBoundary>
-                                <NotificationsProvider urls={urlMapper} getToken={getUserToken}>
+                                <NotificationsProvider urls={urlMapper}>
                                     <App />
                                 </NotificationsProvider>
                             </CardErrorBoundary>

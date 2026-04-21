@@ -13,42 +13,48 @@ import {
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { type AppState } from 'redux/reducer.type';
-import { getWsBase } from 'services/utils';
+import { getUrlWithToken, getWsBase } from 'services/utils';
 import { APP_NAME } from 'utils/config-params';
 
 const useNotificationsUrlGenerator = (): Partial<Record<NotificationsUrlKeys, string | undefined>> => {
     // The websocket API doesn't allow relative urls
     const wsBase = getWsBase();
-    const isAuthenticated = useSelector((state: AppState) => state.userToken?.id_token !== undefined);
+    const tokenId = useSelector((state: AppState) => state.user?.id_token);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     // return a mapColumns with NOTIFICATIONS_URL_KEYS and undefined value if URL is not yet buildable (tokenId)
     // it will be used to register listeners as soon as possible.
     return useMemo(
         () => ({
-            [NotificationsUrlKeys.CONFIG]: isAuthenticated
-                ? `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/notify?${new URLSearchParams({
-                      appName: APP_NAME,
-                  })}`
+            [NotificationsUrlKeys.CONFIG]: tokenId
+                ? getUrlWithToken(
+                      `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/notify?${new URLSearchParams({
+                          appName: APP_NAME,
+                      })}`
+                  )
                 : undefined,
-            [NotificationsUrlKeys.GLOBAL_CONFIG]: isAuthenticated
-                ? `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/global`
+            [NotificationsUrlKeys.GLOBAL_CONFIG]: tokenId
+                ? getUrlWithToken(`${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/global`)
                 : undefined,
             [NotificationsUrlKeys.STUDY]:
-                isAuthenticated && studyUuid
-                    ? `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`
+                tokenId && studyUuid
+                    ? getUrlWithToken(
+                          `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`
+                      )
                     : undefined,
             [NotificationsUrlKeys.DIRECTORY_DELETE_STUDY]:
-                isAuthenticated && studyUuid
-                    ? `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=deleteElement&elementUuid=${encodeURIComponent(
-                          studyUuid
-                      )}`
+                tokenId && studyUuid
+                    ? getUrlWithToken(
+                          `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=deleteElement&elementUuid=${encodeURIComponent(
+                              studyUuid
+                          )}`
+                      )
                     : undefined,
-            [NotificationsUrlKeys.DIRECTORY]: isAuthenticated
-                ? `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`
+            [NotificationsUrlKeys.DIRECTORY]: tokenId
+                ? getUrlWithToken(`${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`)
                 : undefined,
         }),
-        [isAuthenticated, wsBase, studyUuid]
+        [tokenId, wsBase, studyUuid]
     );
 };
 
