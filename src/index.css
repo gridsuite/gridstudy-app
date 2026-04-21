@@ -194,12 +194,6 @@ code {
     stroke: #003700;
     stroke-dasharray: 1, 10;
 }
-.sld-active-power {
-    fill: black;
-}
-.sld-reactive-power {
-    fill: blue;
-}
 .sld-frame {
     fill: var(--sld-background-color, transparent);
 }
