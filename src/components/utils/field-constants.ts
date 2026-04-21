@@ -94,6 +94,7 @@ export const OLGS_MODIFICATION_TYPE = 'operationalLimitsGroupsModificationType';
 export const PERMANENT_LIMIT = 'permanentLimit';
 export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
+export const LINE_SEGMENTS = 'lineSegments';
 
 export const ENERGY_SOURCE = 'energySource';
 export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
@@ -249,6 +250,9 @@ export const UNDERGROUND_SHAPE_FACTORS = 'undergroundShapeFactors';
 export const FINAL_CURRENT_LIMITS = 'finalCurrentLimits';
 export const APPLICABILITY_FIELD = 'applicability';
 export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
+export const AREA = 'area';
+export const TEMPERATURE = 'temperature';
+export const SHAPE_FACTOR = 'shapeFactor';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
@@ -484,3 +488,7 @@ export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
 export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
 export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
 export const CONNECTION_SIDE = 'connectionSide';
+
+export const ACTION = 'action';
+export const SELECTED_MODIFICATIONS = 'selectedModifications';
+export const COMPOSITE_NAMES = 'compositeNames';
