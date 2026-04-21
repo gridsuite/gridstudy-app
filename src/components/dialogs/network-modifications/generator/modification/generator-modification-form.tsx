@@ -16,6 +16,7 @@ import {
     PropertiesForm,
     SelectInput,
     SetPointsForm,
+    ShortCircuitForm,
     TextInput,
 } from '@gridsuite/commons-ui';
 import {
@@ -42,7 +43,6 @@ import { useWatch } from 'react-hook-form';
 import type { UUID } from 'node:crypto';
 import { GeneratorFormInfos } from '../generator-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';

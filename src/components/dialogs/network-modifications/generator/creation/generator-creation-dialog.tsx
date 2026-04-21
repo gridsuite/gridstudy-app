@@ -33,6 +33,9 @@ import {
     FieldConstants,
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormSchema,
+    getShortCircuitFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -60,8 +63,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
@@ -85,11 +86,6 @@ import {
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import {
-    getShortCircuitEmptyFormData,
-    getShortCircuitFormData,
-    getShortCircuitFormSchema,
-} from '../../../short-circuit/short-circuit-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { toReactiveCapabilityCurveChoiceForGeneratorCreation } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
@@ -309,8 +305,8 @@ export default function GeneratorCreationDialog({
                 marginalCost: generator[MARGINAL_COST] ?? null,
                 plannedOutageRate: generator[PLANNED_OUTAGE_RATE] ?? null,
                 forcedOutageRate: generator[FORCED_OUTAGE_RATE] ?? null,
-                directTransX: generator[TRANSIENT_REACTANCE] ?? null,
-                stepUpTransformerX: generator[TRANSFORMER_REACTANCE] ?? null,
+                directTransX: generator[FieldConstants.TRANSIENT_REACTANCE] ?? null,
+                stepUpTransformerX: generator[FieldConstants.TRANSFORMER_REACTANCE] ?? null,
                 regulatingTerminalId: isDistantRegulation ? (generator[EQUIPMENT]?.id ?? null) : null,
                 regulatingTerminalType: isDistantRegulation ? (generator[EQUIPMENT]?.type ?? null) : null,
                 regulatingTerminalVlId: isDistantRegulation ? (generator[VOLTAGE_LEVEL]?.id ?? null) : null,

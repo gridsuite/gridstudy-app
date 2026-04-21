@@ -21,6 +21,7 @@ import {
     FloatInput,
     PropertiesForm,
     ReactivePowerAdornment,
+    ShortCircuitForm,
     TextInput,
 } from '@gridsuite/commons-ui';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
@@ -32,7 +33,6 @@ import { BatteryCreationInfos } from '../../../../../services/network-modificati
 import { BatteryFormInfos } from '../battery-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';

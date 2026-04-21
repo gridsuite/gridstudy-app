@@ -36,8 +36,6 @@ import {
     REACTIVE_POWER_SET_POINT,
     SUBSTATION_ID,
     TOPOLOGY_KIND,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
@@ -48,8 +46,13 @@ import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '../../reactive-limits/reactive-limits.type';
-import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
-import { ActivePowerControlInfos, ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
+import {
+    ActivePowerControlInfos,
+    ConnectablePositionFormInfos,
+    FieldConstants,
+    Property,
+    ShortCircuitInfos,
+} from '@gridsuite/commons-ui';
 
 export type GeneratorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -57,8 +60,8 @@ export type GeneratorDialogSchemaBaseForm = {
     [MAXIMUM_ACTIVE_POWER]: number | null;
     [MINIMUM_ACTIVE_POWER]: number | null;
     [RATED_NOMINAL_POWER]?: number | null;
-    [TRANSFORMER_REACTANCE]?: number | null;
-    [TRANSIENT_REACTANCE]?: number | null;
+    [FieldConstants.TRANSFORMER_REACTANCE]?: number | null;
+    [FieldConstants.TRANSIENT_REACTANCE]?: number | null;
     [PLANNED_ACTIVE_POWER_SET_POINT]?: number | null;
     [MARGINAL_COST]?: number | null;
     [PLANNED_OUTAGE_RATE]?: number | null;
@@ -123,7 +126,7 @@ export interface GeneratorFormInfos {
     generatorStartup: GeneratorStartUpFormInfos;
     connectablePosition: ConnectablePositionFormInfos;
     activePowerControl: ActivePowerControlInfos;
-    generatorShortCircuit: ShortCircuitFormInfos;
+    generatorShortCircuit: ShortCircuitInfos;
     regulatingTerminalId: string;
     regulatingTerminalVlId: string;
     regulatingTerminalConnectableId: string;

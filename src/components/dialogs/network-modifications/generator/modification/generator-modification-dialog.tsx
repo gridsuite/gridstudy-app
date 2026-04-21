@@ -29,6 +29,9 @@ import {
     getSetPointsEmptyFormData,
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,
+    getShortCircuitFormData,
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormSchema,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -61,8 +64,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
@@ -94,11 +95,6 @@ import { GeneratorModificationInfos } from '../../../../../services/network-modi
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import {
-    getShortCircuitEmptyFormData,
-    getShortCircuitFormData,
-    getShortCircuitFormSchema,
-} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -360,8 +356,8 @@ export default function GeneratorModificationDialog({
                 marginalCost: toModificationOperation(generator[MARGINAL_COST]),
                 plannedOutageRate: toModificationOperation(generator[PLANNED_OUTAGE_RATE]),
                 forcedOutageRate: toModificationOperation(generator[FORCED_OUTAGE_RATE]),
-                directTransX: toModificationOperation(generator[TRANSIENT_REACTANCE]),
-                stepUpTransformerX: toModificationOperation(generator[TRANSFORMER_REACTANCE]),
+                directTransX: toModificationOperation(generator[FieldConstants.TRANSIENT_REACTANCE]),
+                stepUpTransformerX: toModificationOperation(generator[FieldConstants.TRANSFORMER_REACTANCE]),
                 voltageRegulationType: toModificationOperation(generator[VOLTAGE_REGULATION_TYPE]),
                 regulatingTerminalId: toModificationOperation(generator[EQUIPMENT]?.id),
                 regulatingTerminalType: toModificationOperation(generator[EQUIPMENT]?.type),

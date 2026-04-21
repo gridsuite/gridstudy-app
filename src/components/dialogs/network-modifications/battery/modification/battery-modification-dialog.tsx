@@ -28,6 +28,9 @@ import {
     getSetPointsSchema,
     getActivePowerControlSchema,
     getActivePowerControlEmptyFormData,
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormSchema,
+    getShortCircuitFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -52,8 +55,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import {
@@ -75,11 +76,6 @@ import BatteryModificationForm from './battery-modification-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import {
-    getShortCircuitEmptyFormData,
-    getShortCircuitFormData,
-    getShortCircuitFormSchema,
-} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -307,8 +303,8 @@ export default function BatteryModificationDialog({
                     ? (reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
                 properties: toModificationProperties(battery) ?? null,
-                directTransX: toModificationOperation(battery[TRANSIENT_REACTANCE]),
-                stepUpTransformerX: toModificationOperation(battery[TRANSFORMER_REACTANCE]),
+                directTransX: toModificationOperation(battery[FieldConstants.TRANSIENT_REACTANCE]),
+                stepUpTransformerX: toModificationOperation(battery[FieldConstants.TRANSFORMER_REACTANCE]),
             } satisfies BatteryModificationInfos;
             modifyBattery({
                 batteryModificationInfos: batteryModificationInfos,

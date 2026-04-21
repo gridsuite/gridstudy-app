@@ -24,16 +24,19 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
 import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '../../reactive-limits/reactive-limits.type';
-import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
-import { ActivePowerControlInfos, ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
+import {
+    ActivePowerControlInfos,
+    ConnectablePositionFormInfos,
+    FieldConstants,
+    Property,
+    ShortCircuitInfos,
+} from '@gridsuite/commons-ui';
 
 export type BatteryDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -59,8 +62,8 @@ export type BatteryDialogSchemaBaseForm = {
     };
     // Properties
     [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
-    [TRANSFORMER_REACTANCE]?: number | null;
-    [TRANSIENT_REACTANCE]?: number | null;
+    [FieldConstants.TRANSFORMER_REACTANCE]?: number | null;
+    [FieldConstants.TRANSIENT_REACTANCE]?: number | null;
 };
 
 export type BatteryCreationDialogSchemaForm = { [EQUIPMENT_ID]: string } & BatteryDialogSchemaBaseForm;
@@ -77,7 +80,7 @@ export interface BatteryFormInfos {
     connectablePosition: ConnectablePositionFormInfos;
     minMaxReactiveLimits: MinMaxReactiveLimitsFormInfos;
     activePowerControl: ActivePowerControlInfos;
-    batteryShortCircuit: ShortCircuitFormInfos;
+    batteryShortCircuit: ShortCircuitInfos;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     voltageLevelId: string;
     busOrBusbarSectionId: string;

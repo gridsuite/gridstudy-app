@@ -52,7 +52,6 @@ import {
     TARGET_P,
     TARGET_Q,
     TARGET_V,
-    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
 } from 'components/utils/field-constants';
@@ -117,7 +116,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         { id: Q_PERCENT, required: false, type: NUMBER },
         { id: PARTICIPATE, required: true, type: BOOLEAN },
         { id: FieldConstants.DROOP, required: false, type: NUMBER },
-        { id: TRANSIENT_REACTANCE, required: false, type: NUMBER },
+        { id: FieldConstants.TRANSIENT_REACTANCE, required: false, type: NUMBER },
         { id: STEP_UP_TRANSFORMER_REACTANCE, required: false, type: NUMBER },
         { id: PLANNED_ACTIVE_POWER_SET_POINT, required: false, type: NUMBER },
         { id: MARGINAL_COST, required: false, type: NUMBER },

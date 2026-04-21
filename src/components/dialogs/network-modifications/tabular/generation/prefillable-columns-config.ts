@@ -50,7 +50,6 @@ import {
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
     Q_PERCENT,
     PARTICIPATE,
-    TRANSIENT_REACTANCE,
     STEP_UP_TRANSFORMER_REACTANCE,
     PLANNED_ACTIVE_POWER_SET_POINT,
     MARGINAL_COST,
@@ -384,7 +383,7 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
         },
         {
             labelId: 'withoutunit.directTransX',
-            csvColumns: [TRANSIENT_REACTANCE],
+            csvColumns: [FieldConstants.TRANSIENT_REACTANCE],
             networkFields: ['generatorShortCircuit.directTransX'],
         },
         {

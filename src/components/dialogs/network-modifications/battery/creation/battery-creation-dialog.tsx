@@ -32,6 +32,9 @@ import {
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,
     FieldConstants,
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormSchema,
+    getShortCircuitFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -54,8 +57,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -72,11 +73,6 @@ import { BatteryCreationInfos } from '../../../../../services/network-modificati
 import BatteryCreationForm from './battery-creation-form';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import {
-    getShortCircuitEmptyFormData,
-    getShortCircuitFormData,
-    getShortCircuitFormSchema,
-} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -234,8 +230,8 @@ export default function BatteryCreationDialog({
                 participate: battery[FieldConstants.FREQUENCY_REGULATION] ?? null,
                 droop: battery[FieldConstants.DROOP] ?? null,
                 properties: toModificationProperties(battery) ?? null,
-                directTransX: battery[TRANSIENT_REACTANCE] ?? null,
-                stepUpTransformerX: battery[TRANSFORMER_REACTANCE] ?? null,
+                directTransX: battery[FieldConstants.TRANSIENT_REACTANCE] ?? null,
+                stepUpTransformerX: battery[FieldConstants.TRANSFORMER_REACTANCE] ?? null,
             } satisfies BatteryCreationInfos;
             createBattery({
                 batteryCreationInfos: batteryCreationInfos,

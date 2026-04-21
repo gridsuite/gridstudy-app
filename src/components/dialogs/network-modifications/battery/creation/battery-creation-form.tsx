@@ -13,6 +13,7 @@ import {
     FloatInput,
     PropertiesForm,
     SetPointsForm,
+    ShortCircuitForm,
     TextInput,
 } from '@gridsuite/commons-ui';
 import {
@@ -28,7 +29,6 @@ import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';

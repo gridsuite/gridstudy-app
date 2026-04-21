@@ -99,7 +99,6 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS_MODIFICATION_TYPE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION_ON,
     X,
 } from 'components/utils/field-constants';
@@ -252,7 +251,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: Q_PERCENT, type: NUMBER },
         { id: PARTICIPATE, type: BOOLEAN },
         { id: FieldConstants.DROOP, type: NUMBER },
-        { id: TRANSIENT_REACTANCE, type: NUMBER },
+        { id: FieldConstants.TRANSIENT_REACTANCE, type: NUMBER },
         { id: STEP_UP_TRANSFORMER_REACTANCE, type: NUMBER },
         { id: PLANNED_ACTIVE_POWER_SET_POINT, type: NUMBER },
         { id: MARGINAL_COST, type: NUMBER },
