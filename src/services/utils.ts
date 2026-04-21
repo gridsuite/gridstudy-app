@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { catchErrorHandler, fetchStudyMetadata, StudyMetadata } from '@gridsuite/commons-ui';
-import { getUserToken } from '../redux/user-store';
 export const FetchStatus = {
     SUCCEED: 'SUCCEED',
     FAILED: 'FAILED',
@@ -90,11 +89,11 @@ export const getQueryParamsList = (params: string[] | number[] | null | undefine
     return '';
 };
 
-export function getUrlWithToken(baseUrl: string) {
+export function getUrlWithToken(baseUrl: string, tokenId: string) {
     if (baseUrl.includes('?')) {
-        return baseUrl + '&access_token=' + getUserToken();
+        return baseUrl + '&access_token=' + tokenId;
     } else {
-        return baseUrl + '?access_token=' + getUserToken();
+        return baseUrl + '?access_token=' + tokenId;
     }
 }
 export function fetchMapBoxToken() {
