@@ -253,6 +253,7 @@ export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
 export const AREA = 'area';
 export const TEMPERATURE = 'temperature';
 export const SHAPE_FACTOR = 'shapeFactor';
+export const APPLY_SEGMENTS_LIMITS = 'applySegmentsLimits';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';

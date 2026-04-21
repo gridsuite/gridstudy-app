@@ -10,6 +10,7 @@ import { useFormContext } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    APPLY_SEGMENTS_LIMITS,
     AREA,
     FINAL_CURRENT_LIMITS,
     SEGMENT_CURRENT_LIMITS,
@@ -39,6 +40,7 @@ import {
     type MuiStyles,
     ReadOnlyInput,
     snackWithFallback,
+    SwitchInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
@@ -70,9 +72,15 @@ const styles = {
 
 export interface LineTypeSegmentFormProps {
     editData?: SegmentFormData[];
+    applySegmentsLimits?: boolean;
+    isModification: boolean;
 }
 
-export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData }) => {
+export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({
+    editData,
+    isModification,
+    applySegmentsLimits,
+}) => {
     const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
@@ -246,8 +254,17 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         updateSegmentsLimits().then(() => {
             updateTotals();
             keepMostConstrainingLimits();
+            setValue(APPLY_SEGMENTS_LIMITS, applySegmentsLimits);
         });
-    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits]);
+    }, [
+        editData,
+        getSegmentLimits,
+        snackError,
+        updateTotals,
+        keepMostConstrainingLimits,
+        setValue,
+        applySegmentsLimits,
+    ]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
@@ -487,7 +504,11 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 <GridItem size={2}>{totalSusceptanceField}</GridItem>
                 <GridItem size={1}>{<div />}</GridItem>
             </Grid>
-            <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
+            {isModification ? (
+                <SwitchInput name={APPLY_SEGMENTS_LIMITS} label="lineTypes.currentLimits.limitSets" />
+            ) : (
+                <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
+            )}
             <Grid container sx={{ height: '100%' }} direction="column">
                 <CustomAGGrid
                     rowData={rowData}
