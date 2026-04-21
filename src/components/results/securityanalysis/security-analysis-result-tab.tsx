@@ -9,7 +9,7 @@ import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, use
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AppState } from '../../../redux/reducer.type';
-import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
+import { Box, LinearProgress, MenuItem, Select, SelectChangeEvent, Tab, Tabs } from '@mui/material';
 import {
     downloadSecurityAnalysisResultZippedCsv,
     fetchSecurityAnalysisResult,
@@ -21,12 +21,11 @@ import { ComputingType, EquipmentType, GsLangUser, type MuiStyles, PARAM_DEVELOP
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { RESULT_TYPE, SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
+import { NMK_TYPE, RESULT_TYPE, SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
 import {
     convertFilterValues,
     getStoreFields,
     mappingColumnToField,
-    NMK_TYPE,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { PaginationType, SecurityAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
@@ -102,10 +101,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const resultType = useMemo(() => {
         if (isDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
             return RESULT_TYPE.N;
-        } else if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
-            return RESULT_TYPE.NMK_CONTINGENCIES;
-        } else {
-            return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
+        }
+        switch (nmkType) {
+            case NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES:
+                return RESULT_TYPE.NMK_CONTINGENCIES;
+            case NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS:
+                return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
+            case NMK_TYPE.POWER_CUT_OFF_FROM_CONTINGENCIES:
+                return RESULT_TYPE.NMK_POWER_CUT_OFF;
         }
     }, [tabIndex, nmkType, isDeveloperMode]);
 
@@ -185,14 +188,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setCount(0);
     }, [setResult]);
 
-    const handleChangeNmkType = () => {
+    const handleChangeNmkType = (event: SelectChangeEvent<NMK_TYPE>) => {
         dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
-        setNmkType(
-            nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                ? NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
-                : NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-        );
+        setNmkType(event.target.value as NMK_TYPE);
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
@@ -320,6 +319,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             <MenuItem value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}>
                                 <FormattedMessage id="ContingenciesFromConstraints" />
                             </MenuItem>
+                            {isDeveloperMode && (
+                                <MenuItem value={NMK_TYPE.POWER_CUT_OFF_FROM_CONTINGENCIES}>
+                                    <FormattedMessage id="PowerCutOffFromContingencies" />
+                                </MenuItem>
+                            )}
                         </Select>
                     )}
                     {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
@@ -348,7 +352,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
-                        isFromContingency={nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}
+                        nmkType={nmkType}
                         paginationProps={{
                             count,
                             rowsPerPage: rowsPerPage as number,

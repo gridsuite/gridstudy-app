@@ -18,8 +18,13 @@ export enum RESULT_TYPE {
     N = 'N',
     NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
     NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
+    NMK_POWER_CUT_OFF = 'NMK_POWER_CUT_OFF',
 }
-
+export enum NMK_TYPE {
+    CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
+    CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
+    POWER_CUT_OFF_FROM_CONTINGENCIES = 'power-cut-off-from-contingencies',
+}
 export interface LimitViolation {
     subjectId?: string;
     acceptableDuration?: number;
@@ -97,6 +102,12 @@ export interface ConstraintsFromContingencyItem {
     contingency?: ContingencyItem;
 }
 
+export interface PowerCutOffFromContingencyItem {
+    status?: string;
+    contingencyId?: string;
+    connectivityResult?: ConnectivityResult;
+}
+
 export interface PreContingencyResult {
     subjectId?: string;
     status: string;
@@ -115,7 +126,7 @@ export type SecurityAnalysisQueryParams = {
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
 export type SecurityAnalysisNmkResult = Page<
-    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null
+    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | PowerCutOffFromContingencyItem[] | null
 >;
 
 // Components props interfaces
@@ -136,7 +147,7 @@ export interface SecurityAnalysisResultNmkProps {
     result?: SecurityAnalysisNmkResult;
     columnDefs: ColDef<any>[];
     isLoadingResult: boolean;
-    isFromContingency: boolean;
+    nmkType: NMK_TYPE;
     paginationProps: TablePaginationProps;
     computationSubType: string;
 }

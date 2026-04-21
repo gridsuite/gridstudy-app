@@ -8,7 +8,7 @@
 
     "button.delete": "Delete",
     "button.continue": "Continue",
-    "filter": "Filter", 
+    "filter": "Filter",
 
     "deleteStudy": "Delete Study",
     "studyNameDidNotMatchMsg": "The given study name did not match with ",
@@ -396,6 +396,7 @@
 
     "ConstraintsFromContingencies": "Contingencies -> violations",
     "ContingenciesFromConstraints": "Violations -> contingencies",
+    "PowerCutOffFromContingencies": "Cut-off powers",
 
     "Equipment": "Equipment",
     "selectionType": "Selection type",
@@ -1583,9 +1584,9 @@
     "downloadNetworkModifications": "Download modifications",
     "moveToTrash": "Move to trash",
     "visualizedRootNetwork": "Visualized root network : {tag}",
-    "addDescription" : "Add description",
-    "activateModification" : "Activate network modification",
-    "deactivateModification" : "Deactivate network modification",
+    "addDescription": "Add description",
+    "activateModification": "Activate network modification",
+    "deactivateModification": "Deactivate network modification",
     "deselectModification": "Deselect modification",
     "selectModification": "Select modification",
     "moveModification": "Move modification",
