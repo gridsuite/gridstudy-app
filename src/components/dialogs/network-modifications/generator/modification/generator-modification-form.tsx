@@ -11,7 +11,7 @@ import { GeneratorDialogTab } from './generatorTabs.utils';
 import { GeneratorDialogHeader, GeneratorDialogHeaderProps } from './GeneratorDialogHeader';
 import { GeneratorDialogTabs } from './GeneratorDialogTabs';
 import { GeneratorDialogTabsContent, GeneratorDialogTabsContentProps } from './GeneratorDialogTabsContent';
-import { UUID } from 'node:crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { useEffect, useState } from 'react';
 import { useFormState } from 'react-hook-form';
