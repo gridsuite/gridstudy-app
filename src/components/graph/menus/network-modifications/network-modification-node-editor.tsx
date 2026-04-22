@@ -6,15 +6,19 @@
  */
 
 import {
+    ComposedModificationMetadata,
     ElementSaveDialog,
     ElementType,
     EquipmentType,
+    ExcludedNetworkModifications,
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
     ModificationType,
+    NameHeaderProps,
     NetworkModificationMetadata,
+    NetworkModificationsTable,
     NotificationsUrlKeys,
     removeNullFields,
     snackWithFallback,
@@ -63,7 +67,7 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/creation/vsc-creation-dialog';
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications/network-modifications-menu';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
@@ -83,7 +87,6 @@ import {
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
-    ExcludedNetworkModifications,
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
     MenuSection,
@@ -97,7 +100,6 @@ import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
-import NetworkModificationsTable from './network-modification-table/network-modifications-table';
 import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
@@ -123,11 +125,14 @@ import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modificati
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
 import { FetchStatus } from '../../../../services/utils.type';
+import { createBaseColumns, createRootNetworksColumns } from './network-modification-table/createColumns';
+import { ColumnDef } from '@tanstack/react-table';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
     'GROOVY_SCRIPT',
     'OPERATING_STATUS_MODIFICATION',
+    'COMPOSITE_MODIFICATION',
 ]);
 
 const isEditableModification = (modif: NetworkModificationMetadata) => {
@@ -154,6 +159,7 @@ const NetworkModificationNodeEditor = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -173,6 +179,7 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
+    const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
     const { networkModificationsToCopy, copyInfos, copyNetworkModifications, cutNetworkModifications, cleanClipboard } =
         useCopiedNetworkModifications();
@@ -959,17 +966,14 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
-    const selectedModificationsIds = useCallback(() => {
-        const allModificationsIds = modifications.map((m) => m.uuid);
-        // sort the selected modifications in the same order as they appear in the whole modifications list
-        return selectedNetworkModifications
-            .sort((a, b) => allModificationsIds.indexOf(a.uuid) - allModificationsIds.indexOf(b.uuid))
-            .map((m) => m.uuid);
-    }, [modifications, selectedNetworkModifications]);
+    const selectedModificationsIds = useMemo(
+        () => selectedNetworkModifications.map((m) => m.uuid),
+        [selectedNetworkModifications]
+    );
 
     const doCutModifications = useCallback(() => {
         cutNetworkModifications({
-            networkModificationUuids: selectedModificationsIds(),
+            networkModificationUuids: selectedModificationsIds,
             copyInfos: {
                 copyType: NetworkModificationCopyType.MOVE,
                 originStudyUuid: studyUuid ?? undefined,
@@ -980,7 +984,7 @@ const NetworkModificationNodeEditor = () => {
 
     const doCopyModifications = useCallback(() => {
         copyNetworkModifications({
-            networkModificationUuids: selectedModificationsIds(),
+            networkModificationUuids: selectedModificationsIds,
             copyInfos: {
                 copyType: NetworkModificationCopyType.COPY,
                 originStudyUuid: studyUuid ?? undefined,
@@ -1070,6 +1074,27 @@ const NetworkModificationNodeEditor = () => {
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
 
+    const createAllColumns = useCallback(
+        (
+            isRowDragDisabled: boolean,
+            modificationsCount: number,
+            nameHeaderProps: NameHeaderProps,
+            setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
+        ): ColumnDef<ComposedModificationMetadata>[] => [
+            ...createBaseColumns(isRowDragDisabled, modificationsCount, nameHeaderProps, setModifications),
+            ...(isMonoRootStudy
+                ? []
+                : createRootNetworksColumns(
+                      rootNetworks,
+                      currentRootNetworkUuid!,
+                      modificationsCount,
+                      modificationsToExclude,
+                      setModificationsToExclude
+                  )),
+        ],
+        [isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude]
+    );
+
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
             return (
@@ -1085,7 +1110,6 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationsTable
                 handleCellClick={debounce(handleCellClick, 300)}
                 modifications={modifications}
-                setModifications={setModifications}
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
@@ -1094,8 +1118,10 @@ const NetworkModificationNodeEditor = () => {
                 notificationMessageId={notificationMessageId}
                 isFetchingModifications={isFetchingModifications}
                 pendingState={pendingState}
-                modificationsToExclude={modificationsToExclude}
-                setModificationsToExclude={setModificationsToExclude}
+                createAllColumns={createAllColumns}
+                highlightedModificationUuid={highlightedModificationUuid}
+                studyUuid={studyUuid}
+                currentNodeId={currentNode?.id}
             />
         );
     };

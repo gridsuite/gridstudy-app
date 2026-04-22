@@ -5,20 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
+import { backendFetch } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 
 const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/dynamic-simulation';
 
 function getDynamicSimulationUrl() {
     return `${PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES}/v1/`;
-}
-
-export function fetchDynamicSimulationProviders() {
-    console.info('fetch dynamic simulation providers');
-    const url = getDynamicSimulationUrl() + 'providers';
-    console.debug(url);
-    return backendFetchJson(url);
 }
 
 export function downloadDebugFileDynamicSimulation(resultUuid: UUID): Promise<Response> {
