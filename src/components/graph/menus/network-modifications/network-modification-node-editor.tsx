@@ -11,6 +11,7 @@ import {
     ElementType,
     EquipmentType,
     ExcludedNetworkModifications,
+    ExtendedEquipmentType,
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
@@ -240,7 +241,7 @@ const NetworkModificationNodeEditor = () => {
         );
     }
 
-    function equipmentDeletionDialogWithDefaultParams(equipmentType: EquipmentType) {
+    function equipmentDeletionDialogWithDefaultParams(equipmentType: EquipmentType | ExtendedEquipmentType) {
         if (currentNode && studyUuid && currentRootNetworkUuid) {
             return (
                 <EquipmentDeletionDialog
@@ -260,7 +261,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }
 
-    const equipmentDeletionSubItems = (equipmentType: EquipmentType) => {
+    const equipmentDeletionSubItems = (equipmentType: EquipmentType | ExtendedEquipmentType) => {
         return {
             // We have a single deletion modification type, but we have a deletion menu item ID per equipment type
             // (because we want to preset the equipment type in creation case)
@@ -428,7 +429,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(VscModificationDialog),
                         },
-                        equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
+                        equipmentDeletionSubItems(ExtendedEquipmentType.HVDC_LINE_VSC),
                     ],
                 },
                 {
@@ -445,7 +446,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LccModificationDialog),
                         },
-                        equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
+                        equipmentDeletionSubItems(ExtendedEquipmentType.HVDC_LINE_LCC),
                     ],
                 },
             ],
