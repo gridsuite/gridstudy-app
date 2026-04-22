@@ -81,7 +81,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     isModification,
     applySegmentsLimits,
 }) => {
-    const { setValue, getValues, clearErrors } = useFormContext();
+    const { setValue, getValues, clearErrors, watch } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
     const { snackError } = useSnackMessage();
@@ -102,6 +102,8 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 })
             );
     }, [snackError]);
+
+    const watchedApplySegmentsLimits = watch(`${APPLY_SEGMENTS_LIMITS}`);
 
     const updateSegmentValues = useCallback(
         (index: number) => {
@@ -504,11 +506,15 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 <GridItem size={2}>{totalSusceptanceField}</GridItem>
                 <GridItem size={1}>{<div />}</GridItem>
             </Grid>
-            {isModification ? (
-                <SwitchInput name={APPLY_SEGMENTS_LIMITS} label="lineTypes.currentLimits.limitSets" />
-            ) : (
+            <Grid container>
                 <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
-            )}
+                {isModification && (
+                    <SwitchInput
+                        name={APPLY_SEGMENTS_LIMITS}
+                        label={watchedApplySegmentsLimits ? 'apply' : 'dontApply'}
+                    />
+                )}
+            </Grid>
             <Grid container sx={{ height: '100%' }} direction="column">
                 <CustomAGGrid
                     rowData={rowData}
@@ -517,7 +523,6 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                     domLayout="autoHeight"
                 />
             </Grid>
-
             {openCatalogDialogIndex !== null && (
                 <LineTypesCatalogSelectorDialog
                     onClose={onCatalogDialogClose}
