@@ -38,8 +38,6 @@ import {
     CONNECTION_POSITION,
     MIN_P,
     MAX_P,
-    MIN_Q,
-    MAX_Q,
     REACTIVE_CAPABILITY_CURVE,
     TARGET_P,
     TARGET_Q,
@@ -48,13 +46,8 @@ import {
     REGULATING_TERMINAL_ID,
     REGULATING_TERMINAL_TYPE,
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
-    Q_PERCENT,
     PARTICIPATE,
     STEP_UP_TRANSFORMER_REACTANCE,
-    PLANNED_ACTIVE_POWER_SET_POINT,
-    MARGINAL_COST,
-    PLANNED_OUTAGE_RATE,
-    FORCED_OUTAGE_RATE,
     LOAD_TYPE,
     P0,
     Q0,
@@ -296,7 +289,7 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
         },
         {
             labelId: 'PrefilledColumn.ReactivePowerLimits',
-            csvColumns: [MIN_Q, MAX_Q],
+            csvColumns: [FieldConstants.MIN_Q, FieldConstants.MAX_Q],
             networkFields: ['minMaxReactiveLimits.minQ', 'minMaxReactiveLimits.maxQ'],
         },
         {
@@ -367,8 +360,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['regulatingTerminalVlId'],
         },
         {
-            labelId: Q_PERCENT,
-            csvColumns: [Q_PERCENT],
+            labelId: FieldConstants.Q_PERCENT,
+            csvColumns: [FieldConstants.Q_PERCENT],
             networkFields: ['coordinatedReactiveControl.qPercent'],
         },
         {
@@ -393,22 +386,22 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
         },
         {
             labelId: 'withoutunit.plannedActivePowerSetPoint',
-            csvColumns: [PLANNED_ACTIVE_POWER_SET_POINT],
+            csvColumns: [FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT],
             networkFields: ['generatorStartup.plannedActivePowerSetPoint'],
         },
         {
-            labelId: MARGINAL_COST,
-            csvColumns: [MARGINAL_COST],
+            labelId: FieldConstants.MARGINAL_COST,
+            csvColumns: [FieldConstants.MARGINAL_COST],
             networkFields: ['generatorStartup.marginalCost'],
         },
         {
-            labelId: PLANNED_OUTAGE_RATE,
-            csvColumns: [PLANNED_OUTAGE_RATE],
+            labelId: FieldConstants.PLANNED_OUTAGE_RATE,
+            csvColumns: [FieldConstants.PLANNED_OUTAGE_RATE],
             networkFields: ['generatorStartup.plannedOutageRate'],
         },
         {
-            labelId: FORCED_OUTAGE_RATE,
-            csvColumns: [FORCED_OUTAGE_RATE],
+            labelId: FieldConstants.FORCED_OUTAGE_RATE,
+            csvColumns: [FieldConstants.FORCED_OUTAGE_RATE],
             networkFields: ['generatorStartup.forcedOutageRate'],
         },
     ],
@@ -477,7 +470,7 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
         },
         {
             labelId: 'PrefilledColumn.ReactivePowerLimits',
-            csvColumns: [MIN_Q, MAX_Q],
+            csvColumns: [FieldConstants.MIN_Q, FieldConstants.MAX_Q],
             networkFields: ['minMaxReactiveLimits.minQ', 'minMaxReactiveLimits.maxQ'],
         },
         {

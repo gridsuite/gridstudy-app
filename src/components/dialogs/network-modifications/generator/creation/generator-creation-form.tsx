@@ -9,33 +9,22 @@ import {
     ActivePowerAdornment,
     ActivePowerControlForm,
     ConnectivityForm,
+    FieldConstants,
     filledTextField,
     FloatInput,
     italicFontTextField,
     MVAPowerAdornment,
     PropertiesForm,
+    ReactiveLimitsForm,
     SelectInput,
     SetPointsForm,
     ShortCircuitForm,
     SwitchInput,
     TextInput,
 } from '@gridsuite/commons-ui';
-import {
-    ENERGY_SOURCE,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    FORCED_OUTAGE_RATE,
-    MARGINAL_COST,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    PLANNED_ACTIVE_POWER_SET_POINT,
-    PLANNED_OUTAGE_RATE,
-    RATED_NOMINAL_POWER,
-    VOLTAGE_REGULATION,
-} from 'components/utils/field-constants';
+import { ENERGY_SOURCE, EQUIPMENT_ID, EQUIPMENT_NAME, VOLTAGE_REGULATION } from 'components/utils/field-constants';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import { Box, Grid } from '@mui/material';
-import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
@@ -104,30 +93,42 @@ export default function GeneratorCreationForm({
     );
 
     const maximumActivePowerField = (
-        <FloatInput name={MAXIMUM_ACTIVE_POWER} label={'MaximumActivePowerText'} adornment={ActivePowerAdornment} />
+        <FloatInput
+            name={FieldConstants.MAXIMUM_ACTIVE_POWER}
+            label={'MaximumActivePowerText'}
+            adornment={ActivePowerAdornment}
+        />
     );
 
     const minimumActivePowerField = (
-        <FloatInput name={MINIMUM_ACTIVE_POWER} label={'MinimumActivePowerText'} adornment={ActivePowerAdornment} />
+        <FloatInput
+            name={FieldConstants.MINIMUM_ACTIVE_POWER}
+            label={'MinimumActivePowerText'}
+            adornment={ActivePowerAdornment}
+        />
     );
 
     const ratedNominalPowerField = (
-        <FloatInput name={RATED_NOMINAL_POWER} label={'RatedNominalPowerText'} adornment={MVAPowerAdornment} />
+        <FloatInput
+            name={FieldConstants.RATED_NOMINAL_POWER}
+            label={'RatedNominalPowerText'}
+            adornment={MVAPowerAdornment}
+        />
     );
 
     const plannedActivePowerSetPointField = (
         <FloatInput
-            name={PLANNED_ACTIVE_POWER_SET_POINT}
+            name={FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
         />
     );
 
-    const marginalCostField = <FloatInput name={MARGINAL_COST} label={'MarginalCost'} />;
+    const marginalCostField = <FloatInput name={FieldConstants.MARGINAL_COST} label={'MarginalCost'} />;
 
-    const plannedOutageRateField = <FloatInput name={PLANNED_OUTAGE_RATE} label={'plannedOutageRate'} />;
+    const plannedOutageRateField = <FloatInput name={FieldConstants.PLANNED_OUTAGE_RATE} label={'plannedOutageRate'} />;
 
-    const forcedOutageRateField = <FloatInput name={FORCED_OUTAGE_RATE} label={'forcedOutageRate'} />;
+    const forcedOutageRateField = <FloatInput name={FieldConstants.FORCED_OUTAGE_RATE} label={'forcedOutageRate'} />;
 
     const voltageRegulationField = (
         <Box>

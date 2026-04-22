@@ -17,11 +17,10 @@ import {
     SETPOINTS_LIMITS,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import {
     EquipmentType,
+    FieldConstants,
     FloatInput,
     ReactivePowerAdornment,
     SelectInput,
@@ -53,7 +52,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
     const watchCharacteristicsChoice = useWatch({ name: `${id}.${CHARACTERISTICS_CHOICE}` });
     // a tricky solution to rerender voltage/reactive setpoints field with label changed between required <-> optional
     useWatch({ name: `${id}.${VOLTAGE_REGULATION_MODE}` });
-    const watchRegulationType = useWatch({ name: `${id}.${VOLTAGE_REGULATION_TYPE}` });
+    const watchRegulationType = useWatch({ name: `${id}.${FieldConstants.VOLTAGE_REGULATION_TYPE}` });
     const minSusceptanceField = (
         <FloatInput name={`${id}.${MIN_SUSCEPTANCE}`} label={'minSusceptance'} adornment={SusceptanceAdornment} />
     );
@@ -69,7 +68,11 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
     );
 
     const voltageSetPointField = (
-        <FloatInput name={`${id}.${VOLTAGE_SET_POINT}`} label={'VoltageText'} adornment={VoltageAdornment} />
+        <FloatInput
+            name={`${id}.${FieldConstants.VOLTAGE_SET_POINT}`}
+            label={'VoltageText'}
+            adornment={VoltageAdornment}
+        />
     );
 
     const reactivePowerSetPointField = (
@@ -83,7 +86,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
     const voltageRegulationTypeField = (
         <SelectInput
             options={Object.values(REGULATION_TYPES)}
-            name={`${id}.${VOLTAGE_REGULATION_TYPE}`}
+            name={`${id}.${FieldConstants.VOLTAGE_REGULATION_TYPE}`}
             label={'RegulationTypeText'}
             size={'small'}
         />

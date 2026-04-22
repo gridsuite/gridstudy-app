@@ -7,10 +7,10 @@
 
 import { Box, FilterOptionsState, Grid, GridDirection, Popper, PopperProps } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { EQUIPMENT, ID, VOLTAGE_LEVEL } from 'components/utils/field-constants';
+import { ID, VOLTAGE_LEVEL } from 'components/utils/field-constants';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, Identifiable, Option } from '@gridsuite/commons-ui';
+import { AutocompleteInput, FieldConstants, Identifiable, Option } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
 import type { UUID } from 'node:crypto';
 
@@ -93,7 +93,7 @@ export function RegulatingTerminalForm({
     }, [watchVoltageLevelId, voltageLevelOptions, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const resetEquipment = useCallback(() => {
-        setValue(`${id}.${EQUIPMENT}`, null);
+        setValue(`${id}.${FieldConstants.EQUIPMENT}`, null);
     }, [id, setValue]);
 
     return (
@@ -149,7 +149,7 @@ export function RegulatingTerminalForm({
             >
                 {
                     <AutocompleteInput
-                        name={`${id}.${EQUIPMENT}`}
+                        name={`${id}.${FieldConstants.EQUIPMENT}`}
                         //setting null programmatically when allowNewValue is enabling (i.e. freeSolo enabled) wont empty the field => need to convert null to empty and vice versa
                         inputTransform={(value) => value ?? ''}
                         outputTransform={(value) => {

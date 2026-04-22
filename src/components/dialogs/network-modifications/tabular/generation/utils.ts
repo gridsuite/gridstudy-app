@@ -8,10 +8,10 @@ import {
     EquipmentType,
     Identifiable,
     type MuiStyles,
+    ReactiveCapabilityCurvePoints,
     type UseStateBooleanReturn,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
-import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {
     MAX_Q_AT_NOMINAL_V,

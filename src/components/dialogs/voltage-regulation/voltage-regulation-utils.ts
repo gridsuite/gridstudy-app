@@ -6,28 +6,25 @@
  */
 
 import {
-    EQUIPMENT,
     ID,
     NAME,
     NOMINAL_VOLTAGE,
-    Q_PERCENT,
     SUBSTATION_ID,
     TOPOLOGY_KIND,
     TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../regulating-terminal/regulating-terminal-form-utils';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 export const getVoltageRegulationEmptyFormData = (isEquipmentModification = false) => ({
     [VOLTAGE_REGULATION]: isEquipmentModification ? null : false,
-    [VOLTAGE_SET_POINT]: null,
-    [Q_PERCENT]: null,
-    [VOLTAGE_REGULATION_TYPE]: isEquipmentModification ? null : REGULATION_TYPES.LOCAL.id,
+    [FieldConstants.VOLTAGE_SET_POINT]: null,
+    [FieldConstants.Q_PERCENT]: null,
+    [FieldConstants.VOLTAGE_REGULATION_TYPE]: isEquipmentModification ? null : REGULATION_TYPES.LOCAL.id,
     ...getRegulatingTerminalEmptyFormData(),
 });
 
@@ -39,9 +36,9 @@ export const getVoltageRegulationSchema = (isEquipmentModification = false) => (
             is: () => !isEquipmentModification,
             then: (schema) => schema.required(),
         }),
-    [VOLTAGE_REGULATION_TYPE]: yup.string().nullable(),
+    [FieldConstants.VOLTAGE_REGULATION_TYPE]: yup.string().nullable(),
 
-    [VOLTAGE_SET_POINT]: yup
+    [FieldConstants.VOLTAGE_SET_POINT]: yup
         .number()
         .nullable()
         .min(0, 'mustBeGreaterOrEqualToZero')
@@ -49,7 +46,7 @@ export const getVoltageRegulationSchema = (isEquipmentModification = false) => (
             is: (value: string) => !isEquipmentModification && value,
             then: (schema) => schema.required(),
         }),
-    [Q_PERCENT]: yup.number().nullable().max(100, 'NormalizedPercentage').min(0, 'NormalizedPercentage'),
+    [FieldConstants.Q_PERCENT]: yup.number().nullable().max(100, 'NormalizedPercentage').min(0, 'NormalizedPercentage'),
     [VOLTAGE_LEVEL]: yup
         .object()
         .nullable()
@@ -60,12 +57,12 @@ export const getVoltageRegulationSchema = (isEquipmentModification = false) => (
             [NOMINAL_VOLTAGE]: yup.string(),
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
-        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
+        .when([VOLTAGE_REGULATION, FieldConstants.VOLTAGE_REGULATION_TYPE], {
             is: (voltageRegulation: number, voltageRegulationType: string) =>
                 !isEquipmentModification && voltageRegulation && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
-    [EQUIPMENT]: yup
+    [FieldConstants.EQUIPMENT]: yup
         .object()
         .nullable()
         .shape({
@@ -73,7 +70,7 @@ export const getVoltageRegulationSchema = (isEquipmentModification = false) => (
             [NAME]: yup.string().nullable(),
             [TYPE]: yup.string(),
         })
-        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
+        .when([VOLTAGE_REGULATION, FieldConstants.VOLTAGE_REGULATION_TYPE], {
             is: (voltageRegulation: number, voltageRegulationType: string) =>
                 !isEquipmentModification && voltageRegulation && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),

@@ -4,10 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    MinMaxReactiveLimitsFormInfos,
-    ReactiveCapabilityCurvePoints,
-} from '../../../../reactive-limits/reactive-limits.type';
+
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
@@ -19,17 +16,17 @@ import {
     CONVERTER_STATION_NAME,
     ID,
     LOSS_FACTOR,
-    MAXIMUM_REACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_LIMITS,
     REACTIVE_POWER,
     VOLTAGE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
-import { ConnectablePositionInfos } from '@gridsuite/commons-ui';
+import {
+    ConnectablePositionInfos,
+    FieldConstants,
+    MinMaxReactiveLimitsFormInfos,
+    ReactiveCapabilityCurvePoints,
+} from '@gridsuite/commons-ui';
 
 export interface VscConverterStationFormInfos {
     id: string;
@@ -75,10 +72,10 @@ export type VscConverterStation = {
         [CONNECTION_POSITION]?: number;
         [CONNECTED]?: boolean;
     };
-    [REACTIVE_LIMITS]?: {
-        [MINIMUM_REACTIVE_POWER]?: number;
-        [MAXIMUM_REACTIVE_POWER]?: number;
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: string;
-        [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
+    [FieldConstants.REACTIVE_LIMITS]?: {
+        [FieldConstants.MINIMUM_REACTIVE_POWER]?: number;
+        [FieldConstants.MAXIMUM_REACTIVE_POWER]?: number;
+        [FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE]: string;
+        [FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
     };
 };

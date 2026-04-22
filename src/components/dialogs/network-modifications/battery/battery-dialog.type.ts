@@ -16,32 +16,23 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     ID,
-    MAXIMUM_ACTIVE_POWER,
-    MAXIMUM_REACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
 import {
-    MinMaxReactiveLimitsFormInfos,
-    ReactiveCapabilityCurvePoints,
-} from '../../reactive-limits/reactive-limits.type';
-import {
     ActivePowerControlInfos,
     ConnectablePositionFormInfos,
     FieldConstants,
+    MinMaxReactiveLimitsFormInfos,
     Property,
+    ReactiveCapabilityCurvePoints,
     ShortCircuitInfos,
 } from '@gridsuite/commons-ui';
 
 export type BatteryDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
-    [MAXIMUM_ACTIVE_POWER]: number | null;
-    [MINIMUM_ACTIVE_POWER]: number | null;
+    [FieldConstants.MAXIMUM_ACTIVE_POWER]: number | null;
+    [FieldConstants.MINIMUM_ACTIVE_POWER]: number | null;
     [REACTIVE_POWER_SET_POINT]?: number | null;
     [ACTIVE_POWER_SET_POINT]?: number | null;
     [CONNECTIVITY]: {
@@ -54,11 +45,11 @@ export type BatteryDialogSchemaBaseForm = {
     };
     [FieldConstants.FREQUENCY_REGULATION]?: boolean | null;
     [FieldConstants.DROOP]?: number | null;
-    [REACTIVE_LIMITS]: {
-        [MINIMUM_REACTIVE_POWER]?: number | null;
-        [MAXIMUM_REACTIVE_POWER]?: number | null;
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
-        [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
+    [FieldConstants.REACTIVE_LIMITS]: {
+        [FieldConstants.MINIMUM_REACTIVE_POWER]?: number | null;
+        [FieldConstants.MAXIMUM_REACTIVE_POWER]?: number | null;
+        [FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
+        [FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
     };
     // Properties
     [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];

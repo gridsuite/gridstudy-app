@@ -10,29 +10,20 @@ import {
     ActivePowerControlForm,
     CheckboxNullableInput,
     ConnectivityForm,
+    FieldConstants,
     filledTextField,
     FloatInput,
+    GeneratorFormInfos,
     MVAPowerAdornment,
     PropertiesForm,
+    ReactiveLimitsForm,
     SelectInput,
     SetPointsForm,
     ShortCircuitForm,
     TextInput,
 } from '@gridsuite/commons-ui';
-import {
-    ENERGY_SOURCE,
-    EQUIPMENT_NAME,
-    FORCED_OUTAGE_RATE,
-    MARGINAL_COST,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    PLANNED_ACTIVE_POWER_SET_POINT,
-    PLANNED_OUTAGE_RATE,
-    RATED_NOMINAL_POWER,
-    VOLTAGE_REGULATION,
-} from 'components/utils/field-constants';
+import { ENERGY_SOURCE, EQUIPMENT_NAME, VOLTAGE_REGULATION } from 'components/utils/field-constants';
 import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constants';
-import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, TextField } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
@@ -41,7 +32,6 @@ import GridSection from '../../../commons/grid-section';
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import { useWatch } from 'react-hook-form';
 import type { UUID } from 'node:crypto';
-import { GeneratorFormInfos } from '../generator-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
@@ -165,7 +155,7 @@ export default function GeneratorModificationForm({
 
     const maximumActivePowerField = (
         <FloatInput
-            name={MAXIMUM_ACTIVE_POWER}
+            name={FieldConstants.MAXIMUM_ACTIVE_POWER}
             label={'MaximumActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.maxP}
@@ -175,7 +165,7 @@ export default function GeneratorModificationForm({
 
     const minimumActivePowerField = (
         <FloatInput
-            name={MINIMUM_ACTIVE_POWER}
+            name={FieldConstants.MINIMUM_ACTIVE_POWER}
             label={'MinimumActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.minP}
@@ -185,7 +175,7 @@ export default function GeneratorModificationForm({
 
     const ratedNominalPowerField = (
         <FloatInput
-            name={RATED_NOMINAL_POWER}
+            name={FieldConstants.RATED_NOMINAL_POWER}
             label={'RatedNominalPowerText'}
             adornment={MVAPowerAdornment}
             previousValue={generatorToModify?.ratedS}
@@ -195,7 +185,7 @@ export default function GeneratorModificationForm({
 
     const plannedActivePowerSetPointField = (
         <FloatInput
-            name={PLANNED_ACTIVE_POWER_SET_POINT}
+            name={FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.generatorStartup?.plannedActivePowerSetPoint ?? undefined}
@@ -205,7 +195,7 @@ export default function GeneratorModificationForm({
 
     const marginalCostField = (
         <FloatInput
-            name={MARGINAL_COST}
+            name={FieldConstants.MARGINAL_COST}
             label={'MarginalCost'}
             previousValue={generatorToModify?.generatorStartup?.marginalCost ?? undefined}
             clearable={true}
@@ -214,7 +204,7 @@ export default function GeneratorModificationForm({
 
     const plannedOutageRateField = (
         <FloatInput
-            name={PLANNED_OUTAGE_RATE}
+            name={FieldConstants.PLANNED_OUTAGE_RATE}
             label={'plannedOutageRate'}
             previousValue={generatorToModify?.generatorStartup?.plannedOutageRate ?? undefined}
             clearable={true}
@@ -223,7 +213,7 @@ export default function GeneratorModificationForm({
 
     const forcedOutageRateField = (
         <FloatInput
-            name={FORCED_OUTAGE_RATE}
+            name={FieldConstants.FORCED_OUTAGE_RATE}
             label={'forcedOutageRate'}
             previousValue={generatorToModify?.generatorStartup?.forcedOutageRate ?? undefined}
             clearable={true}
