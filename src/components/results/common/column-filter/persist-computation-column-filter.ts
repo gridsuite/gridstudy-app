@@ -8,15 +8,14 @@ import { UUID } from 'node:crypto';
 import { FilterConfig, TableType } from '../../../../types/custom-aggrid-types';
 import { updateComputationResultFiltersColumn } from '../../../../services/study/study-config';
 
-export const persistComputationColumnFilters = (
+export const persistComputationColumnFilter = (
     studyUuid: UUID,
     computationType: TableType,
     computationSubType: string,
     colId: string,
-    filters: FilterConfig[],
+    filter: FilterConfig | undefined,
     onError: (error: unknown) => void
 ) => {
-    const filter = filters.find((f) => f.column === colId);
     const columnFilterInfos = {
         columnId: colId,
         columnFilterInfos: filter

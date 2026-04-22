@@ -29,8 +29,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
 import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
-import { COLUMN_TYPES, FilterConfig, TableType } from 'types/custom-aggrid-types';
-import { getColumnFiltersFromState } from 'redux/selectors/filter-selectors';
+import { COLUMN_TYPES } from 'types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import {
@@ -50,7 +49,6 @@ import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floatin
 import { isFormulaContentSizeOk } from './utils/formula-validator';
 import { MAX_FORMULA_CHARACTERS } from '../constants';
 import InfoIcon from '@mui/icons-material/Info';
-import { persistSpreadsheetColumnFilters } from './utils/persist-spreadsheet-column-filters';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -226,18 +224,6 @@ export default function ColumnCreationDialog({
         />
     );
 
-    const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
-        getColumnFiltersFromState(state, TableType.Spreadsheet, spreadsheetConfigUuid)
-    );
-
-    const persistFilters = useCallback(
-        (studyUuid: UUID, newFilters: FilterConfig[]) => {
-            const onError = (error: unknown) => snackWithFallback(snackError, error);
-            persistSpreadsheetColumnFilters(studyUuid, spreadsheetConfigUuid, columnDefinition, newFilters, onError);
-        },
-        [spreadsheetConfigUuid, columnDefinition, snackError]
-    );
-
     const validateParams = (
         columnsDefinitions: ColumnDefinition[],
         newParams: ColumnCreationForm,
@@ -294,22 +280,15 @@ export default function ColumnCreationDialog({
             }
 
             const existingColumn = columnsDefinitions?.find((column) => column.uuid === colUuid);
-            let isUpdate = false;
 
-            // If we update the column, we remove its filters
-            if (existingColumn) {
-                isUpdate = true;
-                const updatedFilters = filters?.filter((filter) => filter.column !== existingColumn.id) ?? [];
-                persistFilters(studyUuid, updatedFilters);
-            }
-
+            // We don't include the column filter, so it will be removed when we update the column.
             const formattedParams = {
                 ...newParams,
                 dependencies: newParams.dependencies?.length ? JSON.stringify(newParams.dependencies) : undefined,
             };
 
             const updateOrCreateColumn =
-                isUpdate && columnDefinition
+                existingColumn && columnDefinition
                     ? updateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
                     : createSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, formattedParams);
 
@@ -351,8 +330,6 @@ export default function ColumnCreationDialog({
             spreadsheetConfigUuid,
             reset,
             open,
-            filters,
-            persistFilters,
             dispatch,
             tableDefinition,
             snackError,

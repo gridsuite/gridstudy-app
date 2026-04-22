@@ -19,11 +19,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
-import { persistSpreadsheetColumnFilters } from '../../../spreadsheet-view/columns/utils/persist-spreadsheet-column-filters';
+import { persistSpreadsheetColumnFilter } from '../../../spreadsheet-view/columns/utils/persist-spreadsheet-column-filter';
 import type { UUID } from 'node:crypto';
 import { updateColumnFiltersAction } from '../../../../redux/actions';
 
-import { persistComputationColumnFilters } from '../../../results/common/column-filter/persist-computation-column-filters';
+import { persistComputationColumnFilter } from '../../../results/common/column-filter/persist-computation-column-filter';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -99,6 +99,7 @@ export const useCustomAggridColumnFilter = (
                 updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
             }
 
+            const colFilter = updatedFilters.find((f) => f.column === colId);
             const onError = (error: unknown) => snackWithFallback(snackError, error);
 
             // Data flow for logs table is: update redux state -> useEffect -> update hook state
@@ -107,9 +108,9 @@ export const useCustomAggridColumnFilter = (
             }
             // Data flow for spreadsheet / computation tables is: update backend database -> notification -> update redux state -> useEffect -> update hook state
             else if (type === TableType.Spreadsheet) {
-                persistSpreadsheetColumnFilters(studyUuid, tab as UUID, colDef, updatedFilters, onError);
+                persistSpreadsheetColumnFilter(studyUuid, tab as UUID, colDef, colFilter, onError);
             } else {
-                persistComputationColumnFilters(studyUuid, type, tab, colId, updatedFilters, onError);
+                persistComputationColumnFilter(studyUuid, type, tab, colId, colFilter, onError);
             }
         },
         [studyUuid, colId, type, filters, snackError, tab, dispatch, colDef]
