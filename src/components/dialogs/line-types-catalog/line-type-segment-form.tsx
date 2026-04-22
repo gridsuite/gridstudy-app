@@ -511,7 +511,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 {isModification && (
                     <SwitchInput
                         name={APPLY_SEGMENTS_LIMITS}
-                        label={watchedApplySegmentsLimits ? 'apply' : 'dontApply'}
+                        label={watchedApplySegmentsLimits ? 'applied' : 'notApplied'}
                     />
                 )}
             </Grid>
