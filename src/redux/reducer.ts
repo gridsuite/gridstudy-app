@@ -477,7 +477,7 @@ const initialState: AppState = {
     isNetworkModificationTreeModelUpToDate: false,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
-    userToken: null,
+    tokenId: undefined,
     signInCallbackError: null,
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
@@ -1020,26 +1020,11 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(USER, (state, action: UserAction) => {
-        const newUser = action.user;
-        // Token: always refreshed (new ref on every silent renew)
-        state.userToken = newUser
-            ? {
-                  access_token: newUser.access_token,
-                  id_token: newUser.id_token,
-                  expires_at: newUser.expires_at,
-              }
-            : null;
-        // Identity: only update reference when sub actually changes.
-        // On silent renew, the profile is identical -> keep the same reference
-        // to avoid re-rendering every component that selects state.user.
-        const currentUser = state.user;
-        if (currentUser === null || newUser === null) {
-            state.user = newUser;
+        state.tokenId = action.user?.id_token ?? undefined;
+        if (state.user?.profile?.sub === action.user?.profile?.sub && state.user !== null) {
             return;
         }
-        if (currentUser.profile?.sub !== newUser.profile?.sub) {
-            state.user = newUser;
-        }
+        state.user = action.user;
     });
 
     builder.addCase(ENABLE_DEVELOPER_MODE, (state, action: EnableDeveloperModeAction) => {

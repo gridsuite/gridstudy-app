@@ -19,7 +19,7 @@ import { APP_NAME } from 'utils/config-params';
 const useNotificationsUrlGenerator = (): Partial<Record<NotificationsUrlKeys, string | undefined>> => {
     // The websocket API doesn't allow relative urls
     const wsBase = getWsBase();
-    const tokenId = useSelector((state: AppState) => state.userToken?.id_token ?? undefined);
+    const tokenId = useSelector((state: AppState) => state.user?.id_token ?? undefined);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     // return a mapColumns with NOTIFICATIONS_URL_KEYS and undefined value if URL is not yet buildable (tokenId)
