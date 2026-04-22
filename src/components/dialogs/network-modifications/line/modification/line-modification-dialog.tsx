@@ -233,6 +233,7 @@ const LineModificationDialog = ({
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
                 [LINE_SEGMENTS]: lineModification.lineSegments,
+                [APPLY_SEGMENTS_LIMITS]: lineModification.applySegmentsLimits,
             });
         },
         [reset]
@@ -251,7 +252,6 @@ const LineModificationDialog = ({
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
             const limits: OperationalLimitsGroupsFormSchema = line[LIMITS];
-            const segments = line[LINE_SEGMENTS];
             modifyLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -301,7 +301,8 @@ const LineModificationDialog = ({
                 p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
                 q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][FieldConstants.VALUE],
                 q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
-                lineSegments: segments,
+                lineSegments: line[LINE_SEGMENTS],
+                applySegmentsLimits: line[APPLY_SEGMENTS_LIMITS] ?? true,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LineModificationError' });
             });
