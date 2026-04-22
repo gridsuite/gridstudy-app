@@ -96,7 +96,7 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [FieldConstants.EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [ENERGY_SOURCE]: yup.string().nullable().required(),
         [FieldConstants.MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
@@ -153,7 +153,7 @@ export default function GeneratorCreationDialog({
     const fromSearchCopyToFormValues = (generator: GeneratorFormInfos) => {
         reset(
             {
-                [FieldConstants.EQUIPMENT_ID]: generator.id + '(1)',
+                [EQUIPMENT_ID]: generator.id + '(1)',
                 [EQUIPMENT_NAME]: generator.name ?? '',
                 [ENERGY_SOURCE]: generator.energySource,
                 [FieldConstants.MAXIMUM_ACTIVE_POWER]: generator.maxP,
@@ -209,7 +209,7 @@ export default function GeneratorCreationDialog({
     useEffect(() => {
         if (editData) {
             reset({
-                [FieldConstants.EQUIPMENT_ID]: editData.equipmentId,
+                [EQUIPMENT_ID]: editData.equipmentId,
                 [EQUIPMENT_NAME]: editData.equipmentName ?? '',
                 [ENERGY_SOURCE]: editData.energySource,
                 [FieldConstants.MAXIMUM_ACTIVE_POWER]: editData.maxP,
@@ -273,7 +273,7 @@ export default function GeneratorCreationDialog({
 
             const generatorCreationInfos = {
                 type: MODIFICATION_TYPES.GENERATOR_CREATION.type,
-                equipmentId: generator[FieldConstants.EQUIPMENT_ID],
+                equipmentId: generator[EQUIPMENT_ID],
                 equipmentName: sanitizeString(generator[EQUIPMENT_NAME]) ?? null,
                 energySource: generator[ENERGY_SOURCE],
                 minP: generator[FieldConstants.MINIMUM_ACTIVE_POWER],
