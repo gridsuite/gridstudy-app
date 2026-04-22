@@ -53,6 +53,7 @@ export default function GeneratorModificationForm({
     PositionDiagramPane,
     equipmentId,
 }: Readonly<GeneratorModificationFormProps>) {
+    // TODO when this Form is moved to commons-ui, we have to use the hook useTabsWithError for tab errors management
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [tabIndex, setTabIndex] = useState<number>(GeneratorDialogTab.CONNECTIVITY_TAB);
 
